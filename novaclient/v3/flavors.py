@@ -16,7 +16,9 @@
 """
 Flavor interface.
 """
+
 from novaclient import base
+from novaclient import utils
 from novaclient.v1_1 import flavors
 
 
@@ -54,6 +56,8 @@ class Flavor(base.Resource):
         :param flavor: The :class:`Flavor` to set extra spec on
         :param metadata: A dict of key/value pairs to be set
         """
+        utils.validate_flavor_metadata_keys(metadata.keys())
+
         body = {'extra_specs': metadata}
         return self.manager._create(
                             "/flavors/%s/flavor-extra-specs" %

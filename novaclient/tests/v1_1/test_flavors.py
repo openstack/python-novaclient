@@ -189,6 +189,23 @@ class FlavorsTest(utils.TestCase):
         self.cs.assert_called('POST', '/flavors/1/os-extra_specs',
                          {"extra_specs": {'k1': 'v1'}})
 
+    def test_set_with_valid_keys(self):
+        valid_keys = ['key4', 'month.price', 'I-Am:AK-ey.44-',
+                      'key with spaces and _']
+
+        f = self.cs.flavors.get(4)
+        for key in valid_keys:
+            f.set_keys({key: 'v4'})
+            self.cs.assert_called('POST', '/flavors/4/os-extra_specs',
+                                  {"extra_specs": {key: 'v4'}})
+
+    def test_set_with_invalid_keys(self):
+        invalid_keys = ['/1', '?1', '%1', '<', '>']
+
+        f = self.cs.flavors.get(1)
+        for key in invalid_keys:
+            self.assertRaises(exceptions.CommandError, f.set_keys, {key: 'v1'})
+
     def test_unset_keys(self):
         f = self.cs.flavors.get(1)
         f.unset_keys(['k1'])

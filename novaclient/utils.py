@@ -13,6 +13,7 @@
 
 import json
 import pkg_resources
+import re
 import sys
 import textwrap
 import uuid
@@ -22,12 +23,15 @@ import six
 
 from novaclient import exceptions
 from novaclient.openstack.common import cliutils
+from novaclient.openstack.common.gettextutils import _
 from novaclient.openstack.common import jsonutils
 from novaclient.openstack.common import strutils
 
 
 arg = cliutils.arg
 env = cliutils.env
+
+VALID_KEY_REGEX = re.compile(r"[\w\.\- :]+$", re.UNICODE)
 
 
 def add_resource_manager_extra_kwargs_hook(f, hook):
@@ -349,3 +353,13 @@ def is_integer_like(val):
         return True
     except (TypeError, ValueError, AttributeError):
         return False
+
+
+def validate_flavor_metadata_keys(keys):
+    for key in keys:
+        valid_name = VALID_KEY_REGEX.match(key)
+        if not valid_name:
+            msg = _('Invalid key: "%s". Keys may only contain letters, '
+                    'numbers, spaces, underscores, periods, colons and '
+                    'hyphens.')
+            raise exceptions.CommandError(msg % key)

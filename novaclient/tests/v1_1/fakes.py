@@ -667,6 +667,10 @@ class FakeHTTPClient(base_client.HTTPClient):
              'OS-FLV-EXT-DATA:ephemeral': 20,
              'os-flavor-access:is_public': False,
              'links': {}},
+            {'id': 4, 'name': '1024 MB Server', 'ram': 1024, 'disk': 10,
+             'OS-FLV-EXT-DATA:ephemeral': 10,
+             'os-flavor-access:is_public': True,
+             'links': {}},
             {'id': 'aa1', 'name': '128 MB Server', 'ram': 128, 'disk': 0,
              'OS-FLV-EXT-DATA:ephemeral': 0,
              'os-flavor-access:is_public': True,
@@ -734,6 +738,14 @@ class FakeHTTPClient(base_client.HTTPClient):
             200,
             {},
             {'flavor':
+                self.get_flavors_detail(is_public='None')[2]['flavors'][3]}
+        )
+
+    def get_flavors_4(self, **kw):
+        return (
+            200,
+            {},
+            {'flavor':
                 self.get_flavors_detail(is_public='None')[2]['flavors'][2]}
         )
 
@@ -765,6 +777,11 @@ class FakeHTTPClient(base_client.HTTPClient):
         return (200, {},
             {'extra_specs': {"k3": "v3"}})
 
+    def get_flavors_4_os_extra_specs(self, **kw):
+        return (200,
+            {},
+            {'extra_specs': {"k4": "v4"}})
+
     def post_flavors_1_os_extra_specs(self, body, **kw):
         assert list(body) == ['extra_specs']
         fakes.assert_has_keys(body['extra_specs'],
@@ -772,6 +789,13 @@ class FakeHTTPClient(base_client.HTTPClient):
         return (200,
             {},
             {'extra_specs': {"k1": "v1"}})
+
+    def post_flavors_4_os_extra_specs(self, body, **kw):
+        assert list(body) == ['extra_specs']
+
+        return (200,
+            {},
+            body)
 
     def delete_flavors_1_os_extra_specs_k1(self, **kw):
         return (204, {}, None)

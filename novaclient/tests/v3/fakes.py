@@ -66,6 +66,9 @@ class FakeHTTPClient(fakes_v1_1.FakeHTTPClient):
     post_flavors_1_flavor_extra_specs = (
         fakes_v1_1.FakeHTTPClient.post_flavors_1_os_extra_specs)
 
+    post_flavors_4_flavor_extra_specs = (
+        fakes_v1_1.FakeHTTPClient.post_flavors_4_os_extra_specs)
+
     delete_flavors_1_flavor_extra_specs_k1 = (
         fakes_v1_1.FakeHTTPClient.delete_flavors_1_os_extra_specs_k1)
 
@@ -78,6 +81,10 @@ class FakeHTTPClient(fakes_v1_1.FakeHTTPClient):
             {'id': 2, 'name': '512 MB Server', 'ram': 512, 'disk': 20,
              'ephemeral': 20,
              'flavor-access:is_public': False,
+             'links': {}},
+            {'id': 4, 'name': '1024 MB Server', 'ram': 1024, 'disk': 10,
+             'ephemeral': 10,
+             'flavor-access:is_public': True,
              'links': {}},
             {'id': 'aa1', 'name': '128 MB Server', 'ram': 128, 'disk': 0,
              'ephemeral': 0,
