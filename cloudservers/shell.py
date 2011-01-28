@@ -399,6 +399,11 @@ class CloudserversShell(object):
         flavor = self._find_flavor(args.flavor)
         server.resize(flavor)
 
+    @arg('zone', metavar='<zone>', help='Name or ID of zone.')
+    def do_zone_add_child(self, args):
+        """Add a child zone."""
+        self._find_zone(args.zone).add_child()
+
     @arg('server', metavar='<server>', help='Name or ID of server.')
     def do_pause(self, args):
         """Pause a server."""
@@ -486,6 +491,10 @@ class CloudserversShell(object):
     def _find_server(self, server):
         """Get a server by name or ID."""
         return self._find_resource(self.cs.servers, server)
+
+    def _find_zone(self, zone):
+        """Get a zone by name or ID."""
+        return self._find_resource(self.cs.zones, zone)
 
     def _find_ipgroup(self, group):
         """Get an IP group by name or ID."""
