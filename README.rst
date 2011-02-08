@@ -1,13 +1,13 @@
-Python bindings to the Rackspace Cloud Servers API
+Python bindings to the OpenStack Nova API
 ==================================================
 
-This is a client for Rackspace's Cloud Servers API. There's a Python API (the
-``cloudservers`` module), and a command-line script (``cloudservers``). Each
-implements 100% of the Rackspace API.
+This is a client for the OpenStack Nova API. There's a Python API (the
+``novatools`` module), and a command-line script (``novatools``). Each
+implements 100% of the OpenStack Nova API.
 
-`Full documentation is available`__.
+[PENDING] `Full documentation is available`__.
 
-__ http://packages.python.org/python-cloudservers/
+__ http://packages.python.org/python-novatools/
 
 You'll also probably want to read `Rackspace's API guide`__ (PDF) -- the first
 bit, at least -- to get an idea of the concepts. Rackspace is doing the cloud
@@ -18,6 +18,11 @@ __ http://docs.rackspacecloud.com/servers/api/cs-devguide-latest.pdf
 
 Development takes place on GitHub__. Bug reports and patches may be filed there.
 
+__ https://github.com/rackspace/python-novatools
+
+This code a fork of `Jacobian's python-cloudservers`__ If you need API support
+the Rackspace API soley, you should use that repository. 
+
 __ http://github.com/jacobian/python-cloudservers
 
 .. contents:: Contents:
@@ -26,29 +31,28 @@ __ http://github.com/jacobian/python-cloudservers
 Command-line API
 ----------------
 
-Installing this package gets you a shell command, ``cloudservers``, that you
+Installing this package gets you a shell command, ``novatools``, that you
 can use to interact with any Rackspace compatible API (including OpenStack).
 
-You'll need to provide your Rackspace username and API key. You can do this
+You'll need to provide your OpenStack username and API key. You can do this
 with the ``--username`` and ``--apikey`` params, but it's easier to just 
 set them as environment variables::
 
-    export CLOUD_SERVERS_USERNAME=jacobian
-    export CLOUD_SERVERS_API_KEY=yadayada
+    export NOVA_TOOLS_USERNAME=openstack
+    export NOVA_TOOLS_API_KEY=yadayada
 
-If you are using OpenStack or another Rackspace compatible API, you can 
-optionally define its authentication url with ``--url``. Or set it as
+You will also need to define the authentication url with ``--url``. Or set it as
 an environment variable as well::
 
-    export CLOUD_SERVERS_URL=http://myserver:port/v1.0/
+    export NOVA_TOOLS_URL=http://myserver:port/v1.0/
     
 You'll find complete documentation on the shell by running 
-``cloudservers help``::
+``novatools help``::
     
-    usage: cloudservers [--username USERNAME] [--apikey APIKEY] 
+    usage: novatools [--username USERNAME] [--apikey APIKEY] 
                         [--url AUTH_URL] <subcommand> ...
 
-    Command-line interface to the Cloud Servers API.
+    Command-line interface to the OpenStack Nova API.
 
     Positional arguments:
       <subcommand>
@@ -86,30 +90,30 @@ You'll find complete documentation on the shell by running
         unrescue            Unrescue a server.
 
     Optional arguments:
-      --username USERNAME   Defaults to env[CLOUD_SERVERS_USERNAME].
-      --apikey APIKEY       Defaults to env[CLOUD_SERVERS_API_KEY].
-      --url AUTH_URL        Defaults to env[CLOUD_SERVERS_URL] or
+      --username USERNAME   Defaults to env[NOVA_TOOLS_USERNAME].
+      --apikey APIKEY       Defaults to env[NOVA_TOOLS_API_KEY].
+      --url AUTH_URL        Defaults to env[NOVA_TOOLS_URL] or
                             https://auth.api.rackspacecloud.com/v1.0
                             if undefined. 
 
-    See "cloudservers help COMMAND" for help on a specific command.
+    See "novatools help COMMAND" for help on a specific command.
     
 Python API
 ----------
 
-There's also a `complete Python API`__.
+[PENDING] There's also a `complete Python API`__.
 
-__ http://packages.python.org/python-cloudservers/
+__ http://packages.python.org/python-novatools/
 
 By way of a quick-start::
 
-    >>> import cloudservers
-    >>> cs = cloudservers.CloudServers(USERNAME, API_KEY [, AUTH_URL])
-    >>> cs.flavors.list()
+    >>> import novatools
+    >>> nt = novatools.OpenStack(USERNAME, API_KEY [, AUTH_URL])
+    >>> nt.flavors.list()
     [...]
-    >>> cs.servers.list()
+    >>> nt.servers.list()
     [...]
-    >>> s = cs.servers.create(image=2, flavor=1, name='myserver')
+    >>> s = nt.servers.create(image=2, flavor=1, name='myserver')
     
     ... time passes ...
     
@@ -119,17 +123,7 @@ By way of a quick-start::
     
     >>> s.delete()
 
-FAQ
----
-
-What's wrong with libcloud?
-
-    Nothing! However, as a cross-service binding it's by definition lowest
-    common denominator; I needed access to the Rackspace-specific APIs (shared
-    IP groups, image snapshots, resizing, etc.). I also wanted a command-line
-    utility.
-    
 What's new?
 -----------
 
-See `the release notes <http://packages.python.org/python-cloudservers/releases.html>`_.
+[PENDING] See `the release notes <http://packages.python.org/python-novatools/releases.html>`_.
