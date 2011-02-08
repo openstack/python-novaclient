@@ -10,14 +10,14 @@ if sys.version_info < (2,6):
     requirements.append('simplejson')
 
 setup(
-    name = "python-cloudservers",
+    name = "python-novatools",
     version = "1.2",
-    description = "Client library for Rackspace's Cloud Servers API",
+    description = "Client library for OpenStack Nova API",
     long_description = read('README.rst'),
-    url = 'http://packages.python.org/python-cloudservers',
+    url = 'https://github.com/rackspace/python-novatools',
     license = 'BSD',
-    author = 'Jacob Kaplan-Moss',
-    author_email = 'jacob@jacobian.org',
+    author = 'Rackspace, based on work by Jacob Kaplan-Moss',
+    author_email = 'github@racklabs.com',
     packages = find_packages(exclude=['tests']),
     classifiers = [
         'Development Status :: 5 - Production/Stable',
@@ -34,6 +34,6 @@ setup(
     test_suite = "nose.collector",
     
     entry_points = {
-        'console_scripts': ['cloudservers = cloudservers.shell:main']
+        'console_scripts': ['novatools = novatools.shell:main']
     }
 )
