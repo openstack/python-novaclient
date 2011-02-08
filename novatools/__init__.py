@@ -20,6 +20,7 @@ from novatools.images import ImageManager, Image
 from novatools.ipgroups import IPGroupManager, IPGroup
 from novatools.servers import (ServerManager, Server, REBOOT_HARD,
                                  REBOOT_SOFT)
+from novatools.zones import Zone, ZoneManager
 
 
 class OpenStack(object):
@@ -48,6 +49,7 @@ class OpenStack(object):
         self.images = ImageManager(self)
         self.ipgroups = IPGroupManager(self)
         self.servers = ServerManager(self)
+        self.zones = ZoneManager(self)
 
     def authenticate(self):
         """

@@ -368,3 +368,45 @@ class FakeClient(OpenStackClient):
 
     def delete_shared_ip_groups_1(self, **kw):
         return (204, None)
+
+    #
+    # Zones
+    #
+    def get_zones(self, **kw):
+        return (200, {'zones': [
+            {'id': 1, 'name': 'zone1'},
+            {'id': 2, 'name': 'zone2'},
+        ]})
+
+
+    def get_zones_detail(self, **kw):
+        return (200, {'zones': [
+            {'id': 1, 'name': 'zone1', 'auth_url': 'http://foo.com'},
+            {'id': 2, 'name': 'zone2', 'auth_url': 'http://foo.com'},
+        ]})
+
+    def get_zones_1(self, **kw):
+        r = {'zone': self.get_zones_detail()[1]['zones'][0]}
+        return (200, r)
+
+    def get_zones_2(self, **kw):
+        r = {'zone': self.get_zones_detail()[1]['zones'][1]}
+        return (200, r)
+
+    def post_zones(self, body, **kw):
+        assert_equal(body.keys(), ['zone'])
+        assert_has_keys(body['zone'],
+                        required=['name', 'auth_url'],
+                        optional=[])
+
+        return (202, self.get_zones_1()[1])
+
+    def put_zones_1(self, body, **kw):
+        assert_equal(body.keys(), ['zone'])
+        assert_has_keys(body['zone'], optional=['name', 'auth_url'])
+        return (204, None)
+
+    def delete_zones_1(self, **kw):
+        return (202, None)
+
+

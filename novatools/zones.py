@@ -11,16 +11,17 @@ class Zone(base.Resource):
         """
         self.manager.delete(self)
 
-    def update(self, name=None):
+    def update(self, name=None, auth_url=None):
         """
         Update the name for this child zone.
 
         :param name: Update the child zone's name.
+        :param auth_url: Update the child zone's Auth URL.
         """
-        self.manager.update(self, name)
+        self.manager.update(self, name, auth_url)
 
 
-class ServerManager(base.ManagerWithFind):
+class ZoneManager(base.ManagerWithFind):
     resource_class = Zone
 
     def get(self, zone):
@@ -57,4 +58,23 @@ class ServerManager(base.ManagerWithFind):
         Delete a child zone.
         """
         self._delete("/zones/%s" % base.getid(zone))
+
+    def update(self, zone, name=None, auth_url=None):
+        """
+        Update the name or the auth_url for a zone.
+
+        :param zone: The :class:`Zone` (or its ID) to update.
+        :param name: Update the zone's name.
+        :param auth_url: Update the Auth URL.
+        """
+
+        if name is None and auth_url is None:
+            return
+        body = {"zone": {}}
+        if name:
+            body["zone"]["name"] = name
+        if auth_url:
+            body["zone"]["auth_url"] = auth_url
+        self._update("/zones/%s" % base.getid(zone), body)
+
 
