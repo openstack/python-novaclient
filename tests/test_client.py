@@ -1,6 +1,6 @@
 import mock
 import httplib2
-from cloudservers.client import CloudServersClient
+from novatools.client import OpenStackClient
 from nose.tools import assert_equal
 
 fake_response = httplib2.Response({"status": 200})
@@ -9,7 +9,7 @@ mock_request = mock.Mock(return_value=(fake_response, fake_body))
 
 
 def client():
-    cl = CloudServersClient("username", "apikey", "auth_test")
+    cl = OpenStackClient("username", "apikey", "auth_test")
     cl.management_url = "http://example.com"
     cl.auth_token = "token"
     return cl

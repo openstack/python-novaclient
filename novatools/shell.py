@@ -103,7 +103,7 @@ class OpenStackShell(object):
                 help=help,
                 description=desc,
                 add_help=False,
-                formatter_class=CloudserversHelpFormatter
+                formatter_class=OpenStackHelpFormatter
             )
             subparser.add_argument('-h', '--help',
                 action='help',
@@ -138,7 +138,7 @@ class OpenStackShell(object):
         self.cs = self._api_class(user, apikey, url)
         try:
             self.cs.authenticate()
-        except cloudservers.Unauthorized:
+        except novatools.Unauthorized:
             raise CommandError("Invalid OpenStack Nova credentials.")
 
         args.func(args)
@@ -181,10 +181,10 @@ class OpenStackShell(object):
         # If we have some flags, update the backup
         backup = {}
         if args.daily:
-            backup['daily'] = getattr(cloudservers, 'BACKUP_DAILY_%s' %
+            backup['daily'] = getattr(novatools, 'BACKUP_DAILY_%s' %
                                                     args.daily.upper())
         if args.weekly:
-            backup['weekly'] = getattr(cloudservers, 'BACKUP_WEEKLY_%s' %
+            backup['weekly'] = getattr(novatools, 'BACKUP_WEEKLY_%s' %
                                                      args.weekly.upper())
         if args.enabled is not None:
             backup['enabled'] = args.enabled
@@ -369,8 +369,8 @@ class OpenStackShell(object):
     @arg('--hard',
         dest='reboot_type',
         action='store_const',
-        const=cloudservers.REBOOT_HARD,
-        default=cloudservers.REBOOT_SOFT,
+        const=novatools.REBOOT_HARD,
+        default=novatools.REBOOT_SOFT,
         help='Perform a hard reboot (instead of a soft one).')
     @arg('server', metavar='<server>', help='Name or ID of server.')
     def do_reboot(self, args):
@@ -508,7 +508,7 @@ class OpenStackShell(object):
         """Get a flavor by name, ID, or RAM size."""
         try:
             return self._find_resource(self.cs.flavors, flavor)
-        except cloudservers.NotFound:
+        except novatools.NotFound:
             return self.cs.flavors.find(ram=flavor)
 
     def _find_resource(self, manager, name_or_id):
@@ -518,7 +518,7 @@ class OpenStackShell(object):
                 return manager.get(int(name_or_id))
             else:
                 return manager.find(name=name_or_id)
-        except cloudservers.NotFound:
+        except novatools.NotFound:
             raise CommandError("No %s with a name or ID of '%s' exists." %
                          (manager.resource_class.__name__.lower(), name_or_id))
 

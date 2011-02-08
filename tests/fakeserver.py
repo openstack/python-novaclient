@@ -10,12 +10,12 @@ import httplib2
 import urlparse
 import urllib
 from nose.tools import assert_equal
-from cloudservers import CloudServers
-from cloudservers.client import CloudServersClient
+from novatools import OpenStack
+from novatools.client import OpenStackClient
 from utils import fail, assert_in, assert_not_in, assert_has_keys
 
 
-class FakeServer(CloudServers):
+class FakeServer(OpenStack):
     def __init__(self, username=None, password=None, auth_url=None):
         super(FakeServer, self).__init__('username', 'apikey', 'auth_url')
         self.client = FakeClient()
@@ -42,7 +42,7 @@ class FakeServer(CloudServers):
         pass
 
 
-class FakeClient(CloudServersClient):
+class FakeClient(OpenStackClient):
     def __init__(self):
         self.username = 'username'
         self.apikey = 'apikey'

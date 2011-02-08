@@ -1,4 +1,4 @@
-from cloudservers import Image
+from novatools import Image
 from fakeserver import FakeServer
 from utils import assert_isinstance
 from nose.tools import assert_equal

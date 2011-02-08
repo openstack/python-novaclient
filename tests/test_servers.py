@@ -2,7 +2,7 @@ import StringIO
 from nose.tools import assert_equal
 from fakeserver import FakeServer
 from utils import assert_isinstance
-from cloudservers import Server
+from novatools import Server
 
 cs = FakeServer()
 

@@ -1,11 +1,11 @@
 import mock
-import cloudservers
+import novatools
 import httplib2
 from nose.tools import assert_raises, assert_equal
 
 
 def test_authenticate_success():
-    cs = cloudservers.CloudServers("username", "apikey")
+    cs = novatools.OpenStack("username", "apikey")
     auth_response = httplib2.Response({
         'status': 204,
         'x-server-management-url':
@@ -31,19 +31,19 @@ def test_authenticate_success():
 
 
 def test_authenticate_failure():
-    cs = cloudservers.CloudServers("username", "apikey")
+    cs = novatools.OpenStack("username", "apikey")
     auth_response = httplib2.Response({'status': 401})
     mock_request = mock.Mock(return_value=(auth_response, None))
 
     @mock.patch.object(httplib2.Http, "request", mock_request)
     def test_auth_call():
-        assert_raises(cloudservers.Unauthorized, cs.client.authenticate)
+        assert_raises(novatools.Unauthorized, cs.client.authenticate)
 
     test_auth_call()
 
 
 def test_auth_automatic():
-    client = cloudservers.CloudServers("username", "apikey").client
+    client = novatools.OpenStack("username", "apikey").client
     client.management_url = ''
     mock_request = mock.Mock(return_value=(None, None))
 
@@ -58,7 +58,7 @@ def test_auth_automatic():
 
 
 def test_auth_manual():
-    cs = cloudservers.CloudServers("username", "password")
+    cs = novatools.OpenStack("username", "apikey")
 
     @mock.patch.object(cs.client, 'authenticate')
     def test_auth_call(m):

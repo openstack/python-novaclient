@@ -1,5 +1,5 @@
 
-from cloudservers.backup_schedules import *
+from novatools.backup_schedules import *
 from fakeserver import FakeServer
 from utils import assert_isinstance
 

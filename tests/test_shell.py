@@ -2,7 +2,7 @@ import os
 import mock
 import httplib2
 from nose.tools import assert_raises, assert_equal
-from cloudservers.shell import CloudserversShell, CommandError
+from novatools.shell import OpenStackShell, CommandError
 from fakeserver import FakeServer
 from utils import assert_in
 
@@ -11,15 +11,15 @@ from utils import assert_in
 def setup():
     global _old_env
     fake_env = {
-        'CLOUD_SERVERS_USERNAME': 'username',
-        'CLOUD_SERVERS_API_KEY': 'password'
+        'NOVA_TOOLS_USERNAME': 'username',
+        'NOVA_TOOLS_API_KEY': 'password'
     }
     _old_env, os.environ = os.environ, fake_env.copy()
 
     # Make a fake shell object, a helping wrapper to call it, and a quick way
     # of asserting that certain API calls were made.
     global shell, _shell, assert_called
-    _shell = CloudserversShell()
+    _shell = OpenStackShell()
     _shell._api_class = FakeServer
     assert_called = lambda m, u, b=None: _shell.cs.assert_called(m, u, b)
     shell = lambda cmd: _shell.main(cmd.split())
