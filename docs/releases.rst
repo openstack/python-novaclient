@@ -2,6 +2,17 @@
 Release notes
 =============
 
+2.0 (Feb 7, 2011)
+=================
+
+* Forked from https://github.com/jacobian/python-cloudservers
+
+* Rebranded to python-novatools
+
+* Auth URL support
+
+* New OpenStack specific commands added (pause, suspend, etc)
+
 1.2 (August 15, 2010)
 =====================
 

@@ -1,22 +1,22 @@
-The :mod:`cloudservers` Python API
+The :mod:`novatools` Python API
 ==================================
 
-.. module:: cloudservers
-   :synopsis: A client for the Rackspace Cloud Servers API.
+.. module:: novatools
+   :synopsis: A client for the OpenStack Nova API.
    
-.. currentmodule:: cloudservers
+.. currentmodule:: novatools
 
 Usage
 -----
 
-First create an instance of :class:`CloudServers` with your credentials::
+First create an instance of :class:`OpenStack` with your credentials::
 
-    >>> from cloudservers import CloudServers
-    >>> cloudservers = CloudServers(USERNAME, API_KEY)
+    >>> from novatools import OpenStack
+    >>> nova = OpenStack(USERNAME, API_KEY, AUTH_URL)
 
-Then call methods on the :class:`CloudServers` object:
+Then call methods on the :class:`OpenStack` object:
 
-.. class:: CloudServers
+.. class:: OpenStack
     
     .. attribute:: backup_schedules
     
@@ -43,10 +43,10 @@ Then call methods on the :class:`CloudServers` object:
 
 For example::
 
-    >>> cloudservers.servers.list()
+    >>> nova.servers.list()
     [<Server: buildslave-ubuntu-9.10>]
 
-    >>> cloudservers.flavors.list()
+    >>> nova.flavors.list()
     [<Flavor: 256 server>,
      <Flavor: 512 server>,
      <Flavor: 1GB server>,
@@ -55,8 +55,8 @@ For example::
      <Flavor: 8GB server>,
      <Flavor: 15.5GB server>]
 
-    >>> fl = cloudservers.flavors.find(ram=512)
-    >>> cloudservers.servers.create("my-server", flavor=fl)
+    >>> fl = nova.flavors.find(ram=512)
+    >>> nova.servers.create("my-server", flavor=fl)
     <Server: my-server>
 
 For more information, see the reference:

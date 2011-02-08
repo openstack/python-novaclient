@@ -1,18 +1,12 @@
-Python bindings to the Rackspace Cloud Servers API
+Python bindings to the OpenStack Nova API
 ==================================================
 
-This is a client for Rackspace's Cloud Servers API. There's :doc:`a Python API
-<api>` (the :mod:`cloudservers` module), and a :doc:`command-line script
-<shell>` (installed as :program:`cloudservers`). Each implements the entire
-Rackspace Cloud Servers API.
+This is a client for OpenStack Nova API. There's :doc:`a Python API
+<api>` (the :mod:`novatools` module), and a :doc:`command-line script
+<shell>` (installed as :program:`novatools`). Each implements the entire
+OpenStack Nova API.
 
-You'll need a `Rackspace Cloud`__ account, and you'll need to make sure to sign
-up for both Cloud Servers *and* Cloud Files -- Rackspace won't let you get an
-API key unless you've got a Cloud Files account, too. Once you've got an
-account, you'll find your API key in the management console under "Your
-Account".
-
-__ http://rackspacecloud.com/
+You'll need an `OpenStack Nova` account, which you can get by using `nova-manage`.
 
 .. seealso::
 
@@ -38,7 +32,7 @@ Contributing
 
 Development takes place `on GitHub`__; please file bugs/pull requests there.
 
-__ http://github.com/jacobian/python-cloudservers
+__ https://github.com/rackspace/python-novatools
 
 Run tests with ``python setup.py test``.
 

@@ -1,4 +1,4 @@
-class CloudServersException(Exception):
+class OpenStackException(Exception):
     """
     The base exception class for all exceptions this library raises.
     """
@@ -11,7 +11,7 @@ class CloudServersException(Exception):
         return "%s (HTTP %s)" % (self.message, self.code)
 
 
-class BadRequest(CloudServersException):
+class BadRequest(OpenStackException):
     """
     HTTP 400 - Bad request: you sent some malformed data.
     """
@@ -19,7 +19,7 @@ class BadRequest(CloudServersException):
     message = "Bad request"
 
 
-class Unauthorized(CloudServersException):
+class Unauthorized(OpenStackException):
     """
     HTTP 401 - Unauthorized: bad credentials.
     """
@@ -27,7 +27,7 @@ class Unauthorized(CloudServersException):
     message = "Unauthorized"
 
 
-class Forbidden(CloudServersException):
+class Forbidden(OpenStackException):
     """
     HTTP 403 - Forbidden: your credentials don't give you access to this
     resource.
@@ -36,7 +36,7 @@ class Forbidden(CloudServersException):
     message = "Forbidden"
 
 
-class NotFound(CloudServersException):
+class NotFound(OpenStackException):
     """
     HTTP 404 - Not found
     """
@@ -44,7 +44,7 @@ class NotFound(CloudServersException):
     message = "Not found"
 
 
-class OverLimit(CloudServersException):
+class OverLimit(OpenStackException):
     """
     HTTP 413 - Over limit: you're over the API limits for this time period.
     """
@@ -53,7 +53,7 @@ class OverLimit(CloudServersException):
 
 
 # NotImplemented is a python keyword.
-class HTTPNotImplemented(CloudServersException):
+class HTTPNotImplemented(OpenStackException):
     """
     HTTP 501 - Not Implemented: the server does not support this operation.
     """
@@ -64,7 +64,7 @@ class HTTPNotImplemented(CloudServersException):
 # In Python 2.4 Exception is old-style and thus doesn't have a __subclasses__()
 # so we can do this:
 #     _code_map = dict((c.http_status, c)
-#                      for c in CloudServersException.__subclasses__())
+#                      for c in OpenStackException.__subclasses__())
 #
 # Instead, we have to hardcode it:
 _code_map = dict((c.http_status, c) for c in [BadRequest, Unauthorized,
@@ -73,7 +73,7 @@ _code_map = dict((c.http_status, c) for c in [BadRequest, Unauthorized,
 
 def from_response(response, body):
     """
-    Return an instance of a CloudServersException or subclass
+    Return an instance of an OpenStackException or subclass
     based on an httplib2 response.
 
     Usage::
@@ -82,7 +82,7 @@ def from_response(response, body):
         if resp.status != 200:
             raise exception_from_response(resp, body)
     """
-    cls = _code_map.get(response.status, CloudServersException)
+    cls = _code_map.get(response.status, OpenStackException)
     if body:
         message = "n/a"
         details = "n/a"

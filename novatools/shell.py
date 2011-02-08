@@ -1,9 +1,9 @@
 """
-Command-line interface to the Cloud Servers API.
+Command-line interface to the OpenStack Nova API.
 """
 
 import argparse
-import cloudservers
+import novatools
 import getpass
 import httplib2
 import os
@@ -12,11 +12,11 @@ import sys
 import textwrap
 
 # Choices for flags.
-DAY_CHOICES = [getattr(cloudservers, i).lower()
-               for i in dir(cloudservers)
+DAY_CHOICES = [getattr(novatools, i).lower()
+               for i in dir(novatools)
                if i.startswith('BACKUP_WEEKLY_')]
-HOUR_CHOICES = [getattr(cloudservers, i).lower()
-                for i in dir(cloudservers)
+HOUR_CHOICES = [getattr(novatools, i).lower()
+                for i in dir(novatools)
                 if i.startswith('BACKUP_DAILY_')]
 
 
@@ -45,19 +45,19 @@ def env(e):
     return os.environ.get(e, '')
 
 
-class CloudserversShell(object):
+class OpenStackShell(object):
 
     # Hook for the test suite to inject a fake server.
-    _api_class = cloudservers.CloudServers
+    _api_class = novatools.OpenStack
 
     def __init__(self):
         self.parser = argparse.ArgumentParser(
-            prog='cloudservers',
+            prog='novatools',
             description=__doc__.strip(),
-            epilog='See "cloudservers help COMMAND" '\
+            epilog='See "novatools help COMMAND" '\
                    'for help on a specific command.',
             add_help=False,
-            formatter_class=CloudserversHelpFormatter,
+            formatter_class=OpenStackHelpFormatter,
         )
 
         # Global arguments
@@ -72,19 +72,19 @@ class CloudserversShell(object):
             help=argparse.SUPPRESS)
 
         self.parser.add_argument('--username',
-            default=env('CLOUD_SERVERS_USERNAME'),
-            help='Defaults to env[CLOUD_SERVERS_USERNAME].')
+            default=env('NOVA_TOOLS_USERNAME'),
+            help='Defaults to env[NOVA_TOOLS_USERNAME].')
 
         self.parser.add_argument('--apikey',
-            default=env('CLOUD_SERVERS_API_KEY'),
-            help='Defaults to env[CLOUD_SERVERS_API_KEY].')
+            default=env('NOVA_TOOLS_API_KEY'),
+            help='Defaults to env[NOVA_TOOLS_API_KEY].')
 
-        auth_url = env('CLOUD_SERVERS_URL')
+        auth_url = env('NOVA_TOOLS_URL')
         if auth_url == '':
             auth_url = 'https://auth.api.rackspacecloud.com/v1.0'
         self.parser.add_argument('--url',
             default=auth_url,
-            help='Defaults to env[CLOUD_SERVERS_URL].')
+            help='Defaults to env[NOVA_TOOLS_URL].')
 
         # Subcommands
         subparsers = self.parser.add_subparsers(metavar='<subcommand>')
@@ -130,16 +130,16 @@ class CloudserversShell(object):
         user, apikey, url = args.username, args.apikey, args.url
         if not user:
             raise CommandError("You must provide a username, either via "
-                               "--username or via env[CLOUD_SERVERS_USERNAME]")
+                               "--username or via env[NOVA_TOOLS_USERNAME]")
         if not apikey:
             raise CommandError("You must provide an API key, either via "
-                               "--apikey or via env[CLOUD_SERVERS_API_KEY]")
+                               "--apikey or via env[NOVA_TOOLS_API_KEY]")
 
         self.cs = self._api_class(user, apikey, url)
         try:
             self.cs.authenticate()
         except cloudservers.Unauthorized:
-            raise CommandError("Invalid Cloud Servers credentials.")
+            raise CommandError("Invalid OpenStack Nova credentials.")
 
         args.func(args)
 
@@ -204,17 +204,17 @@ class CloudserversShell(object):
     @arg('--flavor',
          default=None,
          metavar='<flavor>',
-         help="Flavor ID (see 'cloudservers flavors'). "\
+         help="Flavor ID (see 'novatools flavors'). "\
               "Defaults to 256MB RAM instance.")
     @arg('--image',
          default=None,
          metavar='<image>',
-         help="Image ID (see 'cloudservers images'). "\
+         help="Image ID (see 'novatools images'). "\
               "Defaults to Ubuntu 10.04 LTS.")
     @arg('--ipgroup',
          default=None,
          metavar='<group>',
-         help="IP group name or ID (see 'cloudservers ipgroup-list').")
+         help="IP group name or ID (see 'novatools ipgroup-list').")
     @arg('--meta',
          metavar="<key=value>",
          action='append',
@@ -524,11 +524,11 @@ class CloudserversShell(object):
 
 
 # I'm picky about my shell help.
-class CloudserversHelpFormatter(argparse.HelpFormatter):
+class OpenStackHelpFormatter(argparse.HelpFormatter):
     def start_section(self, heading):
         # Title-case the headings
         heading = '%s%s' % (heading[0].upper(), heading[1:])
-        super(CloudserversHelpFormatter, self).start_section(heading)
+        super(OpenStackHelpFormatter, self).start_section(heading)
 
 
 # Helpers
@@ -557,7 +557,7 @@ def print_dict(d):
 
 def main():
     try:
-        CloudserversShell().main(sys.argv[1:])
+        OpenStackShell().main(sys.argv[1:])
     except CommandError, e:
         print >> sys.stderr, e
         sys.exit(1)

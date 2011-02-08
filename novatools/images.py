@@ -1,4 +1,4 @@
-from cloudservers import base
+from novatools import base
 
 
 class Image(base.Resource):

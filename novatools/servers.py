@@ -1,4 +1,4 @@
-from cloudservers import base
+from novatools import base
 
 REBOOT_SOFT, REBOOT_HARD = 'SOFT', 'HARD'
 

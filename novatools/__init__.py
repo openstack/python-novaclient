@@ -1,6 +1,6 @@
-__version__ = '1.2'
+__version__ = '2.0'
 
-from cloudservers.backup_schedules import (
+from novatools.backup_schedules import (
         BackupSchedule, BackupScheduleManager,
         BACKUP_WEEKLY_DISABLED, BACKUP_WEEKLY_SUNDAY, BACKUP_WEEKLY_MONDAY,
         BACKUP_WEEKLY_TUESDAY, BACKUP_WEEKLY_WEDNESDAY,
@@ -12,29 +12,29 @@ from cloudservers.backup_schedules import (
         BACKUP_DAILY_H_1400_1600, BACKUP_DAILY_H_1600_1800,
         BACKUP_DAILY_H_1800_2000, BACKUP_DAILY_H_2000_2200,
         BACKUP_DAILY_H_2200_0000)
-from cloudservers.client import CloudServersClient
-from cloudservers.exceptions import (CloudServersException, BadRequest,
+from novatools.client import OpenStackClient
+from novatools.exceptions import (OpenStackException, BadRequest,
         Unauthorized, Forbidden, NotFound, OverLimit)
-from cloudservers.flavors import FlavorManager, Flavor
-from cloudservers.images import ImageManager, Image
-from cloudservers.ipgroups import IPGroupManager, IPGroup
-from cloudservers.servers import (ServerManager, Server, REBOOT_HARD,
+from novatools.flavors import FlavorManager, Flavor
+from novatools.images import ImageManager, Image
+from novatools.ipgroups import IPGroupManager, IPGroup
+from novatools.servers import (ServerManager, Server, REBOOT_HARD,
                                  REBOOT_SOFT)
 
 
-class CloudServers(object):
+class OpenStack(object):
     """
-    Top-level object to access the Rackspace Cloud Servers API.
+    Top-level object to access the OpenStack Nova API.
 
     Create an instance with your creds::
 
-        >>> cs = CloudServers(USERNAME, API_KEY [, AUTH_URL])
+        >>> os = OpenStack(USERNAME, API_KEY, AUTH_URL)
 
     Then call methods on its managers::
 
-        >>> cs.servers.list()
+        >>> os.servers.list()
         ...
-        >>> cs.flavors.list()
+        >>> os.flavors.list()
         ...
 
     &c.
@@ -43,7 +43,7 @@ class CloudServers(object):
     def __init__(self, username, apikey,
                  auth_url='https://auth.api.rackspacecloud.com/v1.0'):
         self.backup_schedules = BackupScheduleManager(self)
-        self.client = CloudServersClient(username, apikey, auth_url)
+        self.client = OpenStackClient(username, apikey, auth_url)
         self.flavors = FlavorManager(self)
         self.images = ImageManager(self)
         self.ipgroups = IPGroupManager(self)
@@ -56,7 +56,7 @@ class CloudServers(object):
         Normally this is called automatically when you first access the API,
         but you can call this method to force authentication right now.
 
-        Returns on success; raises :exc:`cloudservers.Unauthorized` if the
+        Returns on success; raises :exc:`novatools.Unauthorized` if the
         credentials are wrong.
         """
         self.client.authenticate()

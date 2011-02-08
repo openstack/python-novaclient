@@ -12,16 +12,16 @@ if not hasattr(urlparse, 'parse_qsl'):
     import cgi
     urlparse.parse_qsl = cgi.parse_qsl
 
-import cloudservers
-from cloudservers import exceptions
+import novatools
+from novatools import exceptions
 
 
-class CloudServersClient(httplib2.Http):
+class OpenStackClient(httplib2.Http):
 
-    USER_AGENT = 'python-cloudservers/%s' % cloudservers.__version__
+    USER_AGENT = 'python-novatools/%s' % novatools.__version__
 
     def __init__(self, user, apikey, auth_url):
-        super(CloudServersClient, self).__init__()
+        super(OpenStackClient, self).__init__()
         self.user = user
         self.apikey = apikey
         self.auth_url = auth_url
@@ -41,7 +41,7 @@ class CloudServersClient(httplib2.Http):
 
         # print "-------------"
         # print "ARGS:", args
-        resp, body = super(CloudServersClient, self).request(*args, **kwargs)
+        resp, body = super(OpenStackClient, self).request(*args, **kwargs)
         # print "RESPONSE", resp
         # print "BODY", body
         if body:
@@ -101,7 +101,7 @@ class CloudServersClient(httplib2.Http):
         """
         Munge GET URLs to always return uncached content.
 
-        The Cloud Servers API caches data *very* agressively and doesn't
+        The OpenStack Nova API caches data *very* agressively and doesn't
         respect cache headers. To avoid stale data, then, we append a little
         bit of nonsense onto GET parameters; this appears to force the data not
         to be cached.
