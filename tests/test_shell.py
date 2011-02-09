@@ -299,6 +299,34 @@ def test_delete():
     assert_called('DELETE', '/servers/1234')
 
 
+def test_zone():
+    shell('zone 1')
+    assert_called('GET', '/zones/1')
+
+    shell('zone 1 --name zoneA --auth_url http://zzz')
+    assert_called(
+        'PUT', '/zones/1',
+        {'zone': {'name': 'zoneA', 'auth_url': 'http://zzz'}}
+    )
+
+def test_zone_add():
+    shell('zone-add zone3 http://zzz')
+    assert_called(
+        'POST', '/zones',
+        {'zone': {'name': 'zone3', 'auth_url': 'http://zzz'}}
+    )
+
+def test_zone_delete():
+    shell('zone-delete 1')
+    assert_called('DELETE', '/zones/1')
+
+
+def test_zone_list():
+    shell('zone-list')
+    assert_in(('GET', '/zones/detail', None),
+              _shell.cs.client.callstack)
+
+
 def test_help():
     @mock.patch.object(_shell.parser, 'print_help')
     def test_help(m):

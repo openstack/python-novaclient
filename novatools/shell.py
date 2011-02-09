@@ -305,7 +305,7 @@ class OpenStackShell(object):
         """
         Delete an image.
 
-        It should go without saying, but you cn only delete images you
+        It should go without saying, but you can only delete images you
         created.
         """
         image = self._find_image(args.image)
@@ -399,11 +399,6 @@ class OpenStackShell(object):
         flavor = self._find_flavor(args.flavor)
         server.resize(flavor)
 
-    @arg('zone', metavar='<zone>', help='Name or ID of zone.')
-    def do_zone_add_child(self, args):
-        """Add a child zone."""
-        self._find_zone(args.zone).add_child()
-
     @arg('server', metavar='<server>', help='Name or ID of server.')
     def do_pause(self, args):
         """Pause a server."""
@@ -488,13 +483,44 @@ class OpenStackShell(object):
         """Immediately shut down and delete a server."""
         self._find_server(args.server).delete()
 
+    @arg('zone', metavar='<zone name>', help='Name of the parent zone')
+    @arg('--name', dest='name', default=None, help='New name.')
+    @arg('--auth_url', dest='auth_url', help='New Auth URL.')
+    def do_zone(self, args):
+        """Show or edit a zone."""
+        zone = self.cs.zones.get(args.zone)
+ 
+        # If we have some flags, update the zone
+        zone_delta = {}
+        if args.name:
+            zone_delta['name'] = args.name
+        if args.auth_url:
+            zone_delta['auth_url'] = args.auth_url
+
+        if zone_delta:
+            zone.update(**zone_delta)
+        else:
+            print_dict(zone._info)
+
+    @arg('name', metavar='<name>', help='Name for the new child zone')
+    @arg('auth_url', metavar='<auth_url>', help="URL for the Zone's Auth API")
+    def do_zone_add(self, args):
+        """Add a new child zone."""
+        zone = self.cs.zones.create(args.name, args.auth_url)
+        print_dict(zone._info)
+
+    @arg('zone', metavar='<zone name>', help='Name of the parent zone')
+    def do_zone_delete(self, args):
+        """Delete a zone."""
+        self.cs.zones.delete(args.zone)
+
+    def do_zone_list(self, args):
+        """List the children of a zone."""
+        print_list(self.cs.zones.list(), ['ID', 'Name', 'Auth URL'])
+
     def _find_server(self, server):
         """Get a server by name or ID."""
         return self._find_resource(self.cs.servers, server)
-
-    def _find_zone(self, zone):
-        """Get a zone by name or ID."""
-        return self._find_resource(self.cs.zones, zone)
 
     def _find_ipgroup(self, group):
         """Get an IP group by name or ID."""
