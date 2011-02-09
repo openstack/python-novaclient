@@ -483,40 +483,47 @@ class OpenStackShell(object):
         """Immediately shut down and delete a server."""
         self._find_server(args.server).delete()
 
-    @arg('zone', metavar='<zone name>', help='Name of the parent zone')
-    @arg('--name', dest='name', default=None, help='New name.')
-    @arg('--auth_url', dest='auth_url', help='New Auth URL.')
+    # --zone_username is required since --username is already used.
+    @arg('zone', metavar='<zone>', help='Name or ID of the zone')
+    @arg('--api_url', dest='api_url', default=None, help='New URL.')
+    @arg('--zone_username', dest='zone_username', default=None,
+                            help='New zone username.')
+    @arg('--password', dest='password', default=None, help='New password.')
     def do_zone(self, args):
         """Show or edit a zone."""
         zone = self.cs.zones.get(args.zone)
  
         # If we have some flags, update the zone
         zone_delta = {}
-        if args.name:
-            zone_delta['name'] = args.name
-        if args.auth_url:
-            zone_delta['auth_url'] = args.auth_url
-
+        if args.api_url:
+            zone_delta['api_url'] = args.api_url
+        if args.zone_username:
+            zone_delta['username'] = args.zone_username
+        if args.password:
+            zone_delta['password'] = args.password
         if zone_delta:
             zone.update(**zone_delta)
         else:
             print_dict(zone._info)
 
-    @arg('name', metavar='<name>', help='Name for the new child zone')
-    @arg('auth_url', metavar='<auth_url>', help="URL for the Zone's Auth API")
+    @arg('api_url', metavar='<api_url>', help="URL for the Zone's API")
+    @arg('zone_username', metavar='<zone_username>', 
+                          help='Authentication username.')
+    @arg('password', metavar='<password>', help='Authentication password.')
     def do_zone_add(self, args):
         """Add a new child zone."""
-        zone = self.cs.zones.create(args.name, args.auth_url)
+        zone = self.cs.zones.create(args.api_url, args.zone_username, 
+                                                  args.password)
         print_dict(zone._info)
 
-    @arg('zone', metavar='<zone name>', help='Name of the parent zone')
+    @arg('zone', metavar='<zone name>', help='Name or ID of the zone')
     def do_zone_delete(self, args):
         """Delete a zone."""
         self.cs.zones.delete(args.zone)
 
     def do_zone_list(self, args):
         """List the children of a zone."""
-        print_list(self.cs.zones.list(), ['ID', 'Name', 'Auth URL'])
+        print_list(self.cs.zones.list(), ['ID', 'API URL', 'Username'])
 
     def _find_server(self, server):
         """Get a server by name or ID."""

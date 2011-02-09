@@ -3,7 +3,7 @@ from novatools import base
 
 class Zone(base.Resource):
     def __repr__(self):
-        return "<Zone: %s>" % self.name
+        return "<Zone: %s>" % self.api_url
 
     def delete(self):
         """
@@ -11,14 +11,15 @@ class Zone(base.Resource):
         """
         self.manager.delete(self)
 
-    def update(self, name=None, auth_url=None):
+    def update(self, api_url=None, username=None, password=None):
         """
         Update the name for this child zone.
 
-        :param name: Update the child zone's name.
-        :param auth_url: Update the child zone's Auth URL.
+        :param api_url: Update the child zone's API URL.
+        :param username: Update the child zone's username.
+        :param password: Update the child zone's password.
         """
-        self.manager.update(self, name, auth_url)
+        self.manager.update(self, api_url, username, password)
 
 
 class ZoneManager(base.ManagerWithFind):
@@ -40,15 +41,18 @@ class ZoneManager(base.ManagerWithFind):
         """
         return self._list("/zones/detail", "zones")
 
-    def create(self, name, auth_url):
+    def create(self, api_url, username, password):
         """
         Create a new child zone.
 
-        :param name: Something to name the zone.
+        :param api_url: The child zone's API URL.
+        :param username: The child zone's username.
+        :param password: The child zone's password.
         """
         body = {"zone": {
-            "name": name,
-            "auth_url": auth_url,
+            "api_url": api_url,
+            "username": username,
+            "password": password,
         }}
 
         return self._create("/zones", body, "zone")
@@ -59,22 +63,24 @@ class ZoneManager(base.ManagerWithFind):
         """
         self._delete("/zones/%s" % base.getid(zone))
 
-    def update(self, zone, name=None, auth_url=None):
+    def update(self, zone, api_url=None, username=None, password=None):
         """
-        Update the name or the auth_url for a zone.
+        Update the name or the api_url for a zone.
 
         :param zone: The :class:`Zone` (or its ID) to update.
-        :param name: Update the zone's name.
-        :param auth_url: Update the Auth URL.
+        :param api_url: Update the API URL.
+        :param username: Update the username.
+        :param password: Update the password.
         """
 
-        if name is None and auth_url is None:
-            return
         body = {"zone": {}}
-        if name:
-            body["zone"]["name"] = name
-        if auth_url:
-            body["zone"]["auth_url"] = auth_url
+        if api_url:
+            body["zone"]["api_url"] = api_url
+        if username:
+            body["zone"]["username"] = username
+        if password:
+            body["zone"]["password"] = password
+
+        if not len(body["zone"]):
+            return
         self._update("/zones/%s" % base.getid(zone), body)
-
-

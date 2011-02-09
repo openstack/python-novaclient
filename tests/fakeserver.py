@@ -374,15 +374,17 @@ class FakeClient(OpenStackClient):
     #
     def get_zones(self, **kw):
         return (200, {'zones': [
-            {'id': 1, 'name': 'zone1'},
-            {'id': 2, 'name': 'zone2'},
+            {'id': 1, 'api_url': 'http://foo.com', 'username': 'bob'},
+            {'id': 2, 'api_url': 'http://foo.com', 'username': 'alice'},
         ]})
 
 
     def get_zones_detail(self, **kw):
         return (200, {'zones': [
-            {'id': 1, 'name': 'zone1', 'auth_url': 'http://foo.com'},
-            {'id': 2, 'name': 'zone2', 'auth_url': 'http://foo.com'},
+            {'id': 1, 'api_url': 'http://foo.com', 'username': 'bob', 
+                                                   'password': 'qwerty'},
+            {'id': 2, 'api_url': 'http://foo.com', 'username': 'alice',
+                                                   'password': 'password'}
         ]})
 
     def get_zones_1(self, **kw):
@@ -396,17 +398,16 @@ class FakeClient(OpenStackClient):
     def post_zones(self, body, **kw):
         assert_equal(body.keys(), ['zone'])
         assert_has_keys(body['zone'],
-                        required=['name', 'auth_url'],
+                        required=['api_url', 'username', 'password'],
                         optional=[])
 
         return (202, self.get_zones_1()[1])
 
     def put_zones_1(self, body, **kw):
         assert_equal(body.keys(), ['zone'])
-        assert_has_keys(body['zone'], optional=['name', 'auth_url'])
+        assert_has_keys(body['zone'], optional=['api_url', 'username',
+                                                'password'])
         return (204, None)
 
     def delete_zones_1(self, **kw):
         return (202, None)
-
-

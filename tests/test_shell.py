@@ -303,17 +303,19 @@ def test_zone():
     shell('zone 1')
     assert_called('GET', '/zones/1')
 
-    shell('zone 1 --name zoneA --auth_url http://zzz')
+    shell('zone 1 --api_url=http://zzz --zone_username=frank --password=xxx')
     assert_called(
         'PUT', '/zones/1',
-        {'zone': {'name': 'zoneA', 'auth_url': 'http://zzz'}}
+        {'zone': {'api_url': 'http://zzz', 'username': 'frank',
+                  'password': 'xxx'}}
     )
 
 def test_zone_add():
-    shell('zone-add zone3 http://zzz')
+    shell('zone-add http://zzz frank xxx')
     assert_called(
         'POST', '/zones',
-        {'zone': {'name': 'zone3', 'auth_url': 'http://zzz'}}
+        {'zone': {'api_url': 'http://zzz', 'username': 'frank', 
+                  'password': 'xxx'}}
     )
 
 def test_zone_delete():
