@@ -38,13 +38,13 @@ You'll need to provide your OpenStack username and API key. You can do this
 with the ``--username`` and ``--apikey`` params, but it's easier to just 
 set them as environment variables::
 
-    export NOVA_TOOLS_USERNAME=openstack
-    export NOVA_TOOLS_API_KEY=yadayada
+    export NOVA_USERNAME=openstack
+    export NOVA_API_KEY=yadayada
 
 You will also need to define the authentication url with ``--url``. Or set it as
 an environment variable as well::
 
-    export NOVA_TOOLS_URL=http://myserver:port/v1.0/
+    export NOVA_URL=http://myserver:port/v1.0/
     
 You'll find complete documentation on the shell by running 
 ``novatools help``::
@@ -90,9 +90,9 @@ You'll find complete documentation on the shell by running
         unrescue            Unrescue a server.
 
     Optional arguments:
-      --username USERNAME   Defaults to env[NOVA_TOOLS_USERNAME].
-      --apikey APIKEY       Defaults to env[NOVA_TOOLS_API_KEY].
-      --url AUTH_URL        Defaults to env[NOVA_TOOLS_URL] or
+      --username USERNAME   Defaults to env[NOVA_USERNAME].
+      --apikey APIKEY       Defaults to env[NOVA_API_KEY].
+      --url AUTH_URL        Defaults to env[NOVA_URL] or
                             https://auth.api.rackspacecloud.com/v1.0
                             if undefined. 
 

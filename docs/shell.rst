@@ -15,18 +15,18 @@ API key. You can do this with the :option:`--username` and :option:`--apikey`
 options, but it's easier to just set them as environment variables by setting
 two environment variables:
 
-.. envvar:: NOVA_TOOLS_USERNAME
+.. envvar:: NOVA_USERNAME
 
     Your OpenStack Nova username.
 
-.. envvar:: NOVA_TOOLS_API_KEY
+.. envvar:: NOVA_API_KEY
 
     Your API key.
 
 For example, in Bash you'd use::
 
-    export NOVA_TOOLS_USERNAME=yourname
-    export NOVA_TOOLS_API_KEY=yadayadayada
+    export NOVA_USERNAME=yourname
+    export NOVA_API_KEY=yadayadayada
     
 From there, all shell commands take the form::
     

@@ -72,19 +72,19 @@ class OpenStackShell(object):
             help=argparse.SUPPRESS)
 
         self.parser.add_argument('--username',
-            default=env('NOVA_TOOLS_USERNAME'),
-            help='Defaults to env[NOVA_TOOLS_USERNAME].')
+            default=env('NOVA_USERNAME'),
+            help='Defaults to env[NOVA_USERNAME].')
 
         self.parser.add_argument('--apikey',
-            default=env('NOVA_TOOLS_API_KEY'),
-            help='Defaults to env[NOVA_TOOLS_API_KEY].')
+            default=env('NOVA_API_KEY'),
+            help='Defaults to env[NOVA_API_KEY].')
 
-        auth_url = env('NOVA_TOOLS_URL')
+        auth_url = env('NOVA_URL')
         if auth_url == '':
             auth_url = 'https://auth.api.rackspacecloud.com/v1.0'
         self.parser.add_argument('--url',
             default=auth_url,
-            help='Defaults to env[NOVA_TOOLS_URL].')
+            help='Defaults to env[NOVA_URL].')
 
         # Subcommands
         subparsers = self.parser.add_subparsers(metavar='<subcommand>')
@@ -130,10 +130,10 @@ class OpenStackShell(object):
         user, apikey, url = args.username, args.apikey, args.url
         if not user:
             raise CommandError("You must provide a username, either via "
-                               "--username or via env[NOVA_TOOLS_USERNAME]")
+                               "--username or via env[NOVA_USERNAME]")
         if not apikey:
             raise CommandError("You must provide an API key, either via "
-                               "--apikey or via env[NOVA_TOOLS_API_KEY]")
+                               "--apikey or via env[NOVA_API_KEY]")
 
         self.cs = self._api_class(user, apikey, url)
         try:

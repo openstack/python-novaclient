@@ -11,8 +11,8 @@ from utils import assert_in
 def setup():
     global _old_env
     fake_env = {
-        'NOVA_TOOLS_USERNAME': 'username',
-        'NOVA_TOOLS_API_KEY': 'password'
+        'NOVA_USERNAME': 'username',
+        'NOVA_API_KEY': 'password'
     }
     _old_env, os.environ = os.environ, fake_env.copy()
 

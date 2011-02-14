@@ -39,11 +39,12 @@ class OpenStackClient(httplib2.Http):
             kwargs['headers']['Content-Type'] = 'application/json'
             kwargs['body'] = json.dumps(kwargs['body'])
 
-        # print "-------------"
-        # print "ARGS:", args
+        if httplib2.debuglevel == 1:
+            print "ARGS:", args
         resp, body = super(OpenStackClient, self).request(*args, **kwargs)
-        # print "RESPONSE", resp
-        # print "BODY", body
+        if httplib2.debuglevel == 1:
+            print "RESPONSE", resp
+            print "BODY", body
         if body:
             try:
                 body = json.loads(body)
