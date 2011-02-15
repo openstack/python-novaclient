@@ -25,6 +25,14 @@ class Zone(base.Resource):
 class ZoneManager(base.ManagerWithFind):
     resource_class = Zone
 
+    def info(self):
+        """
+        Get info on this zone.
+
+        :rtype: :class:`Zone`
+        """
+        return self._get("/zones/", "zone")
+
     def get(self, zone):
         """
         Get a child zone.

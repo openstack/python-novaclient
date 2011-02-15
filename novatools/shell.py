@@ -484,13 +484,18 @@ class OpenStackShell(object):
         self._find_server(args.server).delete()
 
     # --zone_username is required since --username is already used.
-    @arg('zone', metavar='<zone>', help='Name or ID of the zone')
+    @arg('zone', metavar='<zone_id>', help='ID of the zone', default=None)
     @arg('--api_url', dest='api_url', default=None, help='New URL.')
     @arg('--zone_username', dest='zone_username', default=None,
                             help='New zone username.')
     @arg('--password', dest='password', default=None, help='New password.')
     def do_zone(self, args):
-        """Show or edit a zone."""
+        """Show or edit a child zone. No zone arg for this zone."""
+        if args.zone == None:
+            zone = self.cs.zones.info()
+            print_dict(zone)
+            return
+
         zone = self.cs.zones.get(args.zone)
  
         # If we have some flags, update the zone
