@@ -491,11 +491,6 @@ class OpenStackShell(object):
     @arg('--password', dest='password', default=None, help='New password.')
     def do_zone(self, args):
         """Show or edit a child zone. No zone arg for this zone."""
-        if args.zone == None:
-            zone = self.cs.zones.info()
-            print_dict(zone)
-            return
-
         zone = self.cs.zones.get(args.zone)
  
         # If we have some flags, update the zone
@@ -510,6 +505,11 @@ class OpenStackShell(object):
             zone.update(**zone_delta)
         else:
             print_dict(zone._info)
+
+    def do_zone_info(self, args):
+        """Get this zones name and capabilities."""
+        zone = self.cs.zones.info()
+        print_dict(zone._info)
 
     @arg('api_url', metavar='<api_url>', help="URL for the Zone's API")
     @arg('zone_username', metavar='<zone_username>', 

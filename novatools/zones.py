@@ -31,7 +31,7 @@ class ZoneManager(base.ManagerWithFind):
 
         :rtype: :class:`Zone`
         """
-        return self._get("/zones/", "zone")
+        return self._get("/zones/info", "zone")
 
     def get(self, zone):
         """
