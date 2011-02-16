@@ -286,7 +286,15 @@ class OpenStackShell(object):
 
     def do_flavor_list(self, args):
         """Print a list of available 'flavors' (sizes of servers)."""
-        print_list(self.cs.flavors.list(), ['ID', 'Name', 'RAM', 'Disk'])
+        print_list(self.cs.flavors.list(), [
+            'ID',
+            'Name',
+            'Memory_MB',
+            'Swap',
+            'Local_GB',
+            'VCPUs',
+            'RXTX_Quota',
+            'RXTX_Cap'])
 
     def do_image_list(self, args):
         """Print a list of available images to boot from."""
