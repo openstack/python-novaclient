@@ -528,7 +528,8 @@ class OpenStackShell(object):
 
     def do_zone_list(self, args):
         """List the children of a zone."""
-        print_list(self.cs.zones.list(), ['ID', 'API URL'])
+        print_list(self.cs.zones.list(), ['ID', 'Name', 'Is Active',
+                                            'Capabilities', 'API URL'])
 
     def _find_server(self, server):
         """Get a server by name or ID."""
