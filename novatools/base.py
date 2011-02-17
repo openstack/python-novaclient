@@ -109,7 +109,8 @@ class Resource(object):
 
     def get(self):
         new = self.manager.get(self.id)
-        self._add_details(new._info)
+        if new:
+            self._add_details(new._info)
 
     def __eq__(self, other):
         if not isinstance(other, self.__class__):

@@ -11,7 +11,7 @@ if sys.version_info < (2,6):
 
 setup(
     name = "python-novatools",
-    version = "1.2",
+    version = "2.0",
     description = "Client library for OpenStack Nova API",
     long_description = read('README.rst'),
     url = 'https://github.com/rackspace/python-novatools',

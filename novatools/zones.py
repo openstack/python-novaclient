@@ -2,6 +2,12 @@ from novatools import base
 
 
 class Zone(base.Resource):
+    def __init__(self, manager, info):
+        self.name = "n/a"
+        self.is_active = "n/a"
+        self.capabilities = "n/a"
+        super(Zone, self).__init__(manager, info)
+
     def __repr__(self):
         return "<Zone: %s>" % self.api_url
 
@@ -24,6 +30,14 @@ class Zone(base.Resource):
 
 class ZoneManager(base.ManagerWithFind):
     resource_class = Zone
+
+    def info(self):
+        """
+        Get info on this zone.
+
+        :rtype: :class:`Zone`
+        """
+        return self._get("/zones/info", "zone")
 
     def get(self, zone):
         """

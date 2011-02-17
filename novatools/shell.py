@@ -492,13 +492,13 @@ class OpenStackShell(object):
         self._find_server(args.server).delete()
 
     # --zone_username is required since --username is already used.
-    @arg('zone', metavar='<zone>', help='Name or ID of the zone')
+    @arg('zone', metavar='<zone_id>', help='ID of the zone', default=None)
     @arg('--api_url', dest='api_url', default=None, help='New URL.')
     @arg('--zone_username', dest='zone_username', default=None,
                             help='New zone username.')
     @arg('--password', dest='password', default=None, help='New password.')
     def do_zone(self, args):
-        """Show or edit a zone."""
+        """Show or edit a child zone. No zone arg for this zone."""
         zone = self.cs.zones.get(args.zone)
  
         # If we have some flags, update the zone
@@ -513,6 +513,11 @@ class OpenStackShell(object):
             zone.update(**zone_delta)
         else:
             print_dict(zone._info)
+
+    def do_zone_info(self, args):
+        """Get this zones name and capabilities."""
+        zone = self.cs.zones.info()
+        print_dict(zone._info)
 
     @arg('api_url', metavar='<api_url>', help="URL for the Zone's API")
     @arg('zone_username', metavar='<zone_username>', 
@@ -531,7 +536,8 @@ class OpenStackShell(object):
 
     def do_zone_list(self, args):
         """List the children of a zone."""
-        print_list(self.cs.zones.list(), ['ID', 'API URL'])
+        print_list(self.cs.zones.list(), ['ID', 'Name', 'Is Active',
+                                            'Capabilities', 'API URL'])
 
     def _find_server(self, server):
         """Get a server by name or ID."""
