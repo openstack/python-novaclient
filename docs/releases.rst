@@ -2,6 +2,13 @@
 Release notes
 =============
 
+2.2 (March 1, 2011)
+=================
+
+* removed some license/copywrite notices from source that wasn't
+  significantly changed.
+
+
 2.1 (Feb 28, 2011)
 =================
 

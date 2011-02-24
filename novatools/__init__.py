@@ -19,7 +19,7 @@
 novatools module.
 """
 
-__version__ = '2.1'
+__version__ = '2.2'
 
 from novatools.backup_schedules import (
         BackupSchedule, BackupScheduleManager,
