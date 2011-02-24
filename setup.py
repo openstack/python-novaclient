@@ -11,11 +11,11 @@ if sys.version_info < (2,6):
 
 setup(
     name = "python-novatools",
-    version = "2.0",
+    version = "2.1",
     description = "Client library for OpenStack Nova API",
     long_description = read('README.rst'),
     url = 'https://github.com/rackspace/python-novatools',
-    license = 'BSD',
+    license = 'Apache',
     author = 'Rackspace, based on work by Jacob Kaplan-Moss',
     author_email = 'github@racklabs.com',
     packages = find_packages(exclude=['tests']),
@@ -24,7 +24,7 @@ setup(
         'Environment :: Console',
         'Intended Audience :: Developers',
         'Intended Audience :: Information Technology',
-        'License :: OSI Approved :: BSD License',
+        'License :: OSI Approved :: Apache License',
         'Operating System :: OS Independent',
         'Programming Language :: Python',
     ],
@@ -34,6 +34,6 @@ setup(
     test_suite = "nose.collector",
     
     entry_points = {
-        'console_scripts': ['novatools = novatools.shell:main']
+        'console_scripts': ['nova = novatools.shell:main']
     }
 )

@@ -2,6 +2,13 @@
 Release notes
 =============
 
+2.1 (Feb 28, 2011)
+=================
+
+* shell renamed to nova from novatools
+
+* license changed from BSD to Apache
+
 2.0 (Feb 7, 2011)
 =================
 

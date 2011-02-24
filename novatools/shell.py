@@ -1,3 +1,20 @@
+# vim: tabstop=4 shiftwidth=4 softtabstop=4
+
+# Copyright 2011 OpenStack LLC.
+# All Rights Reserved.
+#
+#    Licensed under the Apache License, Version 2.0 (the "License"); you may
+#    not use this file except in compliance with the License. You may obtain
+#    a copy of the License at
+#
+#         http://www.apache.org/licenses/LICENSE-2.0
+#
+#    Unless required by applicable law or agreed to in writing, software
+#    distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+#    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+#    License for the specific language governing permissions and limitations
+#    under the License.
+
 """
 Command-line interface to the OpenStack Nova API.
 """
@@ -52,9 +69,9 @@ class OpenStackShell(object):
 
     def __init__(self):
         self.parser = argparse.ArgumentParser(
-            prog='novatools',
+            prog='nova',
             description=__doc__.strip(),
-            epilog='See "novatools help COMMAND" '\
+            epilog='See "nova help COMMAND" '\
                    'for help on a specific command.',
             add_help=False,
             formatter_class=OpenStackHelpFormatter,
@@ -605,6 +622,10 @@ def print_dict(d):
 def main():
     try:
         OpenStackShell().main(sys.argv[1:])
-    except CommandError, e:
-        print >> sys.stderr, e
+
+    except Exception, e:
+        if httplib2.debuglevel == 1:
+            raise  # dump stack.
+        else:
+            print >> sys.stderr, e
         sys.exit(1)

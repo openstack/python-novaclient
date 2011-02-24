@@ -2,7 +2,7 @@ Python bindings to the OpenStack Nova API
 ==================================================
 
 This is a client for the OpenStack Nova API. There's a Python API (the
-``novatools`` module), and a command-line script (``novatools``). Each
+``novatools`` module), and a command-line script (``nova``). Each
 implements 100% of the OpenStack Nova API.
 
 [PENDING] `Full documentation is available`__.
@@ -21,7 +21,8 @@ Development takes place on GitHub__. Bug reports and patches may be filed there.
 __ https://github.com/rackspace/python-novatools
 
 This code a fork of `Jacobian's python-cloudservers`__ If you need API support
-the Rackspace API soley, you should use that repository. 
+for the Rackspace API soley or the BSD license, you should use that repository. 
+python-novatools is licensed under the Apache License like the rest of OpenStack.
 
 __ http://github.com/jacobian/python-cloudservers
 
@@ -31,7 +32,7 @@ __ http://github.com/jacobian/python-cloudservers
 Command-line API
 ----------------
 
-Installing this package gets you a shell command, ``novatools``, that you
+Installing this package gets you a shell command, ``nova``, that you
 can use to interact with any Rackspace compatible API (including OpenStack).
 
 You'll need to provide your OpenStack username and API key. You can do this
@@ -47,9 +48,9 @@ an environment variable as well::
     export NOVA_URL=http://myserver:port/v1.0/
     
 You'll find complete documentation on the shell by running 
-``novatools help``::
+``nova help``::
     
-    usage: novatools [--username USERNAME] [--apikey APIKEY] 
+    usage: nova [--username USERNAME] [--apikey APIKEY] 
                         [--url AUTH_URL] <subcommand> ...
 
     Command-line interface to the OpenStack Nova API.
@@ -96,7 +97,7 @@ You'll find complete documentation on the shell by running
                             https://auth.api.rackspacecloud.com/v1.0
                             if undefined. 
 
-    See "novatools help COMMAND" for help on a specific command.
+    See "nova help COMMAND" for help on a specific command.
     
 Python API
 ----------
