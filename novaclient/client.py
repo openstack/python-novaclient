@@ -1,3 +1,4 @@
+# Copyright 2010 Jacob Kaplan-Moss
 """
 OpenStack Client interface. Handles the REST calls and responses.
 """

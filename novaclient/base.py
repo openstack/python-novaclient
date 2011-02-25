@@ -1,3 +1,4 @@
+# Copyright 2010 Jacob Kaplan-Moss
 """
 Base utilities to build API operation managers and objects on top of.
 """

@@ -1,3 +1,4 @@
+# Copyright 2010 Jacob Kaplan-Moss
 """
 Exception definitions.
 """
