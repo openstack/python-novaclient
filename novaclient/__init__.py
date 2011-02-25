@@ -18,7 +18,7 @@
 novaclient module.
 """
 
-__version__ = '2.3'
+__version__ = '2.4'
 
 from novaclient.backup_schedules import (
         BackupSchedule, BackupScheduleManager,

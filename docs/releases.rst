@@ -2,6 +2,12 @@
 Release notes
 =============
 
+2.4 (March 7, 2011)
+=================
+
+* added Jacob Kaplan-Moss copyright notices to older/untouched files.
+
+
 2.3 (March 2, 2011)
 =================
 
