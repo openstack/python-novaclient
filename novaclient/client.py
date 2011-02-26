@@ -16,13 +16,13 @@ if not hasattr(urlparse, 'parse_qsl'):
     import cgi
     urlparse.parse_qsl = cgi.parse_qsl
 
-import novatools
-from novatools import exceptions
+import novaclient
+from novaclient import exceptions
 
 
 class OpenStackClient(httplib2.Http):
 
-    USER_AGENT = 'python-novatools/%s' % novatools.__version__
+    USER_AGENT = 'python-novaclient/%s' % novaclient.__version__
 
     def __init__(self, user, apikey, auth_url):
         super(OpenStackClient, self).__init__()

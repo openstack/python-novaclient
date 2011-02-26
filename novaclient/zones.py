@@ -19,7 +19,7 @@
 Zone interface.
 """
 
-from novatools import base
+from novaclient import base
 
 
 class Zone(base.Resource):

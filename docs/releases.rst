@@ -2,6 +2,12 @@
 Release notes
 =============
 
+2.3 (March 2, 2011)
+=================
+
+* package renamed to python-novaclient. Module to novaclient
+
+
 2.2 (March 1, 2011)
 =================
 

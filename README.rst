@@ -2,12 +2,12 @@ Python bindings to the OpenStack Nova API
 ==================================================
 
 This is a client for the OpenStack Nova API. There's a Python API (the
-``novatools`` module), and a command-line script (``nova``). Each
+``novaclient`` module), and a command-line script (``nova``). Each
 implements 100% of the OpenStack Nova API.
 
 [PENDING] `Full documentation is available`__.
 
-__ http://packages.python.org/python-novatools/
+__ http://packages.python.org/python-novaclient/
 
 You'll also probably want to read `Rackspace's API guide`__ (PDF) -- the first
 bit, at least -- to get an idea of the concepts. Rackspace is doing the cloud
@@ -18,11 +18,11 @@ __ http://docs.rackspacecloud.com/servers/api/cs-devguide-latest.pdf
 
 Development takes place on GitHub__. Bug reports and patches may be filed there.
 
-__ https://github.com/rackspace/python-novatools
+__ https://github.com/rackspace/python-client
 
 This code a fork of `Jacobian's python-cloudservers`__ If you need API support
 for the Rackspace API soley or the BSD license, you should use that repository. 
-python-novatools is licensed under the Apache License like the rest of OpenStack.
+python-client is licensed under the Apache License like the rest of OpenStack.
 
 __ http://github.com/jacobian/python-cloudservers
 
@@ -104,12 +104,12 @@ Python API
 
 [PENDING] There's also a `complete Python API`__.
 
-__ http://packages.python.org/python-novatools/
+__ http://packages.python.org/python-novaclient/
 
 By way of a quick-start::
 
-    >>> import novatools
-    >>> nt = novatools.OpenStack(USERNAME, API_KEY [, AUTH_URL])
+    >>> import novaclient
+    >>> nt = novaclient.OpenStack(USERNAME, API_KEY [, AUTH_URL])
     >>> nt.flavors.list()
     [...]
     >>> nt.servers.list()
@@ -127,4 +127,4 @@ By way of a quick-start::
 What's new?
 -----------
 
-[PENDING] See `the release notes <http://packages.python.org/python-novatools/releases.html>`_.
+[PENDING] See `the release notes <http://packages.python.org/python-novaclient/releases.html>`_.

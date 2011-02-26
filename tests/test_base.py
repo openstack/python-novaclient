@@ -1,9 +1,9 @@
 
 import mock
-import novatools.base
-from novatools import Flavor
-from novatools.exceptions import NotFound
-from novatools.base import Resource
+import novaclient.base
+from novaclient import Flavor
+from novaclient.exceptions import NotFound
+from novaclient.base import Resource
 from nose.tools import assert_equal, assert_not_equal, assert_raises
 from fakeserver import FakeServer
 
@@ -16,11 +16,11 @@ def test_resource_repr():
 
 
 def test_getid():
-    assert_equal(novatools.base.getid(4), 4)
+    assert_equal(novaclient.base.getid(4), 4)
 
     class O(object):
         id = 4
-    assert_equal(novatools.base.getid(O), 4)
+    assert_equal(novaclient.base.getid(O), 4)
 
 
 def test_resource_lazy_getattr():

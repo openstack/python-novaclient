@@ -25,7 +25,7 @@ From the Rackspace API guide:
 Classes
 -------
 
-.. currentmodule:: cloudservers
+.. currentmodule:: novaclient
 
 .. autoclass:: IPGroupManager
    :members: get, list, find, findall, create, delete

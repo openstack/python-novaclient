@@ -2,7 +2,7 @@
 Backup Schedule interface.
 """
 
-from novatools import base
+from novaclient import base
 
 BACKUP_WEEKLY_DISABLED = 'DISABLED'
 BACKUP_WEEKLY_SUNDAY = 'SUNDAY'

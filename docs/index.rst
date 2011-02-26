@@ -2,7 +2,7 @@ Python bindings to the OpenStack Nova API
 ==================================================
 
 This is a client for OpenStack Nova API. There's :doc:`a Python API
-<api>` (the :mod:`novatools` module), and a :doc:`command-line script
+<api>` (the :mod:`novaclient` module), and a :doc:`command-line script
 <shell>` (installed as :program:`nova`). Each implements the entire
 OpenStack Nova API.
 
@@ -32,7 +32,7 @@ Contributing
 
 Development takes place `on GitHub`__; please file bugs/pull requests there.
 
-__ https://github.com/rackspace/python-novatools
+__ https://github.com/rackspace/python-novaclient
 
 Run tests with ``python setup.py test``.
 

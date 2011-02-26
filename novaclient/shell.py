@@ -20,7 +20,7 @@ Command-line interface to the OpenStack Nova API.
 """
 
 import argparse
-import novatools
+import novaclient
 import getpass
 import httplib2
 import os
@@ -29,11 +29,11 @@ import sys
 import textwrap
 
 # Choices for flags.
-DAY_CHOICES = [getattr(novatools, i).lower()
-               for i in dir(novatools)
+DAY_CHOICES = [getattr(novaclient, i).lower()
+               for i in dir(novaclient)
                if i.startswith('BACKUP_WEEKLY_')]
-HOUR_CHOICES = [getattr(novatools, i).lower()
-                for i in dir(novatools)
+HOUR_CHOICES = [getattr(novaclient, i).lower()
+                for i in dir(novaclient)
                 if i.startswith('BACKUP_DAILY_')]
 
 
@@ -65,7 +65,7 @@ def env(e):
 class OpenStackShell(object):
 
     # Hook for the test suite to inject a fake server.
-    _api_class = novatools.OpenStack
+    _api_class = novaclient.OpenStack
 
     def __init__(self):
         self.parser = argparse.ArgumentParser(
@@ -155,7 +155,7 @@ class OpenStackShell(object):
         self.cs = self._api_class(user, apikey, url)
         try:
             self.cs.authenticate()
-        except novatools.Unauthorized:
+        except novaclient.Unauthorized:
             raise CommandError("Invalid OpenStack Nova credentials.")
 
         args.func(args)
@@ -198,10 +198,10 @@ class OpenStackShell(object):
         # If we have some flags, update the backup
         backup = {}
         if args.daily:
-            backup['daily'] = getattr(novatools, 'BACKUP_DAILY_%s' %
+            backup['daily'] = getattr(novaclient, 'BACKUP_DAILY_%s' %
                                                     args.daily.upper())
         if args.weekly:
-            backup['weekly'] = getattr(novatools, 'BACKUP_WEEKLY_%s' %
+            backup['weekly'] = getattr(novaclient, 'BACKUP_WEEKLY_%s' %
                                                      args.weekly.upper())
         if args.enabled is not None:
             backup['enabled'] = args.enabled
@@ -221,17 +221,17 @@ class OpenStackShell(object):
     @arg('--flavor',
          default=None,
          metavar='<flavor>',
-         help="Flavor ID (see 'novatools flavors'). "\
+         help="Flavor ID (see 'novaclient flavors'). "\
               "Defaults to 256MB RAM instance.")
     @arg('--image',
          default=None,
          metavar='<image>',
-         help="Image ID (see 'novatools images'). "\
+         help="Image ID (see 'novaclient images'). "\
               "Defaults to Ubuntu 10.04 LTS.")
     @arg('--ipgroup',
          default=None,
          metavar='<group>',
-         help="IP group name or ID (see 'novatools ipgroup-list').")
+         help="IP group name or ID (see 'novaclient ipgroup-list').")
     @arg('--meta',
          metavar="<key=value>",
          action='append',
@@ -394,8 +394,8 @@ class OpenStackShell(object):
     @arg('--hard',
         dest='reboot_type',
         action='store_const',
-        const=novatools.REBOOT_HARD,
-        default=novatools.REBOOT_SOFT,
+        const=novaclient.REBOOT_HARD,
+        default=novaclient.REBOOT_SOFT,
         help='Perform a hard reboot (instead of a soft one).')
     @arg('server', metavar='<server>', help='Name or ID of server.')
     def do_reboot(self, args):
@@ -572,7 +572,7 @@ class OpenStackShell(object):
         """Get a flavor by name, ID, or RAM size."""
         try:
             return self._find_resource(self.cs.flavors, flavor)
-        except novatools.NotFound:
+        except novaclient.NotFound:
             return self.cs.flavors.find(ram=flavor)
 
     def _find_resource(self, manager, name_or_id):
@@ -582,7 +582,7 @@ class OpenStackShell(object):
                 return manager.get(int(name_or_id))
             else:
                 return manager.find(name=name_or_id)
-        except novatools.NotFound:
+        except novaclient.NotFound:
             raise CommandError("No %s with a name or ID of '%s' exists." %
                          (manager.resource_class.__name__.lower(), name_or_id))
 

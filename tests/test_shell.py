@@ -2,7 +2,7 @@ import os
 import mock
 import httplib2
 from nose.tools import assert_raises, assert_equal
-from novatools.shell import OpenStackShell, CommandError
+from novaclient.shell import OpenStackShell, CommandError
 from fakeserver import FakeServer
 from utils import assert_in
 
@@ -18,10 +18,12 @@ def setup():
 
     # Make a fake shell object, a helping wrapper to call it, and a quick way
     # of asserting that certain API calls were made.
-    global shell, _shell, assert_called
+    global shell, _shell, assert_called, assert_called_anytime
     _shell = OpenStackShell()
     _shell._api_class = FakeServer
     assert_called = lambda m, u, b=None: _shell.cs.assert_called(m, u, b)
+    assert_called_anytime = lambda m, u, b=None: \
+                                _shell.cs.assert_called_anytime(m, u, b)
     shell = lambda cmd: _shell.main(cmd.split())
 
 
@@ -175,7 +177,7 @@ def test_boot_ipgroup_name():
 
 def test_flavor_list():
     shell('flavor-list')
-    assert_called('GET', '/flavors/detail')
+    assert_called_anytime('GET', '/flavors/detail')
 
 
 def test_image_list():

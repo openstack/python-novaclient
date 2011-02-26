@@ -16,12 +16,12 @@
 #    under the License.
 
 """
-novatools module.
+novaclient module.
 """
 
-__version__ = '2.2'
+__version__ = '2.3'
 
-from novatools.backup_schedules import (
+from novaclient.backup_schedules import (
         BackupSchedule, BackupScheduleManager,
         BACKUP_WEEKLY_DISABLED, BACKUP_WEEKLY_SUNDAY, BACKUP_WEEKLY_MONDAY,
         BACKUP_WEEKLY_TUESDAY, BACKUP_WEEKLY_WEDNESDAY,
@@ -33,15 +33,15 @@ from novatools.backup_schedules import (
         BACKUP_DAILY_H_1400_1600, BACKUP_DAILY_H_1600_1800,
         BACKUP_DAILY_H_1800_2000, BACKUP_DAILY_H_2000_2200,
         BACKUP_DAILY_H_2200_0000)
-from novatools.client import OpenStackClient
-from novatools.exceptions import (OpenStackException, BadRequest,
+from novaclient.client import OpenStackClient
+from novaclient.exceptions import (OpenStackException, BadRequest,
         Unauthorized, Forbidden, NotFound, OverLimit)
-from novatools.flavors import FlavorManager, Flavor
-from novatools.images import ImageManager, Image
-from novatools.ipgroups import IPGroupManager, IPGroup
-from novatools.servers import (ServerManager, Server, REBOOT_HARD,
+from novaclient.flavors import FlavorManager, Flavor
+from novaclient.images import ImageManager, Image
+from novaclient.ipgroups import IPGroupManager, IPGroup
+from novaclient.servers import (ServerManager, Server, REBOOT_HARD,
                                  REBOOT_SOFT)
-from novatools.zones import Zone, ZoneManager
+from novaclient.zones import Zone, ZoneManager
 
 
 class OpenStack(object):
@@ -79,7 +79,7 @@ class OpenStack(object):
         Normally this is called automatically when you first access the API,
         but you can call this method to force authentication right now.
 
-        Returns on success; raises :exc:`novatools.Unauthorized` if the
+        Returns on success; raises :exc:`novaclient.Unauthorized` if the
         credentials are wrong.
         """
         self.client.authenticate()

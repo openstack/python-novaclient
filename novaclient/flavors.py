@@ -3,7 +3,7 @@ Flavor interface.
 """
 
 
-from novatools import base
+from novaclient import base
 
 
 class Flavor(base.Resource):

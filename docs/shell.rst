@@ -23,10 +23,15 @@ two environment variables:
 
     Your API key.
 
+.. envvar:: NOVA_URL
+
+    The OpenStack API server URL.
+
 For example, in Bash you'd use::
 
     export NOVA_USERNAME=yourname
     export NOVA_API_KEY=yadayadayada
+    export NOVA_URL=http://...
     
 From there, all shell commands take the form::
     

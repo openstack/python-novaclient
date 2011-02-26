@@ -10,11 +10,11 @@ if sys.version_info < (2,6):
     requirements.append('simplejson')
 
 setup(
-    name = "python-novatools",
-    version = "2.2",
+    name = "python-novaclient",
+    version = "2.3",
     description = "Client library for OpenStack Nova API",
     long_description = read('README.rst'),
-    url = 'https://github.com/rackspace/python-novatools',
+    url = 'https://github.com/rackspace/python-novaclient',
     license = 'Apache',
     author = 'Rackspace, based on work by Jacob Kaplan-Moss',
     author_email = 'github@racklabs.com',
@@ -34,6 +34,6 @@ setup(
     test_suite = "nose.collector",
     
     entry_points = {
-        'console_scripts': ['nova = novatools.shell:main']
+        'console_scripts': ['nova = novaclient.shell:main']
     }
 )

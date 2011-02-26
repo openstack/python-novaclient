@@ -10,8 +10,8 @@ import httplib2
 import urlparse
 import urllib
 from nose.tools import assert_equal
-from novatools import OpenStack
-from novatools.client import OpenStackClient
+from novaclient import OpenStack
+from novaclient.client import OpenStackClient
 from utils import fail, assert_in, assert_not_in, assert_has_keys
 
 
@@ -35,6 +35,29 @@ class FakeServer(OpenStack):
 
         if body is not None:
             assert_equal(self.client.callstack[-1][2], body)
+
+        self.client.callstack = []
+
+    def assert_called_anytime(self, method, url, body=None):
+        """
+        Assert than an API method was called anytime in the test.
+        """
+        expected = (method, url)
+
+        assert self.client.callstack, \
+                       "Expected %s %s but no calls were made." % expected
+
+        found = False
+        for entry in self.client.callstack:
+            called = entry[0:2]
+            if expected == entry[0:2]:
+                found = True
+                break
+
+        assert found, 'Expected %s %s; got %s' % \
+                              (expected, self.client.callstack)
+        if body is not None:
+            assert_equal(entry[2], body)
 
         self.client.callstack = []
 

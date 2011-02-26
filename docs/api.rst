@@ -1,17 +1,17 @@
-The :mod:`novatools` Python API
+The :mod:`novaclient` Python API
 ==================================
 
-.. module:: novatools
+.. module:: novaclient
    :synopsis: A client for the OpenStack Nova API.
    
-.. currentmodule:: novatools
+.. currentmodule:: novaclient
 
 Usage
 -----
 
 First create an instance of :class:`OpenStack` with your credentials::
 
-    >>> from novatools import OpenStack
+    >>> from novaclient import OpenStack
     >>> nova = OpenStack(USERNAME, API_KEY, AUTH_URL)
 
 Then call methods on the :class:`OpenStack` object:

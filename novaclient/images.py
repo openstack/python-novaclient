@@ -2,7 +2,7 @@
 Image interface.
 """
 
-from novatools import base
+from novaclient import base
 
 
 class Image(base.Resource):

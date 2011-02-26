@@ -1,4 +1,4 @@
-from novatools import Flavor, NotFound
+from novaclient import Flavor, NotFound
 from fakeserver import FakeServer
 from utils import assert_isinstance
 from nose.tools import assert_raises, assert_equal

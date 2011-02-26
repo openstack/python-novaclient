@@ -19,7 +19,7 @@
 Server interface.
 """
 
-from novatools import base
+from novaclient import base
 
 REBOOT_SOFT, REBOOT_HARD = 'SOFT', 'HARD'
 

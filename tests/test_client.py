@@ -1,6 +1,6 @@
 import mock
 import httplib2
-from novatools.client import OpenStackClient
+from novaclient.client import OpenStackClient
 from nose.tools import assert_equal
 
 fake_response = httplib2.Response({"status": 200})

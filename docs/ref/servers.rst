@@ -6,7 +6,7 @@ A virtual machine instance.
 Classes
 -------
 
-.. currentmodule:: cloudservers
+.. currentmodule:: novaclient
 
 .. autoclass:: ServerManager
    :members: get, list, find, findall, create, update, delete, share_ip,

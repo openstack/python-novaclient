@@ -2,7 +2,7 @@
 IP Group interface.
 """
 
-from novatools import base
+from novaclient import base
 
 
 class IPGroup(base.Resource):
