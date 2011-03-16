@@ -498,8 +498,10 @@ class OpenStackShell(object):
         for addrtype in addresses:
             info['%s ip' % addrtype] = ', '.join(addresses[addrtype])
 
-        info['flavor'] = self._find_flavor(info.pop('flavorId')).name
-        info['image'] = self._find_image(info.pop('imageId')).name
+        if 'flavorId' in info:
+            info['flavor'] = self._find_flavor(info.pop('flavorId')).name
+        if 'imageId' in info:
+            info['image'] = self._find_image(info.pop('imageId')).name
 
         print_dict(info)
 
