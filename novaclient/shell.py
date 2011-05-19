@@ -301,9 +301,19 @@ class OpenStackShell(object):
                                         metadata, files)
         print_dict(server._info)
 
+    def _translate_flavor_keys(self, collection):
+        convert = [('ram', 'memory_mb'), ('disk', 'local_gb')]
+        for item in collection:
+            keys = item.__dict__.keys()
+            for from_key, to_key in convert:
+                if from_key in keys and to_key not in keys:
+                    setattr(item, to_key, item._info[from_key])
+            
     def do_flavor_list(self, args):
         """Print a list of available 'flavors' (sizes of servers)."""
-        print_list(self.cs.flavors.list(), [
+        flavors = self.cs.flavors.list()
+        self._translate_flavor_keys(flavors)
+        print_list(flavors, [
             'ID',
             'Name',
             'Memory_MB',
