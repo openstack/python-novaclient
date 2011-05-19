@@ -194,7 +194,8 @@ class ServerManager(base.ManagerWithFind):
         """
         return self._list("/servers/detail", "servers")
 
-    def create(self, name, image, flavor, ipgroup=None, meta=None, files=None):
+    def create(self, name, image, flavor, ipgroup=None, meta=None, files=None,
+               zone_blob=None):
         """
         Create (boot) a new server.
 
@@ -210,9 +211,9 @@ class ServerManager(base.ManagerWithFind):
                       are the file contents (either as a string or as a
                       file-like object). A maximum of five entries is allowed,
                       and each file must be 10k or less.
-
-        There's a bunch more info about how a server boots in Rackspace's
-        official API docs, page 23.
+        :param zone_blob: a single (encrypted) string which is used internally
+                      by Nova for routing between Zones. Users cannot populate
+                      this field.
         """
         body = {"server": {
             "name": name,
@@ -223,6 +224,8 @@ class ServerManager(base.ManagerWithFind):
             body["server"]["sharedIpGroupId"] = base.getid(ipgroup)
         if meta:
             body["server"]["metadata"] = meta
+        if zone_blob:
+            body["server"]["zone_blob"] = zone_blob
 
         # Files are a slight bit tricky. They're passed in a "personality"
         # list to the POST. Each item is a dict giving a file name and the
