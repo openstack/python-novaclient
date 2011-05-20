@@ -28,6 +28,14 @@ class FlavorManager(base.ManagerWithFind):
         :rtype: list of :class:`Flavor`.
         """
         return self._list("/flavors/detail", "flavors")
+    
+    def list_undetailed(self):
+        """
+        Get a list of all flavors.
+
+        :rtype: list of :class:`Flavor`.
+        """
+        return self._list("/flavors", "flavors")
 
     def get(self, flavor):
         """
