@@ -20,6 +20,19 @@ Zone interface.
 from novaclient import base
 
 
+class Weighting(base.Resource):
+    def __init__(self, manager, info):
+        self.name = "n/a"
+        super(Weighting, self).__init__(manager, info)
+                        
+    def __repr__(self):
+        return "<Weighting: %s>" % self.name
+
+    def to_dict(self):
+        """Return the original info setting, which is a dict."""
+        return self._info
+
+
 class Zone(base.Resource):
     def __init__(self, manager, info):
         self.name = "n/a"
@@ -89,6 +102,19 @@ class ZoneManager(base.ManagerWithFind):
         }}
 
         return self._create("/zones", body, "zone")
+
+    def select(self, *args, **kwargs):
+        """
+        Given requirements for a new instance, select hosts
+        in this zone that best match those requirements.
+        """
+        # 'specs' may be passed in as None, so change to an empty dict.
+        specs = kwargs.get("specs", "")
+        url = "/zones/select"
+        if specs:
+            url = "%s?%s" % (url, specs)
+        weighting_list = self._list(url, "weights", Weighting)
+        return [wt.to_dict() for wt in weighting_list]
 
     def delete(self, zone):
         """
