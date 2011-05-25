@@ -7,6 +7,8 @@ import time
 import urlparse
 import urllib
 import httplib2
+import logging
+
 try:
     import json
 except ImportError:
@@ -20,6 +22,7 @@ if not hasattr(urlparse, 'parse_qsl'):
 import novaclient
 from novaclient import exceptions
 
+_logger = logging.getLogger(__name__)
 
 class OpenStackClient(httplib2.Http):
 
@@ -37,6 +40,23 @@ class OpenStackClient(httplib2.Http):
         # httplib2 overrides
         self.force_exception_to_status_code = True
 
+    def http_log(self, args, kwargs, resp, body):
+        if not _logger.isEnabledFor(logging.DEBUG):
+            return
+            
+        string_parts = ['curl -i']
+        for element in args:
+            if element in ('GET','POST'):
+                string_parts.append(' -X %s' % element)
+            else:
+                string_parts.append(' %s' % element)
+
+        for element in kwargs['headers']:
+            string_parts.append(' -H "%s: %s"' % (element,kwargs['headers'][element]))
+
+        _logger.debug("REQ: %s\n" % "".join(string_parts))
+        _logger.debug("RESP:%s %s\n", resp,body)
+
     def request(self, *args, **kwargs):
         kwargs.setdefault('headers', {})
         kwargs['headers']['User-Agent'] = self.USER_AGENT
@@ -44,12 +64,10 @@ class OpenStackClient(httplib2.Http):
             kwargs['headers']['Content-Type'] = 'application/json'
             kwargs['body'] = json.dumps(kwargs['body'])
 
-        if httplib2.debuglevel == 1:
-            print "ARGS:", args
         resp, body = super(OpenStackClient, self).request(*args, **kwargs)
-        if httplib2.debuglevel == 1:
-            print "RESPONSE", resp
-            print "BODY", body
+
+        self.http_log(args, kwargs, resp, body)
+        
         if body:
             try:
                 body = json.loads(body)
