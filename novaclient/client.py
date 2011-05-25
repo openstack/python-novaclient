@@ -41,17 +41,17 @@ class OpenStackClient(httplib2.Http):
         self.force_exception_to_status_code = True
 
     def http_log(self, args, kwargs, resp, body):
-        string = 'curl -i'
+        string_parts = ['curl -i']
         for element in args:
             if element in ('GET','POST'):
-                string += ' -X ' + element
+                string_parts.append(' -X %s' % element)
             else:
-                string += ' ' + element
+                string_parts.append(' %s' % element)
 
         for element in kwargs['headers']:
-            string += ' -H "' + element + ': ' + kwargs['headers'][element] + '"'
-            
-        _logger.debug("REQ: %s\n", string)
+            string_parts.append(' -H "%s: %s"' % (element,kwargs['headers'][element]))
+
+        _logger.debug("REQ: %s\n" % "".join(string_parts))
         _logger.debug("RESP:%s %s\n", resp,body)
 
     def request(self, *args, **kwargs):
