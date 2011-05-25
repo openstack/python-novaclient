@@ -41,6 +41,9 @@ class OpenStackClient(httplib2.Http):
         self.force_exception_to_status_code = True
 
     def http_log(self, args, kwargs, resp, body):
+        if not _logger.isEnabledFor(logging.DEBUG):
+            return
+            
         string_parts = ['curl -i']
         for element in args:
             if element in ('GET','POST'):
