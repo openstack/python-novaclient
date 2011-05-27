@@ -2,6 +2,11 @@
 Release notes
 =============
 
+2.4.3 (May 27, 2011)
+=================
+
+* added support for POST /zones/select (client only, not cmdline)
+
 2.4 (March 7, 2011)
 =================
 

@@ -108,12 +108,10 @@ class ZoneManager(base.ManagerWithFind):
         Given requirements for a new instance, select hosts
         in this zone that best match those requirements.
         """
-        # 'specs' may be passed in as None, so change to an empty dict.
-        specs = kwargs.get("specs", "")
+        # 'specs' may be passed in as None, so change to an empty string.
+        specs = kwargs.get("specs") or ""
         url = "/zones/select"
-        if specs:
-            url = "%s?%s" % (url, specs)
-        weighting_list = self._list(url, "weights", Weighting)
+        weighting_list = self._list(url, "weights", Weighting, body=specs)
         return [wt.to_dict() for wt in weighting_list]
 
     def delete(self, zone):

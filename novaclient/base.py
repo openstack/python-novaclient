@@ -39,8 +39,12 @@ class Manager(object):
     def __init__(self, api):
         self.api = api
 
-    def _list(self, url, response_key, obj_class=None):
-        resp, body = self.api.client.get(url)
+    def _list(self, url, response_key, obj_class=None, body=None):
+        resp = None
+        if body:
+            resp, body = self.api.client.post(url, body=body)
+        else:
+            resp, body = self.api.client.get(url)
 
         if obj_class is None:
             obj_class = self.resource_class
