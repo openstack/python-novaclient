@@ -12,6 +12,12 @@ def test_list_ipgroups():
     [assert_isinstance(ipg, IPGroup) for ipg in ipl]
 
 
+def test_list_ipgroups_undetailed():
+    ipl = cs.ipgroups.list(detailed=False)
+    cs.assert_called('GET', '/shared_ip_groups')
+    [assert_isinstance(ipg, IPGroup) for ipg in ipl]
+
+
 def test_get_ipgroup():
     ipg = cs.ipgroups.get(1)
     cs.assert_called('GET', '/shared_ip_groups/1')

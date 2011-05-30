@@ -35,7 +35,7 @@ class ImageManager(base.ManagerWithFind):
         """
         return self._get("/images/%s" % base.getid(image), "image")
 
-    def list(self, detailed=False):
+    def list(self, detailed=True):
         """
         Get a list of all images.
 

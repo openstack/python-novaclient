@@ -187,7 +187,7 @@ class ServerManager(base.ManagerWithFind):
         """
         return self._get("/servers/%s" % base.getid(server), "server")
 
-    def list(self, detailed=False):
+    def list(self, detailed=True):
         """
         Get a list of servers.
         :rtype: list of :class:`Server`

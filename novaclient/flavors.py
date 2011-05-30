@@ -21,7 +21,7 @@ class FlavorManager(base.ManagerWithFind):
     """
     resource_class = Flavor
 
-    def list(self, detailed=False):
+    def list(self, detailed=True):
         """
         Get a list of all flavors.
 

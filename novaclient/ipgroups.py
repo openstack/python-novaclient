@@ -20,7 +20,7 @@ class IPGroup(base.Resource):
 class IPGroupManager(base.ManagerWithFind):
     resource_class = IPGroup
 
-    def list(self, detailed=False):
+    def list(self, detailed=True):
         """
         Get a list of all groups.
 
@@ -29,7 +29,7 @@ class IPGroupManager(base.ManagerWithFind):
         detail = ""
         if detailed:
             detail = "/detail"
-        return self._list("/shared_ip_groups%s" % s, "sharedIpGroups")
+        return self._list("/shared_ip_groups%s" % detail, "sharedIpGroups")
 
     def get(self, group):
         """
