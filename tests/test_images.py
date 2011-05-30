@@ -12,6 +12,12 @@ def test_list_images():
     [assert_isinstance(i, Image) for i in il]
 
 
+def test_list_images_undetailed():
+    il = cs.images.list(detailed=False)
+    cs.assert_called('GET', '/images')
+    [assert_isinstance(i, Image) for i in il]
+
+
 def test_get_image_details():
     i = cs.images.get(1)
     cs.assert_called('GET', '/images/1')

@@ -13,7 +13,7 @@ def test_list_flavors():
 
 
 def test_list_flavors_undetailed():
-    fl = cs.flavors.list_undetailed()
+    fl = cs.flavors.list(detailed=False)
     cs.assert_called('GET', '/flavors')
     [assert_isinstance(f, Flavor) for f in fl]
 
