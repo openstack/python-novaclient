@@ -35,13 +35,17 @@ class ImageManager(base.ManagerWithFind):
         """
         return self._get("/images/%s" % base.getid(image), "image")
 
-    def list(self):
+    def list(self, detailed=False):
         """
         Get a list of all images.
 
         :rtype: list of :class:`Image`
         """
-        return self._list("/images/detail", "images")
+        detail = ""
+        if detailed:
+            detail = "/detail"
+        return self._list("/images%s" % detail, "images")
+
 
     def create(self, name, server):
         """
