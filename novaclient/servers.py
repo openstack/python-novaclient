@@ -175,7 +175,7 @@ class Server(base.Resource):
         return self.addresses['private'][0]
 
 
-class ServerManager(base.ManagerWithFind):
+class ServerManager(base.BootingManagerWithFind):
     resource_class = Server
 
     def get(self, server):
@@ -195,7 +195,7 @@ class ServerManager(base.ManagerWithFind):
         return self._list("/servers/detail", "servers")
 
     def create(self, name, image, flavor, ipgroup=None, meta=None, files=None,
-               zone_blob=None):
+               zone_blob=None, reservation_id=None):
         """
         Create (boot) a new server.
 
@@ -214,36 +214,11 @@ class ServerManager(base.ManagerWithFind):
         :param zone_blob: a single (encrypted) string which is used internally
                       by Nova for routing between Zones. Users cannot populate
                       this field.
+        :param reservation_id: a UUID for the set of servers being requested.
         """
-        body = {"server": {
-            "name": name,
-            "imageId": base.getid(image),
-            "flavorId": base.getid(flavor),
-        }}
-        if ipgroup:
-            body["server"]["sharedIpGroupId"] = base.getid(ipgroup)
-        if meta:
-            body["server"]["metadata"] = meta
-        if zone_blob:
-            body["server"]["zone_blob"] = zone_blob
-
-        # Files are a slight bit tricky. They're passed in a "personality"
-        # list to the POST. Each item is a dict giving a file name and the
-        # base64-encoded contents of the file. We want to allow passing
-        # either an open file *or* some contents as files here.
-        if files:
-            personality = body['server']['personality'] = []
-            for filepath, file_or_string in files.items():
-                if hasattr(file_or_string, 'read'):
-                    data = file_or_string.read()
-                else:
-                    data = file_or_string
-                personality.append({
-                    'path': filepath,
-                    'contents': data.encode('base64'),
-                })
-
-        return self._create("/servers", body, "server")
+        return self._boot("/servers", "server", name, image, flavor,
+                          ipgroup=ipgroup, meta=meta, files=files,
+                          zone_blob=zone_blob, reservation_id=reservation_id)
 
     def update(self, server, name=None, password=None):
         """

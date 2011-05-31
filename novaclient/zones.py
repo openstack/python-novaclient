@@ -60,7 +60,7 @@ class Zone(base.Resource):
         self.manager.update(self, api_url, username, password)
 
 
-class ZoneManager(base.ManagerWithFind):
+class ZoneManager(base.BootingManagerWithFind):
     resource_class = Zone
 
     def info(self):
@@ -102,6 +102,33 @@ class ZoneManager(base.ManagerWithFind):
         }}
 
         return self._create("/zones", body, "zone")
+
+    def boot(self, name, image, flavor, ipgroup=None, meta=None, files=None,
+               zone_blob=None, reservation_id=None):
+        """
+        Create (boot) a new server while being aware of Zones.
+
+        :param name: Something to name the server.
+        :param image: The :class:`Image` to boot with.
+        :param flavor: The :class:`Flavor` to boot onto.
+        :param ipgroup: An initial :class:`IPGroup` for this server.
+        :param meta: A dict of arbitrary key/value metadata to store for this
+                     server. A maximum of five entries is allowed, and both
+                     keys and values must be 255 characters or less.
+        :param files: A dict of files to overrwrite on the server upon boot.
+                      Keys are file names (i.e. ``/etc/passwd``) and values
+                      are the file contents (either as a string or as a
+                      file-like object). A maximum of five entries is allowed,
+                      and each file must be 10k or less.
+        :param zone_blob: a single (encrypted) string which is used internally
+                      by Nova for routing between Zones. Users cannot populate
+                      this field.
+        :param reservation_id: a UUID for the set of servers being requested.
+        """
+        return self._boot("/zones/boot", "reservation_id", name, image, flavor,
+                          ipgroup=ipgroup, meta=meta, files=files,
+                          zone_blob=zone_blob, reservation_id=reservation_id,
+                          return_raw=True)
 
     def select(self, *args, **kwargs):
         """

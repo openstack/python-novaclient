@@ -218,42 +218,7 @@ class OpenStackShell(object):
         server = self._find_server(args.server)
         server.backup_schedule.delete()
 
-    @arg('--flavor',
-         default=None,
-         metavar='<flavor>',
-         help="Flavor ID (see 'novaclient flavors'). "\
-              "Defaults to 256MB RAM instance.")
-    @arg('--image',
-         default=None,
-         metavar='<image>',
-         help="Image ID (see 'novaclient images'). "\
-              "Defaults to Ubuntu 10.04 LTS.")
-    @arg('--ipgroup',
-         default=None,
-         metavar='<group>',
-         help="IP group name or ID (see 'novaclient ipgroup-list').")
-    @arg('--meta',
-         metavar="<key=value>",
-         action='append',
-         default=[],
-         help="Record arbitrary key/value metadata. "\
-              "May be give multiple times.")
-    @arg('--file',
-         metavar="<dst-path=src-path>",
-         action='append',
-         dest='files',
-         default=[],
-         help="Store arbitrary files from <src-path> locally to <dst-path> "\
-              "on the new server. You may store up to 5 files.")
-    @arg('--key',
-         metavar='<path>',
-         nargs='?',
-         const=AUTO_KEY,
-         help="Key the server with an SSH keypair. "\
-              "Looks in ~/.ssh for a key, "\
-              "or takes an explicit <path> to one.")
-    @arg('name', metavar='<name>', help='Name for the new server')
-    def do_boot(self, args):
+    def _boot(self, args, reservation_id=None):
         """Boot a new server."""
         flavor = args.flavor or self.cs.flavors.find(ram=256)
         image = args.image or self.cs.images.find(name="Ubuntu 10.04 LTS "\
@@ -297,9 +262,108 @@ class OpenStackShell(object):
             except IOError, e:
                 raise CommandError("Can't open '%s': %s" % (keyfile, e))
 
-        server = self.cs.servers.create(args.name, image, flavor, ipgroup,
-                                        metadata, files)
+        return (args.name, image, flavor, ipgroup, metadata, files, 
+                reservation_id)
+
+    @arg('--flavor',
+         default=None,
+         metavar='<flavor>',
+         help="Flavor ID (see 'novaclient flavors'). "\
+              "Defaults to 256MB RAM instance.")
+    @arg('--image',
+         default=None,
+         metavar='<image>',
+         help="Image ID (see 'novaclient images'). "\
+              "Defaults to Ubuntu 10.04 LTS.")
+    @arg('--ipgroup',
+         default=None,
+         metavar='<group>',
+         help="IP group name or ID (see 'novaclient ipgroup-list').")
+    @arg('--meta',
+         metavar="<key=value>",
+         action='append',
+         default=[],
+         help="Record arbitrary key/value metadata. "\
+              "May be give multiple times.")
+    @arg('--file',
+         metavar="<dst-path=src-path>",
+         action='append',
+         dest='files',
+         default=[],
+         help="Store arbitrary files from <src-path> locally to <dst-path> "\
+              "on the new server. You may store up to 5 files.")
+    @arg('--key',
+         metavar='<path>',
+         nargs='?',
+         const=AUTO_KEY,
+         help="Key the server with an SSH keypair. "\
+              "Looks in ~/.ssh for a key, "\
+              "or takes an explicit <path> to one.")
+    @arg('name', metavar='<name>', help='Name for the new server')
+    def do_boot(self, args):
+        """Boot a new server."""
+        name, image, flavor, ipgroup, metadata, files, reservation_id = \
+                                 self._boot(args)
+
+        server = self.cs.servers.create(args.name, image, flavor,
+                                        ipgroup=ipgroup,
+                                        meta=metadata,
+                                        files=files)
         print_dict(server._info)
+
+    @arg('--flavor',
+         default=None,
+         metavar='<flavor>',
+         help="Flavor ID (see 'novaclient flavors'). "\
+              "Defaults to 256MB RAM instance.")
+    @arg('--image',
+         default=None,
+         metavar='<image>',
+         help="Image ID (see 'novaclient images'). "\
+              "Defaults to Ubuntu 10.04 LTS.")
+    @arg('--ipgroup',
+         default=None,
+         metavar='<group>',
+         help="IP group name or ID (see 'novaclient ipgroup-list').")
+    @arg('--meta',
+         metavar="<key=value>",
+         action='append',
+         default=[],
+         help="Record arbitrary key/value metadata. "\
+              "May be give multiple times.")
+    @arg('--file',
+         metavar="<dst-path=src-path>",
+         action='append',
+         dest='files',
+         default=[],
+         help="Store arbitrary files from <src-path> locally to <dst-path> "\
+              "on the new server. You may store up to 5 files.")
+    @arg('--key',
+         metavar='<path>',
+         nargs='?',
+         const=AUTO_KEY,
+         help="Key the server with an SSH keypair. "\
+              "Looks in ~/.ssh for a key, "\
+              "or takes an explicit <path> to one.")
+    @arg('--reservation_id',
+         default=None,
+         metavar='<reservation_id>',
+         help="Reservation ID (a UUID). "\
+              "If unspecified will be generated by the server.")
+    @arg('name', metavar='<name>', help='Name for the new server')
+    def do_zone_boot(self, args):
+        """Boot a new server, potentially across Zones."""
+        reservation_id = args.reservation_id
+        name, image, flavor, ipgroup, metadata, files, reservation_id = \
+                                 self._boot(args,
+                                            reservation_id=reservation_id)
+
+        reservation_id = self.cs.zones.boot(args.name, image, flavor,
+                                            ipgroup=ipgroup,
+                                            meta=metadata,
+                                            files=files,
+                                            reservation_id=reservation_id)
+        print "Reservation ID=", reservation_id
 
     def _translate_flavor_keys(self, collection):
         convert = [('ram', 'memory_mb'), ('disk', 'local_gb')]
