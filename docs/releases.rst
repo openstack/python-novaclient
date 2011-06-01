@@ -2,6 +2,16 @@
 Release notes
 =============
 
+2.5.0 (June 2, 2011) - soon
+=================
+
+* better logging
+
+2.4.4 (June 1, 2011)
+=================
+
+* added support for GET /servers with reservation_id (and /servers/detail)
+
 2.4.3 (May 27, 2011)
 =================
 

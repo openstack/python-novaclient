@@ -460,10 +460,16 @@ class OpenStackShell(object):
         """Delete an IP group."""
         self._find_ipgroup(args.group).delete()
 
+    @arg('--reservation_id',
+        dest='reservation_id',
+        metavar='<reservation_id>',
+        default=None,
+        help='Only return instances that match reservation_id.')
     def do_list(self, args):
         """List active servers."""
-        print_list(self.cs.servers.list(), ['ID', 'Name', 'Status',
-                                            'Public IP', 'Private IP'])
+        reservation_id = args.reservation_id
+        print_list(self.cs.servers.list(reservation_id=reservation_id),
+                   ['ID', 'Name', 'Status', 'Public IP', 'Private IP'])
 
     @arg('--hard',
         dest='reboot_type',
