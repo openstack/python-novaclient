@@ -80,7 +80,7 @@ class ZoneManager(base.BootingManagerWithFind):
         """
         return self._get("/zones/%s" % base.getid(zone), "zone")
 
-    def list(self, detailed=True):
+    def list(self, detailed=False):
         """
         Get a list of child zones.
         :rtype: list of :class:`Zone`
