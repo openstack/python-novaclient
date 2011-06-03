@@ -187,7 +187,7 @@ class ServerManager(base.BootingManagerWithFind):
         """
         return self._get("/servers/%s" % base.getid(server), "server")
 
-    def list(self, detailed=True, reservation_id=None):
+    def list(self, detailed=False, reservation_id=None):
         """
         Get a list of servers.
         Optional detailed returns details server info.
