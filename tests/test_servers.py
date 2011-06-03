@@ -13,6 +13,12 @@ def test_list_servers():
     [assert_isinstance(s, Server) for s in sl]
 
 
+def test_list_servers_undetailed():
+    sl = cs.servers.list(detailed=False)
+    cs.assert_called('GET', '/servers')
+    [assert_isinstance(s, Server) for s in sl]
+
+
 def test_get_server_details():
     s = cs.servers.get(1234)
     cs.assert_called('GET', '/servers/1234')

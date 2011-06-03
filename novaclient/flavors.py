@@ -21,13 +21,16 @@ class FlavorManager(base.ManagerWithFind):
     """
     resource_class = Flavor
 
-    def list(self):
+    def list(self, detailed=True):
         """
         Get a list of all flavors.
 
         :rtype: list of :class:`Flavor`.
         """
-        return self._list("/flavors/detail", "flavors")
+        detail = ""
+        if detailed:
+            detail = "/detail"
+        return self._list("/flavors%s" % detail, "flavors")
 
     def get(self, flavor):
         """

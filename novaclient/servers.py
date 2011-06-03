@@ -187,9 +187,10 @@ class ServerManager(base.BootingManagerWithFind):
         """
         return self._get("/servers/%s" % base.getid(server), "server")
 
-    def list(self, reservation_id=None):
+    def list(self, detailed=True, reservation_id=None):
         """
         Get a list of servers.
+        Optional detailed returns details server info.
         Optional reservation_id only returns instances with that
         reservation_id.
 
@@ -198,7 +199,11 @@ class ServerManager(base.BootingManagerWithFind):
         reservation = ""
         if reservation_id:
             reservation = "?reservation_id=%s" % reservation_id
-        return self._list("/servers/detail%s" % reservation, "servers")
+        
+        detail = ""
+        if detailed:
+            detail = "/detail"
+        return self._list("/servers%s%s" % (detail, reservation), "servers")
 
     def create(self, name, image, flavor, ipgroup=None, meta=None, files=None,
                zone_blob=None, reservation_id=None):

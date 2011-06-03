@@ -20,13 +20,16 @@ class IPGroup(base.Resource):
 class IPGroupManager(base.ManagerWithFind):
     resource_class = IPGroup
 
-    def list(self):
+    def list(self, detailed=True):
         """
         Get a list of all groups.
 
         :rtype: list of :class:`IPGroup`
         """
-        return self._list("/shared_ip_groups/detail", "sharedIpGroups")
+        detail = ""
+        if detailed:
+            detail = "/detail"
+        return self._list("/shared_ip_groups%s" % detail, "sharedIpGroups")
 
     def get(self, group):
         """

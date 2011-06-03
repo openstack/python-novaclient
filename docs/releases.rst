@@ -2,10 +2,10 @@
 Release notes
 =============
 
-2.5.0 (June 2, 2011) - soon
+2.5.0 (June 3, 2011)
 =================
 
-* better logging
+* better logging thanks to GridDynamics
 
 2.4.4 (June 1, 2011)
 =================

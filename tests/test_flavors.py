@@ -12,6 +12,12 @@ def test_list_flavors():
     [assert_isinstance(f, Flavor) for f in fl]
 
 
+def test_list_flavors_undetailed():
+    fl = cs.flavors.list(detailed=False)
+    cs.assert_called('GET', '/flavors')
+    [assert_isinstance(f, Flavor) for f in fl]
+
+
 def test_get_flavor_details():
     f = cs.flavors.get(1)
     cs.assert_called('GET', '/flavors/1')
