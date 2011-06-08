@@ -305,8 +305,7 @@ class ServerManager(base.BootingManagerWithFind):
         :param server: The :class:`Server` (or its ID) to add an IP to.
         :param network_id: The ID of the network the IP should be on.
         """
-        server = base.getid(server)
-        # TODO(Vek) Call extension to add fixed IP
+        self._action('addFixedIp', server, {'networkId': network_id})
 
     def remove_fixed_ip(self, server, address):
         """
@@ -315,8 +314,7 @@ class ServerManager(base.BootingManagerWithFind):
         :param server: The :class:`Server` (or its ID) to add an IP to.
         :param address: The IP address to remove.
         """
-        server = base.getid(server)
-        # TODO(Vek) Call extension to remove fixed IP
+        self._action('removeFixedIp', server, {'address': address})
 
     def reboot(self, server, type=REBOOT_SOFT):
         """
