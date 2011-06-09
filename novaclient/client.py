@@ -28,10 +28,11 @@ class OpenStackClient(httplib2.Http):
 
     USER_AGENT = 'python-novaclient/%s' % novaclient.__version__
 
-    def __init__(self, user, apikey, auth_url):
+    def __init__(self, user, apikey, projectid auth_url):
         super(OpenStackClient, self).__init__()
         self.user = user
         self.apikey = apikey
+        self.projectid = projectid
         self.auth_url = auth_url
 
         self.management_url = None
@@ -90,6 +91,8 @@ class OpenStackClient(httplib2.Http):
         # re-authenticate and try again. If it still fails, bail.
         try:
             kwargs.setdefault('headers', {})['X-Auth-Token'] = self.auth_token
+            kwargs['headers']['X-Auth-Project-Id'] = self.projectid
+
             resp, body = self.request(self.management_url + url, method,
                                       **kwargs)
             return resp, body
@@ -116,7 +119,7 @@ class OpenStackClient(httplib2.Http):
         return self._cs_request(url, 'DELETE', **kwargs)
 
     def authenticate(self):
-        headers = {'X-Auth-User': self.user, 'X-Auth-Key': self.apikey}
+        headers = {'X-Auth-User': self.user, 'X-Auth-Key': self.apikey, 'X-Auth-Project-Id': self.    projectid}
         resp, body = self.request(self.auth_url, 'GET', headers=headers)
         self.management_url = resp['x-server-management-url']
         self.auth_token = resp['x-auth-token']
