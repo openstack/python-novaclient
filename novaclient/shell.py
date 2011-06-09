@@ -27,6 +27,7 @@ import os
 import prettytable
 import sys
 import textwrap
+import uuid
 
 # Choices for flags.
 DAY_CHOICES = [getattr(novaclient, i).lower()
@@ -664,7 +665,11 @@ class OpenStackShell(object):
         try:
             if isinstance(name_or_id, int) or name_or_id.isdigit():
                 return manager.get(int(name_or_id))
-            else:
+
+            try:
+                uuid.UUID(name_or_id)
+                return manager.get(name_or_id)
+            except ValueError:
                 return manager.find(name=name_or_id)
         except novaclient.NotFound:
             raise CommandError("No %s with a name or ID of '%s' exists." %
