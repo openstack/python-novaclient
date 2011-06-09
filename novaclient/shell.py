@@ -96,7 +96,7 @@ class OpenStackShell(object):
             default=env('NOVA_API_KEY'),
             help='Defaults to env[NOVA_API_KEY].')
 
-     self.parser.add_argument('--projectid',
+        self.parser.add_argument('--projectid',
             default=env('NOVA_PROJECT_ID'),                                                       
             help='Defaults to env[NOVA_PROJECT_ID].')
 

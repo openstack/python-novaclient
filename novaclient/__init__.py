@@ -49,7 +49,7 @@ class OpenStack(object):
 
     Create an instance with your creds::
 
-        >>> os = OpenStack(USERNAME, API_KEY, AUTH_URL)
+        >>> os = OpenStack(USERNAME, API_KEY, PROJECT_ID, AUTH_URL)
 
     Then call methods on its managers::
 
@@ -61,7 +61,7 @@ class OpenStack(object):
     &c.
     """
 
-    def __init__(self, username, apikey, projectid
+    def __init__(self, username, apikey, projectid,
                  auth_url='https://auth.api.rackspacecloud.com/v1.0'):
         self.backup_schedules = BackupScheduleManager(self)
         self.client = OpenStackClient(username, apikey, projectid, auth_url)

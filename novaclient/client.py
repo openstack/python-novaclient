@@ -28,7 +28,7 @@ class OpenStackClient(httplib2.Http):
 
     USER_AGENT = 'python-novaclient/%s' % novaclient.__version__
 
-    def __init__(self, user, apikey, projectid auth_url):
+    def __init__(self, user, apikey, projectid, auth_url):
         super(OpenStackClient, self).__init__()
         self.user = user
         self.apikey = apikey
