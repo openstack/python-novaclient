@@ -63,6 +63,22 @@ class Server(base.Resource):
         """
         self.manager.unshare_ip(self, address)
 
+    def add_fixed_ip(self, network_id):
+        """
+        Add an IP address on a network.
+
+        :param network_id: The ID of the network the IP should be on.
+        """
+        self.manager.add_fixed_ip(self, network_id)
+
+    def remove_fixed_ip(self, address):
+        """
+        Remove an IP address.
+
+        :param address: The IP address to remove.
+        """
+        self.manager.remove_fixed_ip(self, address)
+
     def reboot(self, type=REBOOT_SOFT):
         """
         Reboot the server.
@@ -281,6 +297,24 @@ class ServerManager(base.BootingManagerWithFind):
         """
         server = base.getid(server)
         self._delete("/servers/%s/ips/public/%s" % (server, address))
+
+    def add_fixed_ip(self, server, network_id):
+        """
+        Add an IP address on a network.
+
+        :param server: The :class:`Server` (or its ID) to add an IP to.
+        :param network_id: The ID of the network the IP should be on.
+        """
+        self._action('addFixedIp', server, {'networkId': network_id})
+
+    def remove_fixed_ip(self, server, address):
+        """
+        Remove an IP address.
+
+        :param server: The :class:`Server` (or its ID) to add an IP to.
+        :param address: The IP address to remove.
+        """
+        self._action('removeFixedIp', server, {'address': address})
 
     def reboot(self, server, type=REBOOT_SOFT):
         """
