@@ -97,6 +97,10 @@ class OpenStackShell(object):
             default=env('NOVA_API_KEY'),
             help='Defaults to env[NOVA_API_KEY].')
 
+        self.parser.add_argument('--projectid',
+            default=env('NOVA_PROJECT_ID'),                                                       
+            help='Defaults to env[NOVA_PROJECT_ID].')
+
         auth_url = env('NOVA_URL')
         if auth_url == '':
             auth_url = 'https://auth.api.rackspacecloud.com/v1.0'
@@ -145,7 +149,9 @@ class OpenStackShell(object):
         if args.debug:
             httplib2.debuglevel = 1
 
-        user, apikey, url = args.username, args.apikey, args.url
+        user, apikey, projectid, url = args.username, args.apikey, args.projectid, args.url
+        #FIXME(usrleon): Here should be restrict for project id same as for username or apikey
+        # but for compatibility it is not.
         if not user:
             raise CommandError("You must provide a username, either via "
                                "--username or via env[NOVA_USERNAME]")
@@ -153,7 +159,7 @@ class OpenStackShell(object):
             raise CommandError("You must provide an API key, either via "
                                "--apikey or via env[NOVA_API_KEY]")
 
-        self.cs = self._api_class(user, apikey, url)
+        self.cs = self._api_class(user, apikey, projectid, url)
         try:
             self.cs.authenticate()
         except novaclient.Unauthorized:
