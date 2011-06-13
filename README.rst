@@ -36,11 +36,12 @@ Installing this package gets you a shell command, ``nova``, that you
 can use to interact with any Rackspace compatible API (including OpenStack).
 
 You'll need to provide your OpenStack username and API key. You can do this
-with the ``--username`` and ``--apikey`` params, but it's easier to just 
+with the ``--username``, ``--apikey`` and  ``--projectid`` params, but it's easier to just 
 set them as environment variables::
 
     export NOVA_USERNAME=openstack
     export NOVA_API_KEY=yadayada
+    export NOVA_PROJECT_ID=myproject
 
 You will also need to define the authentication url with ``--url``. Or set it as
 an environment variable as well::
@@ -51,7 +52,7 @@ You'll find complete documentation on the shell by running
 ``nova help``::
     
     usage: nova [--username USERNAME] [--apikey APIKEY] 
-                        [--url AUTH_URL] <subcommand> ...
+                        [--projectid PROJECTID] [--url AUTH_URL] <subcommand> ...
 
     Command-line interface to the OpenStack Nova API.
 
@@ -93,6 +94,7 @@ You'll find complete documentation on the shell by running
     Optional arguments:
       --username USERNAME   Defaults to env[NOVA_USERNAME].
       --apikey APIKEY       Defaults to env[NOVA_API_KEY].
+      --apikey PROJECTID    Defaults to env[NOVA_PROJECT_ID].
       --url AUTH_URL        Defaults to env[NOVA_URL] or
                             https://auth.api.rackspacecloud.com/v1.0
                             if undefined. 
@@ -109,7 +111,7 @@ __ http://packages.python.org/python-novaclient/
 By way of a quick-start::
 
     >>> import novaclient
-    >>> nt = novaclient.OpenStack(USERNAME, API_KEY [, AUTH_URL])
+    >>> nt = novaclient.OpenStack(USERNAME, API_KEY,PROJECT_ID [, AUTH_URL])
     >>> nt.flavors.list()
     [...]
     >>> nt.servers.list()
