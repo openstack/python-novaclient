@@ -353,7 +353,7 @@ class OpenStackShell(object):
               "Looks in ~/.ssh for a key, "\
               "or takes an explicit <path> to one.")
     @arg('account', metavar='<account>', help='Account to build this'\
-         'server for')
+         ' server for')
     @arg('name', metavar='<name>', help='Name for the new server')
     def do_boot_for_account(self, args):
         """Boot a new server in an account."""
