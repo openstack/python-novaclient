@@ -20,6 +20,7 @@ novaclient module.
 
 __version__ = '2.4'
 
+from novaclient.accounts import Account, AccountManager
 from novaclient.backup_schedules import (
         BackupSchedule, BackupScheduleManager,
         BACKUP_WEEKLY_DISABLED, BACKUP_WEEKLY_SUNDAY, BACKUP_WEEKLY_MONDAY,
@@ -70,6 +71,7 @@ class OpenStack(object):
         self.ipgroups = IPGroupManager(self)
         self.servers = ServerManager(self)
         self.zones = ZoneManager(self)
+        self.accounts = AccountManager(self)
 
     def authenticate(self):
         """

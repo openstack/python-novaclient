@@ -352,6 +352,55 @@ class OpenStackShell(object):
          help="Key the server with an SSH keypair. "\
               "Looks in ~/.ssh for a key, "\
               "or takes an explicit <path> to one.")
+    @arg('account', metavar='<account>', help='Account to build this'\
+         'server for')
+    @arg('name', metavar='<name>', help='Name for the new server')
+    def do_boot_for_account(self, args):
+        """Boot a new server in an account."""
+        name, image, flavor, ipgroup, metadata, files, reservation_id = \
+                                 self._boot(args)
+
+        server = self.cs.accounts.create_instance_for(args.account, args.name,
+                    image, flavor,
+                    ipgroup=ipgroup,
+                    meta=metadata,
+                    files=files)
+        print_dict(server._info)
+
+    @arg('--flavor',
+         default=None,
+         metavar='<flavor>',
+         help="Flavor ID (see 'novaclient flavors'). "\
+              "Defaults to 256MB RAM instance.")
+    @arg('--image',
+         default=None,
+         metavar='<image>',
+         help="Image ID (see 'novaclient images'). "\
+              "Defaults to Ubuntu 10.04 LTS.")
+    @arg('--ipgroup',
+         default=None,
+         metavar='<group>',
+         help="IP group name or ID (see 'novaclient ipgroup-list').")
+    @arg('--meta',
+         metavar="<key=value>",
+         action='append',
+         default=[],
+         help="Record arbitrary key/value metadata. "\
+              "May be give multiple times.")
+    @arg('--file',
+         metavar="<dst-path=src-path>",
+         action='append',
+         dest='files',
+         default=[],
+         help="Store arbitrary files from <src-path> locally to <dst-path> "\
+              "on the new server. You may store up to 5 files.")
+    @arg('--key',
+         metavar='<path>',
+         nargs='?',
+         const=AUTO_KEY,
+         help="Key the server with an SSH keypair. "\
+              "Looks in ~/.ssh for a key, "\
+              "or takes an explicit <path> to one.")
     @arg('--reservation_id',
          default=None,
          metavar='<reservation_id>',
