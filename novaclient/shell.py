@@ -150,8 +150,10 @@ class OpenStackShell(object):
             httplib2.debuglevel = 1
 
         user, apikey, projectid, url = args.username, args.apikey, args.projectid, args.url
+
         #FIXME(usrleon): Here should be restrict for project id same as for username or apikey
         # but for compatibility it is not.
+
         if not user:
             raise CommandError("You must provide a username, either via "
                                "--username or via env[NOVA_USERNAME]")

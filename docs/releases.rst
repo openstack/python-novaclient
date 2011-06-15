@@ -2,6 +2,14 @@
 Release notes
 =============
 
+2.5.2 (June 15, 2011)
+=====================
+* ProjectID can be None for backwards compatability. 
+
+2.5.1 (June 10, 2011)
+=====================
+* ProjectID now part of authentication
+
 2.5.0 (June 3, 2011)
 =================
 
