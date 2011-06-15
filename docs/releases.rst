@@ -2,9 +2,10 @@
 Release notes
 =============
 
-2.5.2 (June 15, 2011)
+2.5.2/.3 (June 15, 2011)
 =====================
 * ProjectID can be None for backwards compatability. 
+* README/docs updated for projectId thanks to usrleon
 
 2.5.1 (June 10, 2011)
 =====================
