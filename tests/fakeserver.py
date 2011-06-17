@@ -434,3 +434,17 @@ class FakeClient(OpenStackClient):
 
     def delete_zones_1(self, **kw):
         return (202, None)
+
+    #
+    # Accounts
+    #
+    def post_accounts_test_account_create_instance(self, body, **kw):
+        assert_equal(body.keys(), ['server'])
+        assert_has_keys(body['server'],
+                        required=['name', 'imageId', 'flavorId'],
+                        optional=['sharedIpGroupId', 'metadata',
+                                                       'personality'])
+        if 'personality' in body['server']:
+            for pfile in body['server']['personality']:
+                assert_has_keys(pfile, required=['path', 'contents'])
+        return (202, self.get_servers_1234()[1])
