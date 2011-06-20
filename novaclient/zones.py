@@ -107,7 +107,8 @@ class ZoneManager(base.BootingManagerWithFind):
         return self._create("/zones", body, "zone")
 
     def boot(self, name, image, flavor, ipgroup=None, meta=None, files=None,
-               zone_blob=None, reservation_id=None):
+               zone_blob=None, reservation_id=None, min_count=None,
+               max_count=None):
         """
         Create (boot) a new server while being aware of Zones.
 
@@ -128,10 +129,15 @@ class ZoneManager(base.BootingManagerWithFind):
                       this field.
         :param reservation_id: a UUID for the set of servers being requested.
         """
+        if not min_count:
+            min_count = 1
+        if not max_count:
+            max_count = min_count
         return self._boot("/zones/boot", "reservation_id", name, image, flavor,
                           ipgroup=ipgroup, meta=meta, files=files,
                           zone_blob=zone_blob, reservation_id=reservation_id,
-                          return_raw=True)
+                          return_raw=True, min_count=min_count,
+                          max_count=max_count)
 
     def select(self, *args, **kwargs):
         """

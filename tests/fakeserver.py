@@ -204,7 +204,7 @@ class FakeClient(OpenStackClient):
         assert_has_keys(body['server'],
                         required=['name', 'imageId', 'flavorId'],
                         optional=['sharedIpGroupId', 'metadata',
-                                                       'personality'])
+                                'personality', 'min_count', 'max_count'])
         if 'personality' in body['server']:
             for pfile in body['server']['personality']:
                 assert_has_keys(pfile, required=['path', 'contents'])
@@ -443,7 +443,7 @@ class FakeClient(OpenStackClient):
         assert_has_keys(body['server'],
                         required=['name', 'imageId', 'flavorId'],
                         optional=['sharedIpGroupId', 'metadata',
-                                                       'personality'])
+                                'personality', 'min_count', 'max_count'])
         if 'personality' in body['server']:
             for pfile in body['server']['personality']:
                 assert_has_keys(pfile, required=['path', 'contents'])
