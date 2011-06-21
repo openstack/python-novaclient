@@ -49,15 +49,19 @@ class Zone(base.Resource):
         """
         self.manager.delete(self)
 
-    def update(self, api_url=None, username=None, password=None):
+    def update(self, api_url=None, username=None, password=None,
+               weight_offset=None, weight_scale=None):
         """
         Update the name for this child zone.
 
         :param api_url: Update the child zone's API URL.
         :param username: Update the child zone's username.
         :param password: Update the child zone's password.
+        :param weight_offset: Update the child zone's weight offset.
+        :param weight_scale: Update the child zone's weight scale.
         """
-        self.manager.update(self, api_url, username, password)
+        self.manager.update(self, api_url, username, password,
+                            weight_offset, weight_scale)
 
 
 class ZoneManager(base.BootingManagerWithFind):
@@ -90,18 +94,23 @@ class ZoneManager(base.BootingManagerWithFind):
             detail = "/detail"
         return self._list("/zones%s" % detail, "zones")
 
-    def create(self, api_url, username, password):
+    def create(self, api_url, username, password,
+               weight_offset=0.0, weight_scale=1.0):
         """
         Create a new child zone.
 
         :param api_url: The child zone's API URL.
         :param username: The child zone's username.
         :param password: The child zone's password.
+        :param weight_offset: The child zone's weight offset.
+        :param weight_scale: The child zone's weight scale.
         """
         body = {"zone": {
             "api_url": api_url,
             "username": username,
             "password": password,
+            "weight_offset": weight_offset,
+            "weight_scale": weight_scale
         }}
 
         return self._create("/zones", body, "zone")
@@ -128,6 +137,8 @@ class ZoneManager(base.BootingManagerWithFind):
                       by Nova for routing between Zones. Users cannot populate
                       this field.
         :param reservation_id: a UUID for the set of servers being requested.
+        :param min_count: minimum number of servers to create.
+        :param max_count: maximum number of servers to create.
         """
         if not min_count:
             min_count = 1
@@ -156,7 +167,8 @@ class ZoneManager(base.BootingManagerWithFind):
         """
         self._delete("/zones/%s" % base.getid(zone))
 
-    def update(self, zone, api_url=None, username=None, password=None):
+    def update(self, zone, api_url=None, username=None, password=None,
+               weight_offset=None, weight_scale=None):
         """
         Update the name or the api_url for a zone.
 
@@ -164,6 +176,8 @@ class ZoneManager(base.BootingManagerWithFind):
         :param api_url: Update the API URL.
         :param username: Update the username.
         :param password: Update the password.
+        :param weight_offset: Update the child zone's weight offset.
+        :param weight_scale: Update the child zone's weight scale.
         """
 
         body = {"zone": {}}
@@ -173,7 +187,10 @@ class ZoneManager(base.BootingManagerWithFind):
             body["zone"]["username"] = username
         if password:
             body["zone"]["password"] = password
-
+        if weight_offset:
+            body["zone"]["weight_offset"] = weight_offset
+        if weight_scale:
+            body["zone"]["weight_scale"] = weight_scale
         if not len(body["zone"]):
             return
         self._update("/zones/%s" % base.getid(zone), body)

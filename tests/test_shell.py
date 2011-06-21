@@ -319,11 +319,12 @@ def test_zone():
     )
 
 def test_zone_add():
-    shell('zone-add http://zzz frank xxx')
+    shell('zone-add http://zzz frank xxx 0.0 1.0')
     assert_called(
         'POST', '/zones',
         {'zone': {'api_url': 'http://zzz', 'username': 'frank', 
-                  'password': 'xxx'}}
+                  'password': 'xxx',
+                  'weight_offset': '0.0', 'weight_scale': '1.0'}}
     )
 
 def test_zone_delete():

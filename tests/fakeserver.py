@@ -424,14 +424,16 @@ class FakeClient(OpenStackClient):
         assert_equal(body.keys(), ['zone'])
         assert_has_keys(body['zone'],
                         required=['api_url', 'username', 'password'],
-                        optional=[])
+                        optional=['weight_offset', 'weight_scale'])
 
         return (202, self.get_zones_1()[1])
 
     def put_zones_1(self, body, **kw):
         assert_equal(body.keys(), ['zone'])
         assert_has_keys(body['zone'], optional=['api_url', 'username',
-                                                'password'])
+                                                'password',
+                                                'weight_offset',
+                                                'weight_scale'])
         return (204, None)
 
     def delete_zones_1(self, **kw):

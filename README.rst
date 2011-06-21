@@ -90,6 +90,12 @@ You'll find complete documentation on the shell by running
         root-password       Change the root password for a server.
         show                Show details about the given server.
         unrescue            Unrescue a server.
+        zone                Show or edit a Child Zone
+        zone-add            Add a Child Zone.
+        zone-boot           Boot a server, considering Zones.
+        zone-delete         Remove a Child Zone.
+        zone-info           Show the capabilities for this Zone.
+        zone-list           List all the immediate Child Zones.
 
     Optional arguments:
       --username USERNAME   Defaults to env[NOVA_USERNAME].

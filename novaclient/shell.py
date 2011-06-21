@@ -680,6 +680,10 @@ class OpenStackShell(object):
     @arg('--zone_username', dest='zone_username', default=None,
                             help='New zone username.')
     @arg('--password', dest='password', default=None, help='New password.')
+    @arg('--weight_offset', dest='weight_offset', default=None,
+                            help='Child Zone weight offset.')
+    @arg('--weight_scale', dest='weight_scale', default=None,
+                            help='Child Zone weight scale.')
     def do_zone(self, args):
         """Show or edit a child zone. No zone arg for this zone."""
         zone = self.cs.zones.get(args.zone)
@@ -692,6 +696,10 @@ class OpenStackShell(object):
             zone_delta['username'] = args.zone_username
         if args.password:
             zone_delta['password'] = args.password
+        if args.weight_offset:
+            zone_delta['weight_offset'] = args.weight_offset
+        if args.weight_scale:
+            zone_delta['weight_scale'] = args.weight_scale
         if zone_delta:
             zone.update(**zone_delta)
         else:
@@ -706,10 +714,15 @@ class OpenStackShell(object):
     @arg('zone_username', metavar='<zone_username>', 
                           help='Authentication username.')
     @arg('password', metavar='<password>', help='Authentication password.')
+    @arg('weight_offset', metavar='<weight_offset>',
+                            help='Child Zone weight offset.')
+    @arg('weight_scale', metavar='<weight_scale>',
+                            help='Child Zone weight scale.')
     def do_zone_add(self, args):
         """Add a new child zone."""
         zone = self.cs.zones.create(args.api_url, args.zone_username, 
-                                                  args.password)
+                                    args.password, args.weight_offset,
+                                    args.weight_scale)
         print_dict(zone._info)
 
     @arg('zone', metavar='<zone name>', help='Name or ID of the zone')
