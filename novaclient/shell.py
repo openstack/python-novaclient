@@ -227,11 +227,8 @@ class OpenStackShell(object):
         server = self._find_server(args.server)
         server.backup_schedule.delete()
 
-    def _boot(self, args, reservation_id=None):
+    def _boot(self, args, reservation_id=None, min_count=1, max_count=1):
         """Boot a new server."""
-        min_count = args.min_instances
-        max_count = args.max_instances or min_count
-
         if max_count > min_count:
             raise CommandError("min_instances should be <= max_instances")
         if not min_count or not max_count:
@@ -319,8 +316,8 @@ class OpenStackShell(object):
     @arg('name', metavar='<name>', help='Name for the new server')
     def do_boot(self, args):
         """Boot a new server."""
-        name, image, flavor, ipgroup, metadata, files, reservation_id = \
-                                 self._boot(args)
+        name, image, flavor, ipgroup, metadata, files, reservation_id, \
+                    min_count, max_count = self._boot(args)
 
         server = self.cs.servers.create(args.name, image, flavor,
                                         ipgroup=ipgroup,
@@ -369,8 +366,8 @@ class OpenStackShell(object):
     @arg('name', metavar='<name>', help='Name for the new server')
     def do_boot_for_account(self, args):
         """Boot a new server in an account."""
-        name, image, flavor, ipgroup, metadata, files, reservation_id = \
-                                 self._boot(args)
+        name, image, flavor, ipgroup, metadata, files, reservation_id, \
+                min_count, max_count = self._boot(args)
 
         server = self.cs.accounts.create_instance_for(args.account, args.name,
                     image, flavor,
@@ -432,10 +429,14 @@ class OpenStackShell(object):
     def do_zone_boot(self, args):
         """Boot a new server, potentially across Zones."""
         reservation_id = args.reservation_id
+        min_count = args.min_instances
+        max_count = args.max_instances
         name, image, flavor, ipgroup, metadata, \
                 files, reservation_id, min_count, max_count = \
                                  self._boot(args,
-                                            reservation_id=reservation_id)
+                                            reservation_id=reservation_id,
+                                            min_count=min_count,
+                                            max_count=max_count)
 
         reservation_id = self.cs.zones.boot(args.name, image, flavor,
                                             ipgroup=ipgroup,

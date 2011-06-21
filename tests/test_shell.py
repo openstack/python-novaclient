@@ -69,14 +69,16 @@ def test_boot():
     shell('boot --image 1 some-server')
     assert_called(
         'POST', '/servers',
-        {'server': {'flavorId': 1, 'name': 'some-server', 'imageId': '1'}}
+        {'server': {'flavorId': 1, 'name': 'some-server', 'imageId': '1',
+         'min_count': 1, 'max_count': 1}}
     )
 
     shell('boot --image 1 --meta foo=bar --meta spam=eggs some-server ')
     assert_called(
         'POST', '/servers',
         {'server': {'flavorId': 1, 'name': 'some-server', 'imageId': '1',
-                   'metadata': {'foo': 'bar', 'spam': 'eggs'}}}
+                    'min_count': 1, 'max_count': 1,
+                    'metadata': {'foo': 'bar', 'spam': 'eggs'}}}
     )
 
 
@@ -90,6 +92,7 @@ def test_boot_files():
     assert_called(
         'POST', '/servers',
         {'server': {'flavorId': 1, 'name': 'some-server', 'imageId': '1',
+                    'min_count': 1, 'max_count': 1,
                     'personality': [
                         {'path': '/tmp/bar', 'contents': expected_file_data},
                         {'path': '/tmp/foo', 'contents': expected_file_data}
@@ -117,6 +120,7 @@ def test_boot_key_auto():
         assert_called(
             'POST', '/servers',
             {'server': {'flavorId': 1, 'name': 'some-server', 'imageId': '1',
+                        'min_count': 1, 'max_count': 1,
                         'personality': [{
                             'path': '/root/.ssh/authorized_keys2',
                             'contents': ('SSHKEY').encode('base64')},
@@ -144,6 +148,7 @@ def test_boot_key_file():
     assert_called(
         'POST', '/servers',
         {'server': {'flavorId': 1, 'name': 'some-server', 'imageId': '1',
+                    'min_count': 1, 'max_count': 1,
                     'personality': [
                         {'path': '/root/.ssh/authorized_keys2', 'contents':
                          expected_file_data},
@@ -163,7 +168,7 @@ def test_boot_ipgroup():
     assert_called(
         'POST', '/servers',
         {'server': {'flavorId': 1, 'name': 'some-server', 'imageId': '1',
-                                                         'sharedIpGroupId': 1}}
+                    'sharedIpGroupId': 1, 'min_count': 1, 'max_count': 1}}
     )
 
 
@@ -172,7 +177,7 @@ def test_boot_ipgroup_name():
     assert_called(
         'POST', '/servers',
         {'server': {'flavorId': 1, 'name': 'some-server', 'imageId': '1',
-                                                         'sharedIpGroupId': 1}}
+                    'sharedIpGroupId': 1, 'min_count': 1, 'max_count': 1}}
     )
 
 
