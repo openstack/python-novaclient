@@ -715,9 +715,9 @@ class OpenStackShell(object):
                           help='Authentication username.')
     @arg('password', metavar='<password>', help='Authentication password.')
     @arg('weight_offset', metavar='<weight_offset>',
-                            help='Child Zone weight offset.')
+                            help='Child Zone weight offset (typically 0.0).')
     @arg('weight_scale', metavar='<weight_scale>',
-                            help='Child Zone weight scale.')
+                            help='Child Zone weight scale (typically 1.0).')
     def do_zone_add(self, args):
         """Add a new child zone."""
         zone = self.cs.zones.create(args.api_url, args.zone_username, 
@@ -732,8 +732,8 @@ class OpenStackShell(object):
 
     def do_zone_list(self, args):
         """List the children of a zone."""
-        print_list(self.cs.zones.list(), ['ID', 'Name', 'Is Active',
-                                            'Capabilities', 'API URL'])
+        print_list(self.cs.zones.list(), ['ID', 'Name', 'Is Active', \
+                            'API URL', 'Weight Offset', 'Weight Scale'])
 
     def _find_server(self, server):
         """Get a server by name or ID."""
