@@ -2,7 +2,13 @@
 Release notes
 =============
 
-2.5.2/.3 (June 15, 2011)
+2.5.5 (June 21, 2011)
+=====================
+* zone-boot min/max instance count added thanks to comstud
+* create for user added thanks to cerberus
+* fixed tests
+
+2.5.3 (June 15, 2011)
 =====================
 * ProjectID can be None for backwards compatability. 
 * README/docs updated for projectId thanks to usrleon
