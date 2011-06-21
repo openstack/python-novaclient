@@ -122,7 +122,8 @@ class BootingManagerWithFind(ManagerWithFind):
     """Like a `ManagerWithFind`, but has the ability to boot servers."""
     def _boot(self, resource_url, response_key, name, image, flavor,
               ipgroup=None, meta=None, files=None, zone_blob=None,
-              reservation_id=None, return_raw=False):
+              reservation_id=None, return_raw=False, min_count=None,
+              max_count=None):
         """
         Create (boot) a new server.
 
@@ -158,6 +159,13 @@ class BootingManagerWithFind(ManagerWithFind):
             body["server"]["reservation_id"] = reservation_id
         if zone_blob:
             body["server"]["zone_blob"] = zone_blob
+
+        if not min_count:
+            min_count = 1
+        if not max_count:
+            max_count = min_count
+        body["server"]["min_count"] = min_count
+        body["server"]["max_count"] = max_count
 
         # Files are a slight bit tricky. They're passed in a "personality"
         # list to the POST. Each item is a dict giving a file name and the

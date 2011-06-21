@@ -222,7 +222,8 @@ class ServerManager(base.BootingManagerWithFind):
         return self._list("/servers%s%s" % (detail, reservation), "servers")
 
     def create(self, name, image, flavor, ipgroup=None, meta=None, files=None,
-               zone_blob=None, reservation_id=None):
+               zone_blob=None, reservation_id=None, min_count=None,
+               max_count=None):
         """
         Create (boot) a new server.
 
@@ -243,9 +244,14 @@ class ServerManager(base.BootingManagerWithFind):
                       this field.
         :param reservation_id: a UUID for the set of servers being requested.
         """
+        if not min_count:
+            min_count = 1
+        if not max_count:
+            max_count = min_count
         return self._boot("/servers", "server", name, image, flavor,
                           ipgroup=ipgroup, meta=meta, files=files,
-                          zone_blob=zone_blob, reservation_id=reservation_id)
+                          zone_blob=zone_blob, reservation_id=reservation_id,
+                          min_count=min_count, max_count=max_count)
 
     def update(self, server, name=None, password=None):
         """
