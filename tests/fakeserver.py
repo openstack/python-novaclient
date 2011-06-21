@@ -16,8 +16,10 @@ from utils import fail, assert_in, assert_not_in, assert_has_keys
 
 
 class FakeServer(OpenStack):
-    def __init__(self, username=None, password=None, auth_url=None):
-        super(FakeServer, self).__init__('username', 'apikey', 'auth_url')
+    def __init__(self, username=None, password=None, project_id=None,
+                 auth_url=None):
+        super(FakeServer, self).__init__('username', 'apikey',
+                                         'project_id', 'auth_url')
         self.client = FakeClient()
 
     def assert_called(self, method, url, body=None):

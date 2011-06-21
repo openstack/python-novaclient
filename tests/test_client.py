@@ -9,7 +9,7 @@ mock_request = mock.Mock(return_value=(fake_response, fake_body))
 
 
 def client():
-    cl = OpenStackClient("username", "apikey", "auth_test")
+    cl = OpenStackClient("username", "apikey", "project_id", "auth_test")
     cl.management_url = "http://example.com"
     cl.auth_token = "token"
     return cl
@@ -24,7 +24,9 @@ def test_get():
         resp, body = cl.get("/hi")
         mock_request.assert_called_with("http://example.com/hi?fresh=1234",
             "GET",
-            headers={"X-Auth-Token": "token", "User-Agent": cl.USER_AGENT})
+            headers={"X-Auth-Token": "token",
+                     "X-Auth-Project-Id": "project_id",
+                     "User-Agent": cl.USER_AGENT})
         # Automatic JSON parsing
         assert_equal(body, {"hi": "there"})
 
@@ -40,6 +42,7 @@ def test_post():
         mock_request.assert_called_with("http://example.com/hi", "POST",
             headers={
                 "X-Auth-Token": "token",
+                "X-Auth-Project-Id": "project_id",
                 "Content-Type": "application/json",
                 "User-Agent": cl.USER_AGENT},
             body='[1, 2, 3]'

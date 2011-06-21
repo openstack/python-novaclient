@@ -5,7 +5,7 @@ from nose.tools import assert_raises, assert_equal
 
 
 def test_authenticate_success():
-    cs = novaclient.OpenStack("username", "apikey")
+    cs = novaclient.OpenStack("username", "apikey", "project_id")
     auth_response = httplib2.Response({
         'status': 204,
         'x-server-management-url':
@@ -21,6 +21,7 @@ def test_authenticate_success():
             headers={
                 'X-Auth-User': 'username',
                 'X-Auth-Key': 'apikey',
+                'X-Auth-Project-Id': 'project_id',
                 'User-Agent': cs.client.USER_AGENT
             })
         assert_equal(cs.client.management_url,
@@ -31,7 +32,7 @@ def test_authenticate_success():
 
 
 def test_authenticate_failure():
-    cs = novaclient.OpenStack("username", "apikey")
+    cs = novaclient.OpenStack("username", "apikey", "project_id")
     auth_response = httplib2.Response({'status': 401})
     mock_request = mock.Mock(return_value=(auth_response, None))
 
@@ -43,7 +44,7 @@ def test_authenticate_failure():
 
 
 def test_auth_automatic():
-    client = novaclient.OpenStack("username", "apikey").client
+    client = novaclient.OpenStack("username", "apikey", "project_id").client
     client.management_url = ''
     mock_request = mock.Mock(return_value=(None, None))
 
@@ -58,7 +59,7 @@ def test_auth_automatic():
 
 
 def test_auth_manual():
-    cs = novaclient.OpenStack("username", "apikey")
+    cs = novaclient.OpenStack("username", "apikey", "project_id")
 
     @mock.patch.object(cs.client, 'authenticate')
     def test_auth_call(m):
