@@ -203,7 +203,8 @@ class ServerManager(base.BootingManagerWithFind):
         """
         return self._get("/servers/%s" % base.getid(server), "server")
 
-    def list(self, detailed=True, reservation_id=None):
+    def list(self, detailed=True, fixed_ip=None, project_id=None,
+            reservation_id=None, recurse_zones=None):
         """
         Get a list of servers.
         Optional detailed returns details server info.
@@ -212,14 +213,26 @@ class ServerManager(base.BootingManagerWithFind):
 
         :rtype: list of :class:`Server`
         """
-        reservation = ""
+        query_string = ""
         if reservation_id:
-            reservation = "?reservation_id=%s" % reservation_id
+            # Always going to be '?' here, but added in case someone
+            # puts another case above this one
+            prefix = query_string and '&' or '?'
+            query_string += "sreservation_id=%s" % (prefix, reservation_id)
+        if fixed_ip:
+            prefix = query_string and '&' or '?'
+            query_string += "%sfixed_ip=%s" % (prefix, fixed_ip)
+        if project_id:
+            prefix = query_string and '&' or '?'
+            query_string += "%sproject_id=%s" % (prefix, project_id)
+        if recurse_zones:
+            prefix = query_string and '&' or '?'
+            query_string += "%srecurse_zones=%s" % (prefix, recurse_zones)
         
         detail = ""
         if detailed:
             detail = "/detail"
-        return self._list("/servers%s%s" % (detail, reservation), "servers")
+        return self._list("/servers%s%s" % (detail, query_string), "servers")
 
     def create(self, name, image, flavor, ipgroup=None, meta=None, files=None,
                zone_blob=None, reservation_id=None, min_count=None,
