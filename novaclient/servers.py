@@ -19,6 +19,7 @@
 Server interface.
 """
 
+import urllib
 from novaclient import base
 
 REBOOT_SOFT, REBOOT_HARD = 'SOFT', 'HARD'
@@ -213,21 +214,17 @@ class ServerManager(base.BootingManagerWithFind):
 
         :rtype: list of :class:`Server`
         """
-        query_string = ""
+        qparams = {}
         if reservation_id:
-            # Always going to be '?' here, but added in case someone
-            # puts another case above this one
-            prefix = query_string and '&' or '?'
-            query_string += "sreservation_id=%s" % (prefix, reservation_id)
+            qparams['reservation_id'] = reservation_id
         if fixed_ip:
-            prefix = query_string and '&' or '?'
-            query_string += "%sfixed_ip=%s" % (prefix, fixed_ip)
+            qparams['fixed_ip'] = fixed_ip
         if project_id:
-            prefix = query_string and '&' or '?'
-            query_string += "%sproject_id=%s" % (prefix, project_id)
+            qparams['project_id'] = project_id
         if recurse_zones:
-            prefix = query_string and '&' or '?'
-            query_string += "%srecurse_zones=%s" % (prefix, recurse_zones)
+            qparams['recurse_zones'] = recurse_zones
+
+        query_string = "?%s" % urllib.urlencode(qparams) if qparams else ""
         
         detail = ""
         if detailed:

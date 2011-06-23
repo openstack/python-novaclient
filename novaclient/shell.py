@@ -554,14 +554,17 @@ class OpenStackShell(object):
         help='Only return instances that match reservation_id.')
     @arg('--recurse_zones',
         dest='recurse_zones',
-        metavar='<recurse_zones>',
-        default=False,
-        help='Recurse through all zones if set to 1.')
+        metavar='<0|1>',
+        nargs='?',
+        type=int,
+        const=1,
+        default=0,
+        help='Recurse through all zones if set.')
     def do_list(self, args):
         """List active servers."""
         reservation_id = args.reservation_id
         fixed_ip = args.fixed_ip
-        recurse_zones = args.recurse_zones and 1 or 0
+        recurse_zones = args.recurse_zones
         if recurse_zones:
             to_print = ['UUID', 'Name', 'Status', 'Public IP', 'Private IP']
         else:
