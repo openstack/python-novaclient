@@ -542,16 +542,33 @@ class OpenStackShell(object):
         """Delete an IP group."""
         self._find_ipgroup(args.group).delete()
 
+    @arg('--fixed_ip',
+        dest='fixed_ip',
+        metavar='<fixed_ip>',
+        default=None,
+        help='Only match against fixed IP.')
     @arg('--reservation_id',
         dest='reservation_id',
         metavar='<reservation_id>',
         default=None,
         help='Only return instances that match reservation_id.')
+    @arg('--recurse_zones',
+        dest='recurse_zones',
+        metavar='<recurse_zones>',
+        default=False,
+        help='Recurse through all zones if set to 1.')
     def do_list(self, args):
         """List active servers."""
         reservation_id = args.reservation_id
-        print_list(self.cs.servers.list(reservation_id=reservation_id),
-                   ['ID', 'Name', 'Status', 'Public IP', 'Private IP'])
+        fixed_ip = args.fixed_ip
+        recurse_zones = args.recurse_zones and 1 or 0
+        if recurse_zones:
+            to_print = ['UUID', 'Name', 'Status', 'Public IP', 'Private IP']
+        else:
+            to_print = ['ID', 'Name', 'Status', 'Public IP', 'Private IP']
+        print_list(self.cs.servers.list(fixed_ip=fixed_ip,
+                reservation_id=reservation_id,
+                recurse_zones=recurse_zones), to_print)
 
     @arg('--hard',
         dest='reboot_type',
@@ -653,7 +670,7 @@ class OpenStackShell(object):
     @arg('server', metavar='<server>', help='Name or ID of server.')
     def do_show(self, args):
         """Show details about the given server."""
-        s = self.cs.servers.get(self._find_server(args.server))
+        s = self._find_server(args.server)
 
         info = s._info.copy()
         addresses = info.pop('addresses')
