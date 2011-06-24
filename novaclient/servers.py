@@ -258,6 +258,8 @@ class ServerManager(base.BootingManagerWithFind):
             min_count = 1
         if not max_count:
             max_count = min_count
+        if min_count > max_count:
+            min_count = max_count
         return self._boot("/servers", "server", name, image, flavor,
                           ipgroup=ipgroup, meta=meta, files=files,
                           zone_blob=zone_blob, reservation_id=reservation_id,
