@@ -47,7 +47,7 @@ class ImageManager(base.ManagerWithFind):
         return self._list("/images%s" % detail, "images")
 
 
-    def create(self, server, image_type="snapshot", name=None, rotation=None):
+    def create(self, server, image_type=None, name=None, rotation=None):
         """
         Create a new image by snapshotting a running :class:`Server`
 
@@ -55,6 +55,9 @@ class ImageManager(base.ManagerWithFind):
         :param server: The :class:`Server` (or its ID) to make a snapshot of.
         :rtype: :class:`Image`
         """
+        if image_type is None:
+            image_type = "snapshot"
+
         if image_type not in ("daily", "weekly", "snapshot"):
             raise Exception("Invalid image_type: must be daily, "
                             "weekly or snapshot")
