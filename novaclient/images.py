@@ -47,7 +47,7 @@ class ImageManager(base.ManagerWithFind):
         return self._list("/images%s" % detail, "images")
 
 
-    def create(self, server, image_type=None, name=None, rotation=None):
+    def create(self, server, name, image_type=None, backup_type=None, rotation=None):
         """
         Create a new image by snapshotting a running :class:`Server`
 
@@ -58,17 +58,20 @@ class ImageManager(base.ManagerWithFind):
         if image_type is None:
             image_type = "snapshot"
 
-        if image_type not in ("daily", "weekly", "snapshot"):
-            raise Exception("Invalid image_type: must be daily, "
-                            "weekly or snapshot")
+        if image_type not in ("backup", "snapshot"):
+            raise Exception("Invalid image_type: must be backup or snapshot")
             
-        if image_type == "snapshot" and not name:
-            raise Exception("name is required for snapshots")
-        elif image_type != "snapshot" and not rotation:
-            raise Exception("rotation is required for backups")
+        if image_type == "backup":
+            if not rotation:
+                raise Exception("rotation is required for backups")
+            elif not backup_type:
+                raise Exception("backup_type required for backups")
+            elif backup_type not in ("daily", "weekly"):
+                raise Exception("Invalid backup_type: must be daily or weekly")
 
         data = {"image": {"serverId": base.getid(server), "name": name,
-                          "image_type": image_type, "rotation": rotation}}
+                          "image_type": image_type, "backup_type": backup_type,
+                          "rotation": rotation}}
         return self._create("/images", data, "image")
 
     def delete(self, image):

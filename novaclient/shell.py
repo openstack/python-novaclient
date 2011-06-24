@@ -474,20 +474,27 @@ class OpenStackShell(object):
         print_list(self.cs.images.list(), ['ID', 'Name', 'Status'])
 
     @arg('server', metavar='<server>', help='Name or ID of server.')
-    @arg('image_type', metavar='<image_type>', default='snapshot', help='daily, weekly or snapshot (default)')
+    @arg('name', metavar='<name>', help='Name of backup or snapshot.')
+    @arg('--image-type',
+         metavar='<backup|snapshot>',
+         default='snapshot',
+         help='type of image (default: snapshot)')
+    @arg('--backup-type',
+         metavar='<daily|weekly>',
+         default=None,
+         help='type of backup')
     @arg('--rotation',
          default=None,
          type=int,
          metavar='<rotation>',
-         help="Number of backups to retain. (for image-type daily or weekly)")
-    @arg('--name',
-         default=None,
-         metavar='<name>',
-         help="Name of the new snapshot")
+         help="Number of backups to retain. Used for backup image_type.")
     def do_image_create(self, args):
         """Create a new image by taking a snapshot of a running server."""
         server = self._find_server(args.server)
-        image = self.cs.images.create(server, image_type=args.image_type, name=args.name, rotation=args.rotation)
+        image = self.cs.images.create(server, args.name,
+                                      image_type=args.image_type,
+                                      backup_type=args.backup_type,
+                                      rotation=args.rotation)
         print_dict(image._info)
 
     @arg('image', metavar='<image>', help='Name or ID of image.')

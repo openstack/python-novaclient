@@ -191,11 +191,19 @@ def test_image_list():
     assert_called('GET', '/images/detail')
 
 
-def test_image_create():
-    shell('image-create sample-server snapshot --name new-image')
+def test_snapshot_create():
+    shell('image-create sample-server mysnapshot')
     assert_called(
         'POST', '/images',
-        {'image': {'name': 'new-image', 'serverId': 1234, 'image_type': 'snapshot', 'rotation': None}}
+        {'image': {'name': 'mysnapshot', 'serverId': 1234, 'image_type': 'snapshot', 'backup_type': None, 'rotation': None}}
+    )
+
+
+def test_backup_create():
+    shell('image-create sample-server mybackup --image-type backup --backup-type daily --rotation 1')
+    assert_called(
+        'POST', '/images',
+        {'image': {'name': 'mybackup', 'serverId': 1234, 'image_type': 'backup', 'backup_type': 'daily', 'rotation': 1}}
     )
 
 
