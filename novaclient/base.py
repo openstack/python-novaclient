@@ -34,6 +34,13 @@ def getid(obj):
     Abstracts the common pattern of allowing both an object or an object's ID
     (UUID) as a parameter when dealing with relationships.
     """
+
+    # Try to return the object's UUID first, if we have a UUID.
+    try:
+        if obj.uuid:
+            return obj.uuid
+    except AttributeError:
+        pass
     try:
         return obj.id
     except AttributeError:
