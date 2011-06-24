@@ -336,7 +336,7 @@ class FakeClient(OpenStackClient):
 
     def post_images(self, body, **kw):
         assert_equal(body.keys(), ['image'])
-        assert_has_keys(body['image'], required=['serverId', 'name'])
+        assert_has_keys(body['image'], required=['serverId', 'name', 'image_type', 'rotation'])
         return (202, self.get_images_1()[1])
 
     def delete_images_1(self, **kw):

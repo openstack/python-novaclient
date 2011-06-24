@@ -477,6 +477,7 @@ class OpenStackShell(object):
     @arg('image_type', metavar='<image_type>', default='snapshot', help='daily, weekly or snapshot (default)')
     @arg('--rotation',
          default=None,
+         type=int,
          metavar='<rotation>',
          help="Number of backups to retain. (for image-type daily or weekly)")
     @arg('--name',

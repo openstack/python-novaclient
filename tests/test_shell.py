@@ -192,10 +192,10 @@ def test_image_list():
 
 
 def test_image_create():
-    shell('image-create sample-server new-image')
+    shell('image-create sample-server snapshot --name new-image')
     assert_called(
         'POST', '/images',
-        {'image': {'name': 'new-image', 'serverId': 1234}}
+        {'image': {'name': 'new-image', 'serverId': 1234, 'image_type': 'snapshot', 'rotation': None}}
     )
 
 
