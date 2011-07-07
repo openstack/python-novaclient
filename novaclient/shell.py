@@ -623,6 +623,11 @@ class OpenStackShell(object):
         server.resize(flavor)
 
     @arg('server', metavar='<server>', help='Name or ID of server.')
+    def do_migrate(self, args):
+        """Migrate a server."""
+        self._find_server(args.server).migrate()
+
+    @arg('server', metavar='<server>', help='Name or ID of server.')
     def do_pause(self, args):
         """Pause a server."""
         self._find_server(args.server).pause()

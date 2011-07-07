@@ -166,6 +166,12 @@ class Server(base.Resource):
         """
         self.manager.revert_resize(self)
 
+    def migrate(self):
+        """
+        Migrate a server to a new host in the same zone.
+        """
+        self.manager.migrate(self)
+
     @property
     def backup_schedule(self):
         """
@@ -431,6 +437,14 @@ class ServerManager(base.BootingManagerWithFind):
         :param server: The :class:`Server` (or its ID) to share onto.
         """
         self._action('revertResize', server)
+
+    def migrate(self, server):
+        """
+        Migrate a server to a new host in the same zone.
+
+        :param server: The :class:`Server` (or its ID).
+        """
+        self._action('migrate', server)
 
     def _action(self, action, server, info=None):
         """

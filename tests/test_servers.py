@@ -148,3 +148,10 @@ def test_revert_resized_server():
     cs.assert_called('POST', '/servers/1234/action')
     cs.servers.revert_resize(s)
     cs.assert_called('POST', '/servers/1234/action')
+
+def test_migrate_server():
+    s = cs.servers.get(1234)
+    s.migrate()
+    cs.assert_called('POST', '/servers/1234/action')
+    cs.servers.migrate(s)
+    cs.assert_called('POST', '/servers/1234/action')
