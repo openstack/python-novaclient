@@ -273,6 +273,8 @@ class FakeClient(OpenStackClient):
             return (204, None)
         elif action == 'revertResize':
             assert_equal(body[action], None)
+        elif action == 'migrate':
+            assert_equal(body[action], None)
         else:
             fail("Unexpected server action: %s" % action)
         return (202, None)

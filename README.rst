@@ -79,6 +79,7 @@ You'll find complete documentation on the shell by running
         ipgroup-list        Show IP groups.
         ipgroup-show        Show details about a particular IP group.
         list                List active servers.
+        migrate             Migrate a server to a new host in the same zone.
         reboot              Reboot a server.
         rebuild             Shutdown, re-image, and re-boot a server.
         rename              Rename a server.
