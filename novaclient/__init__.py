@@ -63,9 +63,10 @@ class OpenStack(object):
     """
 
     def __init__(self, username, apikey, projectid,
-                 auth_url='https://auth.api.rackspacecloud.com/v1.0'):
+            auth_url='https://auth.api.rackspacecloud.com/v1.0', timeout=None):
         self.backup_schedules = BackupScheduleManager(self)
-        self.client = OpenStackClient(username, apikey, projectid, auth_url)
+        self.client = OpenStackClient(username, apikey, projectid, auth_url,
+                timeout=timeout)
         self.flavors = FlavorManager(self)
         self.images = ImageManager(self)
         self.ipgroups = IPGroupManager(self)
