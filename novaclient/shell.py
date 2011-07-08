@@ -773,7 +773,7 @@ class OpenStackShell(object):
                                     args.weight_scale)
         print_dict(zone._info)
 
-    @arg('zone', metavar='<zone name>', help='Name or ID of the zone')
+    @arg('zone', metavar='<zone>', help='Name or ID of the zone')
     def do_zone_delete(self, args):
         """Delete a zone."""
         self.cs.zones.delete(args.zone)
