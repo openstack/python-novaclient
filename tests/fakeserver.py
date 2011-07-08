@@ -275,6 +275,10 @@ class FakeClient(OpenStackClient):
             assert_equal(body[action], None)
         elif action == 'migrate':
             assert_equal(body[action], None)
+        elif action == 'addFixedIp':
+            assert_equal(body[action].keys(), ['networkId'])
+        elif action == 'removeFixedIp':
+            assert_equal(body[action].keys(), ['address'])
         else:
             fail("Unexpected server action: %s" % action)
         return (202, None)

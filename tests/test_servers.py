@@ -149,9 +149,26 @@ def test_revert_resized_server():
     cs.servers.revert_resize(s)
     cs.assert_called('POST', '/servers/1234/action')
 
+
 def test_migrate_server():
     s = cs.servers.get(1234)
     s.migrate()
     cs.assert_called('POST', '/servers/1234/action')
     cs.servers.migrate(s)
+    cs.assert_called('POST', '/servers/1234/action')
+
+
+def test_add_fixed_ip():
+    s = cs.servers.get(1234)
+    s.add_fixed_ip(1)
+    cs.assert_called('POST', '/servers/1234/action')
+    cs.servers.add_fixed_ip(s, 1)
+    cs.assert_called('POST', '/servers/1234/action')
+
+
+def test_remove_fixed_ip():
+    s = cs.servers.get(1234)
+    s.remove_fixed_ip('10.0.0.1')
+    cs.assert_called('POST', '/servers/1234/action')
+    cs.servers.remove_fixed_ip(s, '10.0.0.1')
     cs.assert_called('POST', '/servers/1234/action')
