@@ -58,6 +58,7 @@ You'll find complete documentation on the shell by running
 
     Positional arguments:
       <subcommand>
+        add-fixed-ip        Add a new fixed IP address to a servers network.
         backup-schedule     Show or edit the backup schedule for a server.
         backup-schedule-delete
                             Delete the backup schedule for a server.
@@ -82,6 +83,7 @@ You'll find complete documentation on the shell by running
         migrate             Migrate a server to a new host in the same zone.
         reboot              Reboot a server.
         rebuild             Shutdown, re-image, and re-boot a server.
+        remove-fixed-ip     Remove an IP address from a server.
         rename              Rename a server.
         rescue              Rescue a server.
         resize              Resize a server.
