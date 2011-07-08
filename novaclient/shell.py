@@ -149,10 +149,11 @@ class OpenStackShell(object):
         if args.debug:
             httplib2.debuglevel = 1
 
-        user, apikey, projectid, url = args.username, args.apikey, args.projectid, args.url
+        user, apikey, projectid, url = args.username, args.apikey, \
+                                       args.projectid, args.url
 
-        #FIXME(usrleon): Here should be restrict for project id same as for username or apikey
-        # but for compatibility it is not.
+        #FIXME(usrleon): Here should be restrict for project id same as
+        # for username or apikey but for compatibility it is not.
 
         if not user:
             raise CommandError("You must provide a username, either via "
@@ -781,6 +782,22 @@ class OpenStackShell(object):
         """List the children of a zone."""
         print_list(self.cs.zones.list(), ['ID', 'Name', 'Is Active', \
                             'API URL', 'Weight Offset', 'Weight Scale'])
+
+    @arg('server', metavar='<server>', help='Name or ID of server.')
+    @arg('network_id', metavar='<network_id>', help='Network ID.')
+    def do_add_fixed_ip(self, args):
+        """Add new IP address to network."""
+        server = self._find_server(args.server)
+        server.add_fixed_ip(args.network_id)
+        print_dict(server._info)
+    
+    @arg('server', metavar='<server>', help='Name or ID of server.')
+    @arg('address', metavar='<address>', help='IP Address.')
+    def do_remove_fixed_ip(self, args):
+        """Remove an IP address from a server."""
+        server = self._find_server(args.server)
+        server.remove_fixed_ip(args.address)
+        print_dict(server._info)
 
     def _find_server(self, server):
         """Get a server by name or ID."""
