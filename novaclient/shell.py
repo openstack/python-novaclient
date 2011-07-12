@@ -853,7 +853,9 @@ def print_list(objs, fields, formatters={}):
             if field in formatters:
                 row.append(formatters[field](o))
             else:
-                row.append(getattr(o, field.lower().replace(' ', '_'), ''))
+                field_name = field.lower().replace(' ', '_')
+                data = getattr(o, field_name, '')
+                row.append(data)
         pt.add_row(row)
 
     pt.printt(sortby=fields[0])

@@ -34,6 +34,7 @@ class OpenStackClient(httplib2.Http):
         self.apikey = apikey
         self.projectid = projectid
         self.auth_url = auth_url
+        self.version = 'v1.0'
 
         self.management_url = None
         self.auth_token = None
@@ -120,12 +121,21 @@ class OpenStackClient(httplib2.Http):
         return self._cs_request(url, 'DELETE', **kwargs)
 
     def authenticate(self):
+        scheme, netloc, path, query, frag = urlparse.urlsplit(
+                                                    self.auth_url)
+        path_parts = path.split('/')
+        for part in path_parts:
+            if len(part) > 0 and part[0] == 'v':
+                self.version = part
+                break
+
         headers = {'X-Auth-User': self.user,
                    'X-Auth-Key': self.apikey}
         if self.projectid:
             headers['X-Auth-Project-Id'] = self.projectid
         resp, body = self.request(self.auth_url, 'GET', headers=headers)
         self.management_url = resp['x-server-management-url']
+
         self.auth_token = resp['x-auth-token']
 
     def _munge_get_url(self, url):

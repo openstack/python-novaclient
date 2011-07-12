@@ -186,7 +186,7 @@ class Server(base.Resource):
         """
         if len(self.addresses['public']) == 0:
             return ""
-        return self.addresses['public'][0]
+        return self.addresses['public']
 
     @property
     def private_ip(self):
@@ -195,7 +195,7 @@ class Server(base.Resource):
         """
         if len(self.addresses['private']) == 0:
             return ""
-        return self.addresses['private'][0]
+        return self.addresses['private']
 
 
 class ServerManager(base.BootingManagerWithFind):
