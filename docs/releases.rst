@@ -2,6 +2,13 @@
 Release notes
 =============
 
+2.5.8 (July 11, 2011)
+=====================
+* returns all public/private ips, not just first one
+* better 'nova list' search options
+
+2.5.7 - 2.5.6 = minor tweaks
+
 2.5.5 (June 21, 2011)
 =====================
 * zone-boot min/max instance count added thanks to comstud
