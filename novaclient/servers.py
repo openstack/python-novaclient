@@ -210,8 +210,7 @@ class ServerManager(base.BootingManagerWithFind):
         """
         return self._get("/servers/%s" % base.getid(server), "server")
 
-    def list(self, detailed=True, fixed_ip=None, project_id=None,
-            reservation_id=None, recurse_zones=None):
+    def list(self, detailed=True, search_opts=None):
         """
         Get a list of servers.
         Optional detailed returns details server info.
@@ -220,15 +219,13 @@ class ServerManager(base.BootingManagerWithFind):
 
         :rtype: list of :class:`Server`
         """
+        if search_opts is None:
+            search_opts = {}
         qparams = {}
-        if reservation_id:
-            qparams['reservation_id'] = reservation_id
-        if fixed_ip:
-            qparams['fixed_ip'] = fixed_ip
-        if project_id:
-            qparams['project_id'] = project_id
-        if recurse_zones:
-            qparams['recurse_zones'] = recurse_zones
+        # only use values in query string if they are set
+        for opt, val in search_opts.iteritems():
+            if val:
+                qparams[opt] = val
 
         query_string = "?%s" % urllib.urlencode(qparams) if qparams else ""
         

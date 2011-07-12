@@ -583,18 +583,49 @@ class OpenStackShell(object):
         const=1,
         default=0,
         help='Recurse through all zones if set.')
+    @arg('--ip',
+        dest='ip',
+        metavar='<ip_regexp>',
+        default=None,
+        help='Search with regular expression match by IP address')
+    @arg('--ip6',
+        dest='ip6',
+        metavar='<ip6_regexp>',
+        default=None,
+        help='Search with regular expression match by IPv6 address')
+    @arg('--server_name',
+        dest='server_name',
+        metavar='<name_regexp>',
+        default=None,
+        help='Search with regular expression match by server name')
+    @arg('--name',
+        dest='display_name',
+        metavar='<name_regexp>',
+        default=None,
+        help='Search with regular expression match by display name')
+    @arg('--instance_name',
+        dest='name',
+        metavar='<name_regexp>',
+        default=None,
+        help='Search with regular expression match by instance name')
     def do_list(self, args):
         """List active servers."""
-        reservation_id = args.reservation_id
-        fixed_ip = args.fixed_ip
         recurse_zones = args.recurse_zones
+        search_opts = {
+                'reservation_id': args.reservation_id,
+                'fixed_ip': args.fixed_ip,
+                'recurse_zones': recurse_zones,
+                'ip': args.ip,
+                'ip6': args.ip6,
+                'name': args.name,
+                'server_name': args.server_name,
+                'display_name': args.display_name}
         if recurse_zones:
             to_print = ['UUID', 'Name', 'Status', 'Public IP', 'Private IP']
         else:
             to_print = ['ID', 'Name', 'Status', 'Public IP', 'Private IP']
-        print_list(self.cs.servers.list(fixed_ip=fixed_ip,
-                reservation_id=reservation_id,
-                recurse_zones=recurse_zones), to_print)
+        print_list(self.cs.servers.list(search_opts=search_opts),
+                to_print)
 
     @arg('--hard',
         dest='reboot_type',
@@ -773,7 +804,7 @@ class OpenStackShell(object):
                                     args.weight_scale)
         print_dict(zone._info)
 
-    @arg('zone', metavar='<zone name>', help='Name or ID of the zone')
+    @arg('zone', metavar='<zone>', help='Name or ID of the zone')
     def do_zone_delete(self, args):
         """Delete a zone."""
         self.cs.zones.delete(args.zone)

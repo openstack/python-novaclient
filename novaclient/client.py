@@ -28,8 +28,8 @@ class OpenStackClient(httplib2.Http):
 
     USER_AGENT = 'python-novaclient/%s' % novaclient.__version__
 
-    def __init__(self, user, apikey, projectid, auth_url):
-        super(OpenStackClient, self).__init__()
+    def __init__(self, user, apikey, projectid, auth_url, timeout=None):
+        super(OpenStackClient, self).__init__(timeout=timeout)
         self.user = user
         self.apikey = apikey
         self.projectid = projectid
@@ -78,7 +78,7 @@ class OpenStackClient(httplib2.Http):
         else:
             body = None
 
-        if resp.status in (400, 401, 403, 404, 413, 500, 501):
+        if resp.status in (400, 401, 403, 404, 408, 413, 500, 501):
             raise exceptions.from_response(resp, body)
 
         return resp, body
