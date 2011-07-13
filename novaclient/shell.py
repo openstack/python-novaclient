@@ -820,7 +820,6 @@ class OpenStackShell(object):
         """Add new IP address to network."""
         server = self._find_server(args.server)
         server.add_fixed_ip(args.network_id)
-        print_dict(server._info)
     
     @arg('server', metavar='<server>', help='Name or ID of server.')
     @arg('address', metavar='<address>', help='IP Address.')
@@ -828,7 +827,6 @@ class OpenStackShell(object):
         """Remove an IP address from a server."""
         server = self._find_server(args.server)
         server.remove_fixed_ip(args.address)
-        print_dict(server._info)
 
     def _find_server(self, server):
         """Get a server by name or ID."""
