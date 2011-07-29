@@ -24,7 +24,7 @@ class Weighting(base.Resource):
     def __init__(self, manager, info):
         self.name = "n/a"
         super(Weighting, self).__init__(manager, info)
-                        
+
     def __repr__(self):
         return "<Weighting: %s>" % self.name
 

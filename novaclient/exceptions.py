@@ -3,6 +3,7 @@
 Exception definitions.
 """
 
+
 class OpenStackException(Exception):
     """
     The base exception class for all exceptions this library raises.

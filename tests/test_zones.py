@@ -49,7 +49,7 @@ def test_update_zone():
     # Update via manager
     os.zones.update(s, api_url='http://blah.com')
     os.assert_called('PUT', '/zones/1')
-    os.zones.update(1, api_url= 'http://blah.com')
+    os.zones.update(1, api_url='http://blah.com')
     os.assert_called('PUT', '/zones/1')
     os.zones.update(s, api_url='http://blah.com', username='fred',
                        password='zip')

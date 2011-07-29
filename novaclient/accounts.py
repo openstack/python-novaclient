@@ -1,7 +1,9 @@
 from novaclient import base
 
+
 class Account(base.Resource):
     pass
+
 
 class AccountManager(base.BootingManagerWithFind):
     resource_class = Account
