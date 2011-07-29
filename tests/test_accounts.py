@@ -7,6 +7,7 @@ from novaclient import Account
 
 cs = FakeServer()
 
+
 def test_instance_creation_for_account():
     s = cs.accounts.create_instance_for(
         account_id='test_account',

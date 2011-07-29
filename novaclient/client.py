@@ -24,6 +24,7 @@ from novaclient import exceptions
 
 _logger = logging.getLogger(__name__)
 
+
 class OpenStackClient(httplib2.Http):
 
     USER_AGENT = 'python-novaclient/%s' % novaclient.__version__
@@ -45,19 +46,20 @@ class OpenStackClient(httplib2.Http):
     def http_log(self, args, kwargs, resp, body):
         if not _logger.isEnabledFor(logging.DEBUG):
             return
-            
+
         string_parts = ['curl -i']
         for element in args:
-            if element in ('GET','POST'):
+            if element in ('GET', 'POST'):
                 string_parts.append(' -X %s' % element)
             else:
                 string_parts.append(' %s' % element)
 
         for element in kwargs['headers']:
-            string_parts.append(' -H "%s: %s"' % (element,kwargs['headers'][element]))
+            header = ' -H "%s: %s"' % (element, kwargs['headers'][element])
+            string_parts.append(header)
 
         _logger.debug("REQ: %s\n" % "".join(string_parts))
-        _logger.debug("RESP:%s %s\n", resp,body)
+        _logger.debug("RESP:%s %s\n", resp, body)
 
     def request(self, *args, **kwargs):
         kwargs.setdefault('headers', {})
@@ -69,7 +71,7 @@ class OpenStackClient(httplib2.Http):
         resp, body = super(OpenStackClient, self).request(*args, **kwargs)
 
         self.http_log(args, kwargs, resp, body)
-        
+
         if body:
             try:
                 body = json.loads(body)

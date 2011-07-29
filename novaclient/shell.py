@@ -98,7 +98,7 @@ class OpenStackShell(object):
             help='Defaults to env[NOVA_API_KEY].')
 
         self.parser.add_argument('--projectid',
-            default=env('NOVA_PROJECT_ID'),                                                       
+            default=env('NOVA_PROJECT_ID'),
             help='Defaults to env[NOVA_PROJECT_ID].')
 
         auth_url = env('NOVA_URL')
@@ -281,7 +281,7 @@ class OpenStackShell(object):
             except IOError, e:
                 raise CommandError("Can't open '%s': %s" % (keyfile, e))
 
-        return (args.name, image, flavor, ipgroup, metadata, files, 
+        return (args.name, image, flavor, ipgroup, metadata, files,
                 reservation_id, min_count, max_count)
 
     @arg('--flavor',
@@ -461,7 +461,7 @@ class OpenStackShell(object):
             for from_key, to_key in convert:
                 if from_key in keys and to_key not in keys:
                     setattr(item, to_key, item._info[from_key])
-            
+
     def do_flavor_list(self, args):
         """Print a list of available 'flavors' (sizes of servers)."""
         flavors = self.cs.flavors.list()
@@ -481,27 +481,11 @@ class OpenStackShell(object):
         print_list(self.cs.images.list(), ['ID', 'Name', 'Status'])
 
     @arg('server', metavar='<server>', help='Name or ID of server.')
-    @arg('name', metavar='<name>', help='Name of backup or snapshot.')
-    @arg('--image-type',
-         metavar='<backup|snapshot>',
-         default='snapshot',
-         help='type of image (default: snapshot)')
-    @arg('--backup-type',
-         metavar='<daily|weekly>',
-         default=None,
-         help='type of backup')
-    @arg('--rotation',
-         default=None,
-         type=int,
-         metavar='<rotation>',
-         help="Number of backups to retain. Used for backup image_type.")
+    @arg('name', metavar='<name>', help='Name of snapshot.')
     def do_image_create(self, args):
         """Create a new image by taking a snapshot of a running server."""
         server = self._find_server(args.server)
-        image = self.cs.images.create(server, args.name,
-                                      image_type=args.image_type,
-                                      backup_type=args.backup_type,
-                                      rotation=args.rotation)
+        image = self.cs.images.create(server, args.name)
         print_dict(image._info)
 
     @arg('image', metavar='<image>', help='Name or ID of image.')
@@ -661,6 +645,16 @@ class OpenStackShell(object):
         server.resize(flavor)
 
     @arg('server', metavar='<server>', help='Name or ID of server.')
+    @arg('name', metavar='<name>', help='Name of snapshot.')
+    @arg('backup_type', metavar='<daily|weekly>', help='type of backup')
+    @arg('rotation', type=int, metavar='<rotation>',
+         help="Number of backups to retain. Used for backup image_type.")
+    def do_backup(self, args):
+        """Resize a server."""
+        server = self._find_server(args.server)
+        server.backup(args.name, args.backup_type, args.rotation)
+
+    @arg('server', metavar='<server>', help='Name or ID of server.')
     def do_migrate(self, args):
         """Migrate a server."""
         self._find_server(args.server).migrate()
@@ -766,7 +760,7 @@ class OpenStackShell(object):
     def do_zone(self, args):
         """Show or edit a child zone. No zone arg for this zone."""
         zone = self.cs.zones.get(args.zone)
- 
+
         # If we have some flags, update the zone
         zone_delta = {}
         if args.api_url:
@@ -790,7 +784,7 @@ class OpenStackShell(object):
         print_dict(zone._info)
 
     @arg('api_url', metavar='<api_url>', help="URL for the Zone's API")
-    @arg('zone_username', metavar='<zone_username>', 
+    @arg('zone_username', metavar='<zone_username>',
                           help='Authentication username.')
     @arg('password', metavar='<password>', help='Authentication password.')
     @arg('weight_offset', metavar='<weight_offset>',
@@ -799,7 +793,7 @@ class OpenStackShell(object):
                             help='Child Zone weight scale (typically 1.0).')
     def do_zone_add(self, args):
         """Add a new child zone."""
-        zone = self.cs.zones.create(args.api_url, args.zone_username, 
+        zone = self.cs.zones.create(args.api_url, args.zone_username,
                                     args.password, args.weight_offset,
                                     args.weight_scale)
         print_dict(zone._info)
@@ -820,7 +814,7 @@ class OpenStackShell(object):
         """Add new IP address to network."""
         server = self._find_server(args.server)
         server.add_fixed_ip(args.network_id)
-    
+
     @arg('server', metavar='<server>', help='Name or ID of server.')
     @arg('address', metavar='<address>', help='IP Address.')
     def do_remove_fixed_ip(self, args):

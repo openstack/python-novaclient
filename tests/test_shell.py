@@ -195,15 +195,7 @@ def test_snapshot_create():
     shell('image-create sample-server mysnapshot')
     assert_called(
         'POST', '/images',
-        {'image': {'name': 'mysnapshot', 'serverId': 1234, 'image_type': 'snapshot', 'backup_type': None, 'rotation': None}}
-    )
-
-
-def test_backup_create():
-    shell('image-create sample-server mybackup --image-type backup --backup-type daily --rotation 1')
-    assert_called(
-        'POST', '/images',
-        {'image': {'name': 'mybackup', 'serverId': 1234, 'image_type': 'backup', 'backup_type': 'daily', 'rotation': 1}}
+        {'image': {'name': 'mysnapshot', 'serverId': 1234}}
     )
 
 
@@ -295,6 +287,15 @@ def test_resize_revert():
     assert_called('POST', '/servers/1234/action', {'revertResize': None})
 
 
+def test_backup():
+    shell('backup sample-server mybackup daily 1')
+    assert_called(
+        'POST', '/servers/1234/action',
+        {'createBackup': {'name': 'mybackup', 'backup_type': 'daily',
+                          'rotation': 1}}
+    )
+
+
 @mock.patch('getpass.getpass', mock.Mock(return_value='p'))
 def test_root_password():
     shell('root-password sample-server')
@@ -326,14 +327,16 @@ def test_zone():
                   'password': 'xxx'}}
     )
 
+
 def test_zone_add():
     shell('zone-add http://zzz frank xxx 0.0 1.0')
     assert_called(
         'POST', '/zones',
-        {'zone': {'api_url': 'http://zzz', 'username': 'frank', 
+        {'zone': {'api_url': 'http://zzz', 'username': 'frank',
                   'password': 'xxx',
                   'weight_offset': '0.0', 'weight_scale': '1.0'}}
     )
+
 
 def test_zone_delete():
     shell('zone-delete 1')

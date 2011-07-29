@@ -267,6 +267,9 @@ class FakeClient(OpenStackClient):
             assert_equal(body[action].keys(), ['imageId'])
         elif action == 'resize':
             assert_equal(body[action].keys(), ['flavorId'])
+        elif action == 'createBackup':
+            assert_equal(set(body[action].keys()),
+                        set(['name', 'rotation', 'backup_type']))
         elif action == 'confirmResize':
             assert_equal(body[action], None)
             # This one method returns a different response code
@@ -342,7 +345,7 @@ class FakeClient(OpenStackClient):
 
     def post_images(self, body, **kw):
         assert_equal(body.keys(), ['image'])
-        assert_has_keys(body['image'], required=['serverId', 'name', 'image_type', 'backup_type', 'rotation'])
+        assert_has_keys(body['image'], required=['serverId', 'name'])
         return (202, self.get_images_1()[1])
 
     def delete_images_1(self, **kw):
@@ -409,10 +412,9 @@ class FakeClient(OpenStackClient):
             {'id': 2, 'api_url': 'http://foo.com', 'username': 'alice'},
         ]})
 
-
     def get_zones_detail(self, **kw):
         return (200, {'zones': [
-            {'id': 1, 'api_url': 'http://foo.com', 'username': 'bob', 
+            {'id': 1, 'api_url': 'http://foo.com', 'username': 'bob',
                                                    'password': 'qwerty'},
             {'id': 2, 'api_url': 'http://foo.com', 'username': 'alice',
                                                    'password': 'password'}

@@ -68,7 +68,7 @@ class Manager(object):
             obj_class = self.resource_class
         return [obj_class(self, res)
                 for res in body[response_key] if res]
-            
+
     def _get(self, url, response_key):
         resp, body = self.api.client.get(url)
         return self.resource_class(self, body[response_key])
