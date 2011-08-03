@@ -22,7 +22,7 @@ Server interface.
 import urllib
 
 from novaclient import base
-from novaclient.v1_0 import base as local_base
+from novaclient.v1_1 import base as local_base
 
 
 REBOOT_SOFT, REBOOT_HARD = 'SOFT', 'HARD'
