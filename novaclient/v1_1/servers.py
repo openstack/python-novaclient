@@ -109,18 +109,30 @@ class Server(base.Resource):
         """
         Shortcut to get this server's primary public IP address.
         """
-        if len(self.addresses['public']) == 0:
+        try:
+            public_addresses = self.addresses["public"]
+        except KeyError:
+            public_addresses = None
+
+        if public_addresses is None or len(public_addresses) == 0:
             return ""
-        return self.addresses['public']
+        else:
+            return public_addresses
 
     @property
     def private_ip(self):
         """
         Shortcut to get this server's primary private IP address.
         """
-        if len(self.addresses['private']) == 0:
+        try:
+            private_addresses = self.addresses["private"]
+        except KeyError:
+            private_addresses = None
+
+        if private_addresses is None or len(private_addresses) == 0:
             return ""
-        return self.addresses['private']
+        else:
+            return private_addresses
 
 
 class ServerManager(local_base.BootingManagerWithFind):

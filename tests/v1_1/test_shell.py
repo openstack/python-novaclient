@@ -28,7 +28,11 @@ class ShellTest(utils.TestCase):
         assert_called = lambda m, u, b=None: _shell.cs.assert_called(m, u, b)
         assert_called_anytime = lambda m, u, b=None: \
                                     _shell.cs.assert_called_anytime(m, u, b)
-        shell = lambda cmd: _shell.main(cmd.split())
+
+        def shell(cmd):
+            command = ['--version=1.1',]
+            command.extend(cmd.split())
+            _shell.main(command)
 
     def tearDown(self):
         global _old_env
