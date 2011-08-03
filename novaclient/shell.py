@@ -157,7 +157,8 @@ class OpenStackComputeShell(object):
             raise exceptions.CommandError("You must provide an API key, either via "
                                "--apikey or via env[NOVA_API_KEY]")
 
-        self.cs = self.get_api_class()(user, apikey, projectid, url)
+        self.cs = self.get_api_class(options.version)(user, apikey, projectid, url)
+
         try:
             self.cs.authenticate()
         except exceptions.Unauthorized:
@@ -165,8 +166,17 @@ class OpenStackComputeShell(object):
 
         args.func(self.cs, args)
 
-    def get_api_class(self):
-        return self._api_class or shell_v1_0.CLIENT_CLASS
+    def get_api_class(self, version):
+        if self._api_class is not None:
+            return self._api_class
+
+        try:
+            return {
+                "1.0": shell_v1_0.CLIENT_CLASS,
+                "1.1": shell_v1_1.CLIENT_CLASS,
+            }[version]
+        except KeyError:
+            return shell_v1_0.CLIENT_CLASS
 
     @utils.arg('command', metavar='<subcommand>', nargs='?',
                     help='Display help for <subcommand>')
