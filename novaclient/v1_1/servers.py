@@ -20,7 +20,10 @@ Server interface.
 """
 
 import urllib
-from novaclient.v1_1 import base
+
+from novaclient import base
+from novaclient.v1_0 import base as local_base
+
 
 REBOOT_SOFT, REBOOT_HARD = 'SOFT', 'HARD'
 
@@ -42,22 +45,11 @@ class Server(base.Resource):
         :param name: Update the server's name.
         :param password: Update the root password.
         """
-        self.manager.update(self, name)
-
-    def create_image(self, name, metadata=None):
-        """
-        Create an image based on this server.
-
-        :param name: The name of the image to create
-        :param metadata: The metadata to associated with the image.
-        """
-        self.manager.create_image(self, name, metadata)
+        self.manager.update(self, name=name)
 
     def change_password(self, password):
         """
-        Update the root password on this server.
-
-        :param password: The password to set.
+        Update the password for a server.
         """
         self.manager.change_password(self, password)
 
@@ -91,6 +83,15 @@ class Server(base.Resource):
         """
         self.manager.resize(self, flavor)
 
+    def create_image(self, image_name, metadata):
+        """
+        Create an image based on this server.
+
+        :param image_name: The name to assign the newly create image.
+        :param metadata: Metadata to assign to the image.
+        """
+        self.manager.create_image(self, image_name, metadata)
+
     def confirm_resize(self):
         """
         Confirm that the resize worked, thus removing the original server.
@@ -121,24 +122,8 @@ class Server(base.Resource):
             return ""
         return self.addresses['private']
 
-    @property
-    def image_id(self):
-        """
-        Shortcut to get the image identifier.
-        """
-        return self.image["id"]
 
-    @property
-    def flavor_id(self):
-        """
-        Shortcut to get the flavor identifier.
-        """
-        return self.flavor["id"]
-
-
-
-
-class ServerManager(base.BootingManagerWithFind):
+class ServerManager(local_base.BootingManagerWithFind):
     resource_class = Server
 
     def get(self, server):
@@ -161,8 +146,9 @@ class ServerManager(base.BootingManagerWithFind):
         """
         if search_opts is None:
             search_opts = {}
+
         qparams = {}
-        # only use values in query string if they are set
+
         for opt, val in search_opts.iteritems():
             if val:
                 qparams[opt] = val
@@ -190,8 +176,30 @@ class ServerManager(base.BootingManagerWithFind):
                       file-like object). A maximum of five entries is allowed,
                       and each file must be 10k or less.
         """
-        return self._boot("/servers", "server", name, image, flavor,
-                          meta=meta, files=files)
+        personality = []
+
+        for file_path, filelike in files.items():
+            try:
+                data = filelike.read()
+            except AttributeError:
+                data = str(filelike)
+
+            personality.append({
+                "path": file_path,
+                "contents": data.encode("base64"),
+            })
+
+        body = {
+            "server": {
+                "name": name,
+                "imageRef": base.getid(image),
+                "flavorRef": base.getid(flavor),
+                "metadata": meta or {},
+                "personality": personality,
+            },
+        }
+
+        return self._create("/servers", body, "server", return_raw=False)
 
     def update(self, server, name=None):
         """
@@ -211,6 +219,12 @@ class ServerManager(base.BootingManagerWithFind):
 
         self._update("/servers/%s" % base.getid(server), body)
 
+    def change_password(self, server, password):
+        """
+        Update the password for a server.
+        """
+        self._action("changePassword", server, {"adminPass": password})
+
     def delete(self, server):
         """
         Delete (i.e. shut down and delete the image) this server.
@@ -226,32 +240,6 @@ class ServerManager(base.BootingManagerWithFind):
                      or `REBOOT_HARD` for a virtual power cycle hard reboot.
         """
         self._action('reboot', server, {'type': type})
-
-    def create_image(self, server, name, metadata=None):
-        """
-        Create an image based on this server.
-
-        :param server: The :class:`Server` (or its ID) to create image from.
-        :param name: The name of the image to create
-        :param metadata: The metadata to associated with the image.
-        """
-        body = {
-            "name": name,
-            "metadata": metadata or {},
-        }
-        self._action('createImage', server, body)
-
-    def change_password(self, server, password):
-        """
-        Update the root password on a server.
-
-        :param server: The :class:`Server` (or its ID) to share onto.
-        :param password: The password to set.
-        """
-        body = {
-            "adminPass": password,
-        }
-        self._action('changePassword', server, body)
 
     def rebuild(self, server, image):
         """
@@ -291,6 +279,17 @@ class ServerManager(base.BootingManagerWithFind):
         :param server: The :class:`Server` (or its ID) to share onto.
         """
         self._action('revertResize', server)
+
+    def create_image(self, server, image_name, metadata=None):
+        """
+        Snapshot a server.
+
+        :param server: The :class:`Server` (or its ID) to share onto.
+        :param image_name: Name to give the snapshot image
+        :param meta: Metadata to give newly-created image entity
+        """
+        self._action('createImage', server,
+                     {'name': image_name, 'metadata': metadata or {}})
 
     def _action(self, action, server, info=None):
         """

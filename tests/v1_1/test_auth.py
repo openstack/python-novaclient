@@ -2,7 +2,7 @@
 import httplib2
 import mock
 
-from novaclient.v1_0 import client
+from novaclient.v1_1 import client
 from novaclient import exceptions
 from tests import utils
 
@@ -10,8 +10,8 @@ from tests import utils
 class AuthenticationTests(utils.TestCase):
 
     def test_authenticate_success(self):
-        cs = client.Client("username", "apikey", "project_id")
-        management_url = 'https://servers.api.rackspacecloud.com/v1.0/443470'
+        cs = client.Client("username", "apikey", "project_id", "auth_url")
+        management_url = 'https://servers.api.rackspacecloud.com/v1.1/443470'
         auth_response = httplib2.Response({
             'status': 204,
             'x-server-management-url': management_url,
@@ -38,7 +38,7 @@ class AuthenticationTests(utils.TestCase):
         test_auth_call()
 
     def test_authenticate_failure(self):
-        cs = client.Client("username", "apikey", "project_id")
+        cs = client.Client("username", "apikey", "project_id", "auth_url")
         auth_response = httplib2.Response({'status': 401})
         mock_request = mock.Mock(return_value=(auth_response, None))
 
@@ -49,7 +49,7 @@ class AuthenticationTests(utils.TestCase):
         test_auth_call()
 
     def test_auth_automatic(self):
-        cs = client.Client("username", "apikey", "project_id")
+        cs = client.Client("username", "apikey", "project_id", "auth_url")
         http_client = cs.client
         http_client.management_url = ''
         mock_request = mock.Mock(return_value=(None, None))
@@ -64,7 +64,7 @@ class AuthenticationTests(utils.TestCase):
         test_auth_call()
 
     def test_auth_manual(self):
-        cs = client.Client("username", "apikey", "project_id")
+        cs = client.Client("username", "apikey", "project_id", "auth_url")
 
         @mock.patch.object(cs.client, 'authenticate')
         def test_auth_call(m):

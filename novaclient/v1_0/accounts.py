@@ -1,10 +1,13 @@
-from novaclient.v1_0 import base
+
+from novaclient import base
+from novaclient.v1_0 import base as local_base
+
 
 class Account(base.Resource):
     pass
 
-class AccountManager(base.BootingManagerWithFind):
 
+class AccountManager(local_base.BootingManagerWithFind):
     resource_class = Account
 
     def create_instance_for(self, account_id, name, image, flavor,

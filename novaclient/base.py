@@ -21,6 +21,7 @@ Base utilities to build API operation managers and objects on top of.
 
 from novaclient import exceptions
 
+
 # Python 2.4 compat
 try:
     all
@@ -101,8 +102,8 @@ class ManagerWithFind(Manager):
         try:
             return rl[0]
         except IndexError:
-            raise exceptions.NotFound(404, "No %s matching %s." %
-                    (self.resource_class.__name__, kwargs))
+            msg = "No %s matching %s." % (self.resource_class.__name__, kwargs)
+            raise exceptions.NotFound(404, msg)
 
     def findall(self, **kwargs):
         """
@@ -128,13 +129,16 @@ class ManagerWithFind(Manager):
 class BootingManagerWithFind(ManagerWithFind):
     """Like a `ManagerWithFind`, but has the ability to boot servers."""
     def _boot(self, resource_url, response_key, name, image, flavor,
-              meta=None, files=None, return_raw=False):
+              ipgroup=None, meta=None, files=None, zone_blob=None,
+              reservation_id=None, return_raw=False, min_count=None,
+              max_count=None):
         """
         Create (boot) a new server.
 
         :param name: Something to name the server.
         :param image: The :class:`Image` to boot with.
         :param flavor: The :class:`Flavor` to boot onto.
+        :param ipgroup: An initial :class:`IPGroup` for this server.
         :param meta: A dict of arbitrary key/value metadata to store for this
                      server. A maximum of five entries is allowed, and both
                      keys and values must be 255 characters or less.
@@ -143,16 +147,33 @@ class BootingManagerWithFind(ManagerWithFind):
                       are the file contents (either as a string or as a
                       file-like object). A maximum of five entries is allowed,
                       and each file must be 10k or less.
+        :param zone_blob: a single (encrypted) string which is used internally
+                      by Nova for routing between Zones. Users cannot populate
+                      this field.
+        :param reservation_id: a UUID for the set of servers being requested.
         :param return_raw: If True, don't try to coearse the result into
                            a Resource object.
         """
         body = {"server": {
             "name": name,
-            "imageRef": getid(image),
-            "flavorRef": getid(flavor),
+            "imageId": getid(image),
+            "flavorId": getid(flavor),
         }}
+        if ipgroup:
+            body["server"]["sharedIpGroupId"] = getid(ipgroup)
         if meta:
             body["server"]["metadata"] = meta
+        if reservation_id:
+            body["server"]["reservation_id"] = reservation_id
+        if zone_blob:
+            body["server"]["zone_blob"] = zone_blob
+
+        if not min_count:
+            min_count = 1
+        if not max_count:
+            max_count = min_count
+        body["server"]["min_count"] = min_count
+        body["server"]["max_count"] = max_count
 
         # Files are a slight bit tricky. They're passed in a "personality"
         # list to the POST. Each item is a dict giving a file name and the

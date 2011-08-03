@@ -3,7 +3,12 @@
 Exception definitions.
 """
 
-class OpenStackException(Exception):
+
+class CommandError(Exception):
+    pass
+
+
+class ClientException(Exception):
     """
     The base exception class for all exceptions this library raises.
     """
@@ -16,7 +21,7 @@ class OpenStackException(Exception):
         return "%s (HTTP %s)" % (self.message, self.code)
 
 
-class BadRequest(OpenStackException):
+class BadRequest(ClientException):
     """
     HTTP 400 - Bad request: you sent some malformed data.
     """
@@ -24,7 +29,7 @@ class BadRequest(OpenStackException):
     message = "Bad request"
 
 
-class Unauthorized(OpenStackException):
+class Unauthorized(ClientException):
     """
     HTTP 401 - Unauthorized: bad credentials.
     """
@@ -32,7 +37,7 @@ class Unauthorized(OpenStackException):
     message = "Unauthorized"
 
 
-class Forbidden(OpenStackException):
+class Forbidden(ClientException):
     """
     HTTP 403 - Forbidden: your credentials don't give you access to this
     resource.
@@ -41,7 +46,7 @@ class Forbidden(OpenStackException):
     message = "Forbidden"
 
 
-class NotFound(OpenStackException):
+class NotFound(ClientException):
     """
     HTTP 404 - Not found
     """
@@ -49,7 +54,7 @@ class NotFound(OpenStackException):
     message = "Not found"
 
 
-class OverLimit(OpenStackException):
+class OverLimit(ClientException):
     """
     HTTP 413 - Over limit: you're over the API limits for this time period.
     """
@@ -58,7 +63,7 @@ class OverLimit(OpenStackException):
 
 
 # NotImplemented is a python keyword.
-class HTTPNotImplemented(OpenStackException):
+class HTTPNotImplemented(ClientException):
     """
     HTTP 501 - Not Implemented: the server does not support this operation.
     """
@@ -69,7 +74,7 @@ class HTTPNotImplemented(OpenStackException):
 # In Python 2.4 Exception is old-style and thus doesn't have a __subclasses__()
 # so we can do this:
 #     _code_map = dict((c.http_status, c)
-#                      for c in OpenStackException.__subclasses__())
+#                      for c in ClientException.__subclasses__())
 #
 # Instead, we have to hardcode it:
 _code_map = dict((c.http_status, c) for c in [BadRequest, Unauthorized,
@@ -78,7 +83,7 @@ _code_map = dict((c.http_status, c) for c in [BadRequest, Unauthorized,
 
 def from_response(response, body):
     """
-    Return an instance of an OpenStackException or subclass
+    Return an instance of an ClientException or subclass
     based on an httplib2 response.
 
     Usage::
@@ -87,7 +92,7 @@ def from_response(response, body):
         if resp.status != 200:
             raise exception_from_response(resp, body)
     """
-    cls = _code_map.get(response.status, OpenStackException)
+    cls = _code_map.get(response.status, ClientException)
     if body:
         message = "n/a"
         details = "n/a"

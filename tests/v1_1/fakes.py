@@ -1,86 +1,23 @@
-"""
-A fake server that "responds" to API methods with pre-canned responses.
-
-All of these responses come from the spec, so if for some reason the spec's
-wrong the tests might fail. I've indicated in comments the places where actual
-behavior differs from the spec.
-"""
-
-from __future__ import absolute_import
-
-import urlparse
-import urllib
-
 import httplib2
+import urllib
+import urlparse
 
-from novaclient.v1_1 import Client
-from novaclient.v1_1.client import HTTPClient
-
-from .utils import fail, assert_in, assert_not_in, assert_has_keys
-
-
-def assert_equal(value_one, value_two):
-    try:
-        assert value_one == value_two
-    except AssertionError:
-        print "%(value_one)s does not equal %(value_two)s" % locals()
-        raise
+from novaclient import client as base_client
+from novaclient.v1_1 import client
+from tests import fakes
 
 
-class FakeClient(Client):
-    def __init__(self, username=None, password=None, project_id=None,
-                 auth_url=None):
-        super(FakeClient, self).__init__('username', 'apikey',
-                                         'project_id', 'auth_url')
-        self.client = FakeHTTPClient()
+class FakeClient(fakes.FakeClient, client.Client):
 
-    def assert_called(self, method, url, body=None):
-        """
-        Assert than an API method was just called.
-        """
-        expected = (method, url)
-        called = self.client.callstack[-1][0:2]
-
-        assert self.client.callstack, \
-                       "Expected %s %s but no calls were made." % expected
-
-        assert expected == called, 'Expected %s %s; got %s %s' % \
-                                               (expected + called)
-
-        if body is not None:
-            assert_equal(self.client.callstack[-1][2], body)
-
-        self.client.callstack = []
-
-    def assert_called_anytime(self, method, url, body=None):
-        """
-        Assert than an API method was called anytime in the test.
-        """
-        expected = (method, url)
-
-        assert self.client.callstack, \
-                       "Expected %s %s but no calls were made." % expected
-
-        found = False
-        for entry in self.client.callstack:
-            called = entry[0:2]
-            if expected == entry[0:2]:
-                found = True
-                break
-
-        assert found, 'Expected %s; got %s' % \
-                              (expected, self.client.callstack)
-        if body is not None:
-            assert_equal(entry[2], body)
-
-        self.client.callstack = []
-
-    def authenticate(self):
-        pass
+    def __init__(self, *args, **kwargs):
+        client.Client.__init__(self, 'username', 'apikey',
+                               'project_id', 'auth_url')
+        self.client = FakeHTTPClient(**kwargs)
 
 
-class FakeHTTPClient(HTTPClient):
-    def __init__(self):
+class FakeHTTPClient(base_client.HTTPClient):
+
+    def __init__(self, **kwargs):
         self.username = 'username'
         self.apikey = 'apikey'
         self.auth_url = 'auth_url'
@@ -89,15 +26,15 @@ class FakeHTTPClient(HTTPClient):
     def _cs_request(self, url, method, **kwargs):
         # Check that certain things are called correctly
         if method in ['GET', 'DELETE']:
-            assert_not_in('body', kwargs)
+            assert 'body' not in kwargs
         elif method in ['PUT', 'POST']:
-            assert_in('body', kwargs)
+            assert 'body' in kwargs
 
         # Call the method
         munged_url = url.strip('/').replace('/', '_').replace('.', '_')
         callback = "%s_%s" % (method.lower(), munged_url)
         if not hasattr(self, callback):
-            fail('Called unknown API method: %s %s' % (method, url))
+            raise AssertionError('Called unknown API method: %s %s' % (method, url))
 
         # Note the call
         self.callstack.append((method, url, kwargs.get('body', None)))
@@ -184,25 +121,27 @@ class FakeHTTPClient(HTTPClient):
                 "name": "sample-server",
                 "image": {
                     "id": 2,
+                    "name": "sample image",
                 },
                 "flavor": {
                     "id": 1,
+                    "name": "256 MB Server",
                 },
                 "hostId": "e4d909c290d0fb1ca068ffaddf22cbd0",
                 "status": "BUILD",
                 "progress": 60,
                 "addresses": {
                     "public": [{
-                        "addr": "1.2.3.4",
                         "version": 4,
+                        "addr": "1.2.3.4",
                     },
                     {
-                        "addr": "5.6.7.8",
                         "version": 4,
+                        "addr": "5.6.7.8",
                     }],
                     "private": [{
-                        "addr": "10.11.12.13",
                         "version": 4,
+                        "addr": "10.11.12.13",
                     }],
                 },
                 "metadata": {
@@ -215,24 +154,26 @@ class FakeHTTPClient(HTTPClient):
                 "name": "sample-server2",
                 "image": {
                     "id": 2,
+                    "name": "sample image",
                 },
                 "flavor": {
                     "id": 1,
+                    "name": "256 MB Server",
                 },
                 "hostId": "9e107d9d372bb6826bd81d3542a419d6",
                 "status": "ACTIVE",
                 "addresses": {
                     "public": [{
-                        "addr": "1.2.3.5",
                         "version": 4,
+                        "addr": "4.5.6.7",
                     },
                     {
-                        "addr": "5.6.7.9",
                         "version": 4,
+                        "addr": "5.6.9.8",
                     }],
                     "private": [{
-                        "addr": "10.13.12.13",
                         "version": 4,
+                        "addr": "10.13.12.13",
                     }],
                 },
                 "metadata": {
@@ -242,13 +183,13 @@ class FakeHTTPClient(HTTPClient):
         ]})
 
     def post_servers(self, body, **kw):
-        assert_equal(body.keys(), ['server'])
-        assert_has_keys(body['server'],
+        assert body.keys() == ['server']
+        fakes.assert_has_keys(body['server'],
                         required=['name', 'imageRef', 'flavorRef'],
                         optional=['metadata', 'personality'])
         if 'personality' in body['server']:
             for pfile in body['server']['personality']:
-                assert_has_keys(pfile, required=['path', 'contents'])
+                fakes.assert_has_keys(pfile, required=['path', 'contents'])
         return (202, self.get_servers_1234()[1])
 
     def get_servers_1234(self, **kw):
@@ -260,8 +201,8 @@ class FakeHTTPClient(HTTPClient):
         return (200, r)
 
     def put_servers_1234(self, body, **kw):
-        assert_equal(body.keys(), ['server'])
-        assert_has_keys(body['server'], optional=['name', 'adminPass'])
+        assert body.keys() == ['server']
+        fakes.assert_has_keys(body['server'], optional=['name', 'adminPass'])
         return (204, None)
 
     def delete_servers_1234(self, **kw):
@@ -283,12 +224,6 @@ class FakeHTTPClient(HTTPClient):
         return (200, {'private':
                       self.get_servers_1234_ips()[1]['addresses']['private']})
 
-    def put_servers_1234_ips_public_1_2_3_4(self, body, **kw):
-        assert_equal(body.keys(), ['shareIp'])
-        assert_has_keys(body['shareIp'], required=['sharedIpGroupId',
-                                         'configureServer'])
-        return (202, None)
-
     def delete_servers_1234_ips_public_1_2_3_4(self, **kw):
         return (202, None)
 
@@ -297,27 +232,27 @@ class FakeHTTPClient(HTTPClient):
     #
 
     def post_servers_1234_action(self, body, **kw):
-        assert_equal(len(body.keys()), 1)
+        assert len(body.keys()) == 1
         action = body.keys()[0]
         if action == 'reboot':
-            assert_equal(body[action].keys(), ['type'])
-            assert_in(body[action]['type'], ['HARD', 'SOFT'])
+            assert body[action].keys() == ['type']
+            assert body[action]['type'] in ['HARD', 'SOFT']
         elif action == 'rebuild':
-            assert_equal(body[action].keys(), ['imageRef'])
+            assert body[action].keys() == ['imageRef']
         elif action == 'resize':
-            assert_equal(body[action].keys(), ['flavorRef'])
+            assert body[action].keys() == ['flavorRef']
         elif action == 'confirmResize':
-            assert_equal(body[action], None)
+            assert body[action] is None
             # This one method returns a different response code
             return (204, None)
         elif action == 'revertResize':
-            assert_equal(body[action], None)
-        elif action == 'changePassword':
-            assert_equal(body[action].keys(), ["adminPass"])
+            assert body[action] is None
         elif action == 'createImage':
-            assert_equal(body[action].keys(), ["name", "metadata"])
+            assert set(body[action].keys()) == set(['name', 'metadata'])
+        elif action == 'changePassword':
+            assert body[action].keys() == ['adminPass']
         else:
-            fail("Unexpected server action: %s" % action)
+            raise AssertionError("Unexpected server action: %s" % action)
         return (202, None)
 
     #
@@ -378,119 +313,9 @@ class FakeHTTPClient(HTTPClient):
         return (200, {'image': self.get_images_detail()[1]['images'][1]})
 
     def post_images(self, body, **kw):
-        assert_equal(body.keys(), ['image'])
-        assert_has_keys(body['image'], required=['serverId', 'name', 'image_type', 'backup_type', 'rotation'])
+        assert body.keys() == ['image']
+        fakes.assert_has_keys(body['image'], required=['serverId', 'name'])
         return (202, self.get_images_1()[1])
 
     def delete_images_1(self, **kw):
         return (204, None)
-
-    #
-    # Backup schedules
-    #
-    def get_servers_1234_backup_schedule(self, **kw):
-        return (200, {"backupSchedule": {
-            "enabled": True,
-            "weekly": "THURSDAY",
-            "daily": "H_0400_0600"
-        }})
-
-    def post_servers_1234_backup_schedule(self, body, **kw):
-        assert_equal(body.keys(), ['backupSchedule'])
-        assert_has_keys(body['backupSchedule'], required=['enabled'],
-                                                optional=['weekly', 'daily'])
-        return (204, None)
-
-    def delete_servers_1234_backup_schedule(self, **kw):
-        return (204, None)
-
-    #
-    # Shared IP groups
-    #
-    def get_shared_ip_groups(self, **kw):
-        return (200, {'sharedIpGroups': [
-            {'id': 1, 'name': 'group1'},
-            {'id': 2, 'name': 'group2'},
-        ]})
-
-    def get_shared_ip_groups_detail(self, **kw):
-        return (200, {'sharedIpGroups': [
-            {'id': 1, 'name': 'group1', 'servers': [1234]},
-            {'id': 2, 'name': 'group2', 'servers': [5678]},
-        ]})
-
-    def get_shared_ip_groups_1(self, **kw):
-        return (200, {'sharedIpGroup':
-                   self.get_shared_ip_groups_detail()[1]['sharedIpGroups'][0]})
-
-    def post_shared_ip_groups(self, body, **kw):
-        assert_equal(body.keys(), ['sharedIpGroup'])
-        assert_has_keys(body['sharedIpGroup'], required=['name'],
-                                               optional=['server'])
-        return (201, {'sharedIpGroup': {
-            'id': 10101,
-            'name': body['sharedIpGroup']['name'],
-            'servers': 'server' in body['sharedIpGroup'] and \
-                       [body['sharedIpGroup']['server']] or None
-        }})
-
-    def delete_shared_ip_groups_1(self, **kw):
-        return (204, None)
-
-    #
-    # Zones
-    #
-    def get_zones(self, **kw):
-        return (200, {'zones': [
-            {'id': 1, 'api_url': 'http://foo.com', 'username': 'bob'},
-            {'id': 2, 'api_url': 'http://foo.com', 'username': 'alice'},
-        ]})
-
-
-    def get_zones_detail(self, **kw):
-        return (200, {'zones': [
-            {'id': 1, 'api_url': 'http://foo.com', 'username': 'bob',
-                                                   'password': 'qwerty'},
-            {'id': 2, 'api_url': 'http://foo.com', 'username': 'alice',
-                                                   'password': 'password'}
-        ]})
-
-    def get_zones_1(self, **kw):
-        r = {'zone': self.get_zones_detail()[1]['zones'][0]}
-        return (200, r)
-
-    def get_zones_2(self, **kw):
-        r = {'zone': self.get_zones_detail()[1]['zones'][1]}
-        return (200, r)
-
-    def post_zones(self, body, **kw):
-        assert_equal(body.keys(), ['zone'])
-        assert_has_keys(body['zone'],
-                        required=['api_url', 'username', 'password'],
-                        optional=['weight_offset', 'weight_scale'])
-
-        return (202, self.get_zones_1()[1])
-
-    def put_zones_1(self, body, **kw):
-        assert_equal(body.keys(), ['zone'])
-        assert_has_keys(body['zone'], optional=['api_url', 'username',
-                                                'password',
-                                                'weight_offset',
-                                                'weight_scale'])
-        return (204, None)
-
-    def delete_zones_1(self, **kw):
-        return (202, None)
-
-    #
-    # Accounts
-    #
-    def post_accounts_test_account_create_instance(self, body, **kw):
-        assert_equal(body.keys(), ['server'])
-        assert_has_keys(body['server'],
-                        required=['name', 'imageRef', 'flavorRef'],
-                        optional=['metadata', 'personality'])
-        if 'personality' in body['server']:
-            for pfile in body['server']['personality']:
-                assert_has_keys(pfile, required=['path', 'contents'])
-        return (202, self.get_servers_1234()[1])

@@ -3,7 +3,7 @@
 Flavor interface.
 """
 
-from novaclient.v1_1 import base
+from novaclient import base
 
 
 class Flavor(base.Resource):
@@ -26,10 +26,10 @@ class FlavorManager(base.ManagerWithFind):
 
         :rtype: list of :class:`Flavor`.
         """
-        detail = ""
-        if detailed:
-            detail = "/detail"
-        return self._list("/flavors%s" % detail, "flavors")
+        if detailed is True:
+            return self._list("/flavors/detail", "flavors")
+        else:
+            return self._list("/flavors", "flavors")
 
     def get(self, flavor):
         """

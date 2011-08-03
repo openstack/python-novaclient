@@ -17,7 +17,8 @@
 Zone interface.
 """
 
-from novaclient.v1_0 import base
+from novaclient import base
+from novaclient.v1_0 import base as local_base
 
 
 class Weighting(base.Resource):
@@ -64,7 +65,7 @@ class Zone(base.Resource):
                             weight_offset, weight_scale)
 
 
-class ZoneManager(base.BootingManagerWithFind):
+class ZoneManager(local_base.BootingManagerWithFind):
     resource_class = Zone
 
     def info(self):

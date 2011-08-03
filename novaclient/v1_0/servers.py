@@ -20,7 +20,10 @@ Server interface.
 """
 
 import urllib
-from novaclient.v1_0 import base
+
+from novaclient import base
+from novaclient.v1_0 import base as local_base
+
 
 REBOOT_SOFT, REBOOT_HARD = 'SOFT', 'HARD'
 
@@ -154,6 +157,18 @@ class Server(base.Resource):
         """
         self.manager.resize(self, flavor)
 
+    def backup(self, image_name, backup_type, rotation):
+        """
+        Create a server backup.
+
+        :param server: The :class:`Server` (or its ID).
+        :param image_name: The name to assign the newly create image.
+        :param backup_type: 'daily' or 'weekly'
+        :param rotation: number of backups of type 'backup_type' to keep
+        :returns Newly created :class:`Image` object
+        """
+        return self.manager.backup(self, image_name, backup_type, rotation)
+
     def confirm_resize(self):
         """
         Confirm that the resize worked, thus removing the original server.
@@ -198,7 +213,7 @@ class Server(base.Resource):
         return self.addresses['private']
 
 
-class ServerManager(base.BootingManagerWithFind):
+class ServerManager(local_base.BootingManagerWithFind):
     resource_class = Server
 
     def get(self, server):
@@ -369,6 +384,31 @@ class ServerManager(base.BootingManagerWithFind):
         automatically confirmed after 24 hours.
         """
         self._action('resize', server, {'flavorId': base.getid(flavor)})
+
+    def backup(self, server, image_name, backup_type, rotation):
+        """
+        Create a server backup.
+
+        :param server: The :class:`Server` (or its ID).
+        :param image_name: The name to assign the newly create image.
+        :param backup_type: 'daily' or 'weekly'
+        :param rotation: number of backups of type 'backup_type' to keep
+        :returns Newly created :class:`Image` object
+        """
+        if not rotation:
+            raise Exception("rotation is required for backups")
+        elif not backup_type:
+            raise Exception("backup_type required for backups")
+        elif backup_type not in ("daily", "weekly"):
+            raise Exception("Invalid backup_type: must be daily or weekly")
+
+        data = {
+            "name": image_name,
+            "rotation": rotation,
+            "backup_type": backup_type,
+        }
+
+        self._action('createBackup', server, data)
 
     def pause(self, server):
         """
