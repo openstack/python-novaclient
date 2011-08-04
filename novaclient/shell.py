@@ -173,7 +173,6 @@ class OpenStackComputeShell(object):
                 "1.1": shell_v1_1.CLIENT_CLASS,
             }[version]
         except KeyError:
-            print "Bad API version provided, falling back to v1.0."
             return shell_v1_0.CLIENT_CLASS
 
     @utils.arg('command', metavar='<subcommand>', nargs='?',
