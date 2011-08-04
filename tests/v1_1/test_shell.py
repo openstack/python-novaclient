@@ -154,7 +154,7 @@ class ShellTest(utils.TestCase):
         self.assert_called('GET', '/images/detail')
 
     def test_create_image(self):
-        self.run_command('create-image sample-server mysnapshot')
+        self.run_command('image-create sample-server mysnapshot')
         self.assert_called(
             'POST', '/servers/1234/action',
             {'createImage': {'name': 'mysnapshot', 'metadata': {}}}

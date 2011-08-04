@@ -42,12 +42,12 @@ def _translate_flavor_keys(collection):
 @utils.arg('--flavor',
      default=None,
      metavar='<flavor>',
-     help="Flavor ID (see 'novaclient flavors'). "\
+     help="Flavor ID (see 'nova flavors'). "\
           "Defaults to 256MB RAM instance.")
 @utils.arg('--image',
      default=None,
      metavar='<image>',
-     help="Image ID (see 'novaclient images'). "\
+     help="Image ID (see 'nova images'). "\
           "Defaults to Ubuntu 10.04 LTS.")
 @utils.arg('--meta',
      metavar="<key=value>",
@@ -296,7 +296,7 @@ def do_root_password(cs, args):
 
 @utils.arg('server', metavar='<server>', help='Name or ID of server.')
 @utils.arg('name', metavar='<name>', help='Name of snapshot.')
-def do_create_image(cs, args):
+def do_image_create(cs, args):
     """Create a new image by taking a snapshot of a running server."""
     server = _find_server(cs, args.server)
     cs.servers.create_image(server, args.name)
