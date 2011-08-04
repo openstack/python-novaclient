@@ -12,11 +12,12 @@ import novaclient.client
 def assert_has_keys(dict, required=[], optional=[]):
     keys = dict.keys()
     for k in required:
-        assert k in keys
-    allowed_keys = set(required) | set(optional)
-    extra_keys = set(keys).difference(set(required + optional))
-    if extra_keys:
-        raise AssertionError("found unexpected keys: %s" % list(extra_keys))
+        try:
+            assert k in keys
+        except AssertionError:
+            allowed_keys = set(required) | set(optional)
+            extra_keys = set(keys).difference(set(required + optional))
+            raise AssertionError("found unexpected keys: %s" % list(extra_keys))
 
 
 class FakeClient(object):
@@ -58,7 +59,13 @@ class FakeClient(object):
         assert found, 'Expected %s %s; got %s' % \
                               (expected, self.client.callstack)
         if body is not None:
-            assert entry[2] == body
+            try:
+                assert entry[2] == body
+            except AssertionError:
+                print entry[2]
+                print "!="
+                print body
+                raise
 
         self.client.callstack = []
 

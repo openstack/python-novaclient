@@ -47,6 +47,72 @@ class Server(base.Resource):
         """
         self.manager.update(self, name=name)
 
+    def add_fixed_ip(self, network_id):
+        """
+        Add an IP address on a network.
+
+        :param network_id: The ID of the network the IP should be on.
+        """
+        self.manager.add_fixed_ip(self, network_id)
+
+    def pause(self):
+        """
+        Pause -- Pause the running server.
+        """
+        self.manager.pause(self)
+
+    def unpause(self):
+        """
+        Unpause -- Unpause the paused server.
+        """
+        self.manager.unpause(self)
+
+    def suspend(self):
+        """
+        Suspend -- Suspend the running server.
+        """
+        self.manager.suspend(self)
+
+    def resume(self):
+        """
+        Resume -- Resume the suspended server.
+        """
+        self.manager.resume(self)
+
+    def rescue(self):
+        """
+        Rescue -- Rescue the problematic server.
+        """
+        self.manager.rescue(self)
+
+    def unrescue(self):
+        """
+        Unrescue -- Unrescue the rescued server.
+        """
+        self.manager.unrescue(self)
+
+    def diagnostics(self):
+        """Diagnostics -- Retrieve server diagnostics."""
+        self.manager.diagnostics(self)
+
+    def actions(self):
+        """Actions -- Retrieve server actions."""
+        self.manager.actions(self)
+
+    def migrate(self):
+        """
+        Migrate a server to a new host in the same zone.
+        """
+        self.manager.migrate(self)
+
+    def remove_fixed_ip(self, address):
+        """
+        Remove an IP address.
+
+        :param address: The IP address to remove.
+        """
+        self.manager.remove_fixed_ip(self, address)
+
     def change_password(self, password):
         """
         Update the password for a server.
@@ -113,7 +179,7 @@ class Server(base.Resource):
         try:
             for network_label, address_list in self.addresses.items():
                 networks[network_label] = [a['addr'] for a in address_list]
-            return networks 
+            return networks
         except Exception:
             return {}
 
@@ -155,7 +221,78 @@ class ServerManager(local_base.BootingManagerWithFind):
             detail = "/detail"
         return self._list("/servers%s%s" % (detail, query_string), "servers")
 
-    def create(self, name, image, flavor, meta=None, files=None):
+    def add_fixed_ip(self, server, network_id):
+        """
+        Add an IP address on a network.
+
+        :param server: The :class:`Server` (or its ID) to add an IP to.
+        :param network_id: The ID of the network the IP should be on.
+        """
+        self._action('addFixedIp', server, {'networkId': network_id})
+
+    def remove_fixed_ip(self, server, address):
+        """
+        Remove an IP address.
+
+        :param server: The :class:`Server` (or its ID) to add an IP to.
+        :param address: The IP address to remove.
+        """
+        self._action('removeFixedIp', server, {'address': address})
+
+    def pause(self, server):
+        """
+        Pause the server.
+        """
+        self.api.client.post('/servers/%s/pause' % base.getid(server), body={})
+
+    def unpause(self, server):
+        """
+        Unpause the server.
+        """
+        self.api.client.post('/servers/%s/unpause' % base.getid(server),
+                             body={})
+
+    def suspend(self, server):
+        """
+        Suspend the server.
+        """
+        self.api.client.post('/servers/%s/suspend' % base.getid(server),
+                             body={})
+
+    def resume(self, server):
+        """
+        Resume the server.
+        """
+        self.api.client.post('/servers/%s/resume' % base.getid(server),
+                             body={})
+
+    def rescue(self, server):
+        """
+        Rescue the server.
+        """
+        self.api.client.post('/servers/%s/rescue' % base.getid(server),
+                             body={})
+
+    def unrescue(self, server):
+        """
+        Unrescue the server.
+        """
+        self.api.client.post('/servers/%s/unrescue' % base.getid(server),
+                             body={})
+
+    def diagnostics(self, server):
+        """Retrieve server diagnostics."""
+        return self.api.client.get("/servers/%s/diagnostics" %
+                                   base.getid(server))
+
+    def actions(self, server):
+        """Retrieve server actions."""
+        return self._list("/servers/%s/actions" % base.getid(server),
+                          "actions")
+
+    def create(self, name, image, flavor, meta=None, files=None,
+               zone_blob=None, reservation_id=None, min_count=None,
+               max_count=None):
         """
         Create (boot) a new server.
 
@@ -170,31 +307,21 @@ class ServerManager(local_base.BootingManagerWithFind):
                       are the file contents (either as a string or as a
                       file-like object). A maximum of five entries is allowed,
                       and each file must be 10k or less.
+        :param zone_blob: a single (encrypted) string which is used internally
+                      by Nova for routing between Zones. Users cannot populate
+                      this field.
+        :param reservation_id: a UUID for the set of servers being requested.
         """
-        personality = []
-
-        for file_path, filelike in files.items():
-            try:
-                data = filelike.read()
-            except AttributeError:
-                data = str(filelike)
-
-            personality.append({
-                "path": file_path,
-                "contents": data.encode("base64"),
-            })
-
-        body = {
-            "server": {
-                "name": name,
-                "imageRef": base.getid(image),
-                "flavorRef": base.getid(flavor),
-                "metadata": meta or {},
-                "personality": personality,
-            },
-        }
-
-        return self._create("/servers", body, "server", return_raw=False)
+        if not min_count:
+            min_count = 1
+        if not max_count:
+            max_count = min_count
+        if min_count > max_count:
+            min_count = max_count
+        return self._boot("/servers", "server", name, image, flavor,
+                          meta=meta, files=files,
+                          zone_blob=zone_blob, reservation_id=reservation_id,
+                          min_count=min_count, max_count=max_count)
 
     def update(self, server, name=None):
         """
@@ -244,6 +371,14 @@ class ServerManager(local_base.BootingManagerWithFind):
         :param image: the :class:`Image` (or its ID) to re-image with.
         """
         self._action('rebuild', server, {'imageRef': base.getid(image)})
+
+    def migrate(self, server):
+        """
+        Migrate a server to a new host in the same zone.
+
+        :param server: The :class:`Server` (or its ID).
+        """
+        self._action('migrate', server)
 
     def resize(self, server, flavor):
         """

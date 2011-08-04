@@ -44,8 +44,8 @@ class ShellTest(utils.TestCase):
                 'flavorRef': 1,
                 'name': 'some-server',
                 'imageRef': '1',
-                'personality': [],
-                'metadata': {},
+                'min_count': 1,
+                'max_count': 1,
             }}
         )
 
@@ -57,7 +57,8 @@ class ShellTest(utils.TestCase):
                 'name': 'some-server',
                 'imageRef': '1',
                 'metadata': {'foo': 'bar', 'spam': 'eggs'},
-                'personality': [],
+                'min_count': 1,
+                'max_count': 1,
             }}
         )
 
@@ -74,7 +75,8 @@ class ShellTest(utils.TestCase):
                 'flavorRef': 1,
                 'name': 'some-server',
                 'imageRef': '1',
-                'metadata': {},
+                'min_count': 1,
+                'max_count': 1,
                 'personality': [
                    {'path': '/tmp/bar', 'contents': expected_file_data},
                    {'path': '/tmp/foo', 'contents': expected_file_data}
@@ -103,7 +105,8 @@ class ShellTest(utils.TestCase):
                     'flavorRef': 1,
                     'name': 'some-server',
                     'imageRef': '1',
-                    'metadata': {},
+                    'min_count': 1,
+                    'max_count': 1,
                     'personality': [{
                         'path': '/root/.ssh/authorized_keys2',
                         'contents': ('SSHKEY').encode('base64')},
@@ -131,12 +134,14 @@ class ShellTest(utils.TestCase):
             'POST', '/servers',
             {'server': {
                 'flavorRef': 1,
-                 'name': 'some-server', 'imageRef': '1',
-                 'metadata': {},
-                 'personality': [
-                     {'path': '/root/.ssh/authorized_keys2',
-                      'contents':expected_file_data},
-                  ]}
+                'name': 'some-server',
+                'imageRef': '1',
+                'min_count': 1,
+                'max_count': 1,
+                'personality': [
+                    {'path': '/root/.ssh/authorized_keys2',
+                     'contents':expected_file_data},
+                 ]}
             }
         )
 

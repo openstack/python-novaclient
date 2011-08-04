@@ -31,68 +31,16 @@ CLIENT_CLASS = client.Client
 AUTO_KEY = object()
 
 
-def _translate_flavor_keys(collection):
-    convert = [('ram', 'memory_mb'), ('disk', 'local_gb')]
-    for item in collection:
-        keys = item.__dict__.keys()
-        for from_key, to_key in convert:
-            if from_key in keys and to_key not in keys:
-                setattr(item, to_key, item._info[from_key])
-
-@utils.arg('--flavor',
-     default=None,
-     metavar='<flavor>',
-     help="Flavor ID (see 'nova flavors'). "\
-          "Defaults to 256MB RAM instance.")
-@utils.arg('--image',
-     default=None,
-     metavar='<image>',
-     help="Image ID (see 'nova images'). "\
-          "Defaults to Ubuntu 10.04 LTS.")
-@utils.arg('--meta',
-     metavar="<key=value>",
-     action='append',
-     default=[],
-     help="Record arbitrary key/value metadata. "\
-          "May be give multiple times.")
-@utils.arg('--file',
-     metavar="<dst-path=src-path>",
-     action='append',
-     dest='files',
-     default=[],
-     help="Store arbitrary files from <src-path> locally to <dst-path> "\
-          "on the new server. You may store up to 5 files.")
-@utils.arg('--key',
-     metavar='<path>',
-     nargs='?',
-     const=AUTO_KEY,
-     help="Key the server with an SSH keypair. "\
-          "Looks in ~/.ssh for a key, "\
-          "or takes an explicit <path> to one.")
-@utils.arg('name', metavar='<name>', help='Name for the new server')
-def do_boot(cs, args):
+def _boot(cs, args, reservation_id=None, min_count=None, max_count=None):
     """Boot a new server."""
-    name, image, flavor, metadata, files = _boot(cs, args)
-    server = cs.servers.create(args.name, image, flavor,
-                               meta=metadata, files=files)
-    info = server._info
-
-    flavor = info.get('flavor', {})
-    flavor_id = flavor.get('id', '')
-    info['flavor'] = _find_flavor(cs, flavor_id).name
-
-    image = info.get('image', {})
-    image_id = image.get('id', '')
-    info['image'] = _find_image(cs, image_id).name
-
-    info.pop('links', None)
-    info.pop('addresses', None)
-
-    utils.print_dict(info)
-
-
-def _boot(cs, args):
-    """Boot a new server."""
+    if min_count is None:
+        min_count = 1
+    if max_count is None:
+        max_count = min_count
+    if min_count > max_count:
+        raise exceptions.CommandError("min_instances should be <= max_instances")
+    if not min_count or not max_count:
+        raise exceptions.CommandError("min_instances nor max_instances should be 0")
 
     flavor = args.flavor or cs.flavors.find(ram=256)
     image = args.image or cs.images.find(name="Ubuntu 10.04 LTS "\
@@ -129,7 +77,129 @@ def _boot(cs, args):
         except IOError, e:
             raise exceptions.CommandError("Can't open '%s': %s" % (keyfile, e))
 
-    return (args.name, image, flavor, metadata, files)
+    return (args.name, image, flavor, metadata, files,
+            reservation_id, min_count, max_count)
+
+@utils.arg('--flavor',
+     default=None,
+     metavar='<flavor>',
+     help="Flavor ID (see 'nova flavors'). "\
+          "Defaults to 256MB RAM instance.")
+@utils.arg('--image',
+     default=None,
+     metavar='<image>',
+     help="Image ID (see 'nova images'). "\
+          "Defaults to Ubuntu 10.04 LTS.")
+@utils.arg('--meta',
+     metavar="<key=value>",
+     action='append',
+     default=[],
+     help="Record arbitrary key/value metadata. "\
+          "May be give multiple times.")
+@utils.arg('--file',
+     metavar="<dst-path=src-path>",
+     action='append',
+     dest='files',
+     default=[],
+     help="Store arbitrary files from <src-path> locally to <dst-path> "\
+          "on the new server. You may store up to 5 files.")
+@utils.arg('--key',
+     metavar='<path>',
+     nargs='?',
+     const=AUTO_KEY,
+     help="Key the server with an SSH keypair. "\
+          "Looks in ~/.ssh for a key, "\
+          "or takes an explicit <path> to one.")
+@utils.arg('name', metavar='<name>', help='Name for the new server')
+def do_boot(cs, args):
+    """Boot a new server."""
+    name, image, flavor, metadata, files, reservation_id, \
+                min_count, max_count = _boot(cs, args)
+
+    server = cs.servers.create(args.name, image, flavor,
+                                    meta=metadata,
+                                    files=files,
+                                    min_count=min_count,
+                                    max_count=max_count)
+    utils.print_dict(server._info)
+
+
+@utils.arg('--flavor',
+     default=None,
+     metavar='<flavor>',
+     help="Flavor ID (see 'nova flavors'). "\
+          "Defaults to 256MB RAM instance.")
+@utils.arg('--image',
+     default=None,
+     metavar='<image>',
+     help="Image ID (see 'nova images'). "\
+          "Defaults to Ubuntu 10.04 LTS.")
+@utils.arg('--meta',
+     metavar="<key=value>",
+     action='append',
+     default=[],
+     help="Record arbitrary key/value metadata. "\
+          "May be give multiple times.")
+@utils.arg('--file',
+     metavar="<dst-path=src-path>",
+     action='append',
+     dest='files',
+     default=[],
+     help="Store arbitrary files from <src-path> locally to <dst-path> "\
+          "on the new server. You may store up to 5 files.")
+@utils.arg('--key',
+     metavar='<path>',
+     nargs='?',
+     const=AUTO_KEY,
+     help="Key the server with an SSH keypair. "\
+          "Looks in ~/.ssh for a key, "\
+          "or takes an explicit <path> to one.")
+@utils.arg('--reservation_id',
+     default=None,
+     metavar='<reservation_id>',
+     help="Reservation ID (a UUID). "\
+          "If unspecified will be generated by the server.")
+@utils.arg('--min_instances',
+     default=None,
+     type=int,
+     metavar='<number>',
+     help="The minimum number of instances to build. "\
+             "Defaults to 1.")
+@utils.arg('--max_instances',
+     default=None,
+     type=int,
+     metavar='<number>',
+     help="The maximum number of instances to build. "\
+             "Defaults to 'min_instances' setting.")
+@utils.arg('name', metavar='<name>', help='Name for the new server')
+def do_zone_boot(cs, args):
+    """Boot a new server, potentially across Zones."""
+    reservation_id = args.reservation_id
+    min_count = args.min_instances
+    max_count = args.max_instances
+    name, image, flavor, metadata, \
+            files, reservation_id, min_count, max_count = \
+                             _boot(cs, args,
+                                        reservation_id=reservation_id,
+                                        min_count=min_count,
+                                        max_count=max_count)
+
+    reservation_id = cs.zones.boot(args.name, image, flavor,
+                                        meta=metadata,
+                                        files=files,
+                                        reservation_id=reservation_id,
+                                        min_count=min_count,
+                                        max_count=max_count)
+    print "Reservation ID=", reservation_id
+
+
+def _translate_flavor_keys(collection):
+    convert = [('ram', 'memory_mb'), ('disk', 'local_gb')]
+    for item in collection:
+        keys = item.__dict__.keys()
+        for from_key, to_key in convert:
+            if from_key in keys and to_key not in keys:
+                setattr(item, to_key, item._info[from_key])
 
 
 def do_flavor_list(cs, args):
@@ -283,6 +353,55 @@ def do_resize_revert(cs, args):
     _find_server(cs, args.server).revert_resize()
 
 @utils.arg('server', metavar='<server>', help='Name or ID of server.')
+def do_migrate(cs, args):
+    """Migrate a server."""
+    _find_server(cs, args.server).migrate()
+
+@utils.arg('server', metavar='<server>', help='Name or ID of server.')
+def do_pause(cs, args):
+    """Pause a server."""
+    _find_server(cs, args.server).pause()
+
+@utils.arg('server', metavar='<server>', help='Name or ID of server.')
+def do_unpause(cs, args):
+    """Unpause a server."""
+    _find_server(cs, args.server).unpause()
+
+@utils.arg('server', metavar='<server>', help='Name or ID of server.')
+def do_suspend(cs, args):
+    """Suspend a server."""
+    _find_server(cs, args.server).suspend()
+
+@utils.arg('server', metavar='<server>', help='Name or ID of server.')
+def do_resume(cs, args):
+    """Resume a server."""
+    _find_server(cs, args.server).resume()
+
+@utils.arg('server', metavar='<server>', help='Name or ID of server.')
+def do_rescue(cs, args):
+    """Rescue a server."""
+    _find_server(cs, args.server).rescue()
+
+@utils.arg('server', metavar='<server>', help='Name or ID of server.')
+def do_unrescue(cs, args):
+    """Unrescue a server."""
+    _find_server(cs, args.server).unrescue()
+
+@utils.arg('server', metavar='<server>', help='Name or ID of server.')
+def do_diagnostics(cs, args):
+    """Retrieve server diagnostics."""
+    utils.print_dict(cs.servers.diagnostics(args.server)[1])
+
+@utils.arg('server', metavar='<server>', help='Name or ID of server.')
+def do_actions(cs, args):
+    """Retrieve server actions."""
+    utils.print_list(
+        cs.servers.actions(args.server),
+        ["Created_At", "Action", "Error"])
+
+
+
+@utils.arg('server', metavar='<server>', help='Name or ID of server.')
 def do_root_password(cs, args):
     """
     Change the root password for a server.
@@ -360,3 +479,77 @@ def _find_resource(manager, name_or_id):
         raise exceptions.CommandError("No %s with a name or ID of '%s' exists." %
                      (manager.resource_class.__name__.lower(), name_or_id))
 
+# --zone_username is required since --username is already used.
+@utils.arg('zone', metavar='<zone_id>', help='ID of the zone', default=None)
+@utils.arg('--api_url', dest='api_url', default=None, help='New URL.')
+@utils.arg('--zone_username', dest='zone_username', default=None,
+                        help='New zone username.')
+@utils.arg('--password', dest='password', default=None, help='New password.')
+@utils.arg('--weight_offset', dest='weight_offset', default=None,
+                        help='Child Zone weight offset.')
+@utils.arg('--weight_scale', dest='weight_scale', default=None,
+                        help='Child Zone weight scale.')
+def do_zone(cs, args):
+    """Show or edit a child zone. No zone arg for this zone."""
+    zone = cs.zones.get(args.zone)
+
+    # If we have some flags, update the zone
+    zone_delta = {}
+    if args.api_url:
+        zone_delta['api_url'] = args.api_url
+    if args.zone_username:
+        zone_delta['username'] = args.zone_username
+    if args.password:
+        zone_delta['password'] = args.password
+    if args.weight_offset:
+        zone_delta['weight_offset'] = args.weight_offset
+    if args.weight_scale:
+        zone_delta['weight_scale'] = args.weight_scale
+    if zone_delta:
+        zone.update(**zone_delta)
+    else:
+        utils.print_dict(zone._info)
+
+def do_zone_info(cs, args):
+    """Get this zones name and capabilities."""
+    zone = cs.zones.info()
+    utils.print_dict(zone._info)
+
+@utils.arg('api_url', metavar='<api_url>', help="URL for the Zone's API")
+@utils.arg('zone_username', metavar='<zone_username>',
+                      help='Authentication username.')
+@utils.arg('password', metavar='<password>', help='Authentication password.')
+@utils.arg('weight_offset', metavar='<weight_offset>',
+                        help='Child Zone weight offset (typically 0.0).')
+@utils.arg('weight_scale', metavar='<weight_scale>',
+                        help='Child Zone weight scale (typically 1.0).')
+def do_zone_add(cs, args):
+    """Add a new child zone."""
+    zone = cs.zones.create(args.api_url, args.zone_username,
+                                args.password, args.weight_offset,
+                                args.weight_scale)
+    utils.print_dict(zone._info)
+
+@utils.arg('zone', metavar='<zone>', help='Name or ID of the zone')
+def do_zone_delete(cs, args):
+    """Delete a zone."""
+    cs.zones.delete(args.zone)
+
+def do_zone_list(cs, args):
+    """List the children of a zone."""
+    utils.print_list(cs.zones.list(), ['ID', 'Name', 'Is Active', \
+                        'API URL', 'Weight Offset', 'Weight Scale'])
+
+@utils.arg('server', metavar='<server>', help='Name or ID of server.')
+@utils.arg('network_id', metavar='<network_id>', help='Network ID.')
+def do_add_fixed_ip(cs, args):
+    """Add new IP address to network."""
+    server = _find_server(cs, args.server)
+    server.add_fixed_ip(args.network_id)
+
+@utils.arg('server', metavar='<server>', help='Name or ID of server.')
+@utils.arg('address', metavar='<address>', help='IP Address.')
+def do_remove_fixed_ip(cs, args):
+    """Remove an IP address from a server."""
+    server = _find_server(cs, args.server)
+    server.remove_fixed_ip(args.address)

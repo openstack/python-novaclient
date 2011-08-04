@@ -247,6 +247,12 @@ class FakeHTTPClient(base_client.HTTPClient):
             return (204, None)
         elif action == 'revertResize':
             assert body[action] is None
+        elif action == 'migrate':
+            assert body[action] is None
+        elif action == 'addFixedIp':
+            assert body[action].keys() == ['networkId']
+        elif action == 'removeFixedIp':
+            assert body[action].keys() == ['address']
         elif action == 'createImage':
             assert set(body[action].keys()) == set(['name', 'metadata'])
         elif action == 'changePassword':
@@ -319,3 +325,49 @@ class FakeHTTPClient(base_client.HTTPClient):
 
     def delete_images_1(self, **kw):
         return (204, None)
+
+    #
+    # Zones
+    #
+    def get_zones(self, **kw):
+        return (200, {'zones': [
+            {'id': 1, 'api_url': 'http://foo.com', 'username': 'bob'},
+            {'id': 2, 'api_url': 'http://foo.com', 'username': 'alice'},
+        ]})
+
+    def get_zones_detail(self, **kw):
+        return (200, {'zones': [
+            {'id': 1, 'api_url': 'http://foo.com', 'username': 'bob',
+                                                   'password': 'qwerty'},
+            {'id': 2, 'api_url': 'http://foo.com', 'username': 'alice',
+                                                   'password': 'password'}
+        ]})
+
+    def get_zones_1(self, **kw):
+        r = {'zone': self.get_zones_detail()[1]['zones'][0]}
+        return (200, r)
+
+    def get_zones_2(self, **kw):
+        r = {'zone': self.get_zones_detail()[1]['zones'][1]}
+        return (200, r)
+
+    def post_zones(self, body, **kw):
+        assert body.keys() == ['zone']
+        fakes.assert_has_keys(body['zone'],
+                        required=['api_url', 'username', 'password'],
+                        optional=['weight_offset', 'weight_scale'])
+
+        return (202, self.get_zones_1()[1])
+
+    def put_zones_1(self, body, **kw):
+        assert body.keys() == ['zone']
+        fakes.assert_has_keys(body['zone'], optional=['api_url', 'username',
+                                                'password',
+                                                'weight_offset',
+                                                'weight_scale'])
+        return (204, None)
+
+    def delete_zones_1(self, **kw):
+        return (202, None)
+
+
