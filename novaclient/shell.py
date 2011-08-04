@@ -75,8 +75,8 @@ class OpenStackComputeShell(object):
             help='Defaults to env[NOVA_URL].')
 
         parser.add_argument('--version',
-            default='1.0',
-            help='Accepts 1.0 or 1.1, defaults to 1.0')
+            default=env('NOVA_VERSION'),
+            help='Accepts 1.0 or 1.1, defaults to env[NOVA_VERSION].')
 
         return parser
 

@@ -16,7 +16,8 @@ class ShellTest(utils.TestCase):
         fake_env = {
             'NOVA_USERNAME': 'username',
             'NOVA_API_KEY': 'password',
-            'NOVA_PROJECT_ID': 'project_id'
+            'NOVA_PROJECT_ID': 'project_id',
+            'NOVA_VERSION': '1.0',
         }
         _old_env, os.environ = os.environ, fake_env.copy()
 

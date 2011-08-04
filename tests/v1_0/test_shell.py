@@ -16,7 +16,8 @@ class ShellTest(utils.TestCase):
         os.environ = {
             'NOVA_USERNAME': 'username',
             'NOVA_API_KEY': 'password',
-            'NOVA_PROJECT_ID': 'project_id'
+            'NOVA_PROJECT_ID': 'project_id',
+            'NOVA_VERSION': '1.0',
         }
 
         self.shell = OpenStackComputeShell()
@@ -26,10 +27,7 @@ class ShellTest(utils.TestCase):
         os.environ = self.old_environment
 
     def run_command(self, cmd):
-        command = ['--version=1.0']
-        command.extend(cmd.split())
-        print command
-        self.shell.main(command)
+        self.shell.main(cmd.split())
 
     def assert_called(self, method, url, body=None):
         return self.shell.cs.assert_called(method, url, body)
