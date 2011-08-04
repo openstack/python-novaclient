@@ -86,10 +86,13 @@ class OpenStackComputeShell(object):
         self.subcommands = {}
         subparsers = parser.add_subparsers(metavar='<subcommand>')
 
-        actions_module = {
-            '1.0': shell_v1_0,
-            '1.1': shell_v1_1,
-        }[version]
+        try:
+            actions_module = {
+                '1.0': shell_v1_0,
+                '1.1': shell_v1_1,
+            }[version]
+        except KeyError:
+            actions_module = shell_v1_0
 
         self._find_actions(subparsers, actions_module)
         self._find_actions(subparsers, self)
