@@ -105,34 +105,17 @@ class Server(base.Resource):
         self.manager.revert_resize(self)
 
     @property
-    def public_ip(self):
+    def networks(self):
         """
-        Shortcut to get this server's primary public IP address.
+        Generate a simplified list of addresses
         """
+        networks = {}
         try:
-            public_addresses = self.addresses["public"]
-        except KeyError:
-            public_addresses = None
-
-        if public_addresses is None or len(public_addresses) == 0:
-            return ""
-        else:
-            return public_addresses
-
-    @property
-    def private_ip(self):
-        """
-        Shortcut to get this server's primary private IP address.
-        """
-        try:
-            private_addresses = self.addresses["private"]
-        except KeyError:
-            private_addresses = None
-
-        if private_addresses is None or len(private_addresses) == 0:
-            return ""
-        else:
-            return private_addresses
+            for network_label, address_list in self.addresses.items():
+                networks[network_label] = [a['addr'] for a in address_list]
+            return networks 
+        except Exception:
+            return {}
 
 
 class ServerManager(local_base.BootingManagerWithFind):

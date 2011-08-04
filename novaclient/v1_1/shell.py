@@ -75,7 +75,20 @@ def do_boot(cs, args):
     name, image, flavor, metadata, files = _boot(cs, args)
     server = cs.servers.create(args.name, image, flavor,
                                meta=metadata, files=files)
-    utils.print_dict(server._info)
+    info = server._info
+
+    flavor = info.get('flavor', {})
+    flavor_id = flavor.get('id', '')
+    info['flavor'] = _find_flavor(cs, flavor_id).name
+
+    image = info.get('image', {})
+    image_id = image.get('id', '')
+    info['image'] = _find_image(cs, image_id).name
+
+    info.pop('links', None) 
+    info.pop('addresses', None)
+	
+    utils.print_dict(info)
 
 
 def _boot(cs, args):
@@ -203,12 +216,28 @@ def do_list(cs, args):
             'name': args.name,
             'server_name': args.server_name,
             'display_name': args.display_name}
+
     if recurse_zones:
-        to_print = ['UUID', 'Name', 'Status', 'Public IP', 'Private IP']
+        id_col = 'UUID'
     else:
-        to_print = ['ID', 'Name', 'Status', 'Public IP', 'Private IP']
-    utils.print_list(cs.servers.list(search_opts=search_opts),
-            to_print)
+        id_col = 'ID'
+
+    columns = [id_col, 'Name', 'Status', 'Networks']
+    formatters = {'Networks': _format_servers_list_networks}
+    utils.print_list(cs.servers.list(search_opts=search_opts), columns, formatters)
+
+
+def _format_servers_list_networks(server):
+    output = []
+    for (network, addresses) in server.networks.items():
+        if len(addresses) == 0:
+            continue
+        addresses_csv = ', '.join(addresses)
+        group = "%s=%s" % (network, addresses_csv)
+        output.append(group)
+
+    return '; '.join(output)
+
 
 @utils.arg('--hard',
     dest='reboot_type',
@@ -277,11 +306,11 @@ def do_show(cs, args):
     """Show details about the given server."""
     s = _find_server(cs, args.server)
 
+    networks = s.networks
+
     info = s._info.copy()
-    addresses = info.pop('addresses', [])
-    for addrtype in addresses:
-        ips = map(lambda x: x['addr'], addresses[addrtype])
-        info['%s ip' % addrtype] = ', '.join(ips)
+    for network_label, address_list in networks.items():
+        info['%s network' % network_label] = ', '.join(address_list)
 
     flavor = info.get('flavor', {})
     flavor_id = flavor.get('id', '')
@@ -290,6 +319,9 @@ def do_show(cs, args):
     image = info.get('image', {})
     image_id = image.get('id', '')
     info['image'] = _find_image(cs, image_id).name
+
+    info.pop('links', None) 
+    info.pop('addresses', None)
 
     utils.print_dict(info)
 

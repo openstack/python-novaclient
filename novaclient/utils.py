@@ -39,5 +39,3 @@ def print_dict(d):
     pt.aligns = ['l', 'l']
     [pt.add_row(list(r)) for r in d.iteritems()]
     pt.printt(sortby='Property')
-
-
