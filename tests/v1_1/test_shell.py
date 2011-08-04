@@ -12,35 +12,35 @@ class ShellTest(utils.TestCase):
 
     # Patch os.environ to avoid required auth info.
     def setUp(self):
-        global _old_env
-        fake_env = {
+        """Run before each test."""
+        self.old_environment = os.environ.copy()
+        os.environ = {
             'NOVA_USERNAME': 'username',
             'NOVA_API_KEY': 'password',
-            'NOVA_PROJECT_ID': 'project_id'
+            'NOVA_PROJECT_ID': 'project_id',
         }
-        _old_env, os.environ = os.environ, fake_env.copy()
 
-        # Make a fake shell object, a helping wrapper to call it, and a quick way
-        # of asserting that certain API calls were made.
-        global shell, _shell, assert_called, assert_called_anytime
-        _shell = OpenStackComputeShell()
-        _shell._api_class = fakes.FakeClient
-        assert_called = lambda m, u, b=None: _shell.cs.assert_called(m, u, b)
-        assert_called_anytime = lambda m, u, b=None: \
-                                    _shell.cs.assert_called_anytime(m, u, b)
-
-        def shell(cmd):
-            command = ['--version=1.1',]
-            command.extend(cmd.split())
-            _shell.main(command)
+        self.shell = OpenStackComputeShell()
+        self.shell.get_api_class = lambda *_: fakes.FakeClient
 
     def tearDown(self):
-        global _old_env
-        os.environ = _old_env
+        os.environ = self.old_environment
+
+    def run_command(self, cmd):
+        command = ['--version=1.1']
+        command.extend(cmd.split())
+        print command
+        self.shell.main(command)
+
+    def assert_called(self, method, url, body=None):
+        return self.shell.cs.assert_called(method, url, body)
+
+    def assert_called_anytime(self, method, url, body=None):
+        return self.shell.cs.assert_called_anytime(method, url, body)
 
     def test_boot(self):
-        shell('boot --image 1 some-server')
-        assert_called(
+        self.run_command('boot --image 1 some-server')
+        self.assert_called(
             'POST', '/servers',
             {'server': {
                 'flavorRef': 1,
@@ -51,8 +51,8 @@ class ShellTest(utils.TestCase):
             }}
         )
 
-        shell('boot --image 1 --meta foo=bar --meta spam=eggs some-server ')
-        assert_called(
+        self.run_command('boot --image 1 --meta foo=bar --meta spam=eggs some-server ')
+        self.assert_called(
             'POST', '/servers',
             {'server': {
                 'flavorRef': 1,
@@ -68,9 +68,9 @@ class ShellTest(utils.TestCase):
         expected_file_data = open(testfile).read().encode('base64')
 
         cmd = 'boot some-server --image 1 --file /tmp/foo=%s --file /tmp/bar=%s'
-        shell(cmd % (testfile, testfile))
+        self.run_command(cmd % (testfile, testfile))
 
-        assert_called(
+        self.assert_called(
             'POST', '/servers',
             {'server': {
                 'flavorRef': 1,
@@ -87,7 +87,7 @@ class ShellTest(utils.TestCase):
     def test_boot_invalid_file(self):
         invalid_file = os.path.join(os.path.dirname(__file__), 'asdfasdfasdfasdf')
         cmd = 'boot some-server --image 1 --file /foo=%s' % invalid_file
-        self.assertRaises(exceptions.CommandError, shell, cmd)
+        self.assertRaises(exceptions.CommandError, self.run_command, cmd)
 
     def test_boot_key_auto(self):
         mock_exists = mock.Mock(return_value=True)
@@ -98,8 +98,8 @@ class ShellTest(utils.TestCase):
         @mock.patch('os.path.exists', mock_exists)
         @mock.patch('__builtin__.open', mock_open)
         def test_shell_call():
-            shell('boot some-server --image 1 --key')
-            assert_called(
+            self.run_command('boot some-server --image 1 --key')
+            self.assert_called(
                 'POST', '/servers',
                 {'server': {
                     'flavorRef': 1,
@@ -120,7 +120,7 @@ class ShellTest(utils.TestCase):
 
         @mock.patch('os.path.exists', mock_exists)
         def test_shell_call():
-            self.assertRaises(exceptions.CommandError, shell,
+            self.assertRaises(exceptions.CommandError, self.run_command,
                               'boot some-server --image 1 --key')
 
         test_shell_call()
@@ -128,8 +128,8 @@ class ShellTest(utils.TestCase):
     def test_boot_key_file(self):
         testfile = os.path.join(os.path.dirname(__file__), 'testfile.txt')
         expected_file_data = open(testfile).read().encode('base64')
-        shell('boot some-server --image 1 --key %s' % testfile)
-        assert_called(
+        self.run_command('boot some-server --image 1 --key %s' % testfile)
+        self.assert_called(
             'POST', '/servers',
             {'server': {
                 'flavorRef': 1,
@@ -144,71 +144,71 @@ class ShellTest(utils.TestCase):
 
     def test_boot_invalid_keyfile(self):
         invalid_file = os.path.join(os.path.dirname(__file__), 'asdfasdfasdfasdf')
-        self.assertRaises(exceptions.CommandError, shell, 'boot some-server '
+        self.assertRaises(exceptions.CommandError, self.run_command, 'boot some-server '
                                                '--image 1 --key %s' % invalid_file)
 
     def test_flavor_list(self):
-        shell('flavor-list')
-        assert_called_anytime('GET', '/flavors/detail')
+        self.run_command('flavor-list')
+        self.assert_called_anytime('GET', '/flavors/detail')
 
     def test_image_list(self):
-        shell('image-list')
-        assert_called('GET', '/images/detail')
+        self.run_command('image-list')
+        self.assert_called('GET', '/images/detail')
 
     def test_create_image(self):
-        shell('create-image sample-server mysnapshot')
-        assert_called(
+        self.run_command('create-image sample-server mysnapshot')
+        self.assert_called(
             'POST', '/servers/1234/action',
             {'createImage': {'name': 'mysnapshot', 'metadata': {}}}
         )
 
     def test_image_delete(self):
-        shell('image-delete 1')
-        assert_called('DELETE', '/images/1')
+        self.run_command('image-delete 1')
+        self.assert_called('DELETE', '/images/1')
 
     def test_list(self):
-        shell('list')
-        assert_called('GET', '/servers/detail')
+        self.run_command('list')
+        self.assert_called('GET', '/servers/detail')
 
     def test_reboot(self):
-        shell('reboot sample-server')
-        assert_called('POST', '/servers/1234/action', {'reboot': {'type': 'SOFT'}})
-        shell('reboot sample-server --hard')
-        assert_called('POST', '/servers/1234/action', {'reboot': {'type': 'HARD'}})
+        self.run_command('reboot sample-server')
+        self.assert_called('POST', '/servers/1234/action', {'reboot': {'type': 'SOFT'}})
+        self.run_command('reboot sample-server --hard')
+        self.assert_called('POST', '/servers/1234/action', {'reboot': {'type': 'HARD'}})
 
     def test_rebuild(self):
-        shell('rebuild sample-server 1')
-        assert_called('POST', '/servers/1234/action', {'rebuild': {'imageRef': 1}})
+        self.run_command('rebuild sample-server 1')
+        self.assert_called('POST', '/servers/1234/action', {'rebuild': {'imageRef': 1}})
 
     def test_rename(self):
-        shell('rename sample-server newname')
-        assert_called('PUT', '/servers/1234', {'server': {'name': 'newname'}})
+        self.run_command('rename sample-server newname')
+        self.assert_called('PUT', '/servers/1234', {'server': {'name': 'newname'}})
 
     def test_resize(self):
-        shell('resize sample-server 1')
-        assert_called('POST', '/servers/1234/action', {'resize': {'flavorRef': 1}})
+        self.run_command('resize sample-server 1')
+        self.assert_called('POST', '/servers/1234/action', {'resize': {'flavorRef': 1}})
 
     def test_resize_confirm(self):
-        shell('resize-confirm sample-server')
-        assert_called('POST', '/servers/1234/action', {'confirmResize': None})
+        self.run_command('resize-confirm sample-server')
+        self.assert_called('POST', '/servers/1234/action', {'confirmResize': None})
 
     def test_resize_revert(self):
-        shell('resize-revert sample-server')
-        assert_called('POST', '/servers/1234/action', {'revertResize': None})
+        self.run_command('resize-revert sample-server')
+        self.assert_called('POST', '/servers/1234/action', {'revertResize': None})
 
     @mock.patch('getpass.getpass', mock.Mock(return_value='p'))
     def test_root_password(self):
-        shell('root-password sample-server')
-        assert_called('POST', '/servers/1234/action', {'changePassword': {'adminPass': 'p'}})
+        self.run_command('root-password sample-server')
+        self.assert_called('POST', '/servers/1234/action', {'changePassword': {'adminPass': 'p'}})
 
     def test_show(self):
-        shell('show 1234')
+        self.run_command('show 1234')
         # XXX need a way to test multiple calls
         # assert_called('GET', '/servers/1234')
-        assert_called('GET', '/images/2')
+        self.assert_called('GET', '/images/2')
 
     def test_delete(self):
-        shell('delete 1234')
-        assert_called('DELETE', '/servers/1234')
-        shell('delete sample-server')
-        assert_called('DELETE', '/servers/1234')
+        self.run_command('delete 1234')
+        self.assert_called('DELETE', '/servers/1234')
+        self.run_command('delete sample-server')
+        self.assert_called('DELETE', '/servers/1234')

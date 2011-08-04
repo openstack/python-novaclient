@@ -37,9 +37,6 @@ def env(e):
 
 class OpenStackComputeShell(object):
 
-    # Hook for the test suite to inject a fake server.
-    _api_class = None
-
     def get_base_parser(self):
         parser = argparse.ArgumentParser(
             prog='nova',
@@ -167,15 +164,13 @@ class OpenStackComputeShell(object):
         args.func(self.cs, args)
 
     def get_api_class(self, version):
-        if self._api_class is not None:
-            return self._api_class
-
         try:
             return {
                 "1.0": shell_v1_0.CLIENT_CLASS,
                 "1.1": shell_v1_1.CLIENT_CLASS,
             }[version]
         except KeyError:
+            print "Bad API version provided, falling back to v1.0."
             return shell_v1_0.CLIENT_CLASS
 
     @utils.arg('command', metavar='<subcommand>', nargs='?',
