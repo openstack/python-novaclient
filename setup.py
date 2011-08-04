@@ -11,7 +11,7 @@ if sys.version_info < (2,6):
 
 setup(
     name = "python-novaclient",
-    version = "2.5.8",
+    version = "2.6.0",
     description = "Client library for OpenStack Nova API",
     long_description = read('README.rst'),
     url = 'https://github.com/rackspace/python-novaclient',
@@ -29,10 +29,10 @@ setup(
         'Programming Language :: Python',
     ],
     install_requires = requirements,
-    
+
     tests_require = ["nose", "mock"],
     test_suite = "nose.collector",
-    
+
     entry_points = {
         'console_scripts': ['nova = novaclient.shell:main']
     }
