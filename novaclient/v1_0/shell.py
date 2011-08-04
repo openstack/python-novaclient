@@ -143,17 +143,17 @@ def _boot(cs, args, reservation_id=None, min_count=None, max_count=None):
 @utils.arg('--flavor',
      default=None,
      metavar='<flavor>',
-     help="Flavor ID (see 'novaclient flavors'). "\
+     help="Flavor ID (see 'nova flavors'). "\
           "Defaults to 256MB RAM instance.")
 @utils.arg('--image',
      default=None,
      metavar='<image>',
-     help="Image ID (see 'novaclient images'). "\
+     help="Image ID (see 'nova images'). "\
           "Defaults to Ubuntu 10.04 LTS.")
 @utils.arg('--ipgroup',
      default=None,
      metavar='<group>',
-     help="IP group name or ID (see 'novaclient ipgroup-list').")
+     help="IP group name or ID (see 'nova ipgroup-list').")
 @utils.arg('--meta',
      metavar="<key=value>",
      action='append',
@@ -191,17 +191,17 @@ def do_boot(cs, args):
 @utils.arg('--flavor',
      default=None,
      metavar='<flavor>',
-     help="Flavor ID (see 'novaclient flavors'). "\
+     help="Flavor ID (see 'nova flavors'). "\
           "Defaults to 256MB RAM instance.")
 @utils.arg('--image',
      default=None,
      metavar='<image>',
-     help="Image ID (see 'novaclient images'). "\
+     help="Image ID (see 'nova images'). "\
           "Defaults to Ubuntu 10.04 LTS.")
 @utils.arg('--ipgroup',
      default=None,
      metavar='<group>',
-     help="IP group name or ID (see 'novaclient ipgroup-list').")
+     help="IP group name or ID (see 'nova ipgroup-list').")
 @utils.arg('--meta',
      metavar="<key=value>",
      action='append',
@@ -240,17 +240,17 @@ def do_boot_for_account(cs, args):
 @utils.arg('--flavor',
      default=None,
      metavar='<flavor>',
-     help="Flavor ID (see 'novaclient flavors'). "\
+     help="Flavor ID (see 'nova flavors'). "\
           "Defaults to 256MB RAM instance.")
 @utils.arg('--image',
      default=None,
      metavar='<image>',
-     help="Image ID (see 'novaclient images'). "\
+     help="Image ID (see 'nova images'). "\
           "Defaults to Ubuntu 10.04 LTS.")
 @utils.arg('--ipgroup',
      default=None,
      metavar='<group>',
-     help="IP group name or ID (see 'novaclient ipgroup-list').")
+     help="IP group name or ID (see 'nova ipgroup-list').")
 @utils.arg('--meta',
      metavar="<key=value>",
      action='append',

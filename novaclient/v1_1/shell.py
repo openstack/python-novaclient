@@ -42,12 +42,12 @@ def _translate_flavor_keys(collection):
 @utils.arg('--flavor',
      default=None,
      metavar='<flavor>',
-     help="Flavor ID (see 'novaclient flavors'). "\
+     help="Flavor ID (see 'nova flavors'). "\
           "Defaults to 256MB RAM instance.")
 @utils.arg('--image',
      default=None,
      metavar='<image>',
-     help="Image ID (see 'novaclient images'). "\
+     help="Image ID (see 'nova images'). "\
           "Defaults to Ubuntu 10.04 LTS.")
 @utils.arg('--meta',
      metavar="<key=value>",
