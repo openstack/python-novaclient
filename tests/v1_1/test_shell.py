@@ -38,7 +38,7 @@ class ShellTest(utils.TestCase):
 
     def test_boot(self):
         self.run_command('boot --image 1 some-server')
-        self.assert_called(
+        self.assert_called_anytime(
             'POST', '/servers',
             {'server': {
                 'flavorRef': 1,
@@ -50,7 +50,7 @@ class ShellTest(utils.TestCase):
         )
 
         self.run_command('boot --image 1 --meta foo=bar --meta spam=eggs some-server ')
-        self.assert_called(
+        self.assert_called_anytime(
             'POST', '/servers',
             {'server': {
                 'flavorRef': 1,
@@ -68,7 +68,7 @@ class ShellTest(utils.TestCase):
         cmd = 'boot some-server --image 1 --file /tmp/foo=%s --file /tmp/bar=%s'
         self.run_command(cmd % (testfile, testfile))
 
-        self.assert_called(
+        self.assert_called_anytime(
             'POST', '/servers',
             {'server': {
                 'flavorRef': 1,
@@ -97,7 +97,7 @@ class ShellTest(utils.TestCase):
         @mock.patch('__builtin__.open', mock_open)
         def test_shell_call():
             self.run_command('boot some-server --image 1 --key')
-            self.assert_called(
+            self.assert_called_anytime(
                 'POST', '/servers',
                 {'server': {
                     'flavorRef': 1,
@@ -127,7 +127,7 @@ class ShellTest(utils.TestCase):
         testfile = os.path.join(os.path.dirname(__file__), 'testfile.txt')
         expected_file_data = open(testfile).read().encode('base64')
         self.run_command('boot some-server --image 1 --key %s' % testfile)
-        self.assert_called(
+        self.assert_called_anytime(
             'POST', '/servers',
             {'server': {
                 'flavorRef': 1,

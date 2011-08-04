@@ -85,9 +85,9 @@ def do_boot(cs, args):
     image_id = image.get('id', '')
     info['image'] = _find_image(cs, image_id).name
 
-    info.pop('links', None) 
+    info.pop('links', None)
     info.pop('addresses', None)
-	
+
     utils.print_dict(info)
 
 
@@ -320,7 +320,7 @@ def do_show(cs, args):
     image_id = image.get('id', '')
     info['image'] = _find_image(cs, image_id).name
 
-    info.pop('links', None) 
+    info.pop('links', None)
     info.pop('addresses', None)
 
     utils.print_dict(info)
