@@ -115,7 +115,7 @@ class ZoneManager(base.BootingManagerWithFind):
 
         return self._create("/zones", body, "zone")
 
-    def boot(self, name, image, flavor, ipgroup=None, meta=None, files=None,
+    def boot(self, name, image, flavor, meta=None, files=None,
                zone_blob=None, reservation_id=None, min_count=None,
                max_count=None):
         """
@@ -124,7 +124,6 @@ class ZoneManager(base.BootingManagerWithFind):
         :param name: Something to name the server.
         :param image: The :class:`Image` to boot with.
         :param flavor: The :class:`Flavor` to boot onto.
-        :param ipgroup: An initial :class:`IPGroup` for this server.
         :param meta: A dict of arbitrary key/value metadata to store for this
                      server. A maximum of five entries is allowed, and both
                      keys and values must be 255 characters or less.
@@ -145,7 +144,7 @@ class ZoneManager(base.BootingManagerWithFind):
         if not max_count:
             max_count = min_count
         return self._boot("/zones/boot", "reservation_id", name, image, flavor,
-                          ipgroup=ipgroup, meta=meta, files=files,
+                          meta=meta, files=files,
                           zone_blob=zone_blob, reservation_id=reservation_id,
                           return_raw=True, min_count=min_count,
                           max_count=max_count)
