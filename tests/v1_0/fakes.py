@@ -26,7 +26,7 @@ class FakeHTTPClient(base_client.HTTPClient):
         # Check that certain things are called correctly
         if method in ['GET', 'DELETE']:
             assert 'body' not in kwargs
-        elif method in ['PUT', 'POST']:
+        elif method == 'PUT':
             assert 'body' in kwargs
 
         # Call the method
@@ -159,6 +159,9 @@ class FakeHTTPClient(base_client.HTTPClient):
             for pfile in body['server']['personality']:
                 fakes.assert_has_keys(pfile, required=['path', 'contents'])
         return (202, self.get_servers_1234()[1])
+    
+    def post_servers_1234_migrate(self, *args, **kwargs):
+        return (202, None)
 
     def get_servers_1234(self, **kw):
         r = {'server': self.get_servers_detail()[1]['servers'][0]}
