@@ -149,7 +149,7 @@ class Server(base.Resource):
         """
         self.manager.resize(self, flavor)
 
-   def create_image(self, image_name, metadata):
+    def create_image(self, image_name, metadata):
         """
         Create an image based on this server.
 
