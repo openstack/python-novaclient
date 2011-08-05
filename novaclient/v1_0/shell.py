@@ -506,7 +506,7 @@ def do_resize(cs, args):
 @utils.arg('rotation', type=int, metavar='<rotation>',
      help="Number of backups to retain. Used for backup image_type.")
 def do_backup(cs, args):
-    """Resize a server."""
+    """Backup a server."""
     server = _find_server(cs, args.server)
     server.backup(args.name, args.backup_type, args.rotation)
 
