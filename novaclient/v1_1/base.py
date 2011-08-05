@@ -21,7 +21,6 @@ Base utilities to build API operation managers and objects on top of.
 
 from novaclient import exceptions
 
-
 # Python 2.4 compat
 try:
     all
@@ -102,8 +101,8 @@ class ManagerWithFind(Manager):
         try:
             return rl[0]
         except IndexError:
-            msg = "No %s matching %s." % (self.resource_class.__name__, kwargs)
-            raise exceptions.NotFound(404, msg)
+            raise exceptions.NotFound(404, "No %s matching %s." %
+                    (self.resource_class.__name__, kwargs))
 
     def findall(self, **kwargs):
         """
@@ -129,7 +128,7 @@ class ManagerWithFind(Manager):
 class BootingManagerWithFind(ManagerWithFind):
     """Like a `ManagerWithFind`, but has the ability to boot servers."""
     def _boot(self, resource_url, response_key, name, image, flavor,
-              ipgroup=None, meta=None, files=None, zone_blob=None,
+              meta=None, files=None, zone_blob=None,
               reservation_id=None, return_raw=False, min_count=None,
               max_count=None):
         """
@@ -138,7 +137,6 @@ class BootingManagerWithFind(ManagerWithFind):
         :param name: Something to name the server.
         :param image: The :class:`Image` to boot with.
         :param flavor: The :class:`Flavor` to boot onto.
-        :param ipgroup: An initial :class:`IPGroup` for this server.
         :param meta: A dict of arbitrary key/value metadata to store for this
                      server. A maximum of five entries is allowed, and both
                      keys and values must be 255 characters or less.
@@ -156,11 +154,9 @@ class BootingManagerWithFind(ManagerWithFind):
         """
         body = {"server": {
             "name": name,
-            "imageId": getid(image),
-            "flavorId": getid(flavor),
+            "imageRef": getid(image),
+            "flavorRef": getid(flavor),
         }}
-        if ipgroup:
-            body["server"]["sharedIpGroupId"] = getid(ipgroup)
         if meta:
             body["server"]["metadata"] = meta
         if reservation_id:

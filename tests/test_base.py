@@ -1,59 +1,60 @@
 
 import mock
-import novaclient.base
-from novaclient import Flavor
-from novaclient.exceptions import NotFound
-from novaclient.base import Resource
-from nose.tools import assert_equal, assert_not_equal, assert_raises
-from fakeserver import FakeServer
 
-cs = FakeServer()
+from novaclient import base
+from novaclient import exceptions
+from novaclient.v1_0 import flavors
+from tests.v1_0 import fakes
+from tests import utils
 
 
-def test_resource_repr():
-    r = Resource(None, dict(foo="bar", baz="spam"))
-    assert_equal(repr(r), "<Resource baz=spam, foo=bar>")
+cs = fakes.FakeClient()
 
 
-def test_getid():
-    assert_equal(novaclient.base.getid(4), 4)
+class BaseTest(utils.TestCase):
 
-    class O(object):
-        id = 4
-    assert_equal(novaclient.base.getid(O), 4)
+    def test_resource_repr(self):
+        r = base.Resource(None, dict(foo="bar", baz="spam"))
+        self.assertEqual(repr(r), "<Resource baz=spam, foo=bar>")
 
+    def test_getid(self):
+        self.assertEqual(base.getid(4), 4)
 
-def test_resource_lazy_getattr():
-    f = Flavor(cs.flavors, {'id': 1})
-    assert_equal(f.name, '256 MB Server')
-    cs.assert_called('GET', '/flavors/1')
+        class TmpObject(object):
+            id = 4
+        self.assertEqual(base.getid(TmpObject), 4)
 
-    # Missing stuff still fails after a second get
-    assert_raises(AttributeError, getattr, f, 'blahblah')
-    cs.assert_called('GET', '/flavors/1')
+    def test_resource_lazy_getattr(self):
+        f = flavors.Flavor(cs.flavors, {'id': 1})
+        self.assertEqual(f.name, '256 MB Server')
+        cs.assert_called('GET', '/flavors/1')
 
+        # Missing stuff still fails after a second get
+        self.assertRaises(AttributeError, getattr, f, 'blahblah')
+        cs.assert_called('GET', '/flavors/1')
 
-def test_eq():
-    # Two resources of the same type with the same id: equal
-    r1 = Resource(None, {'id': 1, 'name': 'hi'})
-    r2 = Resource(None, {'id': 1, 'name': 'hello'})
-    assert_equal(r1, r2)
+    def test_eq(self):
+        # Two resources of the same type with the same id: equal
+        r1 = base.Resource(None, {'id': 1, 'name': 'hi'})
+        r2 = base.Resource(None, {'id': 1, 'name': 'hello'})
+        self.assertEqual(r1, r2)
 
-    # Two resoruces of different types: never equal
-    r1 = Resource(None, {'id': 1})
-    r2 = Flavor(None, {'id': 1})
-    assert_not_equal(r1, r2)
+        # Two resoruces of different types: never equal
+        r1 = base.Resource(None, {'id': 1})
+        r2 = flavors.Flavor(None, {'id': 1})
+        self.assertNotEqual(r1, r2)
 
-    # Two resources with no ID: equal if their info is equal
-    r1 = Resource(None, {'name': 'joe', 'age': 12})
-    r2 = Resource(None, {'name': 'joe', 'age': 12})
-    assert_equal(r1, r2)
+        # Two resources with no ID: equal if their info is equal
+        r1 = base.Resource(None, {'name': 'joe', 'age': 12})
+        r2 = base.Resource(None, {'name': 'joe', 'age': 12})
+        self.assertEqual(r1, r2)
 
+    def test_findall_invalid_attribute(self):
+        # Make sure findall with an invalid attribute doesn't cause errors.
+        # The following should not raise an exception.
+        cs.flavors.findall(vegetable='carrot')
 
-def test_findall_invalid_attribute():
-    # Make sure findall with an invalid attribute doesn't cause errors.
-    # The following should not raise an exception.
-    cs.flavors.findall(vegetable='carrot')
-
-    # However, find() should raise an error
-    assert_raises(NotFound, cs.flavors.find, vegetable='carrot')
+        # However, find() should raise an error
+        self.assertRaises(exceptions.NotFound,
+                          cs.flavors.find,
+                          vegetable='carrot')

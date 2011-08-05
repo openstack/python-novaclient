@@ -19,18 +19,19 @@ if not hasattr(urlparse, 'parse_qsl'):
     import cgi
     urlparse.parse_qsl = cgi.parse_qsl
 
-import novaclient
+
 from novaclient import exceptions
+
 
 _logger = logging.getLogger(__name__)
 
 
-class OpenStackClient(httplib2.Http):
+class HTTPClient(httplib2.Http):
 
-    USER_AGENT = 'python-novaclient/%s' % novaclient.__version__
+    USER_AGENT = 'python-novaclient'
 
     def __init__(self, user, apikey, projectid, auth_url, timeout=None):
-        super(OpenStackClient, self).__init__(timeout=timeout)
+        super(HTTPClient, self).__init__(timeout=timeout)
         self.user = user
         self.apikey = apikey
         self.projectid = projectid
@@ -68,7 +69,7 @@ class OpenStackClient(httplib2.Http):
             kwargs['headers']['Content-Type'] = 'application/json'
             kwargs['body'] = json.dumps(kwargs['body'])
 
-        resp, body = super(OpenStackClient, self).request(*args, **kwargs)
+        resp, body = super(HTTPClient, self).request(*args, **kwargs)
 
         self.http_log(args, kwargs, resp, body)
 
@@ -144,7 +145,7 @@ class OpenStackClient(httplib2.Http):
         """
         Munge GET URLs to always return uncached content.
 
-        The OpenStack Nova API caches data *very* agressively and doesn't
+        The OpenStack Compute API caches data *very* agressively and doesn't
         respect cache headers. To avoid stale data, then, we append a little
         bit of nonsense onto GET parameters; this appears to force the data not
         to be cached.
