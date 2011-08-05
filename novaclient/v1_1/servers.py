@@ -243,42 +243,37 @@ class ServerManager(local_base.BootingManagerWithFind):
         """
         Pause the server.
         """
-        self.api.client.post('/servers/%s/pause' % base.getid(server), body={})
+        self.api.client.post('/servers/%s/pause' % base.getid(server))
 
     def unpause(self, server):
         """
         Unpause the server.
         """
-        self.api.client.post('/servers/%s/unpause' % base.getid(server),
-                             body={})
+        self.api.client.post('/servers/%s/unpause' % base.getid(server))
 
     def suspend(self, server):
         """
         Suspend the server.
         """
-        self.api.client.post('/servers/%s/suspend' % base.getid(server),
-                             body={})
+        self.api.client.post('/servers/%s/suspend' % base.getid(server))
 
     def resume(self, server):
         """
         Resume the server.
         """
-        self.api.client.post('/servers/%s/resume' % base.getid(server),
-                             body={})
+        self.api.client.post('/servers/%s/resume' % base.getid(server))
 
     def rescue(self, server):
         """
         Rescue the server.
         """
-        self.api.client.post('/servers/%s/rescue' % base.getid(server),
-                             body={})
+        self.api.client.post('/servers/%s/rescue' % base.getid(server))
 
     def unrescue(self, server):
         """
         Unrescue the server.
         """
-        self.api.client.post('/servers/%s/unrescue' % base.getid(server),
-                             body={})
+        self.api.client.post('/servers/%s/unrescue' % base.getid(server))
 
     def diagnostics(self, server):
         """Retrieve server diagnostics."""
@@ -378,7 +373,7 @@ class ServerManager(local_base.BootingManagerWithFind):
 
         :param server: The :class:`Server` (or its ID).
         """
-        self._action('migrate', server)
+        self.api.client.post('/servers/%s/migrate' % base.getid(server))
 
     def resize(self, server, flavor):
         """
