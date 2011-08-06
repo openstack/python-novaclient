@@ -38,9 +38,11 @@ def _boot(cs, args, reservation_id=None, min_count=None, max_count=None):
     if max_count is None:
         max_count = min_count
     if min_count > max_count:
-        raise exceptions.CommandError("min_instances should be <= max_instances")
+        raise exceptions.CommandError("min_instances should be <= "
+                                      "max_instances")
     if not min_count or not max_count:
-        raise exceptions.CommandError("min_instances nor max_instances should be 0")
+        raise exceptions.CommandError("min_instances nor max_instances should"
+                                      "be 0")
 
     flavor = args.flavor or cs.flavors.find(ram=256)
     image = args.image or cs.images.find(name="Ubuntu 10.04 LTS "\
@@ -79,6 +81,7 @@ def _boot(cs, args, reservation_id=None, min_count=None, max_count=None):
 
     return (args.name, image, flavor, metadata, files,
             reservation_id, min_count, max_count)
+
 
 @utils.arg('--flavor',
      default=None,
@@ -216,9 +219,11 @@ def do_flavor_list(cs, args):
         'RXTX_Quota',
         'RXTX_Cap'])
 
+
 def do_image_list(cs, args):
     """Print a list of available images to boot from."""
     utils.print_list(cs.images.list(), ['ID', 'Name', 'Status'])
+
 
 @utils.arg('image', metavar='<image>', help='Name or ID of image.')
 def do_image_delete(cs, args):
@@ -230,6 +235,7 @@ def do_image_delete(cs, args):
     """
     image = _find_image(cs, args.image)
     image.delete()
+
 
 @utils.arg('--fixed_ip',
     dest='fixed_ip',
@@ -294,7 +300,8 @@ def do_list(cs, args):
 
     columns = [id_col, 'Name', 'Status', 'Networks']
     formatters = {'Networks': _format_servers_list_networks}
-    utils.print_list(cs.servers.list(search_opts=search_opts), columns, formatters)
+    utils.print_list(cs.servers.list(search_opts=search_opts), columns,
+                     formatters)
 
 
 def _format_servers_list_networks(server):
@@ -320,6 +327,7 @@ def do_reboot(cs, args):
     """Reboot a server."""
     _find_server(cs, args.server).reboot(args.reboot_type)
 
+
 @utils.arg('server', metavar='<server>', help='Name or ID of server.')
 @utils.arg('image', metavar='<image>', help="Name or ID of new image.")
 def do_rebuild(cs, args):
@@ -328,11 +336,14 @@ def do_rebuild(cs, args):
     image = _find_image(cs, args.image)
     server.rebuild(image)
 
-@utils.arg('server', metavar='<server>', help='Name (old name) or ID of server.')
+
+@utils.arg('server', metavar='<server>',
+           help='Name (old name) or ID of server.')
 @utils.arg('name', metavar='<name>', help='New name for the server.')
 def do_rename(cs, args):
     """Rename a server."""
     _find_server(cs, args.server).update(name=args.name)
+
 
 @utils.arg('server', metavar='<server>', help='Name or ID of server.')
 @utils.arg('flavor', metavar='<flavor>', help="Name or ID of new flavor.")
@@ -342,55 +353,66 @@ def do_resize(cs, args):
     flavor = _find_flavor(cs, args.flavor)
     server.resize(flavor)
 
+
 @utils.arg('server', metavar='<server>', help='Name or ID of server.')
 def do_resize_confirm(cs, args):
     """Confirm a previous resize."""
     _find_server(cs, args.server).confirm_resize()
+
 
 @utils.arg('server', metavar='<server>', help='Name or ID of server.')
 def do_resize_revert(cs, args):
     """Revert a previous resize (and return to the previous VM)."""
     _find_server(cs, args.server).revert_resize()
 
+
 @utils.arg('server', metavar='<server>', help='Name or ID of server.')
 def do_migrate(cs, args):
     """Migrate a server."""
     _find_server(cs, args.server).migrate()
+
 
 @utils.arg('server', metavar='<server>', help='Name or ID of server.')
 def do_pause(cs, args):
     """Pause a server."""
     _find_server(cs, args.server).pause()
 
+
 @utils.arg('server', metavar='<server>', help='Name or ID of server.')
 def do_unpause(cs, args):
     """Unpause a server."""
     _find_server(cs, args.server).unpause()
+
 
 @utils.arg('server', metavar='<server>', help='Name or ID of server.')
 def do_suspend(cs, args):
     """Suspend a server."""
     _find_server(cs, args.server).suspend()
 
+
 @utils.arg('server', metavar='<server>', help='Name or ID of server.')
 def do_resume(cs, args):
     """Resume a server."""
     _find_server(cs, args.server).resume()
+
 
 @utils.arg('server', metavar='<server>', help='Name or ID of server.')
 def do_rescue(cs, args):
     """Rescue a server."""
     _find_server(cs, args.server).rescue()
 
+
 @utils.arg('server', metavar='<server>', help='Name or ID of server.')
 def do_unrescue(cs, args):
     """Unrescue a server."""
     _find_server(cs, args.server).unrescue()
 
+
 @utils.arg('server', metavar='<server>', help='Name or ID of server.')
 def do_diagnostics(cs, args):
     """Retrieve server diagnostics."""
     utils.print_dict(cs.servers.diagnostics(args.server)[1])
+
 
 @utils.arg('server', metavar='<server>', help='Name or ID of server.')
 def do_actions(cs, args):
@@ -398,7 +420,6 @@ def do_actions(cs, args):
     utils.print_list(
         cs.servers.actions(args.server),
         ["Created_At", "Action", "Error"])
-
 
 
 @utils.arg('server', metavar='<server>', help='Name or ID of server.')
@@ -413,12 +434,14 @@ def do_root_password(cs, args):
         raise exceptions.CommandError("Passwords do not match.")
     server.change_password(p1)
 
+
 @utils.arg('server', metavar='<server>', help='Name or ID of server.')
 @utils.arg('name', metavar='<name>', help='Name of snapshot.')
 def do_image_create(cs, args):
     """Create a new image by taking a snapshot of a running server."""
     server = _find_server(cs, args.server)
     cs.servers.create_image(server, args.name)
+
 
 @utils.arg('server', metavar='<server>', help='Name or ID of server.')
 def do_show(cs, args):
@@ -444,18 +467,22 @@ def do_show(cs, args):
 
     utils.print_dict(info)
 
+
 @utils.arg('server', metavar='<server>', help='Name or ID of server.')
 def do_delete(cs, args):
     """Immediately shut down and delete a server."""
     _find_server(cs, args.server).delete()
 
+
 def _find_server(cs, server):
     """Get a server by name or ID."""
     return _find_resource(cs.servers, server)
 
+
 def _find_image(cs, image):
     """Get an image by name or ID."""
     return _find_resource(cs.images, image)
+
 
 def _find_flavor(cs, flavor):
     """Get a flavor by name, ID, or RAM size."""
@@ -463,6 +490,7 @@ def _find_flavor(cs, flavor):
         return _find_resource(cs.flavors, flavor)
     except exceptions.NotFound:
         return cs.flavors.find(ram=flavor)
+
 
 def _find_resource(manager, name_or_id):
     """Helper for the _find_* methods."""
@@ -476,8 +504,10 @@ def _find_resource(manager, name_or_id):
         except ValueError:
             return manager.find(name=name_or_id)
     except exceptions.NotFound:
-        raise exceptions.CommandError("No %s with a name or ID of '%s' exists." %
-                     (manager.resource_class.__name__.lower(), name_or_id))
+        raise exceptions.CommandError(
+                  "No %s with a name or ID of '%s' exists." %
+                  (manager.resource_class.__name__.lower(), name_or_id))
+
 
 # --zone_username is required since --username is already used.
 @utils.arg('zone', metavar='<zone_id>', help='ID of the zone', default=None)
@@ -510,10 +540,12 @@ def do_zone(cs, args):
     else:
         utils.print_dict(zone._info)
 
+
 def do_zone_info(cs, args):
     """Get this zones name and capabilities."""
     zone = cs.zones.info()
     utils.print_dict(zone._info)
+
 
 @utils.arg('api_url', metavar='<api_url>', help="URL for the Zone's API")
 @utils.arg('zone_username', metavar='<zone_username>',
@@ -530,15 +562,18 @@ def do_zone_add(cs, args):
                                 args.weight_scale)
     utils.print_dict(zone._info)
 
+
 @utils.arg('zone', metavar='<zone>', help='Name or ID of the zone')
 def do_zone_delete(cs, args):
     """Delete a zone."""
     cs.zones.delete(args.zone)
 
+
 def do_zone_list(cs, args):
     """List the children of a zone."""
     utils.print_list(cs.zones.list(), ['ID', 'Name', 'Is Active', \
                         'API URL', 'Weight Offset', 'Weight Scale'])
+
 
 @utils.arg('server', metavar='<server>', help='Name or ID of server.')
 @utils.arg('network_id', metavar='<network_id>', help='Network ID.')
@@ -546,6 +581,7 @@ def do_add_fixed_ip(cs, args):
     """Add new IP address to network."""
     server = _find_server(cs, args.server)
     server.add_fixed_ip(args.network_id)
+
 
 @utils.arg('server', metavar='<server>', help='Name or ID of server.')
 @utils.arg('address', metavar='<address>', help='IP Address.')
