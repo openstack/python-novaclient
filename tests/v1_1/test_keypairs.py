@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+
+>>>>>>> keypair api
 from novaclient import exceptions
 from novaclient.v1_1 import keypairs
 from tests.v1_1 import fakes
@@ -8,6 +12,7 @@ cs = fakes.FakeClient()
 
 
 class KeypairsTest(utils.TestCase):
+
     def test_list_keypairs(self):
         kps = cs.keypairs.list()
         cs.assert_called('GET', '/extras/keypairs')
