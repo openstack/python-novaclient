@@ -373,3 +373,21 @@ class FakeHTTPClient(base_client.HTTPClient):
 
     def delete_zones_1(self, **kw):
         return (202, None)
+
+    #
+    # Keypairs
+    #
+    def get_extras_keypairs(self, *kw):
+        return (200, {"keypairs": [
+            {'fingerprint': 'FAKE_KEYPAIR', 'key_name': 'test'}
+        ]})
+
+    def delete_extras_keypairs_test(self, **kw):
+        return (202, None)
+
+    def post_extras_keypairs(self, body, **kw):
+        assert body.keys() == ['keypair']
+        fakes.assert_has_keys(body['keypair'],
+                              required=['key_name'])
+        r = {'keypair': self.get_extras_keypairs()[1]['keypairs'][0]}
+        return (202, r)
