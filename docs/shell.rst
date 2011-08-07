@@ -31,12 +31,17 @@ environment variables by setting two environment variables:
 
     The OpenStack API server URL.
 
+.. envvar:: NOVA_VERSION
+
+    The OpenStack API version.
+
 For example, in Bash you'd use::
 
     export NOVA_USERNAME=yourname
     export NOVA_API_KEY=yadayadayada
     export NOVA_PROJECT_ID=myproject
     export NOVA_URL=http://...
+    export NOVA_VERSION=1.0
     
 From there, all shell commands take the form::
     
