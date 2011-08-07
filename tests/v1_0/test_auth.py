@@ -22,7 +22,7 @@ class AuthenticationTests(utils.TestCase):
         @mock.patch.object(httplib2.Http, "request", mock_request)
         def test_auth_call():
             cs.client.authenticate()
-            headers={
+            headers = {
                 'X-Auth-User': 'username',
                 'X-Auth-Key': 'apikey',
                 'X-Auth-Project-Id': 'project_id',
