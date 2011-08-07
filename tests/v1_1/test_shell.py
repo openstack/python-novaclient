@@ -67,7 +67,8 @@ class ShellTest(utils.TestCase):
         testfile = os.path.join(os.path.dirname(__file__), 'testfile.txt')
         expected_file_data = open(testfile).read().encode('base64')
 
-        cmd = 'boot some-server --image 1 --file /tmp/foo=%s --file /tmp/bar=%s'
+        cmd = 'boot some-server --image 1 ' \
+              '--file /tmp/foo=%s --file /tmp/bar=%s'
         self.run_command(cmd % (testfile, testfile))
 
         self.assert_called_anytime(
