@@ -1,4 +1,3 @@
-
 import os
 import mock
 
@@ -73,7 +72,8 @@ class ShellTest(utils.TestCase):
              'min_count': 1, 'max_count': 1}}
         )
 
-        self.run_command('boot --image 1 --meta foo=bar --meta spam=eggs some-server ')
+        self.run_command('boot --image 1 --meta foo=bar'
+                         ' --meta spam=eggs some-server ')
         self.assert_called(
             'POST', '/servers',
             {'server': {'flavorId': 1, 'name': 'some-server', 'imageId': '1',
@@ -85,24 +85,27 @@ class ShellTest(utils.TestCase):
         testfile = os.path.join(os.path.dirname(__file__), 'testfile.txt')
         expected_file_data = open(testfile).read().encode('base64')
 
-        self.run_command('boot some-server --image 1 --file /tmp/foo=%s --file /tmp/bar=%s' %
-                                                             (testfile, testfile))
+        self.run_command('boot some-server --image 1 '
+                         '--file /tmp/foo=%s --file /tmp/bar=%s' %
+                         (testfile, testfile))
 
         self.assert_called(
             'POST', '/servers',
             {'server': {'flavorId': 1, 'name': 'some-server', 'imageId': '1',
                         'min_count': 1, 'max_count': 1,
                         'personality': [
-                            {'path': '/tmp/bar', 'contents': expected_file_data},
-                            {'path': '/tmp/foo', 'contents': expected_file_data}
+                          {'path': '/tmp/bar', 'contents': expected_file_data},
+                          {'path': '/tmp/foo', 'contents': expected_file_data}
                         ]}
             }
         )
 
     def test_boot_invalid_file(self):
-        invalid_file = os.path.join(os.path.dirname(__file__), 'asdfasdfasdfasdf')
-        self.assertRaises(exceptions.CommandError, self.run_command, 'boot some-server --image 1 '
-                                               '--file /foo=%s' % invalid_file)
+        invalid_file = os.path.join(os.path.dirname(__file__),
+                                    'asdfasdfasdfasdf')
+        self.assertRaises(exceptions.CommandError, self.run_command,
+                          'boot some-server --image 1 '
+                          '--file /foo=%s' % invalid_file)
 
     def test_boot_key_auto(self):
         mock_exists = mock.Mock(return_value=True)
@@ -116,8 +119,8 @@ class ShellTest(utils.TestCase):
             self.run_command('boot some-server --image 1 --key')
             self.assert_called(
                 'POST', '/servers',
-                {'server': {'flavorId': 1, 'name': 'some-server', 'imageId': '1',
-                            'min_count': 1, 'max_count': 1,
+                {'server': {'flavorId': 1, 'name': 'some-server',
+                            'imageId': '1', 'min_count': 1, 'max_count': 1,
                             'personality': [{
                                 'path': '/root/.ssh/authorized_keys2',
                                 'contents': ('SSHKEY').encode('base64')},
@@ -153,9 +156,10 @@ class ShellTest(utils.TestCase):
         )
 
     def test_boot_invalid_keyfile(self):
-        invalid_file = os.path.join(os.path.dirname(__file__), 'asdfasdfasdfasdf')
-        self.assertRaises(exceptions.CommandError, self.run_command, 'boot some-server '
-                                               '--image 1 --key %s' % invalid_file)
+        invalid_file = os.path.join(os.path.dirname(__file__),
+                                    'asdfasdfasdfasdf')
+        self.assertRaises(exceptions.CommandError, self.run_command,
+                          'boot some-server --image 1 --key %s' % invalid_file)
 
     def test_boot_ipgroup(self):
         self.run_command('boot --image 1 --ipgroup 1 some-server')
@@ -238,29 +242,36 @@ class ShellTest(utils.TestCase):
 
     def test_reboot(self):
         self.run_command('reboot sample-server')
-        self.assert_called('POST', '/servers/1234/action', {'reboot': {'type': 'SOFT'}})
+        self.assert_called('POST', '/servers/1234/action',
+                           {'reboot': {'type': 'SOFT'}})
         self.run_command('reboot sample-server --hard')
-        self.assert_called('POST', '/servers/1234/action', {'reboot': {'type': 'HARD'}})
+        self.assert_called('POST', '/servers/1234/action',
+                           {'reboot': {'type': 'HARD'}})
 
     def test_rebuild(self):
         self.run_command('rebuild sample-server 1')
-        self.assert_called('POST', '/servers/1234/action', {'rebuild': {'imageId': 1}})
+        self.assert_called('POST', '/servers/1234/action',
+                           {'rebuild': {'imageId': 1}})
 
     def test_rename(self):
         self.run_command('rename sample-server newname')
-        self.assert_called('PUT', '/servers/1234', {'server': {'name': 'newname'}})
+        self.assert_called('PUT', '/servers/1234',
+                           {'server': {'name': 'newname'}})
 
     def test_resize(self):
         self.run_command('resize sample-server 1')
-        self.assert_called('POST', '/servers/1234/action', {'resize': {'flavorId': 1}})
+        self.assert_called('POST', '/servers/1234/action',
+                           {'resize': {'flavorId': 1}})
 
     def test_resize_confirm(self):
         self.run_command('resize-confirm sample-server')
-        self.assert_called('POST', '/servers/1234/action', {'confirmResize': None})
+        self.assert_called('POST', '/servers/1234/action',
+                           {'confirmResize': None})
 
     def test_resize_revert(self):
         self.run_command('resize-revert sample-server')
-        self.assert_called('POST', '/servers/1234/action', {'revertResize': None})
+        self.assert_called('POST', '/servers/1234/action',
+                           {'revertResize': None})
 
     def test_backup(self):
         self.run_command('backup sample-server mybackup daily 1')
@@ -273,7 +284,8 @@ class ShellTest(utils.TestCase):
     @mock.patch('getpass.getpass', mock.Mock(return_value='p'))
     def test_root_password(self):
         self.run_command('root-password sample-server')
-        self.assert_called('PUT', '/servers/1234', {'server': {'adminPass': 'p'}})
+        self.assert_called('PUT', '/servers/1234',
+                           {'server': {'adminPass': 'p'}})
 
     def test_show(self):
         self.run_command('show 1234')
@@ -291,7 +303,8 @@ class ShellTest(utils.TestCase):
         self.run_command('zone 1')
         self.assert_called('GET', '/zones/1')
 
-        self.run_command('zone 1 --api_url=http://zzz --zone_username=frank --password=xxx')
+        self.run_command('zone 1 --api_url=http://zzz '
+                         '--zone_username=frank --password=xxx')
         self.assert_called(
             'PUT', '/zones/1',
             {'zone': {'api_url': 'http://zzz', 'username': 'frank',

@@ -34,7 +34,8 @@ class FakeHTTPClient(base_client.HTTPClient):
         munged_url = url.strip('/').replace('/', '_').replace('.', '_')
         callback = "%s_%s" % (method.lower(), munged_url)
         if not hasattr(self, callback):
-            raise AssertionError('Called unknown API method: %s %s' % (method, url))
+            raise AssertionError('Called unknown API method: %s %s' % (method,
+                url))
 
         # Note the call
         self.callstack.append((method, url, kwargs.get('body', None)))
@@ -372,5 +373,3 @@ class FakeHTTPClient(base_client.HTTPClient):
 
     def delete_zones_1(self, **kw):
         return (202, None)
-
-

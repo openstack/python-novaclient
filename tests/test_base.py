@@ -1,4 +1,3 @@
-
 import mock
 
 from novaclient import base

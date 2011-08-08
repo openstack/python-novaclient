@@ -1,5 +1,3 @@
-
-
 from novaclient import client
 from novaclient.v1_0 import accounts
 from novaclient.v1_0 import backup_schedules
@@ -8,7 +6,6 @@ from novaclient.v1_0 import images
 from novaclient.v1_0 import ipgroups
 from novaclient.v1_0 import servers
 from novaclient.v1_0 import zones
-
 
 
 class Client(object):
