@@ -124,7 +124,21 @@ def do_boot(cs, args):
                                     files=files,
                                     min_count=min_count,
                                     max_count=max_count)
-    utils.print_dict(server._info)
+
+    info = server._info
+
+    flavor = info.get('flavor', {})
+    flavor_id = flavor.get('id', '')
+    info['flavor'] = _find_flavor(cs, flavor_id).name
+
+    image = info.get('image', {})
+    image_id = image.get('id', '')
+    info['image'] = _find_image(cs, image_id).name
+
+    info.pop('links', None)
+    info.pop('addresses', None)
+
+    utils.print_dict(info)
 
 
 @utils.arg('--flavor',
