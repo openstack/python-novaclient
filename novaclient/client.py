@@ -134,32 +134,49 @@ class HTTPClient(httplib2.Http):
                 self.version = part
                 break
 
-        if not self.version == "v2.0": #FIXME(chris): This should be better.
-            headers = {'X-Auth-User': self.user,
-                       'X-Auth-Key': self.apikey}
-            if self.projectid:
-                headers['X-Auth-Project-Id'] = self.projectid
+        if self.version == "v2.0": #FIXME(chris): This should be better.
+            self._v2_auth()
+        else:
+            redir = self._v1_auth()
+            if redir and not self.auth_token:
+                self.auth_url = redir
+                try:
+                    self._v1_auth()
+                    if not self.auth_token:
+                        raise exceptions.ClientException('Not authenticated')
+                except exceptions.ClientException:
+                    self._v2_auth()
 
-            resp, body = self.request(self.auth_url, 'GET', headers=headers)
+    def _v1_auth(self):
+        headers = {'X-Auth-User': self.user,
+                   'X-Auth-Key': self.apikey}
+        if self.projectid:
+            headers['X-Auth-Project-Id'] = self.projectid
+
+        resp, body = self.request(self.auth_url, 'GET', headers=headers)
+        if resp.status in (200, 204):
             self.management_url = resp['x-server-management-url']
 
             self.auth_token = resp['x-auth-token']
         else:
-            body = {"passwordCredentials": {"username": self.user,
-                                            "password": self.apikey}}
+            return resp['location']
 
-            if self.projectid:
-                body['passwordCredentials']['tenantId'] = self.projectid
+    def _v2_auth(self):
+        body = {"passwordCredentials": {"username": self.user,
+                                        "password": self.apikey}}
 
-            token_url = urlparse.urljoin(self.auth_url, "tokens")
-            resp, body = self.request(token_url, "POST", body=body)
+        if self.projectid:
+            body['passwordCredentials']['tenantId'] = self.projectid
 
-            self.management_url = body["auth"]["serviceCatalog"] \
-                                      ["nova"][0]["publicURL"]
-            self.auth_token = body["auth"]["token"]["id"]
+        token_url = urlparse.urljoin(self.auth_url, "tokens")
+        resp, body = self.request(token_url, "POST", body=body)
 
-            #TODO(chris): Implement service_catalog 
-            self.service_catalog = None
+        self.management_url = body["auth"]["serviceCatalog"] \
+                                  ["nova"][0]["publicURL"]
+        self.auth_token = body["auth"]["token"]["id"]
+
+        #TODO(chris): Implement service_catalog
+        self.service_catalog = None
 
     def _munge_get_url(self, url):
         """
