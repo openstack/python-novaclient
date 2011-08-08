@@ -125,6 +125,18 @@ class HTTPClient(httplib2.Http):
     def delete(self, url, **kwargs):
         return self._cs_request(url, 'DELETE', **kwargs)
 
+    def _v1_auth(self, url, headers):
+        resp, body = self.request(url, 'GET', headers=headers)
+        if resp.status == 305:
+            url = resp['location']
+            print "Redirecting Auth to", url
+            return self._v1_auth(url, headers)
+
+        if resp.status not in [200, 204]:
+            exceptions.from_response(resp, body)
+
+        return (resp, body)
+
     def authenticate(self):
         scheme, netloc, path, query, frag = urlparse.urlsplit(
                                                     self.auth_url)
@@ -140,9 +152,10 @@ class HTTPClient(httplib2.Http):
             if self.projectid:
                 headers['X-Auth-Project-Id'] = self.projectid
 
-            resp, body = self.request(self.auth_url, 'GET', headers=headers)
-            self.management_url = resp['x-server-management-url']
+            resp, body = self._v1_auth(self.auth_url, headers)
 
+            self.management_url = resp['x-server-management-url']
+            print "Management URL=", self.management_url
             self.auth_token = resp['x-auth-token']
         else:
             body = {"passwordCredentials": {"username": self.user,
@@ -158,7 +171,7 @@ class HTTPClient(httplib2.Http):
                                       ["nova"][0]["publicURL"]
             self.auth_token = body["auth"]["token"]["id"]
 
-            #TODO(chris): Implement service_catalog 
+            #TODO(chris): Implement service_catalog
             self.service_catalog = None
 
     def _munge_get_url(self, url):
