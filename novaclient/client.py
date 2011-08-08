@@ -1,5 +1,5 @@
 # Copyright 2010 Jacob Kaplan-Moss
-# Copyright 2011 Piston Cloud Computing
+# Copyright 2011 Piston Cloud Computing, Inc.
 
 """
 OpenStack Client interface. Handles the REST calls and responses.
