@@ -154,12 +154,14 @@ class HTTPClient(httplib2.Http):
             headers['X-Auth-Project-Id'] = self.projectid
 
         resp, body = self.request(self.auth_url, 'GET', headers=headers)
-        if resp.status in (200, 204):
+        if resp.status in (200, 204): # in some cases we get No Content
             self.management_url = resp['x-server-management-url']
 
             self.auth_token = resp['x-auth-token']
-        else:
+        elif resp.status == 305:
             return resp['location']
+        else:
+            raise exceptions.from_response(resp, body)
 
     def _v2_auth(self):
         body = {"passwordCredentials": {"username": self.user,
@@ -171,12 +173,15 @@ class HTTPClient(httplib2.Http):
         token_url = urlparse.urljoin(self.auth_url, "tokens")
         resp, body = self.request(token_url, "POST", body=body)
 
-        self.management_url = body["auth"]["serviceCatalog"] \
-                                  ["nova"][0]["publicURL"]
-        self.auth_token = body["auth"]["token"]["id"]
+        if resp == 200: # content must always present
+            self.management_url = body["auth"]["serviceCatalog"] \
+                                      ["nova"][0]["publicURL"]
+            self.auth_token = body["auth"]["token"]["id"]
 
-        #TODO(chris): Implement service_catalog
-        self.service_catalog = None
+            #TODO(chris): Implement service_catalog
+            self.service_catalog = None
+        else:
+            raise exceptions.from_response(resp, body)
 
     def _munge_get_url(self, url):
         """
