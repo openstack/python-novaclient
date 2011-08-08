@@ -1,4 +1,3 @@
-
 import httplib2
 import mock
 

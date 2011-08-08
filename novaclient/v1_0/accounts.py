@@ -1,4 +1,3 @@
-
 from novaclient import base
 from novaclient.v1_0 import base as local_base
 

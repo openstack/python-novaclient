@@ -3,7 +3,7 @@ The :mod:`novaclient` Python API
 
 .. module:: novaclient
    :synopsis: A client for the OpenStack Nova API.
-   
+
 .. currentmodule:: novaclient
 
 Usage
@@ -17,28 +17,28 @@ First create an instance of :class:`OpenStack` with your credentials::
 Then call methods on the :class:`OpenStack` object:
 
 .. class:: OpenStack
-    
+
     .. attribute:: backup_schedules
-    
+
         A :class:`BackupScheduleManager` -- manage automatic backup images.
-    
+
     .. attribute:: flavors
-    
+
         A :class:`FlavorManager` -- query available "flavors" (hardware
         configurations).
-        
+
     .. attribute:: images
-    
+
         An :class:`ImageManager` -- query and create server disk images.
-    
+
     .. attribute:: ipgroups
-    
+
         A :class:`IPGroupManager` -- manage shared public IP addresses.
-    
+
     .. attribute:: servers
-    
+
         A :class:`ServerManager` -- start, stop, and manage virtual machines.
-    
+
     .. automethod:: authenticate
 
 For example::
@@ -63,5 +63,5 @@ For more information, see the reference:
 
 .. toctree::
    :maxdepth: 2
-   
+
    ref/index

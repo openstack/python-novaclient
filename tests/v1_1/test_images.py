@@ -1,4 +1,3 @@
-
 from novaclient.v1_1 import images
 from tests.v1_1 import fakes
 from tests import utils

@@ -1,4 +1,3 @@
-
 from novaclient import exceptions
 from novaclient.v1_0 import flavors
 from tests.v1_0 import fakes
