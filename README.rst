@@ -43,16 +43,19 @@ set them as environment variables::
     export NOVA_API_KEY=yadayada
     export NOVA_PROJECT_ID=myproject
 
-You will also need to define the authentication url with ``--url``. Or set it as
-an environment variable as well::
+You will also need to define the authentication url with ``--url`` and the
+version of the API with ``--version``.  Or set them as an environment 
+variables as well::
 
     export NOVA_URL=http://myserver:port/v1.0/
+    export NOVA_VERSION=1.0
     
 You'll find complete documentation on the shell by running 
 ``nova help``::
-    
-    usage: nova [--username USERNAME] [--apikey APIKEY] 
-                        [--projectid PROJECTID] [--url AUTH_URL] <subcommand> ...
+
+    usage: nova [--username USERNAME] [--apikey APIKEY] [--projectid PROJECTID]
+                   [--url URL] [--version VERSION]
+                   <subcommand> ...
 
     Command-line interface to the OpenStack Nova API.
 
@@ -107,7 +110,9 @@ You'll find complete documentation on the shell by running
       --apikey PROJECTID    Defaults to env[NOVA_PROJECT_ID].
       --url AUTH_URL        Defaults to env[NOVA_URL] or
                             https://auth.api.rackspacecloud.com/v1.0
-                            if undefined. 
+                            if undefined.
+      --version VERSION     Accepts 1.0 or 1.1, defaults to 
+                            env[NOVA_VERSION].
 
     See "nova help COMMAND" for help on a specific command.
     
