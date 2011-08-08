@@ -134,26 +134,29 @@ class HTTPClient(httplib2.Http):
                 self.version = part
                 break
 
+        auth_url = self.auth_url
         if self.version == "v2.0":  #FIXME(chris): This should be better.
-            self._v2_auth()
+            while auth_url:
+                auth_url = self._v2_auth(auth_url)
         else:
-            redir = self._v1_auth()
-            if redir and not self.auth_token:
-                self.auth_url = redir
-                try:
-                    self._v1_auth()
-                    if not self.auth_token:
-                        raise exceptions.ClientException('Not authenticated')
-                except exceptions.ClientException:
-                    self._v2_auth()
+            try:
+                while auth_url:
+                    auth_url = self._v1_auth(auth_url)
+            # In some configurations nova makes redirection to
+            # v2.0 keystone endpoint. Also, new location does not contain
+            # real endpoint, only hostname and port.
+            except exceptions.ClientException:
+                if auth_url.find('v2.0') < 0:
+                    auth_url = urlparse.urljoin(auth_url, 'v2.0/')
+                self._v2_auth(auth_url)
 
-    def _v1_auth(self):
+    def _v1_auth(self, url):
         headers = {'X-Auth-User': self.user,
                    'X-Auth-Key': self.apikey}
         if self.projectid:
             headers['X-Auth-Project-Id'] = self.projectid
 
-        resp, body = self.request(self.auth_url, 'GET', headers=headers)
+        resp, body = self.request(url, 'GET', headers=headers)
         if resp.status in (200, 204):  # in some cases we get No Content
             self.management_url = resp['x-server-management-url']
 
@@ -163,14 +166,14 @@ class HTTPClient(httplib2.Http):
         else:
             raise exceptions.from_response(resp, body)
 
-    def _v2_auth(self):
+    def _v2_auth(self, url):
         body = {"passwordCredentials": {"username": self.user,
                                         "password": self.apikey}}
 
         if self.projectid:
             body['passwordCredentials']['tenantId'] = self.projectid
 
-        token_url = urlparse.urljoin(self.auth_url, "tokens")
+        token_url = urlparse.urljoin(url, "tokens")
         resp, body = self.request(token_url, "POST", body=body)
 
         if resp == 200:  # content must always present
@@ -180,6 +183,8 @@ class HTTPClient(httplib2.Http):
 
             #TODO(chris): Implement service_catalog
             self.service_catalog = None
+        elif resp.status == 305:
+            return resp['location']
         else:
             raise exceptions.from_response(resp, body)
 
