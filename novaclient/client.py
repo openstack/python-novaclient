@@ -134,7 +134,7 @@ class HTTPClient(httplib2.Http):
                 self.version = part
                 break
 
-        if self.version == "v2.0": #FIXME(chris): This should be better.
+        if self.version == "v2.0":  #FIXME(chris): This should be better.
             self._v2_auth()
         else:
             redir = self._v1_auth()
@@ -154,7 +154,7 @@ class HTTPClient(httplib2.Http):
             headers['X-Auth-Project-Id'] = self.projectid
 
         resp, body = self.request(self.auth_url, 'GET', headers=headers)
-        if resp.status in (200, 204): # in some cases we get No Content
+        if resp.status in (200, 204):  # in some cases we get No Content
             self.management_url = resp['x-server-management-url']
 
             self.auth_token = resp['x-auth-token']
@@ -173,7 +173,7 @@ class HTTPClient(httplib2.Http):
         token_url = urlparse.urljoin(self.auth_url, "tokens")
         resp, body = self.request(token_url, "POST", body=body)
 
-        if resp == 200: # content must always present
+        if resp == 200:  # content must always present
             self.management_url = body["auth"]["serviceCatalog"] \
                                       ["nova"][0]["publicURL"]
             self.auth_token = body["auth"]["token"]["id"]
