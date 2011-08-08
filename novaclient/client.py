@@ -135,7 +135,7 @@ class HTTPClient(httplib2.Http):
                 break
 
         auth_url = self.auth_url
-        if self.version == "v2.0":  #FIXME(chris): This should be better.
+        if self.version == "v2.0":  # FIXME(chris): This should be better.
             while auth_url:
                 auth_url = self._v2_auth(auth_url)
         else:
