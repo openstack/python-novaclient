@@ -25,6 +25,7 @@ class Client(object):
 
     """
 
+    # FIXME(jesse): project_id isn't required to autenticate
     def __init__(self, username, api_key, project_id, auth_url, timeout=None):
         self.flavors = flavors.FlavorManager(self)
         self.images = images.ImageManager(self)

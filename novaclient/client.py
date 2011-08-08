@@ -1,4 +1,6 @@
 # Copyright 2010 Jacob Kaplan-Moss
+# Copyright 2011 Piston Cloud Computing
+
 """
 OpenStack Client interface. Handles the REST calls and responses.
 """
@@ -132,14 +134,32 @@ class HTTPClient(httplib2.Http):
                 self.version = part
                 break
 
-        headers = {'X-Auth-User': self.user,
-                   'X-Auth-Key': self.apikey}
-        if self.projectid:
-            headers['X-Auth-Project-Id'] = self.projectid
-        resp, body = self.request(self.auth_url, 'GET', headers=headers)
-        self.management_url = resp['x-server-management-url']
+        if not self.version == "v2.0": #FIXME(chris): This should be better.
+            headers = {'X-Auth-User': self.user,
+                       'X-Auth-Key': self.apikey}
+            if self.projectid:
+                headers['X-Auth-Project-Id'] = self.projectid
 
-        self.auth_token = resp['x-auth-token']
+            resp, body = self.request(self.auth_url, 'GET', headers=headers)
+            self.management_url = resp['x-server-management-url']
+
+            self.auth_token = resp['x-auth-token']
+        else:
+            body = {"passwordCredentials": {"username": self.user,
+                                            "password": self.apikey}}
+
+            if self.projectid:
+                body['passwordCredentials']['tenantId'] = self.projectid
+
+            token_url = urlparse.urljoin(self.auth_url, "tokens")
+            resp, body = self.request(token_url, "POST", body=body)
+
+            self.management_url = body["auth"]["serviceCatalog"] \
+                                      ["nova"][0]["publicURL"]
+            self.auth_token = body["auth"]["token"]["id"]
+
+            #TODO(chris): Implement service_catalog 
+            self.service_catalog = None
 
     def _munge_get_url(self, url):
         """
