@@ -30,7 +30,7 @@ class Keypair(base.Resource):
 
     @property
     def uuid(self):
-        return self.key_name
+        return self.name
 
     def delete(self):
         self.manager.delete(self)
@@ -39,14 +39,17 @@ class Keypair(base.Resource):
 class KeypairManager(base.ManagerWithFind):
     resource_class = Keypair
 
-    def create(self, key_name):
+    def create(self, name, public_key=None):
         """
         Create a keypair
 
-        :param key_name: name for the keypair to create
+        :param name: name for the keypair to create
+        :param public_key: existing public key to import
         """
-        body = {'keypair': {'key_name': key_name}}
-        return self._create('/extras/keypairs', body, 'keypair')
+        body = {'keypair': {'name': name}}
+        if public_key:
+            body['keypair']['public_key'] = public_key
+        return self._create('/os-keypairs', body, 'keypair')
 
     def delete(self, key):
         """
@@ -54,10 +57,10 @@ class KeypairManager(base.ManagerWithFind):
 
         :param key: The :class:`Keypair` (or its ID) to delete.
         """
-        self._delete('/extras/keypairs/%s' % (base.getid(key)))
+        self._delete('/os-keypairs/%s' % (base.getid(key)))
 
     def list(self):
         """
         Get a list of keypairs.
         """
-        return self._list('/extras/keypairs', 'keypairs')
+        return self._list('/os-keypairs', 'keypairs')

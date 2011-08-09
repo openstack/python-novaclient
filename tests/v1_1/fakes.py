@@ -31,7 +31,8 @@ class FakeHTTPClient(base_client.HTTPClient):
             assert 'body' in kwargs
 
         # Call the method
-        munged_url = url.strip('/').replace('/', '_').replace('.', '_')
+        munged_url = url.strip('/').replace('/', '_') \
+                        .replace('.', '_').replace('-', '_')
         callback = "%s_%s" % (method.lower(), munged_url)
         if not hasattr(self, callback):
             raise AssertionError('Called unknown API method: %s %s' % (method,
@@ -377,17 +378,17 @@ class FakeHTTPClient(base_client.HTTPClient):
     #
     # Keypairs
     #
-    def get_extras_keypairs(self, *kw):
+    def get_os_keypairs(self, *kw):
         return (200, {"keypairs": [
-            {'fingerprint': 'FAKE_KEYPAIR', 'key_name': 'test'}
+            {'fingerprint': 'FAKE_KEYPAIR', 'name': 'test'}
         ]})
 
-    def delete_extras_keypairs_test(self, **kw):
+    def delete_os_keypairs_test(self, **kw):
         return (202, None)
 
-    def post_extras_keypairs(self, body, **kw):
+    def post_os_keypairs(self, body, **kw):
         assert body.keys() == ['keypair']
         fakes.assert_has_keys(body['keypair'],
-                              required=['key_name'])
-        r = {'keypair': self.get_extras_keypairs()[1]['keypairs'][0]}
+                              required=['name'])
+        r = {'keypair': self.get_os_keypairs()[1]['keypairs'][0]}
         return (202, r)
