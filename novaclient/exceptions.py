@@ -8,6 +8,10 @@ class CommandError(Exception):
     pass
 
 
+class AuthorizationFailure(Exception):
+    pass
+
+
 class ClientException(Exception):
     """
     The base exception class for all exceptions this library raises.
@@ -27,6 +31,7 @@ class BadRequest(ClientException):
     """
     http_status = 400
     message = "Bad request"
+
 
 
 class Unauthorized(ClientException):

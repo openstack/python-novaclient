@@ -141,7 +141,10 @@ class HTTPClient(httplib2.Http):
                 headers['X-Auth-Project-Id'] = self.projectid
 
             resp, body = self.request(self.auth_url, 'GET', headers=headers)
-            self.management_url = resp['x-server-management-url']
+            try:
+                self.management_url = resp['x-server-management-url']
+            except KeyError:
+                raise exceptions.AuthorizationFailure()
 
             self.auth_token = resp['x-auth-token']
         else:
