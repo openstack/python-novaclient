@@ -141,6 +141,18 @@ By way of a quick-start::
 
     >>> s.delete()
 
+Quick-start using keystone::
+
+    # use v2.0 auth with http://example.com:5000/v2.0/")
+    >>> from novaclient.v1_1 import client
+    >>> nt = client.Client(USER, PASS, TENANT, AUTH_URL)
+    >>> nt.flavors.list()
+    [...]
+    >>> nt.servers.list()
+    [...]
+    >>> nt.keypairs.list()
+    [...]
+
 What's new?
 -----------
 
