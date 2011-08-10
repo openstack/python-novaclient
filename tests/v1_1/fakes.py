@@ -378,6 +378,24 @@ class FakeHTTPClient(base_client.HTTPClient):
     #
     # Keypairs
     #
+    def get_os_keypairs(self, *kw):
+        return (200, {"keypairs": [
+            {'fingerprint': 'FAKE_KEYPAIR', 'name': 'test'}
+        ]})
+
+    def delete_os_keypairs_test(self, **kw):
+        return (202, None)
+
+    def post_os_keypairs(self, body, **kw):
+        assert body.keys() == ['keypair']
+        fakes.assert_has_keys(body['keypair'],
+                              required=['name'])
+        r = {'keypair': self.get_os_keypairs()[1]['keypairs'][0]}
+        return (202, r)
+
+    #
+    # Quotas
+    #
     def get_os_quotas(self, *kw):
       return (200, {'quota_set_list': [{
             'tenant_id': 'test',
@@ -415,4 +433,3 @@ class FakeHTTPClient(base_client.HTTPClient):
                               required=['tenant_id'])
         r = self.get_os_quotas_test()[1]
         return (200, r)
-
