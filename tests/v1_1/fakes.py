@@ -373,3 +373,21 @@ class FakeHTTPClient(base_client.HTTPClient):
 
     def delete_zones_1(self, **kw):
         return (202, None)
+
+    #
+    # Security Groups
+    #
+    def get_extras_security_groups(self, **kw):
+    	return (200, {"security_groups": [
+    	    {'name': 'test', 'description': 'FAKE_SECURITY_GROUP'}
+	]})
+
+    def delete_extras_security_groups_test(self, **kw):
+    	return (202, None)
+
+    def post_extras_security_groups(self, body, **kw):
+    	assert body.keys() == ['security_group']
+	fakes.assert_has_keys(body['security_group'],
+                        required=['name','description'])
+	r = {'security_group': self.get_extras_security_groups()[1]['security_groups'][0]}
+	return (202, r)
