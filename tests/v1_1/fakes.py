@@ -391,3 +391,23 @@ class FakeHTTPClient(base_client.HTTPClient):
                 required=['name','description'])
         r = {'security_group': self.get_extras_security_groups()[1]['security_groups'][0]}
         return (202, r)
+
+    #
+    # Security Group Rules
+    #
+    def get_extras_security_group_rules(self, **kw):
+        return (200, {"security_group_rules": [
+                {'parent_group_id': 'test', 'group_id': 'FAKE_SECURITY_GROUP'}
+        ]})
+
+    def delete_extras_security_group_rules_test(self, **kw):
+        return (202, None)
+
+    def post_extras_security_group_rules(self, body, **kw):
+        assert body.keys() == ['security_group_rule']
+        fakes.assert_has_keys(body['security_group_rule'],
+                required=['parent_group_id'],
+                optional=['group_id','ip_protocol','from_port','to_port','cidr'])
+        r = {'security_group_rule': self.get_extras_security_group_rules()[1]['security_group_rules'][0]}
+        return (202, r)
+

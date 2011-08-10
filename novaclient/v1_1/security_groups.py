@@ -43,7 +43,7 @@ class SecurityGroupManager(base.ManagerWithFind):
     	"""
         Create a security group
 
-        :param name: name for the security group to dreate
+        :param name: name for the security group to create
         :param description: description of the security group
         """
         body = {"security_group": {"name": name, 'description': description}}
