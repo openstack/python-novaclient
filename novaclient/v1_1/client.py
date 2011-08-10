@@ -2,6 +2,7 @@ from novaclient import client
 from novaclient.v1_1 import flavors
 from novaclient.v1_1 import images
 from novaclient.v1_1 import servers
+from novaclient.v1_1 import quotas
 from novaclient.v1_1 import zones
 
 
@@ -28,6 +29,7 @@ class Client(object):
         self.images = images.ImageManager(self)
         self.servers = servers.ServerManager(self)
         self.zones = zones.ZoneManager(self)
+        self.quotas = quotas.QuotaSetManager(self)
 
         self.client = client.HTTPClient(username,
                                         api_key,
