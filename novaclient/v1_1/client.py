@@ -3,6 +3,7 @@ from novaclient.v1_1 import flavors
 from novaclient.v1_1 import images
 from novaclient.v1_1 import keypairs
 from novaclient.v1_1 import servers
+from novaclient.v1_1 import quotas
 from novaclient.v1_1 import zones
 
 
@@ -32,6 +33,7 @@ class Client(object):
         # extensions
         self.keypairs = keypairs.KeypairManager(self)
         self.zones = zones.ZoneManager(self)
+        self.quotas = quotas.QuotaSetManager(self)
 
         self.client = client.HTTPClient(username,
                                         api_key,
