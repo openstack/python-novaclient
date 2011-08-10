@@ -166,6 +166,8 @@ class OpenStackComputeShell(object):
             self.cs.authenticate()
         except exc.Unauthorized:
             raise exc.CommandError("Invalid OpenStack Nova credentials.")
+        except exc.AuthorizationFailure:
+            raise exc.CommandError("Unable to authorize user")
 
         args.func(self.cs, args)
 
