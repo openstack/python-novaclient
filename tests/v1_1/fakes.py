@@ -379,10 +379,15 @@ class FakeHTTPClient(base_client.HTTPClient):
     #
     def get_extras_security_groups(self, **kw):
         return (200, {"security_groups": [
-                {'name': 'test', 'description': 'FAKE_SECURITY_GROUP'}
+                {'id': 1, 'name': 'test', 'description': 'FAKE_SECURITY_GROUP'}
         ]})
 
-    def delete_extras_security_groups_test(self, **kw):
+    def get_extras_security_groups_1(self, **kw):
+        return (200, {"security_group": 
+                {'id': 1, 'name': 'test', 'description': 'FAKE_SECURITY_GROUP'}
+        })
+
+    def delete_extras_security_groups_1(self, **kw):
         return (202, None)
 
     def post_extras_security_groups(self, body, **kw):
@@ -397,10 +402,10 @@ class FakeHTTPClient(base_client.HTTPClient):
     #
     def get_extras_security_group_rules(self, **kw):
         return (200, {"security_group_rules": [
-                {'parent_group_id': 'test', 'group_id': 'FAKE_SECURITY_GROUP'}
+                {'id': 1, 'parent_group_id': 1, 'group_id': 'FAKE_SECURITY_GROUP'}
         ]})
 
-    def delete_extras_security_group_rules_test(self, **kw):
+    def delete_extras_security_group_rules_1(self, **kw):
         return (202, None)
 
     def post_extras_security_group_rules(self, body, **kw):

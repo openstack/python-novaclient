@@ -21,12 +21,12 @@ from novaclient import base
 
 
 class SecurityGroupRule(base.Resource):
-    def __str__(self):
-        return self.uuid
 
-    @property
-    def uuid(self):
-        return self.name
+    def __repr__(self):
+        return "<Security_group_rule: %s>" % self.id
+
+    def __str__(self):
+        return str(self.id)
 
     def delete(self):
         self.manager.delete(self)
@@ -39,7 +39,7 @@ class SecurityGroupRuleManager(base.ManagerWithFind):
     	"""
         Create a security group
 
-        :param parent_group_id: Security group name for the created rule
+        :param parent_group_id: Security group name for the created rule (int)
         """
         body = { "security_group_rule": { 
                             "ip_protocol": ip_protocol,

@@ -23,17 +23,16 @@ from novaclient import base
 class SecurityGroup(base.Resource):
 
     def __repr__(self):
-        return "<Security_group: %s>" % self.uuid
+        return "<Security_group: %s>" % self.id
 
     def __str__(self):
-        return self.uuid
-
-    @property
-    def uuid(self):
-        return self.name
+        return str(self.id)
 
     def delete(self):
         self.manager.delete(self)
+
+    def get(self):
+        self.manager.get(self)
 
 
 class SecurityGroupManager(base.ManagerWithFind):
@@ -45,6 +44,7 @@ class SecurityGroupManager(base.ManagerWithFind):
 
         :param name: name for the security group to create
         :param description: description of the security group
+        :rtype: Integer ID of created security group
         """
         body = {"security_group": {"name": name, 'description': description}}
         return self._create('/extras/security_groups', body, 'security_group')
@@ -54,8 +54,11 @@ class SecurityGroupManager(base.ManagerWithFind):
         Delete a security group
 
         :param id: The security group ID to delete
+        :rtype: None
         """
-        return self._delete('/extras/security_groups/%s' % id)
+        if hasattr(id, 'id'):
+            id = id.id
+        return self._delete('/extras/security_groups/%d' % id)
 
     def get(self, id):
     	"""
