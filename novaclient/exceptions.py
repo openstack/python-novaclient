@@ -33,7 +33,6 @@ class BadRequest(ClientException):
     message = "Bad request"
 
 
-
 class Unauthorized(ClientException):
     """
     HTTP 401 - Unauthorized: bad credentials.
