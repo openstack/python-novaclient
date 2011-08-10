@@ -27,7 +27,7 @@ class Client(object):
     def __init__(self, username, api_key, project_id, auth_url, timeout=None):
         self.flavors = flavors.FlavorManager(self)
         self.images = images.ImageManager(self)
-	self.security_groups = security_groups.SecurityGroupManager(self)
+        self.security_groups = security_groups.SecurityGroupManager(self)
         self.servers = servers.ServerManager(self)
         self.zones = zones.ZoneManager(self)
 

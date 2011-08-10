@@ -25,9 +25,15 @@ class SecurityGroup(base.Resource):
     def __repr__(self):
         return "<Security_group: %s>" % self.uuid
 
+    def __str__(self):
+        return self.uuid
+
     @property
     def uuid(self):
         return self.name
+
+    def delete(self):
+        self.manager.delete(self)
 
 
 class SecurityGroupManager(base.ManagerWithFind):
@@ -35,35 +41,35 @@ class SecurityGroupManager(base.ManagerWithFind):
 
     def create(self, name, description):
     	"""
-	Create a security group
-	
-	:param name: name for the security group to dreate
-	:param description: description of the security group
-	"""
+        Create a security group
+
+        :param name: name for the security group to dreate
+        :param description: description of the security group
+        """
         body = {"security_group": {"name": name, 'description': description}}
         return self._create('/extras/security_groups', body, 'security_group')
 
     def delete(self, id):
     	"""
-	Delete a security group
-	
-	:param id: The security group ID to delete
-	"""
+        Delete a security group
+
+        :param id: The security group ID to delete
+        """
         return self._delete('/extras/security_groups/%s' % id)
 
     def get(self, id):
     	"""
-	Get a security group
-	
-	:param id: The security group ID to get
-	:rtype: :class:`SecurityGroup`
+        Get a security group
+
+        :param id: The security group ID to get
+        :rtype: :class:`SecurityGroup`
     	"""
         return self._get('/extras/security_groups/%s' % id, 'security_group')
 
     def list(self):
         """
         Get a list of all security_groups
-        
+
         :rtype: list of :class:`SecurityGroup`
         """
         return self._list("/extras/security_groups", "security_groups")
