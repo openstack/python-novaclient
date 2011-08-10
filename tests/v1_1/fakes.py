@@ -31,13 +31,8 @@ class FakeHTTPClient(base_client.HTTPClient):
             assert 'body' in kwargs
 
         # Call the method
-<<<<<<< HEAD
-        munged_url = url.strip('/').replace('/', '_') \
-                        .replace('.', '_').replace('-', '_')
-=======
         munged_url = url.strip('/').replace('/', '_').replace('.', '_')
         munged_url = munged_url.replace('-', '_')
->>>>>>> rax/master
         callback = "%s_%s" % (method.lower(), munged_url)
         if not hasattr(self, callback):
             raise AssertionError('Called unknown API method: %s %s' % (method,
