@@ -9,6 +9,14 @@ from novaclient import exceptions
 from tests import utils
 
 
+def to_http_response(resp_dict):
+    """Handy converts dict {'status':status, 'body': body, 'headers':headers} to httplib response."""
+    resp = httplib2.Response(resp_dict)
+    for k, v in resp_dict['headers'].items():
+        resp[k] = v
+    return resp
+
+
 class AuthenticateAgainstKeystoneTests(utils.TestCase):
     def test_authenticate_success(self):
         cs = client.Client("username", "apikey", "project_id", "auth_url/v2.0")
@@ -19,7 +27,7 @@ class AuthenticateAgainstKeystoneTests(utils.TestCase):
                                       "internalURL": "http://localhost:8774/v1.1",
                                       "publicURL": "http://localhost:8774/v1.1/"}]}}}
         auth_response = httplib2.Response({
-            "status": 204, 
+            "status": 200,
             "body": json.dumps(resp),
             })
 
@@ -45,7 +53,6 @@ class AuthenticateAgainstKeystoneTests(utils.TestCase):
 
         test_auth_call()
 
-
     def test_authenticate_failure(self):
         cs = client.Client("username", "apikey", "project_id", "auth_url/v2.0")
         resp = {"unauthorized": {"message": "Unauthorized", "code": "401"}}
@@ -59,6 +66,59 @@ class AuthenticateAgainstKeystoneTests(utils.TestCase):
         @mock.patch.object(httplib2.Http, "request", mock_request)
         def test_auth_call():
             self.assertRaises(exceptions.Unauthorized, cs.client.authenticate)
+
+        test_auth_call()
+
+    def test_auth_redirect(self):
+        cs = client.Client("username", "apikey", "project_id", "auth_url/v1.0")
+        dict_correct_response = {"auth": {"token": {"expires": "12345", "id": "FAKE_ID"},
+                         "serviceCatalog": {
+                            "nova": [{"adminURL": "http://localhost:8774/v1.1",
+                                      "region": "RegionOne",
+                                      "internalURL": "http://localhost:8774/v1.1",
+                                      "publicURL": "http://localhost:8774/v1.1/"}]}}}
+        correct_response = json.dumps(dict_correct_response)
+        dict_responses = [
+            {"headers": {'location':'http://127.0.0.1:5001'},
+             "status": 305,
+             "body": "Use proxy"},
+            # Configured on admin port, nova redirects to v2.0 port.
+            # When trying to connect on it, keystone auth succeed by v1.0
+            # protocol (through headers) but tokens are being returned in
+            # body (looks like keystone bug). Leaved for compatibility.
+            {"headers": {},
+             "status": 200,
+             "body": correct_response},
+            {"headers": {},
+             "status": 200,
+             "body": correct_response}
+        ]
+
+        responses = [ (to_http_response(resp), resp['body']) for resp in dict_responses ]
+
+        def side_effect(*args, **kwargs):
+            return responses.pop(0)
+
+        mock_request = mock.Mock(side_effect=side_effect)
+
+        @mock.patch.object(httplib2.Http, "request", mock_request)
+        def test_auth_call():
+            cs.client.authenticate()
+            headers = {'User-Agent': cs.client.USER_AGENT,
+                       'Content-Type': 'application/json',}
+            body = {'passwordCredentials': {'username': cs.client.user,
+                                            'password': cs.client.apikey,
+                                            'tenantId': cs.client.projectid,}}
+
+            token_url = urlparse.urljoin(cs.client.auth_url, "tokens")
+            mock_request.assert_called_with(token_url, "POST",
+                                            headers=headers,
+                                            body=json.dumps(body))
+
+            resp = dict_correct_response
+            self.assertEqual(cs.client.management_url,
+                             resp["auth"]["serviceCatalog"]["nova"][0]["publicURL"])
+            self.assertEqual(cs.client.auth_token, resp["auth"]["token"]["id"])
 
         test_auth_call()
 
