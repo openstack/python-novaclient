@@ -145,7 +145,7 @@ class HTTPClient(httplib2.Http):
             # In some configurations nova makes redirection to
             # v2.0 keystone endpoint. Also, new location does not contain
             # real endpoint, only hostname and port.
-            except exceptions.ClientException:
+            except exceptions.WrongResponse:
                 if auth_url.find('v2.0') < 0:
                     auth_url = urlparse.urljoin(auth_url, 'v2.0/')
                 self._v2_auth(auth_url)
@@ -158,9 +158,12 @@ class HTTPClient(httplib2.Http):
 
         resp, body = self.request(url, 'GET', headers=headers)
         if resp.status in (200, 204):  # in some cases we get No Content
-            self.management_url = resp['x-server-management-url']
-
-            self.auth_token = resp['x-auth-token']
+            try:
+                self.management_url = resp['x-server-management-url']
+                self.auth_token = resp['x-auth-token']
+                self.auth_url = url
+            except KeyError:
+                raise exceptions.WrongResponse()
         elif resp.status == 305:
             return resp['location']
         else:
@@ -176,11 +179,14 @@ class HTTPClient(httplib2.Http):
         token_url = urlparse.urljoin(url, "tokens")
         resp, body = self.request(token_url, "POST", body=body)
 
-        if resp == 200:  # content must always present
-            self.management_url = body["auth"]["serviceCatalog"] \
-                                      ["nova"][0]["publicURL"]
-            self.auth_token = body["auth"]["token"]["id"]
-
+        if resp.status == 200:  # content must always present
+            try:
+                self.management_url = body["auth"]["serviceCatalog"] \
+                                          ["nova"][0]["publicURL"]
+                self.auth_token = body["auth"]["token"]["id"]
+                self.auth_url = url
+            except KeyError:
+                raise exceptions.WrongResponse()
             #TODO(chris): Implement service_catalog
             self.service_catalog = None
         elif resp.status == 305:
