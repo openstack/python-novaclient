@@ -402,7 +402,8 @@ class FakeHTTPClient(base_client.HTTPClient):
     #
     def get_extras_security_group_rules(self, **kw):
         return (200, {"security_group_rules": [
-                {'id': 1, 'parent_group_id': 1, 'group_id': 'FAKE_SECURITY_GROUP'}
+                {'id': 1, 'parent_group_id': 1, 'group_id': 2, 'ip_protocol': 'TCP',
+                        'from_port': '22', 'to_port': 22, 'cidr': '10.0.0.0/8'}
         ]})
 
     def delete_extras_security_group_rules_1(self, **kw):

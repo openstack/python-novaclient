@@ -67,6 +67,8 @@ class SecurityGroupManager(base.ManagerWithFind):
         :param id: The security group ID to get
         :rtype: :class:`SecurityGroup`
     	"""
+        if hasattr(id, 'id'):
+            id = id.id
         return self._get('/extras/security_groups/%s' % id, 'security_group')
 
     def list(self):

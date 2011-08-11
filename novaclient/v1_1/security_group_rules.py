@@ -39,7 +39,12 @@ class SecurityGroupRuleManager(base.ManagerWithFind):
     	"""
         Create a security group
 
-        :param parent_group_id: Security group name for the created rule (int)
+        :param ip_protocol: IP protocol, one of 'tcp', 'udp' or 'icmp'
+        :param from_port: Source port
+        :param to_port: Destination port
+        :param cidr: Destination IP address(es) in CIDR notation
+        :param group_id: Security group id (int)
+        :param parent_group_id: Parent security group id (int)
         """
         body = { "security_group_rule": { 
                             "ip_protocol": ip_protocol,
@@ -57,4 +62,6 @@ class SecurityGroupRuleManager(base.ManagerWithFind):
 
         :param id: The security group rule ID to delete
         """
+        if hasattr(id, 'id'):
+            id = id.id
         return self._delete('/extras/security_group_rules/%s' % id)
