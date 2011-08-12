@@ -279,21 +279,37 @@ def do_image_delete(cs, args):
     metavar='<ip6_regexp>',
     default=None,
     help='Search with regular expression match by IPv6 address')
-@utils.arg('--server_name',
-    dest='server_name',
-    metavar='<name_regexp>',
-    default=None,
-    help='Search with regular expression match by server name')
 @utils.arg('--name',
-    dest='display_name',
-    metavar='<name_regexp>',
-    default=None,
-    help='Search with regular expression match by display name')
-@utils.arg('--instance_name',
     dest='name',
     metavar='<name_regexp>',
     default=None,
+    help='Search with regular expression match by name')
+@utils.arg('--instance_name',
+    dest='instance_name',
+    metavar='<name_regexp>',
+    default=None,
     help='Search with regular expression match by instance name')
+@utils.arg('--status',
+    dest='status',
+    metavar='<status>',
+    default=None,
+    help='Search by server status')
+@utils.arg('--flavor',
+    dest='flavor',
+    metavar='<flavor>',
+    type=int,
+    default=None,
+    help='Search by flavor ID')
+@utils.arg('--image',
+    dest='image',
+    metavar='<image>',
+    default=None,
+    help='Search by image ID')
+@utils.arg('--host',
+    dest='host',
+    metavar='<hostname>',
+    default=None,
+    help='Search instances by hostname to which they are assigned')
 def do_list(cs, args):
     """List active servers."""
     recurse_zones = args.recurse_zones
@@ -304,7 +320,6 @@ def do_list(cs, args):
             'ip': args.ip,
             'ip6': args.ip6,
             'name': args.name,
-            'server_name': args.server_name,
             'display_name': args.display_name}
 
     if recurse_zones:
