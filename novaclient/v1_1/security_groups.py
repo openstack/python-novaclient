@@ -47,7 +47,7 @@ class SecurityGroupManager(base.ManagerWithFind):
         :rtype: Integer ID of created security group
         """
         body = {"security_group": {"name": name, 'description': description}}
-        return self._create('/extras/security_groups', body, 'security_group')
+        return self._create('/security_groups', body, 'security_group')
 
     def delete(self, id):
     	"""
@@ -58,7 +58,7 @@ class SecurityGroupManager(base.ManagerWithFind):
         """
         if hasattr(id, 'id'):
             id = id.id
-        return self._delete('/extras/security_groups/%d' % id)
+        return self._delete('/security_groups/%d' % id)
 
     def get(self, id):
     	"""
@@ -69,7 +69,7 @@ class SecurityGroupManager(base.ManagerWithFind):
     	"""
         if hasattr(id, 'id'):
             id = id.id
-        return self._get('/extras/security_groups/%s' % id, 'security_group')
+        return self._get('/security_groups/%s' % id, 'security_group')
 
     def list(self):
         """
@@ -77,4 +77,4 @@ class SecurityGroupManager(base.ManagerWithFind):
 
         :rtype: list of :class:`SecurityGroup`
         """
-        return self._list("/extras/security_groups", "security_groups")
+        return self._list("/security_groups", "security_groups")
