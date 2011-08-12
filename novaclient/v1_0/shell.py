@@ -493,6 +493,10 @@ def do_list(cs, args):
             'ip': args.ip,
             'ip6': args.ip6,
             'name': args.name,
+            'image': args.image,
+            'flavor': args.flavor,
+            'status': args.status,
+            'host': args.host,
             'display_name': args.display_name}
     if recurse_zones:
         to_print = ['UUID', 'Name', 'Status', 'Public IP', 'Private IP']

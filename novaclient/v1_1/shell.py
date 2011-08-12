@@ -251,11 +251,6 @@ def do_image_delete(cs, args):
     image.delete()
 
 
-@utils.arg('--fixed_ip',
-    dest='fixed_ip',
-    metavar='<fixed_ip>',
-    default=None,
-    help='Only match against fixed IP.')
 @utils.arg('--reservation_id',
     dest='reservation_id',
     metavar='<reservation_id>',
@@ -315,11 +310,14 @@ def do_list(cs, args):
     recurse_zones = args.recurse_zones
     search_opts = {
             'reservation_id': args.reservation_id,
-            'fixed_ip': args.fixed_ip,
             'recurse_zones': recurse_zones,
             'ip': args.ip,
             'ip6': args.ip6,
             'name': args.name,
+            'image': args.image,
+            'flavor': args.flavor,
+            'status': args.status,
+            'host': args.host,
             'display_name': args.display_name}
 
     if recurse_zones:
