@@ -10,9 +10,9 @@ cs = fakes.FakeClient()
 class SecurityGroupRulesTest(utils.TestCase):
     def test_delete_security_group_rule(self):
         cs.security_group_rules.delete(1)
-        cs.assert_called('DELETE', '/security_group_rules/1')
+        cs.assert_called('DELETE', '/os-security-group-rules/1')
 
     def test_create_security_group(self):
         sg = cs.security_group_rules.create(1)
-        cs.assert_called('POST', '/security_group_rules')
+        cs.assert_called('POST', '/os-security-group-rules')
         self.assertTrue(isinstance(sg, security_group_rules.SecurityGroupRule))

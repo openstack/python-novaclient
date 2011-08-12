@@ -54,7 +54,7 @@ class SecurityGroupRuleManager(base.ManagerWithFind):
                             "group_id": group_id,
                             "parent_group_id": parent_group_id }}
 
-        return self._create('/security_group_rules', body, "security_group_rule")
+        return self._create('/os-security-group-rules', body, "security_group_rule")
 
     def delete(self, id):
     	"""
@@ -64,4 +64,4 @@ class SecurityGroupRuleManager(base.ManagerWithFind):
         """
         if hasattr(id, 'id'):
             id = id.id
-        return self._delete('/security_group_rules/%s' % id)
+        return self._delete('/os-security-group-rules/%s' % id)
