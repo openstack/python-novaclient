@@ -11,7 +11,8 @@ class SecurityGroupsTest(utils.TestCase):
     def test_list_security_groups(self):
         sgs = cs.security_groups.list()
         cs.assert_called('GET', '/os-security-groups')
-        [self.assertTrue(isinstance(sg, security_groups.SecurityGroup)) for sg in sgs]
+        for sg in sgs:
+            self.assertTrue(isinstance(sg, security_groups.SecurityGroup))
 
     def test_get_security_groups(self):
         sg = cs.security_groups.get(1)
@@ -28,6 +29,6 @@ class SecurityGroupsTest(utils.TestCase):
         cs.assert_called('DELETE', '/os-security-groups/1')
 
     def test_create_security_group(self):
-        sg = cs.security_groups.create("foo","foo barr")
+        sg = cs.security_groups.create("foo", "foo barr")
         cs.assert_called('POST', '/os-security-groups')
         self.assertTrue(isinstance(sg, security_groups.SecurityGroup))

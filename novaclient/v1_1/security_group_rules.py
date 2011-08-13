@@ -35,8 +35,9 @@ class SecurityGroupRule(base.Resource):
 class SecurityGroupRuleManager(base.ManagerWithFind):
     resource_class = SecurityGroupRule
 
-    def create(self, parent_group_id, ip_protocol=None, from_port=None, to_port=None, cidr=None, group_id=None):
-    	"""
+    def create(self, parent_group_id, ip_protocol=None, from_port=None,
+               to_port=None, cidr=None, group_id=None):
+        """
         Create a security group
 
         :param ip_protocol: IP protocol, one of 'tcp', 'udp' or 'icmp'
@@ -46,22 +47,21 @@ class SecurityGroupRuleManager(base.ManagerWithFind):
         :param group_id: Security group id (int)
         :param parent_group_id: Parent security group id (int)
         """
-        body = { "security_group_rule": { 
-                            "ip_protocol": ip_protocol,
-                            "from_port": from_port,
-                            "to_port": to_port,
-                            "cidr": cidr,
-                            "group_id": group_id,
-                            "parent_group_id": parent_group_id }}
+        body = {"security_group_rule": {
+                    "ip_protocol": ip_protocol,
+                    "from_port": from_port,
+                    "to_port": to_port,
+                    "cidr": cidr,
+                    "group_id": group_id,
+                    "parent_group_id": parent_group_id}}
 
-        return self._create('/os-security-group-rules', body, "security_group_rule")
+        return self._create('/os-security-group-rules', body,
+                            'security_group_rule')
 
-    def delete(self, id):
-    	"""
+    def delete(self, rule):
+        """
         Delete a security group rule
 
-        :param id: The security group rule ID to delete
+        :param rule: The security group rule to delete (ID or Class)
         """
-        if hasattr(id, 'id'):
-            id = id.id
-        return self._delete('/os-security-group-rules/%s' % id)
+        return self._delete('/os-security-group-rules/%s' % base.getid(rule))

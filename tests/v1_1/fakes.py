@@ -31,7 +31,8 @@ class FakeHTTPClient(base_client.HTTPClient):
             assert 'body' in kwargs
 
         # Call the method
-        munged_url = url.strip('/').replace('/', '_').replace('.', '_').replace('-', '_')
+        munged_url = url.strip('/').replace('/', '_') \
+                        .replace('.', '_').replace('-', '_')
         callback = "%s_%s" % (method.lower(), munged_url)
         if not hasattr(self, callback):
             raise AssertionError('Called unknown API method: %s %s' % (method,
@@ -383,7 +384,7 @@ class FakeHTTPClient(base_client.HTTPClient):
         ]})
 
     def get_os_security_groups_1(self, **kw):
-        return (200, {"security_group": 
+        return (200, {"security_group":
                 {'id': 1, 'name': 'test', 'description': 'FAKE_SECURITY_GROUP'}
         })
 
@@ -393,8 +394,9 @@ class FakeHTTPClient(base_client.HTTPClient):
     def post_os_security_groups(self, body, **kw):
         assert body.keys() == ['security_group']
         fakes.assert_has_keys(body['security_group'],
-                required=['name','description'])
-        r = {'security_group': self.get_os_security_groups()[1]['security_groups'][0]}
+                              required=['name', 'description'])
+        r = {'security_group':
+                self.get_os_security_groups()[1]['security_groups'][0]}
         return (202, r)
 
     #
@@ -402,8 +404,9 @@ class FakeHTTPClient(base_client.HTTPClient):
     #
     def get_os_security_group_rules(self, **kw):
         return (200, {"security_group_rules": [
-                {'id': 1, 'parent_group_id': 1, 'group_id': 2, 'ip_protocol': 'TCP',
-                        'from_port': '22', 'to_port': 22, 'cidr': '10.0.0.0/8'}
+                {'id': 1, 'parent_group_id': 1, 'group_id': 2,
+                 'ip_protocol': 'TCP', 'from_port': '22', 'to_port': 22,
+                 'cidr': '10.0.0.0/8'}
         ]})
 
     def delete_os_security_group_rules_1(self, **kw):
@@ -412,8 +415,9 @@ class FakeHTTPClient(base_client.HTTPClient):
     def post_os_security_group_rules(self, body, **kw):
         assert body.keys() == ['security_group_rule']
         fakes.assert_has_keys(body['security_group_rule'],
-                required=['parent_group_id'],
-                optional=['group_id','ip_protocol','from_port','to_port','cidr'])
-        r = {'security_group_rule': self.get_os_security_group_rules()[1]['security_group_rules'][0]}
+            required=['parent_group_id'],
+            optional=['group_id', 'ip_protocol', 'from_port',
+                      'to_port', 'cidr'])
+        r = {'security_group_rule':
+            self.get_os_security_group_rules()[1]['security_group_rules'][0]}
         return (202, r)
-

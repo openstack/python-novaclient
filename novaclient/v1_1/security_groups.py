@@ -39,7 +39,7 @@ class SecurityGroupManager(base.ManagerWithFind):
     resource_class = SecurityGroup
 
     def create(self, name, description):
-    	"""
+        """
         Create a security group
 
         :param name: name for the security group to create
@@ -49,27 +49,24 @@ class SecurityGroupManager(base.ManagerWithFind):
         body = {"security_group": {"name": name, 'description': description}}
         return self._create('/os-security-groups', body, 'security_group')
 
-    def delete(self, id):
-    	"""
+    def delete(self, group):
+        """
         Delete a security group
 
-        :param id: The security group ID to delete
+        :param group: The security group to delete (group or ID)
         :rtype: None
         """
-        if hasattr(id, 'id'):
-            id = id.id
-        return self._delete('/os-security-groups/%d' % id)
+        return self._delete('/os-security-groups/%s' % base.getid(group))
 
     def get(self, id):
-    	"""
+        """
         Get a security group
 
-        :param id: The security group ID to get
+        :param group: The security group to get by ID
         :rtype: :class:`SecurityGroup`
-    	"""
-        if hasattr(id, 'id'):
-            id = id.id
-        return self._get('/os-security-groups/%s' % id, 'security_group')
+        """
+        return self._get('/os-security-groups/%s' % id,
+                         'security_group')
 
     def list(self):
         """
