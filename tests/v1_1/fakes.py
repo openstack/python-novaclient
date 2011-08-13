@@ -1,7 +1,7 @@
 import httplib2
 
 from novaclient import client as base_client
-jrom novaclient.v1_1 import client
+from novaclient.v1_1 import client
 from tests import fakes
 
 
@@ -373,7 +373,7 @@ class FakeHTTPClient(base_client.HTTPClient):
     def delete_zones_1(self, **kw):
         return (202, None)
 
-    https://github.com/rackspace/python-novaclient/pull/71/files#
+    #
     # Keypairs
     #
     def get_os_keypairs(self, *kw):
