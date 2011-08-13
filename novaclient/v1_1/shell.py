@@ -251,11 +251,6 @@ def do_image_delete(cs, args):
     image.delete()
 
 
-@utils.arg('--fixed_ip',
-    dest='fixed_ip',
-    metavar='<fixed_ip>',
-    default=None,
-    help='Only match against fixed IP.')
 @utils.arg('--reservation_id',
     dest='reservation_id',
     metavar='<reservation_id>',
@@ -279,33 +274,51 @@ def do_image_delete(cs, args):
     metavar='<ip6_regexp>',
     default=None,
     help='Search with regular expression match by IPv6 address')
-@utils.arg('--server_name',
-    dest='server_name',
-    metavar='<name_regexp>',
-    default=None,
-    help='Search with regular expression match by server name')
 @utils.arg('--name',
-    dest='display_name',
-    metavar='<name_regexp>',
-    default=None,
-    help='Search with regular expression match by display name')
-@utils.arg('--instance_name',
     dest='name',
     metavar='<name_regexp>',
     default=None,
+    help='Search with regular expression match by name')
+@utils.arg('--instance_name',
+    dest='instance_name',
+    metavar='<name_regexp>',
+    default=None,
     help='Search with regular expression match by instance name')
+@utils.arg('--status',
+    dest='status',
+    metavar='<status>',
+    default=None,
+    help='Search by server status')
+@utils.arg('--flavor',
+    dest='flavor',
+    metavar='<flavor>',
+    type=int,
+    default=None,
+    help='Search by flavor ID')
+@utils.arg('--image',
+    dest='image',
+    metavar='<image>',
+    default=None,
+    help='Search by image ID')
+@utils.arg('--host',
+    dest='host',
+    metavar='<hostname>',
+    default=None,
+    help='Search instances by hostname to which they are assigned')
 def do_list(cs, args):
     """List active servers."""
     recurse_zones = args.recurse_zones
     search_opts = {
             'reservation_id': args.reservation_id,
-            'fixed_ip': args.fixed_ip,
             'recurse_zones': recurse_zones,
             'ip': args.ip,
             'ip6': args.ip6,
             'name': args.name,
-            'server_name': args.server_name,
-            'display_name': args.display_name}
+            'image': args.image,
+            'flavor': args.flavor,
+            'status': args.status,
+            'host': args.host,
+            'instance_name': args.instance_name}
 
     if recurse_zones:
         id_col = 'UUID'

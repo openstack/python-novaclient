@@ -47,8 +47,13 @@ You will also need to define the authentication url with ``--url`` and the
 version of the API with ``--version``.  Or set them as an environment
 variables as well::
 
-    export NOVA_URL=http://myserver:port/v1.0/
-    export NOVA_VERSION=1.0
+    export NOVA_URL=http://example.com:8774/v1.1/
+    export NOVA_VERSION=1.1
+
+If you are using Keystone, you need to set the NOVA_URL to the keystone
+endpoint::
+
+    export NOVA_URL=http://example.com:5000/v2.0/
 
 You'll find complete documentation on the shell by running
 ``nova help``::
@@ -140,6 +145,18 @@ By way of a quick-start::
     ... time passes ...
 
     >>> s.delete()
+
+Quick-start using keystone::
+
+    # use v2.0 auth with http://example.com:5000/v2.0/")
+    >>> from novaclient.v1_1 import client
+    >>> nt = client.Client(USER, PASS, TENANT, AUTH_URL)
+    >>> nt.flavors.list()
+    [...]
+    >>> nt.servers.list()
+    [...]
+    >>> nt.keypairs.list()
+    [...]
 
 What's new?
 -----------

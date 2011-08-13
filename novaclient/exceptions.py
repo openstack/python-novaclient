@@ -8,6 +8,10 @@ class CommandError(Exception):
     pass
 
 
+class AuthorizationFailure(Exception):
+    pass
+
+
 class ClientException(Exception):
     """
     The base exception class for all exceptions this library raises.

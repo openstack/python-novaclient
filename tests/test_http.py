@@ -2,6 +2,7 @@ import httplib2
 import mock
 
 from novaclient import client
+from novaclient import exceptions
 from tests import utils
 
 
@@ -54,3 +55,13 @@ class ClientTest(utils.TestCase):
                                             headers=headers, body='[1, 2, 3]')
 
         test_post_call()
+
+    def test_auth_failure(self):
+        cl = get_client()
+
+        # response must not have x-server-management-url header
+        @mock.patch.object(httplib2.Http, "request", mock_request)
+        def test_auth_call():
+            self.assertRaises(exceptions.AuthorizationFailure, cl.authenticate)
+
+        test_auth_call()

@@ -1,6 +1,4 @@
 import httplib2
-import urllib
-import urlparse
 
 from novaclient import client as base_client
 from novaclient.v1_1 import client
@@ -31,8 +29,8 @@ class FakeHTTPClient(base_client.HTTPClient):
             assert 'body' in kwargs
 
         # Call the method
-        munged_url = url.strip('/').replace('/', '_') \
-                        .replace('.', '_').replace('-', '_')
+        munged_url = url.strip('/').replace('/', '_').replace('.', '_')
+        munged_url = munged_url.replace('-', '_')
         callback = "%s_%s" % (method.lower(), munged_url)
         if not hasattr(self, callback):
             raise AssertionError('Called unknown API method: %s %s' % (method,
@@ -374,6 +372,64 @@ class FakeHTTPClient(base_client.HTTPClient):
 
     def delete_zones_1(self, **kw):
         return (202, None)
+
+    # Keypairs
+    #
+    def get_os_keypairs(self, *kw):
+        return (200, {"keypairs": [
+            {'fingerprint': 'FAKE_KEYPAIR', 'name': 'test'}
+        ]})
+
+    def delete_os_keypairs_test(self, **kw):
+        return (202, None)
+
+    def post_os_keypairs(self, body, **kw):
+        assert body.keys() == ['keypair']
+        fakes.assert_has_keys(body['keypair'],
+                              required=['name'])
+        r = {'keypair': self.get_os_keypairs()[1]['keypairs'][0]}
+        return (202, r)
+
+    #
+    # Quotas
+    #
+    def get_os_quotas(self, *kw):
+      return (200, {'quota_set_list': [{
+            'tenant_id': 'test',
+            'metadata_items': [],
+            'injected_file_content_bytes': 1,
+            'volumes': 1,
+            'gigabytes': 1,
+            'ram': 1,
+            'floating_ips': 1,
+            'instances': 1,
+            'injected_files': 1,
+            'cores': 1,
+        }]})
+
+    def get_os_quotas_test(self, *kw):
+      return (200, {'quota_set': {
+            'tenant_id': 'test',
+            'metadata_items': [],
+            'injected_file_content_bytes': 1,
+            'volumes': 1,
+            'gigabytes': 1,
+            'ram': 1,
+            'floating_ips': 1,
+            'instances': 1,
+            'injected_files': 1,
+            'cores': 1,
+        }})
+
+    def delete_os_quotas_test(self, **kw):
+        return (202, None)
+
+    def put_os_quotas_test(self, body, **kw):
+        assert body.keys() == ['quota_set']
+        fakes.assert_has_keys(body['quota_set'],
+                              required=['tenant_id'])
+        r = self.get_os_quotas_test()[1]
+        return (200, r)
 
     #
     # Security Groups
