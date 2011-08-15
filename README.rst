@@ -21,7 +21,7 @@ Development takes place on GitHub__. Bug reports and patches may be filed there.
 __ https://github.com/rackspace/python-client
 
 This code a fork of `Jacobian's python-cloudservers`__ If you need API support
-for the Rackspace API soley or the BSD license, you should use that repository. 
+for the Rackspace API soley or the BSD license, you should use that repository.
 python-client is licensed under the Apache License like the rest of OpenStack.
 
 __ http://github.com/jacobian/python-cloudservers
@@ -36,7 +36,7 @@ Installing this package gets you a shell command, ``nova``, that you
 can use to interact with any Rackspace compatible API (including OpenStack).
 
 You'll need to provide your OpenStack username and API key. You can do this
-with the ``--username``, ``--apikey`` and  ``--projectid`` params, but it's easier to just 
+with the ``--username``, ``--apikey`` and  ``--projectid`` params, but it's easier to just
 set them as environment variables::
 
     export NOVA_USERNAME=openstack
@@ -44,13 +44,18 @@ set them as environment variables::
     export NOVA_PROJECT_ID=myproject
 
 You will also need to define the authentication url with ``--url`` and the
-version of the API with ``--version``.  Or set them as an environment 
+version of the API with ``--version``.  Or set them as an environment
 variables as well::
 
-    export NOVA_URL=http://myserver:port/v1.0/
-    export NOVA_VERSION=1.0
-    
-You'll find complete documentation on the shell by running 
+    export NOVA_URL=http://example.com:8774/v1.1/
+    export NOVA_VERSION=1.1
+
+If you are using Keystone, you need to set the NOVA_URL to the keystone
+endpoint::
+
+    export NOVA_URL=http://example.com:5000/v2.0/
+
+You'll find complete documentation on the shell by running
 ``nova help``::
 
     usage: nova [--username USERNAME] [--apikey APIKEY] [--projectid PROJECTID]
@@ -111,11 +116,11 @@ You'll find complete documentation on the shell by running
       --url AUTH_URL        Defaults to env[NOVA_URL] or
                             https://auth.api.rackspacecloud.com/v1.0
                             if undefined.
-      --version VERSION     Accepts 1.0 or 1.1, defaults to 
+      --version VERSION     Accepts 1.0 or 1.1, defaults to
                             env[NOVA_VERSION].
 
     See "nova help COMMAND" for help on a specific command.
-    
+
 Python API
 ----------
 
@@ -132,14 +137,26 @@ By way of a quick-start::
     >>> nt.servers.list()
     [...]
     >>> s = nt.servers.create(image=2, flavor=1, name='myserver')
-    
+
     ... time passes ...
-    
+
     >>> s.reboot()
-    
+
     ... time passes ...
-    
+
     >>> s.delete()
+
+Quick-start using keystone::
+
+    # use v2.0 auth with http://example.com:5000/v2.0/")
+    >>> from novaclient.v1_1 import client
+    >>> nt = client.Client(USER, PASS, TENANT, AUTH_URL)
+    >>> nt.flavors.list()
+    [...]
+    >>> nt.servers.list()
+    [...]
+    >>> nt.keypairs.list()
+    [...]
 
 What's new?
 -----------

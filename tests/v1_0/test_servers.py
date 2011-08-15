@@ -1,4 +1,3 @@
-
 import StringIO
 
 from novaclient.v1_0 import servers

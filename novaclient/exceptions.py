@@ -8,7 +8,7 @@ class CommandError(Exception):
     pass
 
 
-class WrongResponse(Exception):
+class AuthorizationFailure(Exception):
     pass
 
 

@@ -1,5 +1,5 @@
 # Copyright 2010 Jacob Kaplan-Moss
-# Copyright 2011 Piston Cloud Computing
+# Copyright 2011 Piston Cloud Computing, Inc.
 
 """
 OpenStack Client interface. Handles the REST calls and responses.
@@ -145,7 +145,7 @@ class HTTPClient(httplib2.Http):
             # In some configurations nova makes redirection to
             # v2.0 keystone endpoint. Also, new location does not contain
             # real endpoint, only hostname and port.
-            except exceptions.WrongResponse:
+            except exceptions.AuthorizationFailure:
                 if auth_url.find('v2.0') < 0:
                     auth_url = urlparse.urljoin(auth_url, 'v2.0/')
                 self._v2_auth(auth_url)
@@ -163,7 +163,7 @@ class HTTPClient(httplib2.Http):
                 self.auth_token = resp['x-auth-token']
                 self.auth_url = url
             except KeyError:
-                raise exceptions.WrongResponse()
+                raise exceptions.AuthorizationFailure()
         elif resp.status == 305:
             return resp['location']
         else:
@@ -186,7 +186,7 @@ class HTTPClient(httplib2.Http):
                 self.auth_token = body["auth"]["token"]["id"]
                 self.auth_url = url
             except KeyError:
-                raise exceptions.WrongResponse()
+                raise exceptions.AuthorizationFailure()
             #TODO(chris): Implement service_catalog
             self.service_catalog = None
         elif resp.status == 305:

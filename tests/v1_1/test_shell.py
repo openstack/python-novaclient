@@ -1,4 +1,3 @@
-
 import os
 import mock
 
@@ -49,7 +48,8 @@ class ShellTest(utils.TestCase):
             }}
         )
 
-        self.run_command('boot --image 1 --meta foo=bar --meta spam=eggs some-server ')
+        self.run_command('boot --image 1 --meta foo=bar'
+                         ' --meta spam=eggs some-server ')
         self.assert_called_anytime(
             'POST', '/servers',
             {'server': {
@@ -66,7 +66,8 @@ class ShellTest(utils.TestCase):
         testfile = os.path.join(os.path.dirname(__file__), 'testfile.txt')
         expected_file_data = open(testfile).read().encode('base64')
 
-        cmd = 'boot some-server --image 1 --file /tmp/foo=%s --file /tmp/bar=%s'
+        cmd = 'boot some-server --image 1 ' \
+              '--file /tmp/foo=%s --file /tmp/bar=%s'
         self.run_command(cmd % (testfile, testfile))
 
         self.assert_called_anytime(
@@ -85,7 +86,8 @@ class ShellTest(utils.TestCase):
         )
 
     def test_boot_invalid_file(self):
-        invalid_file = os.path.join(os.path.dirname(__file__), 'asdfasdfasdfasdf')
+        invalid_file = os.path.join(os.path.dirname(__file__),
+                                    'asdfasdfasdfasdf')
         cmd = 'boot some-server --image 1 --file /foo=%s' % invalid_file
         self.assertRaises(exceptions.CommandError, self.run_command, cmd)
 
@@ -146,9 +148,10 @@ class ShellTest(utils.TestCase):
         )
 
     def test_boot_invalid_keyfile(self):
-        invalid_file = os.path.join(os.path.dirname(__file__), 'asdfasdfasdfasdf')
-        self.assertRaises(exceptions.CommandError, self.run_command, 'boot some-server '
-                                               '--image 1 --key %s' % invalid_file)
+        invalid_file = os.path.join(os.path.dirname(__file__),
+                                    'asdfasdfasdfasdf')
+        self.assertRaises(exceptions.CommandError, self.run_command,
+                          'boot some-server --image 1 --key %s' % invalid_file)
 
     def test_flavor_list(self):
         self.run_command('flavor-list')
@@ -175,34 +178,42 @@ class ShellTest(utils.TestCase):
 
     def test_reboot(self):
         self.run_command('reboot sample-server')
-        self.assert_called('POST', '/servers/1234/action', {'reboot': {'type': 'SOFT'}})
+        self.assert_called('POST', '/servers/1234/action',
+                           {'reboot': {'type': 'SOFT'}})
         self.run_command('reboot sample-server --hard')
-        self.assert_called('POST', '/servers/1234/action', {'reboot': {'type': 'HARD'}})
+        self.assert_called('POST', '/servers/1234/action',
+                           {'reboot': {'type': 'HARD'}})
 
     def test_rebuild(self):
         self.run_command('rebuild sample-server 1')
-        self.assert_called('POST', '/servers/1234/action', {'rebuild': {'imageRef': 1}})
+        self.assert_called('POST', '/servers/1234/action',
+                           {'rebuild': {'imageRef': 1}})
 
     def test_rename(self):
         self.run_command('rename sample-server newname')
-        self.assert_called('PUT', '/servers/1234', {'server': {'name': 'newname'}})
+        self.assert_called('PUT', '/servers/1234',
+                           {'server': {'name': 'newname'}})
 
     def test_resize(self):
         self.run_command('resize sample-server 1')
-        self.assert_called('POST', '/servers/1234/action', {'resize': {'flavorRef': 1}})
+        self.assert_called('POST', '/servers/1234/action',
+                           {'resize': {'flavorRef': 1}})
 
     def test_resize_confirm(self):
         self.run_command('resize-confirm sample-server')
-        self.assert_called('POST', '/servers/1234/action', {'confirmResize': None})
+        self.assert_called('POST', '/servers/1234/action',
+                           {'confirmResize': None})
 
     def test_resize_revert(self):
         self.run_command('resize-revert sample-server')
-        self.assert_called('POST', '/servers/1234/action', {'revertResize': None})
+        self.assert_called('POST', '/servers/1234/action',
+                           {'revertResize': None})
 
     @mock.patch('getpass.getpass', mock.Mock(return_value='p'))
     def test_root_password(self):
         self.run_command('root-password sample-server')
-        self.assert_called('POST', '/servers/1234/action', {'changePassword': {'adminPass': 'p'}})
+        self.assert_called('POST', '/servers/1234/action',
+                           {'changePassword': {'adminPass': 'p'}})
 
     def test_show(self):
         self.run_command('show 1234')
