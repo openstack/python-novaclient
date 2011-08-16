@@ -100,7 +100,7 @@ def _boot(cs, args, reservation_id=None, min_count=None, max_count=None):
                                       "should be 0")
 
     flavor = args.flavor or cs.flavors.find(ram=256)
-    image = args.image or cs.images.find(name="Ubuntu 10.04 LTS "\
+    image = int(args.image) or cs.images.find(name="Ubuntu 10.04 LTS "\
                                                    "(lucid)")
 
     # Map --ipgroup <name> to an ID.
