@@ -100,7 +100,7 @@ def _boot(cs, args, reservation_id=None, min_count=None, max_count=None):
                                       "should be 0")
 
     flavor = args.flavor or cs.flavors.find(ram=256)
-    image = int(args.image) or cs.images.find(name="Ubuntu 10.04 LTS "\
+    image = args.image or cs.images.find(name="Ubuntu 10.04 LTS "\
                                                    "(lucid)")
 
     # Map --ipgroup <name> to an ID.
@@ -152,6 +152,7 @@ def _boot(cs, args, reservation_id=None, min_count=None, max_count=None):
           "Defaults to 256MB RAM instance.")
 @utils.arg('--image',
      default=None,
+     type=int,
      metavar='<image>',
      help="Image ID (see 'nova images'). "\
           "Defaults to Ubuntu 10.04 LTS.")
@@ -201,6 +202,7 @@ def do_boot(cs, args):
           "Defaults to 256MB RAM instance.")
 @utils.arg('--image',
      default=None,
+     type=int,
      metavar='<image>',
      help="Image ID (see 'nova images'). "\
           "Defaults to Ubuntu 10.04 LTS.")
@@ -251,6 +253,7 @@ def do_boot_for_account(cs, args):
           "Defaults to 256MB RAM instance.")
 @utils.arg('--image',
      default=None,
+     type=int,
      metavar='<image>',
      help="Image ID (see 'nova images'). "\
           "Defaults to Ubuntu 10.04 LTS.")
@@ -475,6 +478,7 @@ def do_ipgroup_delete(cs, args):
     help='Search by flavor ID')
 @utils.arg('--image',
     dest='image',
+    type=int,
     metavar='<image>',
     default=None,
     help='Search by image ID')
