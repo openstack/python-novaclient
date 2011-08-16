@@ -58,4 +58,4 @@ class QuotaSetManager(base.ManagerWithFind):
 
     def defaults(self, tenant_id):
         return self._get('/os-quota-sets/%s/defaults' % tenant_id,
-                         'quota_set_list')
+                         'quota_set')

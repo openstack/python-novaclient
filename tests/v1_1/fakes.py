@@ -34,9 +34,11 @@ class FakeHTTPClient(base_client.HTTPClient):
         munged_url = url.strip('/').replace('/', '_').replace('.', '_')
         munged_url = munged_url.replace('-', '_')
         callback = "%s_%s" % (method.lower(), munged_url)
+
         if not hasattr(self, callback):
-            raise AssertionError('Called unknown API method: %s %s' % (method,
-                url))
+            raise AssertionError('Called unknown API method: %s %s, '
+                                 'expected fakes method name: %s' % 
+                                 (method, url, callback))
 
         # Note the call
         self.callstack.append((method, url, kwargs.get('body', None)))
@@ -394,42 +396,47 @@ class FakeHTTPClient(base_client.HTTPClient):
         return (202, r)
 
     #
-    # Quotas
+    # Quotas 
     #
-    def get_os_quotas(self, *kw):
-      return (200, {'quota_set_list': [{
-            'tenant_id': 'test',
-            'metadata_items': [],
-            'injected_file_content_bytes': 1,
-            'volumes': 1,
-            'gigabytes': 1,
-            'ram': 1,
-            'floating_ips': 1,
-            'instances': 1,
-            'injected_files': 1,
-            'cores': 1,
-        }]})
 
-    def get_os_quotas_test(self, *kw):
-      return (200, {'quota_set': {
-            'tenant_id': 'test',
-            'metadata_items': [],
-            'injected_file_content_bytes': 1,
-            'volumes': 1,
-            'gigabytes': 1,
-            'ram': 1,
-            'floating_ips': 1,
-            'instances': 1,
-            'injected_files': 1,
-            'cores': 1,
-        }})
+    def get_os_quota_sets_test(self, **kw):
+        return (200, {'quota_set': {
+                      'tenant_id': 'test',
+                      'metadata_items': [],
+                      'injected_file_content_bytes': 1,
+                      'volumes': 1,
+                      'gigabytes': 1,
+                      'ram': 1,
+                      'floating_ips': 1,
+                      'instances': 1,
+                      'injected_files': 1,
+                      'cores': 1}})
 
-    def delete_os_quotas_test(self, **kw):
-        return (202, None)
+    def get_os_quota_sets_test_defaults(self):
+        return (200, {'quota_set': {
+                      'tenant_id': 'test',
+                      'metadata_items': [],
+                      'injected_file_content_bytes': 1,
+                      'volumes': 1,
+                      'gigabytes': 1,
+                      'ram': 1,
+                      'floating_ips': 1,
+                      'instances': 1,
+                      'injected_files': 1,
+                      'cores': 1}})
 
-    def put_os_quotas_test(self, body, **kw):
+    def put_os_quota_sets_test(self, body, **kw):
         assert body.keys() == ['quota_set']
         fakes.assert_has_keys(body['quota_set'],
                               required=['tenant_id'])
-        r = self.get_os_quotas_test()[1]
-        return (200, r)
+        return (200, {'quota_set': {
+                      'tenant_id': 'test',
+                      'metadata_items': [],
+                      'injected_file_content_bytes': 1,
+                      'volumes': 2,
+                      'gigabytes': 1,
+                      'ram': 1,
+                      'floating_ips': 1,
+                      'instances': 1,
+                      'injected_files': 1,
+                      'cores': 1}})
