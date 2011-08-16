@@ -396,7 +396,7 @@ class FakeHTTPClient(base_client.HTTPClient):
         return (202, r)
 
     #
-    # Quotas 
+    # Quotas
     #
 
     def get_os_quota_sets_test(self, **kw):
