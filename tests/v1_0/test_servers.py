@@ -170,13 +170,13 @@ class ServersTest(utils.TestCase):
     def test_rescue(self):
         s = cs.servers.get(1234)
         s.rescue()
-        cs.assert_called('POST', '/servers/1234/action')
+        cs.assert_called('POST', '/servers/1234/rescue')
         cs.servers.rescue(s)
-        cs.assert_called('POST', '/servers/1234/action')
+        cs.assert_called('POST', '/servers/1234/rescue')
 
     def test_unrescue(self):
         s = cs.servers.get(1234)
         s.unrescue()
-        cs.assert_called('POST', '/servers/1234/action')
+        cs.assert_called('POST', '/servers/1234/unrescue')
         cs.servers.unrescue(s)
-        cs.assert_called('POST', '/servers/1234/action')
+        cs.assert_called('POST', '/servers/1234/unrescue')
