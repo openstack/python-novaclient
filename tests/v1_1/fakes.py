@@ -254,6 +254,10 @@ class FakeHTTPClient(base_client.HTTPClient):
             assert body[action] is None
         elif action == 'migrate':
             assert body[action] is None
+        elif action == 'rescue':
+            assert body[action] is None
+        elif action == 'unrescue':
+            assert body[action] is None
         elif action == 'addFixedIp':
             assert body[action].keys() == ['networkId']
         elif action == 'removeFixedIp':
