@@ -267,13 +267,13 @@ class ServerManager(local_base.BootingManagerWithFind):
         """
         Rescue the server.
         """
-        self.api.client.post('/servers/%s/rescue' % base.getid(server))
+        self._action('rescue', server, {})
 
     def unrescue(self, server):
         """
         Unrescue the server.
         """
-        self.api.client.post('/servers/%s/unrescue' % base.getid(server))
+        self._action('unrescue', server, {})
 
     def diagnostics(self, server):
         """Retrieve server diagnostics."""
