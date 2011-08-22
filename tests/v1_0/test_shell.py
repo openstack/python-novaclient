@@ -68,7 +68,7 @@ class ShellTest(utils.TestCase):
         self.run_command('boot --image 1 some-server')
         self.assert_called(
             'POST', '/servers',
-            {'server': {'flavorId': 1, 'name': 'some-server', 'imageId': '1',
+            {'server': {'flavorId': 1, 'name': 'some-server', 'imageId': 1,
              'min_count': 1, 'max_count': 1}}
         )
 
@@ -76,7 +76,7 @@ class ShellTest(utils.TestCase):
                          ' --meta spam=eggs some-server ')
         self.assert_called(
             'POST', '/servers',
-            {'server': {'flavorId': 1, 'name': 'some-server', 'imageId': '1',
+            {'server': {'flavorId': 1, 'name': 'some-server', 'imageId': 1,
                         'min_count': 1, 'max_count': 1,
                         'metadata': {'foo': 'bar', 'spam': 'eggs'}}}
         )
@@ -91,7 +91,7 @@ class ShellTest(utils.TestCase):
 
         self.assert_called(
             'POST', '/servers',
-            {'server': {'flavorId': 1, 'name': 'some-server', 'imageId': '1',
+            {'server': {'flavorId': 1, 'name': 'some-server', 'imageId': 1,
                         'min_count': 1, 'max_count': 1,
                         'personality': [
                           {'path': '/tmp/bar', 'contents': expected_file_data},
@@ -120,7 +120,7 @@ class ShellTest(utils.TestCase):
             self.assert_called(
                 'POST', '/servers',
                 {'server': {'flavorId': 1, 'name': 'some-server',
-                            'imageId': '1', 'min_count': 1, 'max_count': 1,
+                            'imageId': 1, 'min_count': 1, 'max_count': 1,
                             'personality': [{
                                 'path': '/root/.ssh/authorized_keys2',
                                 'contents': ('SSHKEY').encode('base64')},
@@ -146,7 +146,7 @@ class ShellTest(utils.TestCase):
         self.run_command('boot some-server --image 1 --key %s' % testfile)
         self.assert_called(
             'POST', '/servers',
-            {'server': {'flavorId': 1, 'name': 'some-server', 'imageId': '1',
+            {'server': {'flavorId': 1, 'name': 'some-server', 'imageId': 1,
                         'min_count': 1, 'max_count': 1,
                         'personality': [
                             {'path': '/root/.ssh/authorized_keys2', 'contents':
@@ -165,7 +165,7 @@ class ShellTest(utils.TestCase):
         self.run_command('boot --image 1 --ipgroup 1 some-server')
         self.assert_called(
             'POST', '/servers',
-            {'server': {'flavorId': 1, 'name': 'some-server', 'imageId': '1',
+            {'server': {'flavorId': 1, 'name': 'some-server', 'imageId': 1,
                         'sharedIpGroupId': 1, 'min_count': 1, 'max_count': 1}}
         )
 
@@ -173,7 +173,7 @@ class ShellTest(utils.TestCase):
         self.run_command('boot --image 1 --ipgroup group1 some-server')
         self.assert_called(
             'POST', '/servers',
-            {'server': {'flavorId': 1, 'name': 'some-server', 'imageId': '1',
+            {'server': {'flavorId': 1, 'name': 'some-server', 'imageId': 1,
                         'sharedIpGroupId': 1, 'min_count': 1, 'max_count': 1}}
         )
 
