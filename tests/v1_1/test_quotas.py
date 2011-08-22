@@ -22,22 +22,19 @@ from tests import utils
 cs = fakes.FakeClient()
 
 
-class QuoatsTest(utils.TestCase):
-    def test_list_quotas(self):
-        qs = cs.quotas.list()
-        cs.assert_called('GET', '/os-quotas')
-        [self.assertTrue(isinstance(q, quotas.QuotaSet)) for q in qs]
+class QuotaSetsTest(utils.TestCase):
 
-    def test_delete_quota(self):
-        q = cs.quotas.list()[0]
-        q.delete()
-        cs.assert_called('DELETE', '/os-quotas/test')
-        cs.quotas.delete('test')
-        cs.assert_called('DELETE', '/os-quotas/test')
-        cs.quotas.delete(q)
-        cs.assert_called('DELETE', '/os-quotas/test')
+    def test_tenant_quotas_get(self):
+        tenant_id = 'test'
+        qs = cs.quotas.get(tenant_id)
+        cs.assert_called('GET', '/os-quota-sets/%s' % tenant_id)
+
+    def test_tenant_quotas_defaults(self):
+        tenant_id = 'test'
+        q = cs.quotas.defaults(tenant_id)
+        cs.assert_called('GET', '/os-quota-sets/%s/defaults' % tenant_id)
 
     def test_update_quota(self):
-        q = cs.quotas.list()[0]
+        q = cs.quotas.get('test')
         q.update(volumes=2)
-        cs.assert_called('PUT', '/os-quotas/test')
+        cs.assert_called('PUT', '/os-quota-sets/test')
