@@ -30,7 +30,7 @@ class Keypair(base.Resource):
 
     @property
     def uuid(self):
-        return self.name
+        return self._info['keypair']['name']
 
     def delete(self):
         self.manager.delete(self)
