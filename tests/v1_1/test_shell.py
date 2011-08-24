@@ -186,8 +186,17 @@ class ShellTest(utils.TestCase):
 
     def test_rebuild(self):
         self.run_command('rebuild sample-server 1')
-        self.assert_called('POST', '/servers/1234/action',
-                           {'rebuild': {'imageRef': 1}})
+        # XXX need a way to test multiple calls
+        #self.assert_called('POST', '/servers/1234/action',
+        #                   {'rebuild': {'imageRef': 1}})
+        self.assert_called('GET', '/images/2')
+
+        self.run_command('rebuild sample-server 1 --password asdf')
+        # XXX need a way to test multiple calls
+        #self.assert_called('POST', '/servers/1234/action',
+        #                   {'rebuild': {'imageRef': 1, 'adminPass': 'asdf'}})
+        self.assert_called('GET', '/images/2')
+
 
     def test_rename(self):
         self.run_command('rename sample-server newname')

@@ -128,13 +128,14 @@ class Server(base.Resource):
         """
         self.manager.reboot(self, type)
 
-    def rebuild(self, image):
+    def rebuild(self, image, password=None):
         """
         Rebuild -- shut down and then re-image -- this server.
 
         :param image: the :class:`Image` (or its ID) to re-image with.
+        :param password: string to set as password on the rebuilt server.
         """
-        self.manager.rebuild(self, image)
+        return self.manager.rebuild(self, image, password)
 
     def resize(self, flavor):
         """
@@ -358,14 +359,19 @@ class ServerManager(local_base.BootingManagerWithFind):
         """
         self._action('reboot', server, {'type': type})
 
-    def rebuild(self, server, image):
+    def rebuild(self, server, image, password=None):
         """
         Rebuild -- shut down and then re-image -- a server.
 
         :param server: The :class:`Server` (or its ID) to share onto.
         :param image: the :class:`Image` (or its ID) to re-image with.
+        :param password: string to set as password on the rebuilt server.
         """
-        self._action('rebuild', server, {'imageRef': base.getid(image)})
+        body = {'imageRef': base.getid(image)}
+        if password is not None:
+            body['adminPass'] = password
+        resp, body = self._action('rebuild', server, body)
+        return Server(self, body['server'])
 
     def migrate(self, server):
         """
@@ -420,5 +426,5 @@ class ServerManager(local_base.BootingManagerWithFind):
         """
         Perform a server "action" -- reboot/rebuild/resize/etc.
         """
-        self.api.client.post('/servers/%s/action' % base.getid(server),
-                             body={action: info})
+        url = '/servers/%s/action' % base.getid(server)
+        return self.api.client.post(url, body={action: info})

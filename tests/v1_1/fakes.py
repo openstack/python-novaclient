@@ -37,7 +37,7 @@ class FakeHTTPClient(base_client.HTTPClient):
 
         if not hasattr(self, callback):
             raise AssertionError('Called unknown API method: %s %s, '
-                                 'expected fakes method name: %s' % 
+                                 'expected fakes method name: %s' %
                                  (method, url, callback))
 
         # Note the call
@@ -239,13 +239,18 @@ class FakeHTTPClient(base_client.HTTPClient):
     #
 
     def post_servers_1234_action(self, body, **kw):
+        _body = None
         assert len(body.keys()) == 1
         action = body.keys()[0]
         if action == 'reboot':
             assert body[action].keys() == ['type']
             assert body[action]['type'] in ['HARD', 'SOFT']
         elif action == 'rebuild':
-            assert body[action].keys() == ['imageRef']
+            keys = body[action].keys()
+            if 'adminPass' in keys:
+                keys.remove('adminPass')
+            assert keys == ['imageRef']
+            _body = self.get_servers_1234()[1]
         elif action == 'resize':
             assert body[action].keys() == ['flavorRef']
         elif action == 'confirmResize':
@@ -270,7 +275,7 @@ class FakeHTTPClient(base_client.HTTPClient):
             assert body[action].keys() == ['adminPass']
         else:
             raise AssertionError("Unexpected server action: %s" % action)
-        return (202, None)
+        return (202, _body)
 
     #
     # Flavors

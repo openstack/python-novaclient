@@ -357,11 +357,20 @@ def do_reboot(cs, args):
 
 @utils.arg('server', metavar='<server>', help='Name or ID of server.')
 @utils.arg('image', metavar='<image>', help="Name or ID of new image.")
+@utils.arg('--password', dest='password', metavar='<password>', default=False,
+           help="Set the provided password on the rebuild instance.")
 def do_rebuild(cs, args):
     """Shutdown, re-image, and re-boot a server."""
     server = _find_server(cs, args.server)
     image = _find_image(cs, args.image)
-    server.rebuild(image)
+
+    if args.password != False:
+        _password = args.password
+    else:
+        _password = None
+
+    s = server.rebuild(image, _password)
+    _print_server(cs, s)
 
 
 @utils.arg('server', metavar='<server>',
@@ -470,14 +479,9 @@ def do_image_create(cs, args):
     cs.servers.create_image(server, args.name)
 
 
-@utils.arg('server', metavar='<server>', help='Name or ID of server.')
-def do_show(cs, args):
-    """Show details about the given server."""
-    s = _find_server(cs, args.server)
-
-    networks = s.networks
-
-    info = s._info.copy()
+def _print_server(cs, server):
+    networks = server.networks
+    info = server._info.copy()
     for network_label, address_list in networks.items():
         info['%s network' % network_label] = ', '.join(address_list)
 
@@ -493,6 +497,13 @@ def do_show(cs, args):
     info.pop('addresses', None)
 
     utils.print_dict(info)
+
+
+@utils.arg('server', metavar='<server>', help='Name or ID of server.')
+def do_show(cs, args):
+    """Show details about the given server."""
+    s = _find_server(cs, args.server)
+    _print_server(cs, s)
 
 
 @utils.arg('server', metavar='<server>', help='Name or ID of server.')
