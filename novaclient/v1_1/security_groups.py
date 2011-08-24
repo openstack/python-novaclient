@@ -44,7 +44,7 @@ class SecurityGroupManager(base.ManagerWithFind):
 
         :param name: name for the security group to create
         :param description: description of the security group
-        :rtype: Integer ID of created security group
+        :rtype: the security group object
         """
         body = {"security_group": {"name": name, 'description': description}}
         return self._create('/os-security-groups', body, 'security_group')

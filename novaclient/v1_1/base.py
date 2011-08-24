@@ -130,7 +130,7 @@ class BootingManagerWithFind(ManagerWithFind):
     def _boot(self, resource_url, response_key, name, image, flavor,
               meta=None, files=None, zone_blob=None,
               reservation_id=None, return_raw=False, min_count=None,
-              max_count=None):
+              max_count=None, security_groups=None):
         """
         Create (boot) a new server.
 
@@ -151,6 +151,7 @@ class BootingManagerWithFind(ManagerWithFind):
         :param reservation_id: a UUID for the set of servers being requested.
         :param return_raw: If True, don't try to coearse the result into
                            a Resource object.
+        :param security_groups: list of security group names
         """
         body = {"server": {
             "name": name,
@@ -170,6 +171,10 @@ class BootingManagerWithFind(ManagerWithFind):
             max_count = min_count
         body["server"]["min_count"] = min_count
         body["server"]["max_count"] = max_count
+
+        if security_groups:
+            body["server"]["security_groups"] =\
+             [{'name': name} for sg in security_groups]
 
         # Files are a slight bit tricky. They're passed in a "personality"
         # list to the POST. Each item is a dict giving a file name and the

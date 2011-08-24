@@ -287,7 +287,7 @@ class ServerManager(local_base.BootingManagerWithFind):
 
     def create(self, name, image, flavor, meta=None, files=None,
                zone_blob=None, reservation_id=None, min_count=None,
-               max_count=None):
+               max_count=None,security_groups=None):
         """
         Create (boot) a new server.
 
@@ -316,7 +316,8 @@ class ServerManager(local_base.BootingManagerWithFind):
         return self._boot("/servers", "server", name, image, flavor,
                           meta=meta, files=files,
                           zone_blob=zone_blob, reservation_id=reservation_id,
-                          min_count=min_count, max_count=max_count)
+                          min_count=min_count, max_count=max_count,
+                          security_groups=security_groups)
 
     def update(self, server, name=None):
         """
