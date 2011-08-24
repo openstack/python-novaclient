@@ -750,39 +750,22 @@ def do_remove_fixed_ip(cs, args):
 
 def _find_server(cs, server):
     """Get a server by name or ID."""
-    return _find_resource(cs.servers, server)
+    return utils.find_resource(cs.servers, server)
 
 
 def _find_ipgroup(cs, group):
     """Get an IP group by name or ID."""
-    return _find_resource(cs.ipgroups, group)
+    return utils.find_resource(cs.ipgroups, group)
 
 
 def _find_image(cs, image):
     """Get an image by name or ID."""
-    return _find_resource(cs.images, image)
+    return utils.find_resource(cs.images, image)
 
 
 def _find_flavor(cs, flavor):
     """Get a flavor by name, ID, or RAM size."""
     try:
-        return _find_resource(cs.flavors, flavor)
+        return utils.find_resource(cs.flavors, flavor)
     except exceptions.NotFound:
         return cs.flavors.find(ram=flavor)
-
-
-def _find_resource(manager, name_or_id):
-    """Helper for the _find_* methods."""
-    try:
-        if isinstance(name_or_id, int) or name_or_id.isdigit():
-            return manager.get(int(name_or_id))
-
-        try:
-            uuid.UUID(name_or_id)
-            return manager.get(name_or_id)
-        except ValueError:
-            return manager.find(name=name_or_id)
-    except exceptions.NotFound:
-        raise exceptions.CommandError(
-                "No %s with a name or ID of '%s' exists." %
-                     (manager.resource_class.__name__.lower(), name_or_id))
