@@ -1,5 +1,5 @@
 # Copyright 2010 Jacob Kaplan-Moss
-# Copyright 2011 Piston Cloud Computing
+# Copyright 2011 Piston Cloud Computing, Inc.
 
 """
 OpenStack Client interface. Handles the REST calls and responses.
@@ -146,33 +146,65 @@ class HTTPClient(httplib2.Http):
                 self.version = part
                 break
 
-        if not self.version == "v2.0": #FIXME(chris): This should be better.
-            headers = {'X-Auth-User': self.user,
-                       'X-Auth-Key': self.apikey}
-            if self.projectid:
-                headers['X-Auth-Project-Id'] = self.projectid
-
-            resp, body = self._v1_auth(self.auth_url, headers)
-
-            self.management_url = resp['x-server-management-url']
-            print "Management URL=", self.management_url
-            self.auth_token = resp['x-auth-token']
+       auth_url = self.auth_url
+        if self.version == "v2.0":  # FIXME(chris): This should be better.
+            while auth_url:
+                auth_url = self._v2_auth(auth_url)
         else:
-            body = {"passwordCredentials": {"username": self.user,
-                                            "password": self.apikey}}
+            try:
+                while auth_url:
+                    auth_url = self._v1_auth(auth_url)
+            # In some configurations nova makes redirection to
+            # v2.0 keystone endpoint. Also, new location does not contain
+            # real endpoint, only hostname and port.
+            except exceptions.AuthorizationFailure:
+                if auth_url.find('v2.0') < 0:
+                    auth_url = urlparse.urljoin(auth_url, 'v2.0/')
+                self._v2_auth(auth_url)
 
-            if self.projectid:
-                body['passwordCredentials']['tenantId'] = self.projectid
+    def _v1_auth(self, url):
+        headers = {'X-Auth-User': self.user,
+                   'X-Auth-Key': self.apikey}
+        if self.projectid:
+            headers['X-Auth-Project-Id'] = self.projectid
 
-            token_url = urlparse.urljoin(self.auth_url, "tokens")
-            resp, body = self.request(token_url, "POST", body=body)
+        resp, body = self.request(url, 'GET', headers=headers)
+        if resp.status in (200, 204):  # in some cases we get No Content
+            try:
+                self.management_url = resp['x-server-management-url']
+                self.auth_token = resp['x-auth-token']
+                self.auth_url = url
+            except KeyError:
+                raise exceptions.AuthorizationFailure()
+        elif resp.status == 305:
+            return resp['location']
+        else:
+            raise exceptions.from_response(resp, body)
 
-            self.management_url = body["auth"]["serviceCatalog"] \
-                                      ["nova"][0]["publicURL"]
-            self.auth_token = body["auth"]["token"]["id"]
+    def _v2_auth(self, url):
+        body = {"passwordCredentials": {"username": self.user,
+                                        "password": self.apikey}}
 
+        if self.projectid:
+            body['passwordCredentials']['tenantId'] = self.projectid
+
+        token_url = urlparse.urljoin(url, "tokens")
+        resp, body = self.request(token_url, "POST", body=body)
+
+        if resp.status == 200:  # content must always present
+            try:
+                self.management_url = body["auth"]["serviceCatalog"] \
+                                          ["nova"][0]["publicURL"]
+                self.auth_token = body["auth"]["token"]["id"]
+                self.auth_url = url
+            except KeyError:
+                raise exceptions.AuthorizationFailure()
             #TODO(chris): Implement service_catalog
             self.service_catalog = None
+        elif resp.status == 305:
+            return resp['location']
+        else:
+            raise exceptions.from_response(resp, body)
 
     def _munge_get_url(self, url):
         """

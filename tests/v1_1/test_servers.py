@@ -1,4 +1,3 @@
-
 import StringIO
 
 from novaclient.v1_1 import servers
@@ -132,4 +131,18 @@ class ServersTest(utils.TestCase):
         s.remove_fixed_ip('10.0.0.1')
         cs.assert_called('POST', '/servers/1234/action')
         cs.servers.remove_fixed_ip(s, '10.0.0.1')
+        cs.assert_called('POST', '/servers/1234/action')
+
+    def test_rescue(self):
+        s = cs.servers.get(1234)
+        s.rescue()
+        cs.assert_called('POST', '/servers/1234/action')
+        cs.servers.rescue(s)
+        cs.assert_called('POST', '/servers/1234/action')
+
+    def test_unrescue(self):
+        s = cs.servers.get(1234)
+        s.unrescue()
+        cs.assert_called('POST', '/servers/1234/action')
+        cs.servers.unrescue(s)
         cs.assert_called('POST', '/servers/1234/action')

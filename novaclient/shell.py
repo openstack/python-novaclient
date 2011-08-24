@@ -25,7 +25,7 @@ import os
 import prettytable
 import sys
 
-from novaclient import exceptions
+from novaclient import exceptions as exc
 from novaclient import utils
 from novaclient.v1_0 import shell as shell_v1_0
 from novaclient.v1_1 import shell as shell_v1_1
@@ -151,18 +151,23 @@ class OpenStackComputeShell(object):
         # for username or apikey but for compatibility it is not.
 
         if not user:
-            raise exceptions.CommandError("You must provide a username, either via "
-                               "--username or via env[NOVA_USERNAME]")
+            raise exc.CommandError("You must provide a username, either"
+                                   "via --username or via "
+                                   "env[NOVA_USERNAME]")
         if not apikey:
-            raise exceptions.CommandError("You must provide an API key, either via "
-                               "--apikey or via env[NOVA_API_KEY]")
+            raise exc.CommandError("You must provide an API key, either"
+                                   "via --apikey or via"
+                                   "env[NOVA_API_KEY]")
 
-        self.cs = self.get_api_class(options.version)(user, apikey, projectid, url)
+        self.cs = self.get_api_class(options.version)(user, apikey, projectid,
+                                                      url)
 
         try:
             self.cs.authenticate()
-        except exceptions.Unauthorized:
-            raise exceptions.CommandError("Invalid OpenStack Nova credentials.")
+        except exc.Unauthorized:
+            raise exc.CommandError("Invalid OpenStack Nova credentials.")
+        except exc.AuthorizationFailure:
+            raise exc.CommandError("Unable to authorize user")
 
         args.func(self.cs, args)
 
@@ -185,8 +190,8 @@ class OpenStackComputeShell(object):
             if args.command in self.subcommands:
                 self.subcommands[args.command].print_help()
             else:
-                raise exceptions.CommandError("'%s' is not a valid subcommand." %
-                                                         args.command)
+                raise exc.CommandError("'%s' is not a valid subcommand" %
+                                       args.command)
         else:
             self.parser.print_help()
 

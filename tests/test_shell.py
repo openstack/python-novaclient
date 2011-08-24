@@ -1,4 +1,3 @@
-
 import os
 import mock
 import httplib2
@@ -20,8 +19,8 @@ class ShellTest(utils.TestCase):
         }
         _old_env, os.environ = os.environ, fake_env.copy()
 
-        # Make a fake shell object, a helping wrapper to call it, and a quick way
-        # of asserting that certain API calls were made.
+        # Make a fake shell object, a helping wrapper to call it, and a quick
+        # way of asserting that certain API calls were made.
         global shell, _shell, assert_called, assert_called_anytime
         _shell = OpenStackComputeShell()
         shell = lambda cmd: _shell.main(cmd.split())

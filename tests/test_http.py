@@ -1,8 +1,8 @@
-
 import httplib2
 import mock
 
 from novaclient import client
+from novaclient import exceptions
 from tests import utils
 
 
@@ -28,9 +28,9 @@ class ClientTest(utils.TestCase):
         @mock.patch('time.time', mock.Mock(return_value=1234))
         def test_get_call():
             resp, body = cl.get("/hi")
-            headers={"X-Auth-Token": "token",
-                     "X-Auth-Project-Id": "project_id",
-                     "User-Agent": cl.USER_AGENT,
+            headers = {"X-Auth-Token": "token",
+                       "X-Auth-Project-Id": "project_id",
+                       "User-Agent": cl.USER_AGENT,
             }
             mock_request.assert_called_with("http://example.com/hi?fresh=1234",
                                             "GET", headers=headers)
@@ -39,14 +39,13 @@ class ClientTest(utils.TestCase):
 
         test_get_call()
 
-
     def test_post(self):
         cl = get_client()
 
         @mock.patch.object(httplib2.Http, "request", mock_request)
         def test_post_call():
             cl.post("/hi", body=[1, 2, 3])
-            headers={
+            headers = {
                 "X-Auth-Token": "token",
                 "X-Auth-Project-Id": "project_id",
                 "Content-Type": "application/json",
@@ -56,3 +55,13 @@ class ClientTest(utils.TestCase):
                                             headers=headers, body='[1, 2, 3]')
 
         test_post_call()
+
+    def test_auth_failure(self):
+        cl = get_client()
+
+        # response must not have x-server-management-url header
+        @mock.patch.object(httplib2.Http, "request", mock_request)
+        def test_auth_call():
+            self.assertRaises(exceptions.AuthorizationFailure, cl.authenticate)
+
+        test_auth_call()

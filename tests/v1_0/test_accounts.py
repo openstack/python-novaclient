@@ -1,4 +1,3 @@
-
 import StringIO
 
 from tests.v1_0 import fakes
