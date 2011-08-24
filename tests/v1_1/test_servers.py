@@ -90,6 +90,10 @@ class ServersTest(utils.TestCase):
         cs.assert_called('POST', '/servers/1234/action')
         cs.servers.rebuild(s, image=1)
         cs.assert_called('POST', '/servers/1234/action')
+        s.rebuild(image=1, password='5678')
+        cs.assert_called('POST', '/servers/1234/action')
+        cs.servers.rebuild(s, image=1, password='5678')
+        cs.assert_called('POST', '/servers/1234/action')
 
     def test_resize_server(self):
         s = cs.servers.get(1234)
