@@ -1,4 +1,8 @@
+import uuid
+
 import prettytable
+
+from novaclient import exceptions
 
 
 # Decorator for cli-args
@@ -38,3 +42,28 @@ def print_dict(d):
     pt.aligns = ['l', 'l']
     [pt.add_row(list(r)) for r in d.iteritems()]
     pt.printt(sortby='Property')
+
+
+def find_resource(manager, name_or_id):
+    """Helper for the _find_* methods."""
+    # first try to get entity as integer id
+    try:
+        if isinstance(name_or_id, int) or name_or_id.isdigit():
+            return manager.get(int(name_or_id))
+    except exceptions.NotFound:
+        pass
+
+    # now try to get entity as uuid
+    try:
+        uuid.UUID(str(name_or_id))
+        return manager.get(name_or_id)
+    except (ValueError, exceptions.NotFound):
+        pass
+
+    # finally try to find entity by name
+    try:
+        return manager.find(name=name_or_id)
+    except exceptions.NotFound:
+        msg = "No %s with a name or ID of '%s' exists." % \
+              (manager.resource_class.__name__.lower(), name_or_id)
+        raise exceptions.CommandError(msg)
