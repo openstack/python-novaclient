@@ -174,7 +174,7 @@ class BootingManagerWithFind(ManagerWithFind):
 
         if security_groups:
             body["server"]["security_groups"] =\
-             [{'name': name} for sg in security_groups]
+             [{'name': sg} for sg in security_groups]
 
         # Files are a slight bit tricky. They're passed in a "personality"
         # list to the POST. Each item is a dict giving a file name and the

@@ -287,7 +287,7 @@ class ServerManager(local_base.BootingManagerWithFind):
 
     def create(self, name, image, flavor, meta=None, files=None,
                zone_blob=None, reservation_id=None, min_count=None,
-               max_count=None,security_groups=None):
+               max_count=None, security_groups=None):
         """
         Create (boot) a new server.
 
