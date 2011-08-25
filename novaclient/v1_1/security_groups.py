@@ -21,10 +21,6 @@ from novaclient import base
 
 
 class SecurityGroup(base.Resource):
-
-    def __repr__(self):
-        return "<Security_group: %s>" % self.id
-
     def __str__(self):
         return str(self.id)
 
