@@ -304,13 +304,13 @@ class FakeHTTPClient(base_client.HTTPClient):
 
     def get_os_floating_ips(self, **kw):
         return (200, {'floating_ips': [
-            {'id': 1, 'fixed_ip': '10.0.0.1', 'address': '11.0.0.1'},
-            {'id': 2, 'fixed_ip': '10.0.0.2', 'address': '11.0.0.2'},
+            {'id': 1, 'fixed_ip': '10.0.0.1', 'ip': '11.0.0.1'},
+            {'id': 2, 'fixed_ip': '10.0.0.2', 'ip': '11.0.0.2'},
         ]})
 
     def get_os_floating_ips_1(self, **kw):
         return (200, {'floating_ip': 
-            {'id': 1, 'fixed_ip': '10.0.0.1', 'address': '11.0.0.1'}
+            {'id': 1, 'fixed_ip': '10.0.0.1', 'ip': '11.0.0.1'}
         })
 
     def post_os_floating_ips(self, body, **kw):

@@ -262,10 +262,8 @@ class ServerManager(local_base.BootingManagerWithFind):
         :param server: The :class:`Server` (or its ID) to add an IP to.
         :param address: The FloatingIP or string floating address to add.
         """
-        try:
-            address = address.ip
-        except:
-            pass
+
+        address = address.ip if hasattr(address, 'ip') else address
         self._action('addFloatingIp', server, {'address': address})
 
     def remove_floating_ip(self, server, address):
@@ -275,12 +273,9 @@ class ServerManager(local_base.BootingManagerWithFind):
         :param server: The :class:`Server` (or its ID) to remove an IP from.
         :param address: The FloatingIP or string floating address to remove.
         """
-        try:
-            address = address.ip
-        except:
-            pass
-        self._action('removeFloatingIp', server, {'address': address})
 
+        address = address.ip if hasattr(address, 'ip') else address
+        self._action('removeFloatingIp', server, {'address': address})
 
     def pause(self, server):
         """
