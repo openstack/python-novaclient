@@ -1,5 +1,6 @@
 from novaclient import client
 from novaclient.v1_1 import flavors
+from novaclient.v1_1 import floating_ips
 from novaclient.v1_1 import images
 from novaclient.v1_1 import keypairs
 from novaclient.v1_1 import servers
@@ -27,6 +28,7 @@ class Client(object):
     # FIXME(jesse): project_id isn't required to autenticate
     def __init__(self, username, api_key, project_id, auth_url, timeout=None):
         self.flavors = flavors.FlavorManager(self)
+        self.floating_ips = floating_ips.FloatingIPManager(self)
         self.images = images.ImageManager(self)
         self.servers = servers.ServerManager(self)
 

@@ -55,6 +55,22 @@ class Server(base.Resource):
         """
         self.manager.add_fixed_ip(self, network_id)
 
+    def add_floating_ip(self, address):
+        """
+        Add floating IP to an instance
+
+        :param address: The ip address or FloatingIP to add to the instance
+        """
+        self.manager.add_floating_ip(self, address)
+
+    def remove_floating_ip(self, address):
+        """
+        Add floating IP to an instance
+
+        :param address: The ip address or FloatingIP to add to remove
+        """
+        self.manager.remove_floating_ip(self, address)
+
     def pause(self):
         """
         Pause -- Pause the running server.
@@ -238,6 +254,33 @@ class ServerManager(local_base.BootingManagerWithFind):
         :param address: The IP address to remove.
         """
         self._action('removeFixedIp', server, {'address': address})
+
+    def add_floating_ip(self, server, address):
+        """
+        Add a floating ip to an instance
+
+        :param server: The :class:`Server` (or its ID) to add an IP to.
+        :param address: The FloatingIP or string floating address to add.
+        """
+        try:
+            address = address.ip
+        except:
+            pass
+        self._action('addFloatingIp', server, {'address': address})
+
+    def remove_floating_ip(self, server, address):
+        """
+        Remove a floating IP address.
+
+        :param server: The :class:`Server` (or its ID) to remove an IP from.
+        :param address: The FloatingIP or string floating address to remove.
+        """
+        try:
+            address = address.ip
+        except:
+            pass
+        self._action('removeFloatingIp', server, {'address': address})
+
 
     def pause(self, server):
         """
