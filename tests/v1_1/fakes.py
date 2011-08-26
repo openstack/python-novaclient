@@ -267,6 +267,10 @@ class FakeHTTPClient(base_client.HTTPClient):
             assert body[action].keys() == ['networkId']
         elif action == 'removeFixedIp':
             assert body[action].keys() == ['address']
+        elif action == 'addFloatingIp':
+            assert body[action].keys() == ['address']
+        elif action == 'removeFloatingIp':
+            assert body[action].keys() == ['address']
         elif action == 'createImage':
             assert set(body[action].keys()) == set(['name', 'metadata'])
         elif action == 'changePassword':
@@ -296,6 +300,27 @@ class FakeHTTPClient(base_client.HTTPClient):
 
     def get_flavors_2(self, **kw):
         return (200, {'flavor': self.get_flavors_detail()[1]['flavors'][1]})
+
+    #
+    # Floating ips
+    #
+
+    def get_os_floating_ips(self, **kw):
+        return (200, {'floating_ips': [
+            {'id': 1, 'fixed_ip': '10.0.0.1', 'ip': '11.0.0.1'},
+            {'id': 2, 'fixed_ip': '10.0.0.2', 'ip': '11.0.0.2'},
+        ]})
+
+    def get_os_floating_ips_1(self, **kw):
+        return (200, {'floating_ip': 
+            {'id': 1, 'fixed_ip': '10.0.0.1', 'ip': '11.0.0.1'}
+        })
+
+    def post_os_floating_ips(self, body, **kw):
+        return (202, self.get_os_floating_ips_1()[1])
+
+    def delete_os_floating_ips_1(self, **kw):
+        return (204, None)
 
     #
     # Images
