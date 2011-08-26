@@ -28,9 +28,15 @@ class Keypair(base.Resource):
     def __repr__(self):
         return "<Keypair: %s>" % self.uuid
 
+    def _add_details(self, info):
+        dico = 'keypair' in info and \
+            info['keypair'] or info
+        for (k, v) in dico.items():
+            setattr(self, k, v)
+
     @property
     def uuid(self):
-        return self._info['keypair']['name']
+        return self.name
 
     def delete(self):
         self.manager.delete(self)
