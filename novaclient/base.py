@@ -67,8 +67,10 @@ class Manager(object):
 
         if obj_class is None:
             obj_class = self.resource_class
-        return [obj_class(self, res)
-                for res in body[response_key] if res]
+
+        objects = [obj_class(self, res, loaded=True) \
+                        for res in body[response_key] if res]
+        return objects
 
     def _get(self, url, response_key):
         resp, body = self.api.client.get(url)
@@ -199,12 +201,16 @@ class Resource(object):
     """
     A resource represents a particular instance of an object (server, flavor,
     etc). This is pretty much just a bag for attributes.
+
+    :param manager: Manager object
+    :param info: dictionary representing resource attributes
+    :param loaded: prevent lazy-loading if set to True
     """
-    def __init__(self, manager, info):
+    def __init__(self, manager, info, loaded=False):
         self.manager = manager
         self._info = info
         self._add_details(info)
-        self._loaded = False
+        self._loaded = loaded
 
     def _add_details(self, info):
         for (k, v) in info.iteritems():
@@ -212,10 +218,8 @@ class Resource(object):
 
     def __getattr__(self, k):
         if k not in self.__dict__:
-
-            #NOTE(bcwaldon): allow a resource to try to init itself only once
-            if not self._loaded:
-                self._loaded = True
+            #NOTE(bcwaldon): disallow lazy-loading if already loaded once
+            if not self.is_loaded():
                 self.get()
                 return self.__getattr__(k)
 
@@ -230,6 +234,7 @@ class Resource(object):
         return "<%s %s>" % (self.__class__.__name__, info)
 
     def get(self):
+        self.set_loaded(True)
         new = self.manager.get(self.id)
         if new:
             self._add_details(new._info)
@@ -240,3 +245,9 @@ class Resource(object):
         if hasattr(self, 'id') and hasattr(other, 'id'):
             return self.id == other.id
         return self._info == other._info
+
+    def is_loaded(self):
+        return self._loaded
+
+    def set_loaded(self, val):
+        self._loaded = val
