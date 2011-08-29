@@ -204,14 +204,21 @@ class Resource(object):
         self.manager = manager
         self._info = info
         self._add_details(info)
+        self._loaded = False
 
     def _add_details(self, info):
         for (k, v) in info.iteritems():
             setattr(self, k, v)
 
     def __getattr__(self, k):
-        self.get()
         if k not in self.__dict__:
+
+            #NOTE(bcwaldon): allow a resource to try to init itself only once
+            if not self._loaded:
+                self._loaded = True
+                self.get()
+                return self.__getattr__(k)
+
             raise AttributeError(k)
         else:
             return self.__dict__[k]
