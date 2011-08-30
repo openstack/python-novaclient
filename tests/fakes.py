@@ -37,6 +37,8 @@ class FakeClient(object):
                                                (expected + called)
 
         if body is not None:
+            print "CALL", self.client.callstack[-1][2]
+            print "BODY", body
             assert self.client.callstack[-1][2] == body
 
         self.client.callstack = []

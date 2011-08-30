@@ -307,18 +307,31 @@ class ShellTest(utils.TestCase):
                          '--zone_username=frank --password=xxx')
         self.assert_called(
             'PUT', '/zones/1',
-            {'zone': {'api_url': 'http://zzz', 'username': 'frank',
-                      'password': 'xxx'}}
+            {'zone': {'username': 'frank', 'password': 'xxx',
+             'api_url': 'http://zzz'}}
         )
 
     def test_zone_add(self):
-        self.run_command('zone-add http://zzz frank xxx 0.0 1.0')
+        self.run_command('zone-add child_zone http://zzz frank xxx 0.0 1.0')
         self.assert_called(
             'POST', '/zones',
-            {'zone': {'api_url': 'http://zzz', 'username': 'frank',
+            {'zone': {'zone_name': 'child_zone',
+                      'api_url': 'http://zzz', 'username': 'frank',
                       'password': 'xxx',
                       'weight_offset': '0.0', 'weight_scale': '1.0'}}
         )
+
+    def test_zone_add_optional(self):
+        self.run_command('zone-add child_zone http://zzz')
+        self.assert_called(
+            'POST', '/zones',
+             {'zone': {'zone_name': 'child_zone',
+                      'api_url': 'http://zzz',
+                      'username': None,
+                      'password': None,
+                      'weight_offset': 0.0, 'weight_scale': 1.0}}
+        )
+
 
     def test_zone_delete(self):
         self.run_command('zone-delete 1')
