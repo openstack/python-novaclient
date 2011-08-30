@@ -44,11 +44,9 @@ def _boot(cs, args, reservation_id=None, min_count=None, max_count=None):
                                       "be 0")
 
     if not args.image:
-        raise exceptions.CommandError("need to specify an Image ID "
-                                      "see nova image-list")
+        raise exceptions.CommandError("you need to specify a Image ID ")
     if not args.flavor:
-        raise exceptions.CommandError("need to specify a Flavor ID "
-                                      "see nova flavor-list")
+        raise exceptions.CommandError("you need to specify a Flavor ID ")
 
     flavor = args.flavor
     image = args.image
