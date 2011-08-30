@@ -2,8 +2,8 @@
 A fake server that "responds" to API methods with pre-canned responses.
 
 All of these responses come from the spec, so if for some reason the spec's
-wrong the tests might raise AssertionError. I've indicated in comments the places where actual
-behavior differs from the spec.
+wrong the tests might raise AssertionError. I've indicated in comments the
+places where actual behavior differs from the spec.
 """
 
 import novaclient.client
@@ -17,7 +17,8 @@ def assert_has_keys(dict, required=[], optional=[]):
         except AssertionError:
             allowed_keys = set(required) | set(optional)
             extra_keys = set(keys).difference(set(required + optional))
-            raise AssertionError("found unexpected keys: %s" % list(extra_keys))
+            raise AssertionError("found unexpected keys: %s" %
+                    list(extra_keys))
 
 
 class FakeClient(object):

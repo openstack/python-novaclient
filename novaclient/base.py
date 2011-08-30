@@ -67,8 +67,12 @@ class Manager(object):
 
         if obj_class is None:
             obj_class = self.resource_class
-        return [obj_class(self, res)
-                for res in body[response_key] if res]
+        data = body[response_key]
+        # NOTE(ja): keystone returns values as list as {'values': [ ... ]}
+        #           unlike other services which just return the list...
+        if type(data) is dict:
+            data = data['values']
+        return [obj_class(self, res) for res in data if res]
 
     def _get(self, url, response_key):
         resp, body = self.api.client.get(url)
@@ -223,6 +227,8 @@ class Resource(object):
         return "<%s %s>" % (self.__class__.__name__, info)
 
     def get(self):
+        if not hasattr(self.manager, 'get'):
+            return
         new = self.manager.get(self.id)
         if new:
             self._add_details(new._info)

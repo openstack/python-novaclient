@@ -357,11 +357,20 @@ def do_reboot(cs, args):
 
 @utils.arg('server', metavar='<server>', help='Name or ID of server.')
 @utils.arg('image', metavar='<image>', help="Name or ID of new image.")
+@utils.arg('--password', dest='password', metavar='<password>', default=False,
+           help="Set the provided password on the rebuild instance.")
 def do_rebuild(cs, args):
     """Shutdown, re-image, and re-boot a server."""
     server = _find_server(cs, args.server)
     image = _find_image(cs, args.image)
-    server.rebuild(image)
+
+    if args.password != False:
+        _password = args.password
+    else:
+        _password = None
+
+    s = server.rebuild(image, _password)
+    _print_server(cs, s)
 
 
 @utils.arg('server', metavar='<server>',
@@ -470,14 +479,9 @@ def do_image_create(cs, args):
     cs.servers.create_image(server, args.name)
 
 
-@utils.arg('server', metavar='<server>', help='Name or ID of server.')
-def do_show(cs, args):
-    """Show details about the given server."""
-    s = _find_server(cs, args.server)
-
-    networks = s.networks
-
-    info = s._info.copy()
+def _print_server(cs, server):
+    networks = server.networks
+    info = server._info.copy()
     for network_label, address_list in networks.items():
         info['%s network' % network_label] = ', '.join(address_list)
 
@@ -493,6 +497,13 @@ def do_show(cs, args):
     info.pop('addresses', None)
 
     utils.print_dict(info)
+
+
+@utils.arg('server', metavar='<server>', help='Name or ID of server.')
+def do_show(cs, args):
+    """Show details about the given server."""
+    s = _find_server(cs, args.server)
+    _print_server(cs, s)
 
 
 @utils.arg('server', metavar='<server>', help='Name or ID of server.')
@@ -558,18 +569,23 @@ def do_zone_info(cs, args):
 
 
 @utils.arg('api_url', metavar='<api_url>', help="URL for the Zone's API")
-@utils.arg('zone_username', metavar='<zone_username>',
-                      help='Authentication username.')
-@utils.arg('password', metavar='<password>', help='Authentication password.')
-@utils.arg('weight_offset', metavar='<weight_offset>',
-                        help='Child Zone weight offset (typically 0.0).')
-@utils.arg('weight_scale', metavar='<weight_scale>',
-                        help='Child Zone weight scale (typically 1.0).')
+@utils.arg('--zone_username', metavar='<zone_username>',
+            help='Optional Authentication username. (Default=None)',
+            default=None)
+@utils.arg('--password', metavar='<password>',
+           help='Authentication password. (Default=None)',
+           default=None)
+@utils.arg('--weight_offset', metavar='<weight_offset>',
+           help='Child Zone weight offset (Default=0.0))',
+           default=0.0)
+@utils.arg('--weight_scale', metavar='<weight_scale>',
+           help='Child Zone weight scale (Default=1.0).',
+           default=1.0)
 def do_zone_add(cs, args):
     """Add a new child zone."""
     zone = cs.zones.create(args.api_url, args.zone_username,
-                                args.password, args.weight_offset,
-                                args.weight_scale)
+                           args.password, args.weight_offset,
+                           args.weight_scale)
     utils.print_dict(zone._info)
 
 

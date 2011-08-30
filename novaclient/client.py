@@ -11,6 +11,8 @@ import urllib
 import httplib2
 import logging
 
+from novaclient import service_catalog
+
 try:
     import json
 except ImportError:
@@ -182,14 +184,14 @@ class HTTPClient(httplib2.Http):
 
         if resp.status == 200:  # content must always present
             try:
-                self.management_url = body["auth"]["serviceCatalog"] \
-                                          ["nova"][0]["publicURL"]
-                self.auth_token = body["auth"]["token"]["id"]
                 self.auth_url = url
+                self.service_catalog = \
+                    service_catalog.ServiceCatalog(body)
+                self.auth_token = self.service_catalog.token.id
+                self.management_url = self.service_catalog.url_for('nova',
+                                                                   'public')
             except KeyError:
                 raise exceptions.AuthorizationFailure()
-            #TODO(chris): Implement service_catalog
-            self.service_catalog = None
         elif resp.status == 305:
             return resp['location']
         else:

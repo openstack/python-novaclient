@@ -1,6 +1,4 @@
 import httplib2
-import urllib
-import urlparse
 
 from novaclient import client as base_client
 from novaclient.v1_1 import client
@@ -37,7 +35,7 @@ class FakeHTTPClient(base_client.HTTPClient):
 
         if not hasattr(self, callback):
             raise AssertionError('Called unknown API method: %s %s, '
-                                 'expected fakes method name: %s' % 
+                                 'expected fakes method name: %s' %
                                  (method, url, callback))
 
         # Note the call
@@ -239,13 +237,18 @@ class FakeHTTPClient(base_client.HTTPClient):
     #
 
     def post_servers_1234_action(self, body, **kw):
+        _body = None
         assert len(body.keys()) == 1
         action = body.keys()[0]
         if action == 'reboot':
             assert body[action].keys() == ['type']
             assert body[action]['type'] in ['HARD', 'SOFT']
         elif action == 'rebuild':
-            assert body[action].keys() == ['imageRef']
+            keys = body[action].keys()
+            if 'adminPass' in keys:
+                keys.remove('adminPass')
+            assert keys == ['imageRef']
+            _body = self.get_servers_1234()[1]
         elif action == 'resize':
             assert body[action].keys() == ['flavorRef']
         elif action == 'confirmResize':
@@ -264,13 +267,17 @@ class FakeHTTPClient(base_client.HTTPClient):
             assert body[action].keys() == ['networkId']
         elif action == 'removeFixedIp':
             assert body[action].keys() == ['address']
+        elif action == 'addFloatingIp':
+            assert body[action].keys() == ['address']
+        elif action == 'removeFloatingIp':
+            assert body[action].keys() == ['address']
         elif action == 'createImage':
             assert set(body[action].keys()) == set(['name', 'metadata'])
         elif action == 'changePassword':
             assert body[action].keys() == ['adminPass']
         else:
             raise AssertionError("Unexpected server action: %s" % action)
-        return (202, None)
+        return (202, _body)
 
     #
     # Flavors
@@ -293,6 +300,27 @@ class FakeHTTPClient(base_client.HTTPClient):
 
     def get_flavors_2(self, **kw):
         return (200, {'flavor': self.get_flavors_detail()[1]['flavors'][1]})
+
+    #
+    # Floating ips
+    #
+
+    def get_os_floating_ips(self, **kw):
+        return (200, {'floating_ips': [
+            {'id': 1, 'fixed_ip': '10.0.0.1', 'ip': '11.0.0.1'},
+            {'id': 2, 'fixed_ip': '10.0.0.2', 'ip': '11.0.0.2'},
+        ]})
+
+    def get_os_floating_ips_1(self, **kw):
+        return (200, {'floating_ip': 
+            {'id': 1, 'fixed_ip': '10.0.0.1', 'ip': '11.0.0.1'}
+        })
+
+    def post_os_floating_ips(self, body, **kw):
+        return (202, self.get_os_floating_ips_1()[1])
+
+    def delete_os_floating_ips_1(self, **kw):
+        return (204, None)
 
     #
     # Images
@@ -444,3 +472,50 @@ class FakeHTTPClient(base_client.HTTPClient):
                       'instances': 1,
                       'injected_files': 1,
                       'cores': 1}})
+
+    #
+    # Security Groups
+    #
+    def get_os_security_groups(self, **kw):
+        return (200, {"security_groups": [
+                {'id': 1, 'name': 'test', 'description': 'FAKE_SECURITY_GROUP'}
+        ]})
+
+    def get_os_security_groups_1(self, **kw):
+        return (200, {"security_group":
+                {'id': 1, 'name': 'test', 'description': 'FAKE_SECURITY_GROUP'}
+        })
+
+    def delete_os_security_groups_1(self, **kw):
+        return (202, None)
+
+    def post_os_security_groups(self, body, **kw):
+        assert body.keys() == ['security_group']
+        fakes.assert_has_keys(body['security_group'],
+                              required=['name', 'description'])
+        r = {'security_group':
+                self.get_os_security_groups()[1]['security_groups'][0]}
+        return (202, r)
+
+    #
+    # Security Group Rules
+    #
+    def get_os_security_group_rules(self, **kw):
+        return (200, {"security_group_rules": [
+                {'id': 1, 'parent_group_id': 1, 'group_id': 2,
+                 'ip_protocol': 'TCP', 'from_port': '22', 'to_port': 22,
+                 'cidr': '10.0.0.0/8'}
+        ]})
+
+    def delete_os_security_group_rules_1(self, **kw):
+        return (202, None)
+
+    def post_os_security_group_rules(self, body, **kw):
+        assert body.keys() == ['security_group_rule']
+        fakes.assert_has_keys(body['security_group_rule'],
+            required=['parent_group_id'],
+            optional=['group_id', 'ip_protocol', 'from_port',
+                      'to_port', 'cidr'])
+        r = {'security_group_rule':
+            self.get_os_security_group_rules()[1]['security_group_rules'][0]}
+        return (202, r)

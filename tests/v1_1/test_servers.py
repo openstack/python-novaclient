@@ -90,6 +90,10 @@ class ServersTest(utils.TestCase):
         cs.assert_called('POST', '/servers/1234/action')
         cs.servers.rebuild(s, image=1)
         cs.assert_called('POST', '/servers/1234/action')
+        s.rebuild(image=1, password='5678')
+        cs.assert_called('POST', '/servers/1234/action')
+        cs.servers.rebuild(s, image=1, password='5678')
+        cs.assert_called('POST', '/servers/1234/action')
 
     def test_resize_server(self):
         s = cs.servers.get(1234)
@@ -131,6 +135,30 @@ class ServersTest(utils.TestCase):
         s.remove_fixed_ip('10.0.0.1')
         cs.assert_called('POST', '/servers/1234/action')
         cs.servers.remove_fixed_ip(s, '10.0.0.1')
+        cs.assert_called('POST', '/servers/1234/action')
+
+    def test_add_floating_ip(self):
+        s = cs.servers.get(1234)
+        s.add_floating_ip('11.0.0.1')
+        cs.assert_called('POST', '/servers/1234/action')
+        cs.servers.add_floating_ip(s, '11.0.0.1')
+        cs.assert_called('POST', '/servers/1234/action')
+        f = cs.floating_ips.list()[0]
+        cs.servers.add_floating_ip(s, f)
+        cs.assert_called('POST', '/servers/1234/action')
+        s.add_floating_ip(f)
+        cs.assert_called('POST', '/servers/1234/action')
+
+    def test_remove_floating_ip(self):
+        s = cs.servers.get(1234)
+        s.remove_floating_ip('11.0.0.1')
+        cs.assert_called('POST', '/servers/1234/action')
+        cs.servers.remove_floating_ip(s, '11.0.0.1')
+        cs.assert_called('POST', '/servers/1234/action')
+        f = cs.floating_ips.list()[0]
+        cs.servers.remove_floating_ip(s, f)
+        cs.assert_called('POST', '/servers/1234/action')
+        s.remove_floating_ip(f)
         cs.assert_called('POST', '/servers/1234/action')
 
     def test_rescue(self):
