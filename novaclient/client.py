@@ -32,7 +32,8 @@ class HTTPClient(httplib2.Http):
 
     USER_AGENT = 'python-novaclient'
 
-    def __init__(self, user, apikey, projectid, auth_url, timeout=None):
+    def __init__(self, user, apikey, projectid, auth_url, timeout=None,
+                 token=None):
         super(HTTPClient, self).__init__(timeout=timeout)
         self.user = user
         self.apikey = apikey
@@ -41,7 +42,7 @@ class HTTPClient(httplib2.Http):
         self.version = 'v1.0'
 
         self.management_url = None
-        self.auth_token = None
+        self.auth_token = token
 
         # httplib2 overrides
         self.force_exception_to_status_code = True
