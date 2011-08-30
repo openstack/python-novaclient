@@ -312,7 +312,9 @@ class ShellTest(utils.TestCase):
         )
 
     def test_zone_add(self):
-        self.run_command('zone-add child_zone http://zzz frank xxx 0.0 1.0')
+        self.run_command('zone-add child_zone http://zzz '
+                         '--zone_username=frank --password=xxx '
+                         '--weight_offset=0.0 --weight_scale=1.0')
         self.assert_called(
             'POST', '/zones',
             {'zone': {'zone_name': 'child_zone',
