@@ -17,7 +17,6 @@
 
 import getpass
 import os
-import uuid
 
 from novaclient import exceptions
 from novaclient import utils
@@ -44,9 +43,15 @@ def _boot(cs, args, reservation_id=None, min_count=None, max_count=None):
         raise exceptions.CommandError("min_instances nor max_instances should"
                                       "be 0")
 
-    flavor = args.flavor or cs.flavors.find(ram=256)
-    image = args.image or cs.images.find(name="Ubuntu 10.04 LTS "\
-                                                   "(lucid)")
+    if not args.image:
+        raise exceptions.CommandError("need to specify an Image ID "
+                                      "see nova image-list")
+    if not args.flavor:
+        raise exceptions.CommandError("need to specify a Flavor ID "
+                                      "see nova flavor-list")
+
+    flavor = args.flavor
+    image = args.image
 
     metadata = dict(v.split('=') for v in args.meta)
 
@@ -86,13 +91,11 @@ def _boot(cs, args, reservation_id=None, min_count=None, max_count=None):
 @utils.arg('--flavor',
      default=None,
      metavar='<flavor>',
-     help="Flavor ID (see 'nova flavors'). "\
-          "Defaults to 256MB RAM instance.")
+     help="Flavor ID (see 'nova flavor-list').")
 @utils.arg('--image',
      default=None,
      metavar='<image>',
-     help="Image ID (see 'nova images'). "\
-          "Defaults to Ubuntu 10.04 LTS.")
+     help="Image ID (see 'nova image-list'). ")
 @utils.arg('--meta',
      metavar="<key=value>",
      action='append',
@@ -144,13 +147,11 @@ def do_boot(cs, args):
 @utils.arg('--flavor',
      default=None,
      metavar='<flavor>',
-     help="Flavor ID (see 'nova flavors'). "\
-          "Defaults to 256MB RAM instance.")
+     help="Flavor ID (see 'nova flavor-list')")
 @utils.arg('--image',
      default=None,
      metavar='<image>',
-     help="Image ID (see 'nova images'). "\
-          "Defaults to Ubuntu 10.04 LTS.")
+     help="Image ID (see 'nova image-list').")
 @utils.arg('--meta',
      metavar="<key=value>",
      action='append',
