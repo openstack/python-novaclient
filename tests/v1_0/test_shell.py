@@ -317,7 +317,7 @@ class ShellTest(utils.TestCase):
                          '--weight_offset=0.0 --weight_scale=1.0')
         self.assert_called(
             'POST', '/zones',
-            {'zone': {'zone_name': 'child_zone',
+            {'zone': {'name': 'child_zone',
                       'api_url': 'http://zzz', 'username': 'frank',
                       'password': 'xxx',
                       'weight_offset': '0.0', 'weight_scale': '1.0'}}
@@ -327,7 +327,7 @@ class ShellTest(utils.TestCase):
         self.run_command('zone-add child_zone http://zzz')
         self.assert_called(
             'POST', '/zones',
-             {'zone': {'zone_name': 'child_zone',
+             {'zone': {'name': 'child_zone',
                       'api_url': 'http://zzz',
                       'username': None,
                       'password': None,

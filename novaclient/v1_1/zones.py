@@ -107,7 +107,7 @@ class ZoneManager(base.BootingManagerWithFind):
         :param weight_scale: The child zone's weight scale.
         """
         body = {"zone": {
-            "zone_name": zone_name,
+            "name": zone_name,
             "api_url": api_url,
             "username": username,
             "password": password,
