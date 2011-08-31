@@ -238,6 +238,52 @@ def do_image_list(cs, args):
     """Print a list of available images to boot from."""
     utils.print_list(cs.images.list(), ['ID', 'Name', 'Status'])
 
+@utils.arg('image',
+     metavar='<image>',
+     help="Name or ID of image")
+@utils.arg('action',
+     metavar='<action>',
+     choices=['set', 'delete'],
+     help="Actions: 'set' or 'delete'")
+@utils.arg('metadata', 
+     metavar='<key=value>',
+     nargs='+',
+     action='append',
+     default=[],
+     help='Metadata to add/update or delete (only key is necessary on delete)')
+def do_image_meta(cs, args):
+    """Set or Delete metadata on an image."""
+    image = _find_image(cs, args.image)
+    metadata = {} 
+    for metadatum in args.metadata[0]:
+        # Can only pass the key in on 'delete'
+        # So this doesn't have to have '='
+        if metadatum.find('=') > -1:
+            (key, value) = metadatum.split('=',1)
+        else:
+            key = metadatum
+            value = None
+
+        metadata[key] = value
+
+    if args.action == 'set':
+        cs.images.set_meta(image, metadata)
+    elif args.action == 'delete':
+        cs.images.delete_meta(image, metadata.keys())
+
+def _print_image(image):
+    links = image.links
+    info = image._info.copy()
+    info.pop('links')
+    utils.print_dict(info)
+
+@utils.arg('image',
+     metavar='<image>',
+     help="Name or ID of image")
+def do_image_show(cs, args):
+    """Show details about the given image."""
+    image = _find_image(cs, args.image)
+    _print_image(image)
 
 @utils.arg('image', metavar='<image>', help='Name or ID of image.')
 def do_image_delete(cs, args):
