@@ -95,7 +95,7 @@ class ZoneManager(local_base.BootingManagerWithFind):
             detail = "/detail"
         return self._list("/zones%s" % detail, "zones")
 
-    def create(self, api_url, username, password,
+    def create(self, api_url, username=None, password=None,
                weight_offset=0.0, weight_scale=1.0):
         """
         Create a new child zone.
@@ -106,14 +106,12 @@ class ZoneManager(local_base.BootingManagerWithFind):
         :param weight_offset: The child zone's weight offset.
         :param weight_scale: The child zone's weight scale.
         """
-        body = {"zone": {
-            "api_url": api_url,
-            "username": username,
-            "password": password,
-            "weight_offset": weight_offset,
-            "weight_scale": weight_scale
-        }}
-
+        body = {"zone": {"api_url": api_url,
+                         "weight_offset": weight_offset,
+                         "weight_scale": weight_scale,
+                         "username": username,
+                         "password": password}}
+        
         return self._create("/zones", body, "zone")
 
     def boot(self, name, image, flavor, meta=None, files=None,
