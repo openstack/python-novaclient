@@ -13,7 +13,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from novaclient.v1_1 import base
+from novaclient import base
 
 
 class FloatingIP(base.Resource):

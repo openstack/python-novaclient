@@ -35,11 +35,11 @@ class Weighting(base.Resource):
 
 
 class Zone(base.Resource):
-    def __init__(self, manager, info):
+    def __init__(self, manager, info, loaded=False):
         self.name = "n/a"
         self.is_active = "n/a"
         self.capabilities = "n/a"
-        super(Zone, self).__init__(manager, info)
+        super(Zone, self).__init__(manager, info, loaded)
 
     def __repr__(self):
         return "<Zone: %s>" % self.api_url
