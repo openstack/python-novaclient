@@ -30,7 +30,6 @@ class BaseTest(utils.TestCase):
 
         # Missing stuff still fails after a second get
         self.assertRaises(AttributeError, getattr, f, 'blahblah')
-        cs.assert_called('GET', '/flavors/1')
 
     def test_eq(self):
         # Two resources of the same type with the same id: equal

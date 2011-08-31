@@ -67,12 +67,13 @@ class Manager(object):
 
         if obj_class is None:
             obj_class = self.resource_class
+
         data = body[response_key]
         # NOTE(ja): keystone returns values as list as {'values': [ ... ]}
         #           unlike other services which just return the list...
         if type(data) is dict:
             data = data['values']
-        return [obj_class(self, res) for res in data if res]
+        return [obj_class(self, res, loaded=True) for res in data if res]
 
     def _get(self, url, response_key):
         resp, body = self.api.client.get(url)
@@ -203,19 +204,28 @@ class Resource(object):
     """
     A resource represents a particular instance of an object (server, flavor,
     etc). This is pretty much just a bag for attributes.
+
+    :param manager: Manager object
+    :param info: dictionary representing resource attributes
+    :param loaded: prevent lazy-loading if set to True
     """
-    def __init__(self, manager, info):
+    def __init__(self, manager, info, loaded=False):
         self.manager = manager
         self._info = info
         self._add_details(info)
+        self._loaded = loaded
 
     def _add_details(self, info):
         for (k, v) in info.iteritems():
             setattr(self, k, v)
 
     def __getattr__(self, k):
-        self.get()
         if k not in self.__dict__:
+            #NOTE(bcwaldon): disallow lazy-loading if already loaded once
+            if not self.is_loaded():
+                self.get()
+                return self.__getattr__(k)
+
             raise AttributeError(k)
         else:
             return self.__dict__[k]
@@ -229,6 +239,9 @@ class Resource(object):
     def get(self):
         if not hasattr(self.manager, 'get'):
             return
+
+        self.set_loaded(True)
+
         new = self.manager.get(self.id)
         if new:
             self._add_details(new._info)
@@ -239,3 +252,9 @@ class Resource(object):
         if hasattr(self, 'id') and hasattr(other, 'id'):
             return self.id == other.id
         return self._info == other._info
+
+    def is_loaded(self):
+        return self._loaded
+
+    def set_loaded(self, val):
+        self._loaded = val
