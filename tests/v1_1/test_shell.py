@@ -20,7 +20,6 @@ class ShellTest(utils.TestCase):
             'NOVA_API_KEY': 'password',
             'NOVA_PROJECT_ID': 'project_id',
             'NOVA_VERSION': '1.1',
-            'NOVA_PROJECT_ID': 'project_id',
             'NOVA_URL': 'http://no.where',
         }
 
