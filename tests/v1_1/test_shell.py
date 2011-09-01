@@ -25,12 +25,13 @@ class ShellTest(utils.TestCase):
 
     def tearDown(self):
         os.environ = self.old_environment
+        self.shell.cs.clear_callstack()
 
     def run_command(self, cmd):
         self.shell.main(cmd.split())
 
-    def assert_called(self, method, url, body=None):
-        return self.shell.cs.assert_called(method, url, body)
+    def assert_called(self, method, url, body=None, **kwargs):
+        return self.shell.cs.assert_called(method, url, body, **kwargs)
 
     def assert_called_anytime(self, method, url, body=None):
         return self.shell.cs.assert_called_anytime(method, url, body)
@@ -226,12 +227,32 @@ class ShellTest(utils.TestCase):
 
     def test_show(self):
         self.run_command('show 1234')
-        # XXX need a way to test multiple calls
-        # assert_called('GET', '/servers/1234')
+        self.assert_called('GET', '/servers/1234', pos=-3)
+        self.assert_called('GET', '/flavors/1', pos=-2)
         self.assert_called('GET', '/images/2')
+
+    def test_show_bad_id(self):
+        self.assertRaises(exceptions.CommandError, 
+                          self.run_command, 'show xxx')
 
     def test_delete(self):
         self.run_command('delete 1234')
         self.assert_called('DELETE', '/servers/1234')
         self.run_command('delete sample-server')
         self.assert_called('DELETE', '/servers/1234')
+
+
+    def test_set_meta_set(self):
+        self.run_command('meta 1234 set key1=val1 key2=val2')
+        self.assert_called('POST', '/servers/1234/metadata',
+                           {'metadata': {'key1': 'val1', 'key2': 'val2'}})
+
+    def test_set_meta_delete_dict(self):
+        self.run_command('meta 1234 delete key1=val1 key2=val2')
+        self.assert_called('DELETE', '/servers/1234/metadata/key1')
+        self.assert_called('DELETE', '/servers/1234/metadata/key2', pos=-2)
+
+    def test_set_meta_delete_keys(self):
+        self.run_command('meta 1234 delete key1 key2')
+        self.assert_called('DELETE', '/servers/1234/metadata/key1')
+        self.assert_called('DELETE', '/servers/1234/metadata/key2', pos=-2)

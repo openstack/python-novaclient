@@ -478,6 +478,38 @@ def do_image_create(cs, args):
     server = _find_server(cs, args.server)
     cs.servers.create_image(server, args.name)
 
+@utils.arg('server',
+     metavar='<server>',
+     help="Name or ID of server")
+@utils.arg('action',
+     metavar='<action>',
+     choices=['set', 'delete'],
+     help="Actions: 'set' or 'delete'")
+@utils.arg('metadata',
+     metavar='<key=value>',
+     nargs='+',
+     action='append',
+     default=[],
+     help='Metadata to set or delete (only key is necessary on delete)')
+def do_meta(cs, args):
+    """Set or Delete metadata on a server."""
+    server = _find_server(cs, args.server)
+    metadata = {}
+    for metadatum in args.metadata[0]:
+        # Can only pass the key in on 'delete'
+        # So this doesn't have to have '='
+        if metadatum.find('=') > -1:
+            (key, value) = metadatum.split('=',1)
+        else:
+            key = metadatum
+            value = None
+
+        metadata[key] = value
+
+    if args.action == 'set':
+        cs.servers.set_meta(server, metadata)
+    elif args.action == 'delete':
+        cs.servers.delete_meta(server, metadata.keys())
 
 def _print_server(cs, server):
     networks = server.networks

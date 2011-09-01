@@ -66,6 +66,15 @@ class ServersTest(utils.TestCase):
         cs.servers.delete(s)
         cs.assert_called('DELETE', '/servers/1234')
 
+    def test_delete_server_meta(self):
+        s = cs.servers.delete_meta(1234, ['test_key'])
+        cs.assert_called('DELETE', '/servers/1234/metadata/test_key')
+
+    def test_set_server_meta(self):
+        s = cs.servers.set_meta(1234, {'test_key': 'test_value'})
+        reval = cs.assert_called('POST', '/servers/1234/metadata',
+                         {'metadata': { 'test_key': 'test_value' }})
+
     def test_find(self):
         s = cs.servers.find(name='sample-server')
         cs.assert_called('GET', '/servers/detail')
