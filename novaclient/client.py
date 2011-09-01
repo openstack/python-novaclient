@@ -64,6 +64,8 @@ class HTTPClient(httplib2.Http):
             string_parts.append(header)
 
         _logger.debug("REQ: %s\n" % "".join(string_parts))
+        if 'body' in kwargs:
+            _logger.debug("REQ BODY: %s\n" % (kwargs['body']))
         _logger.debug("RESP:%s %s\n", resp, body)
 
     def request(self, *args, **kwargs):
