@@ -223,6 +223,8 @@ class Resource(object):
         return "<%s %s>" % (self.__class__.__name__, info)
 
     def get(self):
+        if not hasattr(self, 'id'):
+            return
         new = self.manager.get(self.id)
         if new:
             self._add_details(new._info)
