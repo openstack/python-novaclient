@@ -326,7 +326,7 @@ class ServerManager(local_base.BootingManagerWithFind):
 
     def create(self, name, image, flavor, meta=None, files=None,
                zone_blob=None, reservation_id=None, min_count=None,
-               max_count=None, security_groups=None):
+               max_count=None, security_groups=None, userdata=None):
         """
         Create (boot) a new server.
 
@@ -344,6 +344,9 @@ class ServerManager(local_base.BootingManagerWithFind):
         :param zone_blob: a single (encrypted) string which is used internally
                       by Nova for routing between Zones. Users cannot populate
                       this field.
+        :param userdata: user data to pass to be exposed by the metadata
+                      server this can be a file type object as well or a
+                      string.
         :param reservation_id: a UUID for the set of servers being requested.
         """
         if not min_count:
@@ -353,7 +356,7 @@ class ServerManager(local_base.BootingManagerWithFind):
         if min_count > max_count:
             min_count = max_count
         return self._boot("/servers", "server", name, image, flavor,
-                          meta=meta, files=files,
+                          meta=meta, files=files, userdata=userdata,
                           zone_blob=zone_blob, reservation_id=reservation_id,
                           min_count=min_count, max_count=max_count,
                           security_groups=security_groups)

@@ -33,10 +33,26 @@ class ServersTest(utils.TestCase):
             image=1,
             flavor=1,
             meta={'foo': 'bar'},
+            userdata="hello moto",
             files={
                 '/etc/passwd': 'some data',                 # a file
-                '/tmp/foo.txt': StringIO.StringIO('data')   # a stream
+                '/tmp/foo.txt': StringIO.StringIO('data'),   # a stream
             }
+        )
+        cs.assert_called('POST', '/servers')
+        self.assertTrue(isinstance(s, servers.Server))
+
+    def test_create_server_userdata_file_object(self):
+        s = cs.servers.create(
+            name="My server",
+            image=1,
+            flavor=1,
+            meta={'foo': 'bar'},
+            userdata=StringIO.StringIO('hello moto'),
+            files={
+                '/etc/passwd': 'some data',                 # a file
+                '/tmp/foo.txt': StringIO.StringIO('data'),   # a stream
+            },
         )
         cs.assert_called('POST', '/servers')
         self.assertTrue(isinstance(s, servers.Server))
