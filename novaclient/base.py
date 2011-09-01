@@ -237,10 +237,10 @@ class Resource(object):
         return "<%s %s>" % (self.__class__.__name__, info)
 
     def get(self):
+        # set_loaded() first ... so if we have to bail, we know we tried.
+        self.set_loaded(True)
         if not hasattr(self.manager, 'get'):
             return
-
-        self.set_loaded(True)
 
         new = self.manager.get(self.id)
         if new:
