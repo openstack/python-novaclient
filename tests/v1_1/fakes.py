@@ -213,6 +213,18 @@ class FakeHTTPClient(base_client.HTTPClient):
     def delete_servers_1234(self, **kw):
         return (202, None)
 
+    def delete_servers_1234_metadata_test_key(self, **kw):
+        return (204, None)
+
+    def delete_servers_1234_metadata_key1(self, **kw):
+        return (204, None)
+
+    def delete_servers_1234_metadata_key2(self, **kw):
+        return (204, None)
+
+    def post_servers_1234_metadata(self, **kw):
+        return (204, {'metadata': { 'test_key': 'test_value'}})
+
     #
     # Server Addresses
     #

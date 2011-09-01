@@ -461,6 +461,25 @@ class ServerManager(local_base.BootingManagerWithFind):
         self._action('createImage', server,
                      {'name': image_name, 'metadata': metadata or {}})
 
+    def set_meta(self, server, metadata):
+        """
+        Set a servers metadata
+        :param server: The :class:`Server` to add metadata to
+        :param metadata: A dict of metadata to add to the server
+        """
+        body = {'metadata': metadata}
+        return self._create("/servers/%s/metadata" % base.getid(server),
+                             body, "metadata")
+
+    def delete_meta(self, server, keys):
+        """
+        Delete metadata from an server
+        :param server: The :class:`Server` to add metadata to
+        :param keys: A list of metadata keys to delete from the server
+        """
+        for k in keys:
+            self._delete("/servers/%s/metadata/%s" % (base.getid(server), k))
+
     def _action(self, action, server, info=None):
         """
         Perform a server "action" -- reboot/rebuild/resize/etc.
