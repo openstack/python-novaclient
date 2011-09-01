@@ -4,3 +4,8 @@
 cover
 *.pyc
 .idea
+*.swp
+*~
+build
+dist
+python_novaclient.egg-info
