@@ -55,6 +55,22 @@ class Server(base.Resource):
         """
         self.manager.add_fixed_ip(self, network_id)
 
+    def add_floating_ip(self, address):
+        """
+        Add floating IP to an instance
+
+        :param address: The ip address or FloatingIP to add to the instance
+        """
+        self.manager.add_floating_ip(self, address)
+
+    def remove_floating_ip(self, address):
+        """
+        Add floating IP to an instance
+
+        :param address: The ip address or FloatingIP to add to remove
+        """
+        self.manager.remove_floating_ip(self, address)
+
     def pause(self):
         """
         Pause -- Pause the running server.
@@ -128,13 +144,14 @@ class Server(base.Resource):
         """
         self.manager.reboot(self, type)
 
-    def rebuild(self, image):
+    def rebuild(self, image, password=None):
         """
         Rebuild -- shut down and then re-image -- this server.
 
         :param image: the :class:`Image` (or its ID) to re-image with.
+        :param password: string to set as password on the rebuilt server.
         """
-        self.manager.rebuild(self, image)
+        return self.manager.rebuild(self, image, password)
 
     def resize(self, flavor):
         """
@@ -239,6 +256,28 @@ class ServerManager(local_base.BootingManagerWithFind):
         """
         self._action('removeFixedIp', server, {'address': address})
 
+    def add_floating_ip(self, server, address):
+        """
+        Add a floating ip to an instance
+
+        :param server: The :class:`Server` (or its ID) to add an IP to.
+        :param address: The FloatingIP or string floating address to add.
+        """
+
+        address = address.ip if hasattr(address, 'ip') else address
+        self._action('addFloatingIp', server, {'address': address})
+
+    def remove_floating_ip(self, server, address):
+        """
+        Remove a floating IP address.
+
+        :param server: The :class:`Server` (or its ID) to remove an IP from.
+        :param address: The FloatingIP or string floating address to remove.
+        """
+
+        address = address.ip if hasattr(address, 'ip') else address
+        self._action('removeFloatingIp', server, {'address': address})
+
     def pause(self, server):
         """
         Pause the server.
@@ -287,7 +326,7 @@ class ServerManager(local_base.BootingManagerWithFind):
 
     def create(self, name, image, flavor, meta=None, files=None,
                zone_blob=None, reservation_id=None, min_count=None,
-               max_count=None):
+               max_count=None, security_groups=None):
         """
         Create (boot) a new server.
 
@@ -316,7 +355,8 @@ class ServerManager(local_base.BootingManagerWithFind):
         return self._boot("/servers", "server", name, image, flavor,
                           meta=meta, files=files,
                           zone_blob=zone_blob, reservation_id=reservation_id,
-                          min_count=min_count, max_count=max_count)
+                          min_count=min_count, max_count=max_count,
+                          security_groups=security_groups)
 
     def update(self, server, name=None):
         """
@@ -358,14 +398,19 @@ class ServerManager(local_base.BootingManagerWithFind):
         """
         self._action('reboot', server, {'type': type})
 
-    def rebuild(self, server, image):
+    def rebuild(self, server, image, password=None):
         """
         Rebuild -- shut down and then re-image -- a server.
 
         :param server: The :class:`Server` (or its ID) to share onto.
         :param image: the :class:`Image` (or its ID) to re-image with.
+        :param password: string to set as password on the rebuilt server.
         """
-        self._action('rebuild', server, {'imageRef': base.getid(image)})
+        body = {'imageRef': base.getid(image)}
+        if password is not None:
+            body['adminPass'] = password
+        resp, body = self._action('rebuild', server, body)
+        return Server(self, body['server'])
 
     def migrate(self, server):
         """
@@ -420,5 +465,5 @@ class ServerManager(local_base.BootingManagerWithFind):
         """
         Perform a server "action" -- reboot/rebuild/resize/etc.
         """
-        self.api.client.post('/servers/%s/action' % base.getid(server),
-                             body={action: info})
+        url = '/servers/%s/action' % base.getid(server)
+        return self.api.client.post(url, body={action: info})

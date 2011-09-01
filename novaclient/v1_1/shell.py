@@ -357,11 +357,20 @@ def do_reboot(cs, args):
 
 @utils.arg('server', metavar='<server>', help='Name or ID of server.')
 @utils.arg('image', metavar='<image>', help="Name or ID of new image.")
+@utils.arg('--password', dest='password', metavar='<password>', default=False,
+           help="Set the provided password on the rebuild instance.")
 def do_rebuild(cs, args):
     """Shutdown, re-image, and re-boot a server."""
     server = _find_server(cs, args.server)
     image = _find_image(cs, args.image)
-    server.rebuild(image)
+
+    if args.password != False:
+        _password = args.password
+    else:
+        _password = None
+
+    s = server.rebuild(image, _password)
+    _print_server(cs, s)
 
 
 @utils.arg('server', metavar='<server>',
@@ -470,14 +479,9 @@ def do_image_create(cs, args):
     cs.servers.create_image(server, args.name)
 
 
-@utils.arg('server', metavar='<server>', help='Name or ID of server.')
-def do_show(cs, args):
-    """Show details about the given server."""
-    s = _find_server(cs, args.server)
-
-    networks = s.networks
-
-    info = s._info.copy()
+def _print_server(cs, server):
+    networks = server.networks
+    info = server._info.copy()
     for network_label, address_list in networks.items():
         info['%s network' % network_label] = ', '.join(address_list)
 
@@ -496,6 +500,13 @@ def do_show(cs, args):
 
 
 @utils.arg('server', metavar='<server>', help='Name or ID of server.')
+def do_show(cs, args):
+    """Show details about the given server."""
+    s = _find_server(cs, args.server)
+    _print_server(cs, s)
+
+
+@utils.arg('server', metavar='<server>', help='Name or ID of server.')
 def do_delete(cs, args):
     """Immediately shut down and delete a server."""
     _find_server(cs, args.server).delete()
@@ -503,37 +514,20 @@ def do_delete(cs, args):
 
 def _find_server(cs, server):
     """Get a server by name or ID."""
-    return _find_resource(cs.servers, server)
+    return utils.find_resource(cs.servers, server)
 
 
 def _find_image(cs, image):
     """Get an image by name or ID."""
-    return _find_resource(cs.images, image)
+    return utils.find_resource(cs.images, image)
 
 
 def _find_flavor(cs, flavor):
     """Get a flavor by name, ID, or RAM size."""
     try:
-        return _find_resource(cs.flavors, flavor)
+        return utils.find_resource(cs.flavors, flavor)
     except exceptions.NotFound:
         return cs.flavors.find(ram=flavor)
-
-
-def _find_resource(manager, name_or_id):
-    """Helper for the _find_* methods."""
-    try:
-        if isinstance(name_or_id, int) or name_or_id.isdigit():
-            return manager.get(int(name_or_id))
-
-        try:
-            uuid.UUID(name_or_id)
-            return manager.get(name_or_id)
-        except ValueError:
-            return manager.find(name=name_or_id)
-    except exceptions.NotFound:
-        raise exceptions.CommandError(
-                  "No %s with a name or ID of '%s' exists." %
-                  (manager.resource_class.__name__.lower(), name_or_id))
 
 
 # --zone_username is required since --username is already used.
@@ -575,18 +569,23 @@ def do_zone_info(cs, args):
 
 
 @utils.arg('api_url', metavar='<api_url>', help="URL for the Zone's API")
-@utils.arg('zone_username', metavar='<zone_username>',
-                      help='Authentication username.')
-@utils.arg('password', metavar='<password>', help='Authentication password.')
-@utils.arg('weight_offset', metavar='<weight_offset>',
-                        help='Child Zone weight offset (typically 0.0).')
-@utils.arg('weight_scale', metavar='<weight_scale>',
-                        help='Child Zone weight scale (typically 1.0).')
+@utils.arg('--zone_username', metavar='<zone_username>',
+            help='Optional Authentication username. (Default=None)',
+            default=None)
+@utils.arg('--password', metavar='<password>',
+           help='Authentication password. (Default=None)',
+           default=None)
+@utils.arg('--weight_offset', metavar='<weight_offset>',
+           help='Child Zone weight offset (Default=0.0))',
+           default=0.0)
+@utils.arg('--weight_scale', metavar='<weight_scale>',
+           help='Child Zone weight scale (Default=1.0).',
+           default=1.0)
 def do_zone_add(cs, args):
     """Add a new child zone."""
     zone = cs.zones.create(args.api_url, args.zone_username,
-                                args.password, args.weight_offset,
-                                args.weight_scale)
+                           args.password, args.weight_offset,
+                           args.weight_scale)
     utils.print_dict(zone._info)
 
 

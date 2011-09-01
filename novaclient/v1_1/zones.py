@@ -17,7 +17,8 @@
 Zone interface.
 """
 
-from novaclient.v1_1 import base
+from novaclient import base
+from novaclient.v1_1 import base as local_base
 
 
 class Weighting(base.Resource):
@@ -34,11 +35,11 @@ class Weighting(base.Resource):
 
 
 class Zone(base.Resource):
-    def __init__(self, manager, info):
+    def __init__(self, manager, info, loaded=False):
         self.name = "n/a"
         self.is_active = "n/a"
         self.capabilities = "n/a"
-        super(Zone, self).__init__(manager, info)
+        super(Zone, self).__init__(manager, info, loaded)
 
     def __repr__(self):
         return "<Zone: %s>" % self.api_url
@@ -64,7 +65,7 @@ class Zone(base.Resource):
                             weight_offset, weight_scale)
 
 
-class ZoneManager(base.BootingManagerWithFind):
+class ZoneManager(local_base.BootingManagerWithFind):
     resource_class = Zone
 
     def info(self):
@@ -94,7 +95,7 @@ class ZoneManager(base.BootingManagerWithFind):
             detail = "/detail"
         return self._list("/zones%s" % detail, "zones")
 
-    def create(self, api_url, username, password,
+    def create(self, api_url, username=None, password=None,
                weight_offset=0.0, weight_scale=1.0):
         """
         Create a new child zone.
@@ -105,14 +106,12 @@ class ZoneManager(base.BootingManagerWithFind):
         :param weight_offset: The child zone's weight offset.
         :param weight_scale: The child zone's weight scale.
         """
-        body = {"zone": {
-            "api_url": api_url,
-            "username": username,
-            "password": password,
-            "weight_offset": weight_offset,
-            "weight_scale": weight_scale
-        }}
-
+        body = {"zone": {"api_url": api_url,
+                         "weight_offset": weight_offset,
+                         "weight_scale": weight_scale,
+                         "username": username,
+                         "password": password}}
+        
         return self._create("/zones", body, "zone")
 
     def boot(self, name, image, flavor, meta=None, files=None,
