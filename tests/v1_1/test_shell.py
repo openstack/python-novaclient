@@ -1,5 +1,7 @@
 import os
 import mock
+import sys
+import tempfile
 
 from novaclient.shell import OpenStackComputeShell
 from novaclient import exceptions
@@ -156,6 +158,32 @@ class ShellTest(utils.TestCase):
     def test_flavor_list(self):
         self.run_command('flavor-list')
         self.assert_called_anytime('GET', '/flavors/detail')
+
+    def test_image_show(self):
+        self.run_command('image-show 1')
+        self.assert_called('GET', '/images/1')
+
+    def test_image_meta_set(self):
+        self.run_command('image-meta 1 set test_key=test_value')
+        self.assert_called('POST', '/images/1/metadata',
+            {'metadata': {'test_key': 'test_value'}})
+
+    def test_image_meta_del(self):
+        self.run_command('image-meta 1 delete test_key=test_value')
+        self.assert_called('DELETE', '/images/1/metadata/test_key')
+
+    def test_image_meta_bad_action(self):
+        tmp = tempfile.TemporaryFile()
+
+        # Suppress stdout and stderr
+        (stdout, stderr) = (sys.stdout, sys.stderr)
+        (sys.stdout, sys.stderr) =  (tmp, tmp)
+
+        self.assertRaises(SystemExit, self.run_command,
+                          'image-meta 1 BAD_ACTION test_key=test_value')
+
+        # Put stdout and stderr back
+        sys.stdout, sys.stderr = (stdout, stderr)
 
     def test_image_list(self):
         self.run_command('image-list')

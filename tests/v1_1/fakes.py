@@ -338,7 +338,11 @@ class FakeHTTPClient(base_client.HTTPClient):
                 'name': 'CentOS 5.2',
                 "updated": "2010-10-10T12:00:00Z",
                 "created": "2010-08-10T12:00:00Z",
-                "status": "ACTIVE"
+                "status": "ACTIVE",
+                "metadata": {
+                    "test_key": "test_value",
+                },
+                "links": {},
             },
             {
                 "id": 743,
@@ -347,7 +351,8 @@ class FakeHTTPClient(base_client.HTTPClient):
                 "updated": "2010-10-10T12:00:00Z",
                 "created": "2010-08-10T12:00:00Z",
                 "status": "SAVING",
-                "progress": 80
+                "progress": 80,
+                "links": {},
             }
         ]})
 
@@ -362,7 +367,17 @@ class FakeHTTPClient(base_client.HTTPClient):
         fakes.assert_has_keys(body['image'], required=['serverId', 'name'])
         return (202, self.get_images_1()[1])
 
+    def post_images_1_metadata(self, body, **kw):
+        assert body.keys() == ['metadata']
+        fakes.assert_has_keys(body['metadata'],
+                              required=['test_key'])
+        return (200,
+            {'metadata': self.get_images_1()[1]['image']['metadata']})
+
     def delete_images_1(self, **kw):
+        return (204, None)
+
+    def delete_images_1_metadata_test_key(self, **kw):
         return (204, None)
 
     #
