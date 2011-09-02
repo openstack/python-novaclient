@@ -35,14 +35,14 @@ class HTTPClient(httplib2.Http):
     USER_AGENT = 'python-novaclient'
 
     def __init__(self, user, apikey, projectid, auth_url, timeout=None,
-                 token=None, service_name='nova'):
+                 token=None, service_name=None):
         super(HTTPClient, self).__init__(timeout=timeout)
         self.user = user
         self.apikey = apikey
         self.projectid = projectid
         self.auth_url = auth_url
         self.version = 'v1.0'
-        self.service_name = service_name
+        self.service_name = service_name or 'nova'
 
         self.management_url = None
         self.auth_token = token
@@ -189,6 +189,7 @@ class HTTPClient(httplib2.Http):
                 self.service_catalog = \
                     service_catalog.ServiceCatalog(body)
                 self.auth_token = self.service_catalog.token.id
+                print "SERVICE NAME=", self.service_name
                 self.management_url = self.service_catalog.url_for(
                                            self.service_name, 'public')
             except KeyError:
