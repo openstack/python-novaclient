@@ -12,7 +12,7 @@ if sys.version_info < (2, 6):
 
 setup(
     name = "python-novaclient",
-    version = "2.6.2",
+    version = "2.6.5",
     description = "Client library for OpenStack Nova API",
     long_description = read('README.rst'),
     url = 'https://github.com/rackspace/python-novaclient',
