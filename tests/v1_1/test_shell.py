@@ -28,7 +28,12 @@ class ShellTest(utils.TestCase):
 
     def tearDown(self):
         os.environ = self.old_environment
-        self.shell.cs.clear_callstack()
+        # For some method like test_image_meta_bad_action we are
+        # testing a SystemExit to be thrown and object self.shell has
+        # no time to get instantatiated which is OK in this case, so
+        # we make sure the method is there before launching it.
+        if hasattr(self.shell, 'cs'):
+            self.shell.cs.clear_callstack()
 
     def run_command(self, cmd):
         self.shell.main(cmd.split())
