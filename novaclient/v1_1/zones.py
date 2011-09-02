@@ -22,9 +22,9 @@ from novaclient.v1_1 import base as local_base
 
 
 class Weighting(base.Resource):
-    def __init__(self, manager, info):
+    def __init__(self, manager, info, loaded=False):
         self.name = "n/a"
-        super(Weighting, self).__init__(manager, info)
+        super(Weighting, self).__init__(manager, info, loaded)
 
     def __repr__(self):
         return "<Weighting: %s>" % self.name
