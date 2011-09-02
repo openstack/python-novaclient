@@ -163,6 +163,16 @@ class OpenStackComputeShell(object):
             raise exc.CommandError("You must provide an API key, either"
                                    "via --apikey or via"
                                    "env[NOVA_API_KEY]")
+        if options.version and options.version != '1.0':
+            if not projectid:
+                raise exc.CommandError("You must provide an projectid, either"
+                                       "via --projectid or via"
+                                       "env[NOVA_PROJECT_ID")
+
+            if not url:
+                raise exc.CommandError("You must provide a auth url, either"
+                                       "via --url or via"
+                                       "env[NOVA_URL")
 
         self.cs = self.get_api_class(options.version) \
                             (user, apikey, projectid, url,

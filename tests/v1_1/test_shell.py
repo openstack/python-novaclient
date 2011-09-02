@@ -1,5 +1,7 @@
 import os
 import mock
+import sys
+import tempfile
 
 from novaclient.shell import OpenStackComputeShell
 from novaclient import exceptions
@@ -18,6 +20,7 @@ class ShellTest(utils.TestCase):
             'NOVA_API_KEY': 'password',
             'NOVA_PROJECT_ID': 'project_id',
             'NOVA_VERSION': '1.1',
+            'NOVA_URL': 'http://no.where',
         }
 
         self.shell = OpenStackComputeShell()
@@ -25,64 +28,70 @@ class ShellTest(utils.TestCase):
 
     def tearDown(self):
         os.environ = self.old_environment
+        # For some method like test_image_meta_bad_action we are
+        # testing a SystemExit to be thrown and object self.shell has
+        # no time to get instantatiated which is OK in this case, so
+        # we make sure the method is there before launching it.
+        if hasattr(self.shell, 'cs'):
+            self.shell.cs.clear_callstack()
 
     def run_command(self, cmd):
         self.shell.main(cmd.split())
 
-    def assert_called(self, method, url, body=None):
-        return self.shell.cs.assert_called(method, url, body)
+    def assert_called(self, method, url, body=None, **kwargs):
+        return self.shell.cs.assert_called(method, url, body, **kwargs)
 
     def assert_called_anytime(self, method, url, body=None):
         return self.shell.cs.assert_called_anytime(method, url, body)
 
     def test_boot(self):
-        self.run_command('boot --image 1 some-server')
+        self.run_command('boot --flavor 1 --image 1 some-server')
         self.assert_called_anytime(
             'POST', '/servers',
             {'server': {
-                'flavorRef': 1,
+                'flavorRef': '1',
                 'name': 'some-server',
                 'imageRef': '1',
                 'min_count': 1,
                 'max_count': 1,
-            }}
+                }},
         )
 
-        self.run_command('boot --image 1 --meta foo=bar'
+        self.run_command('boot --image 1 --flavor 1 --meta foo=bar'
                          ' --meta spam=eggs some-server ')
         self.assert_called_anytime(
             'POST', '/servers',
             {'server': {
-                'flavorRef': 1,
+                'flavorRef': '1',
                 'name': 'some-server',
                 'imageRef': '1',
                 'metadata': {'foo': 'bar', 'spam': 'eggs'},
                 'min_count': 1,
                 'max_count': 1,
-            }}
+            }},
         )
 
     def test_boot_files(self):
         testfile = os.path.join(os.path.dirname(__file__), 'testfile.txt')
         expected_file_data = open(testfile).read().encode('base64')
 
-        cmd = 'boot some-server --image 1 ' \
+        cmd = 'boot some-server --flavor 1 --image 1 ' \
               '--file /tmp/foo=%s --file /tmp/bar=%s'
         self.run_command(cmd % (testfile, testfile))
 
         self.assert_called_anytime(
             'POST', '/servers',
             {'server': {
-                'flavorRef': 1,
+                'flavorRef': '1',
                 'name': 'some-server',
                 'imageRef': '1',
                 'min_count': 1,
                 'max_count': 1,
                 'personality': [
                    {'path': '/tmp/bar', 'contents': expected_file_data},
-                   {'path': '/tmp/foo', 'contents': expected_file_data}
-                ]}
-            }
+                   {'path': '/tmp/foo', 'contents': expected_file_data},
+                ]},
+            },
         )
 
     def test_boot_invalid_file(self):
@@ -100,11 +109,11 @@ class ShellTest(utils.TestCase):
         @mock.patch('os.path.exists', mock_exists)
         @mock.patch('__builtin__.open', mock_open)
         def test_shell_call():
-            self.run_command('boot some-server --image 1 --key')
+            self.run_command('boot some-server --flavor 1 --image 1 --key')
             self.assert_called_anytime(
                 'POST', '/servers',
                 {'server': {
-                    'flavorRef': 1,
+                    'flavorRef': '1',
                     'name': 'some-server',
                     'imageRef': '1',
                     'min_count': 1,
@@ -112,8 +121,8 @@ class ShellTest(utils.TestCase):
                     'personality': [{
                         'path': '/root/.ssh/authorized_keys2',
                         'contents': ('SSHKEY').encode('base64')},
-                    ]}
-                }
+                    ]},
+                },
             )
 
         test_shell_call()
@@ -124,18 +133,19 @@ class ShellTest(utils.TestCase):
         @mock.patch('os.path.exists', mock_exists)
         def test_shell_call():
             self.assertRaises(exceptions.CommandError, self.run_command,
-                              'boot some-server --image 1 --key')
+                              'boot some-server --flavor 1 --image 1 --key')
 
         test_shell_call()
 
     def test_boot_key_file(self):
         testfile = os.path.join(os.path.dirname(__file__), 'testfile.txt')
         expected_file_data = open(testfile).read().encode('base64')
-        self.run_command('boot some-server --image 1 --key %s' % testfile)
+        cmd = 'boot some-server --flavor 1 --image 1 --key %s'
+        self.run_command(cmd % testfile)
         self.assert_called_anytime(
             'POST', '/servers',
             {'server': {
-                'flavorRef': 1,
+                'flavorRef': '1',
                 'name': 'some-server',
                 'imageRef': '1',
                 'min_count': 1,
@@ -143,19 +153,46 @@ class ShellTest(utils.TestCase):
                 'personality': [
                     {'path': '/root/.ssh/authorized_keys2',
                      'contents':expected_file_data},
-                 ]}
-            }
+                 ]},
+            },
         )
 
     def test_boot_invalid_keyfile(self):
         invalid_file = os.path.join(os.path.dirname(__file__),
                                     'asdfasdfasdfasdf')
+        cmd = 'boot some-server --flavor 1 --image 1 --key %s'
         self.assertRaises(exceptions.CommandError, self.run_command,
-                          'boot some-server --image 1 --key %s' % invalid_file)
+                          cmd % invalid_file)
 
     def test_flavor_list(self):
         self.run_command('flavor-list')
         self.assert_called_anytime('GET', '/flavors/detail')
+
+    def test_image_show(self):
+        self.run_command('image-show 1')
+        self.assert_called('GET', '/images/1')
+
+    def test_image_meta_set(self):
+        self.run_command('image-meta 1 set test_key=test_value')
+        self.assert_called('POST', '/images/1/metadata',
+            {'metadata': {'test_key': 'test_value'}})
+
+    def test_image_meta_del(self):
+        self.run_command('image-meta 1 delete test_key=test_value')
+        self.assert_called('DELETE', '/images/1/metadata/test_key')
+
+    def test_image_meta_bad_action(self):
+        tmp = tempfile.TemporaryFile()
+
+        # Suppress stdout and stderr
+        (stdout, stderr) = (sys.stdout, sys.stderr)
+        (sys.stdout, sys.stderr) = (tmp, tmp)
+
+        self.assertRaises(SystemExit, self.run_command,
+                          'image-meta 1 BAD_ACTION test_key=test_value')
+
+        # Put stdout and stderr back
+        sys.stdout, sys.stderr = (stdout, stderr)
 
     def test_image_list(self):
         self.run_command('image-list')
@@ -165,7 +202,7 @@ class ShellTest(utils.TestCase):
         self.run_command('image-create sample-server mysnapshot')
         self.assert_called(
             'POST', '/servers/1234/action',
-            {'createImage': {'name': 'mysnapshot', 'metadata': {}}}
+            {'createImage': {'name': 'mysnapshot', 'metadata': {}}},
         )
 
     def test_image_delete(self):
@@ -197,7 +234,6 @@ class ShellTest(utils.TestCase):
         #                   {'rebuild': {'imageRef': 1, 'adminPass': 'asdf'}})
         self.assert_called('GET', '/images/2')
 
-
     def test_rename(self):
         self.run_command('rename sample-server newname')
         self.assert_called('PUT', '/servers/1234',
@@ -226,12 +262,32 @@ class ShellTest(utils.TestCase):
 
     def test_show(self):
         self.run_command('show 1234')
-        # XXX need a way to test multiple calls
-        # assert_called('GET', '/servers/1234')
+        self.assert_called('GET', '/servers/1234', pos=-3)
+        self.assert_called('GET', '/flavors/1', pos=-2)
         self.assert_called('GET', '/images/2')
+
+    def test_show_bad_id(self):
+        self.assertRaises(exceptions.CommandError, 
+                          self.run_command, 'show xxx')
 
     def test_delete(self):
         self.run_command('delete 1234')
         self.assert_called('DELETE', '/servers/1234')
         self.run_command('delete sample-server')
         self.assert_called('DELETE', '/servers/1234')
+
+
+    def test_set_meta_set(self):
+        self.run_command('meta 1234 set key1=val1 key2=val2')
+        self.assert_called('POST', '/servers/1234/metadata',
+                           {'metadata': {'key1': 'val1', 'key2': 'val2'}})
+
+    def test_set_meta_delete_dict(self):
+        self.run_command('meta 1234 delete key1=val1 key2=val2')
+        self.assert_called('DELETE', '/servers/1234/metadata/key1')
+        self.assert_called('DELETE', '/servers/1234/metadata/key2', pos=-2)
+
+    def test_set_meta_delete_keys(self):
+        self.run_command('meta 1234 delete key1 key2')
+        self.assert_called('DELETE', '/servers/1234/metadata/key1')
+        self.assert_called('DELETE', '/servers/1234/metadata/key2', pos=-2)

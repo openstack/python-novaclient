@@ -29,6 +29,15 @@ class ImagesTest(utils.TestCase):
         cs.images.delete(1)
         cs.assert_called('DELETE', '/images/1')
 
+    def test_delete_meta(self):
+        cs.images.delete_meta(1, {'test_key': 'test_value'})
+        cs.assert_called('DELETE', '/images/1/metadata/test_key')
+
+    def test_set_meta(self):
+        cs.images.set_meta(1, {'test_key': 'test_value'})
+        cs.assert_called('POST', '/images/1/metadata',
+                         {"metadata": {'test_key': 'test_value'}})
+
     def test_find(self):
         i = cs.images.find(name="CentOS 5.2")
         self.assertEqual(i.id, 1)

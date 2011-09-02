@@ -19,7 +19,7 @@ setup(
     license = 'Apache',
     author = 'Rackspace, based on work by Jacob Kaplan-Moss',
     author_email = 'github@racklabs.com',
-    packages = find_packages(exclude=['tests']),
+    packages = find_packages(exclude=['tests', 'tests.*']),
     classifiers = [
         'Development Status :: 5 - Production/Stable',
         'Environment :: Console',

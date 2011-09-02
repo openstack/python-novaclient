@@ -17,7 +17,6 @@
 
 import getpass
 import os
-import uuid
 
 from novaclient import exceptions
 from novaclient import utils
@@ -44,9 +43,13 @@ def _boot(cs, args, reservation_id=None, min_count=None, max_count=None):
         raise exceptions.CommandError("min_instances nor max_instances should"
                                       "be 0")
 
-    flavor = args.flavor or cs.flavors.find(ram=256)
-    image = args.image or cs.images.find(name="Ubuntu 10.04 LTS "\
-                                                   "(lucid)")
+    if not args.image:
+        raise exceptions.CommandError("you need to specify a Image ID ")
+    if not args.flavor:
+        raise exceptions.CommandError("you need to specify a Flavor ID ")
+
+    flavor = args.flavor
+    image = args.image
 
     metadata = dict(v.split('=') for v in args.meta)
 
@@ -86,13 +89,11 @@ def _boot(cs, args, reservation_id=None, min_count=None, max_count=None):
 @utils.arg('--flavor',
      default=None,
      metavar='<flavor>',
-     help="Flavor ID (see 'nova flavors'). "\
-          "Defaults to 256MB RAM instance.")
+     help="Flavor ID (see 'nova flavor-list').")
 @utils.arg('--image',
      default=None,
      metavar='<image>',
-     help="Image ID (see 'nova images'). "\
-          "Defaults to Ubuntu 10.04 LTS.")
+     help="Image ID (see 'nova image-list'). ")
 @utils.arg('--meta',
      metavar="<key=value>",
      action='append',
@@ -144,13 +145,11 @@ def do_boot(cs, args):
 @utils.arg('--flavor',
      default=None,
      metavar='<flavor>',
-     help="Flavor ID (see 'nova flavors'). "\
-          "Defaults to 256MB RAM instance.")
+     help="Flavor ID (see 'nova flavor-list')")
 @utils.arg('--image',
      default=None,
      metavar='<image>',
-     help="Image ID (see 'nova images'). "\
-          "Defaults to Ubuntu 10.04 LTS.")
+     help="Image ID (see 'nova image-list').")
 @utils.arg('--meta',
      metavar="<key=value>",
      action='append',
@@ -238,6 +237,52 @@ def do_image_list(cs, args):
     """Print a list of available images to boot from."""
     utils.print_list(cs.images.list(), ['ID', 'Name', 'Status'])
 
+@utils.arg('image',
+     metavar='<image>',
+     help="Name or ID of image")
+@utils.arg('action',
+     metavar='<action>',
+     choices=['set', 'delete'],
+     help="Actions: 'set' or 'delete'")
+@utils.arg('metadata', 
+     metavar='<key=value>',
+     nargs='+',
+     action='append',
+     default=[],
+     help='Metadata to add/update or delete (only key is necessary on delete)')
+def do_image_meta(cs, args):
+    """Set or Delete metadata on an image."""
+    image = _find_image(cs, args.image)
+    metadata = {} 
+    for metadatum in args.metadata[0]:
+        # Can only pass the key in on 'delete'
+        # So this doesn't have to have '='
+        if metadatum.find('=') > -1:
+            (key, value) = metadatum.split('=',1)
+        else:
+            key = metadatum
+            value = None
+
+        metadata[key] = value
+
+    if args.action == 'set':
+        cs.images.set_meta(image, metadata)
+    elif args.action == 'delete':
+        cs.images.delete_meta(image, metadata.keys())
+
+def _print_image(image):
+    links = image.links
+    info = image._info.copy()
+    info.pop('links')
+    utils.print_dict(info)
+
+@utils.arg('image',
+     metavar='<image>',
+     help="Name or ID of image")
+def do_image_show(cs, args):
+    """Show details about the given image."""
+    image = _find_image(cs, args.image)
+    _print_image(image)
 
 @utils.arg('image', metavar='<image>', help='Name or ID of image.')
 def do_image_delete(cs, args):
@@ -478,8 +523,49 @@ def do_image_create(cs, args):
     server = _find_server(cs, args.server)
     cs.servers.create_image(server, args.name)
 
+@utils.arg('server',
+     metavar='<server>',
+     help="Name or ID of server")
+@utils.arg('action',
+     metavar='<action>',
+     choices=['set', 'delete'],
+     help="Actions: 'set' or 'delete'")
+@utils.arg('metadata',
+     metavar='<key=value>',
+     nargs='+',
+     action='append',
+     default=[],
+     help='Metadata to set or delete (only key is necessary on delete)')
+def do_meta(cs, args):
+    """Set or Delete metadata on a server."""
+    server = _find_server(cs, args.server)
+    metadata = {}
+    for metadatum in args.metadata[0]:
+        # Can only pass the key in on 'delete'
+        # So this doesn't have to have '='
+        if metadatum.find('=') > -1:
+            (key, value) = metadatum.split('=',1)
+        else:
+            key = metadatum
+            value = None
+
+        metadata[key] = value
+
+    if args.action == 'set':
+        cs.servers.set_meta(server, metadata)
+    elif args.action == 'delete':
+        cs.servers.delete_meta(server, metadata.keys())
+
 
 def _print_server(cs, server):
+    # By default when searching via name we will do a
+    # findall(name=blah) and due a REST /details which is not the same
+    # as a .get() and doesn't get the information about flavors and
+    # images. This fix it as we redo the call with the id which does a
+    # .get() to get all informations.
+    if not 'flavor' in server._info:
+        server = _find_server(cs, server.id)
+
     networks = server.networks
     info = server._info.copy()
     for network_label, address_list in networks.items():
