@@ -556,7 +556,16 @@ def do_meta(cs, args):
     elif args.action == 'delete':
         cs.servers.delete_meta(server, metadata.keys())
 
+
 def _print_server(cs, server):
+    # By default when searching via name we will do a
+    # findall(name=blah) and due a REST /details which is not the same
+    # as a .get() and doesn't get the information about flavors and
+    # images. This fix it as we redo the call with the id which does a
+    # .get() to get all informations.
+    if not 'flavor' in server._info:
+        server = _find_server(cs, server.id)
+
     networks = server.networks
     info = server._info.copy()
     for network_label, address_list in networks.items():
