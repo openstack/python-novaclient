@@ -5,11 +5,12 @@
 OpenStack Client interface. Handles the REST calls and responses.
 """
 
-import time
-import urlparse
-import urllib
 import httplib2
 import logging
+import os
+import time
+import urllib
+import urlparse
 
 from novaclient import service_catalog
 
@@ -51,7 +52,11 @@ class HTTPClient(httplib2.Http):
         self.force_exception_to_status_code = True
 
     def http_log(self, args, kwargs, resp, body):
-        if not _logger.isEnabledFor(logging.DEBUG):
+        if 'NOVACLIENT_DEBUG' in os.environ and os.environ['NOVACLIENT_DEBUG']:
+            ch = logging.StreamHandler()
+            _logger.setLevel(logging.DEBUG)
+            _logger.addHandler(ch)
+        elif not _logger.isEnabledFor(logging.DEBUG):
             return
 
         string_parts = ['curl -i']
