@@ -55,15 +55,15 @@ endpoint::
 
     export NOVA_URL=http://example.com:5000/v2.0/
 
-Since Keystone can return multiple services in the Service Catalog, you
-can specify the one you want with ``--service_name`` (or 
-``export NOVA_SERVICE_NAME``). It defaults to 'nova'.
+Since Keystone can return multiple regions in the Service Catalog, you
+can specify the one you want with ``--region_name`` (or 
+``export NOVA_REGION_NAME``). It defaults to the first in the list returned.
 
 You'll find complete documentation on the shell by running
 ``nova help``::
 
     usage: nova [--username USERNAME] [--apikey APIKEY] [--projectid PROJECTID]
-                   [--url URL] [--version VERSION] [--service_name NAME]
+                   [--url URL] [--version VERSION] [--region_name NAME]
                    <subcommand> ...
 
     Command-line interface to the OpenStack Nova API.
@@ -122,8 +122,9 @@ You'll find complete documentation on the shell by running
                             if undefined.
       --version VERSION     Accepts 1.0 or 1.1, defaults to
                             env[NOVA_VERSION].
-      --service_name NAME   The name in the Keystone Service Catalog
-                            to use after authentication. Defaults to 'nova'.
+      --region_name NAME    The region name in the Keystone Service Catalog
+                            to use after authentication. Defaults to first
+                            in the list returned.
 
     See "nova help COMMAND" for help on a specific command.
 
