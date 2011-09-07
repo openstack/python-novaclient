@@ -26,7 +26,7 @@ class Client(object):
     """
 
     def __init__(self, username, api_key, project_id, auth_url=None,
-                 timeout=None, token=None, service_name=None):
+                 timeout=None, token=None, region_name=None):
 
         self.accounts = accounts.AccountManager(self)
         self.backup_schedules = backup_schedules.BackupScheduleManager(self)
@@ -44,7 +44,7 @@ class Client(object):
                                         _auth_url,
                                         timeout=timeout,
                                         token=token,
-                                        service_name=service_name)
+                                        region_name=region_name)
 
     def authenticate(self):
         """
