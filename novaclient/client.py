@@ -46,7 +46,8 @@ class HTTPClient(httplib2.Http):
         self.region_name = region_name
 
         self.management_url = None
-        self.auth_token = token
+        self.auth_token = None
+        self.proxy_token = token
 
         # httplib2 overrides
         self.force_exception_to_status_code = True
@@ -76,7 +77,7 @@ class HTTPClient(httplib2.Http):
         _logger.debug("RESP:%s %s\n", resp, body)
 
     def request(self, *args, **kwargs):
-        kwargs.setdefault('headers', {})
+        kwargs.setdefault('headers', kwargs.get('headers', {}))
         kwargs['headers']['User-Agent'] = self.USER_AGENT
         if 'body' in kwargs:
             kwargs['headers']['Content-Type'] = 'application/json'
@@ -136,6 +137,48 @@ class HTTPClient(httplib2.Http):
     def delete(self, url, **kwargs):
         return self._cs_request(url, 'DELETE', **kwargs)
 
+    def _extract_service_catalog(self, url, resp, body):
+        """See what the auth service told us and process the response.
+        We may get redirected to another site, fail or actually get
+        back a service catalog with a token and our endpoints."""
+
+        if resp.status == 200:  # content must always present
+            try:
+                self.auth_url = url
+                self.service_catalog = \
+                    service_catalog.ServiceCatalog(body)
+                self.auth_token = self.service_catalog.token.id
+
+                _logger.debug("***** REGION_NAME: %s" % self.region_name)
+                self.management_url = self.service_catalog.url_for(
+                                           'nova', 'public', attr='region',
+                                           filter_value=self.region_name)
+                _logger.debug("***** MANAGEMENT URL: %s" % self.management_url)
+                return None
+            except KeyError:
+                raise exceptions.AuthorizationFailure()
+        elif resp.status == 305:
+            return resp['location']
+        else:
+            raise exceptions.from_response(resp, body)
+
+    def _fetch_endpoints_from_auth(self, url):
+        """We have a token, but don't know the final endpoint for
+        the region. We have to go back to the auth service and
+        ask again. This request requires an admin-level token
+        to work. The proxy token supplied could be from a low-level enduser.
+
+        This will overwrite our admin token with the user token.
+        """
+
+        # GET /v2.0/tokens/#####/endpoints
+        token_url = urlparse.urljoin(url, "tokens", self.proxy_token,
+                                     "endpoints")
+        resp, body = self.request(token_url, "GET",
+                                  headers={'X-Auth_Token': self.auth_token},
+                                  body=body)
+        return self._extract_service_catalog(url, resp, body)
+
     def authenticate(self):
         scheme, netloc, path, query, frag = urlparse.urlsplit(
                                                     self.auth_url)
@@ -149,6 +192,13 @@ class HTTPClient(httplib2.Http):
         if self.version == "v2.0":  # FIXME(chris): This should be better.
             while auth_url:
                 auth_url = self._v2_auth(auth_url)
+
+            # Are we acting on behalf of another user via an
+            # existing token? If so, our actual endpoints may
+            # be different than that of the admin token.
+            if self.proxy_token:
+                return self._fetch_endpoints_from_auth()
+
         else:
             try:
                 while auth_url:
@@ -162,6 +212,9 @@ class HTTPClient(httplib2.Http):
                 self._v2_auth(auth_url)
 
     def _v1_auth(self, url):
+        if self.proxy_token:
+            raise NoTokenLookupException()
+
         headers = {'X-Auth-User': self.user,
                    'X-Auth-Key': self.apikey}
         if self.projectid:
@@ -181,6 +234,7 @@ class HTTPClient(httplib2.Http):
             raise exceptions.from_response(resp, body)
 
     def _v2_auth(self, url):
+        """Authenticate against a v2.0 auth service."""
         body = {"passwordCredentials": {"username": self.user,
                                         "password": self.apikey}}
 
@@ -189,22 +243,7 @@ class HTTPClient(httplib2.Http):
 
         token_url = urlparse.urljoin(url, "tokens")
         resp, body = self.request(token_url, "POST", body=body)
-
-        if resp.status == 200:  # content must always present
-            try:
-                self.auth_url = url
-                self.service_catalog = \
-                    service_catalog.ServiceCatalog(body)
-                self.auth_token = self.service_catalog.token.id
-                self.management_url = self.service_catalog.url_for(
-                                           'nova', 'public', attr='region',
-                                           filter_value=self.region_name)
-            except KeyError:
-                raise exceptions.AuthorizationFailure()
-        elif resp.status == 305:
-            return resp['location']
-        else:
-            raise exceptions.from_response(resp, body)
+        return self._extract_service_catalog(url, resp, body)
 
     def _munge_get_url(self, url):
         """
