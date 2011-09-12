@@ -168,25 +168,37 @@ class HTTPClient(httplib2.Http):
         ask again. This request requires an admin-level token
         to work. The proxy token supplied could be from a low-level enduser.
 
+        We can't get this from the keystone service endpoint, we have to use
+        the admin endpoint.
+
         This will overwrite our admin token with the user token.
         """
 
-        # GET /v2.0/tokens/#####/endpoints
-        token_url = urlparse.urljoin(url, "tokens", self.proxy_token,
-                                     "endpoints")
-        resp, body = self.request(token_url, "GET",
-                                  headers={'X-Auth_Token': self.auth_token},
-                                  body=body)
+        # GET ...:5001/v2.0/tokens/#####/endpoints
+        end = '/'.join(['tokens', self.proxy_token, 'endpoints'])
+        url = urlparse.urljoin(url, end)
+        _logger.debug("***** ENDPOINT URL: %s" % url)
+        resp, body = self.request(url, "GET",
+                                  headers={'X-Auth_Token': self.auth_token})
         return self._extract_service_catalog(url, resp, body)
 
     def authenticate(self):
-        scheme, netloc, path, query, frag = urlparse.urlsplit(
-                                                    self.auth_url)
+        magic_tuple = urlparse.urlsplit(self.auth_url)
+        scheme, netloc, path, query, frag = magic_tuple
+        port = magic_tuple.port
+        if port == None:
+            port = 80
         path_parts = path.split('/')
         for part in path_parts:
             if len(part) > 0 and part[0] == 'v':
                 self.version = part
                 break
+
+        # TODO(sandy): Assume admin endpoint is service endpoint+1 for now.
+        # Ideally this is going to have to be provided by the admin.
+        new_netloc = netloc.replace(':%d' % port, ':%d' % (port + 1))
+        admin_url = urlparse.urlunsplit(
+                        (scheme, new_netloc, path, query, frag))
 
         auth_url = self.auth_url
         if self.version == "v2.0":  # FIXME(chris): This should be better.
@@ -197,7 +209,7 @@ class HTTPClient(httplib2.Http):
             # existing token? If so, our actual endpoints may
             # be different than that of the admin token.
             if self.proxy_token:
-                return self._fetch_endpoints_from_auth()
+                return self._fetch_endpoints_from_auth(admin_url)
 
         else:
             try:
