@@ -38,6 +38,8 @@ class CatalogResource(object):
     def __init__(self, resource_dict):
         for key, value in resource_dict.items():
             if self.__catalog_key__ in value:
+                if not isinstance(value, dict):
+                    continue
                 for res_key, res_value in value.items():
                     for attr, val in res_value.items():
                         res = get_resource(attr)
@@ -98,7 +100,7 @@ class ServiceCatalog(CatalogResource):
                             if hasattr(item, attr) and
                                getattr(item, attr) == filter_value]
             if not catalog:
-                raise ValueError("No catalog entries for %s=%s" % 
+                raise ValueError("No catalog entries for %s=%s" %
                                   (attr, filter_value))
         if catalog:
             return getattr(catalog[0], url + "_url")
