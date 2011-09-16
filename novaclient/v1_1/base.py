@@ -15,14 +15,15 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import base64
+
 from novaclient import base
-from novaclient import exceptions
 
 
 class BootingManagerWithFind(base.ManagerWithFind):
     """Like a `ManagerWithFind`, but has the ability to boot servers."""
     def _boot(self, resource_url, response_key, name, image, flavor,
-              meta=None, files=None, zone_blob=None,
+              meta=None, files=None, zone_blob=None, userdata=None,
               reservation_id=None, return_raw=False, min_count=None,
               max_count=None, security_groups=None):
         """
@@ -52,6 +53,10 @@ class BootingManagerWithFind(base.ManagerWithFind):
             "imageRef": base.getid(image),
             "flavorRef": base.getid(flavor),
         }}
+        if userdata:
+            if hasattr(userdata, 'read'):
+                userdata = userdata.read()
+            body["server"]["user_data"] = base64.b64encode(userdata)
         if meta:
             body["server"]["metadata"] = meta
         if reservation_id:
