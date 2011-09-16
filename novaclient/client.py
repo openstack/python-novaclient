@@ -149,11 +149,9 @@ class HTTPClient(httplib2.Http):
                     service_catalog.ServiceCatalog(body)
                 self.auth_token = self.service_catalog.token.id
 
-                _logger.debug("***** REGION_NAME: %s" % self.region_name)
                 self.management_url = self.service_catalog.url_for(
                                            'nova', 'public', attr='region',
                                            filter_value=self.region_name)
-                _logger.debug("***** MANAGEMENT URL: %s" % self.management_url)
                 return None
             except KeyError:
                 raise exceptions.AuthorizationFailure()
@@ -177,7 +175,7 @@ class HTTPClient(httplib2.Http):
         # GET ...:5001/v2.0/tokens/#####/endpoints
         end = '/'.join(['tokens', self.proxy_token, 'endpoints'])
         url = urlparse.urljoin(url, end)
-        _logger.debug("***** ENDPOINT URL: %s" % url)
+        _logger.debug("Using Endpoint URL: %s" % url)
         resp, body = self.request(url, "GET",
                                   headers={'X-Auth_Token': self.auth_token})
         return self._extract_service_catalog(url, resp, body)

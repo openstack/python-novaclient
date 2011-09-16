@@ -39,7 +39,6 @@ class CatalogResource(object):
         for key, value in resource_dict.items():
             if self.__catalog_key__ in value:
                 if not isinstance(value, dict):
-                    print "SKIPPING", key, value
                     continue
                 for res_key, res_value in value.items():
                     for attr, val in res_value.items():
