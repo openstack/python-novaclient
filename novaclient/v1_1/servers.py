@@ -349,8 +349,8 @@ class ServerManager(local_base.BootingManagerWithFind):
                       server this can be a file type object as well or a
                       string.
         :param reservation_id: a UUID for the set of servers being requested.
-        :param key_name: name of previously created keypair to inject
-                      into the instance
+        :param key_name: (optional extension) name of previously created
+                      keypair to inject into the instance
         """
         if not min_count:
             min_count = 1

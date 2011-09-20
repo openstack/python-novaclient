@@ -47,7 +47,8 @@ class BootingManagerWithFind(base.ManagerWithFind):
         :param return_raw: If True, don't try to coearse the result into
                            a Resource object.
         :param security_groups: list of security group names
-        :param key_name: name of keypair to inject into the instance
+        :param key_name: (optional extension) name of keypair to inject into
+                         the instance
         """
         body = {"server": {
             "name": name,
