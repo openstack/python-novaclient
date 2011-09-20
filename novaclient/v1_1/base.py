@@ -25,7 +25,7 @@ class BootingManagerWithFind(base.ManagerWithFind):
     def _boot(self, resource_url, response_key, name, image, flavor,
               meta=None, files=None, zone_blob=None, userdata=None,
               reservation_id=None, return_raw=False, min_count=None,
-              max_count=None, security_groups=None):
+              max_count=None, security_groups=None, key_name=None):
         """
         Create (boot) a new server.
 
@@ -47,6 +47,8 @@ class BootingManagerWithFind(base.ManagerWithFind):
         :param return_raw: If True, don't try to coearse the result into
                            a Resource object.
         :param security_groups: list of security group names
+        :param key_name: (optional extension) name of keypair to inject into
+                         the instance
         """
         body = {"server": {
             "name": name,
@@ -63,6 +65,8 @@ class BootingManagerWithFind(base.ManagerWithFind):
             body["server"]["reservation_id"] = reservation_id
         if zone_blob:
             body["server"]["zone_blob"] = zone_blob
+        if key_name:
+            body["server"]["key_name"] = key_name
 
         if not min_count:
             min_count = 1
