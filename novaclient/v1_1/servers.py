@@ -328,6 +328,8 @@ class ServerManager(local_base.BootingManagerWithFind):
                zone_blob=None, reservation_id=None, min_count=None,
                max_count=None, security_groups=None, userdata=None,
                key_name=None):
+        # TODO: (anthony) indicate in doc string if param is an extension
+        # and/or optional
         """
         Create (boot) a new server.
 
