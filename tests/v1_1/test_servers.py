@@ -34,6 +34,7 @@ class ServersTest(utils.TestCase):
             flavor=1,
             meta={'foo': 'bar'},
             userdata="hello moto",
+            key_name="fakekey",
             files={
                 '/etc/passwd': 'some data',                 # a file
                 '/tmp/foo.txt': StringIO.StringIO('data'),   # a stream

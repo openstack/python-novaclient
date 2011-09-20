@@ -326,7 +326,8 @@ class ServerManager(local_base.BootingManagerWithFind):
 
     def create(self, name, image, flavor, meta=None, files=None,
                zone_blob=None, reservation_id=None, min_count=None,
-               max_count=None, security_groups=None, userdata=None):
+               max_count=None, security_groups=None, userdata=None,
+               key_name=None):
         """
         Create (boot) a new server.
 
@@ -348,6 +349,8 @@ class ServerManager(local_base.BootingManagerWithFind):
                       server this can be a file type object as well or a
                       string.
         :param reservation_id: a UUID for the set of servers being requested.
+        :param key_name: name of previously created keypair to inject
+                      into the instance
         """
         if not min_count:
             min_count = 1
@@ -359,7 +362,7 @@ class ServerManager(local_base.BootingManagerWithFind):
                           meta=meta, files=files, userdata=userdata,
                           zone_blob=zone_blob, reservation_id=reservation_id,
                           min_count=min_count, max_count=max_count,
-                          security_groups=security_groups)
+                          security_groups=security_groups, key_name=key_name)
 
     def update(self, server, name=None):
         """
