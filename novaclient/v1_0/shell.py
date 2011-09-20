@@ -147,6 +147,7 @@ def _boot(cs, args, reservation_id=None, min_count=None, max_count=None):
 
 @utils.arg('--flavor',
      default=None,
+     type=int,
      metavar='<flavor>',
      help="Flavor ID (see 'nova flavors'). "\
           "Defaults to 256MB RAM instance.")
@@ -197,6 +198,7 @@ def do_boot(cs, args):
 
 @utils.arg('--flavor',
      default=None,
+     type=int,
      metavar='<flavor>',
      help="Flavor ID (see 'nova flavors'). "\
           "Defaults to 256MB RAM instance.")
@@ -248,6 +250,7 @@ def do_boot_for_account(cs, args):
 
 @utils.arg('--flavor',
      default=None,
+     type=int,
      metavar='<flavor>',
      help="Flavor ID (see 'nova flavors'). "\
           "Defaults to 256MB RAM instance.")
