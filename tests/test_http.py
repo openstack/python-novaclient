@@ -14,6 +14,11 @@ mock_request = mock.Mock(return_value=(fake_response, fake_body))
 def get_client():
     cl = client.HTTPClient("username", "apikey",
                            "project_id", "auth_test")
+    return cl
+
+
+def get_authed_client():
+    cl = get_client()
     cl.management_url = "http://example.com"
     cl.auth_token = "token"
     return cl
@@ -22,7 +27,7 @@ def get_client():
 class ClientTest(utils.TestCase):
 
     def test_get(self):
-        cl = get_client()
+        cl = get_authed_client()
 
         @mock.patch.object(httplib2.Http, "request", mock_request)
         @mock.patch('time.time', mock.Mock(return_value=1234))
@@ -40,7 +45,7 @@ class ClientTest(utils.TestCase):
         test_get_call()
 
     def test_post(self):
-        cl = get_client()
+        cl = get_authed_client()
 
         @mock.patch.object(httplib2.Http, "request", mock_request)
         def test_post_call():

@@ -707,19 +707,26 @@ def do_zone_info(cs, args):
     utils.print_dict(zone._info)
 
 
-@utils.arg('api_url', metavar='<api_url>', help="URL for the Zone's API")
-@utils.arg('zone_username', metavar='<zone_username>',
-                      help='Authentication username.')
-@utils.arg('password', metavar='<password>', help='Authentication password.')
-@utils.arg('weight_offset', metavar='<weight_offset>',
-                        help='Child Zone weight offset (typically 0.0).')
-@utils.arg('weight_scale', metavar='<weight_scale>',
-                        help='Child Zone weight scale (typically 1.0).')
+@utils.arg('zone_name', metavar='<zone_name>',
+            help='Name of the child zone being added.')
+@utils.arg('api_url', metavar='<api_url>', help="URL for the Zone's Auth API")
+@utils.arg('--zone_username', metavar='<zone_username>',
+            help='Optional Authentication username. (Default=None)',
+            default=None)
+@utils.arg('--password', metavar='<password>',
+           help='Authentication password. (Default=None)',
+           default=None)
+@utils.arg('--weight_offset', metavar='<weight_offset>',
+           help='Child Zone weight offset (Default=0.0))',
+           default=0.0)
+@utils.arg('--weight_scale', metavar='<weight_scale>',
+           help='Child Zone weight scale (Default=1.0).',
+           default=1.0)
 def do_zone_add(cs, args):
     """Add a new child zone."""
-    zone = cs.zones.create(args.api_url, args.zone_username,
-                                args.password, args.weight_offset,
-                                args.weight_scale)
+    zone = cs.zones.create(args.zone_name, args.api_url,
+                           args.zone_username, args.password,
+                           args.weight_offset, args.weight_scale)
     utils.print_dict(zone._info)
 
 

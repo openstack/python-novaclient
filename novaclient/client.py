@@ -35,16 +35,19 @@ class HTTPClient(httplib2.Http):
 
     USER_AGENT = 'python-novaclient'
 
-    def __init__(self, user, apikey, projectid, auth_url, timeout=None):
+    def __init__(self, user, apikey, projectid, auth_url, timeout=None,
+                 token=None, region_name=None):
         super(HTTPClient, self).__init__(timeout=timeout)
         self.user = user
         self.apikey = apikey
         self.projectid = projectid
         self.auth_url = auth_url
         self.version = 'v1.0'
+        self.region_name = region_name
 
         self.management_url = None
         self.auth_token = None
+        self.proxy_token = token
 
         # httplib2 overrides
         self.force_exception_to_status_code = True
@@ -74,7 +77,7 @@ class HTTPClient(httplib2.Http):
         _logger.debug("RESP:%s %s\n", resp, body)
 
     def request(self, *args, **kwargs):
-        kwargs.setdefault('headers', {})
+        kwargs.setdefault('headers', kwargs.get('headers', {}))
         kwargs['headers']['User-Agent'] = self.USER_AGENT
         if 'body' in kwargs:
             kwargs['headers']['Content-Type'] = 'application/json'
@@ -134,19 +137,78 @@ class HTTPClient(httplib2.Http):
     def delete(self, url, **kwargs):
         return self._cs_request(url, 'DELETE', **kwargs)
 
+    def _extract_service_catalog(self, url, resp, body):
+        """See what the auth service told us and process the response.
+        We may get redirected to another site, fail or actually get
+        back a service catalog with a token and our endpoints."""
+
+        if resp.status == 200:  # content must always present
+            try:
+                self.auth_url = url
+                self.service_catalog = \
+                    service_catalog.ServiceCatalog(body)
+                self.auth_token = self.service_catalog.token.id
+
+                self.management_url = self.service_catalog.url_for(
+                                           'nova', 'public', attr='region',
+                                           filter_value=self.region_name)
+                return None
+            except KeyError:
+                raise exceptions.AuthorizationFailure()
+        elif resp.status == 305:
+            return resp['location']
+        else:
+            raise exceptions.from_response(resp, body)
+
+    def _fetch_endpoints_from_auth(self, url):
+        """We have a token, but don't know the final endpoint for
+        the region. We have to go back to the auth service and
+        ask again. This request requires an admin-level token
+        to work. The proxy token supplied could be from a low-level enduser.
+
+        We can't get this from the keystone service endpoint, we have to use
+        the admin endpoint.
+
+        This will overwrite our admin token with the user token.
+        """
+
+        # GET ...:5001/v2.0/tokens/#####/endpoints
+        end = '/'.join(['tokens', self.proxy_token, 'endpoints'])
+        url = urlparse.urljoin(url, end)
+        _logger.debug("Using Endpoint URL: %s" % url)
+        resp, body = self.request(url, "GET",
+                                  headers={'X-Auth_Token': self.auth_token})
+        return self._extract_service_catalog(url, resp, body)
+
     def authenticate(self):
-        scheme, netloc, path, query, frag = urlparse.urlsplit(
-                                                    self.auth_url)
+        magic_tuple = urlparse.urlsplit(self.auth_url)
+        scheme, netloc, path, query, frag = magic_tuple
+        port = magic_tuple.port
+        if port == None:
+            port = 80
         path_parts = path.split('/')
         for part in path_parts:
             if len(part) > 0 and part[0] == 'v':
                 self.version = part
                 break
 
+        # TODO(sandy): Assume admin endpoint is service endpoint+1 for now.
+        # Ideally this is going to have to be provided by the admin.
+        new_netloc = netloc.replace(':%d' % port, ':%d' % (port + 1))
+        admin_url = urlparse.urlunsplit(
+                        (scheme, new_netloc, path, query, frag))
+
         auth_url = self.auth_url
         if self.version == "v2.0":  # FIXME(chris): This should be better.
             while auth_url:
                 auth_url = self._v2_auth(auth_url)
+
+            # Are we acting on behalf of another user via an
+            # existing token? If so, our actual endpoints may
+            # be different than that of the admin token.
+            if self.proxy_token:
+                return self._fetch_endpoints_from_auth(admin_url)
+
         else:
             try:
                 while auth_url:
@@ -160,6 +222,9 @@ class HTTPClient(httplib2.Http):
                 self._v2_auth(auth_url)
 
     def _v1_auth(self, url):
+        if self.proxy_token:
+            raise NoTokenLookupException()
+
         headers = {'X-Auth-User': self.user,
                    'X-Auth-Key': self.apikey}
         if self.projectid:
@@ -179,6 +244,7 @@ class HTTPClient(httplib2.Http):
             raise exceptions.from_response(resp, body)
 
     def _v2_auth(self, url):
+        """Authenticate against a v2.0 auth service."""
         body = {"passwordCredentials": {"username": self.user,
                                         "password": self.apikey}}
 
@@ -187,21 +253,7 @@ class HTTPClient(httplib2.Http):
 
         token_url = urlparse.urljoin(url, "tokens")
         resp, body = self.request(token_url, "POST", body=body)
-
-        if resp.status == 200:  # content must always present
-            try:
-                self.auth_url = url
-                self.service_catalog = \
-                    service_catalog.ServiceCatalog(body)
-                self.auth_token = self.service_catalog.token.id
-                self.management_url = self.service_catalog.url_for('nova',
-                                                                   'public')
-            except KeyError:
-                raise exceptions.AuthorizationFailure()
-        elif resp.status == 305:
-            return resp['location']
-        else:
-            raise exceptions.from_response(resp, body)
+        return self._extract_service_catalog(url, resp, body)
 
     def _munge_get_url(self, url):
         """

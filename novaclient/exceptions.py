@@ -12,6 +12,12 @@ class AuthorizationFailure(Exception):
     pass
 
 
+class NoTokenLookupException(Exception):
+    """This form of authentication does not support looking up
+       endpoints from an existing token."""
+    pass
+
+
 class ClientException(Exception):
     """
     The base exception class for all exceptions this library raises.

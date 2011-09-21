@@ -28,7 +28,9 @@ class ZonesTest(utils.TestCase):
         self.assertEqual(s.api_url, 'http://foo.com')
 
     def test_create_zone(self):
-        s = os.zones.create(api_url="http://foo.com", username='bob',
+        s = os.zones.create(zone_name='child_zone',
+                            api_url="http://foo.com",
+                            username='bob',
                             password='xxx')
         os.assert_called('POST', '/zones')
         self.assertTrue(isinstance(s, zones.Zone))

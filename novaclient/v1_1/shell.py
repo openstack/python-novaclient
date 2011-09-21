@@ -654,7 +654,9 @@ def do_zone_info(cs, args):
     utils.print_dict(zone._info)
 
 
-@utils.arg('api_url', metavar='<api_url>', help="URL for the Zone's API")
+@utils.arg('zone_name', metavar='<zone_name>',
+            help='Name of the child zone being added.')
+@utils.arg('api_url', metavar='<api_url>', help="URL for the Zone's Auth API")
 @utils.arg('--zone_username', metavar='<zone_username>',
             help='Optional Authentication username. (Default=None)',
             default=None)
@@ -669,9 +671,9 @@ def do_zone_info(cs, args):
            default=1.0)
 def do_zone_add(cs, args):
     """Add a new child zone."""
-    zone = cs.zones.create(args.api_url, args.zone_username,
-                           args.password, args.weight_offset,
-                           args.weight_scale)
+    zone = cs.zones.create(args.zone_name, args.api_url,
+                           args.zone_username, args.password,
+                           args.weight_offset, args.weight_scale)
     utils.print_dict(zone._info)
 
 
