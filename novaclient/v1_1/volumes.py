@@ -61,7 +61,7 @@ class VolumeManager(base.ManagerWithFind):
         :param volume_id: The ID of the volume to delete.
         :rtype: :class:`Volume`
         """
-        return self._get("/os-volumes/%s" % base.getid(volume), "volume")
+        return self._get("/os-volumes/%s" % volume_id, "volume")
 
     def list(self, detailed=True):
         """
@@ -81,3 +81,49 @@ class VolumeManager(base.ManagerWithFind):
         :param volume: The :class:`Volume` to delete.
         """
         self._delete("/os-volumes/%s" % base.getid(volume))
+
+    def create_server_volume(self, server_id, volume_id, device):
+        """
+        Attach a volume identified by the volume ID to the given server ID
+
+        :param server_id: The ID of the server
+        :param volume_id: The ID of the volume to attach.
+        :param device: The device name
+        :rtype: :class:`Volume`
+        """
+        body = {'volumeAttachment': {'volumeId': volume_id,
+                            'device': device}}
+        return self._create("/servers/%s/os-volume_attachments" % server_id,
+            body, "volumeAttachment")
+
+    def get_server_volume(self, server_id, attachment_id):
+        """
+        Get the volume identified by the attachment ID, that is attached to
+        the given server ID
+
+        :param server_id: The ID of the server
+        :param attachment_id: The ID of the attachment
+        :rtype: :class:`Volume`
+        """
+        return self._get("/servers/%s/os-volume_attachments/%s" % (server_id,
+            attachment_id,), "volumeAttachment")
+
+    def get_server_volumes(self, server_id):
+        """
+        Get a list of all the attached volumes for the given server ID
+
+        :param server_id: The ID of the server
+        :rtype: list of :class:`Volume`
+        """
+        return self._list("/servers/%s/os-volume_attachments" % server_id,
+            "volumeAttachments")
+
+    def delete_server_volume(self, server_id, attachment_id):
+        """
+        Detach a volume identified by the attachment ID from the given server
+
+        :param server_id: The ID of the server
+        :param attachment_id: The ID of the attachment
+        """
+        return self._delete("/servers/%s/os-volume_attachments/%s" % (server_id,
+            attachment_id,))
