@@ -41,9 +41,10 @@ class AuthenticateAgainstKeystoneTests(utils.TestCase):
             cs.client.authenticate()
             headers = {'User-Agent': cs.client.USER_AGENT,
                        'Content-Type': 'application/json', }
-            body = {'passwordCredentials': {'username': cs.client.user,
-                                            'password': cs.client.apikey,
-                                            'tenantId': cs.client.projectid, }}
+            body = {'auth': {
+                        'passwordCredentials': {'username': cs.client.user,
+                                                'password': cs.client.apikey},
+                        'tenantId': cs.client.projectid, }}
 
             token_url = urlparse.urljoin(cs.client.auth_url, "tokens")
             mock_request.assert_called_with(token_url, "POST",
@@ -110,9 +111,10 @@ class AuthenticateAgainstKeystoneTests(utils.TestCase):
             cs.client.authenticate()
             headers = {'User-Agent': cs.client.USER_AGENT,
                        'Content-Type': 'application/json',}
-            body = {'passwordCredentials': {'username': cs.client.user,
-                                            'password': cs.client.apikey,
-                                            'tenantId': cs.client.projectid,}}
+            body = {'auth': {
+                            'passwordCredentials': {'username': cs.client.user,
+                                                    'password': cs.client.apikey},
+                            'tenantId': cs.client.projectid,}}
 
             token_url = urlparse.urljoin(cs.client.auth_url, "tokens")
             mock_request.assert_called_with(token_url, "POST",

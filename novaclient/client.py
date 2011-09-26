@@ -245,11 +245,12 @@ class HTTPClient(httplib2.Http):
 
     def _v2_auth(self, url):
         """Authenticate against a v2.0 auth service."""
-        body = {"passwordCredentials": {"username": self.user,
-                                        "password": self.apikey}}
+        body = {"auth": {
+                   "passwordCredentials": {"username": self.user,
+                                           "password": self.apikey}}}
 
         if self.projectid:
-            body['passwordCredentials']['tenantId'] = self.projectid
+            body['auth']['tenantId'] = self.projectid
 
         token_url = urlparse.urljoin(url, "tokens")
         resp, body = self.request(token_url, "POST", body=body)
