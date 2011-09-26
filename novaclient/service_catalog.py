@@ -26,22 +26,22 @@ class ServiceCatalog(object):
         self.catalog = resource_dict
 
     def get_token(self):
-        return self.catalog['access']['token']['id']
+        return self.catalog[u'access'][u'token'][u'id']
 
     def url_for(self, attr=None, filter_value=None):
         """Fetch the public URL from the Compute service for
         a particular endpoint attribute. If none given, return
         the first. See tests for sample service catalog."""
-        print "Looking for %s / %s in %s" % (attr, filter_value, self.catalog)
-        catalog = self.catalog['access']['serviceCatalog']
+        catalog = self.catalog[u'access'][u'serviceCatalog']
 
         for service in catalog:
-            if service['type'] != 'compute':
+            if service[u'type'] != u'compute':
                 continue
 
-            endpoints = service['endpoints']
+            endpoints = service[u'endpoints']
             for endpoint in endpoints:
-                if filter_value == None or endpoint[attr] == filter_value:
-                    return endpoint['publicURL']
+                if filter_value == None or endpoint[attr] == \
+                                                unicode(filter_value):
+                    return endpoint[u'publicURL']
 
         raise novaclient.exceptions.EndpointNotFound()

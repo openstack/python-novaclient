@@ -156,8 +156,11 @@ class HTTPClient(httplib2.Http):
                                            filter_value=self.region_name)
                 return None
             except KeyError, e:
-                print "Key ERROR", e
                 raise exceptions.AuthorizationFailure()
+            except exceptions.EndpointNotFound:
+                print "Could not find any suitable endpoint. Correct region?"
+                raise
+
         elif resp.status == 305:
             return resp['location']
         else:
