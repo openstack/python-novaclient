@@ -18,6 +18,11 @@ class NoTokenLookupException(Exception):
     pass
 
 
+class EndpointNotFound(Exception):
+    """Could not find Service or Region in Service Catalog."""
+    pass
+
+
 class ClientException(Exception):
     """
     The base exception class for all exceptions this library raises.

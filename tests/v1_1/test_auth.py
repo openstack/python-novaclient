@@ -20,14 +20,15 @@ def to_http_response(resp_dict):
 class AuthenticateAgainstKeystoneTests(utils.TestCase):
     def test_authenticate_success(self):
         cs = client.Client("username", "apikey", "project_id", "auth_url/v2.0")
-        resp = {"auth":
+        resp = {"access":
                     {"token": {"expires": "12345", "id": "FAKE_ID"},
-                     "serviceCatalog": {
-                          "nova": [
-                              {"adminURL": "http://localhost:8774/v1.1",
+                     "serviceCatalog": [
+                          {"adminURL": "http://localhost:8774/v1.1",
+                           "type": "compute",
+                           "endpoints" : [{
                                "region": "RegionOne",
                                "internalURL": "http://localhost:8774/v1.1",
-                               "publicURL": "http://localhost:8774/v1.1/"}]}}}
+                               "publicURL": "http://localhost:8774/v1.1/"},]},]}}
         auth_response = httplib2.Response({
             "status": 200,
             "body": json.dumps(resp),
@@ -52,8 +53,9 @@ class AuthenticateAgainstKeystoneTests(utils.TestCase):
                                             body=json.dumps(body))
 
             self.assertEqual(cs.client.management_url,
-                        resp["auth"]["serviceCatalog"]["nova"][0]["publicURL"])
-            self.assertEqual(cs.client.auth_token, resp["auth"]["token"]["id"])
+                        resp["access"]["serviceCatalog"][0]
+                                      ['endpoints'][0]["publicURL"])
+            self.assertEqual(cs.client.auth_token, resp["access"]["token"]["id"])
 
         test_auth_call()
 
@@ -76,12 +78,13 @@ class AuthenticateAgainstKeystoneTests(utils.TestCase):
 
     def test_auth_redirect(self):
         cs = client.Client("username", "apikey", "project_id", "auth_url/v1.0")
-        dict_correct_response = {"auth": {"token": {"expires": "12345", "id": "FAKE_ID"},
-                         "serviceCatalog": {
-                            "nova": [{"adminURL": "http://localhost:8774/v1.1",
+        dict_correct_response = {"access": {"token": {"expires": "12345", "id": "FAKE_ID"},
+                         "serviceCatalog": [{
+                            "type": "compute",
+                            "endpoints": [{"adminURL": "http://localhost:8774/v1.1",
                                       "region": "RegionOne",
                                       "internalURL": "http://localhost:8774/v1.1",
-                                      "publicURL": "http://localhost:8774/v1.1/"}]}}}
+                                      "publicURL": "http://localhost:8774/v1.1/"},]},]}}
         correct_response = json.dumps(dict_correct_response)
         dict_responses = [
             {"headers": {'location':'http://127.0.0.1:5001'},
@@ -123,8 +126,9 @@ class AuthenticateAgainstKeystoneTests(utils.TestCase):
 
             resp = dict_correct_response
             self.assertEqual(cs.client.management_url,
-                             resp["auth"]["serviceCatalog"]["nova"][0]["publicURL"])
-            self.assertEqual(cs.client.auth_token, resp["auth"]["token"]["id"])
+                             resp["access"]["serviceCatalog"][0]
+                                 ['endpoints'][0]["publicURL"])
+            self.assertEqual(cs.client.auth_token, resp["access"]["token"]["id"])
 
         test_auth_call()
 

@@ -1,6 +1,8 @@
 # Copyright 2010 Jacob Kaplan-Moss
+# Copyright 2011 OpenStack LLC.
 # Copyright 2011 Piston Cloud Computing, Inc.
 
+# All Rights Reserved.
 """
 OpenStack Client interface. Handles the REST calls and responses.
 """
@@ -147,13 +149,14 @@ class HTTPClient(httplib2.Http):
                 self.auth_url = url
                 self.service_catalog = \
                     service_catalog.ServiceCatalog(body)
-                self.auth_token = self.service_catalog.token.id
+                self.auth_token = self.service_catalog.get_token()
 
                 self.management_url = self.service_catalog.url_for(
-                                           'nova', 'public', attr='region',
+                                           attr='region',
                                            filter_value=self.region_name)
                 return None
-            except KeyError:
+            except KeyError, e:
+                print "Key ERROR", e
                 raise exceptions.AuthorizationFailure()
         elif resp.status == 305:
             return resp['location']
