@@ -1,6 +1,8 @@
 # Copyright 2010 Jacob Kaplan-Moss
+# Copyright 2011 OpenStack LLC.
 # Copyright 2011 Piston Cloud Computing, Inc.
 
+# All Rights Reserved.
 """
 OpenStack Client interface. Handles the REST calls and responses.
 """
@@ -147,14 +149,18 @@ class HTTPClient(httplib2.Http):
                 self.auth_url = url
                 self.service_catalog = \
                     service_catalog.ServiceCatalog(body)
-                self.auth_token = self.service_catalog.token.id
+                self.auth_token = self.service_catalog.get_token()
 
                 self.management_url = self.service_catalog.url_for(
-                                           'nova', 'public', attr='region',
+                                           attr='region',
                                            filter_value=self.region_name)
                 return None
             except KeyError:
                 raise exceptions.AuthorizationFailure()
+            except exceptions.EndpointNotFound:
+                print "Could not find any suitable endpoint. Correct region?"
+                raise
+
         elif resp.status == 305:
             return resp['location']
         else:
@@ -245,11 +251,12 @@ class HTTPClient(httplib2.Http):
 
     def _v2_auth(self, url):
         """Authenticate against a v2.0 auth service."""
-        body = {"passwordCredentials": {"username": self.user,
-                                        "password": self.apikey}}
+        body = {"auth": {
+                   "passwordCredentials": {"username": self.user,
+                                           "password": self.apikey}}}
 
         if self.projectid:
-            body['passwordCredentials']['tenantId'] = self.projectid
+            body['auth']['tenantId'] = self.projectid
 
         token_url = urlparse.urljoin(url, "tokens")
         resp, body = self.request(token_url, "POST", body=body)
