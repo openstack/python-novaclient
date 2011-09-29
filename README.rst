@@ -106,6 +106,12 @@ You'll find complete documentation on the shell by running
         root-password       Change the root password for a server.
         show                Show details about the given server.
         unrescue            Unrescue a server.
+        volume-attach       Attach a volume to a server.
+        volume-create       Add a new volume.
+        volume-delete       Remove a volume.
+        volume-detach       Detach a volume from a server.
+        volume-list         List all the volumes.
+        volume-show         Show details about a volume.
         zone                Show or edit a Child Zone
         zone-add            Add a Child Zone.
         zone-boot           Boot a server, considering Zones.
