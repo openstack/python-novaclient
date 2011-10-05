@@ -16,6 +16,7 @@
 """
 Keypair interface (1.1 extension).
 """
+import os
 
 from novaclient import base
 
@@ -50,7 +51,7 @@ class KeypairManager(base.ManagerWithFind):
         Create a keypair
 
         :param name: name for the keypair to create
-        :param public_key: existing public key to import
+        :param public_key: path to a public ssh key.
         """
         body = {'keypair': {'name': name}}
         if public_key:

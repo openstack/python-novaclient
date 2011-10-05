@@ -92,6 +92,9 @@ You'll find complete documentation on the shell by running
         ipgroup-delete      Delete an IP group.
         ipgroup-list        Show IP groups.
         ipgroup-show        Show details about a particular IP group.
+        keypair-add         Create a new key pair for use with instances
+        keypair-delete      Delete keypair by its id
+        keypair-list        Show a list of keypairs for a user
         list                List active servers.
         migrate             Migrate a server to a new host in the same zone.
         reboot              Reboot a server.
@@ -112,6 +115,7 @@ You'll find complete documentation on the shell by running
         zone-delete         Remove a Child Zone.
         zone-info           Show the capabilities for this Zone.
         zone-list           List all the immediate Child Zones.
+
 
     Optional arguments:
       --username USERNAME   Defaults to env[NOVA_USERNAME].
