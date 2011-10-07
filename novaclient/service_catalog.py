@@ -40,7 +40,7 @@ class ServiceCatalog(object):
 
             endpoints = service['endpoints']
             for endpoint in endpoints:
-                if filter_value == None or endpoint[attr] == filter_value:
+                if not filter_value or endpoint[attr] == filter_value:
                     return endpoint['publicURL']
 
         raise novaclient.exceptions.EndpointNotFound()
