@@ -82,8 +82,23 @@ def _boot(cs, args, reservation_id=None, min_count=None, max_count=None):
         except IOError, e:
             raise exceptions.CommandError("Can't open '%s': %s" % (keyfile, e))
 
+    if args.user_data:
+        user_data = args.user_data
+    else:
+        user_data = None
+
+    if args.availability_zone:
+        availability_zone = args.availability_zone
+    else:
+        availability_zone = None
+
+    if args.security_groups:
+        security_groups = args.security_groups.split(',')
+    else:
+        security_groups = None
     return (args.name, image, flavor, metadata, files,
-            reservation_id, min_count, max_count)
+            reservation_id, min_count, max_count, user_data, \
+            availability_zone, security_groups)
 
 
 @utils.arg('--flavor',
@@ -115,16 +130,33 @@ def _boot(cs, args, reservation_id=None, min_count=None, max_count=None):
           "Looks in ~/.ssh for a key, "\
           "or takes an explicit <path> to one.")
 @utils.arg('name', metavar='<name>', help='Name for the new server')
+@utils.arg('--user_data',
+     default=None,
+     metavar='<user-data>',
+     help="user data to pass to be exposed by the metadata "\
+          "server this can be a file type object as well or a string.")
+@utils.arg('--availability_zone',
+     default=None,
+     metavar='<availability-zone>',
+     help="zone id.")
+@utils.arg('--security_groups',
+     default=None,
+     metavar='<security_groups>',
+     help="comma separated list of security group names.")
 def do_boot(cs, args):
     """Boot a new server."""
     name, image, flavor, metadata, files, reservation_id, \
-                min_count, max_count = _boot(cs, args)
+        min_count, max_count, user_data, availability_zone, \
+        security_groups = _boot(cs, args)
 
     server = cs.servers.create(args.name, image, flavor,
                                     meta=metadata,
                                     files=files,
                                     min_count=min_count,
-                                    max_count=max_count)
+                                    max_count=max_count,
+                                    userdata=user_data,
+                                    availability_zone=availability_zone,
+                                    security_groups=security_groups)
 
     info = server._info
 
@@ -194,7 +226,8 @@ def do_zone_boot(cs, args):
     min_count = args.min_instances
     max_count = args.max_instances
     name, image, flavor, metadata, \
-            files, reservation_id, min_count, max_count = \
+            files, reservation_id, min_count, max_count,\
+            user_data, availability_zone, security_groups = \
                              _boot(cs, args,
                                         reservation_id=reservation_id,
                                         min_count=min_count,
@@ -237,6 +270,7 @@ def do_image_list(cs, args):
     """Print a list of available images to boot from."""
     utils.print_list(cs.images.list(), ['ID', 'Name', 'Status'])
 
+
 @utils.arg('image',
      metavar='<image>',
      help="Name or ID of image")
@@ -244,7 +278,7 @@ def do_image_list(cs, args):
      metavar='<action>',
      choices=['set', 'delete'],
      help="Actions: 'set' or 'delete'")
-@utils.arg('metadata', 
+@utils.arg('metadata',
      metavar='<key=value>',
      nargs='+',
      action='append',
@@ -253,12 +287,12 @@ def do_image_list(cs, args):
 def do_image_meta(cs, args):
     """Set or Delete metadata on an image."""
     image = _find_image(cs, args.image)
-    metadata = {} 
+    metadata = {}
     for metadatum in args.metadata[0]:
         # Can only pass the key in on 'delete'
         # So this doesn't have to have '='
         if metadatum.find('=') > -1:
-            (key, value) = metadatum.split('=',1)
+            (key, value) = metadatum.split('=', 1)
         else:
             key = metadatum
             value = None
@@ -270,11 +304,13 @@ def do_image_meta(cs, args):
     elif args.action == 'delete':
         cs.images.delete_meta(image, metadata.keys())
 
+
 def _print_image(image):
     links = image.links
     info = image._info.copy()
     info.pop('links')
     utils.print_dict(info)
+
 
 @utils.arg('image',
      metavar='<image>',
@@ -283,6 +319,7 @@ def do_image_show(cs, args):
     """Show details about the given image."""
     image = _find_image(cs, args.image)
     _print_image(image)
+
 
 @utils.arg('image', metavar='<image>', help='Name or ID of image.')
 def do_image_delete(cs, args):
@@ -523,6 +560,7 @@ def do_image_create(cs, args):
     server = _find_server(cs, args.server)
     cs.servers.create_image(server, args.name)
 
+
 @utils.arg('server',
      metavar='<server>',
      help="Name or ID of server")
@@ -544,7 +582,7 @@ def do_meta(cs, args):
         # Can only pass the key in on 'delete'
         # So this doesn't have to have '='
         if metadatum.find('=') > -1:
-            (key, value) = metadatum.split('=',1)
+            (key, value) = metadatum.split('=', 1)
         else:
             key = metadatum
             value = None
