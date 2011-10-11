@@ -703,3 +703,71 @@ def do_remove_fixed_ip(cs, args):
     """Remove an IP address from a server."""
     server = _find_server(cs, args.server)
     server.remove_fixed_ip(args.address)
+
+
+@utils.arg('secgroup', metavar='<secgroup>', help='ID of security group.')
+@utils.arg('ip_proto', metavar='<ip_proto>', help='ip_proto (icmp, tcp, udp).')
+@utils.arg('from_port', metavar='<from_port>', help='Port at start of range.')
+@utils.arg('to_port', metavar='<to_port>', help='Port at end of range.')
+@utils.arg('cidr', metavar='<cidr>', help='CIDR describing address range.')
+def do_secgroup_add_rule(cs, args):
+    """Add a rule to a security group."""
+    rule = cs.security_group_rules.create(args.secgroup,
+                                          args.ip_proto,
+                                          args.from_port,
+                                          args.to_port,
+                                          args.cidr)
+    _print_secgroup_rules([rule])
+
+
+def _print_secgroup_rules(rules):
+    utils.print_list(rules, ['Parent Group ID', 'Group ID', 'IP Protocol',
+                             'From Port', 'To Port', 'IP Ranges'])
+
+def _print_secgroups(rules):
+    utils.print_list(rules, ['ID', 'Name', 'Description'])
+
+
+@utils.arg('secgroup', metavar='<secgroup>', help='ID of security group.')
+@utils.arg('ip_proto', metavar='<ip_proto>', help='ip_proto (icmp, tcp, udp).')
+@utils.arg('from_port', metavar='<from_port>', help='Port at start of range.')
+@utils.arg('to_port', metavar='<to_port>', help='Port at end of range.')
+@utils.arg('cidr', metavar='<cidr>', help='CIDR describing address range.')
+def do_secgroup_delete_rule(cs, args):
+    """Delete a rule from a security group."""
+
+    secgroup = cs.security_groups.get(args.secgroup)
+    for rule in secgroup.rules:
+        if (rule['ip_protocol'] == args.ip_proto and
+            rule['from_port'] == int(args.from_port) and
+            rule['to_port'] == int(args.to_port) and
+            rule['ip_range']['cidr'] == args.cidr):
+            return cs.security_group_rules.delete(rule['id'])
+
+    raise exceptions.CommandError("Rule not found")
+
+
+@utils.arg('name', metavar='<name>', help='Name of security group.')
+@utils.arg('description', metavar='<description>',
+           help='Description of security group.')
+def do_secgroup_create(cs, args):
+    """Create a security group."""
+    _print_secgroups([cs.security_groups.create(args.name, args.description)])
+
+
+@utils.arg('secgroup', metavar='<secgroup>', help='ID of security group.')
+def do_secgroup_delete(cs, args):
+    """Delete a security group."""
+    cs.security_groups.delete(args.secgroup)
+
+
+def do_secgroup_list(cs, args):
+    """List security groups for the curent tenant."""
+    _print_secgroups(cs.security_groups.list())
+
+
+@utils.arg('secgroup', metavar='<secgroup>', help='ID of security group.')
+def do_secgroup_list_rules(cs, args):
+    """List rules for a security group."""
+    secgroup = cs.security_groups.get(args.secgroup)
+    _print_secgroup_rules([secgroup.rules])
