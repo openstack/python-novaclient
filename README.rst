@@ -105,7 +105,7 @@ You'll find complete documentation on the shell by running
                             VM).
         root-password       Change the root password for a server.
         secgroup-add-group-rule
-                            Add a source-group rule to a security group.
+                            Add a source group rule to a security group.
         secgroup-add-rule   Add a rule to a security group.
         secgroup-create     Create a new security group.
         secgroup-delete     Delete a security group.
