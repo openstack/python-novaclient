@@ -705,6 +705,10 @@ def do_remove_fixed_ip(cs, args):
     server.remove_fixed_ip(args.address)
 
 
+def _print_floating_ip_list(floating_ips):
+    utils.print_list(floating_ips, ['Ip', 'Instance Id', 'Fixed Ip'])
+
+
 @utils.arg('server', metavar='<server>', help='Name or ID of server.')
 @utils.arg('address', metavar='<address>', help='IP Address.')
 def do_add_floating_ip(cs, args):
@@ -723,7 +727,7 @@ def do_remove_floating_ip(cs, args):
 
 def do_floating_ip_create(cs, args):
     """Allocate a floating IP for the current tenant."""
-    cs.floating_ips.create()
+    _print_floating_ip_list([cs.floating_ips.create()])
 
 
 @utils.arg('address', metavar='<address>', help='IP of Floating Ip.')
@@ -738,5 +742,4 @@ def do_floating_ip_delete(cs, args):
 
 def do_floating_ip_list(cs, args):
     """List floating ips for this tenant."""
-    utils.print_list(cs.floating_ips.list(), ['Ip', 'Instance Id', \
-                        'Fixed Ip'])
+    _print_floating_ip_list(cs.floating_ips.list())
