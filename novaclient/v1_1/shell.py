@@ -703,3 +703,39 @@ def do_remove_fixed_ip(cs, args):
     """Remove an IP address from a server."""
     server = _find_server(cs, args.server)
     server.remove_fixed_ip(args.address)
+
+
+@utils.arg('server', metavar='<server>', help='Name or ID of server.')
+@utils.arg('address', metavar='<address>', help='IP Address.')
+def do_add_floating_ip(cs, args):
+    """Add a floating IP address to a server."""
+    server = _find_server(cs, args.server)
+    server.add_floating_ip(args.address)
+
+
+@utils.arg('server', metavar='<server>', help='Name or ID of server.')
+@utils.arg('address', metavar='<address>', help='IP Address.')
+def do_remove_floating_ip(cs, args):
+    """Remove a floating IP address from a server."""
+    server = _find_server(cs, args.server)
+    server.remove_floating_ip(args.address)
+
+
+def do_floating_ip_create(cs, args):
+    """Allocate a floating IP for the current tenant."""
+    cs.floating_ips.create()
+
+
+@utils.arg('address', metavar='<address>', help='IP of Floating Ip.')
+def do_floating_ip_delete(cs, args):
+    """De-allocate a floating IP."""
+    floating_ips = cs.floating_ips.list()
+    for floating_ip in floating_ips:
+        if floating_ip.ip == args.address:
+            return cs.floating_ips.delete(floating_ip.id)
+
+
+def do_floating_ip_list(cs, args):
+    """List floating ips for this tenant."""
+    utils.print_list(cs.floating_ips.list(), ['Ip', 'Instance Id', \
+                        'Fixed Ip'])
