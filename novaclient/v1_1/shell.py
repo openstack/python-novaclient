@@ -705,34 +705,44 @@ def do_remove_fixed_ip(cs, args):
     server.remove_fixed_ip(args.address)
 
 
+def _print_secgroup_rules(rules):
+    class FormattedRule:
+        def __init__(self, obj):
+            items = (obj if isinstance(obj, dict) else obj._info).items()
+            for k, v in items:
+                if k == 'ip_range':
+                    v = v['cidr']
+                setattr(self, k, v)
+
+    rules = [FormattedRule(rule) for rule in rules]
+    utils.print_list(rules, ['Parent Group ID', 'Group ID', 'IP Protocol',
+                             'From Port', 'To Port', 'IP Range'])
+
+
+def _print_secgroups(secgroups):
+    utils.print_list(secgroups, ['ID', 'Name', 'Description'])
+
+
 @utils.arg('secgroup', metavar='<secgroup>', help='ID of security group.')
 @utils.arg('ip_proto', metavar='<ip_proto>', help='ip_proto (icmp, tcp, udp).')
 @utils.arg('from_port', metavar='<from_port>', help='Port at start of range.')
 @utils.arg('to_port', metavar='<to_port>', help='Port at end of range.')
-@utils.arg('cidr', metavar='<cidr>', help='CIDR describing address range.')
+@utils.arg('ip_range', metavar='<ip_range>', help='CIDR for address range.')
 def do_secgroup_add_rule(cs, args):
     """Add a rule to a security group."""
     rule = cs.security_group_rules.create(args.secgroup,
                                           args.ip_proto,
                                           args.from_port,
                                           args.to_port,
-                                          args.cidr)
+                                          args.ip_range)
     _print_secgroup_rules([rule])
-
-
-def _print_secgroup_rules(rules):
-    utils.print_list(rules, ['Parent Group ID', 'Group ID', 'IP Protocol',
-                             'From Port', 'To Port', 'IP Ranges'])
-
-def _print_secgroups(rules):
-    utils.print_list(rules, ['ID', 'Name', 'Description'])
 
 
 @utils.arg('secgroup', metavar='<secgroup>', help='ID of security group.')
 @utils.arg('ip_proto', metavar='<ip_proto>', help='ip_proto (icmp, tcp, udp).')
 @utils.arg('from_port', metavar='<from_port>', help='Port at start of range.')
 @utils.arg('to_port', metavar='<to_port>', help='Port at end of range.')
-@utils.arg('cidr', metavar='<cidr>', help='CIDR describing address range.')
+@utils.arg('ip_range', metavar='<ip_range>', help='CIDR for address range.')
 def do_secgroup_delete_rule(cs, args):
     """Delete a rule from a security group."""
 
@@ -770,4 +780,4 @@ def do_secgroup_list(cs, args):
 def do_secgroup_list_rules(cs, args):
     """List rules for a security group."""
     secgroup = cs.security_groups.get(args.secgroup)
-    _print_secgroup_rules([secgroup.rules])
+    _print_secgroup_rules(secgroup.rules)
