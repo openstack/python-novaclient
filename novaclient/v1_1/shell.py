@@ -711,12 +711,18 @@ def _print_secgroup_rules(rules):
             items = (obj if isinstance(obj, dict) else obj._info).items()
             for k, v in items:
                 if k == 'ip_range':
-                    v = v['cidr']
+                    v = v.get('cidr')
+                elif k == 'group':
+                    k = 'source_group'
+                    v = v.get('name')
+                if v == None:
+                    v = ''
+
                 setattr(self, k, v)
 
     rules = [FormattedRule(rule) for rule in rules]
-    utils.print_list(rules, ['IP Protocol',
-                             'From Port', 'To Port', 'IP Range'])
+    utils.print_list(rules, ['IP Protocol', 'From Port', 'To Port',
+                             'IP Range', 'Source Group'])
 
 
 def _print_secgroups(secgroups):
@@ -737,7 +743,7 @@ def _get_secgroup(cs, secgroup):
 @utils.arg('cidr', metavar='<cidr>', help='CIDR for address range.')
 def do_secgroup_add_rule(cs, args):
     """Add a rule to a security group."""
-    secgroup = cs.security_groups.get(_get_secgroup(cs, args.secgroup))
+    secgroup = _get_secgroup(cs, args.secgroup)
     rule = cs.security_group_rules.create(secgroup.id,
                                           args.ip_proto,
                                           args.from_port,
@@ -754,7 +760,7 @@ def do_secgroup_add_rule(cs, args):
 def do_secgroup_delete_rule(cs, args):
     """Delete a rule from a security group."""
 
-    secgroup = cs.security_groups.get(_get_secgroup(cs, args.secgroup))
+    secgroup = _get_secgroup(cs, args.secgroup)
     for rule in secgroup.rules:
         if (rule['ip_protocol'] == args.ip_proto and
             rule['from_port'] == int(args.from_port) and
@@ -789,3 +795,65 @@ def do_secgroup_list_rules(cs, args):
     """List rules for a security group."""
     secgroup = _get_secgroup(cs, args.secgroup)
     _print_secgroup_rules(secgroup.rules)
+
+
+@utils.arg('secgroup', metavar='<secgroup>', help='ID of security group.')
+@utils.arg('source_group', metavar='<source_group>',
+           help='ID of source group.')
+@utils.arg('--ip_proto', metavar='<ip_proto>',
+           help='ip_proto (icmp, tcp, udp).')
+@utils.arg('--from_port', metavar='<from_port>',
+           help='Port at start of range.')
+@utils.arg('--to_port', metavar='<to_port>', help='Port at end of range.')
+def do_secgroup_add_group_rule(cs, args):
+    """Add a source group rule to a security group."""
+    secgroup = _get_secgroup(cs, args.secgroup)
+    source_group = _get_secgroup(cs, args.source_group)
+    params = {}
+    params['group_id'] = source_group.id
+
+    if args.ip_proto or args.from_port or args.to_port:
+        if not (args.ip_proto and args.from_port and args.to_port):
+            raise exceptions.CommandError("ip_proto, from_port, and to_port"
+                                           " must be specified together")
+        params['ip_protocol'] = args.ip_proto
+        params['from_port'] = args.from_port
+        params['to_port'] = args.to_port
+
+
+    rule = cs.security_group_rules.create(secgroup.id, **params)
+    _print_secgroup_rules([rule])
+
+
+@utils.arg('secgroup', metavar='<secgroup>', help='ID of security group.')
+@utils.arg('source_group', metavar='<source_group>',
+           help='ID of source group.')
+@utils.arg('--ip_proto', metavar='<ip_proto>',
+           help='ip_proto (icmp, tcp, udp).')
+@utils.arg('--from_port', metavar='<from_port>',
+           help='Port at start of range.')
+@utils.arg('--to_port', metavar='<to_port>', help='Port at end of range.')
+def do_secgroup_delete_group_rule(cs, args):
+    """Delete a source group rule from a security group."""
+    secgroup = _get_secgroup(cs, args.secgroup)
+    source_group = _get_secgroup(cs, args.source_group)
+    params = {}
+    params['group_name'] = source_group.name
+
+    if args.ip_proto or args.from_port or args.to_port:
+        if not (args.ip_proto and args.from_port and args.to_port):
+            raise exceptions.CommandError("ip_proto, from_port, and to_port"
+                                           " must be specified together")
+        params['ip_protocol'] = args.ip_proto
+        params['from_port'] = int(args.from_port)
+        params['to_port'] = int(args.to_port)
+
+    for rule in secgroup.rules:
+        if (rule.get('ip_protocol') == params.get('ip_protocol') and
+            rule.get('from_port') == params.get('from_port') and
+            rule.get('to_port') == params.get('to_port') and
+            rule.get('group', {}).get('name') ==\
+                     params.get('group_name')):
+            return cs.security_group_rules.delete(rule['id'])
+
+    raise exceptions.CommandError("Rule not found")

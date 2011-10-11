@@ -104,9 +104,13 @@ You'll find complete documentation on the shell by running
         resize-revert       Revert a previous resize (and return to the previous
                             VM).
         root-password       Change the root password for a server.
+        secgroup-add-group-rule
+                            Add a source-group rule to a security group.
         secgroup-add-rule   Add a rule to a security group.
         secgroup-create     Create a new security group.
         secgroup-delete     Delete a security group.
+        secgroup-delete-group-rule
+                            Delete a source group rule from a security group.
         secgroup-delete-rule
                             Delete a rule from a security group.
         secgroup-list       List security groups for the curent tenant.
