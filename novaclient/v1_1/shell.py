@@ -820,7 +820,6 @@ def do_secgroup_add_group_rule(cs, args):
         params['from_port'] = args.from_port
         params['to_port'] = args.to_port
 
-
     rule = cs.security_group_rules.create(secgroup.id, **params)
     _print_secgroup_rules([rule])
 
