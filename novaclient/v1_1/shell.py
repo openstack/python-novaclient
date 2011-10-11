@@ -733,6 +733,7 @@ def do_floating_ip_delete(cs, args):
     for floating_ip in floating_ips:
         if floating_ip.ip == args.address:
             return cs.floating_ips.delete(floating_ip.id)
+    raise exceptions.CommandError("Floating ip %s not found.", args.address)
 
 
 def do_floating_ip_list(cs, args):
