@@ -61,7 +61,11 @@ def _boot(cs, args, reservation_id=None, min_count=None, max_count=None):
         except IOError, e:
             raise exceptions.CommandError("Can't open '%s': %s" % (src, e))
 
-    if args.key is AUTO_KEY:
+    key_name = None
+    keyfile = None
+    if args.key_name is not None:
+        key_name = args.key_name
+    elif args.key_path is AUTO_KEY:
         possible_keys = [os.path.join(os.path.expanduser('~'), '.ssh', k)
                          for k in ('id_dsa.pub', 'id_rsa.pub')]
         for k in possible_keys:
@@ -71,10 +75,8 @@ def _boot(cs, args, reservation_id=None, min_count=None, max_count=None):
         else:
             raise exceptions.CommandError("Couldn't find a key file: tried "
                                "~/.ssh/id_dsa.pub or ~/.ssh/id_rsa.pub")
-    elif args.key:
-        keyfile = args.key
-    else:
-        keyfile = None
+    elif args.key_path:
+        keyfile = args.key_path
 
     if keyfile:
         try:
@@ -82,7 +84,7 @@ def _boot(cs, args, reservation_id=None, min_count=None, max_count=None):
         except IOError, e:
             raise exceptions.CommandError("Can't open '%s': %s" % (keyfile, e))
 
-    return (args.name, image, flavor, metadata, files,
+    return (args.name, image, flavor, metadata, files, key_name,
             reservation_id, min_count, max_count)
 
 
@@ -107,24 +109,34 @@ def _boot(cs, args, reservation_id=None, min_count=None, max_count=None):
      default=[],
      help="Store arbitrary files from <src-path> locally to <dst-path> "\
           "on the new server. You may store up to 5 files.")
-@utils.arg('--key',
-     metavar='<path>',
+@utils.arg('--key_path',
+     metavar='<key_path>',
      nargs='?',
      const=AUTO_KEY,
      help="Key the server with an SSH keypair. "\
           "Looks in ~/.ssh for a key, "\
           "or takes an explicit <path> to one.")
+@utils.arg('--key_name',
+     metavar='<key_name>',
+     help="Key name of keypair that should be created earlier with \
+           the command keypair-add")
 @utils.arg('name', metavar='<name>', help='Name for the new server')
 def do_boot(cs, args):
-    """Boot a new server."""
-    name, image, flavor, metadata, files, reservation_id, \
+    """Boot a new server. SSH key is supposed to be injected into newly created server.
+          There are two ways to do this: by key name (name of the previously created keypair)
+          or by key path to the public ssh-key. If you use --key-path parameter then ssh-key is
+          passed as a value of the personality variable. It is possible passing maximum 5 values that way.
+          So it is strongly recommended using --key-name parameter instead of --key-path"""
+    
+    name, image, flavor, metadata, files, key_name, reservation_id, \
                 min_count, max_count = _boot(cs, args)
 
     server = cs.servers.create(args.name, image, flavor,
                                     meta=metadata,
                                     files=files,
                                     min_count=min_count,
-                                    max_count=max_count)
+                                    max_count=max_count,
+                                    key_name=key_name)
 
     info = server._info
 
