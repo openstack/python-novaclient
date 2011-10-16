@@ -767,7 +767,6 @@ def do_volume_delete(cs, args):
 
 @utils.arg('server',
     metavar='<server>',
-    type=int,
     help='Name or ID of server.')
 @utils.arg('volume',
     metavar='<volume>',
@@ -777,12 +776,13 @@ def do_volume_delete(cs, args):
     help='Name of the device e.g. /dev/vdb.')
 def do_volume_attach(cs, args):
     """Attach a volume to a server."""
-    cs.volumes.create_server_volume(args.server, args.volume, args.device)
+    cs.volumes.create_server_volume(_find_server(cs, args.server).id,
+                                        args.volume,
+                                        args.device)
 
 
 @utils.arg('server',
     metavar='<server>',
-    type=int,
     help='Name or ID of server.')
 @utils.arg('attachment_id',
     metavar='<volume>',
@@ -790,4 +790,5 @@ def do_volume_attach(cs, args):
     help='Attachment ID of the volume.')
 def do_volume_detach(cs, args):
     """Detach a volume from a server."""
-    cs.volumes.delete_server_volume(args.server, args.attachment_id)
+    cs.volumes.delete_server_volume(_find_server(cs, args.server).id,
+                                        args.attachment_id)
