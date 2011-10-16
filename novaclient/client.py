@@ -256,7 +256,7 @@ class HTTPClient(httplib2.Http):
                                            "password": self.apikey}}}
 
         if self.projectid:
-            body['auth']['tenantId'] = self.projectid
+            body['auth']['tenantName'] = self.projectid
 
         token_url = urlparse.urljoin(url, "tokens")
         resp, body = self.request(token_url, "POST", body=body)

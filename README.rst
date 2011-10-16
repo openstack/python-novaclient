@@ -71,6 +71,7 @@ You'll find complete documentation on the shell by running
     Positional arguments:
       <subcommand>
         add-fixed-ip        Add a new fixed IP address to a servers network.
+        add-floating-ip     Add a floating IP address to a server.
         backup              Backup a server.
         backup-schedule     Show or edit the backup schedule for a server.
         backup-schedule-delete
@@ -79,6 +80,9 @@ You'll find complete documentation on the shell by running
         delete              Immediately shut down and delete a server.
         flavor-list         Print a list of available 'flavors' (sizes of
                             servers).
+        floating-ip-create  Allocate a floating IP to the current tenant.
+        floating-ip-delete  De-allocate a floating IP from the current tenant.
+        floating-ip-list    List allocated floating IPs for the current tenant.
         help                Display help about this program or one of its
                             subcommands.
         image-create        Create a new image by taking a snapshot of a running
@@ -97,6 +101,7 @@ You'll find complete documentation on the shell by running
         reboot              Reboot a server.
         rebuild             Shutdown, re-image, and re-boot a server.
         remove-fixed-ip     Remove an IP address from a server.
+        remove-floating-ip  Remove a floating IP address from a server.
         rename              Rename a server.
         rescue              Rescue a server.
         resize              Resize a server.
@@ -104,6 +109,17 @@ You'll find complete documentation on the shell by running
         resize-revert       Revert a previous resize (and return to the previous
                             VM).
         root-password       Change the root password for a server.
+        secgroup-add-group-rule
+                            Add a source group rule to a security group.
+        secgroup-add-rule   Add a rule to a security group.
+        secgroup-create     Create a new security group.
+        secgroup-delete     Delete a security group.
+        secgroup-delete-group-rule
+                            Delete a source group rule from a security group.
+        secgroup-delete-rule
+                            Delete a rule from a security group.
+        secgroup-list       List security groups for the curent tenant.
+        secgroup-list-rules List rules for a security group.
         show                Show details about the given server.
         unrescue            Unrescue a server.
         volume-attach       Attach a volume to a server.
