@@ -61,7 +61,14 @@ def _boot(cs, args, reservation_id=None, min_count=None, max_count=None):
         except IOError, e:
             raise exceptions.CommandError("Can't open '%s': %s" % (src, e))
 
-    if args.key is AUTO_KEY:
+    # use the os-keypair extension
+    key_name = None
+    if args.key_name is not None:
+        key_name = args.key_name
+
+    # or use file injection functionality (independent of os-keypair extension)
+    keyfile = None
+    elif args.key_path is AUTO_KEY:
         possible_keys = [os.path.join(os.path.expanduser('~'), '.ssh', k)
                          for k in ('id_dsa.pub', 'id_rsa.pub')]
         for k in possible_keys:
@@ -71,10 +78,8 @@ def _boot(cs, args, reservation_id=None, min_count=None, max_count=None):
         else:
             raise exceptions.CommandError("Couldn't find a key file: tried "
                                "~/.ssh/id_dsa.pub or ~/.ssh/id_rsa.pub")
-    elif args.key:
-        keyfile = args.key
-    else:
-        keyfile = None
+    elif args.key_path:
+        keyfile = args.key_path
 
     if keyfile:
         try:
@@ -100,7 +105,7 @@ def _boot(cs, args, reservation_id=None, min_count=None, max_count=None):
         security_groups = args.security_groups.split(',')
     else:
         security_groups = None
-    return (args.name, image, flavor, metadata, files,
+    return (args.name, image, flavor, metadata, files, key_name,
             reservation_id, min_count, max_count, user_data, \
             availability_zone, security_groups)
 
@@ -126,13 +131,17 @@ def _boot(cs, args, reservation_id=None, min_count=None, max_count=None):
      default=[],
      help="Store arbitrary files from <src-path> locally to <dst-path> "\
           "on the new server. You may store up to 5 files.")
-@utils.arg('--key',
-     metavar='<path>',
+@utils.arg('--key_path',
+     metavar='<key_path>',
      nargs='?',
      const=AUTO_KEY,
      help="Key the server with an SSH keypair. "\
           "Looks in ~/.ssh for a key, "\
-          "or takes an explicit <path> to one.")
+          "or takes an explicit <path> to one. (uses --file functionality)")
+@utils.arg('--key_name',
+     metavar='<key_name>',
+     help="Key name of keypair that should be created earlier with \
+           the command keypair-add")
 @utils.arg('name', metavar='<name>', help='Name for the new server')
 @utils.arg('--user_data',
      default=None,
@@ -148,7 +157,7 @@ def _boot(cs, args, reservation_id=None, min_count=None, max_count=None):
      help="comma separated list of security group names.")
 def do_boot(cs, args):
     """Boot a new server."""
-    name, image, flavor, metadata, files, reservation_id, \
+    name, image, flavor, metadata, files, key_name, reservation_id, \
         min_count, max_count, user_data, availability_zone, \
         security_groups = _boot(cs, args)
 
@@ -159,7 +168,8 @@ def do_boot(cs, args):
                                     max_count=max_count,
                                     userdata=user_data,
                                     availability_zone=availability_zone,
-                                    security_groups=security_groups)
+                                    security_groups=security_groups,
+                                    key_name=key_name)
 
     info = server._info
 
@@ -243,7 +253,7 @@ def do_zone_boot(cs, args):
                                         min_count=min_count,
                                         max_count=max_count)
     print "Reservation ID=", reservation_id
-
+    
 
 def _translate_flavor_keys(collection):
     convert = [('ram', 'memory_mb'), ('disk', 'local_gb')]
@@ -1025,3 +1035,39 @@ def do_secgroup_delete_group_rule(cs, args):
             return cs.security_group_rules.delete(rule['id'])
 
     raise exceptions.CommandError("Rule not found")
+
+
+@utils.arg('name', metavar='<name>', help='Name of key.')
+@utils.arg('--pub_key', metavar='<pub_key>', help='Path to a public ssh key.', default=None)
+def do_keypair_add(cs, args):
+    """Create a new key pair for use with instances"""
+    name = args.name
+    pub_key = args.pub_key
+
+    if pub_key:
+        try:
+            with open(pub_key) as f:
+                pub_key = f.read()
+        except IOError, e:
+            raise exceptions.CommandError("Can't open or read '%s': %s" % (pub_key, e))
+            
+    keypair = cs.keypairs.create(name, pub_key)
+
+    if not pub_key:
+        private_key = keypair.private_key
+        print private_key
+
+
+@utils.arg('name', metavar='<name>', help='Keypair name to delete.')
+def do_keypair_delete(cs, args):
+    """Delete keypair by its id"""
+    name = args.name
+    cs.keypairs.delete(name)
+
+
+def do_keypair_list(cs, args):
+    """Print a list of keypairs for a user"""
+    keypairs = cs.keypairs.list()
+    columns = ['Name', 'Fingerprint']
+    utils.print_list(keypairs, columns)
+
