@@ -51,7 +51,7 @@ class KeypairManager(base.ManagerWithFind):
         Create a keypair
 
         :param name: name for the keypair to create
-        :param public_key: path to a public ssh key.
+        :param public_key: existing public key to import
         """
         body = {'keypair': {'name': name}}
         if public_key:

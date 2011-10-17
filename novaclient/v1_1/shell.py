@@ -61,10 +61,13 @@ def _boot(cs, args, reservation_id=None, min_count=None, max_count=None):
         except IOError, e:
             raise exceptions.CommandError("Can't open '%s': %s" % (src, e))
 
+    # use the os-keypair extension
     key_name = None
-    keyfile = None
     if args.key_name is not None:
         key_name = args.key_name
+
+    # or use file injection functionality (independent of os-keypair extension)
+    keyfile = None
     elif args.key_path is AUTO_KEY:
         possible_keys = [os.path.join(os.path.expanduser('~'), '.ssh', k)
                          for k in ('id_dsa.pub', 'id_rsa.pub')]
@@ -125,8 +128,9 @@ def do_boot(cs, args):
     """Boot a new server. SSH key is supposed to be injected into newly created server.
           There are two ways to do this: by key name (name of the previously created keypair)
           or by key path to the public ssh-key. If you use --key-path parameter then ssh-key is
-          passed as a value of the personality variable. It is possible passing maximum 5 values that way.
-          So it is strongly recommended using --key-name parameter instead of --key-path"""
+          passed as a value of the personality variable (file injection).  The default number
+          of injected files is 5, so it is recommended that you use use --key-name parameter 
+          instead of --key-path"""
     
     name, image, flavor, metadata, files, key_name, reservation_id, \
                 min_count, max_count = _boot(cs, args)
