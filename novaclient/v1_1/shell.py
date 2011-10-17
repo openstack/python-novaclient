@@ -83,7 +83,11 @@ def _boot(cs, args, reservation_id=None, min_count=None, max_count=None):
             raise exceptions.CommandError("Can't open '%s': %s" % (keyfile, e))
 
     if args.user_data:
-        user_data = args.user_data
+        try:
+            user_data = open(args.user_data)
+        except IOError, e:
+            raise exceptions.CommandError("Can't open '%s': %s" % \
+                                          (args.user_data, e))
     else:
         user_data = None
 
@@ -133,8 +137,7 @@ def _boot(cs, args, reservation_id=None, min_count=None, max_count=None):
 @utils.arg('--user_data',
      default=None,
      metavar='<user-data>',
-     help="user data to pass to be exposed by the metadata "\
-          "server this can be a file type object as well or a string.")
+     help="user data file to pass to be exposed by the metadata server.")
 @utils.arg('--availability_zone',
      default=None,
      metavar='<availability-zone>',
