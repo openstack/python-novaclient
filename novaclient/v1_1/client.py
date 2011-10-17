@@ -7,6 +7,7 @@ from novaclient.v1_1 import security_group_rules
 from novaclient.v1_1 import security_groups
 from novaclient.v1_1 import servers
 from novaclient.v1_1 import quotas
+from novaclient.v1_1 import volumes
 from novaclient.v1_1 import zones
 
 
@@ -36,6 +37,7 @@ class Client(object):
         self.servers = servers.ServerManager(self)
 
         # extensions
+        self.volumes = volumes.VolumeManager(self)
         self.keypairs = keypairs.KeypairManager(self)
         self.zones = zones.ZoneManager(self)
         self.quotas = quotas.QuotaSetManager(self)

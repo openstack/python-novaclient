@@ -705,6 +705,94 @@ def do_remove_fixed_ip(cs, args):
     server.remove_fixed_ip(args.address)
 
 
+def _find_volume(cs, volume):
+    """Get a volume by ID."""
+    return utils.find_resource(cs.volumes, volume)
+
+
+def _print_volume(cs, volume):
+    utils.print_dict(volume._info)
+
+
+def _translate_volume_keys(collection):
+    convert = [('displayName', 'display_name')]
+    for item in collection:
+        keys = item.__dict__.keys()
+        for from_key, to_key in convert:
+            if from_key in keys and to_key not in keys:
+                setattr(item, to_key, item._info[from_key])
+
+
+def do_volume_list(cs, args):
+    """List all the volumes."""
+    volumes = cs.volumes.list()
+    _translate_volume_keys(volumes)
+
+    # Create a list of servers to which the volume is attached
+    for vol in volumes:
+        servers = [server.get('serverId') for server in vol.attachments]
+        setattr(vol, 'attached_to', ','.join(map(str, servers)))
+    utils.print_list(volumes, ['ID', 'Status', 'Display Name',
+                        'Size', 'Attached to'])
+
+
+@utils.arg('volume', metavar='<volume>', help='ID of the volume.')
+def do_volume_show(cs, args):
+    """Show details about a volume."""
+    volume = _find_volume(cs, args.volume)
+    _print_volume(cs, volume)
+
+
+@utils.arg('size',
+    metavar='<size>',
+    type=int,
+    help='Size of volume in GB')
+@utils.arg('--display_name', metavar='<display_name>',
+            help='Optional volume name. (Default=None)',
+            default=None)
+@utils.arg('--display_description', metavar='<display_description>',
+            help='Optional volume description. (Default=None)',
+            default=None)
+def do_volume_create(cs, args):
+    """Add a new volume."""
+    cs.volumes.create(args.size, args.display_name, args.display_description)
+
+
+@utils.arg('volume', metavar='<volume>', help='ID of the volume to delete.')
+def do_volume_delete(cs, args):
+    """Remove a volume."""
+    volume = _find_volume(cs, args.volume)
+    volume.delete()
+
+
+@utils.arg('server',
+    metavar='<server>',
+    help='Name or ID of server.')
+@utils.arg('volume',
+    metavar='<volume>',
+    type=int,
+    help='ID of the volume to attach.')
+@utils.arg('device', metavar='<device>',
+    help='Name of the device e.g. /dev/vdb.')
+def do_volume_attach(cs, args):
+    """Attach a volume to a server."""
+    cs.volumes.create_server_volume(_find_server(cs, args.server).id,
+                                        args.volume,
+                                        args.device)
+
+
+@utils.arg('server',
+    metavar='<server>',
+    help='Name or ID of server.')
+@utils.arg('attachment_id',
+    metavar='<volume>',
+    type=int,
+    help='Attachment ID of the volume.')
+def do_volume_detach(cs, args):
+    """Detach a volume from a server."""
+    cs.volumes.delete_server_volume(_find_server(cs, args.server).id,
+                                        args.attachment_id)
+
 def _print_floating_ip_list(floating_ips):
     utils.print_list(floating_ips, ['Ip', 'Instance Id', 'Fixed Ip'])
 
