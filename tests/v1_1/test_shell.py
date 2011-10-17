@@ -109,7 +109,7 @@ class ShellTest(utils.TestCase):
         @mock.patch('os.path.exists', mock_exists)
         @mock.patch('__builtin__.open', mock_open)
         def test_shell_call():
-            self.run_command('boot some-server --flavor 1 --image 1 --key')
+            self.run_command('boot some-server --flavor 1 --image 1 --key_path')
             self.assert_called_anytime(
                 'POST', '/servers',
                 {'server': {
@@ -133,14 +133,14 @@ class ShellTest(utils.TestCase):
         @mock.patch('os.path.exists', mock_exists)
         def test_shell_call():
             self.assertRaises(exceptions.CommandError, self.run_command,
-                              'boot some-server --flavor 1 --image 1 --key')
+                              'boot some-server --flavor 1 --image 1 --key_path')
 
         test_shell_call()
 
     def test_boot_key_file(self):
         testfile = os.path.join(os.path.dirname(__file__), 'testfile.txt')
         expected_file_data = open(testfile).read().encode('base64')
-        cmd = 'boot some-server --flavor 1 --image 1 --key %s'
+        cmd = 'boot some-server --flavor 1 --image 1 --key_path %s'
         self.run_command(cmd % testfile)
         self.assert_called_anytime(
             'POST', '/servers',
@@ -160,7 +160,7 @@ class ShellTest(utils.TestCase):
     def test_boot_invalid_keyfile(self):
         invalid_file = os.path.join(os.path.dirname(__file__),
                                     'asdfasdfasdfasdf')
-        cmd = 'boot some-server --flavor 1 --image 1 --key %s'
+        cmd = 'boot some-server --flavor 1 --image 1 --key_path %s'
         self.assertRaises(exceptions.CommandError, self.run_command,
                           cmd % invalid_file)
 

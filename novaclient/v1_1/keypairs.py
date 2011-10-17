@@ -16,6 +16,7 @@
 """
 Keypair interface (1.1 extension).
 """
+import os
 
 from novaclient import base
 
