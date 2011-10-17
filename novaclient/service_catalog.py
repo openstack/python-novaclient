@@ -28,19 +28,20 @@ class ServiceCatalog(object):
     def get_token(self):
         return self.catalog['access']['token']['id']
 
-    def url_for(self, attr=None, filter_value=None):
+    def url_for(self, attr=None, filter_value=None,
+                    service_type='compute', endpoint_type='publicURL'):
         """Fetch the public URL from the Compute service for
         a particular endpoint attribute. If none given, return
         the first. See tests for sample service catalog."""
         catalog = self.catalog['access']['serviceCatalog']
 
         for service in catalog:
-            if service['type'] != 'compute':
+            if service['type'] != service_type:
                 continue
 
             endpoints = service['endpoints']
             for endpoint in endpoints:
                 if not filter_value or endpoint[attr] == filter_value:
-                    return endpoint['publicURL']
+                    return endpoint[endpoint_type]
 
         raise novaclient.exceptions.EndpointNotFound()
