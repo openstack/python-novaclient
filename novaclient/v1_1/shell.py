@@ -68,7 +68,7 @@ def _boot(cs, args, reservation_id=None, min_count=None, max_count=None):
 
     # or use file injection functionality (independent of os-keypair extension)
     keyfile = None
-    elif args.key_path is AUTO_KEY:
+    if args.key_path is AUTO_KEY:
         possible_keys = [os.path.join(os.path.expanduser('~'), '.ssh', k)
                          for k in ('id_dsa.pub', 'id_rsa.pub')]
         for k in possible_keys:
