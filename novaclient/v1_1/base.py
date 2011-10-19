@@ -25,7 +25,8 @@ class BootingManagerWithFind(base.ManagerWithFind):
     def _boot(self, resource_url, response_key, name, image, flavor,
               meta=None, files=None, zone_blob=None, userdata=None,
               reservation_id=None, return_raw=False, min_count=None,
-              max_count=None, security_groups=None, key_name=None):
+              max_count=None, security_groups=None, key_name=None,
+              availability_zone=None):
         """
         Create (boot) a new server.
 
@@ -49,6 +50,7 @@ class BootingManagerWithFind(base.ManagerWithFind):
         :param security_groups: list of security group names
         :param key_name: (optional extension) name of keypair to inject into
                          the instance
+        :param availability_zone: The :class:`Zone`.
         """
         body = {"server": {
             "name": name,
@@ -95,5 +97,7 @@ class BootingManagerWithFind(base.ManagerWithFind):
                     'contents': data.encode('base64'),
                 })
 
+        if availability_zone:
+            body["server"]["availability_zone"] = availability_zone
         return self._create(resource_url, body, response_key,
                             return_raw=return_raw)

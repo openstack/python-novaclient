@@ -46,7 +46,8 @@ class Client(object):
         # NOTE(ja): need endpoint from service catalog...  no lazy auth
         client.authenticate()
         self.client = copy.copy(client)
-        endpoint = client.service_catalog.url_for('identity', 'admin')
+        endpoint = client.service_catalog.url_for(service_type='identity',
+                                                    endpoint_type='adminURL')
         self.client.management_url = endpoint
 
         self.tenants = tenants.TenantManager(self)

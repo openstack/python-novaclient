@@ -327,7 +327,7 @@ class ServerManager(local_base.BootingManagerWithFind):
     def create(self, name, image, flavor, meta=None, files=None,
                zone_blob=None, reservation_id=None, min_count=None,
                max_count=None, security_groups=None, userdata=None,
-               key_name=None):
+               key_name=None, availability_zone=None):
         # TODO: (anthony) indicate in doc string if param is an extension
         # and/or optional
         """
@@ -352,7 +352,8 @@ class ServerManager(local_base.BootingManagerWithFind):
                       string.
         :param reservation_id: a UUID for the set of servers being requested.
         :param key_name: (optional extension) name of previously created
-                      keypair to inject into the instance
+                      keypair to inject into the instance.
+        :param availability_zone: The :class:`Zone`.
         """
         if not min_count:
             min_count = 1
@@ -364,7 +365,8 @@ class ServerManager(local_base.BootingManagerWithFind):
                           meta=meta, files=files, userdata=userdata,
                           zone_blob=zone_blob, reservation_id=reservation_id,
                           min_count=min_count, max_count=max_count,
-                          security_groups=security_groups, key_name=key_name)
+                          security_groups=security_groups, key_name=key_name,
+                          availability_zone=availability_zone)
 
     def update(self, server, name=None):
         """
