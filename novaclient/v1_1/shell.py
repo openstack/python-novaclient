@@ -747,6 +747,10 @@ def do_volume_show(cs, args):
     metavar='<size>',
     type=int,
     help='Size of volume in GB')
+@utils.arg('--snapshot_id',
+    metavar='<snapshot_id>',
+    help='Optional snapshot id to create the volume from. (Default=None)',
+    default=None)
 @utils.arg('--display_name', metavar='<display_name>',
             help='Optional volume name. (Default=None)',
             default=None)
@@ -755,7 +759,10 @@ def do_volume_show(cs, args):
             default=None)
 def do_volume_create(cs, args):
     """Add a new volume."""
-    cs.volumes.create(args.size, args.display_name, args.display_description)
+    cs.volumes.create(args.size,
+                        args.snapshot_id,
+                        args.display_name,
+                        args.display_description)
 
 
 @utils.arg('volume', metavar='<volume>', help='ID of the volume to delete.')
