@@ -38,6 +38,7 @@ class Client(object):
 
         # extensions
         self.volumes = volumes.VolumeManager(self)
+        self.snapshots = volumes.SnapshotManager(self)
         self.keypairs = keypairs.KeypairManager(self)
         self.zones = zones.ZoneManager(self)
         self.quotas = quotas.QuotaSetManager(self)

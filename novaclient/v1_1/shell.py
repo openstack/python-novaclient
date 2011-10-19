@@ -253,7 +253,7 @@ def do_zone_boot(cs, args):
                                         min_count=min_count,
                                         max_count=max_count)
     print "Reservation ID=", reservation_id
-    
+
 
 def _translate_flavor_keys(collection):
     convert = [('ram', 'memory_mb'), ('disk', 'local_gb')]
@@ -760,13 +760,29 @@ def _find_volume(cs, volume):
     """Get a volume by ID."""
     return utils.find_resource(cs.volumes, volume)
 
+def _find_snapshot(cs, snapshot):
+    """Get a snapshot by ID."""
+    return utils.find_resource(cs.snapshots, snapshot)
 
 def _print_volume(cs, volume):
     utils.print_dict(volume._info)
 
 
+def _print_snapshot(cs, snapshot):
+    utils.print_dict(snapshot._info)
+
+
 def _translate_volume_keys(collection):
     convert = [('displayName', 'display_name')]
+    for item in collection:
+        keys = item.__dict__.keys()
+        for from_key, to_key in convert:
+            if from_key in keys and to_key not in keys:
+                setattr(item, to_key, item._info[from_key])
+
+
+def _translate_snapshot_keys(collection):
+    convert = [('displayName', 'display_name'), ('volumeId', 'volume_id')]
     for item in collection:
         keys = item.__dict__.keys()
         for from_key, to_key in convert:
@@ -850,6 +866,53 @@ def do_volume_detach(cs, args):
     """Detach a volume from a server."""
     cs.volumes.delete_server_volume(_find_server(cs, args.server).id,
                                         args.attachment_id)
+
+def do_snapshot_list(cs, args):
+    """List all the snapshots."""
+    snapshots = cs.snapshots.list()
+    _translate_snapshot_keys(snapshots)
+    utils.print_list(snapshots, ['ID', 'Volume ID', 'Status', 'Display Name',
+                        'Size'])
+
+
+@utils.arg('snapshot', metavar='<snapshot>', help='ID of the snapshot.')
+def do_snapshot_show(cs, args):
+    """Show details about a snapshot."""
+    snapshot = _find_snapshot(cs, args.snapshot)
+    _print_snapshot(cs, snapshot)
+
+
+@utils.arg('volume_id',
+    metavar='<volume_id>',
+    type=int,
+    help='ID of the volume to snapshot')
+@utils.arg('--force',
+    metavar='<force>',
+    help='Optional flag to indicate whether to snapshot a volume even if its '
+        'attached to an instance. (Default=False)',
+    default=False)
+@utils.arg('--display_name', metavar='<display_name>',
+            help='Optional snapshot name. (Default=None)',
+            default=None)
+@utils.arg('--display_description', metavar='<display_description>',
+            help='Optional snapshot description. (Default=None)',
+            default=None)
+def do_snapshot_create(cs, args):
+    """Add a new snapshot."""
+    cs.snapshots.create(args.volume_id,
+                        args.force,
+                        args.display_name,
+                        args.display_description)
+
+
+@utils.arg('snapshot_id',
+    metavar='<snapshot_id>',
+    help='ID of the snapshot to delete.')
+def do_snapshot_delete(cs, args):
+    """Remove a snapshot."""
+    snapshot = _find_snapshot(cs, args.snapshot_id)
+    snapshot.delete()
+
 
 def _print_floating_ip_list(floating_ips):
     utils.print_list(floating_ips, ['Ip', 'Instance Id', 'Fixed Ip'])
@@ -1057,7 +1120,7 @@ def do_keypair_add(cs, args):
                 pub_key = f.read()
         except IOError, e:
             raise exceptions.CommandError("Can't open or read '%s': %s" % (pub_key, e))
-            
+
     keypair = cs.keypairs.create(name, pub_key)
 
     if not pub_key:

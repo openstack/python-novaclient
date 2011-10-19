@@ -56,7 +56,7 @@ endpoint::
     export NOVA_URL=http://example.com:5000/v2.0/
 
 Since Keystone can return multiple regions in the Service Catalog, you
-can specify the one you want with ``--region_name`` (or 
+can specify the one you want with ``--region_name`` (or
 ``export NOVA_REGION_NAME``). It defaults to the first in the list returned.
 
 You'll find complete documentation on the shell by running
@@ -124,6 +124,12 @@ You'll find complete documentation on the shell by running
         secgroup-list       List security groups for the curent tenant.
         secgroup-list-rules List rules for a security group.
         show                Show details about the given server.
+        snapshot-create     Add a new snapshot.
+        snapshot-delete     Remove a snapshot.
+        snapshot-list       List all the snapshots.
+        snapshot-show       Show details about a snapshot.
+        suspend             Suspend a server.
+        unpause             Unpause a server.
         unrescue            Unrescue a server.
         volume-attach       Attach a volume to a server.
         volume-create       Add a new volume.
@@ -190,7 +196,7 @@ Quick-start using keystone::
     [...]
     >>> nt.keypairs.list()
     [...]
-    
+
     # if you want to use the keystone api to modify users/tenants:
     >>> from novaclient import client
     >>> conn = client.HTTPClient(USER, PASS, TENANT, KEYSTONE_URL)
