@@ -185,7 +185,8 @@ class HTTPClient(httplib2.Http):
         _logger.debug("Using Endpoint URL: %s" % url)
         resp, body = self.request(url, "GET",
                                   headers={'X-Auth_Token': self.auth_token})
-        return self._extract_service_catalog(url, resp, body, extract_token=False)
+        return self._extract_service_catalog(url, resp, body,
+                                             extract_token=False)
 
     def authenticate(self):
         magic_tuple = urlparse.urlsplit(self.auth_url)
@@ -201,7 +202,7 @@ class HTTPClient(httplib2.Http):
 
         # TODO(sandy): Assume admin endpoint is 35357 for now.
         # Ideally this is going to have to be provided by the service catalog.
-        new_netloc = netloc.replace(':%d' % port, ':%d' % (35357))
+        new_netloc = netloc.replace(':%d' % port, ':%d' % (35357,))
         admin_url = urlparse.urlunsplit(
                         (scheme, new_netloc, path, query, frag))
 

@@ -78,7 +78,7 @@ class TenantManager(base.ManagerWithFind):
         """
         update a tenant with a new name and description
         """
-        body = {"tenant": {'id': tenant_id }}
+        body = {"tenant": {'id': tenant_id}}
         if enabled is not None:
             body['tenant']['enabled'] = enabled
         if description:

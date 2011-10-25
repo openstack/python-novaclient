@@ -38,10 +38,13 @@ class ServiceCatalog(object):
             for endpoint in self.catalog['endpoints']:
                 if not filter_value or endpoint[attr] == filter_value:
                     return endpoint[endpoint_type]
+            raise novaclient.exceptions.EndpointNotFound()
 
+        # We don't always get a service catalog back ...
         if not 'serviceCatalog' in self.catalog['access']:
             return None
 
+        # Full catalog ...
         catalog = self.catalog['access']['serviceCatalog']
 
         for service in catalog:
