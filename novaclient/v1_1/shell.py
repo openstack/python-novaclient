@@ -105,9 +105,16 @@ def _boot(cs, args, reservation_id=None, min_count=None, max_count=None):
         security_groups = args.security_groups.split(',')
     else:
         security_groups = None
+    
+    block_device_mapping = {}
+    for bdm in args.block_device_mapping:
+        device_name, mapping = bdm.split('=', 1)
+        block_device_mapping[device_name] = mapping
+    
     return (args.name, image, flavor, metadata, files, key_name,
             reservation_id, min_count, max_count, user_data, \
-            availability_zone, security_groups)
+            availability_zone, security_groups, block_device_mapping)
+
 
 
 @utils.arg('--flavor',
@@ -155,11 +162,17 @@ def _boot(cs, args, reservation_id=None, min_count=None, max_count=None):
      default=None,
      metavar='<security_groups>',
      help="comma separated list of security group names.")
+@utils.arg('--block_device_mapping',
+     metavar="<dev_name=mapping>",
+     action='append',
+     default=[],
+     help="Block device mapping in the format "
+         "<dev_name=<id>:<type>:<size(GB)>:<delete_on_terminate>.")
 def do_boot(cs, args):
     """Boot a new server."""
     name, image, flavor, metadata, files, key_name, reservation_id, \
         min_count, max_count, user_data, availability_zone, \
-        security_groups = _boot(cs, args)
+        security_groups, block_device_mapping = _boot(cs, args)
 
     server = cs.servers.create(args.name, image, flavor,
                                     meta=metadata,
@@ -169,8 +182,8 @@ def do_boot(cs, args):
                                     userdata=user_data,
                                     availability_zone=availability_zone,
                                     security_groups=security_groups,
-                                    key_name=key_name)
-
+                                    key_name=key_name,
+                                    block_device_mapping=block_device_mapping)
     info = server._info
 
     flavor = info.get('flavor', {})
