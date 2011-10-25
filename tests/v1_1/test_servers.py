@@ -200,3 +200,19 @@ class ServersTest(utils.TestCase):
         cs.assert_called('POST', '/servers/1234/action')
         cs.servers.unrescue(s)
         cs.assert_called('POST', '/servers/1234/action')
+
+    def test_get_console_output_without_length(self):
+        s = cs.servers.get(1234)
+        s.get_console_output()
+        cs.assert_called('POST', '/servers/1234/action')
+
+        cs.servers.get_console_output(s)
+        cs.assert_called('POST', '/servers/1234/action')
+
+    def test_get_console_output_with_length(self):
+        s = cs.servers.get(1234)
+        s.get_console_output(length=50)
+        cs.assert_called('POST', '/servers/1234/action')
+
+        cs.servers.get_console_output(s, length=50)
+        cs.assert_called('POST', '/servers/1234/action')

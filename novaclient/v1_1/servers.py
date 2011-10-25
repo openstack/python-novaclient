@@ -47,6 +47,14 @@ class Server(base.Resource):
         """
         self.manager.update(self, name=name)
 
+    def get_console_output(self, length=None):
+        """
+        Get text console log output from Server.
+
+        :param length: The number of lines you would like to retrieve (as int)
+        """
+        self.manager.get_console_output(self, length)
+
     def add_fixed_ip(self, network_id):
         """
         Add an IP address on a network.
@@ -496,6 +504,16 @@ class ServerManager(local_base.BootingManagerWithFind):
         body = {'metadata': metadata}
         return self._create("/servers/%s/metadata" % base.getid(server),
                              body, "metadata")
+
+    def get_console_output(self, server, length=None):
+        """
+        Get text console log output from Server.
+
+        :param server: The :class:`Server` (or its ID) whose console output
+                        you would like to retrieve.
+        :param length: The number of tail loglines you would like to retrieve.
+        """
+        return self._action('os-getConsoleOutput', server, {'length': length})
 
     def delete_meta(self, server, keys):
         """

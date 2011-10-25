@@ -300,6 +300,8 @@ class FakeHTTPClient(base_client.HTTPClient):
             assert set(body[action].keys()) == set(['name', 'metadata'])
         elif action == 'changePassword':
             assert body[action].keys() == ['adminPass']
+        elif action == 'os-getConsoleOutput':
+            assert body[action].keys() == ['length']
         else:
             raise AssertionError("Unexpected server action: %s" % action)
         return (202, _body)
