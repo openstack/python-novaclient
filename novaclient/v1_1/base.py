@@ -51,8 +51,8 @@ class BootingManagerWithFind(base.ManagerWithFind):
         :param key_name: (optional extension) name of keypair to inject into
                          the instance
         :param availability_zone: The :class:`Zone`.
-        :param block_device_mapping: A list of dict of block device mappingsi
-                                     for this server.
+        :param block_device_mapping: A dict of block device mappings for this
+                                     server.
         """
         body = {"server": {
             "name": name,
@@ -101,7 +101,7 @@ class BootingManagerWithFind(base.ManagerWithFind):
 
         if availability_zone:
             body["server"]["availability_zone"] = availability_zone
-        
+
         # Block device mappings are passed as a list of dictionaries
         if block_device_mapping:
             bdm = body['server']['block_device_mapping'] = []

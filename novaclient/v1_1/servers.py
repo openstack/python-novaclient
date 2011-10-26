@@ -355,10 +355,9 @@ class ServerManager(local_base.BootingManagerWithFind):
         :param key_name: (optional extension) name of previously created
                       keypair to inject into the instance.
         :param availability_zone: The :class:`Zone`.
-        :param block_device_mapping: (optional extension) A list of dict of
-                      block device mappings for this server.  
+        :param block_device_mapping: (optional extension) A dict of block device
+                      mappings for this server.
         """
-        print block_device_mapping
         if not min_count:
             min_count = 1
         if not max_count:
@@ -367,20 +366,20 @@ class ServerManager(local_base.BootingManagerWithFind):
             min_count = max_count
         if block_device_mapping:
             return self._boot("/os-volumes_boot", "server",
-                            name, image, flavor,
-                            meta=meta, files=files, userdata=userdata,
-                            zone_blob=zone_blob, reservation_id=reservation_id,
-                            min_count=min_count, max_count=max_count,
-                            security_groups=security_groups, key_name=key_name,
-                            availability_zone=availability_zone,
-                            block_device_mapping=block_device_mapping)
+                        name, image, flavor,
+                        meta=meta, files=files, userdata=userdata,
+                        zone_blob=zone_blob, reservation_id=reservation_id,
+                        min_count=min_count, max_count=max_count,
+                        security_groups=security_groups, key_name=key_name,
+                        availability_zone=availability_zone,
+                        block_device_mapping=block_device_mapping)
         else:
             return self._boot("/servers", "server", name, image, flavor,
-                              meta=meta, files=files, userdata=userdata,
-                              zone_blob=zone_blob, reservation_id=reservation_id,
-                              min_count=min_count, max_count=max_count,
-                              security_groups=security_groups, key_name=key_name,
-                              availability_zone=availability_zone)
+                          meta=meta, files=files, userdata=userdata,
+                          zone_blob=zone_blob, reservation_id=reservation_id,
+                          min_count=min_count, max_count=max_count,
+                          security_groups=security_groups, key_name=key_name,
+                          availability_zone=availability_zone)
 
     def update(self, server, name=None):
         """
