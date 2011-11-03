@@ -37,8 +37,8 @@ class HTTPClient(httplib2.Http):
 
     USER_AGENT = 'python-novaclient'
 
-    def __init__(self, user, apikey, projectid, auth_url, insecure=False, timeout=None,
-                 token=None, region_name=None):
+    def __init__(self, user, apikey, projectid, auth_url, insecure=False,
+                 timeout=None, token=None, region_name=None):
         super(HTTPClient, self).__init__(timeout=timeout)
         self.user = user
         self.apikey = apikey
