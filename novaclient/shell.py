@@ -174,9 +174,8 @@ class OpenStackComputeShell(object):
                                        "via --url or via"
                                        "env[NOVA_URL")
 
-        self.cs = self.get_api_class(options.version) \
-                            (user, apikey, projectid, url,
-                             region_name=region_name)
+        self.cs = self.get_api_class(options.version)(user, apikey, projectid,
+                                     url, region_name=region_name)
 
         try:
             self.cs.authenticate()

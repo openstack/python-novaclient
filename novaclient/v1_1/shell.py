@@ -253,7 +253,7 @@ def do_zone_boot(cs, args):
                                         min_count=min_count,
                                         max_count=max_count)
     print "Reservation ID=", reservation_id
-    
+
 
 def _translate_flavor_keys(collection):
     convert = [('ram', 'memory_mb'), ('disk', 'local_gb')]
@@ -844,6 +844,7 @@ def do_volume_detach(cs, args):
     cs.volumes.delete_server_volume(_find_server(cs, args.server).id,
                                         args.attachment_id)
 
+
 def _print_floating_ip_list(floating_ips):
     utils.print_list(floating_ips, ['Ip', 'Instance Id', 'Fixed Ip'])
 
@@ -1038,7 +1039,8 @@ def do_secgroup_delete_group_rule(cs, args):
 
 
 @utils.arg('name', metavar='<name>', help='Name of key.')
-@utils.arg('--pub_key', metavar='<pub_key>', help='Path to a public ssh key.', default=None)
+@utils.arg('--pub_key', metavar='<pub_key>', help='Path to a public ssh key.',
+           default=None)
 def do_keypair_add(cs, args):
     """Create a new key pair for use with instances"""
     name = args.name
@@ -1049,8 +1051,9 @@ def do_keypair_add(cs, args):
             with open(pub_key) as f:
                 pub_key = f.read()
         except IOError, e:
-            raise exceptions.CommandError("Can't open or read '%s': %s" % (pub_key, e))
-            
+            raise exceptions.CommandError("Can't open or read '%s': %s" % \
+                                                          (pub_key, e))
+
     keypair = cs.keypairs.create(name, pub_key)
 
     if not pub_key:
@@ -1070,4 +1073,3 @@ def do_keypair_list(cs, args):
     keypairs = cs.keypairs.list()
     columns = ['Name', 'Fingerprint']
     utils.print_list(keypairs, columns)
-
