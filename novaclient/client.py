@@ -37,8 +37,8 @@ class HTTPClient(httplib2.Http):
 
     USER_AGENT = 'python-novaclient'
 
-    def __init__(self, user, apikey, projectid, auth_url, timeout=None,
-                 token=None, region_name=None):
+    def __init__(self, user, apikey, projectid, auth_url, insecure=False,
+                 timeout=None, token=None, region_name=None):
         super(HTTPClient, self).__init__(timeout=timeout)
         self.user = user
         self.apikey = apikey
@@ -53,6 +53,7 @@ class HTTPClient(httplib2.Http):
 
         # httplib2 overrides
         self.force_exception_to_status_code = True
+        self.disable_ssl_certificate_validation = insecure
 
     def http_log(self, args, kwargs, resp, body):
         if 'NOVACLIENT_DEBUG' in os.environ and os.environ['NOVACLIENT_DEBUG']:
