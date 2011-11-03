@@ -58,9 +58,9 @@ class ImageManager(base.ManagerWithFind):
         self._delete("/images/%s" % base.getid(image))
 
     def set_meta(self, image, metadata):
-        """ 
+        """
         Set an images metadata
-        
+
         :param image: The :class:`Image` to add metadata to
         :param metadata: A dict of metadata to add to the image
         """
@@ -69,9 +69,9 @@ class ImageManager(base.ManagerWithFind):
                              "metadata")
 
     def delete_meta(self, image, keys):
-        """ 
+        """
         Delete metadata from an image
-        
+
         :param image: The :class:`Image` to add metadata to
         :param keys: A list of metadata keys to delete from the image
         """

@@ -36,7 +36,7 @@ class UserManager(base.ManagerWithFind):
         """
         # FIXME(ja): why do we have to send id in params and url?
         params = {"user": {"id": base.getid(user),
-                           "email": email }}
+                           "email": email}}
 
         self._update("/users/%s" % base.getid(user), params)
 
@@ -45,7 +45,7 @@ class UserManager(base.ManagerWithFind):
         Update enabled-ness
         """
         params = {"user": {"id": base.getid(user),
-                           "enabled": enabled }}
+                           "enabled": enabled}}
 
         self._update("/users/%s/enabled" % base.getid(user), params)
 
@@ -54,7 +54,7 @@ class UserManager(base.ManagerWithFind):
         Update password
         """
         params = {"user": {"id": base.getid(user),
-                           "password": password }}
+                           "password": password}}
 
         self._update("/users/%s/password" % base.getid(user), params)
 
@@ -63,7 +63,7 @@ class UserManager(base.ManagerWithFind):
         Update default tenant.
         """
         params = {"user": {"id": base.getid(user),
-                           "tenantId": base.getid(tenant) }}
+                           "tenantId": base.getid(tenant)}}
 
         # FIXME(ja): seems like a bad url - default tenant is an attribute
         #            not a subresource!???
@@ -73,7 +73,8 @@ class UserManager(base.ManagerWithFind):
         """
         Create a user.
         """
-        # FIXME(ja): email should be optional but keystone currently requires it
+        # FIXME(ja): email should be optional but keystone currently
+        # requires it
         params = {"user": {"id": user_id,
                            "password": password,
                            "tenantId": tenant_id,
