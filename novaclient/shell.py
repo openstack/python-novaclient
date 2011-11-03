@@ -180,7 +180,7 @@ class OpenStackComputeShell(object):
                                        "env[NOVA_URL")
 
         self.cs = self.get_api_class(options.version) \
-                            (user, apikey, projectid, url,insecure,
+                            (user, apikey, projectid, url, insecure,
                              region_name=region_name )
 
         try:
