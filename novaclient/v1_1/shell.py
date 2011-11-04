@@ -171,9 +171,11 @@ def do_boot(cs, args):
                                     security_groups=security_groups,
                                     key_name=key_name)
 
-
-    server = cs.servers.get(server._info['id'])
+    # Keep any information (like adminPass) returned by create
     info = server._info
+    server = cs.servers.get(info['id'])
+    info.update(server._info)
+
     flavor = info.get('flavor', {})
     flavor_id = flavor.get('id', '')
     info['flavor'] = _find_flavor(cs, flavor_id).name
