@@ -37,8 +37,8 @@ class HTTPClient(httplib2.Http):
 
     USER_AGENT = 'python-novaclient'
 
-    def __init__(self, user, apikey, projectid, auth_url, timeout=None,
-                 token=None, region_name=None):
+    def __init__(self, user, apikey, projectid, auth_url, insecure=False,
+                 timeout=None, token=None, region_name=None):
         super(HTTPClient, self).__init__(timeout=timeout)
         self.user = user
         self.apikey = apikey
@@ -53,6 +53,7 @@ class HTTPClient(httplib2.Http):
 
         # httplib2 overrides
         self.force_exception_to_status_code = True
+        self.disable_ssl_certificate_validation = insecure
 
     def http_log(self, args, kwargs, resp, body):
         if 'NOVACLIENT_DEBUG' in os.environ and os.environ['NOVACLIENT_DEBUG']:
@@ -139,7 +140,7 @@ class HTTPClient(httplib2.Http):
     def delete(self, url, **kwargs):
         return self._cs_request(url, 'DELETE', **kwargs)
 
-    def _extract_service_catalog(self, url, resp, body):
+    def _extract_service_catalog(self, url, resp, body, extract_token=True):
         """See what the auth service told us and process the response.
         We may get redirected to another site, fail or actually get
         back a service catalog with a token and our endpoints."""
@@ -149,8 +150,9 @@ class HTTPClient(httplib2.Http):
                 self.auth_url = url
                 self.service_catalog = \
                     service_catalog.ServiceCatalog(body)
-                self.auth_token = self.service_catalog.get_token()
 
+                if extract_token:
+                    self.auth_token = self.service_catalog.get_token()
                 self.management_url = self.service_catalog.url_for(
                                            attr='region',
                                            filter_value=self.region_name)
@@ -184,7 +186,8 @@ class HTTPClient(httplib2.Http):
         _logger.debug("Using Endpoint URL: %s" % url)
         resp, body = self.request(url, "GET",
                                   headers={'X-Auth_Token': self.auth_token})
-        return self._extract_service_catalog(url, resp, body)
+        return self._extract_service_catalog(url, resp, body,
+                                             extract_token=False)
 
     def authenticate(self):
         magic_tuple = urlparse.urlsplit(self.auth_url)
@@ -198,9 +201,9 @@ class HTTPClient(httplib2.Http):
                 self.version = part
                 break
 
-        # TODO(sandy): Assume admin endpoint is service endpoint+1 for now.
-        # Ideally this is going to have to be provided by the admin.
-        new_netloc = netloc.replace(':%d' % port, ':%d' % (port + 1))
+        # TODO(sandy): Assume admin endpoint is 35357 for now.
+        # Ideally this is going to have to be provided by the service catalog.
+        new_netloc = netloc.replace(':%d' % port, ':%d' % (35357,))
         admin_url = urlparse.urlunsplit(
                         (scheme, new_netloc, path, query, frag))
 
@@ -213,7 +216,11 @@ class HTTPClient(httplib2.Http):
             # existing token? If so, our actual endpoints may
             # be different than that of the admin token.
             if self.proxy_token:
-                return self._fetch_endpoints_from_auth(admin_url)
+                self._fetch_endpoints_from_auth(admin_url)
+                # Since keystone no longer returns the user token
+                # with the endpoints any more, we need to replace
+                # our service account token with the user token.
+                self.auth_token = self.proxy_token
 
         else:
             try:
