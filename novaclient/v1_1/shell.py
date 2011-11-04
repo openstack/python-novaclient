@@ -171,8 +171,9 @@ def do_boot(cs, args):
                                     security_groups=security_groups,
                                     key_name=key_name)
 
-    info = server._info
 
+    server = cs.servers.get(server._info['id'])
+    info = server._info
     flavor = info.get('flavor', {})
     flavor_id = flavor.get('id', '')
     info['flavor'] = _find_flavor(cs, flavor_id).name
