@@ -32,7 +32,7 @@ def print_list(objs, fields, formatters={}):
             else:
                 if field in mixed_case_fields:
                     field_name = field.replace(' ', '_')
-		else:
+                else:
                     field_name = field.lower().replace(' ', '_')
                 data = getattr(o, field_name, '')
                 row.append(data)

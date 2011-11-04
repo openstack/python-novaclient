@@ -286,8 +286,9 @@ def do_image_list(cs, args):
         server_list[server.id] = server.name
     image_list = cs.images.list()
     for i in range(len(image_list)):
-       if hasattr(image_list[i],'serverId'):
-            image_list[i].serverId = server_list[image_list[i].serverId] + ' (' + str(image_list[i].serverId) + ')'
+        if hasattr(image_list[i], 'serverId'):
+            image_list[i].serverId = server_list[image_list[i].serverId] +
+            ' (' + str(image_list[i].serverId) + ')'
     utils.print_list(cs.images.list(), ['ID', 'Name', 'serverId', 'Status'])
 
 
