@@ -359,7 +359,7 @@ class FakeHTTPClient(base_client.HTTPClient):
             {
                 "id": 743,
                 "name": "My Server Backup",
-                "serverId": 12,
+                "serverId": 1234,
                 "updated": "2010-10-10T12:00:00Z",
                 "created": "2010-08-10T12:00:00Z",
                 "status": "SAVING",
