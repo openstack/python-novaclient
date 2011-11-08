@@ -78,6 +78,10 @@ class OpenStackComputeShell(object):
             default=env('NOVA_REGION_NAME'),
             help='Defaults to env[NOVA_REGION_NAME].')
 
+        parser.add_argument('--endpoint_name',
+            default=env('NOVA_ENDPOINT_NAME'),
+            help='Defaults to env[NOVA_ENDPOINT_NAME] or "publicURL.')
+
         parser.add_argument('--version',
             default=env('NOVA_VERSION'),
             help='Accepts 1.0 or 1.1, defaults to env[NOVA_VERSION].')
@@ -153,9 +157,12 @@ class OpenStackComputeShell(object):
             self.do_help(args)
             return 0
 
-        user, apikey, projectid, url, region_name, insecure = \
+        user, apikey, projectid, url, region_name, endpoint_name, insecure = \
                 args.username, args.apikey, args.projectid, args.url, \
-                args.region_name, args.insecure
+                args.region_name, args.endpoint_name, args.insecure
+
+        if not endpoint_name:
+            endpoint_name = 'publicURL'
 
         #FIXME(usrleon): Here should be restrict for project id same as
         # for username or apikey but for compatibility it is not.
@@ -180,7 +187,8 @@ class OpenStackComputeShell(object):
                                        "env[NOVA_URL")
 
         self.cs = self.get_api_class(options.version)(user, apikey, projectid,
-                                     url, insecure, region_name=region_name)
+                                     url, insecure, region_name=region_name,
+                                     endpoint_name=endpoint_name)
 
         try:
             self.cs.authenticate()
