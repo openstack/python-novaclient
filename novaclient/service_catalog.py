@@ -33,6 +33,18 @@ class ServiceCatalog(object):
         """Fetch the public URL from the Compute service for
         a particular endpoint attribute. If none given, return
         the first. See tests for sample service catalog."""
+        if 'endpoints' in self.catalog:
+            # We have a bastardized service catalog. Treat it special. :/
+            for endpoint in self.catalog['endpoints']:
+                if not filter_value or endpoint[attr] == filter_value:
+                    return endpoint[endpoint_type]
+            raise novaclient.exceptions.EndpointNotFound()
+
+        # We don't always get a service catalog back ...
+        if not 'serviceCatalog' in self.catalog['access']:
+            return None
+
+        # Full catalog ...
         catalog = self.catalog['access']['serviceCatalog']
 
         for service in catalog:

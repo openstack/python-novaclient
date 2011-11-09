@@ -30,8 +30,8 @@ class Client(object):
     """
 
     # FIXME(jesse): project_id isn't required to autenticate
-    def __init__(self, username, api_key, project_id, auth_url, timeout=None,
-                 token=None, region_name=None):
+    def __init__(self, username, api_key, project_id, auth_url,
+                  insecure=False, timeout=None, token=None, region_name=None):
         self.flavors = flavors.FlavorManager(self)
         self.floating_ips = floating_ips.FloatingIPManager(self)
         self.images = images.ImageManager(self)
@@ -51,6 +51,7 @@ class Client(object):
                                         api_key,
                                         project_id,
                                         auth_url,
+                                        insecure=insecure,
                                         timeout=timeout,
                                         token=token,
                                         region_name=region_name)

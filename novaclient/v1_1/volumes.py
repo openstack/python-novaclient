@@ -128,5 +128,5 @@ class VolumeManager(base.ManagerWithFind):
         :param server_id: The ID of the server
         :param attachment_id: The ID of the attachment
         """
-        return self._delete("/servers/%s/os-volume_attachments/%s" % (server_id,
-            attachment_id,))
+        return self._delete("/servers/%s/os-volume_attachments/%s" %
+                                        (server_id, attachment_id,))

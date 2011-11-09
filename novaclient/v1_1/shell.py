@@ -184,7 +184,11 @@ def do_boot(cs, args):
                                     security_groups=security_groups,
                                     key_name=key_name,
                                     block_device_mapping=block_device_mapping)
+
+    # Keep any information (like adminPass) returned by create
     info = server._info
+    server = cs.servers.get(info['id'])
+    info.update(server._info)
 
     flavor = info.get('flavor', {})
     flavor_id = flavor.get('id', '')
@@ -1123,7 +1127,8 @@ def do_secgroup_delete_group_rule(cs, args):
 
 
 @utils.arg('name', metavar='<name>', help='Name of key.')
-@utils.arg('--pub_key', metavar='<pub_key>', help='Path to a public ssh key.', default=None)
+@utils.arg('--pub_key', metavar='<pub_key>', help='Path to a public ssh key.',
+           default=None)
 def do_keypair_add(cs, args):
     """Create a new key pair for use with instances"""
     name = args.name
@@ -1134,7 +1139,8 @@ def do_keypair_add(cs, args):
             with open(pub_key) as f:
                 pub_key = f.read()
         except IOError, e:
-            raise exceptions.CommandError("Can't open or read '%s': %s" % (pub_key, e))
+            raise exceptions.CommandError("Can't open or read '%s': %s" % \
+                                                          (pub_key, e))
 
     keypair = cs.keypairs.create(name, pub_key)
 
@@ -1155,4 +1161,3 @@ def do_keypair_list(cs, args):
     keypairs = cs.keypairs.list()
     columns = ['Name', 'Fingerprint']
     utils.print_list(keypairs, columns)
-
