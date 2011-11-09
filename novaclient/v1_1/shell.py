@@ -105,12 +105,12 @@ def _boot(cs, args, reservation_id=None, min_count=None, max_count=None):
         security_groups = args.security_groups.split(',')
     else:
         security_groups = None
-    
+
     block_device_mapping = {}
     for bdm in args.block_device_mapping:
         device_name, mapping = bdm.split('=', 1)
         block_device_mapping[device_name] = mapping
-    
+
     return (args.name, image, flavor, metadata, files, key_name,
             reservation_id, min_count, max_count, user_data, \
             availability_zone, security_groups, block_device_mapping)
@@ -773,15 +773,17 @@ def _find_volume(cs, volume):
     """Get a volume by ID."""
     return utils.find_resource(cs.volumes, volume)
 
-def _find_snapshot(cs, snapshot):
-    """Get a snapshot by ID."""
-    return utils.find_resource(cs.snapshots, snapshot)
+
+def _find_volume_snapshot(cs, snapshot):
+    """Get a volume snapshot by ID."""
+    return utils.find_resource(cs.volume_snapshots, snapshot)
+
 
 def _print_volume(cs, volume):
     utils.print_dict(volume._info)
 
 
-def _print_snapshot(cs, snapshot):
+def _print_volume_snapshot(cs, snapshot):
     utils.print_dict(snapshot._info)
 
 
@@ -794,7 +796,7 @@ def _translate_volume_keys(collection):
                 setattr(item, to_key, item._info[from_key])
 
 
-def _translate_snapshot_keys(collection):
+def _translate_volume_snapshot_keys(collection):
     convert = [('displayName', 'display_name'), ('volumeId', 'volume_id')]
     for item in collection:
         keys = item.__dict__.keys()
@@ -880,19 +882,19 @@ def do_volume_detach(cs, args):
     cs.volumes.delete_server_volume(_find_server(cs, args.server).id,
                                         args.attachment_id)
 
-def do_snapshot_list(cs, args):
+def do_volume_snapshot_list(cs, args):
     """List all the snapshots."""
-    snapshots = cs.snapshots.list()
-    _translate_snapshot_keys(snapshots)
+    snapshots = cs.volume_snapshots.list()
+    _translate_volume_snapshot_keys(snapshots)
     utils.print_list(snapshots, ['ID', 'Volume ID', 'Status', 'Display Name',
                         'Size'])
 
 
 @utils.arg('snapshot', metavar='<snapshot>', help='ID of the snapshot.')
-def do_snapshot_show(cs, args):
+def do_volume_snapshot_show(cs, args):
     """Show details about a snapshot."""
-    snapshot = _find_snapshot(cs, args.snapshot)
-    _print_snapshot(cs, snapshot)
+    snapshot = _find_volume_snapshot(cs, args.snapshot)
+    _print_volume_snapshot(cs, snapshot)
 
 
 @utils.arg('volume_id',
@@ -900,7 +902,7 @@ def do_snapshot_show(cs, args):
     type=int,
     help='ID of the volume to snapshot')
 @utils.arg('--force',
-    metavar='<force>',
+    metavar='<True|False>',
     help='Optional flag to indicate whether to snapshot a volume even if its '
         'attached to an instance. (Default=False)',
     default=False)
@@ -910,9 +912,9 @@ def do_snapshot_show(cs, args):
 @utils.arg('--display_description', metavar='<display_description>',
             help='Optional snapshot description. (Default=None)',
             default=None)
-def do_snapshot_create(cs, args):
+def do_volume_snapshot_create(cs, args):
     """Add a new snapshot."""
-    cs.snapshots.create(args.volume_id,
+    cs.volume_snapshots.create(args.volume_id,
                         args.force,
                         args.display_name,
                         args.display_description)
@@ -921,9 +923,9 @@ def do_snapshot_create(cs, args):
 @utils.arg('snapshot_id',
     metavar='<snapshot_id>',
     help='ID of the snapshot to delete.')
-def do_snapshot_delete(cs, args):
+def do_volume_snapshot_delete(cs, args):
     """Remove a snapshot."""
-    snapshot = _find_snapshot(cs, args.snapshot_id)
+    snapshot = _find_volume_snapshot(cs, args.snapshot_id)
     snapshot.delete()
 
 

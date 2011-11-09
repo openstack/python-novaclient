@@ -124,10 +124,6 @@ You'll find complete documentation on the shell by running
         secgroup-list       List security groups for the curent tenant.
         secgroup-list-rules List rules for a security group.
         show                Show details about the given server.
-        snapshot-create     Add a new snapshot.
-        snapshot-delete     Remove a snapshot.
-        snapshot-list       List all the snapshots.
-        snapshot-show       Show details about a snapshot.
         suspend             Suspend a server.
         unpause             Unpause a server.
         unrescue            Unrescue a server.
@@ -137,6 +133,14 @@ You'll find complete documentation on the shell by running
         volume-detach       Detach a volume from a server.
         volume-list         List all the volumes.
         volume-show         Show details about a volume.
+        volume-snapshot-create
+                            Add a new snapshot.
+        volume-snapshot-delete
+                            Remove a snapshot.
+        volume-snapshot-list
+                            List all the snapshots.
+        volume-snapshot-show
+                            Show details about a snapshot.
         zone                Show or edit a Child Zone
         zone-add            Add a Child Zone.
         zone-boot           Boot a server, considering Zones.
