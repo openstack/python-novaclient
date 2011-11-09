@@ -40,7 +40,7 @@ with the ``--username``, ``--apikey`` and  ``--projectid`` params, but it's easi
 set them as environment variables::
 
     export NOVA_USERNAME=openstack
-    export NOVA_API_KEY=yadayada
+    export NOVA_PASSWORD=yadayada
     export NOVA_PROJECT_ID=myproject
 
 You will also need to define the authentication url with ``--url`` and the
@@ -64,6 +64,7 @@ You'll find complete documentation on the shell by running
 
     usage: nova [--username USERNAME] [--apikey APIKEY] [--projectid PROJECTID]
                    [--url URL] [--version VERSION] [--region_name NAME]
+                   [--endpoint_name NAME]
                    <subcommand> ...
 
     Command-line interface to the OpenStack Nova API.
@@ -141,7 +142,7 @@ You'll find complete documentation on the shell by running
 
     Optional arguments:
       --username USERNAME   Defaults to env[NOVA_USERNAME].
-      --apikey APIKEY       Defaults to env[NOVA_API_KEY].
+      --apikey PASSWORD       Defaults to env[NOVA_PASSWORD].
       --apikey PROJECTID    Defaults to env[NOVA_PROJECT_ID].
       --url AUTH_URL        Defaults to env[NOVA_URL] or
                             https://auth.api.rackspacecloud.com/v1.0
@@ -164,7 +165,7 @@ __ http://packages.python.org/python-novaclient/
 By way of a quick-start::
 
     >>> import novaclient
-    >>> nt = novaclient.OpenStack(USERNAME, API_KEY,PROJECT_ID [, AUTH_URL])
+    >>> nt = novaclient.OpenStack(USERNAME, PASSWORD, PROJECT_ID [, AUTH_URL])
     >>> nt.flavors.list()
     [...]
     >>> nt.servers.list()

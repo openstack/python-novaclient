@@ -18,7 +18,7 @@ class FakeClient(fakes.FakeClient, client.Client):
 class FakeHTTPClient(base_client.HTTPClient):
     def __init__(self, **kwargs):
         self.username = 'username'
-        self.apikey = 'apikey'
+        self.password = 'password'
         self.auth_url = 'auth_url'
         self.callstack = []
 

@@ -17,7 +17,7 @@ class ShellTest(utils.TestCase):
         self.old_environment = os.environ.copy()
         os.environ = {
             'NOVA_USERNAME': 'username',
-            'NOVA_API_KEY': 'password',
+            'NOVA_PASSWORD': 'password',
             'NOVA_PROJECT_ID': 'project_id',
             'NOVA_VERSION': '1.1',
             'NOVA_URL': 'http://no.where',
@@ -228,7 +228,7 @@ class ShellTest(utils.TestCase):
         #                   {'rebuild': {'imageRef': 1}})
         self.assert_called('GET', '/images/2')
 
-        self.run_command('rebuild sample-server 1 --password asdf')
+        self.run_command('rebuild sample-server 1 --rebuild_password asdf')
         # XXX need a way to test multiple calls
         #self.assert_called('POST', '/servers/1234/action',
         #                   {'rebuild': {'imageRef': 1, 'adminPass': 'asdf'}})
@@ -267,7 +267,7 @@ class ShellTest(utils.TestCase):
         self.assert_called('GET', '/images/2')
 
     def test_show_bad_id(self):
-        self.assertRaises(exceptions.CommandError, 
+        self.assertRaises(exceptions.CommandError,
                           self.run_command, 'show xxx')
 
     def test_delete(self):

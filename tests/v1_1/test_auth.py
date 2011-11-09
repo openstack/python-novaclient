@@ -19,7 +19,7 @@ def to_http_response(resp_dict):
 
 class AuthenticateAgainstKeystoneTests(utils.TestCase):
     def test_authenticate_success(self):
-        cs = client.Client("username", "apikey", "project_id", "auth_url/v2.0")
+        cs = client.Client("username", "password", "project_id", "auth_url/v2.0")
         resp = {"access":
                     {"token": {"expires": "12345", "id": "FAKE_ID"},
                      "serviceCatalog": [
@@ -44,7 +44,7 @@ class AuthenticateAgainstKeystoneTests(utils.TestCase):
                        'Content-Type': 'application/json', }
             body = {'auth': {
                         'passwordCredentials': {'username': cs.client.user,
-                                                'password': cs.client.apikey},
+                                                'password': cs.client.password},
                         'tenantName': cs.client.projectid, }}
 
             token_url = urlparse.urljoin(cs.client.auth_url, "tokens")
@@ -60,7 +60,7 @@ class AuthenticateAgainstKeystoneTests(utils.TestCase):
         test_auth_call()
 
     def test_authenticate_failure(self):
-        cs = client.Client("username", "apikey", "project_id", "auth_url/v2.0")
+        cs = client.Client("username", "password", "project_id", "auth_url/v2.0")
         resp = {"unauthorized": {"message": "Unauthorized", "code": "401"}}
         auth_response = httplib2.Response({
             "status": 401,
@@ -77,7 +77,7 @@ class AuthenticateAgainstKeystoneTests(utils.TestCase):
         test_auth_call()
 
     def test_auth_redirect(self):
-        cs = client.Client("username", "apikey", "project_id", "auth_url/v1.0")
+        cs = client.Client("username", "password", "project_id", "auth_url/v1.0")
         dict_correct_response = {"access": {"token": {"expires": "12345", "id": "FAKE_ID"},
                          "serviceCatalog": [{
                             "type": "compute",
@@ -116,7 +116,7 @@ class AuthenticateAgainstKeystoneTests(utils.TestCase):
                        'Content-Type': 'application/json',}
             body = {'auth': {
                             'passwordCredentials': {'username': cs.client.user,
-                                                    'password': cs.client.apikey},
+                                                    'password': cs.client.password},
                             'tenantName': cs.client.projectid,}}
 
             token_url = urlparse.urljoin(cs.client.auth_url, "tokens")
@@ -135,7 +135,7 @@ class AuthenticateAgainstKeystoneTests(utils.TestCase):
 
 class AuthenticationTests(utils.TestCase):
     def test_authenticate_success(self):
-        cs = client.Client("username", "apikey", "project_id", "auth_url")
+        cs = client.Client("username", "password", "project_id", "auth_url")
         management_url = 'https://servers.api.rackspacecloud.com/v1.1/443470'
         auth_response = httplib2.Response({
             'status': 204,
@@ -149,7 +149,7 @@ class AuthenticationTests(utils.TestCase):
             cs.client.authenticate()
             headers = {
                 'X-Auth-User': 'username',
-                'X-Auth-Key': 'apikey',
+                'X-Auth-Key': 'password',
                 'X-Auth-Project-Id': 'project_id',
                 'User-Agent': cs.client.USER_AGENT
             }
@@ -163,7 +163,7 @@ class AuthenticationTests(utils.TestCase):
         test_auth_call()
 
     def test_authenticate_failure(self):
-        cs = client.Client("username", "apikey", "project_id", "auth_url")
+        cs = client.Client("username", "password", "project_id", "auth_url")
         auth_response = httplib2.Response({'status': 401})
         mock_request = mock.Mock(return_value=(auth_response, None))
 
@@ -174,7 +174,7 @@ class AuthenticationTests(utils.TestCase):
         test_auth_call()
 
     def test_auth_automatic(self):
-        cs = client.Client("username", "apikey", "project_id", "auth_url")
+        cs = client.Client("username", "password", "project_id", "auth_url")
         http_client = cs.client
         http_client.management_url = ''
         mock_request = mock.Mock(return_value=(None, None))
@@ -189,7 +189,7 @@ class AuthenticationTests(utils.TestCase):
         test_auth_call()
 
     def test_auth_manual(self):
-        cs = client.Client("username", "apikey", "project_id", "auth_url")
+        cs = client.Client("username", "password", "project_id", "auth_url")
 
         @mock.patch.object(cs.client, 'authenticate')
         def test_auth_call(m):

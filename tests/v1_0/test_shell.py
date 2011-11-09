@@ -14,7 +14,7 @@ class ShellTest(utils.TestCase):
         self.old_environment = os.environ.copy()
         os.environ = {
             'NOVA_USERNAME': 'username',
-            'NOVA_API_KEY': 'password',
+            'NOVA_PASSWORD': 'password',
             'NOVA_PROJECT_ID': 'project_id',
             'NOVA_VERSION': '1.0',
         }
@@ -304,7 +304,7 @@ class ShellTest(utils.TestCase):
         self.assert_called('GET', '/zones/1')
 
         self.run_command('zone 1 --api_url=http://zzz '
-                         '--zone_username=frank --password=xxx')
+                         '--zone_username=frank --zone_password=xxx')
         self.assert_called(
             'PUT', '/zones/1',
             {'zone': {'username': 'frank', 'password': 'xxx',
@@ -313,7 +313,7 @@ class ShellTest(utils.TestCase):
 
     def test_zone_add(self):
         self.run_command('zone-add child_zone http://zzz '
-                         '--zone_username=frank --password=xxx '
+                         '--zone_username=frank --zone_password=xxx '
                          '--weight_offset=0.0 --weight_scale=1.0')
         self.assert_called(
             'POST', '/zones',
