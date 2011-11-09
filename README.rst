@@ -36,7 +36,7 @@ Installing this package gets you a shell command, ``nova``, that you
 can use to interact with any Rackspace compatible API (including OpenStack).
 
 You'll need to provide your OpenStack username and API key. You can do this
-with the ``--username``, ``--apikey`` and  ``--projectid`` params, but it's easier to just
+with the ``--username``, ``--password`` and  ``--projectid`` params, but it's easier to just
 set them as environment variables::
 
     export NOVA_USERNAME=openstack
@@ -62,7 +62,7 @@ can specify the one you want with ``--region_name`` (or
 You'll find complete documentation on the shell by running
 ``nova help``::
 
-    usage: nova [--username USERNAME] [--apikey APIKEY] [--projectid PROJECTID]
+    usage: nova [--username USERNAME] [--password PASSWORD] [--projectid PROJECTID]
                    [--url URL] [--version VERSION] [--region_name NAME]
                    [--endpoint_name NAME]
                    <subcommand> ...
@@ -142,8 +142,8 @@ You'll find complete documentation on the shell by running
 
     Optional arguments:
       --username USERNAME   Defaults to env[NOVA_USERNAME].
-      --apikey PASSWORD       Defaults to env[NOVA_PASSWORD].
-      --apikey PROJECTID    Defaults to env[NOVA_PROJECT_ID].
+      --password PASSWORD   Defaults to env[NOVA_PASSWORD].
+      --projectid PROJECTID Defaults to env[NOVA_PROJECT_ID].
       --url AUTH_URL        Defaults to env[NOVA_URL] or
                             https://auth.api.rackspacecloud.com/v1.0
                             if undefined.

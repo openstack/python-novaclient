@@ -10,7 +10,7 @@ from tests import fakes
 class FakeClient(fakes.FakeClient, client.Client):
 
     def __init__(self, *args, **kwargs):
-        client.Client.__init__(self, 'username', 'apikey',
+        client.Client.__init__(self, 'username', 'password',
                                'project_id', 'auth_url')
         self.client = FakeHTTPClient(**kwargs)
 
