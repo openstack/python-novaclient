@@ -266,7 +266,15 @@ class HTTPClient(httplib2.Http):
             body['auth']['tenantName'] = self.projectid
 
         token_url = urlparse.urljoin(url, "tokens")
+
+        # Make sure we follow redirects when trying to reach Keystone
+        tmp_follow_all_redirects = self.follow_all_redirects
+        self.follow_all_redirects = True
+
         resp, body = self.request(token_url, "POST", body=body)
+
+        self.follow_all_redirects = tmp_follow_all_redirects
+
         return self._extract_service_catalog(url, resp, body)
 
     def _munge_get_url(self, url):
