@@ -271,9 +271,10 @@ class HTTPClient(httplib2.Http):
         tmp_follow_all_redirects = self.follow_all_redirects
         self.follow_all_redirects = True
 
-        resp, body = self.request(token_url, "POST", body=body)
-
-        self.follow_all_redirects = tmp_follow_all_redirects
+        try:
+            resp, body = self.request(token_url, "POST", body=body)
+        finally:
+            self.follow_all_redirects = tmp_follow_all_redirects
 
         return self._extract_service_catalog(url, resp, body)
 
