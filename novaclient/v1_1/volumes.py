@@ -40,16 +40,19 @@ class VolumeManager(base.ManagerWithFind):
     """
     resource_class = Volume
 
-    def create(self, size, display_name=None, display_description=None):
+    def create(self, size, snapshot_id=None,
+                    display_name=None, display_description=None):
         """
         Create a volume.
 
         :param size: Size of volume in GB
+        :param snapshot_id: ID of the snapshot
         :param display_name: Name of the volume
         :param display_description: Description of the volume
         :rtype: :class:`Volume`
         """
         body = {'volume': {'size': size,
+                            'snapshot_id': snapshot_id,
                             'display_name': display_name,
                             'display_description': display_description}}
         return self._create('/os-volumes', body, 'volume')

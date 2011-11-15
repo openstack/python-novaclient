@@ -26,7 +26,7 @@ class BootingManagerWithFind(base.ManagerWithFind):
               meta=None, files=None, zone_blob=None, userdata=None,
               reservation_id=None, return_raw=False, min_count=None,
               max_count=None, security_groups=None, key_name=None,
-              availability_zone=None):
+              availability_zone=None, block_device_mapping=None):
         """
         Create (boot) a new server.
 
@@ -51,6 +51,8 @@ class BootingManagerWithFind(base.ManagerWithFind):
         :param key_name: (optional extension) name of keypair to inject into
                          the instance
         :param availability_zone: The :class:`Zone`.
+        :param block_device_mapping: A dict of block device mappings for this
+                                     server.
         """
         body = {"server": {
             "name": name,
@@ -99,5 +101,33 @@ class BootingManagerWithFind(base.ManagerWithFind):
 
         if availability_zone:
             body["server"]["availability_zone"] = availability_zone
+
+        # Block device mappings are passed as a list of dictionaries
+        if block_device_mapping:
+            bdm = body['server']['block_device_mapping'] = []
+            for device_name, mapping in block_device_mapping.items():
+                #
+                # The mapping is in the format:
+                # <id>:[<type>]:[<size(GB)>]:[<delete_on_terminate>]
+                #
+                bdm_dict = {
+                    'device_name': device_name }
+
+                mapping_parts = mapping.split(':')
+                id = mapping_parts[0]
+                if len(mapping_parts) == 1:
+                    bdm_dict['volume_id'] = id
+                if len(mapping_parts) > 1:
+                    type = mapping_parts[1]
+                    if type.startswith('snap'):
+                        bdm_dict['snapshot_id'] = id
+                    else:
+                        bdm_dict['volume_id'] = id
+                if len(mapping_parts) > 2:
+                    bdm_dict['volume_size'] = mapping_parts[2]
+                if len(mapping_parts) > 3:
+                    bdm_dict['delete_on_termination'] = mapping_parts[3]
+                bdm.append(bdm_dict)
+
         return self._create(resource_url, body, response_key,
                             return_raw=return_raw)
