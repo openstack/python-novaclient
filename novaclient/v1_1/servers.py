@@ -328,7 +328,7 @@ class ServerManager(local_base.BootingManagerWithFind):
                zone_blob=None, reservation_id=None, min_count=None,
                max_count=None, security_groups=None, userdata=None,
                key_name=None, availability_zone=None,
-               block_device_mapping=None):
+               block_device_mapping=None, nics=None):
         # TODO: (anthony) indicate in doc string if param is an extension
         # and/or optional
         """
@@ -357,6 +357,9 @@ class ServerManager(local_base.BootingManagerWithFind):
         :param availability_zone: The :class:`Zone`.
         :param block_device_mapping: (optional extension) A dict of block device
                       mappings for this server.
+        :param nics:  (optional extension) an ordered list of nics to be
+                      added to this server, with information about
+                      connected networks, fixed ips, etc.
         """
         if not min_count:
             min_count = 1
@@ -379,7 +382,7 @@ class ServerManager(local_base.BootingManagerWithFind):
                           zone_blob=zone_blob, reservation_id=reservation_id,
                           min_count=min_count, max_count=max_count,
                           security_groups=security_groups, key_name=key_name,
-                          availability_zone=availability_zone)
+                          availability_zone=availability_zone, nics=nics)
 
     def update(self, server, name=None):
         """
