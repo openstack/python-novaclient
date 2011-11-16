@@ -38,7 +38,8 @@ class HTTPClient(httplib2.Http):
     USER_AGENT = 'python-novaclient'
 
     def __init__(self, user, password, projectid, auth_url, insecure=False,
-                 timeout=None, token=None, region_name=None):
+                 timeout=None, token=None, region_name=None,
+                 endpoint_name='publicURL'):
         super(HTTPClient, self).__init__(timeout=timeout)
         self.user = user
         self.password = password
@@ -46,6 +47,7 @@ class HTTPClient(httplib2.Http):
         self.auth_url = auth_url
         self.version = 'v1.0'
         self.region_name = region_name
+        self.endpoint_name = endpoint_name
 
         self.management_url = None
         self.auth_token = None
@@ -155,7 +157,8 @@ class HTTPClient(httplib2.Http):
                     self.auth_token = self.service_catalog.get_token()
                 self.management_url = self.service_catalog.url_for(
                                            attr='region',
-                                           filter_value=self.region_name)
+                                           filter_value=self.region_name,
+                                           endpoint_type=self.endpoint_name)
                 return None
             except KeyError:
                 raise exceptions.AuthorizationFailure()

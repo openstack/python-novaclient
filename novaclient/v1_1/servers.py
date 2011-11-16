@@ -355,8 +355,8 @@ class ServerManager(local_base.BootingManagerWithFind):
         :param key_name: (optional extension) name of previously created
                       keypair to inject into the instance.
         :param availability_zone: The :class:`Zone`.
-        :param block_device_mapping: (optional extension) A dict of block device
-                      mappings for this server.
+        :param block_device_mapping: (optional extension) A dict of block
+                      device mappings for this server.
         :param nics:  (optional extension) an ordered list of nics to be
                       added to this server, with information about
                       connected networks, fixed ips, etc.
