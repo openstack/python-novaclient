@@ -674,7 +674,8 @@ def do_delete(cs, args):
 @utils.arg('--api_url', dest='api_url', default=None, help='New URL.')
 @utils.arg('--zone_username', dest='zone_username', default=None,
                         help='New zone username.')
-@utils.arg('--password', dest='password', default=None, help='New password.')
+@utils.arg('--zone_password', dest='zone_password', default=None,
+                        help='New password.')
 @utils.arg('--weight_offset', dest='weight_offset', default=None,
                         help='Child Zone weight offset.')
 @utils.arg('--weight_scale', dest='weight_scale', default=None,
@@ -689,8 +690,8 @@ def do_zone(cs, args):
         zone_delta['api_url'] = args.api_url
     if args.zone_username:
         zone_delta['username'] = args.zone_username
-    if args.password:
-        zone_delta['password'] = args.password
+    if args.zone_password:
+        zone_delta['password'] = args.zone_password
     if args.weight_offset:
         zone_delta['weight_offset'] = args.weight_offset
     if args.weight_scale:
@@ -713,7 +714,7 @@ def do_zone_info(cs, args):
 @utils.arg('--zone_username', metavar='<zone_username>',
             help='Optional Authentication username. (Default=None)',
             default=None)
-@utils.arg('--password', metavar='<password>',
+@utils.arg('--zone_password', metavar='<zone_password>',
            help='Authentication password. (Default=None)',
            default=None)
 @utils.arg('--weight_offset', metavar='<weight_offset>',
@@ -725,7 +726,7 @@ def do_zone_info(cs, args):
 def do_zone_add(cs, args):
     """Add a new child zone."""
     zone = cs.zones.create(args.zone_name, args.api_url,
-                           args.zone_username, args.password,
+                           args.zone_username, args.zone_password,
                            args.weight_offset, args.weight_scale)
     utils.print_dict(zone._info)
 

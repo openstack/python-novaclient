@@ -9,7 +9,7 @@ from tests import utils
 class AuthenticationTests(utils.TestCase):
 
     def test_authenticate_success(self):
-        cs = client.Client("username", "apikey", "project_id")
+        cs = client.Client("username", "password", "project_id")
         management_url = 'https://servers.api.rackspacecloud.com/v1.0/443470'
         auth_response = httplib2.Response({
             'status': 204,
@@ -23,7 +23,7 @@ class AuthenticationTests(utils.TestCase):
             cs.client.authenticate()
             headers = {
                 'X-Auth-User': 'username',
-                'X-Auth-Key': 'apikey',
+                'X-Auth-Key': 'password',
                 'X-Auth-Project-Id': 'project_id',
                 'User-Agent': cs.client.USER_AGENT
             }
@@ -37,7 +37,7 @@ class AuthenticationTests(utils.TestCase):
         test_auth_call()
 
     def test_authenticate_failure(self):
-        cs = client.Client("username", "apikey", "project_id")
+        cs = client.Client("username", "password", "project_id")
         auth_response = httplib2.Response({'status': 401})
         mock_request = mock.Mock(return_value=(auth_response, None))
 
@@ -48,7 +48,7 @@ class AuthenticationTests(utils.TestCase):
         test_auth_call()
 
     def test_auth_automatic(self):
-        cs = client.Client("username", "apikey", "project_id")
+        cs = client.Client("username", "password", "project_id")
         http_client = cs.client
         http_client.management_url = ''
         mock_request = mock.Mock(return_value=(None, None))
@@ -63,7 +63,7 @@ class AuthenticationTests(utils.TestCase):
         test_auth_call()
 
     def test_auth_manual(self):
-        cs = client.Client("username", "apikey", "project_id")
+        cs = client.Client("username", "password", "project_id")
 
         @mock.patch.object(cs.client, 'authenticate')
         def test_auth_call(m):

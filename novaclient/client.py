@@ -37,11 +37,11 @@ class HTTPClient(httplib2.Http):
 
     USER_AGENT = 'python-novaclient'
 
-    def __init__(self, user, apikey, projectid, auth_url, insecure=False,
+    def __init__(self, user, password, projectid, auth_url, insecure=False,
                  timeout=None, token=None, region_name=None):
         super(HTTPClient, self).__init__(timeout=timeout)
         self.user = user
-        self.apikey = apikey
+        self.password = password
         self.projectid = projectid
         self.auth_url = auth_url
         self.version = 'v1.0'
@@ -239,7 +239,7 @@ class HTTPClient(httplib2.Http):
             raise NoTokenLookupException()
 
         headers = {'X-Auth-User': self.user,
-                   'X-Auth-Key': self.apikey}
+                   'X-Auth-Key': self.password}
         if self.projectid:
             headers['X-Auth-Project-Id'] = self.projectid
 
@@ -260,7 +260,7 @@ class HTTPClient(httplib2.Http):
         """Authenticate against a v2.0 auth service."""
         body = {"auth": {
                    "passwordCredentials": {"username": self.user,
-                                           "password": self.apikey}}}
+                                           "password": self.password}}}
 
         if self.projectid:
             body['auth']['tenantName'] = self.projectid

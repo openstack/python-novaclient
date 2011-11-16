@@ -8,7 +8,7 @@ from tests import fakes
 class FakeClient(fakes.FakeClient, client.Client):
 
     def __init__(self, *args, **kwargs):
-        client.Client.__init__(self, 'username', 'apikey',
+        client.Client.__init__(self, 'username', 'password',
                                'project_id', 'auth_url')
         self.client = FakeHTTPClient(**kwargs)
 
@@ -17,7 +17,7 @@ class FakeHTTPClient(base_client.HTTPClient):
 
     def __init__(self, **kwargs):
         self.username = 'username'
-        self.apikey = 'apikey'
+        self.password = 'password'
         self.auth_url = 'auth_url'
         self.callstack = []
 
@@ -324,7 +324,7 @@ class FakeHTTPClient(base_client.HTTPClient):
         ]})
 
     def get_os_floating_ips_1(self, **kw):
-        return (200, {'floating_ip': 
+        return (200, {'floating_ip':
             {'id': 1, 'fixed_ip': '10.0.0.1', 'ip': '11.0.0.1'}
         })
 

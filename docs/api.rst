@@ -12,7 +12,7 @@ Usage
 First create an instance of :class:`OpenStack` with your credentials::
 
     >>> from novaclient import OpenStack
-    >>> nova = OpenStack(USERNAME, API_KEY, AUTH_URL)
+    >>> nova = OpenStack(USERNAME, PASSWORD, AUTH_URL)
 
 Then call methods on the :class:`OpenStack` object:
 

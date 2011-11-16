@@ -18,7 +18,7 @@ class Client(object):
 
     Create an instance with your creds::
 
-        >>> client = Client(USERNAME, API_KEY, PROJECT_ID, AUTH_URL)
+        >>> client = Client(USERNAME, PASSWORD, PROJECT_ID, AUTH_URL)
 
     Then call methods on its managers::
 
@@ -30,7 +30,7 @@ class Client(object):
     """
 
     # FIXME(jesse): project_id isn't required to autenticate
-    def __init__(self, username, api_key, project_id, auth_url,
+    def __init__(self, username, password, project_id, auth_url,
                   insecure=False, timeout=None, token=None, region_name=None):
         self.flavors = flavors.FlavorManager(self)
         self.floating_ips = floating_ips.FloatingIPManager(self)
@@ -48,7 +48,7 @@ class Client(object):
             security_group_rules.SecurityGroupRuleManager(self)
 
         self.client = client.HTTPClient(username,
-                                        api_key,
+                                        password,
                                         project_id,
                                         auth_url,
                                         insecure=insecure,

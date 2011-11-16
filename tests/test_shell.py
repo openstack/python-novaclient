@@ -14,7 +14,7 @@ class ShellTest(utils.TestCase):
         global _old_env
         fake_env = {
             'NOVA_USERNAME': 'username',
-            'NOVA_API_KEY': 'password',
+            'NOVA_PASSWORD': 'password',
             'NOVA_PROJECT_ID': 'project_id',
             'NOVA_URL': 'http://no.where',
         }

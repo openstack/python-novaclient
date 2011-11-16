@@ -12,7 +12,7 @@ mock_request = mock.Mock(return_value=(fake_response, fake_body))
 
 
 def get_client():
-    cl = client.HTTPClient("username", "apikey",
+    cl = client.HTTPClient("username", "password",
                            "project_id", "auth_test")
     return cl
 
