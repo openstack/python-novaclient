@@ -62,9 +62,9 @@ class OpenStackComputeShell(object):
             default=env('NOVA_USERNAME'),
             help='Defaults to env[NOVA_USERNAME].')
 
-        parser.add_argument('--apikey',
-            default=env('NOVA_API_KEY'),
-            help='Defaults to env[NOVA_API_KEY].')
+        parser.add_argument('--password',
+            default=env('NOVA_PASSWORD'),
+            help='Defaults to env[NOVA_PASSWORD].')
 
         parser.add_argument('--projectid',
             default=env('NOVA_PROJECT_ID'),
@@ -157,7 +157,7 @@ class OpenStackComputeShell(object):
             self.do_help(args)
             return 0
 
-        user, apikey, projectid, url, region_name, endpoint_name, insecure = \
+        user, password, projectid, url, region_name, endpoint_name, insecure =\
                 args.username, args.apikey, args.projectid, args.url, \
                 args.region_name, args.endpoint_name, args.insecure
 
@@ -165,16 +165,16 @@ class OpenStackComputeShell(object):
             endpoint_name = 'publicURL'
 
         #FIXME(usrleon): Here should be restrict for project id same as
-        # for username or apikey but for compatibility it is not.
+        # for username or password but for compatibility it is not.
 
         if not user:
             raise exc.CommandError("You must provide a username, either"
                                    "via --username or via "
                                    "env[NOVA_USERNAME]")
-        if not apikey:
-            raise exc.CommandError("You must provide an API key, either"
-                                   "via --apikey or via"
-                                   "env[NOVA_API_KEY]")
+        if not password:
+            raise exc.CommandError("You must provide a password, either"
+                                   "via --password or via"
+                                   "env[NOVA_PASSWORD]")
         if options.version and options.version != '1.0':
             if not projectid:
                 raise exc.CommandError("You must provide an projectid, either"
@@ -186,7 +186,7 @@ class OpenStackComputeShell(object):
                                        "via --url or via"
                                        "env[NOVA_URL")
 
-        self.cs = self.get_api_class(options.version)(user, apikey, projectid,
+        self.cs = self.get_api_class(options.version)(user, password, projectid,
                                      url, insecure, region_name=region_name,
                                      endpoint_name=endpoint_name)
 
