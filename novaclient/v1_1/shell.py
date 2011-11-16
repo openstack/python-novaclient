@@ -111,10 +111,17 @@ def _boot(cs, args, reservation_id=None, min_count=None, max_count=None):
         device_name, mapping = bdm.split('=', 1)
         block_device_mapping[device_name] = mapping
 
+    nics = []
+    for nic_str in args.nics:
+        nic_info = {"net-id": "", "v4-fixed-ip": ""}
+        for kv_str in nic_str.split(","):
+            k,v = kv_str.split("=")
+            nic_info[k] = v
+        nics.append(nic_info)
+
     return (args.name, image, flavor, metadata, files, key_name,
             reservation_id, min_count, max_count, user_data, \
-            availability_zone, security_groups, block_device_mapping)
-
+            availability_zone, security_groups, block_device_mapping, nics)
 
 
 @utils.arg('--flavor',
@@ -168,11 +175,20 @@ def _boot(cs, args, reservation_id=None, min_count=None, max_count=None):
      default=[],
      help="Block device mapping in the format "
          "<dev_name=<id>:<type>:<size(GB)>:<delete_on_terminate>.")
+@utils.arg('--nic',
+     metavar="<net-id=net-uuid,v4-fixed-ip=ip-addr>",
+     action='append',
+     dest='nics',
+     default=[],
+     help="Create a NIC on the server.\n"
+           "Specify option multiple times to create multiple NICs.\n"
+           "net-id: attach NIC to network with this UUID (optional)\n"
+           "v4-fixed-ip: IPv4 fixed address for NIC (optional).")
 def do_boot(cs, args):
     """Boot a new server."""
     name, image, flavor, metadata, files, key_name, reservation_id, \
         min_count, max_count, user_data, availability_zone, \
-        security_groups, block_device_mapping = _boot(cs, args)
+        security_groups, block_device_mapping, nics = _boot(cs, args)
 
     server = cs.servers.create(args.name, image, flavor,
                                     meta=metadata,
@@ -183,7 +199,8 @@ def do_boot(cs, args):
                                     availability_zone=availability_zone,
                                     security_groups=security_groups,
                                     key_name=key_name,
-                                    block_device_mapping=block_device_mapping)
+                                    block_device_mapping=block_device_mapping,
+                                    nics=nics)
 
     # Keep any information (like adminPass) returned by create
     info = server._info
