@@ -113,8 +113,7 @@ class BootingManagerWithFind(base.ManagerWithFind):
                 # The mapping is in the format:
                 # <id>:[<type>]:[<size(GB)>]:[<delete_on_terminate>]
                 #
-                bdm_dict = {
-                    'device_name': device_name }
+                bdm_dict = {'device_name': device_name}
 
                 mapping_parts = mapping.split(':')
                 id = mapping_parts[0]

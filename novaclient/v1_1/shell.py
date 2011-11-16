@@ -115,7 +115,7 @@ def _boot(cs, args, reservation_id=None, min_count=None, max_count=None):
     for nic_str in args.nics:
         nic_info = {"net-id": "", "v4-fixed-ip": ""}
         for kv_str in nic_str.split(","):
-            k,v = kv_str.split("=")
+            k, v = kv_str.split("=")
             nic_info[k] = v
         nics.append(nic_info)
 
@@ -904,6 +904,7 @@ def do_volume_detach(cs, args):
     """Detach a volume from a server."""
     cs.volumes.delete_server_volume(_find_server(cs, args.server).id,
                                         args.attachment_id)
+
 
 def do_volume_snapshot_list(cs, args):
     """List all the snapshots."""
