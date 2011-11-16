@@ -158,7 +158,7 @@ class OpenStackComputeShell(object):
             return 0
 
         user, password, projectid, url, region_name, endpoint_name, insecure =\
-                args.username, args.apikey, args.projectid, args.url, \
+                args.username, args.password, args.projectid, args.url, \
                 args.region_name, args.endpoint_name, args.insecure
 
         if not endpoint_name:
