@@ -282,25 +282,25 @@ class ServerManager(local_base.BootingManagerWithFind):
         """
         Pause the server.
         """
-        self.api.client.post('/servers/%s/pause' % base.getid(server))
+        self._action('pause', server, None)
 
     def unpause(self, server):
         """
         Unpause the server.
         """
-        self.api.client.post('/servers/%s/unpause' % base.getid(server))
+        self._action('unpause', server, None)
 
     def suspend(self, server):
         """
         Suspend the server.
         """
-        self.api.client.post('/servers/%s/suspend' % base.getid(server))
+        self._action('suspend', server, None)
 
     def resume(self, server):
         """
         Resume the server.
         """
-        self.api.client.post('/servers/%s/resume' % base.getid(server))
+        self._action('resume', server, None)
 
     def rescue(self, server):
         """
