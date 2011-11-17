@@ -30,9 +30,12 @@ class Client(object):
     """
 
     # FIXME(jesse): project_id isn't required to authenticate
-    def __init__(self, username, password, project_id, auth_url,
+    def __init__(self, username, api_key, project_id, auth_url,
                   insecure=False, timeout=None, token=None, region_name=None,
                   endpoint_name='publicURL'):
+        # FIXME(comstud): Rename the api_key argument above when we
+        # know it's not being used as keyword argument
+        password = api_key
         self.flavors = flavors.FlavorManager(self)
         self.floating_ips = floating_ips.FloatingIPManager(self)
         self.images = images.ImageManager(self)

@@ -62,6 +62,10 @@ class OpenStackComputeShell(object):
             default=env('NOVA_USERNAME'),
             help='Defaults to env[NOVA_USERNAME].')
 
+        parser.add_argument('--apikey',
+            default=env('NOVA_API_KEY'),
+            help='Defaults to env[NOVA_API_KEY].')
+
         parser.add_argument('--password',
             default=env('NOVA_PASSWORD'),
             help='Defaults to env[NOVA_PASSWORD].')
@@ -157,9 +161,10 @@ class OpenStackComputeShell(object):
             self.do_help(args)
             return 0
 
-        user, password, projectid, url, region_name, endpoint_name, insecure =\
-                args.username, args.password, args.projectid, args.url, \
-                args.region_name, args.endpoint_name, args.insecure
+        (user, apikey, password, projectid, url, region_name,
+                endpoint_name, insecure) = (args.username, args.apikey,
+                        args.password, args.projectid, args.url,
+                        args.region_name, args.endpoint_name, args.insecure)
 
         if not endpoint_name:
             endpoint_name = 'publicURL'
@@ -171,10 +176,14 @@ class OpenStackComputeShell(object):
             raise exc.CommandError("You must provide a username, either"
                                    "via --username or via "
                                    "env[NOVA_USERNAME]")
+
         if not password:
-            raise exc.CommandError("You must provide a password, either"
-                                   "via --password or via"
-                                   "env[NOVA_PASSWORD]")
+            if not apikey:
+                raise exc.CommandError("You must provide a password, either"
+                        "via --password or via env[NOVA_PASSWORD]")
+            else:
+                password = apikey
+
         if options.version and options.version != '1.0':
             if not projectid:
                 raise exc.CommandError("You must provide an projectid, either"

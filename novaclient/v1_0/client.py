@@ -25,10 +25,13 @@ class Client(object):
 
     """
 
-    def __init__(self, username, password, project_id, auth_url=None,
+    def __init__(self, username, api_key, project_id, auth_url=None,
                  insecure=False, timeout=None, token=None, region_name=None,
                  endpoint_name='publicURL'):
 
+        # FIXME(comstud): Rename the api_key argument above when we
+        # know it's not being used as keyword argument
+        password = api_key
         self.accounts = accounts.AccountManager(self)
         self.backup_schedules = backup_schedules.BackupScheduleManager(self)
         self.flavors = flavors.FlavorManager(self)

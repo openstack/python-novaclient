@@ -28,14 +28,14 @@ def read_file(file_name):
 
 setuptools.setup(
     name="python-novaclient",
-    version="2.6.7",
+    version="2.6.8",
     author="Rackspace, based on work by Jacob Kaplan-Moss",
     author_email="github@racklabs.com",
     description="Client library for OpenStack Nova API.",
     long_description=read_file("README.rst"),
     license="Apache License, Version 2.0",
     url="https://github.com/openstack/python-novaclient",
-    packages=["novaclient"],
+    packages=["novaclient", "novaclient.v1_0", "novaclient.v1_1"],
     install_requires=requirements,
     tests_require=["nose", "mock"],
     test_suite="nose.collector",
