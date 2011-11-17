@@ -29,6 +29,7 @@ from novaclient import base
 from novaclient import exceptions as exc
 from novaclient import utils
 from novaclient.v1_1 import shell as shell_v1_1
+from novaclient.keystone import shell as shell_keystone
 
 
 def env(*vars):
@@ -119,6 +120,7 @@ class OpenStackComputeShell(object):
             actions_module = shell_v1_1
 
         self._find_actions(subparsers, actions_module)
+        self._find_actions(subparsers, shell_keystone)
         self._find_actions(subparsers, self)
 
         for _, _, ext_module in extensions:
@@ -229,27 +231,39 @@ class OpenStackComputeShell(object):
         #FIXME(usrleon): Here should be restrict for project id same as
         # for username or password but for compatibility it is not.
 
-        if not user:
-            raise exc.CommandError("You must provide a username, either "
-                                   "via --username or via "
-                                   "env[OS_USER_NAME]")
+        if not utils.isunauthenticated(args.func):
+            if not user:
+                raise exc.CommandError("You must provide a username, either "
+                                       "via --username or via "
+                                       "env[NOVA_USERNAME]")
 
-        if not password:
-            if not apikey:
-                raise exc.CommandError("You must provide a password, either "
-                        "via --password or via env[OS_PASSWORD]")
-            else:
-                password = apikey
+            if not password:
+                if not apikey:
+                    raise exc.CommandError("You must provide a password, "
+                            "either via --password or via env[NOVA_PASSWORD]")
+                else:
+                    password = apikey
 
-        if not projectid:
-            raise exc.CommandError("You must provide an projectid, either "
-                                   "via --projectid or via "
-                                   "env[OS_TENANT_NAME]")
+            if not projectid:
+                raise exc.CommandError("You must provide an projectid, either "
+                                       "via --projectid or via "
+                                       "env[OS_TENANT_NAME]")
 
-        if not url:
-            raise exc.CommandError("You must provide a auth url, either "
-                                   "via --url or via "
-                                   "env[OS_AUTH_URL]")
+            if not url:
+                raise exc.CommandError("You must provide a auth url, either "
+                                       "via --url or via "
+                                       "env[OS_AUTH_URL]")
+
+        if options.version and options.version != '1.0':
+            if not projectid:
+                raise exc.CommandError("You must provide an projectid, "
+                                       "either via --projectid or via "
+                                       "env[NOVA_PROJECT_ID")
+
+            if not url:
+                raise exc.CommandError("You must provide a auth url,"
+                                       " either via --url or via "
+                                       "env[NOVA_URL")
 
         self.cs = self.get_api_class(options.version)(user, password,
                                      projectid, url, insecure,
@@ -258,7 +272,8 @@ class OpenStackComputeShell(object):
                                      extensions=extensions)
 
         try:
-            self.cs.authenticate()
+            if not utils.isunauthenticated(args.func):
+                self.cs.authenticate()
         except exc.Unauthorized:
             raise exc.CommandError("Invalid OpenStack Nova credentials.")
         except exc.AuthorizationFailure:

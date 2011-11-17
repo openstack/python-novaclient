@@ -15,6 +15,27 @@ def arg(*args, **kwargs):
     return _decorator
 
 
+def unauthenticated(f):
+    """
+    Adds 'unauthenticated' attribute to decorated function.
+    Usage:
+        @unauthenticated
+        def mymethod(f):
+            ...
+    """
+    f.unauthenticated = True
+    return f
+
+
+def isunauthenticated(f):
+    """
+    Checks to see if the function is marked as not requiring authentication
+    with the @unauthenticated decorator. Returns True if decorator is
+    set to True, False otherwise.
+    """
+    return getattr(f, 'unauthenticated', False)
+
+
 def pretty_choice_list(l):
     return ', '.join("'%s'" % i for i in l)
 
