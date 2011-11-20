@@ -13,6 +13,10 @@ _nova()
           zone zone-add zone-boot zone-delete zone-info zone-list help
           --debug --endpoint_name --password --projectid --region_name --url
           --username --version"
+
+    UUID_CACHE=~/.novaclient_cached_*_uuids
+    opts+=" "$(cat $UUID_CACHE 2> /dev/null | tr '\n' ' ')
+
     COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
 }
 complete -F _nova nova
