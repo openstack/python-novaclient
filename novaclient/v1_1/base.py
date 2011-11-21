@@ -71,7 +71,7 @@ class BootingManagerWithFind(base.ManagerWithFind):
         if reservation_id:
             body["server"]["reservation_id"] = reservation_id
         if zone_blob:
-            body["server"]["zone_blob"] = zone_blob
+            body["server"]["blob"] = zone_blob
         if key_name:
             body["server"]["key_name"] = key_name
 

@@ -71,7 +71,7 @@ class BootingManagerWithFind(base.ManagerWithFind):
         if reservation_id:
             body["server"]["reservation_id"] = reservation_id
         if zone_blob:
-            body["server"]["zone_blob"] = zone_blob
+            body["server"]["blob"] = zone_blob
 
         if not min_count:
             min_count = 1
