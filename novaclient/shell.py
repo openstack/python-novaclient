@@ -173,26 +173,26 @@ class OpenStackComputeShell(object):
         # for username or password but for compatibility it is not.
 
         if not user:
-            raise exc.CommandError("You must provide a username, either"
+            raise exc.CommandError("You must provide a username, either "
                                    "via --username or via "
                                    "env[NOVA_USERNAME]")
 
         if not password:
             if not apikey:
-                raise exc.CommandError("You must provide a password, either"
+                raise exc.CommandError("You must provide a password, either "
                         "via --password or via env[NOVA_PASSWORD]")
             else:
                 password = apikey
 
         if options.version and options.version != '1.0':
             if not projectid:
-                raise exc.CommandError("You must provide an projectid, either"
-                                       "via --projectid or via"
+                raise exc.CommandError("You must provide an projectid, either "
+                                       "via --projectid or via "
                                        "env[NOVA_PROJECT_ID")
 
             if not url:
-                raise exc.CommandError("You must provide a auth url, either"
-                                       "via --url or via"
+                raise exc.CommandError("You must provide a auth url, either "
+                                       "via --url or via "
                                        "env[NOVA_URL")
 
         self.cs = self.get_api_class(options.version)(user, password,
