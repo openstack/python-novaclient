@@ -19,6 +19,8 @@
 Base utilities to build API operation managers and objects on top of.
 """
 
+import contextlib
+import os
 from novaclient import exceptions
 
 
@@ -73,7 +75,40 @@ class Manager(object):
         #           unlike other services which just return the list...
         if type(data) is dict:
             data = data['values']
-        return [obj_class(self, res, loaded=True) for res in data if res]
+
+        with self.uuid_cache(obj_class, mode="w"):
+            return [obj_class(self, res, loaded=True) for res in data if res]
+
+    @contextlib.contextmanager
+    def uuid_cache(self, obj_class, mode):
+        """
+        Cache UUIDs for bash autocompletion.
+
+        The UUID cache works by checking to see whether an ID is UUID-like when
+        we create a resource object (e.g. a Image or a Server), and if it is,
+        we add it to a local cache file.  We maintain one cache file per
+        resource type so that we can refresh them independently.
+
+        A resource listing will clear and repopulate the UUID cache.
+
+        A resource create will append to the UUID cache.
+
+        Delete is not handled because listings are assumed to be performed
+        often enough to keep the UUID cache reasonably up-to-date.
+        """
+        resource = obj_class.__name__.lower()
+        filename = os.path.expanduser("~/.novaclient_cached_%s_uuids" %
+                                      resource)
+        self._uuid_cache = open(filename, mode)
+        try:
+            yield
+        finally:
+            self._uuid_cache.close()
+            del self._uuid_cache
+
+    def write_uuid_to_cache(self, uuid):
+        if hasattr(self, '_uuid_cache'):
+            self._uuid_cache.write("%s\n" % uuid)
 
     def _get(self, url, response_key):
         resp, body = self.api.client.get(url)
@@ -83,7 +118,9 @@ class Manager(object):
         resp, body = self.api.client.post(url, body=body)
         if return_raw:
             return body[response_key]
-        return self.resource_class(self, body[response_key])
+
+        with self.uuid_cache(self.resource_class, mode="a"):
+            return self.resource_class(self, body[response_key])
 
     def _delete(self, url):
         resp, body = self.api.client.delete(url)
@@ -214,6 +251,12 @@ class Resource(object):
         self._info = info
         self._add_details(info)
         self._loaded = loaded
+
+        # NOTE(sirp): ensure `id` is already present because if it isn't we'll
+        # enter an infinite loop of __getattr__ -> get -> __init__ ->
+        # __getattr__ -> ...
+        if 'id' in self.__dict__ and len(str(self.id)) == 36:
+            self.manager.write_uuid_to_cache(self.id)
 
     def _add_details(self, info):
         for (k, v) in info.iteritems():
