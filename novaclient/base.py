@@ -99,12 +99,20 @@ class Manager(object):
         resource = obj_class.__name__.lower()
         filename = os.path.expanduser("~/.novaclient_cached_%s_uuids" %
                                       resource)
-        self._uuid_cache = open(filename, mode)
+
+        try:
+            self._uuid_cache = open(filename, mode)
+        except IOError:
+            # NOTE(kiall): This is typicaly a permission denied while
+            #              attempting to write the cache file.
+            pass
+
         try:
             yield
         finally:
-            self._uuid_cache.close()
-            del self._uuid_cache
+            if hasattr(self, '_uuid_cache'):
+                self._uuid_cache.close()
+                del self._uuid_cache
 
     def write_uuid_to_cache(self, uuid):
         if hasattr(self, '_uuid_cache'):
