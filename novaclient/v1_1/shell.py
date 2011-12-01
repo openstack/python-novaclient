@@ -309,8 +309,7 @@ def do_flavor_list(cs, args):
         'Swap',
         'Local_GB',
         'VCPUs',
-        'RXTX_Quota',
-        'RXTX_Cap'])
+        'RXTX_Factor'])
 
 
 def do_image_list(cs, args):
