@@ -9,16 +9,20 @@ implements 100% of the OpenStack Nova API.
 
 __ http://packages.python.org/python-novaclient/
 
-You'll also probably want to read `Rackspace's API guide`__ (PDF) -- the first
-bit, at least -- to get an idea of the concepts. Rackspace is doing the cloud
-hosting thing a bit differently from Amazon, and if you get the concepts this
-library should make more sense.
+You'll also probably want to read `OpenStack Compute Developer Guide API`__ --
+the first bit, at least -- to get an idea of the concepts. Rackspace is doing
+the cloud hosting thing a bit differently from Amazon, and if you get the
+concepts this library should make more sense.
 
-__ http://docs.rackspacecloud.com/servers/api/cs-devguide-latest.pdf
+__ http://docs.openstack.org/api/
 
-Development takes place on GitHub__. Bug reports and patches may be filed there.
+The project is hosted on `Launchpad`_, where bugs can be filed. The code is
+hosted on `Github`_. Patches must be submitted using `Gerrit`_, *not* Github
+pull requests.
 
-__ https://github.com/rackspace/python-client
+.. _Github: https://github.com/openstack/python-novaclient
+.. _Launchpad: https://launchpad.net/python-novaclient
+.. _Gerrit: http://wiki.openstack.org/GerritWorkflow
 
 This code a fork of `Jacobian's python-cloudservers`__ If you need API support
 for the Rackspace API soley or the BSD license, you should use that repository.
@@ -36,8 +40,8 @@ Installing this package gets you a shell command, ``nova``, that you
 can use to interact with any Rackspace compatible API (including OpenStack).
 
 You'll need to provide your OpenStack username and API key. You can do this
-with the ``--username``, ``--password`` and  ``--projectid`` params, but it's easier to just
-set them as environment variables::
+with the ``--username``, ``--password`` and  ``--projectid`` params, but it's
+easier to just set them as environment variables::
 
     export NOVA_USERNAME=openstack
     export NOVA_PASSWORD=yadayada
