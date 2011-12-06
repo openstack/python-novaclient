@@ -1207,3 +1207,17 @@ def do_keypair_list(cs, args):
     keypairs = cs.keypairs.list()
     columns = ['Name', 'Fingerprint']
     utils.print_list(keypairs, columns)
+
+
+def do_absolute_limits(cs, args):
+    """Print a list of absolute limits for a user"""
+    limits = cs.limits.get().absolute
+    columns = ['Name', 'Value']
+    utils.print_list(limits, columns)
+
+
+def do_rate_limits(cs, args):
+    """Print a list of rate limits for a user"""
+    limits = cs.limits.get().rate
+    columns = ['Verb', 'URI', 'Value', 'Remain', 'Unit', 'Next_Available']
+    utils.print_list(limits, columns)

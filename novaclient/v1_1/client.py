@@ -3,10 +3,11 @@ from novaclient.v1_1 import flavors
 from novaclient.v1_1 import floating_ips
 from novaclient.v1_1 import images
 from novaclient.v1_1 import keypairs
+from novaclient.v1_1 import limits
+from novaclient.v1_1 import quotas
 from novaclient.v1_1 import security_group_rules
 from novaclient.v1_1 import security_groups
 from novaclient.v1_1 import servers
-from novaclient.v1_1 import quotas
 from novaclient.v1_1 import volumes
 from novaclient.v1_1 import volume_snapshots
 from novaclient.v1_1 import zones
@@ -37,11 +38,12 @@ class Client(object):
         # know it's not being used as keyword argument
         password = api_key
         self.flavors = flavors.FlavorManager(self)
-        self.floating_ips = floating_ips.FloatingIPManager(self)
         self.images = images.ImageManager(self)
+        self.limits = limits.LimitsManager(self)
         self.servers = servers.ServerManager(self)
 
         # extensions
+        self.floating_ips = floating_ips.FloatingIPManager(self)
         self.volumes = volumes.VolumeManager(self)
         self.volume_snapshots = volume_snapshots.SnapshotManager(self)
         self.keypairs = keypairs.KeypairManager(self)

@@ -28,7 +28,7 @@ def read_file(file_name):
 
 setuptools.setup(
     name="python-novaclient",
-    version="2.6.8",
+    version="2.6.9",
     author="Rackspace, based on work by Jacob Kaplan-Moss",
     author_email="github@racklabs.com",
     description="Client library for OpenStack Nova API.",
