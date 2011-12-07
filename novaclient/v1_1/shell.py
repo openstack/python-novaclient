@@ -314,15 +314,16 @@ def do_flavor_list(cs, args):
 
 def do_image_list(cs, args):
     """Print a list of available images to boot from."""
-    server_list = {}
-    for server in cs.servers.list():
-        server_list[server.id] = server.name
     image_list = cs.images.list()
-    for i in range(len(image_list)):
-        if hasattr(image_list[i], 'serverId'):
-            image_list[i].serverId = server_list[image_list[i].serverId] + \
-            ' (' + str(image_list[i].serverId) + ')'
-    utils.print_list(cs.images.list(), ['ID', 'Name', 'serverId', 'Status'])
+
+    def parse_server_name(image):
+        try:
+            return image.server['id']
+        except (AttributeError, KeyError):
+            return ''
+
+    fmts = {'Server': parse_server_name}
+    utils.print_list(image_list, ['ID', 'Name', 'Status', 'Server'], fmts)
 
 
 @utils.arg('image',
