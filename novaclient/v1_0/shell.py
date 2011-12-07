@@ -357,7 +357,7 @@ def do_image_list(cs, args):
         if hasattr(image_list[i], 'serverId'):
             image_list[i].serverId = server_list[image_list[i].serverId] + \
             ' (' + str(image_list[i].serverId) + ')'
-    utils.print_list(image_list, ['ID', 'Name', 'serverId','Status'])
+    utils.print_list(image_list, ['ID', 'Name', 'serverId', 'Status'])
 
 
 @utils.arg('server', metavar='<server>', help='Name or ID of server.')
