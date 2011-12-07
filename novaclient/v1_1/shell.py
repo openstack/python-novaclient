@@ -360,9 +360,27 @@ def do_image_meta(cs, args):
 
 
 def _print_image(image):
-    links = image.links
     info = image._info.copy()
+
+    # ignore links, we don't need to present those
     info.pop('links')
+
+    # try to replace a server entity to just an id
+    server = info.pop('server', None)
+    try:
+        info['server'] = server['id']
+    except (KeyError, TypeError):
+        pass
+
+    # break up metadata and display each on its own row
+    metadata = info.pop('metadata', {})
+    try:
+        for key, value in metadata.items():
+            _key = 'metadata %s' % key
+            info[_key] = value
+    except AttributeError:
+        pass
+
     utils.print_dict(info)
 
 
