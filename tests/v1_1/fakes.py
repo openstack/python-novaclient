@@ -223,7 +223,7 @@ class FakeHTTPClient(base_client.HTTPClient):
         return (204, None)
 
     def post_servers_1234_metadata(self, **kw):
-        return (204, {'metadata': { 'test_key': 'test_value'}})
+        return (204, {'metadata': {'test_key': 'test_value'}})
 
     #
     # Server Addresses

@@ -334,7 +334,6 @@ class ShellTest(utils.TestCase):
                       'weight_offset': 0.0, 'weight_scale': 1.0}}
         )
 
-
     def test_zone_delete(self):
         self.run_command('zone-delete 1')
         self.assert_called('DELETE', '/zones/1')

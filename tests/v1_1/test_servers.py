@@ -90,7 +90,7 @@ class ServersTest(utils.TestCase):
     def test_set_server_meta(self):
         s = cs.servers.set_meta(1234, {'test_key': 'test_value'})
         reval = cs.assert_called('POST', '/servers/1234/metadata',
-                         {'metadata': { 'test_key': 'test_value' }})
+                         {'metadata': {'test_key': 'test_value'}})
 
     def test_find(self):
         s = cs.servers.find(name='sample-server')

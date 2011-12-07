@@ -27,9 +27,7 @@ class KeypairsTest(utils.TestCase):
         cs.assert_called('POST', '/os-keypairs')
         self.assertTrue(isinstance(kp, keypairs.Keypair))
 
-
     def test_import_keypair(self):
         kp = cs.keypairs.create("foo", "fake-public-key")
         cs.assert_called('POST', '/os-keypairs')
         self.assertTrue(isinstance(kp, keypairs.Keypair))
-
