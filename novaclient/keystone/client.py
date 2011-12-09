@@ -14,6 +14,7 @@
 #    under the License.
 
 import copy
+
 from novaclient.keystone import tenants
 from novaclient.keystone import users
 

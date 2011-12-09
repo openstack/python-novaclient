@@ -1,8 +1,8 @@
 import httplib2
 import mock
 
-from novaclient.v1_0 import client
 from novaclient import exceptions
+from novaclient.v1_0 import client
 from tests import utils
 
 

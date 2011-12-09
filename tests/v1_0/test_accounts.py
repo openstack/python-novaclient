@@ -1,7 +1,7 @@
 import StringIO
 
-from tests.v1_0 import fakes
 from tests import utils
+from tests.v1_0 import fakes
 
 
 cs = fakes.FakeClient()
@@ -10,7 +10,7 @@ cs = fakes.FakeClient()
 class AccountsTest(utils.TestCase):
 
     def test_instance_creation_for_account(self):
-        s = cs.accounts.create_instance_for(
+        cs.accounts.create_instance_for(
             account_id='test_account',
             name="My server",
             image=1,

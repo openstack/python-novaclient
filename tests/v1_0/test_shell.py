@@ -1,10 +1,10 @@
 import os
 import mock
 
-from novaclient.shell import OpenStackComputeShell
 from novaclient import exceptions
-from tests.v1_0 import fakes
+import novaclient.shell
 from tests import utils
+from tests.v1_0 import fakes
 
 
 class ShellTest(utils.TestCase):
@@ -19,7 +19,7 @@ class ShellTest(utils.TestCase):
             'NOVA_VERSION': '1.0',
         }
 
-        self.shell = OpenStackComputeShell()
+        self.shell = novaclient.shell.OpenStackComputeShell()
         self.shell.get_api_class = lambda *_: fakes.FakeClient
 
     def tearDown(self):

@@ -1,5 +1,5 @@
 .coverage
-.novaclient-venv
+.venv
 *,cover
 cover
 *.pyc

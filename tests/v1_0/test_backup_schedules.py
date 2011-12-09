@@ -1,6 +1,6 @@
 from novaclient.v1_0 import backup_schedules
-from tests.v1_0 import fakes
 from tests import utils
+from tests.v1_0 import fakes
 
 
 cs = fakes.FakeClient()

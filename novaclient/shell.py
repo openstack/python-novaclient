@@ -22,7 +22,6 @@ Command-line interface to the OpenStack Nova API.
 import argparse
 import httplib2
 import os
-import prettytable
 import sys
 
 from novaclient import exceptions as exc
@@ -105,8 +104,10 @@ class OpenStackComputeShell(object):
 
         try:
             actions_module = {
+                '1': shell_v1_0,
                 '1.0': shell_v1_0,
                 '1.1': shell_v1_1,
+                '2': shell_v1_1,
             }[version]
         except KeyError:
             actions_module = shell_v1_0
@@ -212,8 +213,10 @@ class OpenStackComputeShell(object):
     def get_api_class(self, version):
         try:
             return {
+                "1": shell_v1_0.CLIENT_CLASS,
                 "1.0": shell_v1_0.CLIENT_CLASS,
                 "1.1": shell_v1_1.CLIENT_CLASS,
+                "2": shell_v1_1.CLIENT_CLASS,
             }[version]
         except KeyError:
             return shell_v1_0.CLIENT_CLASS

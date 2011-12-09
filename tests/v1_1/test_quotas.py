@@ -13,10 +13,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from novaclient import exceptions
-from novaclient.v1_1 import quotas
-from tests.v1_1 import fakes
 from tests import utils
+from tests.v1_1 import fakes
 
 
 cs = fakes.FakeClient()
@@ -26,12 +24,12 @@ class QuotaSetsTest(utils.TestCase):
 
     def test_tenant_quotas_get(self):
         tenant_id = 'test'
-        qs = cs.quotas.get(tenant_id)
+        cs.quotas.get(tenant_id)
         cs.assert_called('GET', '/os-quota-sets/%s' % tenant_id)
 
     def test_tenant_quotas_defaults(self):
         tenant_id = 'test'
-        q = cs.quotas.defaults(tenant_id)
+        cs.quotas.defaults(tenant_id)
         cs.assert_called('GET', '/os-quota-sets/%s/defaults' % tenant_id)
 
     def test_update_quota(self):

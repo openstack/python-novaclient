@@ -20,7 +20,6 @@ Base utilities to build API operation managers and objects on top of.
 """
 
 from novaclient import base
-from novaclient import exceptions
 
 
 # Python 2.4 compat

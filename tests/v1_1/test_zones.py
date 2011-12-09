@@ -1,8 +1,7 @@
-import StringIO
 
 from novaclient.v1_1 import zones
-from tests.v1_1 import fakes
 from tests import utils
+from tests.v1_1 import fakes
 
 
 os = fakes.FakeClient()

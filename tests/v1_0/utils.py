@@ -19,7 +19,6 @@ def assert_has_keys(dict, required=[], optional=[]):
     keys = dict.keys()
     for k in required:
         assert_in(k, keys, "required key %s missing from %s" % (k, dict))
-    allowed_keys = set(required) | set(optional)
     extra_keys = set(keys).difference(set(required + optional))
     if extra_keys:
         fail("found unexpected keys: %s" % list(extra_keys))

@@ -1,9 +1,8 @@
 import os
-import mock
 import httplib2
 
-from novaclient.shell import OpenStackComputeShell
 from novaclient import exceptions
+import novaclient.shell
 from tests import utils
 
 
@@ -23,7 +22,7 @@ class ShellTest(utils.TestCase):
         # Make a fake shell object, a helping wrapper to call it, and a quick
         # way of asserting that certain API calls were made.
         global shell, _shell, assert_called, assert_called_anytime
-        _shell = OpenStackComputeShell()
+        _shell = novaclient.shell.OpenStackComputeShell()
         shell = lambda cmd: _shell.main(cmd.split())
 
     def tearDown(self):

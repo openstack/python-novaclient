@@ -6,8 +6,6 @@ wrong the tests might raise AssertionError. I've indicated in comments the
 places where actual behavior differs from the spec.
 """
 
-import novaclient.client
-
 
 def assert_has_keys(dict, required=[], optional=[]):
     keys = dict.keys()
@@ -15,7 +13,6 @@ def assert_has_keys(dict, required=[], optional=[]):
         try:
             assert k in keys
         except AssertionError:
-            allowed_keys = set(required) | set(optional)
             extra_keys = set(keys).difference(set(required + optional))
             raise AssertionError("found unexpected keys: %s" %
                     list(extra_keys))
@@ -50,7 +47,6 @@ class FakeClient(object):
 
         found = False
         for entry in self.client.callstack:
-            called = entry[0:2]
             if expected == entry[0:2]:
                 found = True
                 break

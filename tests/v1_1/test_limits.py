@@ -1,7 +1,7 @@
 
 from novaclient.v1_1 import limits
-from tests.v1_1 import fakes
 from tests import utils
+from tests.v1_1 import fakes
 
 
 cs = fakes.FakeClient()

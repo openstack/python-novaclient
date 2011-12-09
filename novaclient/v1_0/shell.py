@@ -17,7 +17,6 @@
 
 import getpass
 import os
-import uuid
 
 from novaclient import exceptions
 from novaclient import utils

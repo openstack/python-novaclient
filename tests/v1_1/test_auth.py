@@ -3,7 +3,6 @@ import json
 import mock
 import urlparse
 
-
 from novaclient.v1_1 import client
 from novaclient import exceptions
 from tests import utils

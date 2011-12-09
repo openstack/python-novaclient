@@ -1,6 +1,4 @@
 import httplib2
-import urllib
-import urlparse
 
 from novaclient import client as base_client
 from novaclient.v1_0 import client

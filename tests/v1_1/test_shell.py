@@ -3,7 +3,7 @@ import mock
 import sys
 import tempfile
 
-from novaclient.shell import OpenStackComputeShell
+import novaclient.shell
 from novaclient import exceptions
 from tests.v1_1 import fakes
 from tests import utils
@@ -23,7 +23,7 @@ class ShellTest(utils.TestCase):
             'NOVA_URL': 'http://no.where',
         }
 
-        self.shell = OpenStackComputeShell()
+        self.shell = novaclient.shell.OpenStackComputeShell()
         self.shell.get_api_class = lambda *_: fakes.FakeClient
 
     def tearDown(self):
