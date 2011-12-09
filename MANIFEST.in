@@ -1,0 +1,7 @@
+include AUTHORS
+include HACKING
+include LICENSE
+include README.rst
+include run_tests.sh
+recursive-include docs *
+recursive-include tests *
