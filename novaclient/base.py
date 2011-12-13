@@ -181,6 +181,9 @@ class ManagerWithFind(Manager):
 
         return found
 
+    def list(self):
+        raise NotImplementedError
+
 
 class BootingManagerWithFind(ManagerWithFind):
     """Like a `ManagerWithFind`, but has the ability to boot servers."""
