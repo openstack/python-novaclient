@@ -36,13 +36,13 @@ class LimitsTest(utils.TestCase):
 
         expected = (
             limits.RateLimit('POST', '*', '.*', 10, 2, 'MINUTE',
-                             '2011-12-15T22:42:45Z' ),
+                             '2011-12-15T22:42:45Z'),
             limits.RateLimit('PUT', '*', '.*', 10, 2, 'MINUTE',
-                             '2011-12-15T22:42:45Z' ),
+                             '2011-12-15T22:42:45Z'),
             limits.RateLimit('DELETE', '*', '.*', 100, 100, 'MINUTE',
-                             '2011-12-15T22:42:45Z' ),
+                             '2011-12-15T22:42:45Z'),
             limits.RateLimit('POST', '*/servers', '^/servers', 25, 24, 'DAY',
-                             '2011-12-15T22:42:45Z' ),
+                             '2011-12-15T22:42:45Z'),
         )
 
         rate_limits = list(obj.rate)
