@@ -213,7 +213,10 @@ class HTTPClient(httplib2.Http):
         auth_url = self.auth_url
         if self.version == "v2.0":  # FIXME(chris): This should be better.
             while auth_url:
-                auth_url = self._v2_auth(auth_url)
+                if "NOVA_RAX_AUTH" in os.environ:
+                    auth_url = self._rax_auth(auth_url)
+                else:
+                    auth_url = self._v2_auth(auth_url)
 
             # Are we acting on behalf of another user via an
             # existing token? If so, our actual endpoints may
@@ -224,7 +227,6 @@ class HTTPClient(httplib2.Http):
                 # with the endpoints any more, we need to replace
                 # our service account token with the user token.
                 self.auth_token = self.proxy_token
-
         else:
             try:
                 while auth_url:
@@ -268,6 +270,20 @@ class HTTPClient(httplib2.Http):
         if self.projectid:
             body['auth']['tenantName'] = self.projectid
 
+        self._authenticate(url, body)
+
+    def _rax_auth(self, url):
+        """Authenticate against the Rackspace auth service."""
+        body = {"auth": {
+                "RAX-KSKEY:apiKeyCredentials": {
+                        "username": self.user,
+                        "apiKey": self.password,
+                        "tenantName": self.projectid}}}
+
+        self._authenticate(url, body)
+
+    def _authenticate(self, url, body):
+        """Authenticate and extract the service catalog."""
         token_url = urlparse.urljoin(url, "tokens")
 
         # Make sure we follow redirects when trying to reach Keystone
