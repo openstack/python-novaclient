@@ -481,21 +481,9 @@ def do_list(cs, args):
         id_col = 'ID'
 
     columns = [id_col, 'Name', 'Status', 'Networks']
-    formatters = {'Networks': _format_servers_list_networks}
+    formatters = {'Networks': utils._format_servers_list_networks}
     utils.print_list(cs.servers.list(search_opts=search_opts), columns,
                      formatters)
-
-
-def _format_servers_list_networks(server):
-    output = []
-    for (network, addresses) in server.networks.items():
-        if len(addresses) == 0:
-            continue
-        addresses_csv = ', '.join(addresses)
-        group = "%s=%s" % (network, addresses_csv)
-        output.append(group)
-
-    return '; '.join(output)
 
 
 @utils.arg('--hard',

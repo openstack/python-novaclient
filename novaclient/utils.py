@@ -71,3 +71,15 @@ def find_resource(manager, name_or_id):
         msg = "No %s with a name or ID of '%s' exists." % \
               (manager.resource_class.__name__.lower(), name_or_id)
         raise exceptions.CommandError(msg)
+
+
+def _format_servers_list_networks(server):
+    output = []
+    for (network, addresses) in server.networks.items():
+        if len(addresses) == 0:
+            continue
+        addresses_csv = ', '.join(addresses)
+        group = "%s=%s" % (network, addresses_csv)
+        output.append(group)
+
+    return '; '.join(output)

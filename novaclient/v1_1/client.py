@@ -33,7 +33,7 @@ class Client(object):
     # FIXME(jesse): project_id isn't required to authenticate
     def __init__(self, username, api_key, project_id, auth_url,
                   insecure=False, timeout=None, token=None, region_name=None,
-                  endpoint_name='publicURL'):
+                  endpoint_name='publicURL', extensions=None):
         # FIXME(comstud): Rename the api_key argument above when we
         # know it's not being used as keyword argument
         password = api_key
@@ -52,6 +52,11 @@ class Client(object):
         self.security_groups = security_groups.SecurityGroupManager(self)
         self.security_group_rules = \
             security_group_rules.SecurityGroupRuleManager(self)
+
+        # Add in any extensions...
+        if extensions:
+            for (ext_name, ext_manager_class, ext_module) in extensions:
+                setattr(self, ext_name, ext_manager_class(self))
 
         self.client = client.HTTPClient(username,
                                         password,

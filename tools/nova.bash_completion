@@ -4,15 +4,8 @@ _nova()
     COMPREPLY=()
     cur="${COMP_WORDS[COMP_CWORD]}"
     prev="${COMP_WORDS[COMP_CWORD-1]}"
-    opts="add-fixed-ip backup backup-schedule backup-schedule-delete boot
-          boot-for-account delete delete diagnostics flavor-list image-create
-          image-delete image-list ip-share ip-unshare ipgroup-create
-          ipgroup-delete ipgroup-list ipgroup-show list migrate pause reboot
-          rebuild remove-fixed-ip rename rescue resize resize-confirm
-          resize-revert resume root-password show suspend unpause unrescue
-          zone zone-add zone-boot zone-delete zone-info zone-list help
-          --debug --endpoint_name --password --projectid --region_name --url
-          --username --version"
+
+    opts="$(nova bash_completion)"
 
     UUID_CACHE=~/.novaclient_cached_*_uuids
     opts+=" "$(cat $UUID_CACHE 2> /dev/null | tr '\n' ' ')

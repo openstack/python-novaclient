@@ -27,7 +27,7 @@ class Client(object):
 
     def __init__(self, username, api_key, project_id, auth_url=None,
                  insecure=False, timeout=None, token=None, region_name=None,
-                 endpoint_name='publicURL'):
+                 endpoint_name='publicURL', extensions=None):
 
         # FIXME(comstud): Rename the api_key argument above when we
         # know it's not being used as keyword argument
@@ -39,6 +39,11 @@ class Client(object):
         self.ipgroups = ipgroups.IPGroupManager(self)
         self.servers = servers.ServerManager(self)
         self.zones = zones.ZoneManager(self)
+
+        # Add in any extensions...
+        if extensions:
+            for (ext_name, ext_manager_class, ext_module) in extensions:
+                setattr(self, ext_name, ext_manager_class(self))
 
         _auth_url = auth_url or 'https://auth.api.rackspacecloud.com/v1.0'
 
