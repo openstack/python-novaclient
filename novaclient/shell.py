@@ -134,6 +134,10 @@ class OpenStackComputeShell(object):
         extensions = []
         for ext_path in glob.iglob(ext_glob):
             name = os.path.basename(ext_path)[:-3]
+
+            if name == "__init__":
+                continue
+
             ext_module = imp.load_source(name, ext_path)
 
             # Extract Manager class
