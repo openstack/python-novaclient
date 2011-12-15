@@ -161,8 +161,7 @@ You'll find complete documentation on the shell by running
       --url AUTH_URL        Defaults to env[NOVA_URL] or
                             https://auth.api.rackspacecloud.com/v1.0
                             if undefined.
-      --version VERSION     Accepts 1.0 or 1.1, defaults to
-                            env[NOVA_VERSION].
+      --version VERSION     Accepts 1.1, defaults to env[NOVA_VERSION].
       --region_name NAME    The region name in the Keystone Service Catalog
                             to use after authentication. Defaults to first
                             in the list returned.

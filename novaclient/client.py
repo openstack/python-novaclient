@@ -45,7 +45,7 @@ class HTTPClient(httplib2.Http):
         self.password = password
         self.projectid = projectid
         self.auth_url = auth_url
-        self.version = 'v1.0'
+        self.version = 'v1.1'
         self.region_name = region_name
         self.endpoint_name = endpoint_name
 

@@ -1,5 +1,4 @@
 # Copyright 2010 Jacob Kaplan-Moss
-
 # Copyright 2011 OpenStack LLC.
 # All Rights Reserved.
 #
@@ -29,7 +28,6 @@ import sys
 from novaclient import base
 from novaclient import exceptions as exc
 from novaclient import utils
-from novaclient.v1_0 import shell as shell_v1_0
 from novaclient.v1_1 import shell as shell_v1_1
 
 
@@ -90,7 +88,7 @@ class OpenStackComputeShell(object):
 
         parser.add_argument('--version',
             default=env('NOVA_VERSION'),
-            help='Accepts 1.0 or 1.1, defaults to env[NOVA_VERSION].')
+            help='Accepts 1.1, defaults to env[NOVA_VERSION].')
 
         parser.add_argument('--insecure',
             default=False,
@@ -107,13 +105,11 @@ class OpenStackComputeShell(object):
 
         try:
             actions_module = {
-                '1': shell_v1_0,
-                '1.0': shell_v1_0,
                 '1.1': shell_v1_1,
                 '2': shell_v1_1,
             }[version]
         except KeyError:
-            actions_module = shell_v1_0
+            actions_module = shell_v1_1
 
         self._find_actions(subparsers, actions_module)
         self._find_actions(subparsers, self)
@@ -238,7 +234,7 @@ class OpenStackComputeShell(object):
             else:
                 password = apikey
 
-        if options.version and options.version != '1.0':
+        if options.version:
             if not projectid:
                 raise exc.CommandError("You must provide an projectid, either "
                                        "via --projectid or via "
@@ -267,13 +263,11 @@ class OpenStackComputeShell(object):
     def get_api_class(self, version):
         try:
             return {
-                "1": shell_v1_0.CLIENT_CLASS,
-                "1.0": shell_v1_0.CLIENT_CLASS,
                 "1.1": shell_v1_1.CLIENT_CLASS,
                 "2": shell_v1_1.CLIENT_CLASS,
             }[version]
         except KeyError:
-            return shell_v1_0.CLIENT_CLASS
+            return shell_v1_1.CLIENT_CLASS
 
     def do_bash_completion(self, args):
         """

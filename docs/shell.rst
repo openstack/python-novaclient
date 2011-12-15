@@ -41,7 +41,7 @@ For example, in Bash you'd use::
     export NOVA_PASSWORD=yadayadayada
     export NOVA_PROJECT_ID=myproject
     export NOVA_URL=http://...
-    export NOVA_VERSION=1.0
+    export NOVA_VERSION=1.1
     
 From there, all shell commands take the form::
     
