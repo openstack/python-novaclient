@@ -74,7 +74,10 @@ class Manager(object):
         # NOTE(ja): keystone returns values as list as {'values': [ ... ]}
         #           unlike other services which just return the list...
         if type(data) is dict:
-            data = data['values']
+            try:
+                data = data['values']
+            except KeyError:
+                pass
 
         with self.uuid_cache(obj_class, mode="w"):
             return [obj_class(self, res, loaded=True) for res in data if res]

@@ -20,10 +20,13 @@ Command-line interface to the OpenStack Nova API.
 """
 
 import argparse
+import glob
 import httplib2
+import imp
 import os
 import sys
 
+from novaclient import base
 from novaclient import exceptions as exc
 from novaclient import utils
 from novaclient.v1_0 import shell as shell_v1_0
@@ -96,7 +99,7 @@ class OpenStackComputeShell(object):
 
         return parser
 
-    def get_subcommand_parser(self, version):
+    def get_subcommand_parser(self, version, extensions):
         parser = self.get_base_parser()
 
         self.subcommands = {}
@@ -115,7 +118,48 @@ class OpenStackComputeShell(object):
         self._find_actions(subparsers, actions_module)
         self._find_actions(subparsers, self)
 
+        for _, _, ext_module in extensions:
+            self._find_actions(subparsers, ext_module)
+
+        self._add_bash_completion_subparser(subparsers)
+
         return parser
+
+    def _discover_extensions(self, version):
+        module_path = os.path.dirname(os.path.abspath(__file__))
+        version_str = "v%s" % version.replace('.', '_')
+        ext_path = os.path.join(module_path, version_str, 'contrib')
+        ext_glob = os.path.join(ext_path, "*.py")
+
+        extensions = []
+        for ext_path in glob.iglob(ext_glob):
+            name = os.path.basename(ext_path)[:-3]
+            ext_module = imp.load_source(name, ext_path)
+
+            # Extract Manager class
+            ext_manager_class = None
+            for attr_value in ext_module.__dict__.values():
+                try:
+                    if issubclass(attr_value, base.Manager):
+                        ext_manager_class = attr_value
+                        break
+                except TypeError:
+                    continue  # in case attr_value isn't a class...
+
+            if not ext_manager_class:
+                raise Exception("Could not find Manager class in extension.")
+
+            extensions.append((name, ext_manager_class, ext_module))
+
+        return extensions
+
+    def _add_bash_completion_subparser(self, subparsers):
+        subparser = subparsers.add_parser('bash_completion',
+            add_help=False,
+            formatter_class=OpenStackHelpFormatter
+        )
+        self.subcommands['bash_completion'] = subparser
+        subparser.set_defaults(func=self.do_bash_completion)
 
     def _find_actions(self, subparsers, actions_module):
         for attr in (a for a in dir(actions_module) if a.startswith('do_')):
@@ -147,7 +191,9 @@ class OpenStackComputeShell(object):
         (options, args) = parser.parse_known_args(argv)
 
         # build available subcommands based on version
-        subcommand_parser = self.get_subcommand_parser(options.version)
+        extensions = self._discover_extensions(options.version)
+        subcommand_parser = self.get_subcommand_parser(
+                options.version, extensions)
         self.parser = subcommand_parser
 
         # Parse args again and call whatever callback was selected
@@ -160,6 +206,9 @@ class OpenStackComputeShell(object):
         # Short-circuit and deal with help right away.
         if args.func == self.do_help:
             self.do_help(args)
+            return 0
+        elif args.func == self.do_bash_completion:
+            self.do_bash_completion(args)
             return 0
 
         (user, apikey, password, projectid, url, region_name,
@@ -199,7 +248,8 @@ class OpenStackComputeShell(object):
         self.cs = self.get_api_class(options.version)(user, password,
                                      projectid, url, insecure,
                                      region_name=region_name,
-                                     endpoint_name=endpoint_name)
+                                     endpoint_name=endpoint_name,
+                                     extensions=extensions)
 
         try:
             self.cs.authenticate()
@@ -220,6 +270,22 @@ class OpenStackComputeShell(object):
             }[version]
         except KeyError:
             return shell_v1_0.CLIENT_CLASS
+
+    def do_bash_completion(self, args):
+        """
+        Prints all of the commands and options to stdout so that the
+        nova.bash_completion script doesn't have to hard code them.
+        """
+        commands = set()
+        options = set()
+        for sc_str, sc in self.subcommands.items():
+            commands.add(sc_str)
+            for option in sc._optionals._option_string_actions.keys():
+                options.add(option)
+
+        commands.remove('bash-completion')
+        commands.remove('bash_completion')
+        print ' '.join(commands | options)
 
     @utils.arg('command', metavar='<subcommand>', nargs='?',
                     help='Display help for <subcommand>')
