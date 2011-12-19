@@ -31,8 +31,15 @@ from novaclient import utils
 from novaclient.v1_1 import shell as shell_v1_1
 
 
-def env(e):
-    return os.environ.get(e, '')
+def env(*vars):
+    """
+    returns the first environment variable set
+    """
+    for v in vars:
+        value = os.environ.get(v, None)
+        if value:
+            return value
+    return ''
 
 
 class OpenStackComputeShell(object):
@@ -59,24 +66,24 @@ class OpenStackComputeShell(object):
             help=argparse.SUPPRESS)
 
         parser.add_argument('--username',
-            default=env('NOVA_USERNAME'),
-            help='Defaults to env[NOVA_USERNAME].')
+            default=env('OS_USER_NAME', 'NOVA_USERNAME'),
+            help='Defaults to env[OS_USER_NAME].')
 
         parser.add_argument('--apikey',
             default=env('NOVA_API_KEY'),
             help='Defaults to env[NOVA_API_KEY].')
 
         parser.add_argument('--password',
-            default=env('NOVA_PASSWORD'),
-            help='Defaults to env[NOVA_PASSWORD].')
+            default=env('OS_PASSWORD', 'NOVA_PASSWORD'),
+            help='Defaults to env[OS_PASSWORD].')
 
         parser.add_argument('--projectid',
-            default=env('NOVA_PROJECT_ID'),
-            help='Defaults to env[NOVA_PROJECT_ID].')
+            default=env('OS_TENANT_NAME', 'NOVA_PROJECT_ID'),
+            help='Defaults to env[OS_TENANT_NAME].')
 
         parser.add_argument('--url',
-            default=env('NOVA_URL'),
-            help='Defaults to env[NOVA_URL].')
+            default=env('OS_AUTH_URL', 'NOVA_URL'),
+            help='Defaults to env[OS_AUTH_URL].')
 
         parser.add_argument('--region_name',
             default=env('NOVA_REGION_NAME'),
@@ -225,25 +232,24 @@ class OpenStackComputeShell(object):
         if not user:
             raise exc.CommandError("You must provide a username, either "
                                    "via --username or via "
-                                   "env[NOVA_USERNAME]")
+                                   "env[OS_USER_NAME]")
 
         if not password:
             if not apikey:
                 raise exc.CommandError("You must provide a password, either "
-                        "via --password or via env[NOVA_PASSWORD]")
+                        "via --password or via env[OS_PASSWORD]")
             else:
                 password = apikey
 
-        if options.version:
-            if not projectid:
-                raise exc.CommandError("You must provide an projectid, either "
-                                       "via --projectid or via "
-                                       "env[NOVA_PROJECT_ID")
+        if not projectid:
+            raise exc.CommandError("You must provide an projectid, either "
+                                   "via --projectid or via "
+                                   "env[OS_TENANT_NAME]")
 
-            if not url:
-                raise exc.CommandError("You must provide a auth url, either "
-                                       "via --url or via "
-                                       "env[NOVA_URL")
+        if not url:
+            raise exc.CommandError("You must provide a auth url, either "
+                                   "via --url or via "
+                                   "env[OS_AUTH_URL]")
 
         self.cs = self.get_api_class(options.version)(user, password,
                                      projectid, url, insecure,
