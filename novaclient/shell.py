@@ -42,10 +42,28 @@ def env(*vars):
     return ''
 
 
+class NovaClientArgumentParser(argparse.ArgumentParser):
+
+    def __init__(self, *args, **kwargs):
+        super(NovaClientArgumentParser, self).__init__(*args, **kwargs)
+
+    def error(self, message):
+        """error(message: string)
+
+        Prints a usage message incorporating the message to stderr and
+        exits.
+        """
+        self.print_usage(sys.stderr)
+        #FIXME(lzyeval): if changes occur in argparse.ArgParser._check_value
+        choose_from = ' (choose from'
+        self.exit(2, "error: %s\nTry `%s help' for more information.\n" %
+                     (message.split(choose_from)[0], self.prog))
+
+
 class OpenStackComputeShell(object):
 
     def get_base_parser(self):
-        parser = argparse.ArgumentParser(
+        parser = NovaClientArgumentParser(
             prog='nova',
             description=__doc__.strip(),
             epilog='See "nova help COMMAND" '\
