@@ -85,8 +85,8 @@ class OpenStackComputeShell(object):
             help=argparse.SUPPRESS)
 
         parser.add_argument('--username',
-            default=env('OS_USER_NAME', 'NOVA_USERNAME'),
-            help='Defaults to env[OS_USER_NAME].')
+            default=env('OS_USERNAME', 'NOVA_USERNAME'),
+            help='Defaults to env[OS_USERNAME].')
 
         parser.add_argument('--apikey',
             default=env('NOVA_API_KEY'),
@@ -253,12 +253,12 @@ class OpenStackComputeShell(object):
             if not user:
                 raise exc.CommandError("You must provide a username, either "
                                        "via --username or via "
-                                       "env[NOVA_USERNAME]")
+                                       "env[OS_USERNAME]")
 
             if not password:
                 if not apikey:
                     raise exc.CommandError("You must provide a password, "
-                            "either via --password or via env[NOVA_PASSWORD]")
+                            "either via --password or via env[OS_PASSWORD]")
                 else:
                     password = apikey
 
