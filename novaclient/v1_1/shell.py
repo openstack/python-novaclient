@@ -51,7 +51,7 @@ def _boot(cs, args, reservation_id=None, min_count=None, max_count=None):
     flavor = args.flavor
     image = args.image
 
-    metadata = dict(v.split('=') for v in args.meta)
+    meta = dict(v.split('=') for v in args.meta)
 
     files = {}
     for f in args.files:
@@ -89,12 +89,12 @@ def _boot(cs, args, reservation_id=None, min_count=None, max_count=None):
 
     if args.user_data:
         try:
-            user_data = open(args.user_data)
+            userdata = open(args.user_data)
         except IOError, e:
             raise exceptions.CommandError("Can't open '%s': %s" % \
                                           (args.user_data, e))
     else:
-        user_data = None
+        userdata = None
 
     if args.availability_zone:
         availability_zone = args.availability_zone
@@ -119,9 +119,22 @@ def _boot(cs, args, reservation_id=None, min_count=None, max_count=None):
             nic_info[k] = v
         nics.append(nic_info)
 
-    return (args.name, image, flavor, metadata, files, key_name,
-            reservation_id, min_count, max_count, user_data, \
-            availability_zone, security_groups, block_device_mapping, nics)
+    boot_args = [args.name, image, flavor]
+
+    boot_kwargs = dict(
+            meta=meta,
+            files=files,
+            key_name=key_name,
+            reservation_id=reservation_id,
+            min_count=min_count,
+            max_count=max_count,
+            userdata=userdata,
+            availability_zone=availability_zone,
+            security_groups=security_groups,
+            block_device_mapping=block_device_mapping,
+            nics=nics)
+
+    return boot_args, boot_kwargs
 
 
 @utils.arg('--flavor',
@@ -186,21 +199,12 @@ def _boot(cs, args, reservation_id=None, min_count=None, max_count=None):
            "v4-fixed-ip: IPv4 fixed address for NIC (optional).")
 def do_boot(cs, args):
     """Boot a new server."""
-    name, image, flavor, metadata, files, key_name, reservation_id, \
-        min_count, max_count, user_data, availability_zone, \
-        security_groups, block_device_mapping, nics = _boot(cs, args)
+    boot_args, boot_kwargs = _boot(cs, args)
 
-    server = cs.servers.create(args.name, image, flavor,
-                                    meta=metadata,
-                                    files=files,
-                                    min_count=min_count,
-                                    max_count=max_count,
-                                    userdata=user_data,
-                                    availability_zone=availability_zone,
-                                    security_groups=security_groups,
-                                    key_name=key_name,
-                                    block_device_mapping=block_device_mapping,
-                                    nics=nics)
+    extra_boot_kwargs = utils.get_resource_manager_extra_kwargs(do_boot, args)
+    boot_kwargs.update(extra_boot_kwargs)
+
+    server = cs.servers.create(*boot_args, **boot_kwargs)
 
     # Keep any information (like adminPass) returned by create
     info = server._info
@@ -269,23 +273,17 @@ def do_boot(cs, args):
 @utils.arg('name', metavar='<name>', help='Name for the new server')
 def do_zone_boot(cs, args):
     """Boot a new server, potentially across Zones."""
-    reservation_id = args.reservation_id
-    min_count = args.min_instances
-    max_count = args.max_instances
-    name, image, flavor, metadata, \
-            files, reservation_id, min_count, max_count,\
-            user_data, availability_zone, security_groups = \
-                             _boot(cs, args,
-                                        reservation_id=reservation_id,
-                                        min_count=min_count,
-                                        max_count=max_count)
+    boot_args, boot_kwargs = _boot(cs,
+                                   args,
+                                   reservation_id=args.reservation_id,
+                                   min_count=args.min_instances,
+                                   max_count=args.max_instances)
 
-    reservation_id = cs.zones.boot(args.name, image, flavor,
-                                        meta=metadata,
-                                        files=files,
-                                        reservation_id=reservation_id,
-                                        min_count=min_count,
-                                        max_count=max_count)
+    extra_boot_kwargs = utils.get_resource_manager_extra_kwargs(
+            do_zone_boot, args)
+    boot_kwargs.update(extra_boot_kwargs)
+
+    reservation_id = cs.zones.boot(*boot_args, **boot_kwargs)
     print "Reservation ID=", reservation_id
 
 

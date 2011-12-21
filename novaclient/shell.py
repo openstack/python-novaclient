@@ -27,6 +27,7 @@ import sys
 
 from novaclient import base
 from novaclient import exceptions as exc
+import novaclient.extension
 from novaclient import utils
 from novaclient.v1_1 import shell as shell_v1_1
 from novaclient.keystone import shell as shell_keystone
@@ -123,7 +124,7 @@ class OpenStackComputeShell(object):
 
         return parser
 
-    def get_subcommand_parser(self, version, extensions):
+    def get_subcommand_parser(self, version):
         parser = self.get_base_parser()
 
         self.subcommands = {}
@@ -141,8 +142,8 @@ class OpenStackComputeShell(object):
         self._find_actions(subparsers, shell_keystone)
         self._find_actions(subparsers, self)
 
-        for _, _, ext_module in extensions:
-            self._find_actions(subparsers, ext_module)
+        for extension in self.extensions:
+            self._find_actions(subparsers, extension.module)
 
         self._add_bash_completion_subparser(subparsers)
 
@@ -161,22 +162,9 @@ class OpenStackComputeShell(object):
             if name == "__init__":
                 continue
 
-            ext_module = imp.load_source(name, ext_path)
-
-            # Extract Manager class
-            ext_manager_class = None
-            for attr_value in ext_module.__dict__.values():
-                try:
-                    if issubclass(attr_value, base.Manager):
-                        ext_manager_class = attr_value
-                        break
-                except TypeError:
-                    continue  # in case attr_value isn't a class...
-
-            if not ext_manager_class:
-                raise Exception("Could not find Manager class in extension.")
-
-            extensions.append((name, ext_manager_class, ext_module))
+            module = imp.load_source(name, ext_path)
+            extension = novaclient.extension.Extension(name, module)
+            extensions.append(extension)
 
         return extensions
 
@@ -218,13 +206,14 @@ class OpenStackComputeShell(object):
         (options, args) = parser.parse_known_args(argv)
 
         # build available subcommands based on version
-        extensions = self._discover_extensions(options.version)
-        subcommand_parser = self.get_subcommand_parser(
-                options.version, extensions)
+        self.extensions = self._discover_extensions(options.version)
+        self._run_extension_hooks('__pre_parse_args__')
+
+        subcommand_parser = self.get_subcommand_parser(options.version)
         self.parser = subcommand_parser
 
-        # Parse args again and call whatever callback was selected
         args = subcommand_parser.parse_args(argv)
+        self._run_extension_hooks('__post_parse_args__', args)
 
         # Deal with global arguments
         if args.debug:
@@ -287,7 +276,7 @@ class OpenStackComputeShell(object):
                                      projectid, url, insecure,
                                      region_name=region_name,
                                      endpoint_name=endpoint_name,
-                                     extensions=extensions)
+                                     extensions=self.extensions)
 
         try:
             if not utils.isunauthenticated(args.func):
@@ -298,6 +287,11 @@ class OpenStackComputeShell(object):
             raise exc.CommandError("Unable to authorize user")
 
         args.func(self.cs, args)
+
+    def _run_extension_hooks(self, hook_type, *args, **kwargs):
+        """Run hooks for all registered extensions."""
+        for extension in self.extensions:
+            extension.run_hooks(hook_type, *args, **kwargs)
 
     def get_api_class(self, version):
         try:

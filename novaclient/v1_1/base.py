@@ -20,13 +20,16 @@ import base64
 from novaclient import base
 
 
+# FIXME(sirp): Now that v1_0 has been removed, this can be merged with
+# base.ManagerWithFind
 class BootingManagerWithFind(base.ManagerWithFind):
     """Like a `ManagerWithFind`, but has the ability to boot servers."""
     def _boot(self, resource_url, response_key, name, image, flavor,
               meta=None, files=None, zone_blob=None, userdata=None,
               reservation_id=None, return_raw=False, min_count=None,
               max_count=None, security_groups=None, key_name=None,
-              availability_zone=None, block_device_mapping=None, nics=None):
+              availability_zone=None, block_device_mapping=None, nics=None,
+              **kwargs):
         """
         Create (boot) a new server.
 
@@ -144,4 +147,4 @@ class BootingManagerWithFind(base.ManagerWithFind):
             body['server']['networks'] = all_net_data
 
         return self._create(resource_url, body, response_key,
-                            return_raw=return_raw)
+                            return_raw=return_raw, **kwargs)

@@ -336,7 +336,7 @@ class ServerManager(local_base.BootingManagerWithFind):
                zone_blob=None, reservation_id=None, min_count=None,
                max_count=None, security_groups=None, userdata=None,
                key_name=None, availability_zone=None,
-               block_device_mapping=None, nics=None):
+               block_device_mapping=None, nics=None, **kwargs):
         # TODO: (anthony) indicate in doc string if param is an extension
         # and/or optional
         """
@@ -375,22 +375,26 @@ class ServerManager(local_base.BootingManagerWithFind):
             max_count = min_count
         if min_count > max_count:
             min_count = max_count
+
+        boot_args = [name, image, flavor]
+
+        boot_kwargs = dict(
+            meta=meta, files=files, userdata=userdata, zone_blob=zone_blob,
+            reservation_id=reservation_id, min_count=min_count,
+            max_count=max_count, security_groups=security_groups,
+            key_name=key_name, availability_zone=availability_zone,
+            **kwargs)
+
         if block_device_mapping:
-            return self._boot("/os-volumes_boot", "server",
-                        name, image, flavor,
-                        meta=meta, files=files, userdata=userdata,
-                        zone_blob=zone_blob, reservation_id=reservation_id,
-                        min_count=min_count, max_count=max_count,
-                        security_groups=security_groups, key_name=key_name,
-                        availability_zone=availability_zone,
-                        block_device_mapping=block_device_mapping)
+            resource_url = "/os-volumes_boot"
+            boot_kwargs['block_device_mapping'] = block_device_mapping
         else:
-            return self._boot("/servers", "server", name, image, flavor,
-                          meta=meta, files=files, userdata=userdata,
-                          zone_blob=zone_blob, reservation_id=reservation_id,
-                          min_count=min_count, max_count=max_count,
-                          security_groups=security_groups, key_name=key_name,
-                          availability_zone=availability_zone, nics=nics)
+            resource_url = "/servers"
+            boot_kwargs['nics'] = nics
+
+        response_key = "server"
+        return self._boot(resource_url, response_key, *boot_args,
+                **boot_kwargs)
 
     def update(self, server, name=None):
         """

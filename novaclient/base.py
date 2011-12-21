@@ -22,6 +22,7 @@ Base utilities to build API operation managers and objects on top of.
 import contextlib
 import os
 from novaclient import exceptions
+from novaclient import utils
 
 
 # Python 2.4 compat
@@ -50,7 +51,7 @@ def getid(obj):
         return obj
 
 
-class Manager(object):
+class Manager(utils.HookableMixin):
     """
     Managers interact with a particular type of API (servers, flavors, images,
     etc.) and provide CRUD operations for them.
@@ -125,7 +126,8 @@ class Manager(object):
         resp, body = self.api.client.get(url)
         return self.resource_class(self, body[response_key])
 
-    def _create(self, url, body, response_key, return_raw=False):
+    def _create(self, url, body, response_key, return_raw=False, **kwargs):
+        self.run_hooks('modify_body_for_create', body, **kwargs)
         resp, body = self.api.client.post(url, body=body)
         if return_raw:
             return body[response_key]
@@ -136,7 +138,8 @@ class Manager(object):
     def _delete(self, url):
         resp, body = self.api.client.delete(url)
 
-    def _update(self, url, body):
+    def _update(self, url, body, **kwargs):
+        self.run_hooks('modify_body_for_update', body, **kwargs)
         resp, body = self.api.client.put(url, body=body)
 
 
@@ -184,7 +187,7 @@ class BootingManagerWithFind(ManagerWithFind):
     def _boot(self, resource_url, response_key, name, image, flavor,
               ipgroup=None, meta=None, files=None, zone_blob=None,
               reservation_id=None, return_raw=False, min_count=None,
-              max_count=None):
+              max_count=None, **kwargs):
         """
         Create (boot) a new server.
 
@@ -245,7 +248,7 @@ class BootingManagerWithFind(ManagerWithFind):
                 })
 
         return self._create(resource_url, body, response_key,
-                            return_raw=return_raw)
+                            return_raw=return_raw, **kwargs)
 
 
 class Resource(object):

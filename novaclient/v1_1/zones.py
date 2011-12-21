@@ -120,7 +120,7 @@ class ZoneManager(local_base.BootingManagerWithFind):
 
     def boot(self, name, image, flavor, meta=None, files=None,
                zone_blob=None, reservation_id=None, min_count=None,
-               max_count=None):
+               max_count=None, **kwargs):
         """
         Create (boot) a new server while being aware of Zones.
 
@@ -150,7 +150,7 @@ class ZoneManager(local_base.BootingManagerWithFind):
                           meta=meta, files=files,
                           zone_blob=zone_blob, reservation_id=reservation_id,
                           return_raw=True, min_count=min_count,
-                          max_count=max_count)
+                          max_count=max_count, **kwargs)
 
     def select(self, *args, **kwargs):
         """

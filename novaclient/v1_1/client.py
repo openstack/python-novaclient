@@ -55,8 +55,10 @@ class Client(object):
 
         # Add in any extensions...
         if extensions:
-            for (ext_name, ext_manager_class, ext_module) in extensions:
-                setattr(self, ext_name, ext_manager_class(self))
+            for extension in extensions:
+                if extension.manager_class:
+                    setattr(self, extension.name,
+                            extension.manager_class(self))
 
         self.client = client.HTTPClient(username,
                                         password,
