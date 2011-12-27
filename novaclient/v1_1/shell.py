@@ -43,8 +43,9 @@ def _boot(cs, args, reservation_id=None, min_count=None, max_count=None):
         raise exceptions.CommandError("min_instances nor max_instances should"
                                       "be 0")
 
-    if not args.image:
-        raise exceptions.CommandError("you need to specify a Image ID ")
+    if not args.image and not args.block_device_mapping:
+        raise exceptions.CommandError("you need to specify an Image ID "
+                                      "or a block device mapping ")
     if not args.flavor:
         raise exceptions.CommandError("you need to specify a Flavor ID ")
 
