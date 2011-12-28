@@ -53,7 +53,7 @@ class Server(base.Resource):
 
         :param length: The number of lines you would like to retrieve (as int)
         """
-        self.manager.get_console_output(self, length)
+        return self.manager.get_console_output(self, length)
 
     def add_fixed_ip(self, network_id):
         """
