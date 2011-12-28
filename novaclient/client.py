@@ -130,7 +130,6 @@ class HTTPClient(httplib2.Http):
                 raise ex
 
     def get(self, url, **kwargs):
-        url = self._munge_get_url(url)
         return self._cs_request(url, 'GET', **kwargs)
 
     def post(self, url, **kwargs):
@@ -296,18 +295,3 @@ class HTTPClient(httplib2.Http):
             self.follow_all_redirects = tmp_follow_all_redirects
 
         return self._extract_service_catalog(url, resp, body)
-
-    def _munge_get_url(self, url):
-        """
-        Munge GET URLs to always return uncached content.
-
-        The OpenStack Compute API caches data *very* agressively and doesn't
-        respect cache headers. To avoid stale data, then, we append a little
-        bit of nonsense onto GET parameters; this appears to force the data not
-        to be cached.
-        """
-        scheme, netloc, path, query, frag = urlparse.urlsplit(url)
-        query = urlparse.parse_qsl(query)
-        query.append(('fresh', str(time.time())))
-        query = urllib.urlencode(query)
-        return urlparse.urlunsplit((scheme, netloc, path, query, frag))

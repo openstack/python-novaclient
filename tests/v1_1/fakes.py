@@ -58,9 +58,6 @@ class FakeHTTPClient(base_client.HTTPClient):
         status, body = getattr(self, callback)(**kwargs)
         return httplib2.Response({"status": status}), body
 
-    def _munge_get_url(self, url):
-        return url
-
     #
     # Limits
     #
