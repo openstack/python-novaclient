@@ -352,6 +352,47 @@ class FakeHTTPClient(base_client.HTTPClient):
     def delete_os_floating_ips_1(self, **kw):
         return (204, None)
 
+    def get_os_floating_ip_dns(self, **kw):
+        return (205, {'zones':
+                      [{'zone': 'example.org'},
+                       {'zone': 'example.com'}]})
+
+    def get_os_floating_ip_dns_zone1(self, **kw):
+        if kw.get('ip'):
+            return (205, {'dns_entries':
+                          [{'dns_entry':
+                             {'ip': kw.get('ip'),
+                              'name': "host1",
+                              'type': "A",
+                              'zone': 'zone1'}},
+                           {'dns_entry':
+                             {'ip': kw.get('ip'),
+                              'name': "host2",
+                              'type': "A",
+                              'zone': 'zone1'}}]})
+        if kw.get('name'):
+            return (205, {'dns_entries':
+                          [{'dns_entry':
+                            {'ip': "10.10.10.10",
+                             'name': kw.get('name'),
+                             'type': "A",
+                             'zone': 'zone1'}}]})
+        else:
+            return (404, None)
+
+    def post_os_floating_ip_dns(self, body, **kw):
+        fakes.assert_has_keys(body['dns_entry'],
+                        required=['name', 'ip', 'dns_type', 'zone'])
+        return (205, {'dns_entry':
+                      {'ip': body['dns_entry'].get('ip'),
+                       'name': body['dns_entry'].get('name'),
+                       'type': body['dns_entry'].get('dns_type'),
+                       'zone': body['dns_entry'].get('zone')}})
+
+    def delete_os_floating_ip_dns_zone1(self, **kw):
+        assert 'name' in kw
+        return (200, None)
+
     #
     # Images
     #
