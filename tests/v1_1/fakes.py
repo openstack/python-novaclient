@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import httplib2
+import urlparse
 
 from novaclient import client as base_client
 from novaclient.v1_1 import client
@@ -43,8 +44,12 @@ class FakeHTTPClient(base_client.HTTPClient):
             assert 'body' in kwargs
 
         # Call the method
-        munged_url = url.strip('/').replace('/', '_').replace('.', '_')
+        args = urlparse.parse_qsl(urlparse.urlparse(url)[4])
+        kwargs.update(args)
+        munged_url = url.rsplit('?', 1)[0]
+        munged_url = munged_url.strip('/').replace('/', '_').replace('.', '_')
         munged_url = munged_url.replace('-', '_')
+
         callback = "%s_%s" % (method.lower(), munged_url)
 
         if not hasattr(self, callback):
