@@ -517,7 +517,9 @@ class ServerManager(local_base.BootingManagerWithFind):
                         you would like to retrieve.
         :param length: The number of tail loglines you would like to retrieve.
         """
-        return self._action('os-getConsoleOutput', server, {'length': length})
+        return self._action('os-getConsoleOutput',
+                            server,
+                            {'length': length})[1]['output']
 
     def delete_meta(self, server, keys):
         """
