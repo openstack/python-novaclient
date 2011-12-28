@@ -202,7 +202,7 @@ class ServersTest(utils.TestCase):
         cs.assert_called('POST', '/servers/1234/action')
 
     def test_get_console_output_without_length(self):
-        success = ({'status': 202}, 'foo')
+        success = 'foo'
         s = cs.servers.get(1234)
         s.get_console_output()
         self.assertEqual(s.get_console_output(), success)
@@ -213,7 +213,8 @@ class ServersTest(utils.TestCase):
         cs.assert_called('POST', '/servers/1234/action')
 
     def test_get_console_output_with_length(self):
-        success = ({'status': 202}, 'foo')
+        success = 'foo'
+
         s = cs.servers.get(1234)
         s.get_console_output(length=50)
         self.assertEqual(s.get_console_output(length=50), success)
