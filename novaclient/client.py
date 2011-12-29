@@ -10,8 +10,6 @@ OpenStack Client interface. Handles the REST calls and responses.
 import httplib2
 import logging
 import os
-import time
-import urllib
 import urlparse
 
 from novaclient import service_catalog
@@ -240,7 +238,7 @@ class HTTPClient(httplib2.Http):
 
     def _v1_auth(self, url):
         if self.proxy_token:
-            raise NoTokenLookupException()
+            raise exceptions.NoTokenLookupException()
 
         headers = {'X-Auth-User': self.user,
                    'X-Auth-Key': self.password}
