@@ -25,12 +25,12 @@ import imp
 import os
 import sys
 
-from novaclient import base
+from novaclient import client
 from novaclient import exceptions as exc
 import novaclient.extension
+from novaclient.keystone import shell as shell_keystone
 from novaclient import utils
 from novaclient.v1_1 import shell as shell_v1_1
-from novaclient.keystone import shell as shell_keystone
 
 
 def env(*vars):
@@ -272,11 +272,11 @@ class OpenStackComputeShell(object):
                                        " either via --url or via "
                                        "env[NOVA_URL")
 
-        self.cs = self.get_api_class(options.version)(user, password,
-                                     projectid, url, insecure,
-                                     region_name=region_name,
-                                     endpoint_name=endpoint_name,
-                                     extensions=self.extensions)
+        self.cs = client.Client(options.version, user, password,
+                                projectid, url, insecure,
+                                region_name=region_name,
+                                endpoint_name=endpoint_name,
+                                extensions=self.extensions)
 
         try:
             if not utils.isunauthenticated(args.func):
@@ -292,15 +292,6 @@ class OpenStackComputeShell(object):
         """Run hooks for all registered extensions."""
         for extension in self.extensions:
             extension.run_hooks(hook_type, *args, **kwargs)
-
-    def get_api_class(self, version):
-        try:
-            return {
-                "1.1": shell_v1_1.CLIENT_CLASS,
-                "2": shell_v1_1.CLIENT_CLASS,
-            }[version]
-        except KeyError:
-            return shell_v1_1.CLIENT_CLASS
 
     def do_bash_completion(self, args):
         """

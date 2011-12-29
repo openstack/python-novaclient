@@ -1,6 +1,6 @@
-import uuid
-
 import prettytable
+import sys
+import uuid
 
 from novaclient import exceptions
 
@@ -181,3 +181,10 @@ def safe_issubclass(*args):
         pass
 
     return False
+
+
+def import_class(import_str):
+    """Returns a class from a string including module and class."""
+    mod_str, _sep, class_str = import_str.rpartition('.')
+    __import__(mod_str)
+    return getattr(sys.modules[mod_str], class_str)

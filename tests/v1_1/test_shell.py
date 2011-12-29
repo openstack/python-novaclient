@@ -4,6 +4,7 @@ import sys
 import tempfile
 
 import novaclient.shell
+import novaclient.client
 from novaclient import exceptions
 from tests.v1_1 import fakes
 from tests import utils
@@ -24,7 +25,10 @@ class ShellTest(utils.TestCase):
         }
 
         self.shell = novaclient.shell.OpenStackComputeShell()
-        self.shell.get_api_class = lambda *_: fakes.FakeClient
+
+        #HACK(bcwaldon): replace this when we start using stubs
+        self.old_get_client_class = novaclient.client.get_client_class
+        novaclient.client.get_client_class = lambda *_: fakes.FakeClient
 
     def tearDown(self):
         os.environ = self.old_environment
@@ -34,6 +38,9 @@ class ShellTest(utils.TestCase):
         # we make sure the method is there before launching it.
         if hasattr(self.shell, 'cs'):
             self.shell.cs.clear_callstack()
+
+        #HACK(bcwaldon): replace this when we start using stubs
+        novaclient.client.get_client_class = self.old_get_client_class
 
     def run_command(self, cmd):
         self.shell.main(cmd.split())
