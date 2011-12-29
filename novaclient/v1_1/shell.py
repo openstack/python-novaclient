@@ -964,6 +964,23 @@ def do_volume_snapshot_delete(cs, args):
     snapshot.delete()
 
 
+@utils.arg('server', metavar='<server>', help='Name or ID of server.')
+@utils.arg('console_type',
+    metavar='<console_type>',
+    help='Type of vnc console ("novnc" or "xvpvnc").')
+def do_get_vnc_console(cs, args):
+    """Get a vnc console to a server."""
+    server = _find_server(cs, args.server)
+    data = server.get_vnc_console(args.console_type)
+
+    class VNCConsole:
+        def __init__(self, console_dict):
+            self.type = console_dict['type']
+            self.url = console_dict['url']
+
+    utils.print_list([VNCConsole(data['console'])], ['Type', 'Url'])
+
+
 def _print_floating_ip_list(floating_ips):
     utils.print_list(floating_ips, ['Ip', 'Instance Id', 'Fixed Ip', 'Pool'])
 

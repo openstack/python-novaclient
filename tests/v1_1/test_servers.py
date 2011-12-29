@@ -247,3 +247,11 @@ class ServersTest(utils.TestCase):
         cs.assert_called('GET', '/servers/1234/diagnostics')
 
         self.assertEqual(diagnostics, diagnostics_from_manager)
+
+    def test_get_vnc_console(self):
+        s = cs.servers.get(1234)
+        s.get_vnc_console('fake')
+        cs.assert_called('POST', '/servers/1234/action')
+
+        cs.servers.get_vnc_console(s, 'fake')
+        cs.assert_called('POST', '/servers/1234/action')

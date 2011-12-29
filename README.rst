@@ -90,6 +90,7 @@ You'll find complete documentation on the shell by running
         floating-ip-list    List allocated floating IPs for the current tenant.
         floating-ip-pool-list
                             List all floating ip pools.
+        get-vnc-console     Get a vnc console for a server
         help                Display help about this program or one of its
                             subcommands.
         image-create        Create a new image by taking a snapshot of a running

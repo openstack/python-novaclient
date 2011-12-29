@@ -55,6 +55,14 @@ class Server(base.Resource):
         """
         return self.manager.get_console_output(self, length)
 
+    def get_vnc_console(self, console_type):
+        """
+        Get vnc console for a Server.
+
+        :param console_type: Type of console ('novnc' or 'xvpvnc')
+        """
+        return self.manager.get_vnc_console(self, console_type)
+
     def add_fixed_ip(self, network_id):
         """
         Add an IP address on a network.
@@ -285,6 +293,17 @@ class ServerManager(local_base.BootingManagerWithFind):
 
         address = address.ip if hasattr(address, 'ip') else address
         self._action('removeFloatingIp', server, {'address': address})
+
+    def get_vnc_console(self, server, console_type):
+        """
+        Get a vnc console for an instance
+
+        :param server: The :class:`Server` (or its ID) to add an IP to.
+        :param console_type: Type of vnc console to get ('novnc' or 'xvpvnc')
+        """
+
+        return self._action('os-getVNCConsole', server,
+                            {'type': console_type})[1]
 
     def pause(self, server):
         """

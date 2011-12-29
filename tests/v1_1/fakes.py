@@ -323,6 +323,8 @@ class FakeHTTPClient(base_client.HTTPClient):
         elif action == 'os-getConsoleOutput':
             assert body[action].keys() == ['length']
             return (202, {'output': 'foo'})
+        elif action == 'os-getVNCConsole':
+            assert body[action].keys() == ['type']
         else:
             raise AssertionError("Unexpected server action: %s" % action)
         return (202, _body)
