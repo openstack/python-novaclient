@@ -31,7 +31,7 @@ class Snapshot(base.Resource):
         """
         Delete this snapshot.
         """
-        return self.manager.delete(self)
+        self.manager.delete(self)
 
 
 class SnapshotManager(base.ManagerWithFind):

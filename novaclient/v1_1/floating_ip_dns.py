@@ -80,5 +80,5 @@ class FloatingIPDNSManager(base.ManagerWithFind):
         qparams = {'name': name}
         params = "?%s" % urllib.urlencode(qparams) if qparams else ""
 
-        return self._delete("/os-floating-ip-dns/%s%s" %
+        self._delete("/os-floating-ip-dns/%s%s" %
                                 (_quote_zone(zone), params))

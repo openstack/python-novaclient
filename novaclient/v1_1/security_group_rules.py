@@ -60,4 +60,4 @@ class SecurityGroupRuleManager(base.ManagerWithFind):
 
         :param rule: The security group rule to delete (ID or Class)
         """
-        return self._delete('/os-security-group-rules/%s' % base.getid(rule))
+        self._delete('/os-security-group-rules/%s' % base.getid(rule))

@@ -52,7 +52,7 @@ class SecurityGroupManager(base.ManagerWithFind):
         :param group: The security group to delete (group or ID)
         :rtype: None
         """
-        return self._delete('/os-security-groups/%s' % base.getid(group))
+        self._delete('/os-security-groups/%s' % base.getid(group))
 
     def get(self, id):
         """

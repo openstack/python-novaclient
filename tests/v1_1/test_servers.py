@@ -223,3 +223,27 @@ class ServersTest(utils.TestCase):
         cs.servers.get_console_output(s, length=50)
         self.assertEqual(cs.servers.get_console_output(s, length=50), success)
         cs.assert_called('POST', '/servers/1234/action')
+
+    def test_get_server_actions(self):
+        s = cs.servers.get(1234)
+        actions = s.actions()
+        self.assertTrue(actions is not None)
+        cs.assert_called('GET', '/servers/1234/actions')
+
+        actions_from_manager = cs.servers.actions(1234)
+        self.assertTrue(actions_from_manager is not None)
+        cs.assert_called('GET', '/servers/1234/actions')
+
+        self.assertEqual(actions, actions_from_manager)
+
+    def test_get_server_diagnostics(self):
+        s = cs.servers.get(1234)
+        diagnostics = s.diagnostics()
+        self.assertTrue(diagnostics is not None)
+        cs.assert_called('GET', '/servers/1234/diagnostics')
+
+        diagnostics_from_manager = cs.servers.diagnostics(1234)
+        self.assertTrue(diagnostics_from_manager is not None)
+        cs.assert_called('GET', '/servers/1234/diagnostics')
+
+        self.assertEqual(diagnostics, diagnostics_from_manager)

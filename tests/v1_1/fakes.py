@@ -240,6 +240,23 @@ class FakeHTTPClient(base_client.HTTPClient):
     def post_servers_1234_metadata(self, **kw):
         return (204, {'metadata': {'test_key': 'test_value'}})
 
+    def get_servers_1234_diagnostics(self, **kw):
+        return (200, 'Fake diagnostics')
+
+    def get_servers_1234_actions(self, **kw):
+        return (200, {'actions': [
+            {
+                'action': 'rebuild',
+                'error': None,
+                'created_at': '2011-12-30 11:45:36'
+            },
+            {
+                'action': 'reboot',
+                'error': 'Failed!',
+                'created_at': '2011-12-30 11:40:29'
+            },
+        ]})
+
     #
     # Server Addresses
     #

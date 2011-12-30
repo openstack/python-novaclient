@@ -31,7 +31,7 @@ class Volume(base.Resource):
         """
         Delete this volume.
         """
-        return self.manager.delete(self)
+        self.manager.delete(self)
 
 
 class VolumeManager(base.ManagerWithFind):
@@ -128,5 +128,5 @@ class VolumeManager(base.ManagerWithFind):
         :param server_id: The ID of the server
         :param attachment_id: The ID of the attachment
         """
-        return self._delete("/servers/%s/os-volume_attachments/%s" %
+        self._delete("/servers/%s/os-volume_attachments/%s" %
                                         (server_id, attachment_id,))

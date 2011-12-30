@@ -54,7 +54,7 @@ class QuotaSetManager(base.ManagerWithFind):
             if body['quota_set'][key] == None:
                 body['quota_set'].pop(key)
 
-        return self._update('/os-quota-sets/%s' % (tenant_id), body)
+        self._update('/os-quota-sets/%s' % (tenant_id), body)
 
     def defaults(self, tenant_id):
         return self._get('/os-quota-sets/%s/defaults' % tenant_id,

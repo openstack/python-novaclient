@@ -117,11 +117,11 @@ class Server(base.Resource):
 
     def diagnostics(self):
         """Diagnostics -- Retrieve server diagnostics."""
-        self.manager.diagnostics(self)
+        return self.manager.diagnostics(self)
 
     def actions(self):
         """Actions -- Retrieve server actions."""
-        self.manager.actions(self)
+        return self.manager.actions(self)
 
     def migrate(self):
         """

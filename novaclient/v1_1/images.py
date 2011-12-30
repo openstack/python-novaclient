@@ -17,7 +17,7 @@ class Image(base.Resource):
         """
         Delete this image.
         """
-        return self.manager.delete(self)
+        self.manager.delete(self)
 
 
 class ImageManager(base.ManagerWithFind):

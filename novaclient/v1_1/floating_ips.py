@@ -45,7 +45,7 @@ class FloatingIPManager(base.ManagerWithFind):
 
         :param key: The :class:`Keypair` (or its ID) to delete.
         """
-        return self._delete("/os-floating-ips/%s" % base.getid(floating_ip))
+        self._delete("/os-floating-ips/%s" % base.getid(floating_ip))
 
     def get(self, floating_ip):
         """
