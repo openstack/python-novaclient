@@ -298,3 +298,25 @@ class ShellTest(utils.TestCase):
         self.run_command('meta 1234 delete key1 key2')
         self.assert_called('DELETE', '/servers/1234/metadata/key1')
         self.assert_called('DELETE', '/servers/1234/metadata/key2', pos=-2)
+
+    def test_dns_create(self):
+        self.run_command('dns-create zone1 testname 192.168.1.1')
+        self.assert_called('POST', '/os-floating-ip-dns')
+
+        self.run_command('dns-create zone1 tn 192.168.1.1 --type A')
+        self.assert_called('POST', '/os-floating-ip-dns')
+
+    def test_dns_delete(self):
+        self.run_command('dns-delete zone1 testname')
+        self.assert_called('DELETE', '/os-floating-ip-dns/zone1?name=testname')
+
+    def test_dns_list(self):
+        self.run_command('dns-list zone1 --ip 192.168.1.1')
+        self.assert_called('GET', '/os-floating-ip-dns/zone1?ip=192.168.1.1')
+
+        self.run_command('dns-list zone1 --name testname')
+        self.assert_called('GET', '/os-floating-ip-dns/zone1?name=testname')
+
+    def test_dns_zones(self):
+        self.run_command('dns-zones')
+        self.assert_called('GET', '/os-floating-ip-dns')

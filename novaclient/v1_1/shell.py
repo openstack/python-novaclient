@@ -1002,6 +1002,48 @@ def do_floating_ip_list(cs, args):
     _print_floating_ip_list(cs.floating_ips.list())
 
 
+def _print_dns_list(dns_entries):
+    utils.print_list(dns_entries, ['ip', 'zone', 'name'])
+
+
+def do_dns_zones(cs, args):
+    """Print a list of available dns zones."""
+    zones = cs.floating_ip_dns.zones()
+    utils.print_list(zones, ['zone'])
+
+
+@utils.arg('zone', metavar='<zone>', help='DNS zone')
+@utils.arg('--ip', metavar='<ip>', help='ip address', default=None)
+@utils.arg('--name', metavar='<name>', help='DNS name', default=None)
+def do_dns_list(cs, args):
+    """List current DNS entries for zone and ip or zone and name."""
+    if not (args.ip or args.name):
+        raise exceptions.CommandError(
+              "You must specify either --ip or --name")
+    entries = cs.floating_ip_dns.get_entries(args.zone,
+                                             ip=args.ip, name=args.name)
+    _print_dns_list(entries)
+
+
+@utils.arg('zone', metavar='<zone>', help='DNS zone')
+@utils.arg('name', metavar='<name>', help='DNS name')
+@utils.arg('ip', metavar='<ip>', help='ip address')
+@utils.arg('--type', metavar='<type>', help='dns type (e.g. "A")',
+           default='A')
+def do_dns_create(cs, args):
+    """Create a DNS entry for zone, name and ip."""
+    entries = cs.floating_ip_dns.create_entry(args.zone, args.name,
+                                              args.ip, args.type)
+    _print_dns_list([entries])
+
+
+@utils.arg('zone', metavar='<zone>', help='DNS zone')
+@utils.arg('name', metavar='<name>', help='DNS name')
+def do_dns_delete(cs, args):
+    """Delete the specified DNS entry."""
+    cs.floating_ip_dns.delete_entry(args.zone, args.name)
+
+
 def _print_secgroup_rules(rules):
     class FormattedRule:
         def __init__(self, obj):
