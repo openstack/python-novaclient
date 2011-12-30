@@ -111,7 +111,7 @@ class OpenStackComputeShell(object):
 
         parser.add_argument('--endpoint_name',
             default=env('NOVA_ENDPOINT_NAME'),
-            help='Defaults to env[NOVA_ENDPOINT_NAME] or "publicURL.')
+            help='Defaults to env[NOVA_ENDPOINT_NAME] or "publicURL".')
 
         parser.add_argument('--version',
             default=env('NOVA_VERSION'),
@@ -265,12 +265,12 @@ class OpenStackComputeShell(object):
             if not projectid:
                 raise exc.CommandError("You must provide an projectid, "
                                        "either via --projectid or via "
-                                       "env[NOVA_PROJECT_ID")
+                                       "env[NOVA_PROJECT_ID]")
 
             if not url:
                 raise exc.CommandError("You must provide a auth url,"
                                        " either via --url or via "
-                                       "env[NOVA_URL")
+                                       "env[NOVA_URL]")
 
         self.cs = self.get_api_class(options.version)(user, password,
                                      projectid, url, insecure,
