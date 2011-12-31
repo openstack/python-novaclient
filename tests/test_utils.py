@@ -1,40 +1,51 @@
 
 from novaclient import exceptions
 from novaclient import utils
+from novaclient import base
 from tests import utils as test_utils
+
+UUID = '8e8ec658-c7b0-4243-bdf8-6f7f2952c0d0'
 
 
 class FakeResource(object):
-    pass
+
+    def __init__(self, _id, properties):
+        self.id = _id
+        try:
+            self.name = properties['name']
+        except KeyError:
+            pass
+        try:
+            self.displayName = properties['displayName']
+        except KeyError:
+            pass
 
 
-class FakeManager(object):
+class FakeManager(base.ManagerWithFind):
 
     resource_class = FakeResource
 
-    resources = {
-        '1234': {'name': 'entity_one'},
-        '8e8ec658-c7b0-4243-bdf8-6f7f2952c0d0': {'name': 'entity_two'},
-        '5678': {'name': '9876'}
-    }
+    resources = [
+        FakeResource('1234', {'name': 'entity_one'}),
+        FakeResource(UUID, {'name': 'entity_two'}),
+        FakeResource('4242', {'displayName': 'entity_three'}),
+        FakeResource('5678', {'name': '9876'})
+    ]
 
     def get(self, resource_id):
-        try:
-            return self.resources[str(resource_id)]
-        except KeyError:
-            raise exceptions.NotFound(resource_id)
-
-    def find(self, name=None):
-        for resource_id, resource in self.resources.items():
-            if resource['name'] == str(name):
+        for resource in self.resources:
+            if resource.id == str(resource_id):
                 return resource
-        raise exceptions.NotFound(name)
+        raise exceptions.NotFound(resource_id)
+
+    def list(self):
+        return self.resources
 
 
 class FindResourceTestCase(test_utils.TestCase):
 
     def setUp(self):
-        self.manager = FakeManager()
+        self.manager = FakeManager(None)
 
     def test_find_none(self):
         self.assertRaises(exceptions.CommandError,
@@ -44,21 +55,20 @@ class FindResourceTestCase(test_utils.TestCase):
 
     def test_find_by_integer_id(self):
         output = utils.find_resource(self.manager, 1234)
-        self.assertEqual(output, self.manager.resources['1234'])
+        self.assertEqual(output, self.manager.get('1234'))
 
     def test_find_by_str_id(self):
         output = utils.find_resource(self.manager, '1234')
-        self.assertEqual(output, self.manager.resources['1234'])
+        self.assertEqual(output, self.manager.get('1234'))
 
     def test_find_by_uuid(self):
-        uuid = '8e8ec658-c7b0-4243-bdf8-6f7f2952c0d0'
-        output = utils.find_resource(self.manager, uuid)
-        self.assertEqual(output, self.manager.resources[uuid])
+        output = utils.find_resource(self.manager, UUID)
+        self.assertEqual(output, self.manager.get(UUID))
 
     def test_find_by_str_name(self):
         output = utils.find_resource(self.manager, 'entity_one')
-        self.assertEqual(output, self.manager.resources['1234'])
+        self.assertEqual(output, self.manager.get('1234'))
 
-    def test_find_by_int_name(self):
-        output = utils.find_resource(self.manager, 9876)
-        self.assertEqual(output, self.manager.resources['5678'])
+    def test_find_by_str_displayname(self):
+        output = utils.find_resource(self.manager, 'entity_three')
+        self.assertEqual(output, self.manager.get('4242'))
