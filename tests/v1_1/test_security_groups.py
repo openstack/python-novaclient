@@ -31,3 +31,12 @@ class SecurityGroupsTest(utils.TestCase):
         sg = cs.security_groups.create("foo", "foo barr")
         cs.assert_called('POST', '/os-security-groups')
         self.assertTrue(isinstance(sg, security_groups.SecurityGroup))
+
+    def test_refresh_security_group(self):
+        sg = cs.security_groups.get(1)
+        sg2 = cs.security_groups.get(1)
+        self.assertEqual(sg.name, sg2.name)
+        sg2.name = "should be test"
+        self.assertNotEqual(sg.name, sg2.name)
+        sg2.get()
+        self.assertEqual(sg.name, sg2.name)
