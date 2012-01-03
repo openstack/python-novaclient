@@ -32,17 +32,6 @@ class FloatingIPDNS(base.Resource):
     def delete(self):
         self.manager.delete_entry(self.name, self.zone)
 
-    def create(self):
-        self.manager.create_entry(self.zone, self.name,
-                                  self.ip, self.dns_type)
-
-    def get(self):
-        entries = self.manager.get_entries(self.zone, self.ip, self.name)
-        if entries:
-            return entries[0]
-        else:
-            return None
-
 
 class FloatingIPDNSManager(base.ManagerWithFind):
     resource_class = FloatingIPDNS
