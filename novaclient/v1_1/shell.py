@@ -20,11 +20,7 @@ import os
 
 from novaclient import exceptions
 from novaclient import utils
-from novaclient.v1_1 import client
 from novaclient.v1_1 import servers
-
-
-CLIENT_CLASS = client.Client
 
 
 AUTO_KEY = object()
