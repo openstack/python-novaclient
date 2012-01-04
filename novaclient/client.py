@@ -192,7 +192,7 @@ class HTTPClient(httplib2.Http):
         magic_tuple = urlparse.urlsplit(self.auth_url)
         scheme, netloc, path, query, frag = magic_tuple
         port = magic_tuple.port
-        if port == None:
+        if port is None:
             port = 80
         path_parts = path.split('/')
         for part in path_parts:

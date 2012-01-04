@@ -74,7 +74,7 @@ class Manager(utils.HookableMixin):
         data = body[response_key]
         # NOTE(ja): keystone returns values as list as {'values': [ ... ]}
         #           unlike other services which just return the list...
-        if type(data) is dict:
+        if isinstance(data, dict):
             try:
                 data = data['values']
             except KeyError:
