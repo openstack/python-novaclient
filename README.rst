@@ -88,6 +88,8 @@ You'll find complete documentation on the shell by running
         floating-ip-create  Allocate a floating IP to the current tenant.
         floating-ip-delete  De-allocate a floating IP from the current tenant.
         floating-ip-list    List allocated floating IPs for the current tenant.
+        floating-ip-pool-list
+                            List all floating ip pools.
         help                Display help about this program or one of its
                             subcommands.
         image-create        Create a new image by taking a snapshot of a running

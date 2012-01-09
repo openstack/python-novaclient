@@ -1,3 +1,4 @@
+# Copyright (c) 2011 X.commerce, a business unit of eBay Inc.
 # Copyright 2011 OpenStack LLC.
 # All Rights Reserved.
 #
@@ -33,11 +34,11 @@ class FloatingIPManager(base.ManagerWithFind):
         """
         return self._list("/os-floating-ips", "floating_ips")
 
-    def create(self):
+    def create(self, pool=None):
         """
         Create (allocate) a  floating ip for a tenant
         """
-        return self._create("/os-floating-ips", {}, "floating_ip")
+        return self._create("/os-floating-ips", {'pool': pool}, "floating_ip")
 
     def delete(self, floating_ip):
         """

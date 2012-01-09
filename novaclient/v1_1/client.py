@@ -2,6 +2,7 @@ from novaclient import client
 from novaclient.v1_1 import flavors
 from novaclient.v1_1 import floating_ip_dns
 from novaclient.v1_1 import floating_ips
+from novaclient.v1_1 import floating_ip_pools
 from novaclient.v1_1 import images
 from novaclient.v1_1 import keypairs
 from novaclient.v1_1 import limits
@@ -46,6 +47,7 @@ class Client(object):
         # extensions
         self.floating_ips = floating_ips.FloatingIPManager(self)
         self.floating_ip_dns = floating_ip_dns.FloatingIPDNSManager(self)
+        self.floating_ip_pools = floating_ip_pools.FloatingIPPoolManager(self)
         self.volumes = volumes.VolumeManager(self)
         self.volume_snapshots = volume_snapshots.SnapshotManager(self)
         self.keypairs = keypairs.KeypairManager(self)
