@@ -145,9 +145,9 @@ class ServersTest(utils.TestCase):
     def test_migrate_server(self):
         s = cs.servers.get(1234)
         s.migrate()
-        cs.assert_called('POST', '/servers/1234/migrate')
+        cs.assert_called('POST', '/servers/1234/action')
         cs.servers.migrate(s)
-        cs.assert_called('POST', '/servers/1234/migrate')
+        cs.assert_called('POST', '/servers/1234/action')
 
     def test_add_fixed_ip(self):
         s = cs.servers.get(1234)
