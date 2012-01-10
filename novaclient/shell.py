@@ -165,6 +165,10 @@ class OpenStackComputeShell(object):
     def _discover_via_python_path(self, version):
         for (module_loader, name, ispkg) in pkgutil.iter_modules():
             if name.endswith('python_novaclient_ext'):
+                if not hasattr(module_loader, 'load_module'):
+                    # Python 2.6 compat: actually get an ImpImporter obj
+                    module_loader = module_loader.find_module(name)
+
                 module = module_loader.load_module(name)
                 yield name, module
 
