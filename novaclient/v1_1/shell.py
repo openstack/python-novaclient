@@ -503,7 +503,7 @@ def do_rebuild(cs, args):
     server = _find_server(cs, args.server)
     image = _find_image(cs, args.image)
 
-    if args.rebuild_password != False:
+    if args.rebuild_password is not False:
         _password = args.rebuild_password
     else:
         _password = None
@@ -1054,7 +1054,7 @@ def _print_secgroup_rules(rules):
                 elif k == 'group':
                     k = 'source_group'
                     v = v.get('name')
-                if v == None:
+                if v is None:
                     v = ''
 
                 setattr(self, k, v)

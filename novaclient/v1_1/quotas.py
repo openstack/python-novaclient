@@ -51,7 +51,7 @@ class QuotaSetManager(base.ManagerWithFind):
                 'cores': cores}}
 
         for key in body['quota_set'].keys():
-            if body['quota_set'][key] == None:
+            if body['quota_set'][key] is None:
                 body['quota_set'].pop(key)
 
         self._update('/os-quota-sets/%s' % (tenant_id), body)
