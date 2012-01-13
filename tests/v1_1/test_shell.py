@@ -387,3 +387,47 @@ class ShellTest(utils.TestCase):
 
         self.assert_called('POST', '/flavors', body, pos=-2)
         self.assert_called('GET', '/flavors/1')
+
+    def test_aggregate_list(self):
+        self.run_command('aggregate-list')
+        self.assert_called('GET', '/os-aggregates')
+
+    def test_aggregate_create(self):
+        self.run_command('aggregate-create test_name nova1')
+        body = {"aggregate": {"name": "test_name",
+                              "availability_zone": "nova1"}}
+        self.assert_called('POST', '/os-aggregates', body)
+
+    def test_aggregate_delete(self):
+        self.run_command('aggregate-delete 1')
+        self.assert_called('DELETE', '/os-aggregates/1')
+
+    def test_aggregate_update(self):
+        self.run_command('aggregate-update 1 new_name')
+        body = {"aggregate": {"name": "new_name"}}
+        self.assert_called('PUT', '/os-aggregates/1', body)
+
+    def test_aggregate_update_with_availablity_zone(self):
+        self.run_command('aggregate-update 1 foo new_zone')
+        body = {"aggregate": {"name": "foo", "availability_zone": "new_zone"}}
+        self.assert_called('PUT', '/os-aggregates/1', body)
+
+    def test_aggregate_set_metadata(self):
+        self.run_command('aggregate-set-metadata 1 foo=bar delete_key')
+        body = {"set_metadata": {"metadata": {"foo": "bar",
+                                              "delete_key": None}}}
+        self.assert_called('POST', '/os-aggregates/1/action', body)
+
+    def test_aggregate_add_host(self):
+        self.run_command('aggregate-add-host 1 host1')
+        body = {"add_host": {"host": "host1"}}
+        self.assert_called('POST', '/os-aggregates/1/action', body)
+
+    def test_aggregate_remove_host(self):
+        self.run_command('aggregate-remove-host 1 host1')
+        body = {"remove_host": {"host": "host1"}}
+        self.assert_called('POST', '/os-aggregates/1/action', body)
+
+    def test_aggregate_details(self):
+        self.run_command('aggregate-details 1')
+        self.assert_called('GET', '/os-aggregates/1')

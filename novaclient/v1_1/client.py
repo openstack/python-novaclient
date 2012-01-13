@@ -1,5 +1,6 @@
 from novaclient import client
 from novaclient.v1_1 import certs
+from novaclient.v1_1 import aggregates
 from novaclient.v1_1 import flavors
 from novaclient.v1_1 import floating_ip_dns
 from novaclient.v1_1 import floating_ips
@@ -64,6 +65,7 @@ class Client(object):
         self.usage = usage.UsageManager(self)
         self.virtual_interfaces = \
             virtual_interfaces.VirtualInterfaceManager(self)
+        self.aggregates = aggregates.AggregateManager(self)
 
         # Add in any extensions...
         if extensions:

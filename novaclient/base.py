@@ -141,6 +141,7 @@ class Manager(utils.HookableMixin):
     def _update(self, url, body, **kwargs):
         self.run_hooks('modify_body_for_update', body, **kwargs)
         resp, body = self.api.client.put(url, body=body)
+        return body
 
 
 class ManagerWithFind(Manager):

@@ -708,3 +708,41 @@ class FakeHTTPClient(base_client.HTTPClient):
 
     def post_os_certificates(self, **kw):
         return (200, {'certificate': {'private_key': 'foo', 'data': 'bar'}})
+
+    #
+    # Aggregates
+    #
+    def get_os_aggregates(self, *kw):
+        return (200, {"aggregates": [
+            {'id':'1',
+             'name': 'test',
+             'availability_zone': 'nova1'},
+            {'id':'2',
+             'name': 'test2',
+             'availability_zone': 'nova1'},
+        ]})
+
+    def _return_aggregate(self):
+        r = {'aggregate': self.get_os_aggregates()[1]['aggregates'][0]}
+        return (200, r)
+
+    def get_os_aggregates_1(self, **kw):
+        return self._return_aggregate()
+
+    def post_os_aggregates(self, body, **kw):
+        return self._return_aggregate()
+
+    def put_os_aggregates_1(self, body, **kw):
+        return self._return_aggregate()
+
+    def put_os_aggregates_2(self, body, **kw):
+        return self._return_aggregate()
+
+    def post_os_aggregates_1_action(self, body, **kw):
+        return self._return_aggregate()
+
+    def post_os_aggregates_2_action(self, body, **kw):
+        return self._return_aggregate()
+
+    def delete_os_aggregates_1(self, **kw):
+        return (202, None)

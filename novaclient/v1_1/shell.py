@@ -380,6 +380,15 @@ def do_image_list(cs, args):
 def do_image_meta(cs, args):
     """Set or Delete metadata on an image."""
     image = _find_image(cs, args.image)
+    metadata = _extract_metadata(args)
+
+    if args.action == 'set':
+        cs.images.set_meta(image, metadata)
+    elif args.action == 'delete':
+        cs.images.delete_meta(image, metadata.keys())
+
+
+def _extract_metadata(args):
     metadata = {}
     for metadatum in args.metadata[0]:
         # Can only pass the key in on 'delete'
@@ -391,11 +400,7 @@ def do_image_meta(cs, args):
             value = None
 
         metadata[key] = value
-
-    if args.action == 'set':
-        cs.images.set_meta(image, metadata)
-    elif args.action == 'delete':
-        cs.images.delete_meta(image, metadata.keys())
+    return metadata
 
 
 def _print_image(image):
@@ -679,17 +684,7 @@ def do_image_create(cs, args):
 def do_meta(cs, args):
     """Set or Delete metadata on a server."""
     server = _find_server(cs, args.server)
-    metadata = {}
-    for metadatum in args.metadata[0]:
-        # Can only pass the key in on 'delete'
-        # So this doesn't have to have '='
-        if metadatum.find('=') > -1:
-            (key, value) = metadatum.split('=', 1)
-        else:
-            key = metadatum
-            value = None
-
-        metadata[key] = value
+    metadata = _extract_metadata(args)
 
     if args.action == 'set':
         cs.servers.set_meta(server, metadata)
@@ -1298,7 +1293,7 @@ def do_secgroup_delete_group_rule(cs, args):
         if (rule.get('ip_protocol') == params.get('ip_protocol') and
             rule.get('from_port') == params.get('from_port') and
             rule.get('to_port') == params.get('to_port') and
-            rule.get('group', {}).get('name') ==\
+            rule.get('group', {}).get('name') == \
                      params.get('group_name')):
             return cs.security_group_rules.delete(rule['id'])
 
@@ -1445,3 +1440,86 @@ def do_x509_get_root_cert(cs, args):
         cacert = cs.certs.get()
         cert.write(cacert.data)
         print "Wrote x509 root cert to %s" % args.filename
+
+
+def do_aggregate_list(cs, args):
+    """Print a list of all aggregates."""
+    aggregates = cs.aggregates.list()
+    columns = ['Id', 'Name', 'Availability Zone', 'Operational State']
+    utils.print_list(aggregates, columns)
+
+
+@utils.arg('name', metavar='<name>', help='Name of aggregate.')
+@utils.arg('availability_zone', metavar='<availability_zone>',
+           help='The availablity zone of the aggregate.')
+def do_aggregate_create(cs, args):
+    """Create a new aggregate with the specified details."""
+    aggregate = cs.aggregates.create(args.name, args.availability_zone)
+    _print_aggregate_details(aggregate)
+
+
+@utils.arg('id', metavar='<id>', help='Aggregate id to delete.')
+def do_aggregate_delete(cs, args):
+    """Delete the aggregate by its id."""
+    cs.aggregates.delete(args.id)
+    print "Aggregate %s has been succesfully deleted." % args.id
+
+
+@utils.arg('id', metavar='<id>', help='Aggregate id to udpate.')
+@utils.arg('name', metavar='<name>', help='Name of aggregate.')
+@utils.arg('availability_zone', metavar='<availability_zone>',
+           help='The availablity zone of the aggregate.', nargs='?')
+def do_aggregate_update(cs, args):
+    """Update the aggregate's name and optionally availablity zone."""
+    updates = {"name": args.name}
+    if args.availability_zone:
+        updates["availability_zone"] = args.availability_zone
+
+    aggregate = cs.aggregates.update(args.id, updates)
+    print "Aggregate %s has been succesfully updated." % args.id
+    _print_aggregate_details(aggregate)
+
+
+@utils.arg('id', metavar='<id>', help='Aggregate id to udpate.')
+@utils.arg('metadata',
+           metavar='<key=value>',
+           nargs='+',
+           action='append',
+           default=[],
+           help='Metadata to add/update to aggregate')
+def do_aggregate_set_metadata(cs, args):
+    """Update the metadata associated with the aggregate."""
+    metadata = _extract_metadata(args)
+    aggregate = cs.aggregates.set_metadata(args.id, metadata)
+    print "Aggregate %s has been succesfully updated." % args.id
+    _print_aggregate_details(aggregate)
+
+
+@utils.arg('id', metavar='<id>', help='Host aggregate id to delete.')
+@utils.arg('host', metavar='<host>', help='The host to add to the aggregate.')
+def do_aggregate_add_host(cs, args):
+    """Add the host to the specified aggregate."""
+    aggregate = cs.aggregates.add_host(args.id, args.host)
+    print "Aggregate %s has been succesfully updated." % args.id
+    _print_aggregate_details(aggregate)
+
+
+@utils.arg('id', metavar='<id>', help='Host aggregate id to delete.')
+@utils.arg('host', metavar='<host>', help='The host to add to the aggregate.')
+def do_aggregate_remove_host(cs, args):
+    """Remove the specified host from the specfied aggregate."""
+    aggregate = cs.aggregates.remove_host(args.id, args.host)
+    print "Aggregate %s has been succesfully updated." % args.id
+    _print_aggregate_details(aggregate)
+
+
+@utils.arg('id', metavar='<id>', help='Host aggregate id to delete.')
+def do_aggregate_details(cs, args):
+    """Show details of the specified aggregate."""
+    _print_aggregate_details(cs.aggregates.get_details(args.id))
+
+
+def _print_aggregate_details(aggregate):
+    columns = ['Id', 'Name', 'Availability Zone', 'Operational State',
+               'Hosts', 'Metadata']
+    utils.print_list([aggregate], columns)
