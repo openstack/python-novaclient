@@ -45,8 +45,9 @@ class Client(object):
         self.servers = servers.ServerManager(self)
 
         # extensions
+        self.dns_domains = floating_ip_dns.FloatingIPDNSDomainManager(self)
+        self.dns_entries = floating_ip_dns.FloatingIPDNSEntryManager(self)
         self.floating_ips = floating_ips.FloatingIPManager(self)
-        self.floating_ip_dns = floating_ip_dns.FloatingIPDNSManager(self)
         self.floating_ip_pools = floating_ip_pools.FloatingIPPoolManager(self)
         self.volumes = volumes.VolumeManager(self)
         self.volume_snapshots = volume_snapshots.SnapshotManager(self)

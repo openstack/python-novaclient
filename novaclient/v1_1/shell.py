@@ -1032,45 +1032,81 @@ def do_floating_ip_pool_list(cs, args):
 
 
 def _print_dns_list(dns_entries):
-    utils.print_list(dns_entries, ['ip', 'zone', 'name'])
+    utils.print_list(dns_entries, ['ip', 'name', 'domain'])
 
 
-def do_dns_zones(cs, args):
-    """Print a list of available dns zones."""
-    zones = cs.floating_ip_dns.zones()
-    utils.print_list(zones, ['zone'])
+def _print_domain_list(domain_entries):
+    utils.print_list(domain_entries, ['domain', 'scope',
+                                   'project', 'availability_zone'])
 
 
-@utils.arg('zone', metavar='<zone>', help='DNS zone')
+def do_dns_domains(cs, args):
+    """Print a list of available dns domains."""
+    domains = cs.dns_domains.domains()
+    _print_domain_list(domains)
+
+
+@utils.arg('domain', metavar='<domain>', help='DNS domain')
 @utils.arg('--ip', metavar='<ip>', help='ip address', default=None)
 @utils.arg('--name', metavar='<name>', help='DNS name', default=None)
 def do_dns_list(cs, args):
-    """List current DNS entries for zone and ip or zone and name."""
+    """List current DNS entries for domain and ip or domain and name."""
     if not (args.ip or args.name):
         raise exceptions.CommandError(
               "You must specify either --ip or --name")
-    entries = cs.floating_ip_dns.get_entries(args.zone,
-                                             ip=args.ip, name=args.name)
-    _print_dns_list(entries)
+    if args.name:
+        entry = cs.dns_entries.get(args.domain, args.name)
+        _print_dns_list([entry])
+    else:
+        entries = cs.dns_entries.get_for_ip(args.domain,
+                                            ip=args.ip)
+        _print_dns_list(entries)
 
 
-@utils.arg('zone', metavar='<zone>', help='DNS zone')
-@utils.arg('name', metavar='<name>', help='DNS name')
 @utils.arg('ip', metavar='<ip>', help='ip address')
+@utils.arg('name', metavar='<name>', help='DNS name')
+@utils.arg('domain', metavar='<domain>', help='DNS domain')
 @utils.arg('--type', metavar='<type>', help='dns type (e.g. "A")',
            default='A')
 def do_dns_create(cs, args):
-    """Create a DNS entry for zone, name and ip."""
-    entries = cs.floating_ip_dns.create_entry(args.zone, args.name,
-                                              args.ip, args.type)
-    _print_dns_list([entries])
+    """Create a DNS entry for domain, name and ip."""
+    entries = cs.dns_entries.create(args.domain, args.name,
+                                    args.ip, args.type)
 
 
-@utils.arg('zone', metavar='<zone>', help='DNS zone')
+@utils.arg('domain', metavar='<domain>', help='DNS domain')
 @utils.arg('name', metavar='<name>', help='DNS name')
 def do_dns_delete(cs, args):
     """Delete the specified DNS entry."""
-    cs.floating_ip_dns.delete_entry(args.zone, args.name)
+    cs.dns_entries.delete(args.domain, args.name)
+
+
+@utils.arg('domain', metavar='<domain>', help='DNS domain')
+def do_dns_delete_domain(cs, args):
+    """Delete the specified DNS domain."""
+    cs.dns_domains.delete(args.domain)
+
+
+@utils.arg('domain', metavar='<domain>', help='DNS domain')
+@utils.arg('--availability_zone', metavar='<availability_zone>',
+           help='Limit access to this domain to instances '
+                'in the specified availability zone.',
+           default=None)
+def do_dns_create_private_domain(cs, args):
+    """Create the specified DNS domain."""
+    cs.dns_domains.create_private(args.domain,
+                                  args.availability_zone)
+
+
+@utils.arg('domain', metavar='<domain>', help='DNS domain')
+@utils.arg('--project', metavar='<project>',
+           help='Limit access to this domain to users '
+                'of the specified project.',
+           default=None)
+def do_dns_create_public_domain(cs, args):
+    """Create the specified DNS domain."""
+    cs.dns_domains.create_public(args.domain,
+                                 args.project)
 
 
 def _print_secgroup_rules(rules):
