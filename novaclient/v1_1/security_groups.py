@@ -27,9 +27,6 @@ class SecurityGroup(base.Resource):
     def delete(self):
         self.manager.delete(self)
 
-    def get(self):
-        self.manager.get(self)
-
 
 class SecurityGroupManager(base.ManagerWithFind):
     resource_class = SecurityGroup
