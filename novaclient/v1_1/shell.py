@@ -508,7 +508,8 @@ def do_rebuild(cs, args):
     else:
         _password = None
 
-    s = server.rebuild(image, _password)
+    kwargs = utils.get_resource_manager_extra_kwargs(do_rebuild, args)
+    s = server.rebuild(image, _password, **kwargs)
     _print_server(cs, s)
 
 
@@ -526,7 +527,8 @@ def do_resize(cs, args):
     """Resize a server."""
     server = _find_server(cs, args.server)
     flavor = _find_flavor(cs, args.flavor)
-    server.resize(flavor)
+    kwargs = utils.get_resource_manager_extra_kwargs(do_resize, args)
+    server.resize(flavor, **kwargs)
 
 
 @utils.arg('server', metavar='<server>', help='Name or ID of server.')

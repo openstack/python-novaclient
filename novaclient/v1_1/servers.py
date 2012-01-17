@@ -152,16 +152,16 @@ class Server(base.Resource):
         """
         self.manager.reboot(self, type)
 
-    def rebuild(self, image, password=None):
+    def rebuild(self, image, password=None, **kwargs):
         """
         Rebuild -- shut down and then re-image -- this server.
 
         :param image: the :class:`Image` (or its ID) to re-image with.
         :param password: string to set as password on the rebuilt server.
         """
-        return self.manager.rebuild(self, image, password)
+        return self.manager.rebuild(self, image, password=password, **kwargs)
 
-    def resize(self, flavor):
+    def resize(self, flavor, **kwargs):
         """
         Resize the server's resources.
 
@@ -172,7 +172,7 @@ class Server(base.Resource):
         flavor quickly with :meth:`revert_resize`. All resizes are
         automatically confirmed after 24 hours.
         """
-        self.manager.resize(self, flavor)
+        self.manager.resize(self, flavor, **kwargs)
 
     def create_image(self, image_name, metadata):
         """
@@ -436,7 +436,7 @@ class ServerManager(local_base.BootingManagerWithFind):
         """
         self._action('reboot', server, {'type': type})
 
-    def rebuild(self, server, image, password=None):
+    def rebuild(self, server, image, password=None, **kwargs):
         """
         Rebuild -- shut down and then re-image -- a server.
 
@@ -447,7 +447,7 @@ class ServerManager(local_base.BootingManagerWithFind):
         body = {'imageRef': base.getid(image)}
         if password is not None:
             body['adminPass'] = password
-        resp, body = self._action('rebuild', server, body)
+        resp, body = self._action('rebuild', server, body, **kwargs)
         return Server(self, body['server'])
 
     def migrate(self, server):
@@ -458,7 +458,7 @@ class ServerManager(local_base.BootingManagerWithFind):
         """
         self.api.client.post('/servers/%s/migrate' % base.getid(server))
 
-    def resize(self, server, flavor):
+    def resize(self, server, flavor, **kwargs):
         """
         Resize a server's resources.
 
@@ -470,7 +470,8 @@ class ServerManager(local_base.BootingManagerWithFind):
         flavor quickly with :meth:`revert_resize`. All resizes are
         automatically confirmed after 24 hours.
         """
-        self._action('resize', server, {'flavorRef': base.getid(flavor)})
+        info = {'flavorRef': base.getid(flavor)}
+        self._action('resize', server, info=info, **kwargs)
 
     def confirm_resize(self, server):
         """
@@ -530,9 +531,11 @@ class ServerManager(local_base.BootingManagerWithFind):
         for k in keys:
             self._delete("/servers/%s/metadata/%s" % (base.getid(server), k))
 
-    def _action(self, action, server, info=None):
+    def _action(self, action, server, info=None, **kwargs):
         """
         Perform a server "action" -- reboot/rebuild/resize/etc.
         """
+        body = {action: info}
+        self.run_hooks('modify_body_for_action', body, **kwargs)
         url = '/servers/%s/action' % base.getid(server)
-        return self.api.client.post(url, body={action: info})
+        return self.api.client.post(url, body=body)
