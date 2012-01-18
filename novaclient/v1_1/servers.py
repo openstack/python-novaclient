@@ -475,7 +475,7 @@ class ServerManager(local_base.BootingManagerWithFind):
 
         :param server: The :class:`Server` (or its ID).
         """
-        self.api.client.post('/servers/%s/migrate' % base.getid(server))
+        self._action('migrate', server)
 
     def resize(self, server, flavor, **kwargs):
         """
