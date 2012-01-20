@@ -26,6 +26,7 @@ import itertools
 import os
 import pkgutil
 import sys
+import logging
 
 from novaclient import client
 from novaclient import exceptions as exc
@@ -35,6 +36,8 @@ from novaclient.v1_1 import shell as shell_v1_1
 
 DEFAULT_NOVA_VERSION = "1.1"
 DEFAULT_NOVA_ENDPOINT_TYPE = 'publicURL'
+
+logger = logging.getLogger(__name__)
 
 
 def env(*vars, **kwargs):
@@ -89,7 +92,7 @@ class OpenStackComputeShell(object):
         parser.add_argument('--debug',
             default=False,
             action='store_true',
-            help=argparse.SUPPRESS)
+            help="Print debugging output")
 
         parser.add_argument('--username',
             default=env('OS_USERNAME', 'NOVA_USERNAME'),
@@ -239,10 +242,23 @@ class OpenStackComputeShell(object):
                 subparser.add_argument(*args, **kwargs)
             subparser.set_defaults(func=callback)
 
+    def setup_debugging(self, debug):
+        if not debug:
+            return
+
+        streamhandler = logging.StreamHandler()
+        streamformat = "%(levelname)s (%(module)s:%(lineno)d) %(message)s"
+        streamhandler.setFormatter(logging.Formatter(streamformat))
+        logger.setLevel(logging.DEBUG)
+        logger.addHandler(streamhandler)
+
+        httplib2.debuglevel = 1
+
     def main(self, argv):
         # Parse args once to find version
         parser = self.get_base_parser()
         (options, args) = parser.parse_known_args(argv)
+        self.setup_debugging(options.debug)
 
         # build available subcommands based on version
         self.extensions = self._discover_extensions(options.version)
@@ -253,10 +269,6 @@ class OpenStackComputeShell(object):
 
         args = subcommand_parser.parse_args(argv)
         self._run_extension_hooks('__post_parse_args__', args)
-
-        # Deal with global arguments
-        if args.debug:
-            httplib2.debuglevel = 1
 
         # Short-circuit and deal with help right away.
         if args.func == self.do_help:
@@ -381,10 +393,8 @@ def main():
         OpenStackComputeShell().main(sys.argv[1:])
 
     except Exception, e:
-        if httplib2.debuglevel == 1:
-            raise  # dump stack.
-        else:
-            print >> sys.stderr, e
+        logger.debug(e, exc_info=1)
+        print >> sys.stderr, "ERROR: %s" % e
         sys.exit(1)
 
 
