@@ -1397,3 +1397,51 @@ def do_usage_list(cs, args):
         simplify_usage(usage)
 
     utils.print_list(usage_list, rows)
+
+
+@utils.arg('pk_filename',
+           metavar='<private_key_file>',
+           nargs='?',
+           default='pk.pem',
+           help='Filename to write the private key to.')
+@utils.arg('cert_filename',
+           metavar='<x509_cert>',
+           nargs='?',
+           default='cert.pem',
+           help='Filename to write the x509 cert.')
+def do_x509_create_cert(cs, args):
+    """Create x509 cert for a user in tenant"""
+
+    if os.path.exists(args.pk_filename):
+        raise exceptions.CommandError("Unable to write privatekey - %s exists."
+                        % args.pk_filename)
+    if os.path.exists(args.cert_filename):
+        raise exceptions.CommandError("Unable to write x509 cert - %s exists."
+                        % args.cert_filename)
+
+    certs = cs.certs.create()
+
+    with open(args.pk_filename, 'w') as private_key:
+        private_key.write(certs.private_key)
+        print "Wrote private key to %s" % args.pk_filename
+
+    with open(args.cert_filename, 'w') as cert:
+        cert.write(certs.data)
+        print "Wrote x509 certificate to %s" % args.cert_filename
+
+
+@utils.arg('filename',
+           metavar='<filename>',
+           nargs='?',
+           default='cacert.pem',
+           help='Filename to write the x509 root cert.')
+def do_x509_get_root_cert(cs, args):
+    """Fetches the x509 root cert."""
+    if os.path.exists(args.filename):
+        raise exceptions.CommandError("Unable to write x509 root cert - \
+                                      %s exists." % args.filename)
+
+    with open(args.filename, 'w') as cert:
+        cacert = cs.certs.get()
+        cert.write(cacert.data)
+        print "Wrote x509 root cert to %s" % args.filename

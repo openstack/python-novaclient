@@ -699,3 +699,12 @@ class FakeHTTPClient(base_client.HTTPClient):
                 u'started_at': u'2012-01-20 18:06:06.479998'}],
             u'start': u'2011-12-25 19:48:41.750687',
             u'total_local_gb_usage': 0.0}})
+
+    #
+    # Certificates
+    #
+    def get_os_certificates_root(self, **kw):
+        return (200, {'certificate': {'private_key': None, 'data': 'foo'}})
+
+    def post_os_certificates(self, **kw):
+        return (200, {'certificate': {'private_key': 'foo', 'data': 'bar'}})

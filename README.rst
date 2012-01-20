@@ -152,6 +152,8 @@ You'll find complete documentation on the shell by running
                             List all the snapshots.
         volume-snapshot-show
                             Show details about a snapshot.
+        x509-create-cert    Create x509 cert for a user in tenant
+        x509-get-root-cert  Fetches the x509 root cert.
         zone                Show or edit a Child Zone
         zone-add            Add a Child Zone.
         zone-boot           Boot a server, considering Zones.
