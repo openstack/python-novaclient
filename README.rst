@@ -83,6 +83,8 @@ You'll find complete documentation on the shell by running
                             Delete the backup schedule for a server.
         boot                Boot a new server.
         delete              Immediately shut down and delete a server.
+        flavor-create       Create a new flavor
+        flavor-delete       Delete a specific flavor
         flavor-list         Print a list of available 'flavors' (sizes of
                             servers).
         floating-ip-create  Allocate a floating IP to the current tenant.

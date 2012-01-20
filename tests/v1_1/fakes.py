@@ -348,6 +348,12 @@ class FakeHTTPClient(base_client.HTTPClient):
     def get_flavors_2(self, **kw):
         return (200, {'flavor': self.get_flavors_detail()[1]['flavors'][1]})
 
+    def delete_flavors_flavordelete(self, **kw):
+        return (202, None)
+
+    def post_flavors(self, body, **kw):
+        return (202, {'flavor': self.get_flavors_detail()[1]['flavors'][0]})
+
     #
     # Floating ips
     #
