@@ -255,3 +255,13 @@ class ServersTest(utils.TestCase):
 
         cs.servers.get_vnc_console(s, 'fake')
         cs.assert_called('POST', '/servers/1234/action')
+
+    def test_create_image(self):
+        s = cs.servers.get(1234)
+        s.create_image('123')
+        cs.assert_called('POST', '/servers/1234/action')
+        s.create_image('123', {})
+        cs.assert_called('POST', '/servers/1234/action')
+        cs.servers.create_image(s, '123')
+        cs.assert_called('POST', '/servers/1234/action')
+        cs.servers.create_image(s, '123', {})
