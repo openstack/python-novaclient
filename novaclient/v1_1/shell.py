@@ -15,6 +15,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import datetime
 import getpass
 import os
 
@@ -1275,3 +1276,46 @@ def do_rate_limits(cs, args):
     limits = cs.limits.get().rate
     columns = ['Verb', 'URI', 'Value', 'Remain', 'Unit', 'Next_Available']
     utils.print_list(limits, columns)
+
+
+@utils.arg('--start', metavar='<start>',
+           help='Usage range start date ex 2012-01-20 (default: 4 weeks ago)',
+           default=None)
+@utils.arg('--end', metavar='<end>',
+           help='Usage range end date, ex 2012-01-20 (default: tomorrow) ',
+           default=None)
+def do_usage_list(cs, args):
+    """List usage data for all tenants"""
+    dateformat = "%Y-%m-%d"
+    rows = ["Tenant ID", "Instances", "RAM MB-Hours", "CPU Hours",
+            "Disk GB-Hours"]
+
+    if args.start:
+        start = datetime.datetime.strptime(args.start, dateformat)
+    else:
+        start = (datetime.datetime.today() -
+                 datetime.timedelta(weeks=4))
+
+    if args.end:
+        end = datetime.datetime.strptime(args.end, dateformat)
+    else:
+        end = datetime.datetime.tomorrow()
+
+    def simplify_usage(u):
+        simplerows = map(lambda x: x.lower().replace(" ", "_"), rows)
+
+        setattr(u, simplerows[0], u.tenant_id)
+        setattr(u, simplerows[1], "%d" % len(u.server_usages))
+        setattr(u, simplerows[2], "%.2f" % u.total_memory_mb_usage)
+        setattr(u, simplerows[3], "%.2f" % u.total_vcpus_usage)
+        setattr(u, simplerows[4], "%.2f" % u.total_local_gb_usage)
+
+    usage_list = cs.usage.list(start, end, detailed=True)
+
+    print "Usage from %s to %s:" % (start.strftime(dateformat),
+                                    end.strftime(dateformat))
+
+    for usage in usage_list:
+        simplify_usage(usage)
+
+    utils.print_list(usage_list, rows)

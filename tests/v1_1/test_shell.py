@@ -320,3 +320,11 @@ class ShellTest(utils.TestCase):
     def test_dns_zones(self):
         self.run_command('dns-zones')
         self.assert_called('GET', '/os-floating-ip-dns')
+
+    def test_usage_list(self):
+        self.run_command('usage-list --start 2000-01-20 --end 2005-02-01')
+        self.assert_called('GET',
+                           '/os-simple-tenant-usage?' +
+                           'start=2000-01-20T00:00:00&' +
+                           'end=2005-02-01T00:00:00&' +
+                           'detailed=1')

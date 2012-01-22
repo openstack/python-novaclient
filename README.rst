@@ -135,6 +135,7 @@ You'll find complete documentation on the shell by running
         suspend             Suspend a server.
         unpause             Unpause a server.
         unrescue            Unrescue a server.
+        usage-list          List usage data for all tenants
         volume-attach       Attach a volume to a server.
         volume-create       Add a new volume.
         volume-delete       Remove a volume.
