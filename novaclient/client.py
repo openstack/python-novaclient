@@ -295,14 +295,16 @@ class HTTPClient(httplib2.Http):
 
 
 def get_client_class(version):
+    version_map = {
+        '1.1': 'novaclient.v1_1.client.Client',
+        '2': 'novaclient.v1_1.client.Client',
+    }
     try:
-        version = str(version)
-        client_path = {
-            '1.1': 'novaclient.v1_1.client.Client',
-            '2': 'novaclient.v1_1.client.Client',
-        }[version]
+        client_path = version_map[str(version)]
     except (KeyError, ValueError):
-        raise exceptions.UnsupportedVersion()
+        msg = "Invalid client version '%s'. must be one of: %s" % (
+              (version, ', '.join(version_map.keys())))
+        raise exceptions.UnsupportedVersion(msg)
 
     return utils.import_class(client_path)
 
