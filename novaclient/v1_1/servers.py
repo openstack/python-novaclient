@@ -115,7 +115,7 @@ class Server(base.Resource):
         """
         Rescue -- Rescue the problematic server.
         """
-        self.manager.rescue(self)
+        return self.manager.rescue(self)
 
     def unrescue(self):
         """
@@ -333,7 +333,7 @@ class ServerManager(local_base.BootingManagerWithFind):
         """
         Rescue the server.
         """
-        self._action('rescue', server, None)
+        return self._action('rescue', server, None)
 
     def unrescue(self, server):
         """

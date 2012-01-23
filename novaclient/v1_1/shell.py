@@ -576,7 +576,7 @@ def do_resume(cs, args):
 @utils.arg('server', metavar='<server>', help='Name or ID of server.')
 def do_rescue(cs, args):
     """Rescue a server."""
-    _find_server(cs, args.server).rescue()
+    utils.print_dict(_find_server(cs, args.server).rescue()[1])
 
 
 @utils.arg('server', metavar='<server>', help='Name or ID of server.')
