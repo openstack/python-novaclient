@@ -328,3 +328,26 @@ class ShellTest(utils.TestCase):
                            'start=2000-01-20T00:00:00&' +
                            'end=2005-02-01T00:00:00&' +
                            'detailed=1')
+
+    def test_flavor_delete(self):
+        self.run_command("flavor-delete flavordelete")
+        self.assert_called('DELETE', '/flavors/flavordelete')
+
+    def test_flavor_create(self):
+        self.run_command("flavor-create flavorcreate "
+                         "1234 512 10 1 --swap 1024")
+
+        body = {
+            "flavor": {
+                "name": "flavorcreate",
+                "ram": 512,
+                "vcpus": 1,
+                "disk": 10,
+                "id": 1234,
+                "swap": 1024,
+                "rxtx_factor": 1,
+            }
+        }
+
+        self.assert_called('POST', '/flavors', body, pos=-2)
+        self.assert_called('GET', '/flavors/1')

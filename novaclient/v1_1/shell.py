@@ -294,9 +294,7 @@ def _translate_flavor_keys(collection):
                 setattr(item, to_key, item._info[from_key])
 
 
-def do_flavor_list(cs, args):
-    """Print a list of available 'flavors' (sizes of servers)."""
-    flavors = cs.flavors.list()
+def _print_flavor_list(flavors):
     _translate_flavor_keys(flavors)
     utils.print_list(flavors, [
         'ID',
@@ -306,6 +304,50 @@ def do_flavor_list(cs, args):
         'Local_GB',
         'VCPUs',
         'RXTX_Factor'])
+
+
+def do_flavor_list(cs, args):
+    """Print a list of available 'flavors' (sizes of servers)."""
+    flavors = cs.flavors.list()
+    _print_flavor_list(flavors)
+
+
+@utils.arg('id',
+     metavar='<id>',
+     help="Unique ID of the flavor to delete")
+def do_flavor_delete(cs, args):
+    """Delete a specific flavor"""
+    cs.flavors.delete(args.id)
+
+
+@utils.arg('name',
+     metavar='<name>',
+     help="Name of the new flavor")
+@utils.arg('id',
+     metavar='<id>',
+     help="Unique integer ID for the new flavor")
+@utils.arg('ram',
+     metavar='<ram>',
+     help="Memory size in MB")
+@utils.arg('disk',
+     metavar='<disk>',
+     help="Disk size in GB")
+@utils.arg('vcpus',
+     metavar='<vcpus>',
+     help="Number of vcpus")
+@utils.arg('--swap',
+     metavar='<swap>',
+     help="Swap space size in MB (default 0)",
+     default=0)
+@utils.arg('--rxtx-factor',
+     metavar='<factor>',
+     help="RX/TX factor (default 1)",
+     default=1)
+def do_flavor_create(cs, args):
+    """Create a new flavor"""
+    f = cs.flavors.create(args.name, args.ram, args.vcpus, args.disk, args.id,
+                          args.swap, args.rxtx_factor)
+    _print_flavor_list([f])
 
 
 def do_image_list(cs, args):
