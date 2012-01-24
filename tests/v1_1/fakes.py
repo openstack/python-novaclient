@@ -544,6 +544,14 @@ class FakeHTTPClient(base_client.HTTPClient):
         return (202, r)
 
     #
+    # Virtual Interfaces
+    #
+    def get_servers_1234_os_virtual_interfaces(self, **kw):
+        return (200, {"virtual_interfaces": [
+            {'id': 'fakeid', 'mac_address': 'fakemac'}
+        ]})
+
+    #
     # Quotas
     #
 

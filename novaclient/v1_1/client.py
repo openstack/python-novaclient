@@ -10,6 +10,7 @@ from novaclient.v1_1 import quotas
 from novaclient.v1_1 import security_group_rules
 from novaclient.v1_1 import security_groups
 from novaclient.v1_1 import servers
+from novaclient.v1_1 import virtual_interfaces
 from novaclient.v1_1 import volumes
 from novaclient.v1_1 import volume_snapshots
 from novaclient.v1_1 import zones
@@ -56,6 +57,8 @@ class Client(object):
         self.security_groups = security_groups.SecurityGroupManager(self)
         self.security_group_rules = \
             security_group_rules.SecurityGroupRuleManager(self)
+        self.virtual_interfaces = \
+            virtual_interfaces.VirtualInterfaceManager(self)
 
         # Add in any extensions...
         if extensions:
