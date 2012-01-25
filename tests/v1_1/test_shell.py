@@ -300,25 +300,44 @@ class ShellTest(utils.TestCase):
         self.assert_called('DELETE', '/servers/1234/metadata/key2', pos=-2)
 
     def test_dns_create(self):
-        self.run_command('dns-create zone1 testname 192.168.1.1')
-        self.assert_called('POST', '/os-floating-ip-dns')
+        self.run_command('dns-create 192.168.1.1 testname testdomain')
+        self.assert_called('PUT',
+                           '/os-floating-ip-dns/testdomain/entries/testname')
 
-        self.run_command('dns-create zone1 tn 192.168.1.1 --type A')
-        self.assert_called('POST', '/os-floating-ip-dns')
+        self.run_command('dns-create 192.168.1.1 testname testdomain --type A')
+        self.assert_called('PUT',
+                           '/os-floating-ip-dns/testdomain/entries/testname')
+
+    def test_dns_create_public_domain(self):
+        self.run_command('dns-create-public-domain testdomain '
+                         '--project test_project')
+        self.assert_called('PUT', '/os-floating-ip-dns/testdomain')
+
+    def test_dns_create_private_domain(self):
+        self.run_command('dns-create-private-domain testdomain '
+                         '--availability_zone av_zone')
+        self.assert_called('PUT', '/os-floating-ip-dns/testdomain')
 
     def test_dns_delete(self):
-        self.run_command('dns-delete zone1 testname')
-        self.assert_called('DELETE', '/os-floating-ip-dns/zone1?name=testname')
+        self.run_command('dns-delete testdomain testname')
+        self.assert_called('DELETE',
+                           '/os-floating-ip-dns/testdomain/entries/testname')
+
+    def test_dns_delete_domain(self):
+        self.run_command('dns-delete-domain testdomain')
+        self.assert_called('DELETE', '/os-floating-ip-dns/testdomain')
 
     def test_dns_list(self):
-        self.run_command('dns-list zone1 --ip 192.168.1.1')
-        self.assert_called('GET', '/os-floating-ip-dns/zone1?ip=192.168.1.1')
+        self.run_command('dns-list testdomain --ip 192.168.1.1')
+        self.assert_called('GET',
+                       '/os-floating-ip-dns/testdomain/entries?ip=192.168.1.1')
 
-        self.run_command('dns-list zone1 --name testname')
-        self.assert_called('GET', '/os-floating-ip-dns/zone1?name=testname')
+        self.run_command('dns-list testdomain --name testname')
+        self.assert_called('GET',
+                           '/os-floating-ip-dns/testdomain/entries/testname')
 
-    def test_dns_zones(self):
-        self.run_command('dns-zones')
+    def test_dns_domains(self):
+        self.run_command('dns-domains')
         self.assert_called('GET', '/os-floating-ip-dns')
 
     def test_usage_list(self):

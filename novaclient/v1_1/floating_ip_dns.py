@@ -18,56 +18,116 @@ import urllib
 from novaclient import base
 
 
-def _quote_zone(zone):
-    """Special quoting rule for placing zone names on a url line.
+def _quote_domain(domain):
+    """Special quoting rule for placing domain names on a url line.
 
-    Zone names tend to have .'s in them.  Urllib doesn't quote dots,
+    Domain names tend to have .'s in them.  Urllib doesn't quote dots,
     but Routes tends to choke on them, so we need an extra level of
     by-hand quoting here.
     """
-    return urllib.quote(zone.replace('.', '%2E'))
+    return urllib.quote(domain.replace('.', '%2E'))
 
 
-class FloatingIPDNS(base.Resource):
+class FloatingIPDNSDomain(base.Resource):
     def delete(self):
-        self.manager.delete_entry(self.name, self.zone)
+        self.manager.delete(self.domain)
+
+    def create(self):
+        if self.scope == 'public':
+            self.manager.create_public(self.domain, self.project)
+        else:
+            self.manager.create_private(self.domain, self.availability_zone)
+
+    def get(self):
+        entries = self.manager.domains()
+        for entry in entries:
+            if entry.get('domain') == self.domain:
+                return entry
+
+        return None
 
 
-class FloatingIPDNSManager(base.ManagerWithFind):
-    resource_class = FloatingIPDNS
+class FloatingIPDNSDomainManager(base.ManagerWithFind):
+    resource_class = FloatingIPDNSDomain
 
-    def zones(self):
-        """Return the list of available dns zones."""
-        return self._list("/os-floating-ip-dns", "zones")
+    def domains(self):
+        """Return the list of available dns domains."""
+        return self._list("/os-floating-ip-dns", "domain_entries")
 
-    def get_entries(self, zone, name=None, ip=None):
-        """Return a list of entries for the given zone and ip or name."""
-        qparams = {}
-        if name:
-            qparams['name'] = name
-        if ip:
-            qparams['ip'] = ip
+    def create_private(self, fqdomain, availability_zone):
+        """Add or modify a private DNS domain."""
+        body = {'domain_entry':
+                 {'scope': 'private',
+                  'availability_zone': availability_zone}}
 
-        params = "?%s" % urllib.urlencode(qparams) if qparams else ""
+        return self._update('/os-floating-ip-dns/%s' % _quote_domain(fqdomain),
+                            body)
 
-        return self._list("/os-floating-ip-dns/%s%s" %
-                              (_quote_zone(zone), params),
+    def create_public(self, fqdomain, project):
+        """Add or modify a public DNS domain."""
+        body = {'domain_entry':
+                 {'scope': 'public',
+                  'project': project}}
+
+        return self._update('/os-floating-ip-dns/%s' % _quote_domain(fqdomain),
+                            body)
+
+    def delete(self, fqdomain):
+        """Delete the specified domain"""
+        self._delete("/os-floating-ip-dns/%s" % _quote_domain(fqdomain))
+
+
+class FloatingIPDNSEntry(base.Resource):
+    def delete(self):
+        self.manager.delete(self.name, self.domain)
+
+    def create(self):
+        self.manager.create(self.domain, self.name,
+                                  self.ip, self.dns_type)
+
+    def get(self):
+        return self.manager.get(self.domain, self.name)
+
+
+class FloatingIPDNSEntryManager(base.ManagerWithFind):
+    resource_class = FloatingIPDNSEntry
+
+    def get(self, domain, name):
+        """Return a list of entries for the given domain and ip or name."""
+        return self._get("/os-floating-ip-dns/%s/entries/%s" %
+                              (_quote_domain(domain), name),
+                          "dns_entry")
+
+    def get_for_ip(self, domain, ip):
+        """Return a list of entries for the given domain and ip or name."""
+        qparams = {'ip': ip}
+        params = "?%s" % urllib.urlencode(qparams)
+
+        return self._list("/os-floating-ip-dns/%s/entries%s" %
+                              (_quote_domain(domain), params),
                           "dns_entries")
 
-    def create_entry(self, zone, name, ip, dns_type):
+    def create(self, domain, name, ip, dns_type):
         """Add a new DNS entry."""
         body = {'dns_entry':
-                 {'name': name,
-                  'ip': ip,
-                  'dns_type': dns_type,
-                  'zone': zone}}
+                 {'ip': ip,
+                  'dns_type': dns_type}}
 
-        return self._create("/os-floating-ip-dns", body, "dns_entry")
+        return self._update("/os-floating-ip-dns/%s/entries/%s" %
+                            (_quote_domain(domain), name),
+                            body)
 
-    def delete_entry(self, zone, name):
-        """Delete entry specified by name and zone."""
-        qparams = {'name': name}
-        params = "?%s" % urllib.urlencode(qparams) if qparams else ""
+    def modify_ip(self, domain, name, ip):
+        """Add a new DNS entry."""
+        body = {'dns_entry':
+                 {'ip': ip,
+                  'dns_type': 'A'}}
 
-        self._delete("/os-floating-ip-dns/%s%s" %
-                                (_quote_zone(zone), params))
+        return self._update("/os-floating-ip-dns/%s/entries/%s" %
+                            (_quote_domain(domain), name),
+                            body)
+
+    def delete(self, domain, name):
+        """Delete entry specified by name and domain."""
+        self._delete("/os-floating-ip-dns/%s/entries/%s" %
+                                (_quote_domain(domain), name))
