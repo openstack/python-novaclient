@@ -93,6 +93,14 @@ def _boot(cs, args, reservation_id=None, min_count=None, max_count=None):
             nic_info[k] = v
         nics.append(nic_info)
 
+    hints = {}
+    if args.scheduler_hints:
+        hint_set = [dict({hint[0]: hint[1]}) for hint in \
+                [hint_set.split('=') for hint_set in args.scheduler_hints]]
+        for hint in hint_set:
+            hints.update(hint.items())
+    else:
+        hints = {}
     boot_args = [args.name, image, flavor]
 
     boot_kwargs = dict(
@@ -106,7 +114,8 @@ def _boot(cs, args, reservation_id=None, min_count=None, max_count=None):
             availability_zone=availability_zone,
             security_groups=security_groups,
             block_device_mapping=block_device_mapping,
-            nics=nics)
+            nics=nics,
+            scheduler_hints=hints)
 
     return boot_args, boot_kwargs
 
@@ -155,6 +164,12 @@ def _boot(cs, args, reservation_id=None, min_count=None, max_count=None):
      default=[],
      help="Block device mapping in the format "
          "<dev_name=<id>:<type>:<size(GB)>:<delete_on_terminate>.")
+@utils.arg('--hint',
+        action='append',
+        dest='scheduler_hints',
+        default=[],
+        metavar='<key=value>',
+        help="Send arbitrary key/value pairs to the scheduler for custom use.")
 @utils.arg('--nic',
      metavar="<net-id=net-uuid,v4-fixed-ip=ip-addr>",
      action='append',
