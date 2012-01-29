@@ -24,9 +24,6 @@ from novaclient import utils
 from novaclient.v1_1 import servers
 
 
-AUTO_KEY = object()
-
-
 def _boot(cs, args, reservation_id=None, min_count=None, max_count=None):
     """Boot a new server."""
     if min_count is None:
@@ -63,27 +60,6 @@ def _boot(cs, args, reservation_id=None, min_count=None, max_count=None):
     key_name = None
     if args.key_name is not None:
         key_name = args.key_name
-
-    # or use file injection functionality (independent of os-keypair extension)
-    keyfile = None
-    if args.key_path is AUTO_KEY:
-        possible_keys = [os.path.join(os.path.expanduser('~'), '.ssh', k)
-                         for k in ('id_dsa.pub', 'id_rsa.pub')]
-        for k in possible_keys:
-            if os.path.exists(k):
-                keyfile = k
-                break
-        else:
-            raise exceptions.CommandError("Couldn't find a key file: tried "
-                               "~/.ssh/id_dsa.pub or ~/.ssh/id_rsa.pub")
-    elif args.key_path:
-        keyfile = args.key_path
-
-    if keyfile:
-        try:
-            files['/root/.ssh/authorized_keys2'] = open(keyfile)
-        except IOError, e:
-            raise exceptions.CommandError("Can't open '%s': %s" % (keyfile, e))
 
     if args.user_data:
         try:
@@ -156,13 +132,6 @@ def _boot(cs, args, reservation_id=None, min_count=None, max_count=None):
      default=[],
      help="Store arbitrary files from <src-path> locally to <dst-path> "\
           "on the new server. You may store up to 5 files.")
-@utils.arg('--key_path',
-     metavar='<key_path>',
-     nargs='?',
-     const=AUTO_KEY,
-     help="Key the server with an SSH keypair. "\
-          "Looks in ~/.ssh for a key, "\
-          "or takes an explicit <path> to one. (uses --file functionality)")
 @utils.arg('--key_name',
      metavar='<key_name>',
      help="Key name of keypair that should be created earlier with \
@@ -244,13 +213,6 @@ def do_boot(cs, args):
      default=[],
      help="Store arbitrary files from <src-path> locally to <dst-path> "\
           "on the new server. You may store up to 5 files.")
-@utils.arg('--key',
-     metavar='<path>',
-     nargs='?',
-     const=AUTO_KEY,
-     help="Key the server with an SSH keypair. "\
-          "Looks in ~/.ssh for a key, "\
-          "or takes an explicit <path> to one.")
 @utils.arg('--reservation_id',
      default=None,
      metavar='<reservation_id>',
