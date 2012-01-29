@@ -361,4 +361,5 @@ def main():
             raise  # dump stack.
         else:
             print >> sys.stderr, e
+            raise
         sys.exit(1)
