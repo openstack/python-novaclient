@@ -1,0 +1,5 @@
+python-novaclient (2012.1-1) oneiric; urgency=low
+
+  * source package automatically created by stdeb 0.6.0+git
+
+ -- Rackspace, based on work by Jacob Kaplan-Moss <github@racklabs.com>  Mon, 30 Jan 2012 01:55:25 -0800

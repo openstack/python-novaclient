@@ -1,0 +1,31 @@
+Source: python-novaclient
+Maintainer: Rackspace, based on work by Jacob Kaplan-Moss <github@racklabs.com>
+Section: python
+Priority: optional
+Build-Depends: python-setuptools (>= 0.6b3), python-all (>= 2.6.6-3), debhelper (>= 7.4.3)
+Standards-Version: 3.9.1
+
+Package: python-novaclient
+Architecture: all
+Depends: ${misc:Depends}, ${python:Depends}
+Description: Client library for OpenStack Nova API.
+ Python bindings to the OpenStack Nova API
+ ==================================================
+ .
+ This is a client for the OpenStack Nova API. There's a Python API (the
+ ``novaclient`` module), and a command-line script (``nova``). Each
+ implements 100% of the OpenStack Nova API.
+ .
+ [PENDING] `Full documentation is available`__.
+ .
+ __ http://packages.python.org/python-novaclient/
+ .
+ You'll also probably want to read `OpenStack Compute Developer Guide API`__ --
+ the first bit, at least -- to get an idea of the concepts. Rackspace is doing
+ the cloud hosting thing a bit differently from Amazon, and if you get the
+ concepts this library should make more sense.
+ .
+ __ http://docs.openstack.org/api/
+ .
+ The project is hosted on `Launchpad`_, where bugs can be filed. The code is
+ hosted on `Github`_. Patches must be submitted using `Gerrit`_, *not* Github
