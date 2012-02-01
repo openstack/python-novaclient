@@ -29,7 +29,7 @@ class BootingManagerWithFind(base.ManagerWithFind):
               reservation_id=None, return_raw=False, min_count=None,
               max_count=None, security_groups=None, key_name=None,
               availability_zone=None, block_device_mapping=None, nics=None,
-              **kwargs):
+              scheduler_hints=None, **kwargs):
         """
         Create (boot) a new server.
 
@@ -59,6 +59,8 @@ class BootingManagerWithFind(base.ManagerWithFind):
         :param nics:  (optional extension) an ordered list of nics to be
                       added to this server, with information about
                       connected networks, fixed ips, etc.
+        :param scheduler_hints: (optional extension) arbitrary key-value pairs
+                              specified by the client to help boot an instance.
         """
         body = {"server": {
             "name": name,
@@ -77,7 +79,8 @@ class BootingManagerWithFind(base.ManagerWithFind):
             body["server"]["blob"] = zone_blob
         if key_name:
             body["server"]["key_name"] = key_name
-
+        if scheduler_hints:
+            body['os:scheduler_hints'] = scheduler_hints
         if not min_count:
             min_count = 1
         if not max_count:

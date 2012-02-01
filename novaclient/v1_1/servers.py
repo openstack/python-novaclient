@@ -355,7 +355,8 @@ class ServerManager(local_base.BootingManagerWithFind):
                zone_blob=None, reservation_id=None, min_count=None,
                max_count=None, security_groups=None, userdata=None,
                key_name=None, availability_zone=None,
-               block_device_mapping=None, nics=None, **kwargs):
+               block_device_mapping=None, nics=None, scheduler_hints=None,
+               **kwargs):
         # TODO: (anthony) indicate in doc string if param is an extension
         # and/or optional
         """
@@ -387,6 +388,8 @@ class ServerManager(local_base.BootingManagerWithFind):
         :param nics:  (optional extension) an ordered list of nics to be
                       added to this server, with information about
                       connected networks, fixed ips, etc.
+        :param scheduler_hints: (optional extension) arbitrary key-value pairs
+                            specified by the client to help boot an instance
         """
         if not min_count:
             min_count = 1
@@ -402,7 +405,7 @@ class ServerManager(local_base.BootingManagerWithFind):
             reservation_id=reservation_id, min_count=min_count,
             max_count=max_count, security_groups=security_groups,
             key_name=key_name, availability_zone=availability_zone,
-            **kwargs)
+            scheduler_hints=scheduler_hints, **kwargs)
 
         if block_device_mapping:
             resource_url = "/os-volumes_boot"
