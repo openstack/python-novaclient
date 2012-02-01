@@ -265,3 +265,12 @@ class ServersTest(utils.TestCase):
         cs.servers.create_image(s, '123')
         cs.assert_called('POST', '/servers/1234/action')
         cs.servers.create_image(s, '123', {})
+
+    def test_live_migrate_server(self):
+        s = cs.servers.get(1234)
+        s.live_migrate(host='hostname', block_migration=False,
+                       disk_over_commit=False)
+        cs.assert_called('POST', '/servers/1234/action')
+        cs.servers.live_migrate(s, host='hostname', block_migration=False,
+                                disk_over_commit=False)
+        cs.assert_called('POST', '/servers/1234/action')

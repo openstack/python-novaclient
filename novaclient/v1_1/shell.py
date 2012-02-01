@@ -1500,3 +1500,19 @@ def _print_aggregate_details(aggregate):
     columns = ['Id', 'Name', 'Availability Zone', 'Operational State',
                'Hosts', 'Metadata']
     utils.print_list([aggregate], columns)
+
+
+@utils.arg('server', metavar='<server>', help='Name or ID of server.')
+@utils.arg('host', metavar='<host>', help='destination host name.')
+@utils.arg('--block_migrate', action='store_true', dest='block_migrate',
+           default=False,
+           help='True in case of block_migration.\
+                (Default=False:live_migration)')
+@utils.arg('--disk_over_commit', action='store_true', dest='disk_over_commit',
+           default=False,
+           help='Allow overcommit.(Default=Flase)')
+def do_live_migration(cs, args):
+    """Migrates a running instance to a new machine."""
+    _find_server(cs, args.server).live_migrate(args.host,
+                                               args.block_migrate,
+                                               args.disk_over_commit)
