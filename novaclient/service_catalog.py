@@ -29,16 +29,19 @@ class ServiceCatalog(object):
         return self.catalog['access']['token']['id']
 
     def url_for(self, attr=None, filter_value=None,
-                    service_type='compute', endpoint_type='publicURL'):
+                    service_type='compute', endpoint_type='publicURL',
+                    service_name=None):
         """Fetch the public URL from the Compute service for
         a particular endpoint attribute. If none given, return
         the first. See tests for sample service catalog."""
+        matching_endpoints = []
         if 'endpoints' in self.catalog:
             # We have a bastardized service catalog. Treat it special. :/
             for endpoint in self.catalog['endpoints']:
                 if not filter_value or endpoint[attr] == filter_value:
-                    return endpoint[endpoint_type]
-            raise novaclient.exceptions.EndpointNotFound()
+                    matching_endpoints.append(endpoint)
+            if not matching_endpoints:
+                raise novaclient.exceptions.EndpointNotFound()
 
         # We don't always get a service catalog back ...
         if not 'serviceCatalog' in self.catalog['access']:
@@ -51,9 +54,19 @@ class ServiceCatalog(object):
             if service['type'] != service_type:
                 continue
 
+            if service_name and service.get('name') != service_name:
+                continue
+
             endpoints = service['endpoints']
             for endpoint in endpoints:
                 if not filter_value or endpoint[attr] == filter_value:
-                    return endpoint[endpoint_type]
+                    endpoint["serviceName"] = service.get("name")
+                    matching_endpoints.append(endpoint)
 
-        raise novaclient.exceptions.EndpointNotFound()
+        if not matching_endpoints:
+            raise novaclient.exceptions.EndpointNotFound()
+        elif len(matching_endpoints) > 1:
+            raise novaclient.exceptions.AmbiguousEndpoints(
+                    endpoints=matching_endpoints)
+        else:
+            return matching_endpoints[0][endpoint_type]

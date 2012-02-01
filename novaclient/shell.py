@@ -111,9 +111,13 @@ class OpenStackComputeShell(object):
             default=env('NOVA_REGION_NAME'),
             help='Defaults to env[NOVA_REGION_NAME].')
 
-        parser.add_argument('--endpoint_name',
-            default=env('NOVA_ENDPOINT_NAME'),
-            help='Defaults to env[NOVA_ENDPOINT_NAME] or "publicURL".')
+        parser.add_argument('--service_name',
+            default=env('NOVA_SERVICE_NAME'),
+            help='Defaults to env[NOVA_SERVICE_NAME]')
+
+        parser.add_argument('--endpoint_type',
+            default=env('NOVA_ENDPOINT_TYPE'),
+            help='Defaults to env[NOVA_ENDPOINT_TYPE] or "publicURL".')
 
         parser.add_argument('--version',
             default=env('NOVA_VERSION'),
@@ -247,12 +251,13 @@ class OpenStackComputeShell(object):
             return 0
 
         (user, apikey, password, projectid, url, region_name,
-                endpoint_name, insecure) = (args.username, args.apikey,
-                        args.password, args.projectid, args.url,
-                        args.region_name, args.endpoint_name, args.insecure)
+                endpoint_type, insecure, service_name) = (args.username,
+                        args.apikey, args.password, args.projectid, args.url,
+                        args.region_name, args.endpoint_type, args.insecure,
+                        args.service_name)
 
-        if not endpoint_name:
-            endpoint_name = 'publicURL'
+        if not endpoint_type:
+            endpoint_type = 'publicURL'
 
         #FIXME(usrleon): Here should be restrict for project id same as
         # for username or password but for compatibility it is not.
@@ -294,8 +299,9 @@ class OpenStackComputeShell(object):
         self.cs = client.Client(options.version, user, password,
                                 projectid, url, insecure,
                                 region_name=region_name,
-                                endpoint_name=endpoint_name,
-                                extensions=self.extensions)
+                                endpoint_type=endpoint_type,
+                                extensions=self.extensions,
+                                service_name=service_name)
 
         try:
             if not utils.isunauthenticated(args.func):

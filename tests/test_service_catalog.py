@@ -103,8 +103,7 @@ class ServiceCatalogTest(utils.TestCase):
     def test_building_a_service_catalog(self):
         sc = service_catalog.ServiceCatalog(SERVICE_CATALOG)
 
-        self.assertEquals(sc.url_for(),
-                            "https://compute1.host/v1/1234")
+        self.assertRaises(exceptions.AmbiguousEndpoints, sc.url_for)
         self.assertEquals(sc.url_for('tenantId', '1'),
                             "https://compute1.host/v1/1234")
         self.assertEquals(sc.url_for('tenantId', '2'),

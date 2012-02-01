@@ -39,7 +39,8 @@ class Client(object):
     # FIXME(jesse): project_id isn't required to authenticate
     def __init__(self, username, api_key, project_id, auth_url,
                   insecure=False, timeout=None, token=None, region_name=None,
-                  endpoint_name='publicURL', extensions=None):
+                  endpoint_type='publicURL', extensions=None,
+                  service_name=None):
         # FIXME(comstud): Rename the api_key argument above when we
         # know it's not being used as keyword argument
         password = api_key
@@ -82,7 +83,8 @@ class Client(object):
                                         timeout=timeout,
                                         token=token,
                                         region_name=region_name,
-                                        endpoint_name=endpoint_name)
+                                        endpoint_type=endpoint_type,
+                                        service_name=service_name)
 
     def authenticate(self):
         """

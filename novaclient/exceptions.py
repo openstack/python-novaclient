@@ -29,6 +29,15 @@ class EndpointNotFound(Exception):
     pass
 
 
+class AmbiguousEndpoints(Exception):
+    """Found more than one matching endpoint in Service Catalog."""
+    def __init__(self, endpoints=None):
+        self.endpoints = endpoints
+
+    def __str__(self):
+        return "AmbiguousEndpoints: %s" % repr(self.endpoints)
+
+
 class ClientException(Exception):
     """
     The base exception class for all exceptions this library raises.

@@ -36,7 +36,7 @@ class HTTPClient(httplib2.Http):
 
     def __init__(self, user, password, projectid, auth_url, insecure=False,
                  timeout=None, token=None, region_name=None,
-                 endpoint_name='publicURL'):
+                 endpoint_type='publicURL', service_name=None):
         super(HTTPClient, self).__init__(timeout=timeout)
         self.user = user
         self.password = password
@@ -44,7 +44,8 @@ class HTTPClient(httplib2.Http):
         self.auth_url = auth_url
         self.version = 'v1.1'
         self.region_name = region_name
-        self.endpoint_name = endpoint_name
+        self.endpoint_type = endpoint_type
+        self.service_name = service_name
 
         self.management_url = None
         self.auth_token = None
@@ -154,8 +155,13 @@ class HTTPClient(httplib2.Http):
                 self.management_url = self.service_catalog.url_for(
                                            attr='region',
                                            filter_value=self.region_name,
-                                           endpoint_type=self.endpoint_name)
+                                           endpoint_type=self.endpoint_type,
+                                           service_name=self.service_name)
                 return None
+            except exceptions.AmbiguousEndpoints, exc:
+                print "Found more than one valid endpoint. Use a more " \
+                      "restrictive filter"
+                raise
             except KeyError:
                 raise exceptions.AuthorizationFailure()
             except exceptions.EndpointNotFound:
