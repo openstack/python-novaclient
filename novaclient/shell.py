@@ -34,16 +34,19 @@ from novaclient.keystone import shell as shell_keystone
 from novaclient import utils
 from novaclient.v1_1 import shell as shell_v1_1
 
+DEFAULT_NOVA_VERSION = "1.1"
 
-def env(*vars):
+
+def env(*vars, **kwargs):
     """
     returns the first environment variable set
+    if none are non-empty, defaults to '' or keyword arg default
     """
     for v in vars:
         value = os.environ.get(v, None)
         if value:
             return value
-    return ''
+    return kwargs.get('default', '')
 
 
 class NovaClientArgumentParser(argparse.ArgumentParser):
@@ -120,7 +123,7 @@ class OpenStackComputeShell(object):
             help='Defaults to env[NOVA_ENDPOINT_TYPE] or "publicURL".')
 
         parser.add_argument('--version',
-            default=env('NOVA_VERSION'),
+            default=env('NOVA_VERSION', default=DEFAULT_NOVA_VERSION),
             help='Accepts 1.1, defaults to env[NOVA_VERSION].')
 
         parser.add_argument('--insecure',
@@ -368,3 +371,7 @@ def main():
         else:
             print >> sys.stderr, e
         sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()
