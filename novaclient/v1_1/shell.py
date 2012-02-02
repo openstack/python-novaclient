@@ -1349,7 +1349,8 @@ def do_usage_list(cs, args):
     if args.end:
         end = datetime.datetime.strptime(args.end, dateformat)
     else:
-        end = datetime.datetime.tomorrow()
+        end = (datetime.datetime.today() +
+                 datetime.timedelta(days=1))
 
     def simplify_usage(u):
         simplerows = map(lambda x: x.lower().replace(" ", "_"), rows)
