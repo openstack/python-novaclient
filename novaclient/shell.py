@@ -35,6 +35,7 @@ from novaclient import utils
 from novaclient.v1_1 import shell as shell_v1_1
 
 DEFAULT_NOVA_VERSION = "1.1"
+DEFAULT_NOVA_ENDPOINT_TYPE = 'publicURL'
 
 
 def env(*vars, **kwargs):
@@ -94,33 +95,31 @@ class OpenStackComputeShell(object):
             default=env('OS_USERNAME', 'NOVA_USERNAME'),
             help='Defaults to env[OS_USERNAME].')
 
-        parser.add_argument('--apikey',
-            default=env('NOVA_API_KEY'),
-            help='Defaults to env[NOVA_API_KEY].')
-
         parser.add_argument('--password',
             default=env('OS_PASSWORD', 'NOVA_PASSWORD'),
             help='Defaults to env[OS_PASSWORD].')
 
-        parser.add_argument('--projectid',
+        parser.add_argument('--tenant_name',
             default=env('OS_TENANT_NAME', 'NOVA_PROJECT_ID'),
             help='Defaults to env[OS_TENANT_NAME].')
 
-        parser.add_argument('--url',
+        parser.add_argument('--auth_url',
             default=env('OS_AUTH_URL', 'NOVA_URL'),
             help='Defaults to env[OS_AUTH_URL].')
 
         parser.add_argument('--region_name',
-            default=env('NOVA_REGION_NAME'),
-            help='Defaults to env[NOVA_REGION_NAME].')
+            default=env('OS_REGION_NAME', 'NOVA_REGION_NAME'),
+            help='Defaults to env[OS_REGION_NAME].')
 
         parser.add_argument('--service_name',
             default=env('NOVA_SERVICE_NAME'),
             help='Defaults to env[NOVA_SERVICE_NAME]')
 
         parser.add_argument('--endpoint_type',
-            default=env('NOVA_ENDPOINT_TYPE'),
-            help='Defaults to env[NOVA_ENDPOINT_TYPE] or "publicURL".')
+            default=env('NOVA_ENDPOINT_TYPE',
+                        default=DEFAULT_NOVA_ENDPOINT_TYPE),
+            help='Defaults to env[NOVA_ENDPOINT_TYPE] or '
+                    + DEFAULT_NOVA_ENDPOINT_TYPE + '.')
 
         parser.add_argument('--version',
             default=env('NOVA_VERSION', default=DEFAULT_NOVA_VERSION),
@@ -129,6 +128,21 @@ class OpenStackComputeShell(object):
         parser.add_argument('--insecure',
             default=False,
             action='store_true',
+            help=argparse.SUPPRESS)
+
+        # alias for --password, left in for backwards compatibility
+        parser.add_argument('--apikey',
+            default=env('NOVA_API_KEY'),
+            help=argparse.SUPPRESS)
+
+        # alias for --tenant_name, left in for backward compatibility
+        parser.add_argument('--projectid',
+            default=env('NOVA_PROJECT_ID'),
+            help=argparse.SUPPRESS)
+
+        # alias for --auth_url, left in for backward compatibility
+        parser.add_argument('--url',
+            default=env('NOVA_URL'),
             help=argparse.SUPPRESS)
 
         return parser
@@ -253,54 +267,56 @@ class OpenStackComputeShell(object):
             self.do_bash_completion(args)
             return 0
 
-        (user, apikey, password, projectid, url, region_name,
-                endpoint_type, insecure, service_name) = (args.username,
-                        args.apikey, args.password, args.projectid, args.url,
-                        args.region_name, args.endpoint_type, args.insecure,
-                        args.service_name)
+        (user, apikey, password, projectid, tenant_name, url, auth_url,
+                region_name, endpoint_type, insecure, service_name) = (
+                        args.username, args.apikey, args.password,
+                        args.projectid, args.tenant_name, args.url,
+                        args.auth_url, args.region_name, args.endpoint_type,
+                        args.insecure, args.service_name)
 
         if not endpoint_type:
-            endpoint_type = 'publicURL'
+            endpoint_type = DEFAULT_NOVA_ENDPOINT_TYPE
 
         #FIXME(usrleon): Here should be restrict for project id same as
         # for username or password but for compatibility it is not.
 
         if not utils.isunauthenticated(args.func):
             if not user:
-                raise exc.CommandError("You must provide a username, either "
-                                       "via --username or via "
-                                       "env[OS_USERNAME]")
+                raise exc.CommandError("You must provide a username "
+                        "via either --username or env[OS_USERNAME]")
 
             if not password:
                 if not apikey:
-                    raise exc.CommandError("You must provide a password, "
-                            "either via --password or via env[OS_PASSWORD]")
+                    raise exc.CommandError("You must provide a password "
+                            "via either --password or via env[OS_PASSWORD]")
                 else:
                     password = apikey
 
-            if not projectid:
-                raise exc.CommandError("You must provide an projectid, either "
-                                       "via --projectid or via "
-                                       "env[OS_TENANT_NAME]")
+            if not tenant_name:
+                if not projectid:
+                    raise exc.CommandError("You must provide a tenant name "
+                            "via either --tenant_name or env[OS_TENANT_NAME]")
+                else:
+                    tenant_name = projectid
 
-            if not url:
-                raise exc.CommandError("You must provide a auth url, either "
-                                       "via --url or via "
-                                       "env[OS_AUTH_URL]")
+            if not auth_url:
+                if not url:
+                    raise exc.CommandError("You must provide an auth url "
+                            "via either --auth_url or env[OS_AUTH_URL]")
+                else:
+                    auth_url = url
 
         if options.version and options.version != '1.0':
-            if not projectid:
-                raise exc.CommandError("You must provide an projectid, "
-                                       "either via --projectid or via "
-                                       "env[NOVA_PROJECT_ID]")
+            if not tenant_name:
+                raise exc.CommandError("You must provide a tenant name "
+                        "via either --tenant_name or env[OS_TENANT_NAME]")
 
-            if not url:
-                raise exc.CommandError("You must provide a auth url,"
-                                       " either via --url or via "
-                                       "env[NOVA_URL]")
+            if not auth_url:
+                raise exc.CommandError("You must provide an auth url "
+                        "via either --auth_url or env[OS_AUTH_URL]")
 
         self.cs = client.Client(options.version, user, password,
-                                projectid, url, insecure,
+                                tenant_name, auth_url, insecure,
                                 region_name=region_name,
                                 endpoint_type=endpoint_type,
                                 extensions=self.extensions,
