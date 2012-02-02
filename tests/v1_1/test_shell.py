@@ -366,3 +366,22 @@ class ShellTest(utils.TestCase):
     def test_aggregate_details(self):
         self.run_command('aggregate-details 1')
         self.assert_called('GET', '/os-aggregates/1')
+
+    def test_live_migration(self):
+        self.run_command('live-migration sample-server hostname')
+        self.assert_called('POST', '/servers/1234/action',
+                           {'os-migrateLive': {'host': 'hostname',
+                                            'block_migration': False,
+                                            'disk_over_commit': False}})
+        self.run_command('live-migration sample-server hostname \
+                         --block_migrate')
+        self.assert_called('POST', '/servers/1234/action',
+                           {'os-migrateLive': {'host': 'hostname',
+                                            'block_migration': True,
+                                            'disk_over_commit': False}})
+        self.run_command('live-migration sample-server hostname \
+                         --block_migrate --disk_over_commit')
+        self.assert_called('POST', '/servers/1234/action',
+                           {'os-migrateLive': {'host': 'hostname',
+                                            'block_migration': True,
+                                            'disk_over_commit': True}})

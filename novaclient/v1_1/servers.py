@@ -216,6 +216,16 @@ class Server(base.Resource):
         except Exception:
             return {}
 
+    def live_migrate(self, host,
+                     block_migration=False,
+                     disk_over_commit=False):
+        """
+        Migrates a running instance to a new machine.
+        """
+        self.manager.live_migrate(self, host,
+                                  block_migration,
+                                  disk_over_commit)
+
 
 class ServerManager(local_base.BootingManagerWithFind):
     resource_class = Server
@@ -552,6 +562,21 @@ class ServerManager(local_base.BootingManagerWithFind):
         """
         for k in keys:
             self._delete("/servers/%s/metadata/%s" % (base.getid(server), k))
+
+    def live_migrate(self, server, host, block_migration, disk_over_commit):
+        """
+        Migrates a running instance to a new machine.
+
+        :param server: instance id which comes from nova list.
+        :param host: destination host name.
+        :param block_migration: if True, do block_migration.
+        :param disk_over_commit: if True, Allow overcommit.
+
+        """
+        self._action('os-migrateLive', server,
+                     {'host': host,
+                      'block_migration': block_migration,
+                      'disk_over_commit': disk_over_commit})
 
     def _action(self, action, server, info=None, **kwargs):
         """
