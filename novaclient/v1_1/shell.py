@@ -480,10 +480,20 @@ def do_image_delete(cs, args):
     metavar='<hostname>',
     default=None,
     help='Search instances by hostname to which they are assigned')
+@utils.arg('--all_tenants',
+    dest='all_tenants',
+    metavar='<0|1>',
+    nargs='?',
+    type=int,
+    const=1,
+    default=0,
+    help='Display information from all tenants (Admin only).')
 def do_list(cs, args):
     """List active servers."""
     recurse_zones = args.recurse_zones
+    all_tenants = int(os.environ.get("ALL_TENANTS", args.all_tenants))
     search_opts = {
+            'all_tenants': all_tenants,
             'reservation_id': args.reservation_id,
             'recurse_zones': recurse_zones,
             'ip': args.ip,
