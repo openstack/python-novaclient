@@ -750,3 +750,17 @@ class FakeHTTPClient(base_client.HTTPClient):
 
     def delete_os_aggregates_1(self, **kw):
         return (202, None)
+
+    #
+    # Hosts
+    #
+    def get_os_hosts_host(self, *kw):
+        return (200, {'host':
+                [{'resource': {'project': '(total)', 'host': 'dummy',
+                  'cpu': 16, 'memory_mb': 32234, 'disk_gb': 128}},
+                 {'resource': {'project': '(used_now)', 'host': 'dummy',
+                  'cpu': 1, 'memory_mb': 2075, 'disk_gb': 45}},
+                 {'resource': {'project': '(used_max)', 'host': 'dummy',
+                  'cpu': 1, 'memory_mb': 2048, 'disk_gb': 30}},
+                 {'resource': {'project': 'admin', 'host': 'dummy',
+                  'cpu': 1, 'memory_mb': 2048, 'disk_gb': 30}}]})
