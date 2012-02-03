@@ -30,7 +30,6 @@ import sys
 from novaclient import client
 from novaclient import exceptions as exc
 import novaclient.extension
-from novaclient.keystone import shell as shell_keystone
 from novaclient import utils
 from novaclient.v1_1 import shell as shell_v1_1
 
@@ -163,7 +162,6 @@ class OpenStackComputeShell(object):
             actions_module = shell_v1_1
 
         self._find_actions(subparsers, actions_module)
-        self._find_actions(subparsers, shell_keystone)
         self._find_actions(subparsers, self)
 
         for extension in self.extensions:

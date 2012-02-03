@@ -225,14 +225,6 @@ Quick-start using keystone::
     >>> nt.keypairs.list()
     [...]
 
-    # if you want to use the keystone api to modify users/tenants:
-    >>> from novaclient import client
-    >>> conn = client.HTTPClient(USER, PASS, TENANT, KEYSTONE_URL)
-    >>> from novaclient import keystone
-    >>> kc = keystone.Client(conn.client)
-    >>> kc.tenants.list()
-    [...]
-
 What's new?
 -----------
 
