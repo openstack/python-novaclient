@@ -1517,3 +1517,11 @@ def do_live_migration(cs, args):
     _find_server(cs, args.server).live_migrate(args.host,
                                                args.block_migrate,
                                                args.disk_over_commit)
+
+
+@utils.arg('host', metavar='<hostname>', help='Name of host.')
+def do_describe_resource(cs, args):
+    """Show details about a resource"""
+    result = cs.hosts.get(args.host)
+    columns = ["HOST", "PROJECT", "cpu", "memory_mb", "disk_gb"]
+    utils.print_list(result, columns)
