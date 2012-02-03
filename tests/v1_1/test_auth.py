@@ -55,6 +55,7 @@ class AuthenticateAgainstKeystoneTests(utils.TestCase):
             headers = {
                 'User-Agent': cs.client.USER_AGENT,
                 'Content-Type': 'application/json',
+                'Accept': 'application/json',
             }
             body = {
                 'auth': {
@@ -152,6 +153,7 @@ class AuthenticateAgainstKeystoneTests(utils.TestCase):
             headers = {
                 'User-Agent': cs.client.USER_AGENT,
                 'Content-Type': 'application/json',
+                'Accept': 'application/json',
             }
             body = {
                 'auth': {
@@ -244,6 +246,7 @@ class AuthenticationTests(utils.TestCase):
         def test_auth_call():
             cs.client.authenticate()
             headers = {
+                'Accept': 'application/json',
                 'X-Auth-User': 'username',
                 'X-Auth-Key': 'password',
                 'X-Auth-Project-Id': 'project_id',
