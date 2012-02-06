@@ -7,7 +7,7 @@ _nova()
 
     opts="$(nova bash_completion)"
 
-    UUID_CACHE=~/.novaclient_cached_*_uuids
+    UUID_CACHE=~/.novaclient/*-uuid-cache
     opts+=" "$(cat $UUID_CACHE 2> /dev/null | tr '\n' ' ')
 
     COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
