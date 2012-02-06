@@ -109,11 +109,11 @@ def print_list(objs, fields, formatters={}):
     pt.printt(sortby=fields[0])
 
 
-def print_dict(d):
-    pt = prettytable.PrettyTable(['Property', 'Value'], caching=False)
+def print_dict(d, property="Property"):
+    pt = prettytable.PrettyTable([property, 'Value'], caching=False)
     pt.aligns = ['l', 'l']
     [pt.add_row(list(r)) for r in d.iteritems()]
-    pt.printt(sortby='Property')
+    pt.printt(sortby=property)
 
 
 def find_resource(manager, name_or_id):

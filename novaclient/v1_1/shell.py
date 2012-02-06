@@ -1535,3 +1535,17 @@ def do_describe_resource(cs, args):
     result = cs.hosts.get(args.host)
     columns = ["HOST", "PROJECT", "cpu", "memory_mb", "disk_gb"]
     utils.print_list(result, columns)
+
+
+def do_endpoints(cs, args):
+    """Discover endpoints that get returned from the authenticate services"""
+    catalog = cs.client.service_catalog.catalog
+    for e in catalog['access']['serviceCatalog']:
+        utils.print_dict(e['endpoints'][0], e['name'])
+
+
+def do_credentials(cs, args):
+    """Show user credentials returned from auth"""
+    catalog = cs.client.service_catalog.catalog
+    utils.print_dict(catalog['access']['user'], "User Credentials")
+    utils.print_dict(catalog['access']['token'], "Token")
