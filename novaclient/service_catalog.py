@@ -51,7 +51,7 @@ class ServiceCatalog(object):
         catalog = self.catalog['access']['serviceCatalog']
 
         for service in catalog:
-            if service['type'] != service_type:
+            if service.get("type") != service_type:
                 continue
 
             if service_name and service.get('name') != service_name:
@@ -59,7 +59,7 @@ class ServiceCatalog(object):
 
             endpoints = service['endpoints']
             for endpoint in endpoints:
-                if not filter_value or endpoint[attr] == filter_value:
+                if not filter_value or endpoint.get(attr) == filter_value:
                     endpoint["serviceName"] = service.get("name")
                     matching_endpoints.append(endpoint)
 
