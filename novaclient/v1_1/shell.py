@@ -103,6 +103,13 @@ def _boot(cs, args, reservation_id=None, min_count=None, max_count=None):
         hints = {}
     boot_args = [args.name, image, flavor]
 
+    if str(args.config_drive).lower() in ("true", "1"):
+        config_drive = True
+    elif str(args.config_drive).lower() in ("false", "0", "", "none"):
+        config_drive = None
+    else:
+        config_drive = args.config_drive
+
     boot_kwargs = dict(
             meta=meta,
             files=files,
@@ -115,7 +122,8 @@ def _boot(cs, args, reservation_id=None, min_count=None, max_count=None):
             security_groups=security_groups,
             block_device_mapping=block_device_mapping,
             nics=nics,
-            scheduler_hints=hints)
+            scheduler_hints=hints,
+            config_drive=config_drive)
 
     return boot_args, boot_kwargs
 
@@ -179,6 +187,11 @@ def _boot(cs, args, reservation_id=None, min_count=None, max_count=None):
            "Specify option multiple times to create multiple NICs.\n"
            "net-id: attach NIC to network with this UUID (optional)\n"
            "v4-fixed-ip: IPv4 fixed address for NIC (optional).")
+@utils.arg('--config-drive',
+     metavar="<value>",
+     dest='config_drive',
+     default=False,
+     help="Enable config drive")
 def do_boot(cs, args):
     """Boot a new server."""
     boot_args, boot_kwargs = _boot(cs, args)

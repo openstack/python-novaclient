@@ -366,7 +366,7 @@ class ServerManager(local_base.BootingManagerWithFind):
                max_count=None, security_groups=None, userdata=None,
                key_name=None, availability_zone=None,
                block_device_mapping=None, nics=None, scheduler_hints=None,
-               **kwargs):
+               config_drive=None, **kwargs):
         # TODO: (anthony) indicate in doc string if param is an extension
         # and/or optional
         """
@@ -400,6 +400,8 @@ class ServerManager(local_base.BootingManagerWithFind):
                       connected networks, fixed ips, etc.
         :param scheduler_hints: (optional extension) arbitrary key-value pairs
                             specified by the client to help boot an instance
+        :param config_drive: (optional extension) value for config drive
+                            either boolean, or volume-id
         """
         if not min_count:
             min_count = 1
@@ -415,7 +417,8 @@ class ServerManager(local_base.BootingManagerWithFind):
             reservation_id=reservation_id, min_count=min_count,
             max_count=max_count, security_groups=security_groups,
             key_name=key_name, availability_zone=availability_zone,
-            scheduler_hints=scheduler_hints, **kwargs)
+            scheduler_hints=scheduler_hints, config_drive=config_drive,
+            **kwargs)
 
         if block_device_mapping:
             resource_url = "/os-volumes_boot"
