@@ -1,7 +1,6 @@
 import httplib2
 import json
 import mock
-import urlparse
 
 from novaclient.v1_1 import client
 from novaclient import exceptions
@@ -67,14 +66,14 @@ class AuthenticateAgainstKeystoneTests(utils.TestCase):
                 },
             }
 
-            token_url = urlparse.urljoin(cs.client.auth_url, "tokens")
+            token_url = cs.client.auth_url + "/tokens"
             mock_request.assert_called_with(token_url, "POST",
                                             headers=headers,
                                             body=json.dumps(body))
 
-            self.assertEqual(cs.client.management_url,
-                        resp["access"]["serviceCatalog"][0]
-                                      ['endpoints'][0]["publicURL"])
+            endpoints = resp["access"]["serviceCatalog"][0]['endpoints']
+            public_url = endpoints[0]["publicURL"].rstrip('/')
+            self.assertEqual(cs.client.management_url, public_url)
             token_id = resp["access"]["token"]["id"]
             self.assertEqual(cs.client.auth_token, token_id)
 
@@ -165,15 +164,15 @@ class AuthenticateAgainstKeystoneTests(utils.TestCase):
                  },
             }
 
-            token_url = urlparse.urljoin(cs.client.auth_url, "tokens")
+            token_url = cs.client.auth_url + "/tokens"
             mock_request.assert_called_with(token_url, "POST",
                                             headers=headers,
                                             body=json.dumps(body))
 
             resp = dict_correct_response
-            self.assertEqual(cs.client.management_url,
-                             resp["access"]["serviceCatalog"][0]
-                                 ['endpoints'][0]["publicURL"])
+            endpoints = resp["access"]["serviceCatalog"][0]['endpoints']
+            public_url = endpoints[0]["publicURL"].rstrip('/')
+            self.assertEqual(cs.client.management_url, public_url)
             token_id = resp["access"]["token"]["id"]
             self.assertEqual(cs.client.auth_token, token_id)
 
