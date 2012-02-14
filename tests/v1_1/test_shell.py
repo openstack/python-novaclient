@@ -385,3 +385,31 @@ class ShellTest(utils.TestCase):
                            {'os-migrateLive': {'host': 'hostname',
                                             'block_migration': True,
                                             'disk_over_commit': True}})
+
+    def test_host_update_status(self):
+        self.run_command('host-update sample-host_1 --status enabled')
+        body = {'status': 'enabled'}
+        self.assert_called('PUT', '/os-hosts/sample-host_1', body)
+
+    def test_host_update_maintenance(self):
+        self.run_command('host-update sample-host_2 --maintenance enable')
+        body = {'maintenance_mode': 'enable'}
+        self.assert_called('PUT', '/os-hosts/sample-host_2', body)
+
+    def test_host_update_multiple_settings(self):
+        self.run_command('host-update sample-host_3 '
+                         '--status disabled --maintenance enable')
+        body = {'status': 'disabled', 'maintenance_mode': 'enable'}
+        self.assert_called('PUT', '/os-hosts/sample-host_3', body)
+
+    def test_host_startup(self):
+        self.run_command('host-action sample-host --action startup')
+        self.assert_called('GET', '/os-hosts/sample-host/startup')
+
+    def test_host_shutdown(self):
+        self.run_command('host-action sample-host --action shutdown')
+        self.assert_called('GET', '/os-hosts/sample-host/shutdown')
+
+    def test_host_reboot(self):
+        self.run_command('host-action sample-host --action reboot')
+        self.assert_called('GET', '/os-hosts/sample-host/reboot')

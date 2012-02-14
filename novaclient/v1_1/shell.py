@@ -1408,6 +1408,36 @@ def do_describe_resource(cs, args):
     utils.print_list(result, columns)
 
 
+@utils.arg('host', metavar='<hostname>', help='Name of host.')
+@utils.arg('--status', metavar='<status>', default=None, dest='status',
+           help='Either enable or disable a host.')
+@utils.arg('--maintenance', metavar='<maintenance_mode>', default=None,
+           dest='maintenance',
+           help='Either put or resume host to/from maintenance.')
+def do_host_update(cs, args):
+    """Update host settings."""
+    updates = {}
+    columns = ["HOST"]
+    if args.status:
+        updates['status'] = args.status
+        columns.append("status")
+    if args.maintenance:
+        updates['maintenance_mode'] = args.maintenance
+        columns.append("maintenance_mode")
+    result = cs.hosts.update(args.host, updates)
+    utils.print_list([result], columns)
+
+
+@utils.arg('host', metavar='<hostname>', help='Name of host.')
+@utils.arg('--action', metavar='<action>', dest='action',
+           choices=['startup', 'shutdown', 'reboot'],
+           help='A power action: startup, reboot, or shutdown.')
+def do_host_action(cs, args):
+    """Perform a power action on a host."""
+    result = cs.hosts.host_action(args.host, args.action)
+    utils.print_list([result], ['HOST', 'power_action'])
+
+
 def do_endpoints(cs, args):
     """Discover endpoints that get returned from the authenticate services"""
     catalog = cs.client.service_catalog.catalog

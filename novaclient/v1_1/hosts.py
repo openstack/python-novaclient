@@ -24,10 +24,21 @@ class Host(base.Resource):
         return "<Host: %s>" % self.host
 
     def _add_details(self, info):
-        dico = 'resource' in info and \
-            info['resource'] or info
+        dico = 'resource' in info and info['resource'] or info
         for (k, v) in dico.items():
             setattr(self, k, v)
+
+    def update(self, values):
+        return self.manager.update(self.host, values)
+
+    def startup(self):
+        return self.manager.host_action(self.host, 'startup')
+
+    def shutdown(self):
+        return self.manager.host_action(self.host, 'shutdown')
+
+    def reboot(self):
+        return self.manager.host_action(self.host, 'reboot')
 
 
 class HostManager(base.ManagerWithFind):
@@ -39,4 +50,14 @@ class HostManager(base.ManagerWithFind):
 
         :param host: destination host name.
         """
-        return self._list("/os-hosts/%s" % (host), "host")
+        return self._list("/os-hosts/%s" % host, "host")
+
+    def update(self, host, values):
+        """Update status or maintenance mode for the host."""
+        result = self._update("/os-hosts/%s" % host, values)
+        return self.resource_class(self, result)
+
+    def host_action(self, host, action):
+        """Performs an action on a host."""
+        url = "/os-hosts/%s/%s" % (host, action)
+        return self._get(url)
