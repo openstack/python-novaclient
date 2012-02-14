@@ -25,7 +25,7 @@ from novaclient import base
 class BootingManagerWithFind(base.ManagerWithFind):
     """Like a `ManagerWithFind`, but has the ability to boot servers."""
     def _boot(self, resource_url, response_key, name, image, flavor,
-              meta=None, files=None, zone_blob=None, userdata=None,
+              meta=None, files=None, userdata=None,
               reservation_id=None, return_raw=False, min_count=None,
               max_count=None, security_groups=None, key_name=None,
               availability_zone=None, block_device_mapping=None, nics=None,
@@ -44,16 +44,14 @@ class BootingManagerWithFind(base.ManagerWithFind):
                       are the file contents (either as a string or as a
                       file-like object). A maximum of five entries is allowed,
                       and each file must be 10k or less.
-        :param zone_blob: a single (encrypted) string which is used internally
-                      by Nova for routing between Zones. Users cannot populate
-                      this field.
         :param reservation_id: a UUID for the set of servers being requested.
         :param return_raw: If True, don't try to coearse the result into
                            a Resource object.
         :param security_groups: list of security group names
         :param key_name: (optional extension) name of keypair to inject into
                          the instance
-        :param availability_zone: The :class:`Zone`.
+        :param availability_zone: Name of the availability zone for instance
+                                  placement.
         :param block_device_mapping: A dict of block device mappings for this
                                      server.
         :param nics:  (optional extension) an ordered list of nics to be
@@ -75,8 +73,6 @@ class BootingManagerWithFind(base.ManagerWithFind):
             body["server"]["metadata"] = meta
         if reservation_id:
             body["server"]["reservation_id"] = reservation_id
-        if zone_blob:
-            body["server"]["blob"] = zone_blob
         if key_name:
             body["server"]["key_name"] = key_name
         if scheduler_hints:

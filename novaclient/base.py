@@ -201,7 +201,7 @@ class ManagerWithFind(Manager):
 class BootingManagerWithFind(ManagerWithFind):
     """Like a `ManagerWithFind`, but has the ability to boot servers."""
     def _boot(self, resource_url, response_key, name, image, flavor,
-              ipgroup=None, meta=None, files=None, zone_blob=None,
+              ipgroup=None, meta=None, files=None,
               reservation_id=None, return_raw=False, min_count=None,
               max_count=None, **kwargs):
         """
@@ -219,9 +219,6 @@ class BootingManagerWithFind(ManagerWithFind):
                       are the file contents (either as a string or as a
                       file-like object). A maximum of five entries is allowed,
                       and each file must be 10k or less.
-        :param zone_blob: a single (encrypted) string which is used internally
-                      by Nova for routing between Zones. Users cannot populate
-                      this field.
         :param reservation_id: a UUID for the set of servers being requested.
         :param return_raw: If True, don't try to coearse the result into
                            a Resource object.
@@ -237,8 +234,6 @@ class BootingManagerWithFind(ManagerWithFind):
             body["server"]["metadata"] = meta
         if reservation_id:
             body["server"]["reservation_id"] = reservation_id
-        if zone_blob:
-            body["server"]["blob"] = zone_blob
 
         if not min_count:
             min_count = 1

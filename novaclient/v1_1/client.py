@@ -17,7 +17,6 @@ from novaclient.v1_1 import usage
 from novaclient.v1_1 import virtual_interfaces
 from novaclient.v1_1 import volumes
 from novaclient.v1_1 import volume_snapshots
-from novaclient.v1_1 import zones
 
 
 class Client(object):
@@ -59,7 +58,6 @@ class Client(object):
         self.volumes = volumes.VolumeManager(self)
         self.volume_snapshots = volume_snapshots.SnapshotManager(self)
         self.keypairs = keypairs.KeypairManager(self)
-        self.zones = zones.ZoneManager(self)
         self.quotas = quotas.QuotaSetManager(self)
         self.security_groups = security_groups.SecurityGroupManager(self)
         self.security_group_rules = \

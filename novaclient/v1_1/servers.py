@@ -133,7 +133,7 @@ class Server(base.Resource):
 
     def migrate(self):
         """
-        Migrate a server to a new host in the same zone.
+        Migrate a server to a new host.
         """
         self.manager.migrate(self)
 
@@ -362,7 +362,7 @@ class ServerManager(local_base.BootingManagerWithFind):
                           "actions")
 
     def create(self, name, image, flavor, meta=None, files=None,
-               zone_blob=None, reservation_id=None, min_count=None,
+               reservation_id=None, min_count=None,
                max_count=None, security_groups=None, userdata=None,
                key_name=None, availability_zone=None,
                block_device_mapping=None, nics=None, scheduler_hints=None,
@@ -383,16 +383,14 @@ class ServerManager(local_base.BootingManagerWithFind):
                       are the file contents (either as a string or as a
                       file-like object). A maximum of five entries is allowed,
                       and each file must be 10k or less.
-        :param zone_blob: a single (encrypted) string which is used internally
-                      by Nova for routing between Zones. Users cannot populate
-                      this field.
         :param userdata: user data to pass to be exposed by the metadata
                       server this can be a file type object as well or a
                       string.
         :param reservation_id: a UUID for the set of servers being requested.
         :param key_name: (optional extension) name of previously created
                       keypair to inject into the instance.
-        :param availability_zone: The :class:`Zone`.
+        :param availability_zone: Name of the availability zone for instance
+                                  placement.
         :param block_device_mapping: (optional extension) A dict of block
                       device mappings for this server.
         :param nics:  (optional extension) an ordered list of nics to be
@@ -411,7 +409,7 @@ class ServerManager(local_base.BootingManagerWithFind):
         boot_args = [name, image, flavor]
 
         boot_kwargs = dict(
-            meta=meta, files=files, userdata=userdata, zone_blob=zone_blob,
+            meta=meta, files=files, userdata=userdata,
             reservation_id=reservation_id, min_count=min_count,
             max_count=max_count, security_groups=security_groups,
             key_name=key_name, availability_zone=availability_zone,
@@ -484,7 +482,7 @@ class ServerManager(local_base.BootingManagerWithFind):
 
     def migrate(self, server):
         """
-        Migrate a server to a new host in the same zone.
+        Migrate a server to a new host.
 
         :param server: The :class:`Server` (or its ID).
         """

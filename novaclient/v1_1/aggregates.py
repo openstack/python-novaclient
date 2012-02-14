@@ -60,7 +60,7 @@ class AggregateManager(base.ManagerWithFind):
                          "aggregate")
 
     def update(self, aggregate, values):
-        """Update the name and/or availablity zone."""
+        """Update the name and/or availability zone."""
         body = {'aggregate': values}
         result = self._update("/os-aggregates/%s" % base.getid(aggregate),
                               body)

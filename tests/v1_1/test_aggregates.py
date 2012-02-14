@@ -57,7 +57,7 @@ class AggregatesTest(utils.TestCase):
         cs.assert_called('PUT', '/os-aggregates/2', body)
         self.assertTrue(isinstance(result2, aggregates.Aggregate))
 
-    def test_update_with_availablity_zone(self):
+    def test_update_with_availability_zone(self):
         aggregate = cs.aggregates.get_details("1")
         values = {"name": "foo", "availability_zone": "new_zone"}
         body = {"aggregate": values}

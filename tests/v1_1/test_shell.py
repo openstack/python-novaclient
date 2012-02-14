@@ -342,7 +342,7 @@ class ShellTest(utils.TestCase):
         body = {"aggregate": {"name": "new_name"}}
         self.assert_called('PUT', '/os-aggregates/1', body)
 
-    def test_aggregate_update_with_availablity_zone(self):
+    def test_aggregate_update_with_availability_zone(self):
         self.run_command('aggregate-update 1 foo new_zone')
         body = {"aggregate": {"name": "foo", "availability_zone": "new_zone"}}
         self.assert_called('PUT', '/os-aggregates/1', body)
