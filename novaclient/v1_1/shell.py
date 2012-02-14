@@ -1420,3 +1420,24 @@ def do_credentials(cs, args):
     catalog = cs.client.service_catalog.catalog
     utils.print_dict(catalog['access']['user'], "User Credentials")
     utils.print_dict(catalog['access']['token'], "Token")
+
+
+@utils.arg('server', metavar='<server>', help='Name or ID of server.')
+@utils.arg('--private',
+    dest='private',
+    action='store_const',
+    const=True,
+    default=False,
+    help='Optional flag to indicate whether to use private address '
+        'attached to an instance. (Default=False)')
+@utils.arg('--login', metavar='<login>', help='Login to use.', default="root")
+def do_ssh(cs, args):
+    """SSH into a server."""
+    addresses = _find_server(cs, args.server).addresses
+    address_type = "private" if args.private else "public"
+    try:
+        ip_address = addresses[address_type][0]['addr']
+    except (KeyError, IndexError):
+        print "ERROR: No %s address found." % address_type
+        return
+    os.system("ssh %s@%s" % (args.login, ip_address))
