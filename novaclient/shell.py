@@ -40,18 +40,6 @@ DEFAULT_NOVA_ENDPOINT_TYPE = 'publicURL'
 logger = logging.getLogger(__name__)
 
 
-def env(*vars, **kwargs):
-    """
-    returns the first environment variable set
-    if none are non-empty, defaults to '' or keyword arg default
-    """
-    for v in vars:
-        value = os.environ.get(v, None)
-        if value:
-            return value
-    return kwargs.get('default', '')
-
-
 class NovaClientArgumentParser(argparse.ArgumentParser):
 
     def __init__(self, *args, **kwargs):
@@ -95,37 +83,37 @@ class OpenStackComputeShell(object):
             help="Print debugging output")
 
         parser.add_argument('--username',
-            default=env('OS_USERNAME', 'NOVA_USERNAME'),
+            default=utils.env('OS_USERNAME', 'NOVA_USERNAME'),
             help='Defaults to env[OS_USERNAME].')
 
         parser.add_argument('--password',
-            default=env('OS_PASSWORD', 'NOVA_PASSWORD'),
+            default=utils.env('OS_PASSWORD', 'NOVA_PASSWORD'),
             help='Defaults to env[OS_PASSWORD].')
 
         parser.add_argument('--tenant_name',
-            default=env('OS_TENANT_NAME', 'NOVA_PROJECT_ID'),
+            default=utils.env('OS_TENANT_NAME', 'NOVA_PROJECT_ID'),
             help='Defaults to env[OS_TENANT_NAME].')
 
         parser.add_argument('--auth_url',
-            default=env('OS_AUTH_URL', 'NOVA_URL'),
+            default=utils.env('OS_AUTH_URL', 'NOVA_URL'),
             help='Defaults to env[OS_AUTH_URL].')
 
         parser.add_argument('--region_name',
-            default=env('OS_REGION_NAME', 'NOVA_REGION_NAME'),
+            default=utils.env('OS_REGION_NAME', 'NOVA_REGION_NAME'),
             help='Defaults to env[OS_REGION_NAME].')
 
         parser.add_argument('--service_name',
-            default=env('NOVA_SERVICE_NAME'),
+            default=utils.env('NOVA_SERVICE_NAME'),
             help='Defaults to env[NOVA_SERVICE_NAME]')
 
         parser.add_argument('--endpoint_type',
-            default=env('NOVA_ENDPOINT_TYPE',
+            default=utils.env('NOVA_ENDPOINT_TYPE',
                         default=DEFAULT_NOVA_ENDPOINT_TYPE),
             help='Defaults to env[NOVA_ENDPOINT_TYPE] or '
                     + DEFAULT_NOVA_ENDPOINT_TYPE + '.')
 
         parser.add_argument('--version',
-            default=env('NOVA_VERSION', default=DEFAULT_NOVA_VERSION),
+            default=utils.env('NOVA_VERSION', default=DEFAULT_NOVA_VERSION),
             help='Accepts 1.1, defaults to env[NOVA_VERSION].')
 
         parser.add_argument('--insecure',
@@ -135,17 +123,17 @@ class OpenStackComputeShell(object):
 
         # alias for --password, left in for backwards compatibility
         parser.add_argument('--apikey',
-            default=env('NOVA_API_KEY'),
+            default=utils.env('NOVA_API_KEY'),
             help=argparse.SUPPRESS)
 
         # alias for --tenant_name, left in for backward compatibility
         parser.add_argument('--projectid',
-            default=env('NOVA_PROJECT_ID'),
+            default=utils.env('NOVA_PROJECT_ID'),
             help=argparse.SUPPRESS)
 
         # alias for --auth_url, left in for backward compatibility
         parser.add_argument('--url',
-            default=env('NOVA_URL'),
+            default=utils.env('NOVA_URL'),
             help=argparse.SUPPRESS)
 
         return parser

@@ -1,3 +1,4 @@
+import os
 import prettytable
 import sys
 import uuid
@@ -11,6 +12,18 @@ def arg(*args, **kwargs):
         add_arg(func, *args, **kwargs)
         return func
     return _decorator
+
+
+def env(*vars, **kwargs):
+    """
+    returns the first environment variable set
+    if none are non-empty, defaults to '' or keyword arg default
+    """
+    for v in vars:
+        value = os.environ.get(v, None)
+        if value:
+            return value
+    return kwargs.get('default', '')
 
 
 def add_arg(f, *args, **kwargs):

@@ -26,7 +26,8 @@ from novaclient import exceptions
 from novaclient import utils
 
 
-UUID_CACHE_DIR = "~/.novaclient"
+UUID_CACHE_DIR = utils.env('NOVACLIENT_UUID_CACHE_DIR',
+                           default="~/.novaclient")
 
 
 # Python 2.4 compat
