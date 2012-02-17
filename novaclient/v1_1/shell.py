@@ -723,7 +723,7 @@ def _print_volume_snapshot(cs, snapshot):
 
 
 def _translate_volume_keys(collection):
-    convert = [('displayName', 'display_name')]
+    convert = [('displayName', 'display_name'), ('volumeType', 'volume_type')]
     for item in collection:
         keys = item.__dict__.keys()
         for from_key, to_key in convert:
@@ -751,7 +751,7 @@ def do_volume_list(cs, args):
         servers = [server.get('serverId') for server in vol.attachments]
         setattr(vol, 'attached_to', ','.join(map(str, servers)))
     utils.print_list(volumes, ['ID', 'Status', 'Display Name',
-                        'Size', 'Attached to'])
+                        'Size', 'Volume Type', 'Attached to'])
 
 
 @utils.arg('volume', metavar='<volume>', help='ID of the volume.')
@@ -776,13 +776,18 @@ def do_volume_show(cs, args):
 @utils.arg('--display_description', metavar='<display_description>',
             help='Optional volume description. (Default=None)',
             default=None)
+@utils.arg('--volume_type',
+    metavar='<volume_type>',
+    help='Optional volume type. (Default=None)',
+    default=None)
 @utils.service_type('volume')
 def do_volume_create(cs, args):
     """Add a new volume."""
     cs.volumes.create(args.size,
                         args.snapshot_id,
                         args.display_name,
-                        args.display_description)
+                        args.display_description,
+                        args.volume_type)
 
 
 @utils.arg('volume', metavar='<volume>', help='ID of the volume to delete.')
@@ -871,6 +876,36 @@ def do_volume_snapshot_delete(cs, args):
     """Remove a snapshot."""
     snapshot = _find_volume_snapshot(cs, args.snapshot_id)
     snapshot.delete()
+
+
+def _print_volume_type_list(vtypes):
+    utils.print_list(vtypes, ['ID', 'Name'])
+
+
+@utils.service_type('volume')
+def do_volume_type_list(cs, args):
+    """Print a list of available 'volume types'."""
+    vtypes = cs.volume_types.list()
+    _print_volume_type_list(vtypes)
+
+
+@utils.arg('name',
+     metavar='<name>',
+     help="Name of the new flavor")
+@utils.service_type('volume')
+def do_volume_type_create(cs, args):
+    """Create a new volume type."""
+    vtype = cs.volume_types.create(args.name)
+    _print_volume_type_list([vtype])
+
+
+@utils.arg('id',
+     metavar='<id>',
+     help="Unique ID of the volume type to delete")
+@utils.service_type('volume')
+def do_volume_type_delete(cs, args):
+    """Delete a specific flavor"""
+    cs.volume_types.delete(args.id)
 
 
 @utils.arg('server', metavar='<server>', help='Name or ID of server.')
