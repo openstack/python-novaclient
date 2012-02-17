@@ -46,7 +46,7 @@ def _boot(cs, args, reservation_id=None, min_count=None, max_count=None):
     flavor = args.flavor
     image = args.image
 
-    meta = dict(v.split('=') for v in args.meta)
+    meta = dict(v.split('=', 1) for v in args.meta)
 
     files = {}
     for f in args.files:
