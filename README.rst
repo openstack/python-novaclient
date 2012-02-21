@@ -107,6 +107,8 @@ You'll find complete documentation on the shell by running
         get-vnc-console     Get a vnc console for a server
         help                Display help about this program or one of its
                             subcommands.
+        host-update         Update the host status or maintenance mode
+        host-action         Perform a power action on the host
         image-create        Create a new image by taking a snapshot of a running
                             server.
         image-delete        Delete an image.
