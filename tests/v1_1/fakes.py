@@ -342,8 +342,10 @@ class FakeHTTPClient(base_client.HTTPClient):
 
     def get_flavors_detail(self, **kw):
         return (200, {'flavors': [
-            {'id': 1, 'name': '256 MB Server', 'ram': 256, 'disk': 10},
-            {'id': 2, 'name': '512 MB Server', 'ram': 512, 'disk': 20}
+            {'id': 1, 'name': '256 MB Server', 'ram': 256, 'disk': 10,
+             'OS-FLV-EXT-DATA:ephemeral': 10},
+            {'id': 2, 'name': '512 MB Server', 'ram': 512, 'disk': 20,
+             'OS-FLV-EXT-DATA:ephemeral': 20}
         ]})
 
     def get_flavors_1(self, **kw):

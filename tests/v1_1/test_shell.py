@@ -306,7 +306,7 @@ class ShellTest(utils.TestCase):
 
     def test_flavor_create(self):
         self.run_command("flavor-create flavorcreate "
-                         "1234 512 10 1 --swap 1024")
+                         "1234 512 10 1 --swap 1024 --ephemeral 10")
 
         body = {
             "flavor": {
@@ -314,6 +314,7 @@ class ShellTest(utils.TestCase):
                 "ram": 512,
                 "vcpus": 1,
                 "disk": 10,
+                "OS-FLV-EXT-DATA:ephemeral": 10,
                 "id": 1234,
                 "swap": 1024,
                 "rxtx_factor": 1,
