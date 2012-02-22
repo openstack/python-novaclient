@@ -221,7 +221,7 @@ def do_boot(cs, args):
 
 
 def _translate_flavor_keys(collection):
-    convert = [('ram', 'memory_mb'), ('disk', 'local_gb')]
+    convert = [('ram', 'memory_mb')]
     for item in collection:
         keys = item.__dict__.keys()
         for from_key, to_key in convert:
@@ -235,8 +235,9 @@ def _print_flavor_list(flavors):
         'ID',
         'Name',
         'Memory_MB',
+        'Disk',
+        'Ephemeral',
         'Swap',
-        'Local_GB',
         'VCPUs',
         'RXTX_Factor'])
 
@@ -267,6 +268,10 @@ def do_flavor_delete(cs, args):
 @utils.arg('disk',
      metavar='<disk>',
      help="Disk size in GB")
+@utils.arg('--ephemeral',
+     metavar='<ephemeral>',
+     help="Ephemeral space size in GB (default 0)",
+     default=0)
 @utils.arg('vcpus',
      metavar='<vcpus>',
      help="Number of vcpus")
@@ -281,7 +286,7 @@ def do_flavor_delete(cs, args):
 def do_flavor_create(cs, args):
     """Create a new flavor"""
     f = cs.flavors.create(args.name, args.ram, args.vcpus, args.disk, args.id,
-                          args.swap, args.rxtx_factor)
+                          args.ephemeral, args.swap, args.rxtx_factor)
     _print_flavor_list([f])
 
 
