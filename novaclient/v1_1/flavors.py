@@ -18,7 +18,7 @@ class Flavor(base.Resource):
         """
         Provide a user-friendly accessor to OS-FLV-EXT-DATA:ephemeral
         """
-        return self._info["OS-FLV-EXT-DATA:ephemeral"]
+        return self._info.get("OS-FLV-EXT-DATA:ephemeral", 'N/A')
 
 
 class FlavorManager(base.ManagerWithFind):

@@ -354,6 +354,11 @@ class FakeHTTPClient(base_client.HTTPClient):
     def get_flavors_2(self, **kw):
         return (200, {'flavor': self.get_flavors_detail()[1]['flavors'][1]})
 
+    def get_flavors_3(self, **kw):
+        # Diablo has no ephemeral
+        return (200, {'flavor': {'id': 3, 'name': '256 MB Server',
+                                 'ram': 256, 'disk': 10}})
+
     def delete_flavors_flavordelete(self, **kw):
         return (202, None)
 
