@@ -18,6 +18,8 @@
 import datetime
 import getpass
 import os
+import sys
+import time
 
 from novaclient import exceptions
 from novaclient import utils
@@ -192,6 +194,11 @@ def _boot(cs, args, reservation_id=None, min_count=None, max_count=None):
      dest='config_drive',
      default=False,
      help="Enable config drive")
+@utils.arg('--poll',
+    dest='poll',
+    action="store_true",
+    default=False,
+    help='Blocks while instance builds so progress can be reported.')
 def do_boot(cs, args):
     """Boot a new server."""
     boot_args, boot_kwargs = _boot(cs, args)
@@ -218,6 +225,41 @@ def do_boot(cs, args):
     info.pop('addresses', None)
 
     utils.print_dict(info)
+
+    if args.poll:
+        _poll_for_status(cs, info['id'], 'building', 'build', ['active'])
+
+
+def _poll_for_status(cs, server_id, action, initial_state, final_ok_states,
+                     poll_period=5, show_progress=True):
+    """Block while an action is being performed, periodically printing
+    progress.
+    """
+    def print_progress(server, progress=None):
+        if show_progress and hasattr(server, 'progress'):
+            msg = ('\rInstance %(action)s... %(progress)s%% complete'
+                   % dict(action=action,
+                          progress=progress or server.progress or 0))
+        else:
+            msg = '\rInstance %(action)s...' % dict(action=action)
+
+        sys.stdout.write(msg)
+        sys.stdout.flush()
+
+    print
+    while True:
+        server = cs.servers.get(server_id)
+        status = server.status.lower()
+        if status in final_ok_states:
+            print_progress(server, progress=100)
+            print "\nFinished"
+            break
+        elif status == "error":
+            print "\nError %(action)s instance" % locals()
+            break
+        else:
+            print_progress(server)
+            time.sleep(poll_period)
 
 
 def _translate_flavor_keys(collection):
@@ -473,9 +515,19 @@ def do_list(cs, args):
     default=servers.REBOOT_SOFT,
     help='Perform a hard reboot (instead of a soft one).')
 @utils.arg('server', metavar='<server>', help='Name or ID of server.')
+@utils.arg('--poll',
+    dest='poll',
+    action="store_true",
+    default=False,
+    help='Blocks while instance is rebooting.')
 def do_reboot(cs, args):
     """Reboot a server."""
-    _find_server(cs, args.server).reboot(args.reboot_type)
+    server = _find_server(cs, args.server)
+    server.reboot(args.reboot_type)
+
+    if args.poll:
+        _poll_for_status(cs, server.id, 'rebooting', 'reboot', ['active'],
+                         show_progress=False)
 
 
 @utils.arg('server', metavar='<server>', help='Name or ID of server.')
@@ -483,6 +535,11 @@ def do_reboot(cs, args):
 @utils.arg('--rebuild_password', dest='rebuild_password',
            metavar='<rebuild_password>', default=False,
            help="Set the provided password on the rebuild instance.")
+@utils.arg('--poll',
+    dest='poll',
+    action="store_true",
+    default=False,
+    help='Blocks while instance rebuilds so progress can be reported.')
 def do_rebuild(cs, args):
     """Shutdown, re-image, and re-boot a server."""
     server = _find_server(cs, args.server)
@@ -497,6 +554,9 @@ def do_rebuild(cs, args):
     s = server.rebuild(image, _password, **kwargs)
     _print_server(cs, s)
 
+    if args.poll:
+        _poll_for_status(cs, server.id, 'rebuilding', 'rebuild', ['active'])
+
 
 @utils.arg('server', metavar='<server>',
            help='Name (old name) or ID of server.')
@@ -508,12 +568,20 @@ def do_rename(cs, args):
 
 @utils.arg('server', metavar='<server>', help='Name or ID of server.')
 @utils.arg('flavor', metavar='<flavor>', help="Name or ID of new flavor.")
+@utils.arg('--poll',
+    dest='poll',
+    action="store_true",
+    default=False,
+    help='Blocks while instance resizes so progress can be reported.')
 def do_resize(cs, args):
     """Resize a server."""
     server = _find_server(cs, args.server)
     flavor = _find_flavor(cs, args.flavor)
     kwargs = utils.get_resource_manager_extra_kwargs(do_resize, args)
     server.resize(flavor, **kwargs)
+    if args.poll:
+        _poll_for_status(cs, server.id, 'resizing', 'resize',
+                         ['active', 'verify-resize'])
 
 
 @utils.arg('server', metavar='<server>', help='Name or ID of server.')
@@ -529,9 +597,19 @@ def do_resize_revert(cs, args):
 
 
 @utils.arg('server', metavar='<server>', help='Name or ID of server.')
+@utils.arg('--poll',
+    dest='poll',
+    action="store_true",
+    default=False,
+    help='Blocks while instance migrates so progress can be reported.')
 def do_migrate(cs, args):
     """Migrate a server."""
-    _find_server(cs, args.server).migrate()
+    server = _find_server(cs, args.server)
+    server.migrate()
+
+    if args.poll:
+        _poll_for_status(cs, server.id, 'migrating', 'resize',
+                         ['active', 'verify-resize'])
 
 
 @utils.arg('server', metavar='<server>', help='Name or ID of server.')
