@@ -57,7 +57,7 @@ class SnapshotManager(base.ManagerWithFind):
                             'force': force,
                             'display_name': display_name,
                             'display_description': display_description}}
-        return self._create('/os-snapshots', body, 'snapshot')
+        return self._create('/snapshots', body, 'snapshot')
 
     def get(self, snapshot_id):
         """
@@ -66,7 +66,7 @@ class SnapshotManager(base.ManagerWithFind):
         :param snapshot_id: The ID of the snapshot to get.
         :rtype: :class:`Snapshot`
         """
-        return self._get("/os-snapshots/%s" % snapshot_id, "snapshot")
+        return self._get("/snapshots/%s" % snapshot_id, "snapshot")
 
     def list(self, detailed=True):
         """
@@ -75,9 +75,9 @@ class SnapshotManager(base.ManagerWithFind):
         :rtype: list of :class:`Snapshot`
         """
         if detailed is True:
-            return self._list("/os-snapshots/detail", "snapshots")
+            return self._list("/snapshots/detail", "snapshots")
         else:
-            return self._list("/os-snapshots", "snapshots")
+            return self._list("/snapshots", "snapshots")
 
     def delete(self, snapshot):
         """
@@ -85,4 +85,4 @@ class SnapshotManager(base.ManagerWithFind):
 
         :param snapshot: The :class:`Snapshot` to delete.
         """
-        self._delete("/os-snapshots/%s" % base.getid(snapshot))
+        self._delete("/snapshots/%s" % base.getid(snapshot))

@@ -40,7 +40,7 @@ class Client(object):
     def __init__(self, username, api_key, project_id, auth_url,
                   insecure=False, timeout=None, token=None, region_name=None,
                   endpoint_type='publicURL', extensions=None,
-                  service_name=None):
+                  service_type=None, service_name=None):
         # FIXME(comstud): Rename the api_key argument above when we
         # know it's not being used as keyword argument
         password = api_key
@@ -84,6 +84,7 @@ class Client(object):
                                         token=token,
                                         region_name=region_name,
                                         endpoint_type=endpoint_type,
+                                        service_type=service_type,
                                         service_name=service_name)
 
     def authenticate(self):

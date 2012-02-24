@@ -36,7 +36,8 @@ class HTTPClient(httplib2.Http):
 
     def __init__(self, user, password, projectid, auth_url, insecure=False,
                  timeout=None, token=None, region_name=None,
-                 endpoint_type='publicURL', service_name=None):
+                 endpoint_type='publicURL', service_type=None,
+                 service_name=None):
         super(HTTPClient, self).__init__(timeout=timeout)
         self.user = user
         self.password = password
@@ -45,6 +46,7 @@ class HTTPClient(httplib2.Http):
         self.version = 'v1.1'
         self.region_name = region_name
         self.endpoint_type = endpoint_type
+        self.service_type = service_type
         self.service_name = service_name
 
         self.management_url = None
@@ -158,6 +160,7 @@ class HTTPClient(httplib2.Http):
                                            attr='region',
                                            filter_value=self.region_name,
                                            endpoint_type=self.endpoint_type,
+                                           service_type=self.service_type,
                                            service_name=self.service_name)
                 self.management_url = management_url.rstrip('/')
                 return None

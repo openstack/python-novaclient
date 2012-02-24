@@ -29,7 +29,7 @@ class ServiceCatalog(object):
         return self.catalog['access']['token']['id']
 
     def url_for(self, attr=None, filter_value=None,
-                    service_type='compute', endpoint_type='publicURL',
+                    service_type=None, endpoint_type='publicURL',
                     service_name=None):
         """Fetch the public URL from the Compute service for
         a particular endpoint attribute. If none given, return

@@ -740,6 +740,7 @@ def _translate_volume_snapshot_keys(collection):
                 setattr(item, to_key, item._info[from_key])
 
 
+@utils.service_type('volume')
 def do_volume_list(cs, args):
     """List all the volumes."""
     volumes = cs.volumes.list()
@@ -754,6 +755,7 @@ def do_volume_list(cs, args):
 
 
 @utils.arg('volume', metavar='<volume>', help='ID of the volume.')
+@utils.service_type('volume')
 def do_volume_show(cs, args):
     """Show details about a volume."""
     volume = _find_volume(cs, args.volume)
@@ -774,6 +776,7 @@ def do_volume_show(cs, args):
 @utils.arg('--display_description', metavar='<display_description>',
             help='Optional volume description. (Default=None)',
             default=None)
+@utils.service_type('volume')
 def do_volume_create(cs, args):
     """Add a new volume."""
     cs.volumes.create(args.size,
@@ -783,6 +786,7 @@ def do_volume_create(cs, args):
 
 
 @utils.arg('volume', metavar='<volume>', help='ID of the volume to delete.')
+@utils.service_type('volume')
 def do_volume_delete(cs, args):
     """Remove a volume."""
     volume = _find_volume(cs, args.volume)
@@ -818,6 +822,7 @@ def do_volume_detach(cs, args):
                                         args.attachment_id)
 
 
+@utils.service_type('volume')
 def do_volume_snapshot_list(cs, args):
     """List all the snapshots."""
     snapshots = cs.volume_snapshots.list()
@@ -827,6 +832,7 @@ def do_volume_snapshot_list(cs, args):
 
 
 @utils.arg('snapshot', metavar='<snapshot>', help='ID of the snapshot.')
+@utils.service_type('volume')
 def do_volume_snapshot_show(cs, args):
     """Show details about a snapshot."""
     snapshot = _find_volume_snapshot(cs, args.snapshot)
@@ -848,6 +854,7 @@ def do_volume_snapshot_show(cs, args):
 @utils.arg('--display_description', metavar='<display_description>',
             help='Optional snapshot description. (Default=None)',
             default=None)
+@utils.service_type('volume')
 def do_volume_snapshot_create(cs, args):
     """Add a new snapshot."""
     cs.volume_snapshots.create(args.volume_id,
@@ -859,6 +866,7 @@ def do_volume_snapshot_create(cs, args):
 @utils.arg('snapshot_id',
     metavar='<snapshot_id>',
     help='ID of the snapshot to delete.')
+@utils.service_type('volume')
 def do_volume_snapshot_delete(cs, args):
     """Remove a snapshot."""
     snapshot = _find_volume_snapshot(cs, args.snapshot_id)

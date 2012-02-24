@@ -96,6 +96,27 @@ def isunauthenticated(f):
     return getattr(f, 'unauthenticated', False)
 
 
+def service_type(stype):
+    """
+    Adds 'service_type' attribute to decorated function.
+    Usage:
+        @service_type('volume')
+        def mymethod(f):
+            ...
+    """
+    def inner(f):
+        f.service_type = stype
+        return f
+    return inner
+
+
+def get_service_type(f):
+    """
+    Retrieves service type from function
+    """
+    return getattr(f, 'service_type', None)
+
+
 def pretty_choice_list(l):
     return ', '.join("'%s'" % i for i in l)
 

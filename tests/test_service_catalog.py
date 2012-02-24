@@ -59,13 +59,13 @@ SERVICE_CATALOG = {
                 "endpoints_links": [],
             },
             {
-                "name": "Cloud Files",
-                "type": "object-store",
+                "name": "Nova Volumes",
+                "type": "volume",
                 "endpoints": [
                     {
-                        "tenantId": "11",
-                        "publicURL": "https://compute1.host/v1/blah-blah",
-                        "internalURL": "https://compute1.host/v1/blah-blah",
+                        "tenantId": "1",
+                        "publicURL": "https://volume1.host/v1/1234",
+                        "internalURL": "https://volume1.host/v1/1234",
                         "region": "South",
                         "versionId": "1.0",
                         "versionInfo": "uri",
@@ -73,12 +73,12 @@ SERVICE_CATALOG = {
                     },
                     {
                         "tenantId": "2",
-                        "publicURL": "https://compute1.host/v1.1/blah-blah",
-                        "internalURL": "https://compute1.host/v1.1/blah-blah",
+                        "publicURL": "https://volume1.host/v1.1/3456",
+                        "internalURL": "https://volume1.host/v1.1/3456",
                         "region": "South",
                         "versionId": "1.1",
-                        "versionInfo": "https://compute1.host/v1.1/",
-                        "versionList": "https://compute1.host/"
+                        "versionInfo": "https://volume1.host/v1.1/",
+                        "versionList": "https://volume1.host/"
                     },
                 ],
                 "endpoints_links": [
@@ -103,11 +103,25 @@ class ServiceCatalogTest(utils.TestCase):
     def test_building_a_service_catalog(self):
         sc = service_catalog.ServiceCatalog(SERVICE_CATALOG)
 
-        self.assertRaises(exceptions.AmbiguousEndpoints, sc.url_for)
-        self.assertEquals(sc.url_for('tenantId', '1'),
+        self.assertRaises(exceptions.AmbiguousEndpoints, sc.url_for,
+                          service_type='compute')
+        self.assertEquals(sc.url_for('tenantId', '1', service_type='compute'),
                             "https://compute1.host/v1/1234")
-        self.assertEquals(sc.url_for('tenantId', '2'),
+        self.assertEquals(sc.url_for('tenantId', '2', service_type='compute'),
                             "https://compute1.host/v1.1/3456")
 
-        self.assertRaises(exceptions.EndpointNotFound,
-                                        sc.url_for, "region", "South")
+        self.assertRaises(exceptions.EndpointNotFound, sc.url_for,
+                          "region", "South", service_type='compute')
+
+    def test_alternate_service_type(self):
+        sc = service_catalog.ServiceCatalog(SERVICE_CATALOG)
+
+        self.assertRaises(exceptions.AmbiguousEndpoints, sc.url_for,
+                          service_type='volume')
+        self.assertEquals(sc.url_for('tenantId', '1', service_type='volume'),
+                            "https://volume1.host/v1/1234")
+        self.assertEquals(sc.url_for('tenantId', '2', service_type='volume'),
+                            "https://volume1.host/v1.1/3456")
+
+        self.assertRaises(exceptions.EndpointNotFound, sc.url_for,
+                          "region", "North", service_type='volume')

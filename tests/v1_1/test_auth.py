@@ -18,7 +18,7 @@ def to_http_response(resp_dict):
 class AuthenticateAgainstKeystoneTests(utils.TestCase):
     def test_authenticate_success(self):
         cs = client.Client("username", "password", "project_id",
-                           "auth_url/v2.0")
+                           "auth_url/v2.0", service_type='compute')
         resp = {
             "access": {
                 "token": {
@@ -99,7 +99,7 @@ class AuthenticateAgainstKeystoneTests(utils.TestCase):
 
     def test_auth_redirect(self):
         cs = client.Client("username", "password", "project_id",
-                           "auth_url/v1.0")
+                           "auth_url/v1.0", service_type='compute')
         dict_correct_response = {
             "access": {
                 "token": {
@@ -180,7 +180,7 @@ class AuthenticateAgainstKeystoneTests(utils.TestCase):
 
     def test_ambiguous_endpoints(self):
         cs = client.Client("username", "password", "project_id",
-                           "auth_url/v2.0")
+                           "auth_url/v2.0", service_type='compute')
         resp = {
             "access": {
                 "token": {

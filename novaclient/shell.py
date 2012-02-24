@@ -36,6 +36,7 @@ from novaclient.v1_1 import shell as shell_v1_1
 
 DEFAULT_NOVA_VERSION = "1.1"
 DEFAULT_NOVA_ENDPOINT_TYPE = 'publicURL'
+DEFAULT_NOVA_SERVICE_TYPE = 'compute'
 
 logger = logging.getLogger(__name__)
 
@@ -101,6 +102,9 @@ class OpenStackComputeShell(object):
         parser.add_argument('--region_name',
             default=utils.env('OS_REGION_NAME', 'NOVA_REGION_NAME'),
             help='Defaults to env[OS_REGION_NAME].')
+
+        parser.add_argument('--service_type',
+            help='Defaults to compute for most actions')
 
         parser.add_argument('--service_name',
             default=utils.env('NOVA_SERVICE_NAME'),
@@ -267,14 +271,19 @@ class OpenStackComputeShell(object):
             return 0
 
         (user, apikey, password, projectid, tenant_name, url, auth_url,
-                region_name, endpoint_type, insecure, service_name) = (
+                region_name, endpoint_type, insecure, service_type,
+                service_name) = (
                         args.username, args.apikey, args.password,
                         args.projectid, args.tenant_name, args.url,
                         args.auth_url, args.region_name, args.endpoint_type,
-                        args.insecure, args.service_name)
+                        args.insecure, args.service_type, args.service_name)
 
         if not endpoint_type:
             endpoint_type = DEFAULT_NOVA_ENDPOINT_TYPE
+
+        if not service_type:
+            service_type = DEFAULT_NOVA_SERVICE_TYPE
+            service_type = utils.get_service_type(args.func) or service_type
 
         #FIXME(usrleon): Here should be restrict for project id same as
         # for username or password but for compatibility it is not.
@@ -319,6 +328,7 @@ class OpenStackComputeShell(object):
                                 region_name=region_name,
                                 endpoint_type=endpoint_type,
                                 extensions=self.extensions,
+                                service_type=service_type,
                                 service_name=service_name)
 
         try:
