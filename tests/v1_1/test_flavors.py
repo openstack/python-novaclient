@@ -25,6 +25,15 @@ class FlavorsTest(utils.TestCase):
         self.assertTrue(isinstance(f, flavors.Flavor))
         self.assertEqual(f.ram, 256)
         self.assertEqual(f.disk, 10)
+        self.assertEqual(f.ephemeral, 10)
+
+    def test_get_flavor_details_diablo(self):
+        f = cs.flavors.get(3)
+        cs.assert_called('GET', '/flavors/3')
+        self.assertTrue(isinstance(f, flavors.Flavor))
+        self.assertEqual(f.ram, 256)
+        self.assertEqual(f.disk, 10)
+        self.assertEqual(f.ephemeral, 'N/A')
 
     def test_find(self):
         f = cs.flavors.find(ram=256)
