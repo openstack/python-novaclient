@@ -1579,21 +1579,43 @@ def do_credentials(cs, args):
 
 
 @utils.arg('server', metavar='<server>', help='Name or ID of server.')
+@utils.arg('--port',
+    dest='port',
+    action='store',
+    type=int,
+    default=22,
+    help='Optional flag to indicate which port to use for ssh. '
+         '(Default=22)')
 @utils.arg('--private',
     dest='private',
-    action='store_const',
-    const=True,
+    action='store_true',
     default=False,
     help='Optional flag to indicate whether to use private address '
-        'attached to an instance. (Default=False)')
+         'attached to an instance. (Default=False)')
+@utils.arg('--ipv6',
+    dest='ipv6',
+    action='store_true',
+    default=False,
+    help='Optional flag to indicate whether to use an IPv6 address '
+         'attached to an instance. (Defaults to IPv4 address)')
 @utils.arg('--login', metavar='<login>', help='Login to use.', default="root")
 def do_ssh(cs, args):
     """SSH into a server."""
     addresses = _find_server(cs, args.server).addresses
     address_type = "private" if args.private else "public"
-    try:
-        ip_address = addresses[address_type][0]['addr']
-    except (KeyError, IndexError):
-        print "ERROR: No %s address found." % address_type
+    version = 6 if args.ipv6 else 4
+
+    ip_address = None
+    for address in addresses[address_type]:
+        if address['version'] == version:
+            ip_address = address['addr']
+            break
+
+    if ip_address:
+        os.system("ssh -%d -p%d %s@%s" % (version, args.port, args.login,
+                                          ip_address))
+    else:
+        pretty_version = "IPv%d" % version
+        print "ERROR: No %s %s address found." % (address_type,
+                                                  pretty_version)
         return
-    os.system("ssh %s@%s" % (args.login, ip_address))
