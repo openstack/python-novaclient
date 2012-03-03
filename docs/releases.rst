@@ -17,7 +17,7 @@ Release notes
 
 2.5.3 (June 15, 2011)
 =====================
-* ProjectID can be None for backwards compatability. 
+* ProjectID can be None for backwards compatability.
 * README/docs updated for projectId thanks to usrleon
 
 2.5.1 (June 10, 2011)
@@ -91,9 +91,9 @@ Release notes
 
 * Added a ``--files`` option to :program:`cloudservers boot` supporting
   the upload of (up to five) files at boot time.
-  
+
 * Added a ``--key`` option to :program:`cloudservers boot` to key the server
   with an SSH public key at boot time. This is just a shortcut for ``--files``,
   but it's a useful shortcut.
-  
+
 * Changed the default server image to Ubuntu 10.04 LTS.
