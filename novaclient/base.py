@@ -21,13 +21,10 @@ Base utilities to build API operation managers and objects on top of.
 
 import contextlib
 import errno
+import hashlib
 import os
 from novaclient import exceptions
 from novaclient import utils
-
-
-UUID_CACHE_DIR = utils.env('NOVACLIENT_UUID_CACHE_DIR',
-                           default="~/.novaclient")
 
 
 # Python 2.4 compat
@@ -105,7 +102,17 @@ class Manager(utils.HookableMixin):
         Delete is not handled because listings are assumed to be performed
         often enough to keep the UUID cache reasonably up-to-date.
         """
-        uuid_cache_dir = os.path.expanduser(UUID_CACHE_DIR)
+        base_dir = utils.env('NOVACLIENT_UUID_CACHE_DIR',
+                             default="~/.novaclient")
+
+        # NOTE(sirp): Keep separate UUID caches for each username + endpoint
+        # pair
+        username = utils.env('OS_USERNAME', 'NOVA_USERNAME')
+        url = utils.env('OS_URL', 'NOVA_URL')
+        uniqifier = hashlib.md5(username + url).hexdigest()
+
+        uuid_cache_dir = os.path.expanduser(os.path.join(base_dir, uniqifier))
+
         try:
             os.makedirs(uuid_cache_dir, 0755)
         except OSError as e:
@@ -115,7 +122,7 @@ class Manager(utils.HookableMixin):
                 raise
 
         resource = obj_class.__name__.lower()
-        filename = uuid_cache_dir + "/%s-uuid-cache" % resource
+        filename = os.path.join(uuid_cache_dir, "%s-uuid-cache" % resource)
 
         try:
             self._uuid_cache = open(filename, mode)
