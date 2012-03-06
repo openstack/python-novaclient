@@ -10,6 +10,8 @@ class Flavor(base.Resource):
     """
     A flavor is an available hardware configuration for a server.
     """
+    HUMAN_ID = True
+
     def __repr__(self):
         return "<Flavor: %s>" % self.name
 

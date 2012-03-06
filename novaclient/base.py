@@ -82,25 +82,23 @@ class Manager(utils.HookableMixin):
             except KeyError:
                 pass
 
-        with self.uuid_cache(obj_class, mode="w"):
-            return [obj_class(self, res, loaded=True) for res in data if res]
+        with self.completion_cache('human_id', obj_class, mode="w"):
+            with self.completion_cache('uuid', obj_class, mode="w"):
+                return [obj_class(self, res, loaded=True)
+                        for res in data if res]
 
     @contextlib.contextmanager
-    def uuid_cache(self, obj_class, mode):
+    def completion_cache(self, cache_type, obj_class, mode):
         """
-        Cache UUIDs for bash autocompletion.
+        The completion cache store items that can be used for bash
+        autocompletion, like UUIDs or human-friendly IDs.
 
-        The UUID cache works by checking to see whether an ID is UUID-like when
-        we create a resource object (e.g. a Image or a Server), and if it is,
-        we add it to a local cache file.  We maintain one cache file per
-        resource type so that we can refresh them independently.
+        A resource listing will clear and repopulate the cache.
 
-        A resource listing will clear and repopulate the UUID cache.
-
-        A resource create will append to the UUID cache.
+        A resource create will append to the cache.
 
         Delete is not handled because listings are assumed to be performed
-        often enough to keep the UUID cache reasonably up-to-date.
+        often enough to keep the cache reasonably up-to-date.
         """
         base_dir = utils.env('NOVACLIENT_UUID_CACHE_DIR',
                              default="~/.novaclient")
@@ -111,10 +109,10 @@ class Manager(utils.HookableMixin):
         url = utils.env('OS_URL', 'NOVA_URL')
         uniqifier = hashlib.md5(username + url).hexdigest()
 
-        uuid_cache_dir = os.path.expanduser(os.path.join(base_dir, uniqifier))
+        cache_dir = os.path.expanduser(os.path.join(base_dir, uniqifier))
 
         try:
-            os.makedirs(uuid_cache_dir, 0755)
+            os.makedirs(cache_dir, 0755)
         except OSError as e:
             if e.errno == errno.EEXIST:
                 pass
@@ -122,10 +120,13 @@ class Manager(utils.HookableMixin):
                 raise
 
         resource = obj_class.__name__.lower()
-        filename = os.path.join(uuid_cache_dir, "%s-uuid-cache" % resource)
+        filename = "%s-%s-cache" % (resource, cache_type.replace('_', '-'))
+        path = os.path.join(cache_dir, filename)
+
+        cache_attr = "_%s_cache" % cache_type
 
         try:
-            self._uuid_cache = open(filename, mode)
+            setattr(self, cache_attr, open(path, mode))
         except IOError:
             # NOTE(kiall): This is typicaly a permission denied while
             #              attempting to write the cache file.
@@ -134,13 +135,15 @@ class Manager(utils.HookableMixin):
         try:
             yield
         finally:
-            if hasattr(self, '_uuid_cache'):
-                self._uuid_cache.close()
-                del self._uuid_cache
+            cache = getattr(self, cache_attr, None)
+            if cache:
+                cache.close()
+                delattr(self, cache_attr)
 
-    def write_uuid_to_cache(self, uuid):
-        if hasattr(self, '_uuid_cache'):
-            self._uuid_cache.write("%s\n" % uuid)
+    def write_to_completion_cache(self, cache_type, val):
+        cache = getattr(self, "_%s_cache" % cache_type, None)
+        if cache:
+            cache.write("%s\n" % val)
 
     def _get(self, url, response_key=None):
         resp, body = self.api.client.get(url)
@@ -155,8 +158,9 @@ class Manager(utils.HookableMixin):
         if return_raw:
             return body[response_key]
 
-        with self.uuid_cache(self.resource_class, mode="a"):
-            return self.resource_class(self, body[response_key])
+        with self.completion_cache('human_id', self.resource_class, mode="a"):
+            with self.completion_cache('uuid', self.resource_class, mode="a"):
+                return self.resource_class(self, body[response_key])
 
     def _delete(self, url):
         resp, body = self.api.client.delete(url)
@@ -282,6 +286,8 @@ class Resource(object):
     :param info: dictionary representing resource attributes
     :param loaded: prevent lazy-loading if set to True
     """
+    HUMAN_ID = False
+
     def __init__(self, manager, info, loaded=False):
         self.manager = manager
         self._info = info
@@ -292,7 +298,20 @@ class Resource(object):
         # enter an infinite loop of __getattr__ -> get -> __init__ ->
         # __getattr__ -> ...
         if 'id' in self.__dict__ and len(str(self.id)) == 36:
-            self.manager.write_uuid_to_cache(self.id)
+            self.manager.write_to_completion_cache('uuid', self.id)
+
+        human_id = self.human_id
+        if human_id:
+            self.manager.write_to_completion_cache('human_id', human_id)
+
+    @property
+    def human_id(self):
+        """Subclasses may override this provide a pretty ID which can be used
+        for bash completion.
+        """
+        if 'name' in self.__dict__ and self.HUMAN_ID:
+            return utils.slugify(self.name)
+        return None
 
     def _add_details(self, info):
         for (k, v) in info.iteritems():

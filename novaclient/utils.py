@@ -1,7 +1,9 @@
 import os
-import prettytable
+import re
 import sys
 import uuid
+
+import prettytable
 
 from novaclient import exceptions
 
@@ -166,6 +168,11 @@ def find_resource(manager, name_or_id):
     except (ValueError, exceptions.NotFound):
         pass
 
+    try:
+        return manager.find(human_id=name_or_id)
+    except exceptions.NotFound:
+        pass
+
     # finally try to find entity by name
     try:
         return manager.find(name=name_or_id)
@@ -226,3 +233,23 @@ def import_class(import_str):
     mod_str, _sep, class_str = import_str.rpartition('.')
     __import__(mod_str)
     return getattr(sys.modules[mod_str], class_str)
+
+_slugify_strip_re = re.compile(r'[^\w\s-]')
+_slugify_hyphenate_re = re.compile(r'[-\s]+')
+
+
+# http://code.activestate.com/recipes/
+#   577257-slugify-make-a-string-usable-in-a-url-or-filename/
+def slugify(value):
+    """
+    Normalizes string, converts to lowercase, removes non-alpha characters,
+    and converts spaces to hyphens.
+
+    From Django's "django/template/defaultfilters.py".
+    """
+    import unicodedata
+    if not isinstance(value, unicode):
+        value = unicode(value)
+    value = unicodedata.normalize('NFKD', value).encode('ascii', 'ignore')
+    value = unicode(_slugify_strip_re.sub('', value).strip().lower())
+    return _slugify_hyphenate_re.sub('-', value)

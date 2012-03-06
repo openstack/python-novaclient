@@ -29,6 +29,8 @@ REBOOT_SOFT, REBOOT_HARD = 'SOFT', 'HARD'
 
 
 class Server(base.Resource):
+    HUMAN_ID = True
+
     def __repr__(self):
         return "<Server: %s>" % self.name
 

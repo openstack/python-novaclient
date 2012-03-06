@@ -45,8 +45,8 @@ def _boot(cs, args, reservation_id=None, min_count=None, max_count=None):
     if not args.flavor:
         raise exceptions.CommandError("you need to specify a Flavor ID ")
 
-    flavor = args.flavor
-    image = args.image
+    flavor = _find_flavor(cs, args.flavor)
+    image = _find_image(cs, args.image)
 
     meta = dict(v.split('=', 1) for v in args.meta)
 

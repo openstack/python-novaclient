@@ -10,6 +10,8 @@ class Image(base.Resource):
     """
     An image is a collection of files used to create or rebuild a server.
     """
+    HUMAN_ID = True
+
     def __repr__(self):
         return "<Image: %s>" % self.name
 
