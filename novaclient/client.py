@@ -35,7 +35,8 @@ class HTTPClient(httplib2.Http):
     USER_AGENT = 'python-novaclient'
 
     def __init__(self, user, password, projectid, auth_url, insecure=False,
-                 timeout=None, token=None, region_name=None,
+                 timeout=None, proxy_tenant_id=None,
+                 proxy_token=None, region_name=None,
                  endpoint_type='publicURL', service_type=None,
                  service_name=None):
         super(HTTPClient, self).__init__(timeout=timeout)
@@ -51,7 +52,8 @@ class HTTPClient(httplib2.Http):
 
         self.management_url = None
         self.auth_token = None
-        self.proxy_token = token
+        self.proxy_token = proxy_token
+        self.proxy_tenant_id = proxy_tenant_id
 
         # httplib2 overrides
         self.force_exception_to_status_code = True
@@ -192,7 +194,8 @@ class HTTPClient(httplib2.Http):
         """
 
         # GET ...:5001/v2.0/tokens/#####/endpoints
-        url = '/'.join([url, 'tokens', self.proxy_token, 'endpoints'])
+        url = '/'.join([url, 'tokens', '%s?belongsTo=%s'
+                        % (self.proxy_token, self.proxy_tenant_id)])
         _logger.debug("Using Endpoint URL: %s" % url)
         resp, body = self.request(url, "GET",
                                   headers={'X-Auth_Token': self.auth_token})
