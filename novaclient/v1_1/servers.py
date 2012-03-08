@@ -530,8 +530,10 @@ class ServerManager(local_base.BootingManagerWithFind):
         :param image_name: Name to give the snapshot image
         :param meta: Metadata to give newly-created image entity
         """
-        self._action('createImage', server,
-                     {'name': image_name, 'metadata': metadata or {}})
+        body = {'name': image_name, 'metadata': metadata or {}}
+        location = self._action('createImage', server, body)[0]['location']
+        image_uuid = location.split('/')[-1]
+        return image_uuid
 
     def set_meta(self, server, metadata):
         """

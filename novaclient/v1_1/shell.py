@@ -227,19 +227,18 @@ def do_boot(cs, args):
     utils.print_dict(info)
 
     if args.poll:
-        _poll_for_status(cs, info['id'], 'building', 'build', ['active'])
+        _poll_for_status(cs.servers.get, info['id'], 'building', ['active'])
 
 
-def _poll_for_status(cs, server_id, action, initial_state, final_ok_states,
+def _poll_for_status(poll_fn, obj_id, action, final_ok_states,
                      poll_period=5, show_progress=True):
     """Block while an action is being performed, periodically printing
     progress.
     """
-    def print_progress(server, progress=None):
-        if show_progress and hasattr(server, 'progress'):
+    def print_progress(progress):
+        if show_progress:
             msg = ('\rInstance %(action)s... %(progress)s%% complete'
-                   % dict(action=action,
-                          progress=progress or server.progress or 0))
+                   % dict(action=action, progress=progress))
         else:
             msg = '\rInstance %(action)s...' % dict(action=action)
 
@@ -248,17 +247,18 @@ def _poll_for_status(cs, server_id, action, initial_state, final_ok_states,
 
     print
     while True:
-        server = cs.servers.get(server_id)
-        status = server.status.lower()
+        obj = poll_fn(obj_id)
+        status = obj.status.lower()
+        progress = getattr(obj, 'progress', None) or 0
         if status in final_ok_states:
-            print_progress(server, progress=100)
+            print_progress(100)
             print "\nFinished"
             break
         elif status == "error":
             print "\nError %(action)s instance" % locals()
             break
         else:
-            print_progress(server)
+            print_progress(progress)
             time.sleep(poll_period)
 
 
@@ -526,7 +526,7 @@ def do_reboot(cs, args):
     server.reboot(args.reboot_type)
 
     if args.poll:
-        _poll_for_status(cs, server.id, 'rebooting', 'reboot', ['active'],
+        _poll_for_status(cs.servers.get, server.id, 'rebooting', ['active'],
                          show_progress=False)
 
 
@@ -555,7 +555,7 @@ def do_rebuild(cs, args):
     _print_server(cs, s)
 
     if args.poll:
-        _poll_for_status(cs, server.id, 'rebuilding', 'rebuild', ['active'])
+        _poll_for_status(cs.servers.get, server.id, 'rebuilding', ['active'])
 
 
 @utils.arg('server', metavar='<server>',
@@ -580,7 +580,7 @@ def do_resize(cs, args):
     kwargs = utils.get_resource_manager_extra_kwargs(do_resize, args)
     server.resize(flavor, **kwargs)
     if args.poll:
-        _poll_for_status(cs, server.id, 'resizing', 'resize',
+        _poll_for_status(cs.servers.get, server.id, 'resizing',
                          ['active', 'verify-resize'])
 
 
@@ -608,7 +608,7 @@ def do_migrate(cs, args):
     server.migrate()
 
     if args.poll:
-        _poll_for_status(cs, server.id, 'migrating', 'resize',
+        _poll_for_status(cs.servers.get, server.id, 'migrating',
                          ['active', 'verify-resize'])
 
 
@@ -677,10 +677,19 @@ def do_root_password(cs, args):
 
 @utils.arg('server', metavar='<server>', help='Name or ID of server.')
 @utils.arg('name', metavar='<name>', help='Name of snapshot.')
+@utils.arg('--poll',
+    dest='poll',
+    action="store_true",
+    default=False,
+    help='Blocks while instance snapshots so progress can be reported.')
 def do_image_create(cs, args):
     """Create a new image by taking a snapshot of a running server."""
     server = _find_server(cs, args.server)
-    cs.servers.create_image(server, args.name)
+    image_uuid = cs.servers.create_image(server, args.name)
+
+    if args.poll:
+        _poll_for_status(cs.images.get, image_uuid, 'snapshotting',
+                         ['active'])
 
 
 @utils.arg('server',

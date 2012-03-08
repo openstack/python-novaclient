@@ -62,7 +62,10 @@ class FakeHTTPClient(base_client.HTTPClient):
         self.callstack.append((method, url, kwargs.get('body', None)))
 
         status, body = getattr(self, callback)(**kwargs)
-        return httplib2.Response({"status": status}), body
+        if hasattr(status, 'items'):
+            return httplib2.Response(status), body
+        else:
+            return httplib2.Response({"status": status}), body
 
     #
     # Limits
@@ -280,6 +283,7 @@ class FakeHTTPClient(base_client.HTTPClient):
 
     def post_servers_1234_action(self, body, **kw):
         _body = None
+        resp = 202
         assert len(body.keys()) == 1
         action = body.keys()[0]
         if action == 'reboot':
@@ -315,6 +319,7 @@ class FakeHTTPClient(base_client.HTTPClient):
             assert body[action].keys() == ['address']
         elif action == 'createImage':
             assert set(body[action].keys()) == set(['name', 'metadata'])
+            resp = dict(status=202, location="http://blah/images/456")
         elif action == 'changePassword':
             assert body[action].keys() == ['adminPass']
         elif action == 'os-getConsoleOutput':
@@ -328,7 +333,7 @@ class FakeHTTPClient(base_client.HTTPClient):
                                                     'disk_over_commit'])
         else:
             raise AssertionError("Unexpected server action: %s" % action)
-        return (202, _body)
+        return (resp, _body)
 
     #
     # Flavors
