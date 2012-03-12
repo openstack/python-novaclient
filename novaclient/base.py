@@ -92,7 +92,7 @@ class Manager(utils.HookableMixin):
         often enough to keep the cache reasonably up-to-date.
         """
         base_dir = utils.env('NOVACLIENT_UUID_CACHE_DIR',
-                             default="~/.novaclient")
+                             default="/tmp/.novaclient")
 
         # NOTE(sirp): Keep separate UUID caches for each username + endpoint
         # pair
