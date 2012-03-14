@@ -39,37 +39,39 @@ Command-line API
 Installing this package gets you a shell command, ``nova``, that you
 can use to interact with any Rackspace compatible API (including OpenStack).
 
-You'll need to provide your OpenStack username and API key. You can do this
-with the ``--username``, ``--password`` and  ``--projectid`` params, but it's
-easier to just set them as environment variables::
+You'll need to provide your OpenStack username and password. You can do this
+with the ``--os_username``, ``--os_password`` and  ``--os_tenant_name``
+params, but it's easier to just set them as environment variables::
 
-    export NOVA_USERNAME=openstack
-    export NOVA_PASSWORD=yadayada
-    export NOVA_PROJECT_ID=myproject
+    export OS_USERNAME=openstack
+    export OS_PASSWORD=yadayada
+    export OS_TENANT_NAME=myproject
 
-You will also need to define the authentication url with ``--url`` and the
-version of the API with ``--version``.  Or set them as an environment
+You will also need to define the authentication url with ``--os_auth_url``
+and the version of the API with ``--version``.  Or set them as an environment
 variables as well::
 
-    export NOVA_URL=http://example.com:8774/v1.1/
+    export OS_AUTH_URL=http://example.com:8774/v1.1/
     export NOVA_VERSION=1.1
 
 If you are using Keystone, you need to set the NOVA_URL to the keystone
 endpoint::
 
-    export NOVA_URL=http://example.com:5000/v2.0/
+    export OS_AUTH_URL=http://example.com:5000/v2.0/
 
 Since Keystone can return multiple regions in the Service Catalog, you
-can specify the one you want with ``--region_name`` (or
-``export NOVA_REGION_NAME``). It defaults to the first in the list returned.
+can specify the one you want with ``--os_region_name`` (or
+``export OS_REGION_NAME``). It defaults to the first in the list returned.
 
 You'll find complete documentation on the shell by running
 ``nova help``::
 
-    usage: nova [--username USERNAME] [--password PASSWORD] [--projectid PROJECTID]
-                   [--url URL] [--version VERSION] [--region_name NAME]
-                   [--endpoint_name NAME]
-                   <subcommand> ...
+    usage: nova [--debug] [--os_username OS_USERNAME] [--os_password OS_PASSWORD]
+                [--os_tenant_name OS_TENANT_NAME] [--os_auth_url OS_AUTH_URL]
+                [--os_region_name OS_REGION_NAME] [--service_type SERVICE_TYPE]
+                [--service_name SERVICE_NAME] [--endpoint_type ENDPOINT_TYPE]
+                [--version VERSION]
+                <subcommand> ...
 
     Command-line interface to the OpenStack Nova API.
 
@@ -171,18 +173,26 @@ You'll find complete documentation on the shell by running
         x509-create-cert    Create x509 cert for a user in tenant
         x509-get-root-cert  Fetches the x509 root cert.
 
-
     Optional arguments:
-      --username USERNAME   Defaults to env[NOVA_USERNAME].
-      --password PASSWORD   Defaults to env[NOVA_PASSWORD].
-      --projectid PROJECTID Defaults to env[NOVA_PROJECT_ID].
-      --url AUTH_URL        Defaults to env[NOVA_URL] or
-                            https://auth.api.rackspacecloud.com/v1.0
-                            if undefined.
+      --debug               Print debugging output
+      --os_username OS_USERNAME
+                            Defaults to env[OS_USERNAME].
+      --os_password OS_PASSWORD
+                            Defaults to env[OS_PASSWORD].
+      --os_tenant_name OS_TENANT_NAME
+                            Defaults to env[OS_TENANT_NAME].
+      --os_auth_url OS_AUTH_URL
+                            Defaults to env[OS_AUTH_URL].
+      --os_region_name OS_REGION_NAME
+                            Defaults to env[OS_REGION_NAME].
+      --service_type SERVICE_TYPE
+                            Defaults to compute for most actions
+      --service_name SERVICE_NAME
+                            Defaults to env[NOVA_SERVICE_NAME]
+      --endpoint_type ENDPOINT_TYPE
+                            Defaults to env[NOVA_ENDPOINT_TYPE] or publicURL.
       --version VERSION     Accepts 1.1, defaults to env[NOVA_VERSION].
-      --region_name NAME    The region name in the Keystone Service Catalog
-                            to use after authentication. Defaults to first
-                            in the list returned.
+
 
     See "nova help COMMAND" for help on a specific command.
 

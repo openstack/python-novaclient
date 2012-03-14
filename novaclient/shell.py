@@ -83,23 +83,23 @@ class OpenStackComputeShell(object):
             action='store_true',
             help="Print debugging output")
 
-        parser.add_argument('--username',
+        parser.add_argument('--os_username',
             default=utils.env('OS_USERNAME', 'NOVA_USERNAME'),
             help='Defaults to env[OS_USERNAME].')
 
-        parser.add_argument('--password',
+        parser.add_argument('--os_password',
             default=utils.env('OS_PASSWORD', 'NOVA_PASSWORD'),
             help='Defaults to env[OS_PASSWORD].')
 
-        parser.add_argument('--tenant_name',
+        parser.add_argument('--os_tenant_name',
             default=utils.env('OS_TENANT_NAME', 'NOVA_PROJECT_ID'),
             help='Defaults to env[OS_TENANT_NAME].')
 
-        parser.add_argument('--auth_url',
+        parser.add_argument('--os_auth_url',
             default=utils.env('OS_AUTH_URL', 'NOVA_URL'),
             help='Defaults to env[OS_AUTH_URL].')
 
-        parser.add_argument('--region_name',
+        parser.add_argument('--os_region_name',
             default=utils.env('OS_REGION_NAME', 'NOVA_REGION_NAME'),
             help='Defaults to env[OS_REGION_NAME].')
 
@@ -125,20 +125,31 @@ class OpenStackComputeShell(object):
             action='store_true',
             help=argparse.SUPPRESS)
 
-        # alias for --password, left in for backwards compatibility
-        parser.add_argument('--apikey',
+        # FIXME(dtroyer): The args below are here for diablo compatibility,
+        #                 remove them in folsum cycle
+
+        # alias for --os_username, left in for backwards compatibility
+        parser.add_argument('--username',
+            help='Deprecated')
+
+        # alias for --os_region_name, left in for backwards compatibility
+        parser.add_argument('--region_name',
+            help='Deprecated')
+
+        # alias for --os_password, left in for backwards compatibility
+        parser.add_argument('--apikey', '--password', dest='apikey',
             default=utils.env('NOVA_API_KEY'),
-            help=argparse.SUPPRESS)
+            help='Deprecated')
 
-        # alias for --tenant_name, left in for backward compatibility
-        parser.add_argument('--projectid',
+        # alias for --os_tenant_name, left in for backward compatibility
+        parser.add_argument('--projectid', '--tenant_name', dest='projectid',
             default=utils.env('NOVA_PROJECT_ID'),
-            help=argparse.SUPPRESS)
+            help='Deprecated')
 
-        # alias for --auth_url, left in for backward compatibility
-        parser.add_argument('--url',
+        # alias for --os_auth_url, left in for backward compatibility
+        parser.add_argument('--url', '--auth_url', dest='url',
             default=utils.env('NOVA_URL'),
-            help=argparse.SUPPRESS)
+            help='Deprecated')
 
         return parser
 
@@ -270,13 +281,16 @@ class OpenStackComputeShell(object):
             self.do_bash_completion(args)
             return 0
 
-        (user, apikey, password, projectid, tenant_name, url, auth_url,
-                region_name, endpoint_type, insecure, service_type,
-                service_name) = (
-                        args.username, args.apikey, args.password,
-                        args.projectid, args.tenant_name, args.url,
-                        args.auth_url, args.region_name, args.endpoint_type,
-                        args.insecure, args.service_type, args.service_name)
+        (os_username, os_password, os_tenant_name, os_auth_url,
+                os_region_name, endpoint_type,
+                insecure, service_type, service_name,
+                username, apikey, projectid, url, region_name) = (
+                        args.os_username, args.os_password,
+                        args.os_tenant_name, args.os_auth_url,
+                        args.os_region_name, args.endpoint_type,
+                        args.insecure, args.service_type, args.service_name,
+                        args.username, args.apikey, args.projectid,
+                        args.url, args.region_name)
 
         if not endpoint_type:
             endpoint_type = DEFAULT_NOVA_ENDPOINT_TYPE
@@ -286,46 +300,54 @@ class OpenStackComputeShell(object):
             service_type = utils.get_service_type(args.func) or service_type
 
         #FIXME(usrleon): Here should be restrict for project id same as
-        # for username or password but for compatibility it is not.
+        # for os_username or os_password but for compatibility it is not.
 
         if not utils.isunauthenticated(args.func):
-            if not user:
-                raise exc.CommandError("You must provide a username "
-                        "via either --username or env[OS_USERNAME]")
+            if not os_username:
+                if not username:
+                    raise exc.CommandError("You must provide a username "
+                            "via either --os_username or env[OS_USERNAME]")
+                else:
+                    os_username = username
 
-            if not password:
+            if not os_password:
                 if not apikey:
                     raise exc.CommandError("You must provide a password "
-                            "via either --password or via env[OS_PASSWORD]")
+                            "via either --os_password or via "
+                            "env[OS_PASSWORD]")
                 else:
-                    password = apikey
+                    os_password = apikey
 
-            if not tenant_name:
+            if not os_tenant_name:
                 if not projectid:
                     raise exc.CommandError("You must provide a tenant name "
-                            "via either --tenant_name or env[OS_TENANT_NAME]")
+                            "via either --os_tenant_name or "
+                            "env[OS_TENANT_NAME]")
                 else:
-                    tenant_name = projectid
+                    os_tenant_name = projectid
 
-            if not auth_url:
+            if not os_auth_url:
                 if not url:
                     raise exc.CommandError("You must provide an auth url "
-                            "via either --auth_url or env[OS_AUTH_URL]")
+                            "via either --os_auth_url or env[OS_AUTH_URL]")
                 else:
-                    auth_url = url
+                    os_auth_url = url
+
+            if not os_region_name and region_name:
+                os_region_name = region_name
 
         if options.version and options.version != '1.0':
-            if not tenant_name:
+            if not os_tenant_name:
                 raise exc.CommandError("You must provide a tenant name "
-                        "via either --tenant_name or env[OS_TENANT_NAME]")
+                        "via either --os_tenant_name or env[OS_TENANT_NAME]")
 
-            if not auth_url:
+            if not os_auth_url:
                 raise exc.CommandError("You must provide an auth url "
-                        "via either --auth_url or env[OS_AUTH_URL]")
+                        "via either --os_auth_url or env[OS_AUTH_URL]")
 
-        self.cs = client.Client(options.version, user, password,
-                                tenant_name, auth_url, insecure,
-                                region_name=region_name,
+        self.cs = client.Client(options.version, os_username, os_password,
+                                os_tenant_name, os_auth_url, insecure,
+                                region_name=os_region_name,
                                 endpoint_type=endpoint_type,
                                 extensions=self.extensions,
                                 service_type=service_type,
