@@ -124,6 +124,7 @@ You'll find complete documentation on the shell by running
         keypair-delete      Delete keypair by its id
         keypair-list        Show a list of keypairs for a user
         list                List active servers.
+        lock                Lock a server
         migrate             Migrate a server to a new host.
         reboot              Reboot a server.
         rebuild             Shutdown, re-image, and re-boot a server.
@@ -149,6 +150,7 @@ You'll find complete documentation on the shell by running
         secgroup-list-rules List rules for a security group.
         show                Show details about the given server.
         suspend             Suspend a server.
+        unlock              Unlock a server.
         unpause             Unpause a server.
         unrescue            Unrescue a server.
         usage-list          List usage data for all tenants

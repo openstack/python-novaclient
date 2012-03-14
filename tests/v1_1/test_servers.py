@@ -201,6 +201,20 @@ class ServersTest(utils.TestCase):
         cs.servers.unrescue(s)
         cs.assert_called('POST', '/servers/1234/action')
 
+    def test_lock(self):
+        s = cs.servers.get(1234)
+        s.lock()
+        cs.assert_called('POST', '/servers/1234/action')
+        cs.servers.lock(s)
+        cs.assert_called('POST', '/servers/1234/action')
+
+    def test_unlock(self):
+        s = cs.servers.get(1234)
+        s.unlock()
+        cs.assert_called('POST', '/servers/1234/action')
+        cs.servers.unlock(s)
+        cs.assert_called('POST', '/servers/1234/action')
+
     def test_get_console_output_without_length(self):
         success = 'foo'
         s = cs.servers.get(1234)

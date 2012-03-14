@@ -625,6 +625,18 @@ def do_unpause(cs, args):
 
 
 @utils.arg('server', metavar='<server>', help='Name or ID of server.')
+def do_lock(cs, args):
+    """Lock a server."""
+    _find_server(cs, args.server).lock()
+
+
+@utils.arg('server', metavar='<server>', help='Name or ID of server.')
+def do_unlock(cs, args):
+    """Unlock a server."""
+    _find_server(cs, args.server).unlock()
+
+
+@utils.arg('server', metavar='<server>', help='Name or ID of server.')
 def do_suspend(cs, args):
     """Suspend a server."""
     _find_server(cs, args.server).suspend()

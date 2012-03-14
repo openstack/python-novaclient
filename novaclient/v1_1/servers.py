@@ -101,6 +101,18 @@ class Server(base.Resource):
         """
         self.manager.unpause(self)
 
+    def lock(self):
+        """
+        Lock -- Lock the instance from certain operations.
+        """
+        self.manager.lock(self)
+
+    def unlock(self):
+        """
+        Unlock -- Remove instance lock.
+        """
+        self.manager.unlock(self)
+
     def suspend(self):
         """
         Suspend -- Suspend the running server.
@@ -328,6 +340,18 @@ class ServerManager(local_base.BootingManagerWithFind):
         Unpause the server.
         """
         self._action('unpause', server, None)
+
+    def lock(self, server):
+        """
+        Lock the server.
+        """
+        self._action('lock', server, None)
+
+    def unlock(self, server):
+        """
+        Unlock the server.
+        """
+        self._action('unlock', server, None)
 
     def suspend(self, server):
         """
