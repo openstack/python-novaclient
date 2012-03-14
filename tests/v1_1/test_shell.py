@@ -414,3 +414,23 @@ class ShellTest(utils.TestCase):
     def test_host_reboot(self):
         self.run_command('host-action sample-host --action reboot')
         self.assert_called('GET', '/os-hosts/sample-host/reboot')
+
+    def test_quota_show(self):
+        self.run_command('quota-show test')
+        self.assert_called('GET', '/os-quota-sets/test')
+
+    def test_quota_defaults(self):
+        self.run_command('quota-defaults test')
+        self.assert_called('GET', '/os-quota-sets/test/defaults')
+
+    def test_quota_update(self):
+        self.run_command('quota-update test --instances=5')
+        self.assert_called('PUT', '/os-quota-sets/test')
+
+    def test_quota_class_show(self):
+        self.run_command('quota-class-show test')
+        self.assert_called('GET', '/os-quota-class-sets/test')
+
+    def test_quota_class_update(self):
+        self.run_command('quota-class-update test --instances=5')
+        self.assert_called('PUT', '/os-quota-class-sets/test')

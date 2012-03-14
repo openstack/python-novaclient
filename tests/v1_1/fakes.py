@@ -591,6 +591,39 @@ class FakeHTTPClient(base_client.HTTPClient):
                       'cores': 1}})
 
     #
+    # Quota Classes
+    #
+
+    def get_os_quota_class_sets_test(self, **kw):
+        return (200, {'quota_class_set': {
+                      'class_name': 'test',
+                      'metadata_items': [],
+                      'injected_file_content_bytes': 1,
+                      'volumes': 1,
+                      'gigabytes': 1,
+                      'ram': 1,
+                      'floating_ips': 1,
+                      'instances': 1,
+                      'injected_files': 1,
+                      'cores': 1}})
+
+    def put_os_quota_class_sets_test(self, body, **kw):
+        assert body.keys() == ['quota_class_set']
+        fakes.assert_has_keys(body['quota_class_set'],
+                              required=['class_name'])
+        return (200, {'quota_class_set': {
+                      'class_name': 'test',
+                      'metadata_items': [],
+                      'injected_file_content_bytes': 1,
+                      'volumes': 2,
+                      'gigabytes': 1,
+                      'ram': 1,
+                      'floating_ips': 1,
+                      'instances': 1,
+                      'injected_files': 1,
+                      'cores': 1}})
+
+    #
     # Security Groups
     #
     def get_os_security_groups(self, **kw):
