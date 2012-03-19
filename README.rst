@@ -70,64 +70,76 @@ You'll find complete documentation on the shell by running
                 [--os_tenant_name OS_TENANT_NAME] [--os_auth_url OS_AUTH_URL]
                 [--os_region_name OS_REGION_NAME] [--service_type SERVICE_TYPE]
                 [--service_name SERVICE_NAME] [--endpoint_type ENDPOINT_TYPE]
-                [--version VERSION]
+                [--version VERSION] [--username USERNAME]
+                [--region_name REGION_NAME] [--apikey APIKEY]
+                [--projectid PROJECTID] [--url URL]
                 <subcommand> ...
 
     Command-line interface to the OpenStack Nova API.
 
     Positional arguments:
       <subcommand>
-        add-fixed-ip        Add a new fixed IP address to a servers network.
+        absolute-limits     Print a list of absolute limits for a user
+        actions             Retrieve server actions.
+        add-fixed-ip        Add new IP address to network.
         add-floating-ip     Add a floating IP address to a server.
-        aggregate-add-host  Add the host to the specified aggregate
-        aggregate-create    Create a new aggregate with the specified details
-        aggregate-delete    Delete the aggregate by its id
-        aggregate-details   Show details of the specified aggregate
-        aggregate-list      Print a list of all aggregates
+        aggregate-add-host  Add the host to the specified aggregate.
+        aggregate-create    Create a new aggregate with the specified details.
+        aggregate-delete    Delete the aggregate by its id.
+        aggregate-details   Show details of the specified aggregate.
+        aggregate-list      Print a list of all aggregates.
         aggregate-remove-host
-                            Remove the specified host from the specfied
-                            aggregate
+                            Remove the specified host from the specfied aggregate.
         aggregate-set-metadata
-                            Update the metadata associated with the aggregate
+                            Update the metadata associated with the aggregate.
         aggregate-update    Update the aggregate's name and optionally
-                            availability zone
-        backup              Backup a server.
-        backup-schedule     Show or edit the backup schedule for a server.
-        backup-schedule-delete
-                            Delete the backup schedule for a server.
+                            availability zone.
         boot                Boot a new server.
+        console-log         Get console log output of a server.
+        credentials         Show user credentials returned from auth
         delete              Immediately shut down and delete a server.
+        describe-resource   Show details about a resource
+        diagnostics         Retrieve server diagnostics.
+        dns-create          Create a DNS entry for domain, name and ip.
+        dns-create-private-domain
+                            Create the specified DNS domain.
+        dns-create-public-domain
+                            Create the specified DNS domain.
+        dns-delete          Delete the specified DNS entry.
+        dns-delete-domain   Delete the specified DNS domain.
+        dns-domains         Print a list of available dns domains.
+        dns-list            List current DNS entries for domain and ip or domain
+                            and name.
+        endpoints           Discover endpoints that get returned from the
+                            authenticate services
         flavor-create       Create a new flavor
         flavor-delete       Delete a specific flavor
         flavor-list         Print a list of available 'flavors' (sizes of
                             servers).
-        floating-ip-create  Allocate a floating IP to the current tenant.
-        floating-ip-delete  De-allocate a floating IP from the current tenant.
-        floating-ip-list    List allocated floating IPs for the current tenant.
+        floating-ip-create  Allocate a floating IP for the current tenant.
+        floating-ip-delete  De-allocate a floating IP.
+        floating-ip-list    List floating ips for this tenant.
         floating-ip-pool-list
                             List all floating ip pools.
-        get-vnc-console     Get a vnc console for a server
-        help                Display help about this program or one of its
-                            subcommands.
-        host-update         Update the host status or maintenance mode
-        host-action         Perform a power action on the host
+        get-vnc-console     Get a vnc console to a server.
+        host-action         Perform a power action on a host.
+        host-update         Update host settings.
         image-create        Create a new image by taking a snapshot of a running
                             server.
         image-delete        Delete an image.
         image-list          Print a list of available images to boot from.
-        ip-share            Share an IP address from the given IP group onto a
-                            server.
-        ip-unshare          Stop sharing an given address with a server.
-        ipgroup-create      Create a new IP group.
-        ipgroup-delete      Delete an IP group.
-        ipgroup-list        Show IP groups.
-        ipgroup-show        Show details about a particular IP group.
+        image-meta          Set or Delete metadata on an image.
+        image-show          Show details about the given image.
         keypair-add         Create a new key pair for use with instances
         keypair-delete      Delete keypair by its id
-        keypair-list        Show a list of keypairs for a user
+        keypair-list        Print a list of keypairs for a user
         list                List active servers.
-        lock                Lock a server
-        migrate             Migrate a server to a new host.
+        live-migration      Migrates a running instance to a new machine.
+        lock                Lock a server.
+        meta                Set or Delete metadata on a server.
+        migrate             Migrate a server.
+        pause               Pause a server.
+        rate-limits         Print a list of rate limits for a user
         reboot              Reboot a server.
         rebuild             Shutdown, re-image, and re-boot a server.
         remove-fixed-ip     Remove an IP address from a server.
@@ -138,19 +150,22 @@ You'll find complete documentation on the shell by running
         resize-confirm      Confirm a previous resize.
         resize-revert       Revert a previous resize (and return to the previous
                             VM).
+        resume              Resume a server.
         root-password       Change the root password for a server.
         secgroup-add-group-rule
                             Add a source group rule to a security group.
         secgroup-add-rule   Add a rule to a security group.
-        secgroup-create     Create a new security group.
+        secgroup-create     Create a security group.
         secgroup-delete     Delete a security group.
         secgroup-delete-group-rule
                             Delete a source group rule from a security group.
         secgroup-delete-rule
                             Delete a rule from a security group.
         secgroup-list       List security groups for the curent tenant.
-        secgroup-list-rules List rules for a security group.
+        secgroup-list-rules
+                            List rules for a security group.
         show                Show details about the given server.
+        ssh                 SSH into a server.
         suspend             Suspend a server.
         unlock              Unlock a server.
         unpause             Unpause a server.
@@ -170,8 +185,15 @@ You'll find complete documentation on the shell by running
                             List all the snapshots.
         volume-snapshot-show
                             Show details about a snapshot.
+        volume-type-create  Create a new volume type.
+        volume-type-delete  Delete a specific flavor
+        volume-type-list    Print a list of available 'volume types'.
         x509-create-cert    Create x509 cert for a user in tenant
         x509-get-root-cert  Fetches the x509 root cert.
+        bash-completion     Prints all of the commands and options to stdout so
+                            that the
+        help                Display help about this program or one of its
+                            subcommands.
 
     Optional arguments:
       --debug               Print debugging output
@@ -192,7 +214,15 @@ You'll find complete documentation on the shell by running
       --endpoint_type ENDPOINT_TYPE
                             Defaults to env[NOVA_ENDPOINT_TYPE] or publicURL.
       --version VERSION     Accepts 1.1, defaults to env[NOVA_VERSION].
-
+      --username USERNAME   Deprecated
+      --region_name REGION_NAME
+                            Deprecated
+      --apikey APIKEY, --password APIKEY
+                            Deprecated
+      --projectid PROJECTID, --tenant_name PROJECTID
+                            Deprecated
+      --url URL, --auth_url URL
+                            Deprecated
 
     See "nova help COMMAND" for help on a specific command.
 

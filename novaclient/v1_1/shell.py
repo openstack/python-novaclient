@@ -1029,6 +1029,18 @@ def _print_floating_ip_list(floating_ips):
 
 
 @utils.arg('server', metavar='<server>', help='Name or ID of server.')
+@utils.arg('--length',
+           metavar='<length>',
+           default=None,
+           help='Length in lines to tail.')
+def do_console_log(cs, args):
+    """Get console log output of a server."""
+    server = _find_server(cs, args.server)
+    data = server.get_console_output(length=args.length)
+    print data
+
+
+@utils.arg('server', metavar='<server>', help='Name or ID of server.')
 @utils.arg('address', metavar='<address>', help='IP Address.')
 def do_add_floating_ip(cs, args):
     """Add a floating IP address to a server."""
