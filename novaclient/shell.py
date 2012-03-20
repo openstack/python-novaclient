@@ -121,7 +121,7 @@ class OpenStackComputeShell(object):
             help='Accepts 1.1, defaults to env[NOVA_VERSION].')
 
         parser.add_argument('--insecure',
-            default=False,
+            default=utils.env('NOVACLIENT_INSECURE', default=False),
             action='store_true',
             help=argparse.SUPPRESS)
 
