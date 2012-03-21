@@ -114,10 +114,10 @@ class Manager(utils.HookableMixin):
         try:
             os.makedirs(cache_dir, 0755)
         except OSError as e:
-            if e.errno == errno.EEXIST:
-                pass
-            else:
-                raise
+            # NOTE(kiall): This is typicaly either permission denied while
+            #              attempting to create the directory, or the directory
+            #              already exists. Either way, don't fail.
+            pass
 
         resource = obj_class.__name__.lower()
         filename = "%s-%s-cache" % (resource, cache_type.replace('_', '-'))
