@@ -1,5 +1,6 @@
 from novaclient import client
 from novaclient.v1_1 import certs
+from novaclient.v1_1 import cloudpipe
 from novaclient.v1_1 import aggregates
 from novaclient.v1_1 import flavors
 from novaclient.v1_1 import floating_ip_dns
@@ -55,6 +56,7 @@ class Client(object):
         # extensions
         self.dns_domains = floating_ip_dns.FloatingIPDNSDomainManager(self)
         self.dns_entries = floating_ip_dns.FloatingIPDNSEntryManager(self)
+        self.cloudpipe = cloudpipe.CloudpipeManager(self)
         self.certs = certs.CertificateManager(self)
         self.floating_ips = floating_ips.FloatingIPManager(self)
         self.floating_ip_pools = floating_ip_pools.FloatingIPPoolManager(self)
