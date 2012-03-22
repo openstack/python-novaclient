@@ -2,6 +2,7 @@ include AUTHORS
 include HACKING
 include LICENSE
 include README.rst
-include run_tests.sh
+include run_tests.sh tox.ini
 recursive-include docs *
 recursive-include tests *
+recursive-include tools *
