@@ -230,6 +230,19 @@ def do_boot(cs, args):
         _poll_for_status(cs.servers.get, info['id'], 'building', ['active'])
 
 
+def do_cloudpipe_list(cs, args):
+    """Print a list of all cloudpipe instances."""
+    cloudpipes = cs.cloudpipe.list()
+    columns = ['Project Id', "Public IP", "Public Port", "Internal IP"]
+    utils.print_list(cloudpipes, columns)
+
+
+@utils.arg('project', metavar='<project>', help='Name of the project.')
+def do_cloudpipe_create(cs, args):
+    """Create a cloudpipe instance for the given project"""
+    cs.cloudpipe.create(args.project)
+
+
 def _poll_for_status(poll_fn, obj_id, action, final_ok_states,
                      poll_period=5, show_progress=True):
     """Block while an action is being performed, periodically printing
