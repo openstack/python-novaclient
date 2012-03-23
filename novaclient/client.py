@@ -28,6 +28,10 @@ from novaclient import utils
 
 
 _logger = logging.getLogger(__name__)
+if 'NOVACLIENT_DEBUG' in os.environ and os.environ['NOVACLIENT_DEBUG']:
+    ch = logging.StreamHandler()
+    _logger.setLevel(logging.DEBUG)
+    _logger.addHandler(ch)
 
 
 class HTTPClient(httplib2.Http):
@@ -60,11 +64,7 @@ class HTTPClient(httplib2.Http):
         self.disable_ssl_certificate_validation = insecure
 
     def http_log(self, args, kwargs, resp, body):
-        if 'NOVACLIENT_DEBUG' in os.environ and os.environ['NOVACLIENT_DEBUG']:
-            ch = logging.StreamHandler()
-            _logger.setLevel(logging.DEBUG)
-            _logger.addHandler(ch)
-        elif not _logger.isEnabledFor(logging.DEBUG):
+        if not _logger.isEnabledFor(logging.DEBUG):
             return
 
         string_parts = ['curl -i']
