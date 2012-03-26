@@ -55,8 +55,12 @@ class NovaClientArgumentParser(argparse.ArgumentParser):
         self.print_usage(sys.stderr)
         #FIXME(lzyeval): if changes occur in argparse.ArgParser._check_value
         choose_from = ' (choose from'
-        self.exit(2, "error: %s\nTry '%s help' for more information.\n" %
-                     (message.split(choose_from)[0], self.prog))
+        progparts = self.prog.partition(' ')
+        self.exit(2, "error: %(errmsg)s\nTry '%(mainp)s help %(subp)s'"
+                     " for more information.\n" %
+                     {'errmsg': message.split(choose_from)[0],
+                      'mainp': progparts[0],
+                      'subp': progparts[2]})
 
 
 class OpenStackComputeShell(object):
