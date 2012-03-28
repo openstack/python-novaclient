@@ -860,7 +860,8 @@ def do_volume_list(cs, args):
 
     # Create a list of servers to which the volume is attached
     for vol in volumes:
-        servers = [server.get('serverId') for server in vol.attachments]
+        servers = [s.get('server_id') or s.get('serverId')
+                   for s in vol.attachments]
         setattr(vol, 'attached_to', ','.join(map(str, servers)))
     utils.print_list(volumes, ['ID', 'Status', 'Display Name',
                         'Size', 'Volume Type', 'Attached to'])
