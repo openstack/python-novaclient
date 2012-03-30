@@ -1645,6 +1645,10 @@ def do_credentials(cs, args):
     help='Optional flag to indicate whether to use an IPv6 address '
          'attached to an instance. (Defaults to IPv4 address)')
 @utils.arg('--login', metavar='<login>', help='Login to use.', default="root")
+@utils.arg('-i', '--identity',
+    dest='identity',
+    help='Private key file, same as the -i option to the ssh command.',
+    default='')
 def do_ssh(cs, args):
     """SSH into a server."""
     addresses = _find_server(cs, args.server).addresses
@@ -1662,9 +1666,11 @@ def do_ssh(cs, args):
             ip_address = address['addr']
             break
 
+    identity = '-i %s' % args.identity if len(args.identity) else ''
+
     if ip_address:
-        os.system("ssh -%d -p%d %s@%s" % (version, args.port, args.login,
-                                          ip_address))
+        os.system("ssh -%d -p%d %s %s@%s" % (version, args.port, identity,
+                                             args.login, ip_address))
     else:
         pretty_version = "IPv%d" % version
         print "ERROR: No %s %s address found." % (address_type,
