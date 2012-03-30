@@ -1258,7 +1258,7 @@ def do_secgroup_delete(cs, args):
 
 
 def do_secgroup_list(cs, args):
-    """List security groups for the curent tenant."""
+    """List security groups for the current tenant."""
     _print_secgroups(cs.security_groups.list())
 
 
