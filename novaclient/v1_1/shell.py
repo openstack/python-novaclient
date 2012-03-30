@@ -1651,6 +1651,11 @@ def do_ssh(cs, args):
     address_type = "private" if args.private else "public"
     version = 6 if args.ipv6 else 4
 
+    if address_type not in addresses:
+        print "ERROR: No %s addresses found for '%s'." % (address_type,
+                                                          args.server)
+        return
+
     ip_address = None
     for address in addresses[address_type]:
         if address['version'] == version:
