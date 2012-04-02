@@ -20,7 +20,6 @@ Base utilities to build API operation managers and objects on top of.
 """
 
 import contextlib
-import errno
 import hashlib
 import os
 from novaclient import exceptions
@@ -113,7 +112,7 @@ class Manager(utils.HookableMixin):
 
         try:
             os.makedirs(cache_dir, 0755)
-        except OSError as e:
+        except OSError:
             # NOTE(kiall): This is typicaly either permission denied while
             #              attempting to create the directory, or the directory
             #              already exists. Either way, don't fail.

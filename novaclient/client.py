@@ -98,7 +98,7 @@ class HTTPClient(httplib2.Http):
         if body:
             try:
                 body = json.loads(body)
-            except ValueError, e:
+            except ValueError:
                 pass
         else:
             body = None
@@ -166,7 +166,7 @@ class HTTPClient(httplib2.Http):
                                            service_name=self.service_name)
                 self.management_url = management_url.rstrip('/')
                 return None
-            except exceptions.AmbiguousEndpoints, exc:
+            except exceptions.AmbiguousEndpoints:
                 print "Found more than one valid endpoint. Use a more " \
                       "restrictive filter"
                 raise

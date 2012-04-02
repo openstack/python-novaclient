@@ -1134,12 +1134,10 @@ def do_dns_list(cs, args):
 @utils.arg('ip', metavar='<ip>', help='ip address')
 @utils.arg('name', metavar='<name>', help='DNS name')
 @utils.arg('domain', metavar='<domain>', help='DNS domain')
-@utils.arg('--type', metavar='<type>', help='dns type (e.g. "A")',
-           default='A')
+@utils.arg('--type', metavar='<type>', help='dns type (e.g. "A")', default='A')
 def do_dns_create(cs, args):
     """Create a DNS entry for domain, name and ip."""
-    entries = cs.dns_entries.create(args.domain, args.name,
-                                    args.ip, args.type)
+    cs.dns_entries.create(args.domain, args.name, args.ip, args.type)
 
 
 @utils.arg('domain', metavar='<domain>', help='DNS domain')
