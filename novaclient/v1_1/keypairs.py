@@ -35,7 +35,7 @@ class Keypair(base.Resource):
             setattr(self, k, v)
 
     @property
-    def uuid(self):
+    def id(self):
         return self.name
 
     def delete(self):

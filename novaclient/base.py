@@ -37,15 +37,8 @@ except NameError:
 def getid(obj):
     """
     Abstracts the common pattern of allowing both an object or an object's ID
-    (UUID) as a parameter when dealing with relationships.
+    as a parameter when dealing with relationships.
     """
-
-    # Try to return the object's UUID first, if we have a UUID.
-    try:
-        if obj.uuid:
-            return obj.uuid
-    except AttributeError:
-        pass
     try:
         return obj.id
     except AttributeError:
@@ -147,9 +140,9 @@ class Manager(utils.HookableMixin):
     def _get(self, url, response_key=None):
         resp, body = self.api.client.get(url)
         if response_key:
-            return self.resource_class(self, body[response_key])
+            return self.resource_class(self, body[response_key], loaded=True)
         else:
-            return self.resource_class(self, body)
+            return self.resource_class(self, body, loaded=True)
 
     def _create(self, url, body, response_key, return_raw=False, **kwargs):
         self.run_hooks('modify_body_for_create', body, **kwargs)
