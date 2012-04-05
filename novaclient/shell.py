@@ -77,7 +77,7 @@ class OpenStackComputeShell(object):
 
         # Global arguments
         parser.add_argument('-h', '--help',
-            action='help',
+            action='store_true',
             help=argparse.SUPPRESS,
         )
 
@@ -272,6 +272,10 @@ class OpenStackComputeShell(object):
 
         subcommand_parser = self.get_subcommand_parser(options.version)
         self.parser = subcommand_parser
+
+        if options.help and len(args) == 0:
+            subcommand_parser.print_help()
+            return 0
 
         args = subcommand_parser.parse_args(argv)
         self._run_extension_hooks('__post_parse_args__', args)
