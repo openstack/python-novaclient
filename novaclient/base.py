@@ -174,12 +174,15 @@ class ManagerWithFind(Manager):
         This isn't very efficient: it loads the entire list then filters on
         the Python side.
         """
-        rl = self.findall(**kwargs)
-        try:
-            return rl[0]
-        except IndexError:
+        matches = self.findall(**kwargs)
+        num_matches = len(matches)
+        if num_matches == 0:
             msg = "No %s matching %s." % (self.resource_class.__name__, kwargs)
             raise exceptions.NotFound(404, msg)
+        elif num_matches > 1:
+            raise exceptions.NoUniqueMatch
+        else:
+            return matches[0]
 
     def findall(self, **kwargs):
         """

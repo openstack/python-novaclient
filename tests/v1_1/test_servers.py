@@ -1,5 +1,6 @@
 import StringIO
 
+from novaclient import exceptions
 from novaclient.v1_1 import servers
 from tests import utils
 from tests.v1_1 import fakes
@@ -97,10 +98,10 @@ class ServersTest(utils.TestCase):
         cs.assert_called('GET', '/servers/detail')
         self.assertEqual(s.name, 'sample-server')
 
-        # Find with multiple results arbitraility returns the first item
-        s = cs.servers.find(flavor={"id": 1, "name": "256 MB Server"})
+        self.assertRaises(exceptions.NoUniqueMatch, cs.servers.find,
+                          flavor={"id": 1, "name": "256 MB Server"})
+
         sl = cs.servers.findall(flavor={"id": 1, "name": "256 MB Server"})
-        self.assertEqual(sl[0], s)
         self.assertEqual([s.id for s in sl], [1234, 5678])
 
     def test_reboot_server(self):
