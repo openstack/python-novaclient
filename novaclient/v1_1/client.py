@@ -44,7 +44,7 @@ class Client(object):
                   insecure=False, timeout=None, proxy_tenant_id=None,
                   proxy_token=None, region_name=None,
                   endpoint_type='publicURL', extensions=None,
-                  service_type=None, service_name=None):
+                  service_type='compute', service_name=None):
         # FIXME(comstud): Rename the api_key argument above when we
         # know it's not being used as keyword argument
         password = api_key
