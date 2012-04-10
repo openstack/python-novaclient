@@ -37,7 +37,7 @@ setuptools.setup(
     long_description=read_file("README.rst"),
     license="Apache License, Version 2.0",
     url="https://github.com/openstack/python-novaclient",
-    packages=["novaclient", "novaclient.v1_1", "novaclient.v1_1.contrib"],
+    packages=setuptools.find_packages(exclude=['tests', 'tests.*']),
     install_requires=requirements,
     tests_require=["nose", "mock"],
     test_suite="nose.collector",
