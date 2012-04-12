@@ -113,6 +113,10 @@ class OpenStackComputeShell(object):
             default=utils.env('NOVA_SERVICE_NAME'),
             help='Defaults to env[NOVA_SERVICE_NAME]')
 
+        parser.add_argument('--volume_service_name',
+            default=utils.env('NOVA_VOLUME_SERVICE_NAME'),
+            help='Defaults to env[NOVA_VOLUME_SERVICE_NAME]')
+
         parser.add_argument('--endpoint_type',
             default=utils.env('NOVA_ENDPOINT_TYPE',
                         default=DEFAULT_NOVA_ENDPOINT_TYPE),
@@ -292,14 +296,15 @@ class OpenStackComputeShell(object):
             return 0
 
         (os_username, os_password, os_tenant_name, os_auth_url,
-                os_region_name, endpoint_type,
-                insecure, service_type, service_name,
+                os_region_name, endpoint_type, insecure,
+                service_type, service_name, volume_service_name,
                 username, apikey, projectid, url, region_name) = (
                         args.os_username, args.os_password,
                         args.os_tenant_name, args.os_auth_url,
                         args.os_region_name, args.endpoint_type,
                         args.insecure, args.service_type, args.service_name,
-                        args.username, args.apikey, args.projectid,
+                        args.volume_service_name, args.username,
+                        args.apikey, args.projectid,
                         args.url, args.region_name)
 
         if not endpoint_type:
@@ -360,7 +365,8 @@ class OpenStackComputeShell(object):
                 os_password, os_tenant_name, os_auth_url, insecure,
                 region_name=os_region_name, endpoint_type=endpoint_type,
                 extensions=self.extensions, service_type=service_type,
-                service_name=service_name)
+                service_name=service_name,
+                volume_service_name=volume_service_name)
 
         try:
             if not utils.isunauthenticated(args.func):

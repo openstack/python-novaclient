@@ -30,7 +30,7 @@ class ServiceCatalog(object):
 
     def url_for(self, attr=None, filter_value=None,
                     service_type=None, endpoint_type='publicURL',
-                    service_name=None):
+                    service_name=None, volume_service_name=None):
         """Fetch the public URL from the Compute service for
         a particular endpoint attribute. If none given, return
         the first. See tests for sample service catalog."""
@@ -54,7 +54,12 @@ class ServiceCatalog(object):
             if service.get("type") != service_type:
                 continue
 
-            if service_name and service.get('name') != service_name:
+            if (service_name and service_type == 'compute' and
+                    service.get('name') != service_name):
+                continue
+
+            if (volume_service_name and service_type == 'volume' and
+                    service.get('name') != volume_service_name):
                 continue
 
             endpoints = service['endpoints']
