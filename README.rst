@@ -52,7 +52,7 @@ and the version of the API with ``--version``.  Or set them as an environment
 variables as well::
 
     export OS_AUTH_URL=http://example.com:8774/v1.1/
-    export NOVA_VERSION=1.1
+    export OS_COMPUTE_API_VERSION=1.1
 
 If you are using Keystone, you need to set the NOVA_URL to the keystone
 endpoint::
@@ -213,7 +213,8 @@ You'll find complete documentation on the shell by running
                             Defaults to env[NOVA_SERVICE_NAME]
       --endpoint_type ENDPOINT_TYPE
                             Defaults to env[NOVA_ENDPOINT_TYPE] or publicURL.
-      --version VERSION     Accepts 1.1, defaults to env[NOVA_VERSION].
+      --os_compute_api_version VERSION
+                            Accepts 1.1, defaults to env[OS_COMPUTE_API_VERSION].
       --username USERNAME   Deprecated
       --region_name REGION_NAME
                             Deprecated

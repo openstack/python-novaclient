@@ -34,7 +34,7 @@ import novaclient.extension
 from novaclient import utils
 from novaclient.v1_1 import shell as shell_v1_1
 
-DEFAULT_NOVA_VERSION = "1.1"
+DEFAULT_OS_COMPUTE_API_VERSION = "1.1"
 DEFAULT_NOVA_ENDPOINT_TYPE = 'publicURL'
 DEFAULT_NOVA_SERVICE_TYPE = 'compute'
 
@@ -119,9 +119,10 @@ class OpenStackComputeShell(object):
             help='Defaults to env[NOVA_ENDPOINT_TYPE] or '
                     + DEFAULT_NOVA_ENDPOINT_TYPE + '.')
 
-        parser.add_argument('--version',
-            default=utils.env('NOVA_VERSION', default=DEFAULT_NOVA_VERSION),
-            help='Accepts 1.1, defaults to env[NOVA_VERSION].')
+        parser.add_argument('--os_compute_api_version',
+            default=utils.env('OS_COMPUTE_API_VERSION',
+            default=DEFAULT_OS_COMPUTE_API_VERSION),
+            help='Accepts 1.1, defaults to env[OS_COMPUTE_API_VERSION].')
 
         parser.add_argument('--insecure',
             default=utils.env('NOVACLIENT_INSECURE', default=False),
@@ -267,10 +268,12 @@ class OpenStackComputeShell(object):
         self.setup_debugging(options.debug)
 
         # build available subcommands based on version
-        self.extensions = self._discover_extensions(options.version)
+        self.extensions = self._discover_extensions(
+                options.os_compute_api_version)
         self._run_extension_hooks('__pre_parse_args__')
 
-        subcommand_parser = self.get_subcommand_parser(options.version)
+        subcommand_parser = self.get_subcommand_parser(
+                options.os_compute_api_version)
         self.parser = subcommand_parser
 
         if options.help and len(args) == 0:
@@ -343,7 +346,8 @@ class OpenStackComputeShell(object):
             if not os_region_name and region_name:
                 os_region_name = region_name
 
-        if options.version and options.version != '1.0':
+        if (options.os_compute_api_version and
+                options.os_compute_api_version != '1.0'):
             if not os_tenant_name:
                 raise exc.CommandError("You must provide a tenant name "
                         "via either --os_tenant_name or env[OS_TENANT_NAME]")
@@ -352,13 +356,11 @@ class OpenStackComputeShell(object):
                 raise exc.CommandError("You must provide an auth url "
                         "via either --os_auth_url or env[OS_AUTH_URL]")
 
-        self.cs = client.Client(options.version, os_username, os_password,
-                                os_tenant_name, os_auth_url, insecure,
-                                region_name=os_region_name,
-                                endpoint_type=endpoint_type,
-                                extensions=self.extensions,
-                                service_type=service_type,
-                                service_name=service_name)
+        self.cs = client.Client(options.os_compute_api_version, os_username,
+                os_password, os_tenant_name, os_auth_url, insecure,
+                region_name=os_region_name, endpoint_type=endpoint_type,
+                extensions=self.extensions, service_type=service_type,
+                service_name=service_name)
 
         try:
             if not utils.isunauthenticated(args.func):

@@ -37,7 +37,7 @@ class ShellTest(utils.TestCase):
             'NOVA_USERNAME': 'username',
             'NOVA_PASSWORD': 'password',
             'NOVA_PROJECT_ID': 'project_id',
-            'NOVA_VERSION': '1.1',
+            'OS_COMPUTE_API_VERSION': '1.1',
             'NOVA_URL': 'http://no.where',
         }
 
