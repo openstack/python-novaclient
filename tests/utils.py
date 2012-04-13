@@ -1,5 +1,5 @@
-import unittest
+import unittest2
 
 
-class TestCase(unittest.TestCase):
+class TestCase(unittest2.TestCase):
     pass
