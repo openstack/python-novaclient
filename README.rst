@@ -233,29 +233,11 @@ Python API
 
 __ http://packages.python.org/python-novaclient/
 
-By way of a quick-start::
-
-    >>> import novaclient
-    >>> nt = novaclient.OpenStack(USERNAME, PASSWORD, PROJECT_ID [, AUTH_URL])
-    >>> nt.flavors.list()
-    [...]
-    >>> nt.servers.list()
-    [...]
-    >>> s = nt.servers.create(image=2, flavor=1, name='myserver')
-
-    ... time passes ...
-
-    >>> s.reboot()
-
-    ... time passes ...
-
-    >>> s.delete()
-
 Quick-start using keystone::
 
     # use v2.0 auth with http://example.com:5000/v2.0/")
     >>> from novaclient.v1_1 import client
-    >>> nt = client.Client(USER, PASS, TENANT, AUTH_URL)
+    >>> nt = client.Client(USER, PASS, TENANT, AUTH_URL, service_type="compute")
     >>> nt.flavors.list()
     [...]
     >>> nt.servers.list()
