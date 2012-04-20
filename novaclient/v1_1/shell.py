@@ -91,14 +91,14 @@ def _boot(cs, args, reservation_id=None, min_count=None, max_count=None):
     for nic_str in args.nics:
         nic_info = {"net-id": "", "v4-fixed-ip": ""}
         for kv_str in nic_str.split(","):
-            k, v = kv_str.split("=")
+            k, v = kv_str.split("=", 1)
             nic_info[k] = v
         nics.append(nic_info)
 
     hints = {}
     if args.scheduler_hints:
-        hint_set = [dict({hint[0]: hint[1]}) for hint in \
-                [hint_set.split('=') for hint_set in args.scheduler_hints]]
+        parsed_hints = [hint.split('=', 1) for hint in args.scheduler_hints]
+        hint_set = [dict({hint[0]: hint[1]}) for hint in parsed_hints]
         for hint in hint_set:
             hints.update(hint.items())
     else:

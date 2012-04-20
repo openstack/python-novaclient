@@ -204,7 +204,7 @@ class FakeHTTPClient(base_client.HTTPClient):
         ]})
 
     def post_servers(self, body, **kw):
-        assert body.keys() == ['server']
+        assert set(body.keys()) <= set(['server', 'os:scheduler_hints'])
         fakes.assert_has_keys(body['server'],
                         required=['name', 'imageRef', 'flavorRef'],
                         optional=['metadata', 'personality'])

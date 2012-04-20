@@ -81,7 +81,8 @@ class ShellTest(utils.TestCase):
                 }},
         )
 
-        self.run_command('boot --image 1 --flavor 1 --meta foo=bar'
+    def test_boot_metadata(self):
+        self.run_command('boot --image 1 --flavor 1 --meta foo=bar=pants'
                          ' --meta spam=eggs some-server ')
         self.assert_called_anytime(
             'POST', '/servers',
@@ -89,10 +90,46 @@ class ShellTest(utils.TestCase):
                 'flavorRef': '1',
                 'name': 'some-server',
                 'imageRef': '1',
-                'metadata': {'foo': 'bar', 'spam': 'eggs'},
+                'metadata': {'foo': 'bar=pants', 'spam': 'eggs'},
                 'min_count': 1,
                 'max_count': 1,
             }},
+        )
+
+    def test_boot_hints(self):
+        self.run_command('boot --image 1 --flavor 1 --hint a=b=c some-server ')
+        self.assert_called_anytime(
+            'POST', '/servers',
+            {
+                'server': {
+                    'flavorRef': '1',
+                    'name': 'some-server',
+                    'imageRef': '1',
+                    'min_count': 1,
+                    'max_count': 1,
+                },
+                'os:scheduler_hints': {'a': 'b=c'},
+            },
+        )
+
+    def test_boot_nics(self):
+        cmd = ('boot --image 1 --flavor 1 '
+               '--nic net-id=a=c,v4-fixed-ip=10.0.0.1 some-server')
+        self.run_command(cmd)
+        self.assert_called_anytime(
+            'POST', '/servers',
+            {
+                'server': {
+                    'flavorRef': '1',
+                    'name': 'some-server',
+                    'imageRef': '1',
+                    'min_count': 1,
+                    'max_count': 1,
+                    'networks': [
+                        {'uuid': 'a=c', 'fixed_ip': '10.0.0.1'},
+                    ],
+                },
+            },
         )
 
     def test_boot_files(self):
