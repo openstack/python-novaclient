@@ -103,7 +103,7 @@ class HTTPClient(httplib2.Http):
         else:
             body = None
 
-        if resp.status in (400, 401, 403, 404, 408, 409, 413, 500, 501):
+        if resp.status >= 400:
             raise exceptions.from_response(resp, body)
 
         return resp, body
