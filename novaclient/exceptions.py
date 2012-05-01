@@ -46,13 +46,18 @@ class ClientException(Exception):
     """
     The base exception class for all exceptions this library raises.
     """
-    def __init__(self, code, message=None, details=None):
+    def __init__(self, code, message=None, details=None, request_id=None):
         self.code = code
         self.message = message or self.__class__.message
         self.details = details
+        self.request_id = request_id
 
     def __str__(self):
-        return "%s (HTTP %s)" % (self.message, self.code)
+        formatted_string = "%s (HTTP %s)" % (self.message, self.code)
+        if self.request_id:
+            formatted_string += " (Request-ID: %s)" % self.request_id
+
+        return formatted_string
 
 
 class BadRequest(ClientException):
@@ -127,6 +132,7 @@ def from_response(response, body):
             raise exception_from_response(resp, body)
     """
     cls = _code_map.get(response.status, ClientException)
+    request_id = response.get('x-compute-request-id')
     if body:
         message = "n/a"
         details = "n/a"
@@ -134,6 +140,7 @@ def from_response(response, body):
             error = body[body.keys()[0]]
             message = error.get('message', None)
             details = error.get('details', None)
-        return cls(code=response.status, message=message, details=details)
+        return cls(code=response.status, message=message, details=details,
+                   request_id=request_id)
     else:
-        return cls(code=response.status)
+        return cls(code=response.status, request_id=request_id)
