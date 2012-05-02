@@ -16,7 +16,7 @@ class FakeResource(object):
         except KeyError:
             pass
         try:
-            self.displayName = properties['displayName']
+            self.display_name = properties['display_name']
         except KeyError:
             pass
 
@@ -28,7 +28,7 @@ class FakeManager(base.ManagerWithFind):
     resources = [
         FakeResource('1234', {'name': 'entity_one'}),
         FakeResource(UUID, {'name': 'entity_two'}),
-        FakeResource('4242', {'displayName': 'entity_three'}),
+        FakeResource('4242', {'display_name': 'entity_three'}),
         FakeResource('5678', {'name': '9876'})
     ]
 

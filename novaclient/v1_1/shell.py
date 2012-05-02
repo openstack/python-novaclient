@@ -915,7 +915,6 @@ def do_volume_delete(cs, args):
     help='Name or ID of server.')
 @utils.arg('volume',
     metavar='<volume>',
-    type=int,
     help='ID of the volume to attach.')
 @utils.arg('device', metavar='<device>',
     help='Name of the device e.g. /dev/vdb.')
@@ -931,7 +930,6 @@ def do_volume_attach(cs, args):
     help='Name or ID of server.')
 @utils.arg('attachment_id',
     metavar='<volume>',
-    type=int,
     help='Attachment ID of the volume.')
 def do_volume_detach(cs, args):
     """Detach a volume from a server."""
