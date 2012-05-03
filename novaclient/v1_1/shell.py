@@ -676,14 +676,16 @@ def do_unrescue(cs, args):
 @utils.arg('server', metavar='<server>', help='Name or ID of server.')
 def do_diagnostics(cs, args):
     """Retrieve server diagnostics."""
-    utils.print_dict(cs.servers.diagnostics(args.server)[1])
+    server = _find_server(cs, args.server)
+    utils.print_dict(cs.servers.diagnostics(server)[1])
 
 
 @utils.arg('server', metavar='<server>', help='Name or ID of server.')
 def do_actions(cs, args):
     """Retrieve server actions."""
+    server = _find_server(cs, args.server)
     utils.print_list(
-        cs.servers.actions(args.server),
+        cs.servers.actions(server),
         ["Created_At", "Action", "Error"])
 
 

@@ -236,6 +236,18 @@ class ShellTest(utils.TestCase):
         self.run_command('delete sample-server')
         self.assert_called('DELETE', '/servers/1234')
 
+    def test_diagnostics(self):
+        self.run_command('diagnostics 1234')
+        self.assert_called('GET', '/servers/1234/diagnostics')
+        self.run_command('diagnostics sample-server')
+        self.assert_called('GET', '/servers/1234/diagnostics')
+
+    def test_actions(self):
+        self.run_command('actions 1234')
+        self.assert_called('GET', '/servers/1234/actions')
+        self.run_command('actions sample-server')
+        self.assert_called('GET', '/servers/1234/actions')
+
     def test_set_meta_set(self):
         self.run_command('meta 1234 set key1=val1 key2=val2')
         self.assert_called('POST', '/servers/1234/metadata',
