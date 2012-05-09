@@ -958,7 +958,6 @@ def do_volume_snapshot_show(cs, args):
 
 @utils.arg('volume_id',
     metavar='<volume_id>',
-    type=int,
     help='ID of the volume to snapshot')
 @utils.arg('--force',
     metavar='<True|False>',
