@@ -787,11 +787,11 @@ def _print_server(cs, server):
 
     flavor = info.get('flavor', {})
     flavor_id = flavor.get('id', '')
-    info['flavor'] = _find_flavor(cs, flavor_id).name
+    info['flavor'] = '%s (%s)' % (_find_flavor(cs, flavor_id).name, flavor_id)
 
     image = info.get('image', {})
     image_id = image.get('id', '')
-    info['image'] = _find_image(cs, image_id).name
+    info['image'] = '%s (%s)' % (_find_image(cs, image_id).name, image_id)
 
     info.pop('links', None)
     info.pop('addresses', None)
