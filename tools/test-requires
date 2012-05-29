@@ -5,6 +5,6 @@ nose
 nose-exclude
 nosexcover
 openstack.nose_plugin
-pep8>=1.0
+pep8==1.1
 sphinx>=1.1.2
 unittest2
