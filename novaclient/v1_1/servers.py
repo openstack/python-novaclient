@@ -389,7 +389,7 @@ class ServerManager(local_base.BootingManagerWithFind):
 
     def create(self, name, image, flavor, meta=None, files=None,
                reservation_id=None, min_count=None,
-               max_count=None, security_groups=None, userdata=None,
+               max_count=None, security_groups=None, user_data=None,
                key_name=None, availability_zone=None,
                block_device_mapping=None, nics=None, scheduler_hints=None,
                config_drive=None, **kwargs):
@@ -409,7 +409,7 @@ class ServerManager(local_base.BootingManagerWithFind):
                       are the file contents (either as a string or as a
                       file-like object). A maximum of five entries is allowed,
                       and each file must be 10k or less.
-        :param userdata: user data to pass to be exposed by the metadata
+        :param user_data: user data to pass to be exposed by the metadata
                       server this can be a file type object as well or a
                       string.
         :param reservation_id: a UUID for the set of servers being requested.
@@ -437,7 +437,7 @@ class ServerManager(local_base.BootingManagerWithFind):
         boot_args = [name, image, flavor]
 
         boot_kwargs = dict(
-            meta=meta, files=files, userdata=userdata,
+            meta=meta, files=files, user_data=user_data,
             reservation_id=reservation_id, min_count=min_count,
             max_count=max_count, security_groups=security_groups,
             key_name=key_name, availability_zone=availability_zone,
