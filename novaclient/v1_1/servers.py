@@ -89,6 +89,18 @@ class Server(base.Resource):
         """
         self.manager.remove_floating_ip(self, address)
 
+    def stop(self):
+        """
+        Stop -- Stop the running server.
+        """
+        self.manager.stop(self)
+
+    def start(self):
+        """
+        Start -- Start the paused server.
+        """
+        self.manager.start(self)
+
     def pause(self):
         """
         Pause -- Pause the running server.
@@ -328,6 +340,18 @@ class ServerManager(local_base.BootingManagerWithFind):
 
         return self._action('os-getVNCConsole', server,
                             {'type': console_type})[1]
+
+    def stop(self, server):
+        """
+        Stop the server.
+        """
+        return self._action('os-stop', server, None)
+
+    def start(self, server):
+        """
+        Start the server.
+        """
+        self._action('os-start', server, None)
 
     def pause(self, server):
         """

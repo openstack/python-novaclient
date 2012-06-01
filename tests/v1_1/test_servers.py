@@ -188,6 +188,20 @@ class ServersTest(utils.TestCase):
         s.remove_floating_ip(f)
         cs.assert_called('POST', '/servers/1234/action')
 
+    def test_stop(self):
+        s = cs.servers.get(1234)
+        s.stop()
+        cs.assert_called('POST', '/servers/1234/action')
+        cs.servers.stop(s)
+        cs.assert_called('POST', '/servers/1234/action')
+
+    def test_start(self):
+        s = cs.servers.get(1234)
+        s.start()
+        cs.assert_called('POST', '/servers/1234/action')
+        cs.servers.start(s)
+        cs.assert_called('POST', '/servers/1234/action')
+
     def test_rescue(self):
         s = cs.servers.get(1234)
         s.rescue()

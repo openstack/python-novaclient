@@ -166,6 +166,8 @@ You'll find complete documentation on the shell by running
                             List rules for a security group.
         show                Show details about the given server.
         ssh                 SSH into a server.
+        start               Start a server.
+        stop                Stop a server.
         suspend             Suspend a server.
         unlock              Unlock a server.
         unpause             Unpause a server.

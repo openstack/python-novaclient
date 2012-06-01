@@ -638,6 +638,18 @@ def do_unpause(cs, args):
 
 
 @utils.arg('server', metavar='<server>', help='Name or ID of server.')
+def do_stop(cs, args):
+    """Stop a server."""
+    _find_server(cs, args.server).stop()
+
+
+@utils.arg('server', metavar='<server>', help='Name or ID of server.')
+def do_start(cs, args):
+    """Start a server."""
+    _find_server(cs, args.server).start()
+
+
+@utils.arg('server', metavar='<server>', help='Name or ID of server.')
 def do_lock(cs, args):
     """Lock a server."""
     _find_server(cs, args.server).lock()

@@ -305,6 +305,10 @@ class FakeHTTPClient(base_client.HTTPClient):
             assert body[action] is None
         elif action == 'migrate':
             assert body[action] is None
+        elif action == 'os-stop':
+            assert body[action] is None
+        elif action == 'os-start':
+            assert body[action] is None
         elif action == 'rescue':
             assert body[action] is None
         elif action == 'unrescue':
