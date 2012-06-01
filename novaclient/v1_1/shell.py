@@ -142,8 +142,8 @@ def _boot(cs, args, reservation_id=None, min_count=None, max_count=None):
      metavar="<key=value>",
      action='append',
      default=[],
-     help="Record arbitrary key/value metadata. "\
-          "May be give multiple times.")
+     help="Record arbitrary key/value metadata to /meta.js "\
+          "on the new server. Can be specified multiple times.")
 @utils.arg('--file',
      metavar="<dst-path=src-path>",
      action='append',
