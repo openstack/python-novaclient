@@ -165,6 +165,10 @@ class ShellTest(utils.TestCase):
         self.run_command('flavor-list')
         self.assert_called_anytime('GET', '/flavors/detail')
 
+    def test_flavor_show(self):
+        self.run_command('flavor-show 1')
+        self.assert_called('GET', '/flavors/1')
+
     def test_image_show(self):
         self.run_command('image-show 1')
         self.assert_called('GET', '/images/1')

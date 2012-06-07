@@ -311,6 +311,15 @@ def do_flavor_delete(cs, args):
     cs.flavors.delete(args.id)
 
 
+@utils.arg('flavor',
+     metavar='<flavor>',
+     help="Name or ID of flavor")
+def do_flavor_show(cs, args):
+    """Show details about the given flavor."""
+    flavor = _find_flavor(cs, args.flavor)
+    _print_flavor(flavor)
+
+
 @utils.arg('name',
      metavar='<name>',
      help="Name of the new flavor")
@@ -420,6 +429,13 @@ def _print_image(image):
     except AttributeError:
         pass
 
+    utils.print_dict(info)
+
+
+def _print_flavor(flavor):
+    info = flavor._info.copy()
+    # ignore links, we don't need to present those
+    info.pop('links')
     utils.print_dict(info)
 
 
