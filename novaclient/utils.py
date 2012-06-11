@@ -126,7 +126,7 @@ def pretty_choice_list(l):
 def print_list(objs, fields, formatters={}):
     mixed_case_fields = ['serverId']
     pt = prettytable.PrettyTable([f for f in fields], caching=False)
-    pt.aligns = ['l' for f in fields]
+    pt.align = 'l'
 
     for o in objs:
         row = []
@@ -147,7 +147,7 @@ def print_list(objs, fields, formatters={}):
 
 def print_dict(d, property="Property"):
     pt = prettytable.PrettyTable([property, 'Value'], caching=False)
-    pt.aligns = ['l', 'l']
+    pt.align = 'l'
     [pt.add_row(list(r)) for r in d.iteritems()]
     print pt.get_string(sortby=property)
 
