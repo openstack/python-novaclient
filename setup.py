@@ -16,6 +16,8 @@ import os
 import setuptools
 import sys
 
+from novaclient.openstack.common import setup
+
 
 requirements = ["httplib2", "prettytable"]
 if sys.version_info < (2, 6):
@@ -27,6 +29,8 @@ if sys.version_info < (2, 7):
 def read_file(file_name):
     return open(os.path.join(os.path.dirname(__file__), file_name)).read()
 
+
+setup.generate_authors()
 
 setuptools.setup(
     name="python-novaclient",
