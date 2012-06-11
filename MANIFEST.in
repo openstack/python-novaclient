@@ -3,6 +3,7 @@ include HACKING
 include LICENSE
 include README.rst
 include run_tests.sh tox.ini
+include novaclient/versioninfo
 recursive-include doc *
 recursive-include tests *
 recursive-include tools *

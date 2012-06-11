@@ -34,7 +34,7 @@ setup.generate_authors()
 
 setuptools.setup(
     name="python-novaclient",
-    version="2012.2",
+    version=setup.get_post_version('novaclient'),
     author="Rackspace, based on work by Jacob Kaplan-Moss",
     author_email="github@racklabs.com",
     description="Client library for OpenStack Nova API.",
