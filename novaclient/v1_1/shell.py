@@ -1518,10 +1518,10 @@ def do_aggregate_create(cs, args):
 def do_aggregate_delete(cs, args):
     """Delete the aggregate by its id."""
     cs.aggregates.delete(args.id)
-    print "Aggregate %s has been succesfully deleted." % args.id
+    print "Aggregate %s has been successfully deleted." % args.id
 
 
-@utils.arg('id', metavar='<id>', help='Aggregate id to udpate.')
+@utils.arg('id', metavar='<id>', help='Aggregate id to update.')
 @utils.arg('name', metavar='<name>', help='Name of aggregate.')
 @utils.arg('availability_zone', metavar='<availability_zone>',
            help='The availability zone of the aggregate.', nargs='?')
@@ -1532,11 +1532,11 @@ def do_aggregate_update(cs, args):
         updates["availability_zone"] = args.availability_zone
 
     aggregate = cs.aggregates.update(args.id, updates)
-    print "Aggregate %s has been succesfully updated." % args.id
+    print "Aggregate %s has been successfully updated." % args.id
     _print_aggregate_details(aggregate)
 
 
-@utils.arg('id', metavar='<id>', help='Aggregate id to udpate.')
+@utils.arg('id', metavar='<id>', help='Aggregate id to update.')
 @utils.arg('metadata',
            metavar='<key=value>',
            nargs='+',
@@ -1547,7 +1547,7 @@ def do_aggregate_set_metadata(cs, args):
     """Update the metadata associated with the aggregate."""
     metadata = _extract_metadata(args)
     aggregate = cs.aggregates.set_metadata(args.id, metadata)
-    print "Aggregate %s has been succesfully updated." % args.id
+    print "Aggregate %s has been successfully updated." % args.id
     _print_aggregate_details(aggregate)
 
 
@@ -1556,16 +1556,16 @@ def do_aggregate_set_metadata(cs, args):
 def do_aggregate_add_host(cs, args):
     """Add the host to the specified aggregate."""
     aggregate = cs.aggregates.add_host(args.id, args.host)
-    print "Aggregate %s has been succesfully updated." % args.id
+    print "Aggregate %s has been successfully updated." % args.id
     _print_aggregate_details(aggregate)
 
 
 @utils.arg('id', metavar='<id>', help='Host aggregate id to delete.')
 @utils.arg('host', metavar='<host>', help='The host to add to the aggregate.')
 def do_aggregate_remove_host(cs, args):
-    """Remove the specified host from the specfied aggregate."""
+    """Remove the specified host from the specified aggregate."""
     aggregate = cs.aggregates.remove_host(args.id, args.host)
-    print "Aggregate %s has been succesfully updated." % args.id
+    print "Aggregate %s has been successfully updated." % args.id
     _print_aggregate_details(aggregate)
 
 
