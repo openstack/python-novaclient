@@ -28,10 +28,6 @@ from novaclient import utils
 
 
 _logger = logging.getLogger(__name__)
-if 'NOVACLIENT_DEBUG' in os.environ and os.environ['NOVACLIENT_DEBUG']:
-    ch = logging.StreamHandler()
-    _logger.setLevel(logging.DEBUG)
-    _logger.addHandler(ch)
 
 
 class HTTPClient(httplib2.Http):
