@@ -10,6 +10,7 @@ OpenStack Client interface. Handles the REST calls and responses.
 import httplib2
 import logging
 import os
+import time
 import urlparse
 
 try:
@@ -38,7 +39,8 @@ class HTTPClient(httplib2.Http):
                  timeout=None, proxy_tenant_id=None,
                  proxy_token=None, region_name=None,
                  endpoint_type='publicURL', service_type=None,
-                 service_name=None, volume_service_name=None):
+                 service_name=None, volume_service_name=None,
+                 timings=False):
         super(HTTPClient, self).__init__(timeout=timeout)
         self.user = user
         self.password = password
@@ -50,6 +52,9 @@ class HTTPClient(httplib2.Http):
         self.service_type = service_type
         self.service_name = service_name
         self.volume_service_name = volume_service_name
+        self.timings = timings
+
+        self.times = []  # [("item", starttime, endtime), ...]
 
         self.management_url = None
         self.auth_token = None
@@ -59,6 +64,12 @@ class HTTPClient(httplib2.Http):
         # httplib2 overrides
         self.force_exception_to_status_code = True
         self.disable_ssl_certificate_validation = insecure
+
+    def set_management_url(self, url):
+        self.management_url = url
+
+    def get_timings(self):
+        return self.times
 
     def http_log(self, args, kwargs, resp, body):
         if not _logger.isEnabledFor(logging.DEBUG):
@@ -105,6 +116,13 @@ class HTTPClient(httplib2.Http):
 
         return resp, body
 
+    def _time_request(self, url, method, **kwargs):
+        start_time = time.time()
+        resp, body = self.request(url, method, **kwargs)
+        self.times.append(("%s %s" % (method, url),
+                           start_time, time.time()))
+        return resp, body
+
     def _cs_request(self, url, method, **kwargs):
         if not self.management_url:
             self.authenticate()
@@ -117,14 +135,14 @@ class HTTPClient(httplib2.Http):
             if self.projectid:
                 kwargs['headers']['X-Auth-Project-Id'] = self.projectid
 
-            resp, body = self.request(self.management_url + url, method,
+            resp, body = self._time_request(self.management_url + url, method,
                                       **kwargs)
             return resp, body
         except exceptions.Unauthorized, ex:
             try:
                 self.authenticate()
-                resp, body = self.request(self.management_url + url, method,
-                                          **kwargs)
+                resp, body = self._time_request(self.management_url + url,
+                                                method, **kwargs)
                 return resp, body
             except exceptions.Unauthorized:
                 raise ex
@@ -195,7 +213,7 @@ class HTTPClient(httplib2.Http):
         url = '/'.join([url, 'tokens', '%s?belongsTo=%s'
                         % (self.proxy_token, self.proxy_tenant_id)])
         _logger.debug("Using Endpoint URL: %s" % url)
-        resp, body = self.request(url, "GET",
+        resp, body = self._time_request(url, "GET",
                                   headers={'X-Auth_Token': self.auth_token})
         return self._extract_service_catalog(url, resp, body,
                                              extract_token=False)
@@ -256,7 +274,7 @@ class HTTPClient(httplib2.Http):
         if self.projectid:
             headers['X-Auth-Project-Id'] = self.projectid
 
-        resp, body = self.request(url, 'GET', headers=headers)
+        resp, body = self._time_request(url, 'GET', headers=headers)
         if resp.status in (200, 204):  # in some cases we get No Content
             try:
                 mgmt_header = 'x-server-management-url'
@@ -300,7 +318,7 @@ class HTTPClient(httplib2.Http):
         self.follow_all_redirects = True
 
         try:
-            resp, body = self.request(token_url, "POST", body=body)
+            resp, body = self._time_request(token_url, "POST", body=body)
         finally:
             self.follow_all_redirects = tmp_follow_all_redirects
 

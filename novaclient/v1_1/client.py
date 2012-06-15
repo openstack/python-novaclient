@@ -45,7 +45,7 @@ class Client(object):
                   proxy_token=None, region_name=None,
                   endpoint_type='publicURL', extensions=None,
                   service_type='compute', service_name=None,
-                  volume_service_name=None):
+                  volume_service_name=None, timings=False):
         # FIXME(comstud): Rename the api_key argument above when we
         # know it's not being used as keyword argument
         password = api_key
@@ -95,7 +95,14 @@ class Client(object):
                                     endpoint_type=endpoint_type,
                                     service_type=service_type,
                                     service_name=service_name,
-                                    volume_service_name=volume_service_name)
+                                    volume_service_name=volume_service_name,
+                                    timings=timings)
+
+    def set_management_url(self, url):
+        self.client.management_url = url
+
+    def get_timings(self):
+        return self.client.get_timings()
 
     def authenticate(self):
         """

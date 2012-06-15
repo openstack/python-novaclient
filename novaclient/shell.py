@@ -86,6 +86,11 @@ class OpenStackComputeShell(object):
             action='store_true',
             help="Print debugging output")
 
+        parser.add_argument('--timings',
+            default=False,
+            action='store_true',
+            help="Print call timing info")
+
         parser.add_argument('--os_username',
             default=utils.env('OS_USERNAME', 'NOVA_USERNAME'),
             help='Defaults to env[OS_USERNAME].')
@@ -158,6 +163,9 @@ class OpenStackComputeShell(object):
         parser.add_argument('--url', '--auth_url', dest='url',
             default=utils.env('NOVA_URL'),
             help='Deprecated')
+
+        parser.add_argument('--bypass_url', dest='bypass_url',
+            help="Use this API endpoint instead of the Service Catalog")
 
         return parser
 
@@ -298,14 +306,16 @@ class OpenStackComputeShell(object):
         (os_username, os_password, os_tenant_name, os_auth_url,
                 os_region_name, endpoint_type, insecure,
                 service_type, service_name, volume_service_name,
-                username, apikey, projectid, url, region_name) = (
+                username, apikey, projectid, url, region_name,
+                bypass_url) = (
                         args.os_username, args.os_password,
                         args.os_tenant_name, args.os_auth_url,
                         args.os_region_name, args.endpoint_type,
                         args.insecure, args.service_type, args.service_name,
                         args.volume_service_name, args.username,
                         args.apikey, args.projectid,
-                        args.url, args.region_name)
+                        args.url, args.region_name,
+                        args.bypass_url)
 
         if not endpoint_type:
             endpoint_type = DEFAULT_NOVA_ENDPOINT_TYPE
@@ -366,17 +376,35 @@ class OpenStackComputeShell(object):
                 region_name=os_region_name, endpoint_type=endpoint_type,
                 extensions=self.extensions, service_type=service_type,
                 service_name=service_name,
-                volume_service_name=volume_service_name)
+                volume_service_name=volume_service_name,
+                timings=args.timings)
 
         try:
             if not utils.isunauthenticated(args.func):
                 self.cs.authenticate()
+                if bypass_url:
+                    self.cs.set_management_url(bypass_url)
         except exc.Unauthorized:
             raise exc.CommandError("Invalid OpenStack Nova credentials.")
         except exc.AuthorizationFailure:
             raise exc.CommandError("Unable to authorize user")
 
         args.func(self.cs, args)
+
+        if args.timings:
+            self._dump_timings(self.cs.get_timings())
+
+    def _dump_timings(self, timings):
+        class Tyme(object):
+            def __init__(self, url, seconds):
+                self.url = url
+                self.seconds = seconds
+        results = [Tyme(url, end - start) for url, start, end in timings]
+        total = 0.0
+        for tyme in results:
+            total += tyme.seconds
+        results.append(Tyme("Total", total))
+        utils.print_list(results, ["url", "seconds"], sortby_index=None)
 
     def _run_extension_hooks(self, hook_type, *args, **kwargs):
         """Run hooks for all registered extensions."""
