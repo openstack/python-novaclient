@@ -8,6 +8,14 @@ OpenStack Client interface. Handles the REST calls and responses.
 """
 
 import httplib2
+
+has_keyring = False
+try:
+    import keyring
+    has_keyring = True
+except ImportError:
+    pass
+
 import logging
 import os
 import time
@@ -40,7 +48,7 @@ class HTTPClient(httplib2.Http):
                  proxy_token=None, region_name=None,
                  endpoint_type='publicURL', service_type=None,
                  service_name=None, volume_service_name=None,
-                 timings=False):
+                 timings=False, bypass_url=None, no_cache=False):
         super(HTTPClient, self).__init__(timeout=timeout)
         self.user = user
         self.password = password
@@ -53,6 +61,8 @@ class HTTPClient(httplib2.Http):
         self.service_name = service_name
         self.volume_service_name = volume_service_name
         self.timings = timings
+        self.bypass_url = bypass_url
+        self.no_cache = no_cache
 
         self.times = []  # [("item", starttime, endtime), ...]
 
@@ -60,6 +70,7 @@ class HTTPClient(httplib2.Http):
         self.auth_token = None
         self.proxy_token = proxy_token
         self.proxy_tenant_id = proxy_tenant_id
+        self.used_keyring = False
 
         # httplib2 overrides
         self.force_exception_to_status_code = True
@@ -219,6 +230,23 @@ class HTTPClient(httplib2.Http):
                                              extract_token=False)
 
     def authenticate(self):
+        if has_keyring:
+            keyring_key = "%s/%s" % (self.auth_url, self.user)
+            if not self.no_cache and not self.used_keyring:
+                # Lookup the token/mgmt url from the keyring first time
+                # through.
+                # If we come through again, it's because the old token
+                # was rejected.
+                try:
+                    block = keyring.get_password("novaclient_auth",
+                                                 keyring_key)
+                    if block:
+                        self.used_keyring = True
+                        self.auth_token, self.management_url = block.split('|')
+                        return
+                except Exception:
+                    pass
+
         magic_tuple = urlparse.urlsplit(self.auth_url)
         scheme, netloc, path, query, frag = magic_tuple
         port = magic_tuple.port
@@ -264,6 +292,19 @@ class HTTPClient(httplib2.Http):
                 if auth_url.find('v2.0') < 0:
                     auth_url = auth_url + '/v2.0'
                 self._v2_auth(auth_url)
+
+        if self.bypass_url:
+            self.set_management_url(self.bypass_url)
+
+        # Store the token/mgmt url in the keyring for later requests.
+        if has_keyring:
+            try:
+                keyring_value = "%s|%s" % (self.auth_token,
+                                           self.management_url)
+                keyring.set_password("novaclient_auth",
+                                     keyring_key, keyring_value)
+            except Exception:
+                pass
 
     def _v1_auth(self, url):
         if self.proxy_token:

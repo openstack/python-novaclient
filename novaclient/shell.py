@@ -86,6 +86,11 @@ class OpenStackComputeShell(object):
             action='store_true',
             help="Print debugging output")
 
+        parser.add_argument('--no_cache',
+            default=utils.env('OS_NO_CACHE', default=False),
+            action='store_true',
+            help="Don't use the auth token cache.")
+
         parser.add_argument('--timings',
             default=False,
             action='store_true',
@@ -307,7 +312,7 @@ class OpenStackComputeShell(object):
                 os_region_name, endpoint_type, insecure,
                 service_type, service_name, volume_service_name,
                 username, apikey, projectid, url, region_name,
-                bypass_url) = (
+                bypass_url, no_cache) = (
                         args.os_username, args.os_password,
                         args.os_tenant_name, args.os_auth_url,
                         args.os_region_name, args.endpoint_type,
@@ -315,7 +320,7 @@ class OpenStackComputeShell(object):
                         args.volume_service_name, args.username,
                         args.apikey, args.projectid,
                         args.url, args.region_name,
-                        args.bypass_url)
+                        args.bypass_url, args.no_cache)
 
         if not endpoint_type:
             endpoint_type = DEFAULT_NOVA_ENDPOINT_TYPE
@@ -377,13 +382,12 @@ class OpenStackComputeShell(object):
                 extensions=self.extensions, service_type=service_type,
                 service_name=service_name,
                 volume_service_name=volume_service_name,
-                timings=args.timings)
+                timings=args.timings, bypass_url=bypass_url,
+                no_cache=no_cache)
 
         try:
             if not utils.isunauthenticated(args.func):
                 self.cs.authenticate()
-                if bypass_url:
-                    self.cs.set_management_url(bypass_url)
         except exc.Unauthorized:
             raise exc.CommandError("Invalid OpenStack Nova credentials.")
         except exc.AuthorizationFailure:
