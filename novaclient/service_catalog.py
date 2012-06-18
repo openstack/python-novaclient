@@ -39,7 +39,10 @@ class ServiceCatalog(object):
             # We have a bastardized service catalog. Treat it special. :/
             for endpoint in self.catalog['endpoints']:
                 if not filter_value or endpoint[attr] == filter_value:
-                    matching_endpoints.append(endpoint)
+                    # Ignore 1.0 compute endpoints
+                    if endpoint.get("type") == 'compute' and \
+                            endpoint.get('versionId') in (None, '1.1', '2'):
+                        matching_endpoints.append(endpoint)
             if not matching_endpoints:
                 raise novaclient.exceptions.EndpointNotFound()
 
@@ -64,6 +67,10 @@ class ServiceCatalog(object):
 
             endpoints = service['endpoints']
             for endpoint in endpoints:
+                # Ignore 1.0 compute endpoints
+                if service.get("type") == 'compute' and \
+                            endpoint.get('versionId', '2') not in ('1.1', '2'):
+                    continue
                 if not filter_value or endpoint.get(attr) == filter_value:
                     endpoint["serviceName"] = service.get("name")
                     matching_endpoints.append(endpoint)
