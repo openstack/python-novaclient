@@ -339,6 +339,8 @@ class FakeHTTPClient(base_client.HTTPClient):
             assert set(body[action].keys()) == set(['host',
                                                     'block_migration',
                                                     'disk_over_commit'])
+        elif action == 'os-resetState':
+            assert body[action].keys() == ['state']
         else:
             raise AssertionError("Unexpected server action: %s" % action)
         return (resp, _body)

@@ -252,6 +252,12 @@ class Server(base.Resource):
                                   block_migration,
                                   disk_over_commit)
 
+    def reset_state(self, state='error'):
+        """
+        Reset the state of an instance to active or error.
+        """
+        self.manager.reset_state(self, state)
+
 
 class ServerManager(local_base.BootingManagerWithFind):
     resource_class = Server
@@ -630,6 +636,16 @@ class ServerManager(local_base.BootingManagerWithFind):
                      {'host': host,
                       'block_migration': block_migration,
                       'disk_over_commit': disk_over_commit})
+
+    def reset_state(self, server, state='error'):
+        """
+        Reset the state of an instance to active or error.
+
+        :param server: ID of the instance to reset the state of.
+        :param state: Desired state; either 'active' or 'error'.
+                      Defaults to 'error'.
+        """
+        self._action('os-resetState', server, dict(state=state))
 
     def _action(self, action, server, info=None, **kwargs):
         """

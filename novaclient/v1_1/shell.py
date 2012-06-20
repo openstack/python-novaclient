@@ -1597,6 +1597,16 @@ def do_live_migration(cs, args):
                                                args.disk_over_commit)
 
 
+@utils.arg('server', metavar='<server>', help='Name or ID of server.')
+@utils.arg('--active', action='store_const', dest='state',
+           default='error', const='active',
+           help='Request the instance be reset to "active" state instead '
+           'of "error" state (the default).')
+def do_reset_state(cs, args):
+    """Reset the state of an instance"""
+    _find_server(cs, args.server).reset_state(args.state)
+
+
 @utils.arg('host', metavar='<hostname>', help='Name of host.')
 def do_describe_resource(cs, args):
     """Show details about a resource"""

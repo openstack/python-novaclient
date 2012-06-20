@@ -440,6 +440,14 @@ class ShellTest(utils.TestCase):
                                             'block_migration': True,
                                             'disk_over_commit': True}})
 
+    def test_reset_state(self):
+        self.run_command('reset-state sample-server')
+        self.assert_called('POST', '/servers/1234/action',
+                           {'os-resetState': {'state': 'error'}})
+        self.run_command('reset-state sample-server --active')
+        self.assert_called('POST', '/servers/1234/action',
+                           {'os-resetState': {'state': 'active'}})
+
     def test_host_update_status(self):
         self.run_command('host-update sample-host_1 --status enabled')
         body = {'status': 'enabled'}

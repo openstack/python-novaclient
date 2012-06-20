@@ -303,3 +303,10 @@ class ServersTest(utils.TestCase):
         cs.servers.live_migrate(s, host='hostname', block_migration=False,
                                 disk_over_commit=False)
         cs.assert_called('POST', '/servers/1234/action')
+
+    def test_reset_state(self):
+        s = cs.servers.get(1234)
+        s.reset_state('newstate')
+        cs.assert_called('POST', '/servers/1234/action')
+        cs.servers.reset_state(s, 'newstate')
+        cs.assert_called('POST', '/servers/1234/action')
