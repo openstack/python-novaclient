@@ -1501,7 +1501,7 @@ def do_x509_get_root_cert(cs, args):
 def do_aggregate_list(cs, args):
     """Print a list of all aggregates."""
     aggregates = cs.aggregates.list()
-    columns = ['Id', 'Name', 'Availability Zone', 'Operational State']
+    columns = ['Id', 'Name', 'Availability Zone']
     utils.print_list(aggregates, columns)
 
 
@@ -1576,8 +1576,7 @@ def do_aggregate_details(cs, args):
 
 
 def _print_aggregate_details(aggregate):
-    columns = ['Id', 'Name', 'Availability Zone', 'Operational State',
-               'Hosts', 'Metadata']
+    columns = ['Id', 'Name', 'Availability Zone', 'Hosts', 'Metadata']
     utils.print_list([aggregate], columns)
 
 
