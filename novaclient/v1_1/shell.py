@@ -234,7 +234,7 @@ def do_boot(cs, args):
         _poll_for_status(cs.servers.get, info['id'], 'building', ['active'])
 
 
-def do_cloudpipe_list(cs, args):
+def do_cloudpipe_list(cs, _args):
     """Print a list of all cloudpipe instances."""
     cloudpipes = cs.cloudpipe.list()
     columns = ['Project Id', "Public IP", "Public Port", "Internal IP"]
@@ -301,7 +301,7 @@ def _print_flavor_list(flavors):
         'RXTX_Factor'])
 
 
-def do_flavor_list(cs, args):
+def do_flavor_list(cs, _args):
     """Print a list of available 'flavors' (sizes of servers)."""
     flavors = cs.flavors.list()
     _print_flavor_list(flavors)
@@ -358,7 +358,7 @@ def do_flavor_create(cs, args):
     _print_flavor_list([f])
 
 
-def do_image_list(cs, args):
+def do_image_list(cs, _args):
     """Print a list of available images to boot from."""
     image_list = cs.images.list()
 
@@ -860,11 +860,11 @@ def _find_volume_snapshot(cs, snapshot):
     return utils.find_resource(cs.volume_snapshots, snapshot)
 
 
-def _print_volume(cs, volume):
+def _print_volume(volume):
     utils.print_dict(volume._info)
 
 
-def _print_volume_snapshot(cs, snapshot):
+def _print_volume_snapshot(snapshot):
     utils.print_dict(snapshot._info)
 
 
@@ -887,7 +887,7 @@ def _translate_volume_snapshot_keys(collection):
 
 
 @utils.service_type('volume')
-def do_volume_list(cs, args):
+def do_volume_list(cs, _args):
     """List all the volumes."""
     volumes = cs.volumes.list()
     _translate_volume_keys(volumes)
@@ -905,7 +905,7 @@ def do_volume_list(cs, args):
 def do_volume_show(cs, args):
     """Show details about a volume."""
     volume = _find_volume(cs, args.volume)
-    _print_volume(cs, volume)
+    _print_volume(volume)
 
 
 @utils.arg('size',
@@ -972,7 +972,7 @@ def do_volume_detach(cs, args):
 
 
 @utils.service_type('volume')
-def do_volume_snapshot_list(cs, args):
+def do_volume_snapshot_list(cs, _args):
     """List all the snapshots."""
     snapshots = cs.volume_snapshots.list()
     _translate_volume_snapshot_keys(snapshots)
@@ -985,7 +985,7 @@ def do_volume_snapshot_list(cs, args):
 def do_volume_snapshot_show(cs, args):
     """Show details about a snapshot."""
     snapshot = _find_volume_snapshot(cs, args.snapshot)
-    _print_volume_snapshot(cs, snapshot)
+    _print_volume_snapshot(snapshot)
 
 
 @utils.arg('volume_id',
@@ -1120,12 +1120,12 @@ def do_floating_ip_delete(cs, args):
     raise exceptions.CommandError("Floating ip %s not found.", args.address)
 
 
-def do_floating_ip_list(cs, args):
+def do_floating_ip_list(cs, _args):
     """List floating ips for this tenant."""
     _print_floating_ip_list(cs.floating_ips.list())
 
 
-def do_floating_ip_pool_list(cs, args):
+def do_floating_ip_pool_list(cs, _args):
     """List all floating ip pools."""
     utils.print_list(cs.floating_ip_pools.list(), ['name'])
 
@@ -1649,14 +1649,14 @@ def do_host_action(cs, args):
     utils.print_list([result], ['HOST', 'power_action'])
 
 
-def do_endpoints(cs, args):
+def do_endpoints(cs, _args):
     """Discover endpoints that get returned from the authenticate services"""
     catalog = cs.client.service_catalog.catalog
     for e in catalog['access']['serviceCatalog']:
         utils.print_dict(e['endpoints'][0], e['name'])
 
 
-def do_credentials(cs, args):
+def do_credentials(cs, _args):
     """Show user credentials returned from auth"""
     catalog = cs.client.service_catalog.catalog
     utils.print_dict(catalog['access']['user'], "User Credentials")
