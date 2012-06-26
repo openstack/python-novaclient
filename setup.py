@@ -19,18 +19,9 @@ import sys
 from novaclient.openstack.common import setup
 
 
-requirements = ["httplib2", "prettytable"]
-if sys.version_info < (2, 6):
-    requirements.append("simplejson")
-if sys.version_info < (2, 7):
-    requirements.append("argparse")
-
-
 def read_file(file_name):
     return open(os.path.join(os.path.dirname(__file__), file_name)).read()
 
-
-setup.generate_authors()
 
 setuptools.setup(
     name="python-novaclient",
@@ -42,9 +33,9 @@ setuptools.setup(
     license="Apache License, Version 2.0",
     url="https://github.com/openstack/python-novaclient",
     packages=setuptools.find_packages(exclude=['tests', 'tests.*']),
-    install_requires=requirements,
-    tests_require=["nose", "mock"],
+    install_requires=setup.parse_requirements(),
     test_suite="nose.collector",
+    cmdclass=setup.get_cmdclass(),
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Environment :: Console",
