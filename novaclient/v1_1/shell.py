@@ -97,12 +97,16 @@ def _boot(cs, args, reservation_id=None, min_count=None, max_count=None):
 
     hints = {}
     if args.scheduler_hints:
-        parsed_hints = [hint.split('=', 1) for hint in args.scheduler_hints]
-        hint_set = [dict({hint[0]: hint[1]}) for hint in parsed_hints]
-        for hint in hint_set:
-            hints.update(hint.items())
-    else:
-        hints = {}
+        for hint in args.scheduler_hints:
+            key, _sep, value = hint.partition('=')
+            # NOTE(vish): multiple copies of the same hint will
+            #             result in a list of values
+            if key in hints:
+                if isinstance(hints[key], basestring):
+                    hints[key] = [hints[key]]
+                hints[key] += [value]
+            else:
+                hints[key] = value
     boot_args = [args.name, image, flavor]
 
     if str(args.config_drive).lower() in ("true", "1"):
