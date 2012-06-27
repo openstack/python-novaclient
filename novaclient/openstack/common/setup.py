@@ -206,6 +206,20 @@ _rst_template = """%(heading)s
 """
 
 
+def read_versioninfo(project):
+    """Read the versioninfo file. If it doesn't exist, we're in a github
+       zipball, and there's really know way to know what version we really
+       are, but that should be ok, because the utility of that should be
+       just about nil if this code path is in use in the first place."""
+    versioninfo_path = os.path.join(project, 'versioninfo')
+    if os.path.exists(versioninfo_path):
+        with open(versioninfo_path, 'r') as vinfo:
+            version = vinfo.read().strip()
+    else:
+        version = "0.0.0"
+    return version
+
+
 def write_versioninfo(project, version):
     """Write a simple file containing the version of the package."""
     open(os.path.join(project, 'versioninfo'), 'w').write("%s\n" % version)
@@ -313,9 +327,8 @@ def get_pre_version(projectname, base_version):
         write_versioninfo(projectname, version)
         return version.split('~')[0]
     else:
-        with open(os.path.join(projectname, 'versioninfo'), 'r') as vinfo:
-            full_version = vinfo.read().strip()
-            return full_version.split('~')[0]
+        version = read_versioninfo(projectname)
+    return version.split('~')[0]
 
 
 def get_post_version(projectname):
@@ -327,4 +340,4 @@ def get_post_version(projectname):
         version = _get_git_post_version()
         write_versioninfo(projectname, version)
         return version
-    return open(os.path.join(projectname, 'versioninfo'), 'r').read().strip()
+    return read_versioninfo(projectname)
