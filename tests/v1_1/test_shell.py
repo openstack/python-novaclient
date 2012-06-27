@@ -476,6 +476,22 @@ class ShellTest(utils.TestCase):
         self.run_command('host-action sample-host --action reboot')
         self.assert_called('GET', '/os-hosts/sample-host/reboot')
 
+    def test_hypervisor_list(self):
+        self.run_command('hypervisor-list')
+        self.assert_called('GET', '/os-hypervisors')
+
+    def test_hypervisor_list_matching(self):
+        self.run_command('hypervisor-list --matching hyper')
+        self.assert_called('GET', '/os-hypervisors/hyper/search')
+
+    def test_hypervisor_servers(self):
+        self.run_command('hypervisor-servers hyper')
+        self.assert_called('GET', '/os-hypervisors/hyper/servers')
+
+    def test_hypervisor_show(self):
+        self.run_command('hypervisor-show 1234')
+        self.assert_called('GET', '/os-hypervisors/1234')
+
     def test_quota_show(self):
         self.run_command('quota-show test')
         self.assert_called('GET', '/os-quota-sets/test')

@@ -7,6 +7,7 @@ from novaclient.v1_1 import floating_ip_dns
 from novaclient.v1_1 import floating_ips
 from novaclient.v1_1 import floating_ip_pools
 from novaclient.v1_1 import hosts
+from novaclient.v1_1 import hypervisors
 from novaclient.v1_1 import images
 from novaclient.v1_1 import keypairs
 from novaclient.v1_1 import limits
@@ -76,6 +77,7 @@ class Client(object):
             virtual_interfaces.VirtualInterfaceManager(self)
         self.aggregates = aggregates.AggregateManager(self)
         self.hosts = hosts.HostManager(self)
+        self.hypervisors = hypervisors.HypervisorManager(self)
 
         # Add in any extensions...
         if extensions:

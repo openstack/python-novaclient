@@ -1649,6 +1649,60 @@ def do_host_action(cs, args):
     utils.print_list([result], ['HOST', 'power_action'])
 
 
+@utils.arg('--matching', metavar='<hostname>', default=None,
+           help='List hypervisors matching the given <hostname>.')
+def do_hypervisor_list(cs, args):
+    """List hypervisors."""
+    columns = ['ID', 'Hypervisor hostname']
+    if args.matching:
+        utils.print_list(cs.hypervisors.search(args.matching), columns)
+    else:
+        # Since we're not outputting detail data, choose
+        # detailed=False for server-side efficiency
+        utils.print_list(cs.hypervisors.list(False), columns)
+
+
+@utils.arg('hostname', metavar='<hostname>',
+           help='The hypervisor hostname (or pattern) to search for.')
+def do_hypervisor_servers(cs, args):
+    """List instances belonging to specific hypervisors."""
+    hypers = cs.hypervisors.search(args.hostname, servers=True)
+
+    class InstanceOnHyper(object):
+        def __init__(self, **kwargs):
+            self.__dict__.update(kwargs)
+
+    # Massage the result into a list to be displayed
+    instances = []
+    for hyper in hypers:
+        hyper_host = hyper.hypervisor_hostname
+        hyper_id = hyper.id
+        instances.extend([InstanceOnHyper(id=serv['uuid'],
+                                          name=serv['name'],
+                                          hypervisor_hostname=hyper_host,
+                                          hypervisor_id=hyper_id)
+                          for serv in hyper.servers])
+
+    # Output the data
+    utils.print_list(instances, ['ID', 'Name', 'Hypervisor ID',
+                                 'Hypervisor Hostname'])
+
+
+@utils.arg('hypervisor_id', metavar='<hypervisor_id>',
+           help='The ID of the hypervisor to show the details of.')
+def do_hypervisor_show(cs, args):
+    """Display the details of the specified hypervisor."""
+    hyper = utils.find_resource(cs.hypervisors, args.hypervisor_id)
+
+    # Build up the dict
+    info = hyper._info.copy()
+    info['service_id'] = info['service']['id']
+    info['service_host'] = info['service']['host']
+    del info['service']
+
+    utils.print_dict(info)
+
+
 def do_endpoints(cs, _args):
     """Discover endpoints that get returned from the authenticate services"""
     catalog = cs.client.service_catalog.catalog

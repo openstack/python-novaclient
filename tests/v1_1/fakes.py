@@ -822,3 +822,89 @@ class FakeHTTPClient(base_client.HTTPClient):
         result = {'host': 'dummy'}
         result.update(body)
         return (200, result)
+
+    def get_os_hypervisors(self, **kw):
+        return (200, {"hypervisors": [
+                    {'id': 1234, 'hypervisor_hostname': 'hyper1'},
+                    {'id': 5678, 'hypervisor_hostname': 'hyper2'},
+                    ]})
+
+    def get_os_hypervisors_detail(self, **kw):
+        return (200, {"hypervisors": [
+                    {'id': 1234,
+                     'service': {'id': 1, 'host': 'compute1'},
+                     'vcpus': 4,
+                     'memory_mb': 10 * 1024,
+                     'local_gb': 250,
+                     'vcpus_used': 2,
+                     'memory_mb_used': 5 * 1024,
+                     'local_gb_used': 125,
+                     'hypervisor_type': "xen",
+                     'hypervisor_version': 3,
+                     'hypervisor_hostname': "hyper1",
+                     'free_ram_mb': 5 * 1024,
+                     'free_disk_gb': 125,
+                     'current_workload': 2,
+                     'running_vms': 2,
+                     'cpu_info': 'cpu_info',
+                     'disk_available_least': 100},
+                    {'id': 2,
+                     'service': {'id': 2, 'host': "compute2"},
+                     'vcpus': 4,
+                     'memory_mb': 10 * 1024,
+                     'local_gb': 250,
+                     'vcpus_used': 2,
+                     'memory_mb_used': 5 * 1024,
+                     'local_gb_used': 125,
+                     'hypervisor_type': "xen",
+                     'hypervisor_version': 3,
+                     'hypervisor_hostname': "hyper2",
+                     'free_ram_mb': 5 * 1024,
+                     'free_disk_gb': 125,
+                     'current_workload': 2,
+                     'running_vms': 2,
+                     'cpu_info': 'cpu_info',
+                     'disk_available_least': 100}
+                    ]})
+
+    def get_os_hypervisors_hyper_search(self, **kw):
+        return (200, {'hypervisors': [
+                    {'id': 1234, 'hypervisor_hostname': 'hyper1'},
+                    {'id': 5678, 'hypervisor_hostname': 'hyper2'}
+                    ]})
+
+    def get_os_hypervisors_hyper_servers(self, **kw):
+        return (200, {'hypervisors': [
+                    {'id': 1234,
+                     'hypervisor_hostname': 'hyper1',
+                     'servers': [
+                            {'name': 'inst1', 'uuid': 'uuid1'},
+                            {'name': 'inst2', 'uuid': 'uuid2'}
+                            ]},
+                    {'id': 5678,
+                     'hypervisor_hostname': 'hyper2',
+                     'servers': [
+                            {'name': 'inst3', 'uuid': 'uuid3'},
+                            {'name': 'inst4', 'uuid': 'uuid4'}
+                            ]}
+                    ]})
+
+    def get_os_hypervisors_1234(self, **kw):
+        return (200, {'hypervisor':
+                          {'id': 1234,
+                           'service': {'id': 1, 'host': 'compute1'},
+                           'vcpus': 4,
+                           'memory_mb': 10 * 1024,
+                           'local_gb': 250,
+                           'vcpus_used': 2,
+                           'memory_mb_used': 5 * 1024,
+                           'local_gb_used': 125,
+                           'hypervisor_type': "xen",
+                           'hypervisor_version': 3,
+                           'hypervisor_hostname': "hyper1",
+                           'free_ram_mb': 5 * 1024,
+                           'free_disk_gb': 125,
+                           'current_workload': 2,
+                           'running_vms': 2,
+                           'cpu_info': 'cpu_info',
+                           'disk_available_least': 100}})
