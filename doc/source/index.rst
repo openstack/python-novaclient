@@ -30,9 +30,13 @@ Contents:
 Contributing
 ============
 
-Development takes place `on GitHub`__; please file bugs/pull requests there.
+Code is hosted `on GitHub`_. Submit bugs to the Nova project on 
+`Launchpad`_. Submit code to the openstack/python-novaclient project using
+`Gerrit`_.
 
-__ https://github.com/rackspace/python-novaclient
+.. _on GitHub: https://github.com/openstack/python-novaclient
+.. _Launchpad: https://launchpad.net/nova
+.. _Gerrit: http://wiki.openstack.org/GerritWorkflow
 
 Run tests with ``python setup.py test``.
 
