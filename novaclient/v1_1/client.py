@@ -107,6 +107,9 @@ class Client(object):
     def get_timings(self):
         return self.client.get_timings()
 
+    def reset_timings(self):
+        self.client.reset_timings()
+
     def authenticate(self):
         """
         Authenticate against the server.

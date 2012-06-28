@@ -82,6 +82,9 @@ class HTTPClient(httplib2.Http):
     def get_timings(self):
         return self.times
 
+    def reset_timings(self):
+        self.times = []
+
     def http_log(self, args, kwargs, resp, body):
         if not _logger.isEnabledFor(logging.DEBUG):
             return
@@ -297,7 +300,7 @@ class HTTPClient(httplib2.Http):
             self.set_management_url(self.bypass_url)
 
         # Store the token/mgmt url in the keyring for later requests.
-        if has_keyring:
+        if has_keyring and not self.no_cache:
             try:
                 keyring_value = "%s|%s" % (self.auth_token,
                                            self.management_url)
