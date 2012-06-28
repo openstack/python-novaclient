@@ -18,7 +18,8 @@ def to_http_response(resp_dict):
 class AuthenticateAgainstKeystoneTests(utils.TestCase):
     def test_authenticate_success(self):
         cs = client.Client("username", "password", "project_id",
-                           "auth_url/v2.0", service_type='compute')
+                           "auth_url/v2.0", service_type='compute',
+                           no_cache=True)
         resp = {
             "access": {
                 "token": {
@@ -81,7 +82,7 @@ class AuthenticateAgainstKeystoneTests(utils.TestCase):
 
     def test_authenticate_failure(self):
         cs = client.Client("username", "password", "project_id",
-                           "auth_url/v2.0")
+                           "auth_url/v2.0", no_cache=True)
         resp = {"unauthorized": {"message": "Unauthorized", "code": "401"}}
         auth_response = httplib2.Response({
             "status": 401,
@@ -99,7 +100,8 @@ class AuthenticateAgainstKeystoneTests(utils.TestCase):
 
     def test_auth_redirect(self):
         cs = client.Client("username", "password", "project_id",
-                           "auth_url/v1.0", service_type='compute')
+                           "auth_url/v1.0", service_type='compute',
+                           no_cache=True)
         dict_correct_response = {
             "access": {
                 "token": {
@@ -180,7 +182,8 @@ class AuthenticateAgainstKeystoneTests(utils.TestCase):
 
     def test_ambiguous_endpoints(self):
         cs = client.Client("username", "password", "project_id",
-                           "auth_url/v2.0", service_type='compute')
+                           "auth_url/v2.0", service_type='compute',
+                           no_cache=True)
         resp = {
             "access": {
                 "token": {
@@ -232,7 +235,8 @@ class AuthenticateAgainstKeystoneTests(utils.TestCase):
 
 class AuthenticationTests(utils.TestCase):
     def test_authenticate_success(self):
-        cs = client.Client("username", "password", "project_id", "auth_url")
+        cs = client.Client("username", "password", "project_id", "auth_url",
+                           no_cache=True)
         management_url = 'https://servers.api.rackspacecloud.com/v1.1/443470'
         auth_response = httplib2.Response({
             'status': 204,
@@ -261,7 +265,8 @@ class AuthenticationTests(utils.TestCase):
         test_auth_call()
 
     def test_authenticate_failure(self):
-        cs = client.Client("username", "password", "project_id", "auth_url")
+        cs = client.Client("username", "password", "project_id", "auth_url",
+                           no_cache=True)
         auth_response = httplib2.Response({'status': 401})
         mock_request = mock.Mock(return_value=(auth_response, None))
 
@@ -272,7 +277,8 @@ class AuthenticationTests(utils.TestCase):
         test_auth_call()
 
     def test_auth_automatic(self):
-        cs = client.Client("username", "password", "project_id", "auth_url")
+        cs = client.Client("username", "password", "project_id", "auth_url",
+                           no_cache=True)
         http_client = cs.client
         http_client.management_url = ''
         mock_request = mock.Mock(return_value=(None, None))
@@ -287,7 +293,8 @@ class AuthenticationTests(utils.TestCase):
         test_auth_call()
 
     def test_auth_manual(self):
-        cs = client.Client("username", "password", "project_id", "auth_url")
+        cs = client.Client("username", "password", "project_id", "auth_url",
+                           no_cache=True)
 
         @mock.patch.object(cs.client, 'authenticate')
         def test_auth_call(m):
