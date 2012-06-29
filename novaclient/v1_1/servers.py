@@ -177,14 +177,14 @@ class Server(base.Resource):
         """
         self.manager.change_password(self, password)
 
-    def reboot(self, type=REBOOT_SOFT):
+    def reboot(self, reboot_type=REBOOT_SOFT):
         """
         Reboot the server.
 
-        :param type: either :data:`REBOOT_SOFT` for a software-level reboot,
-                     or `REBOOT_HARD` for a virtual power cycle hard reboot.
+        :param reboot_type: either :data:`REBOOT_SOFT` for a software-level
+                reboot, or `REBOOT_HARD` for a virtual power cycle hard reboot.
         """
-        self.manager.reboot(self, type)
+        self.manager.reboot(self, reboot_type)
 
     def rebuild(self, image, password=None, **kwargs):
         """
@@ -515,15 +515,15 @@ class ServerManager(local_base.BootingManagerWithFind):
         """
         self._delete("/servers/%s" % base.getid(server))
 
-    def reboot(self, server, type=REBOOT_SOFT):
+    def reboot(self, server, reboot_type=REBOOT_SOFT):
         """
         Reboot a server.
 
         :param server: The :class:`Server` (or its ID) to share onto.
-        :param type: either :data:`REBOOT_SOFT` for a software-level reboot,
-                     or `REBOOT_HARD` for a virtual power cycle hard reboot.
+        :param reboot_type: either :data:`REBOOT_SOFT` for a software-level
+                reboot, or `REBOOT_HARD` for a virtual power cycle hard reboot.
         """
-        self._action('reboot', server, {'type': type})
+        self._action('reboot', server, {'type': reboot_type})
 
     def rebuild(self, server, image, password=None, **kwargs):
         """
@@ -536,7 +536,7 @@ class ServerManager(local_base.BootingManagerWithFind):
         body = {'imageRef': base.getid(image)}
         if password is not None:
             body['adminPass'] = password
-        resp, body = self._action('rebuild', server, body, **kwargs)
+        _resp, body = self._action('rebuild', server, body, **kwargs)
         return Server(self, body['server'])
 
     def migrate(self, server):

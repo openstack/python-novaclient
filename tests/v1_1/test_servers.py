@@ -108,7 +108,7 @@ class ServersTest(utils.TestCase):
         s = cs.servers.get(1234)
         s.reboot()
         cs.assert_called('POST', '/servers/1234/action')
-        cs.servers.reboot(s, type='HARD')
+        cs.servers.reboot(s, reboot_type='HARD')
         cs.assert_called('POST', '/servers/1234/action')
 
     def test_rebuild_server(self):

@@ -51,14 +51,14 @@ class SecurityGroupManager(base.ManagerWithFind):
         """
         self._delete('/os-security-groups/%s' % base.getid(group))
 
-    def get(self, id):
+    def get(self, group_id):
         """
         Get a security group
 
-        :param group: The security group to get by ID
+        :param group_id: The security group to get by ID
         :rtype: :class:`SecurityGroup`
         """
-        return self._get('/os-security-groups/%s' % id,
+        return self._get('/os-security-groups/%s' % group_id,
                          'security_group')
 
     def list(self):

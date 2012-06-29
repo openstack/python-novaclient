@@ -16,13 +16,13 @@ def arg(*args, **kwargs):
     return _decorator
 
 
-def env(*vars, **kwargs):
+def env(*args, **kwargs):
     """
     returns the first environment variable set
     if none are non-empty, defaults to '' or keyword arg default
     """
-    for v in vars:
-        value = os.environ.get(v, None)
+    for arg in args:
+        value = os.environ.get(arg, None)
         if value:
             return value
     return kwargs.get('default', '')
@@ -149,11 +149,11 @@ def print_list(objs, fields, formatters={}, sortby_index=0):
     print pt.get_string(sortby=sortby)
 
 
-def print_dict(d, property="Property"):
-    pt = prettytable.PrettyTable([property, 'Value'], caching=False)
+def print_dict(d, dict_property="Property"):
+    pt = prettytable.PrettyTable([dict_property, 'Value'], caching=False)
     pt.align = 'l'
     [pt.add_row(list(r)) for r in d.iteritems()]
-    print pt.get_string(sortby=property)
+    print pt.get_string(sortby=dict_property)
 
 
 def find_resource(manager, name_or_id):

@@ -201,7 +201,7 @@ class OpenStackComputeShell(object):
     def _discover_extensions(self, version):
         extensions = []
         for name, module in itertools.chain(
-                self._discover_via_python_path(version),
+                self._discover_via_python_path(),
                 self._discover_via_contrib_path(version)):
 
             extension = novaclient.extension.Extension(name, module)
@@ -209,8 +209,8 @@ class OpenStackComputeShell(object):
 
         return extensions
 
-    def _discover_via_python_path(self, version):
-        for (module_loader, name, ispkg) in pkgutil.iter_modules():
+    def _discover_via_python_path(self):
+        for (module_loader, name, _ispkg) in pkgutil.iter_modules():
             if name.endswith('python_novaclient_ext'):
                 if not hasattr(module_loader, 'load_module'):
                     # Python 2.6 compat: actually get an ImpImporter obj
@@ -248,11 +248,11 @@ class OpenStackComputeShell(object):
             command = attr[3:].replace('_', '-')
             callback = getattr(actions_module, attr)
             desc = callback.__doc__ or ''
-            help = desc.strip().split('\n')[0]
+            action_help = desc.strip().split('\n')[0]
             arguments = getattr(callback, 'arguments', [])
 
             subparser = subparsers.add_parser(command,
-                help=help,
+                help=action_help,
                 description=desc,
                 add_help=False,
                 formatter_class=OpenStackHelpFormatter
@@ -415,7 +415,7 @@ class OpenStackComputeShell(object):
         for extension in self.extensions:
             extension.run_hooks(hook_type, *args, **kwargs)
 
-    def do_bash_completion(self, args):
+    def do_bash_completion(self, _args):
         """
         Prints all of the commands and options to stdout so that the
         nova.bash_completion script doesn't have to hard code them.
