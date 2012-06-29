@@ -908,3 +908,9 @@ class FakeHTTPClient(base_client.HTTPClient):
                            'running_vms': 2,
                            'cpu_info': 'cpu_info',
                            'disk_available_least': 100}})
+
+    def get_os_hypervisors_1234_uptime(self, **kw):
+        return (200, {'hypervisor':
+                          {'id': 1234,
+                           'hypervisor_hostname': "hyper1",
+                           'uptime': "fake uptime"}})

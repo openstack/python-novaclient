@@ -136,3 +136,14 @@ class HypervisorsTest(utils.TestCase):
         cs.assert_called('GET', '/os-hypervisors/1234')
 
         self.compare_to_expected(expected, result)
+
+    def test_hypervisor_uptime(self):
+        expected = dict(
+            id=1234,
+            hypervisor_hostname="hyper1",
+            uptime="fake uptime")
+
+        result = cs.hypervisors.uptime(1234)
+        cs.assert_called('GET', '/os-hypervisors/1234/uptime')
+
+        self.compare_to_expected(expected, result)

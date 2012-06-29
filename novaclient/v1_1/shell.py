@@ -1709,6 +1709,16 @@ def do_hypervisor_show(cs, args):
     utils.print_dict(info)
 
 
+@utils.arg('hypervisor_id', metavar='<hypervisor_id>',
+           help='The ID of the hypervisor to show the uptime of.')
+def do_hypervisor_uptime(cs, args):
+    """Display the uptime of the specified hypervisor."""
+    hyper = cs.hypervisors.uptime(args.hypervisor_id)
+
+    # Output the uptime information
+    utils.print_dict(hyper._info.copy())
+
+
 def ensure_service_catalog_present(cs):
     if not hasattr(cs.client, 'service_catalog'):
         # Turn off token caching and re-auth

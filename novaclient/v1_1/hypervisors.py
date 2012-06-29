@@ -56,3 +56,10 @@ class HypervisorManager(base.Manager):
         """
         return self._get("/os-hypervisors/%s" % base.getid(hypervisor),
                          "hypervisor")
+
+    def uptime(self, hypervisor):
+        """
+        Get the uptime for a specific hypervisor.
+        """
+        return self._get("/os-hypervisors/%s/uptime" % base.getid(hypervisor),
+                         "hypervisor")
