@@ -61,3 +61,6 @@ class HostManager(base.ManagerWithFind):
         """Performs an action on a host."""
         url = "/os-hosts/%s/%s" % (host, action)
         return self._get(url)
+
+    def list_all(self):
+        return self._list("/os-hosts", "hosts")

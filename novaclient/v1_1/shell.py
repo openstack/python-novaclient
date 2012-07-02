@@ -1612,10 +1612,17 @@ def do_reset_state(cs, args):
 
 
 @utils.arg('host', metavar='<hostname>', help='Name of host.')
-def do_describe_resource(cs, args):
-    """Show details about a resource"""
+def do_host_describe(cs, args):
+    """Describe a specific host"""
     result = cs.hosts.get(args.host)
     columns = ["HOST", "PROJECT", "cpu", "memory_mb", "disk_gb"]
+    utils.print_list(result, columns)
+
+
+def do_host_list(cs, args):
+    """List all hosts by service"""
+    columns = ["host_name", "service"]
+    result = cs.hosts.list_all()
     utils.print_list(result, columns)
 
 
