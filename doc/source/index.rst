@@ -6,16 +6,16 @@ This is a client for OpenStack Nova API. There's :doc:`a Python API
 <shell>` (installed as :program:`nova`). Each implements the entire
 OpenStack Nova API.
 
-You'll need an `OpenStack Nova` account, which you can get by using `nova-manage`.
+You'll need credentials for an OpenStack cloud that implements the
+Compute API, such as TryStack, HP, or Rackspace, in order to use the nova client.
 
 .. seealso::
 
-    You may want to read `Rackspace's API guide`__ (PDF) -- the first bit, at
-    least -- to get an idea of the concepts. Rackspace is doing the cloud
-    hosting thing a bit differently from Amazon, and if you get the concepts
+    You may want to read the `OpenStack Compute Developer Guide`__  -- the overview, at
+    least -- to get an idea of the concepts. By understanding the concepts
     this library should make more sense.
 
-    __ http://docs.rackspacecloud.com/servers/api/cs-devguide-latest.pdf
+    __ http://docs.openstack.org/api/openstack-compute/2/content/
 
 Contents:
 
@@ -46,4 +46,3 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-
