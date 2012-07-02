@@ -383,7 +383,7 @@ class OpenStackComputeShell(object):
                 service_name=service_name,
                 volume_service_name=volume_service_name,
                 timings=args.timings, bypass_url=bypass_url,
-                no_cache=no_cache)
+                no_cache=no_cache, http_log_debug=options.debug)
 
         try:
             if not utils.isunauthenticated(args.func):

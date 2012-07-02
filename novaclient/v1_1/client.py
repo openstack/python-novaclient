@@ -47,7 +47,7 @@ class Client(object):
                   endpoint_type='publicURL', extensions=None,
                   service_type='compute', service_name=None,
                   volume_service_name=None, timings=False,
-                  bypass_url=None, no_cache=False):
+                  bypass_url=None, no_cache=False, http_log_debug=False):
         # FIXME(comstud): Rename the api_key argument above when we
         # know it's not being used as keyword argument
         password = api_key
@@ -101,7 +101,8 @@ class Client(object):
                                     volume_service_name=volume_service_name,
                                     timings=timings,
                                     bypass_url=bypass_url,
-                                    no_cache=no_cache)
+                                    no_cache=no_cache,
+                                    http_log_debug=http_log_debug)
 
     def set_management_url(self, url):
         self.client.set_management_url(url)

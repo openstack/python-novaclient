@@ -36,9 +36,6 @@ from novaclient import service_catalog
 from novaclient import utils
 
 
-_logger = logging.getLogger(__name__)
-
-
 class HTTPClient(httplib2.Http):
 
     USER_AGENT = 'python-novaclient'
@@ -48,7 +45,8 @@ class HTTPClient(httplib2.Http):
                  proxy_token=None, region_name=None,
                  endpoint_type='publicURL', service_type=None,
                  service_name=None, volume_service_name=None,
-                 timings=False, bypass_url=None, no_cache=False):
+                 timings=False, bypass_url=None, no_cache=False,
+                 http_log_debug=False):
         super(HTTPClient, self).__init__(timeout=timeout)
         self.user = user
         self.password = password
@@ -63,6 +61,7 @@ class HTTPClient(httplib2.Http):
         self.timings = timings
         self.bypass_url = bypass_url
         self.no_cache = no_cache
+        self.http_log_debug = http_log_debug
 
         self.times = []  # [("item", starttime, endtime), ...]
 
@@ -76,6 +75,12 @@ class HTTPClient(httplib2.Http):
         self.force_exception_to_status_code = True
         self.disable_ssl_certificate_validation = insecure
 
+        self._logger = logging.getLogger(__name__)
+        if self.http_log_debug:
+            ch = logging.StreamHandler()
+            self._logger.setLevel(logging.DEBUG)
+            self._logger.addHandler(ch)
+
     def set_management_url(self, url):
         self.management_url = url
 
@@ -86,7 +91,7 @@ class HTTPClient(httplib2.Http):
         self.times = []
 
     def http_log(self, args, kwargs, resp, body):
-        if not _logger.isEnabledFor(logging.DEBUG):
+        if not self.http_log_debug:
             return
 
         string_parts = ['curl -i']
@@ -100,10 +105,10 @@ class HTTPClient(httplib2.Http):
             header = ' -H "%s: %s"' % (element, kwargs['headers'][element])
             string_parts.append(header)
 
-        _logger.debug("REQ: %s\n" % "".join(string_parts))
+        self._logger.debug("\nREQ: %s\n" % "".join(string_parts))
         if 'body' in kwargs:
-            _logger.debug("REQ BODY: %s\n" % (kwargs['body']))
-        _logger.debug("RESP:%s %s\n", resp, body)
+            self._logger.debug("REQ BODY: %s\n" % (kwargs['body']))
+        self._logger.debug("RESP:%s %s\n", resp, body)
 
     def request(self, *args, **kwargs):
         kwargs.setdefault('headers', kwargs.get('headers', {}))
@@ -226,7 +231,7 @@ class HTTPClient(httplib2.Http):
         # GET ...:5001/v2.0/tokens/#####/endpoints
         url = '/'.join([url, 'tokens', '%s?belongsTo=%s'
                         % (self.proxy_token, self.proxy_tenant_id)])
-        _logger.debug("Using Endpoint URL: %s" % url)
+        self._logger.debug("Using Endpoint URL: %s" % url)
         resp, body = self._time_request(url, "GET",
                                   headers={'X-Auth_Token': self.auth_token})
         return self._extract_service_catalog(url, resp, body,
