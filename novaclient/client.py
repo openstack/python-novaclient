@@ -239,7 +239,13 @@ class HTTPClient(httplib2.Http):
 
     def authenticate(self):
         if has_keyring:
-            keyring_key = "%s/%s" % (self.auth_url, self.user)
+            keys = [self.auth_url, self.user, self.region_name,
+                    self.endpoint_type, self.service_type, self.service_name,
+                    self.volume_service_name]
+            for index, key in enumerate(keys):
+                if key is None:
+                    keys[index] = '?'
+            keyring_key = "/".join(keys)
             if not self.no_cache and not self.used_keyring:
                 # Lookup the token/mgmt url from the keyring first time
                 # through.
