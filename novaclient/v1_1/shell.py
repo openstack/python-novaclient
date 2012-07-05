@@ -614,7 +614,7 @@ def do_resize(cs, args):
     server.resize(flavor, **kwargs)
     if args.poll:
         _poll_for_status(cs.servers.get, server.id, 'resizing',
-                         ['active', 'verify-resize'])
+                         ['active', 'verify_resize'])
 
 
 @utils.arg('server', metavar='<server>', help='Name or ID of server.')
@@ -642,7 +642,7 @@ def do_migrate(cs, args):
 
     if args.poll:
         _poll_for_status(cs.servers.get, server.id, 'migrating',
-                         ['active', 'verify-resize'])
+                         ['active', 'verify_resize'])
 
 
 @utils.arg('server', metavar='<server>', help='Name or ID of server.')
