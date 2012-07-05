@@ -81,6 +81,16 @@ class HTTPClient(httplib2.Http):
             self._logger.setLevel(logging.DEBUG)
             self._logger.addHandler(ch)
 
+    def use_token_cache(self, use_it):
+        # One day I'll stop using negative naming.
+        self.no_cache = not use_it
+
+    def unauthenticate(self):
+        """Forget all of our authentication information."""
+        self.management_url = None
+        self.auth_token = None
+        self.used_keyring = False
+
     def set_management_url(self, url):
         self.management_url = url
 

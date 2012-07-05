@@ -1709,8 +1709,17 @@ def do_hypervisor_show(cs, args):
     utils.print_dict(info)
 
 
+def ensure_service_catalog_present(cs):
+    if not hasattr(cs.client, 'service_catalog'):
+        # Turn off token caching and re-auth
+        cs.client.unauthenticate()
+        cs.client.use_token_cache(False)
+        cs.client.authenticate()
+
+
 def do_endpoints(cs, _args):
     """Discover endpoints that get returned from the authenticate services"""
+    ensure_service_catalog_present(cs)
     catalog = cs.client.service_catalog.catalog
     for e in catalog['access']['serviceCatalog']:
         utils.print_dict(e['endpoints'][0], e['name'])
@@ -1718,6 +1727,7 @@ def do_endpoints(cs, _args):
 
 def do_credentials(cs, _args):
     """Show user credentials returned from auth"""
+    ensure_service_catalog_present(cs)
     catalog = cs.client.service_catalog.catalog
     utils.print_dict(catalog['access']['user'], "User Credentials")
     utils.print_dict(catalog['access']['token'], "Token")
