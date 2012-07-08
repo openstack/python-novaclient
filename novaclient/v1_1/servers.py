@@ -258,6 +258,18 @@ class Server(base.Resource):
         """
         self.manager.reset_state(self, state)
 
+    def add_security_group(self, security_group):
+        """
+        Add a security group to an instance.
+        """
+        self.manager.add_security_group(self, security_group)
+
+    def remove_security_group(self, security_group):
+        """
+        Remova a security group from an instance.
+        """
+        self.manager.remove_security_group(self, security_group)
+
 
 class ServerManager(local_base.BootingManagerWithFind):
     resource_class = Server
@@ -646,6 +658,26 @@ class ServerManager(local_base.BootingManagerWithFind):
                       Defaults to 'error'.
         """
         self._action('os-resetState', server, dict(state=state))
+
+    def add_security_group(self, server, security_group):
+        """
+        Add a Security Group to a instance
+
+        :param server: ID of the instance.
+        :param security_grou: The name of security group to add.
+
+        """
+        self._action('addSecurityGroup', server, {'name': security_group})
+
+    def remove_security_group(self, server, security_group):
+        """
+        Add a Security Group to a instance
+
+        :param server: ID of the instance.
+        :param security_grou: The name of security group to remove.
+
+        """
+        self._action('removeSecurityGroup', server, {'name': security_group})
 
     def _action(self, action, server, info=None, **kwargs):
         """
