@@ -304,6 +304,9 @@ def _print_flavor_list(flavors):
 def do_flavor_list(cs, _args):
     """Print a list of available 'flavors' (sizes of servers)."""
     flavors = cs.flavors.list()
+    for flavor in flavors:
+        # int needed for numerical sort
+        flavor.id = int(flavor.id)
     _print_flavor_list(flavors)
 
 
