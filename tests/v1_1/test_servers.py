@@ -310,3 +310,17 @@ class ServersTest(utils.TestCase):
         cs.assert_called('POST', '/servers/1234/action')
         cs.servers.reset_state(s, 'newstate')
         cs.assert_called('POST', '/servers/1234/action')
+
+    def test_add_security_group(self):
+        s = cs.servers.get(1234)
+        s.add_security_group('newsg')
+        cs.assert_called('POST', '/servers/1234/action')
+        cs.servers.add_security_group(s, 'newsg')
+        cs.assert_called('POST', '/servers/1234/action')
+
+    def test_remove_security_group(self):
+        s = cs.servers.get(1234)
+        s.remove_security_group('oldsg')
+        cs.assert_called('POST', '/servers/1234/action')
+        cs.servers.remove_security_group(s, 'oldsg')
+        cs.assert_called('POST', '/servers/1234/action')

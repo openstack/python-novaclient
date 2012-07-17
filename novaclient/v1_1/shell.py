@@ -1103,6 +1103,22 @@ def do_remove_floating_ip(cs, args):
     server.remove_floating_ip(args.address)
 
 
+@utils.arg('server', metavar='<server>', help='Name or ID of server.')
+@utils.arg('secgroup', metavar='<secgroup>', help='Name of Security Group.')
+def do_add_secgroup(cs, args):
+    """Add a Security Group to a server."""
+    server = _find_server(cs, args.server)
+    server.add_security_group(args.secgroup)
+
+
+@utils.arg('server', metavar='<server>', help='Name or ID of server.')
+@utils.arg('secgroup', metavar='<secgroup>', help='Name of Security Group.')
+def do_remove_secgroup(cs, args):
+    """Remove a Security Group from a server."""
+    server = _find_server(cs, args.server)
+    server.remove_security_group(args.secgroup)
+
+
 @utils.arg('pool',
            metavar='<floating_ip_pool>',
            help='Name of Floating IP Pool. (Optional)',

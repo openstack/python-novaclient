@@ -341,6 +341,10 @@ class FakeHTTPClient(base_client.HTTPClient):
                                                     'disk_over_commit'])
         elif action == 'os-resetState':
             assert body[action].keys() == ['state']
+        elif action == 'addSecurityGroup':
+            assert body[action].keys() == ['name']
+        elif action == 'removeSecurityGroup':
+            assert body[action].keys() == ['name']
         else:
             raise AssertionError("Unexpected server action: %s" % action)
         return (resp, _body)
