@@ -457,7 +457,8 @@ def do_cloudpipe_list(cs, _args):
     utils.print_list(cloudpipes, columns)
 
 
-@utils.arg('project', metavar='<project>', help='Name of the project.')
+@utils.arg('project', metavar='<project_id>',
+           help='UUID of the project to create the cloudpipe for.')
 def do_cloudpipe_create(cs, args):
     """Create a cloudpipe instance for the given project."""
     cs.cloudpipe.create(args.project)
