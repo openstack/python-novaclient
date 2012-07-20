@@ -141,7 +141,10 @@ class OpenStackComputeShell(object):
         parser.add_argument('--insecure',
             default=utils.env('NOVACLIENT_INSECURE', default=False),
             action='store_true',
-            help=argparse.SUPPRESS)
+            help="Explicitly allow novaclient to perform \"insecure\" "
+                 "SSL (https) requests. The server's certificate will "
+                 "not be verified against any certificate authorities. "
+                 "This option should be used with caution.")
 
         # FIXME(dtroyer): The args below are here for diablo compatibility,
         #                 remove them in folsum cycle
