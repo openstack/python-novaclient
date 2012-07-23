@@ -871,6 +871,22 @@ class FakeHTTPClient(base_client.HTTPClient):
                      'disk_available_least': 100}
                     ]})
 
+    def get_os_hypervisors_statistics(self, **kw):
+        return (200, {"hypervisor_statistics": {
+                    'count': 2,
+                    'vcpus': 8,
+                    'memory_mb': 20 * 1024,
+                    'local_gb': 500,
+                    'vcpus_used': 4,
+                    'memory_mb_used': 10 * 1024,
+                    'local_gb_used': 250,
+                    'free_ram_mb': 10 * 1024,
+                    'free_disk_gb': 250,
+                    'current_workload': 4,
+                    'running_vms': 4,
+                    'disk_available_least': 200,
+                    }})
+
     def get_os_hypervisors_hyper_search(self, **kw):
         return (200, {'hypervisors': [
                     {'id': 1234, 'hypervisor_hostname': 'hyper1'},

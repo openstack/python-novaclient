@@ -63,3 +63,9 @@ class HypervisorManager(base.Manager):
         """
         return self._get("/os-hypervisors/%s/uptime" % base.getid(hypervisor),
                          "hypervisor")
+
+    def statistics(self):
+        """
+        Get hypervisor statistics over all compute nodes.
+        """
+        return self._get("/os-hypervisors/statistics", "hypervisor_statistics")

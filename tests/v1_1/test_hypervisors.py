@@ -147,3 +147,24 @@ class HypervisorsTest(utils.TestCase):
         cs.assert_called('GET', '/os-hypervisors/1234/uptime')
 
         self.compare_to_expected(expected, result)
+
+    def test_hypervisor_statistics(self):
+        expected = dict(
+            count=2,
+            vcpus=8,
+            memory_mb=20 * 1024,
+            local_gb=500,
+            vcpus_used=4,
+            memory_mb_used=10 * 1024,
+            local_gb_used=250,
+            free_ram_mb=10 * 1024,
+            free_disk_gb=250,
+            current_workload=4,
+            running_vms=4,
+            disk_available_least=200,
+            )
+
+        result = cs.hypervisors.statistics()
+        cs.assert_called('GET', '/os-hypervisors/statistics')
+
+        self.compare_to_expected(expected, result)

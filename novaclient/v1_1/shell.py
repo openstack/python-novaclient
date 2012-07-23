@@ -1738,6 +1738,12 @@ def do_hypervisor_uptime(cs, args):
     utils.print_dict(hyper._info.copy())
 
 
+def do_hypervisor_stats(cs, args):
+    """Get hypervisor statistics over all compute nodes."""
+    stats = cs.hypervisors.statistics()
+    utils.print_dict(stats._info.copy())
+
+
 def ensure_service_catalog_present(cs):
     if not hasattr(cs.client, 'service_catalog'):
         # Turn off token caching and re-auth

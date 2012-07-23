@@ -496,6 +496,10 @@ class ShellTest(utils.TestCase):
         self.run_command('hypervisor-uptime 1234')
         self.assert_called('GET', '/os-hypervisors/1234/uptime')
 
+    def test_hypervisor_stats(self):
+        self.run_command('hypervisor-stats')
+        self.assert_called('GET', '/os-hypervisors/statistics')
+
     def test_quota_show(self):
         self.run_command('quota-show test')
         self.assert_called('GET', '/os-quota-sets/test')
