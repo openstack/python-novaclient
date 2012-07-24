@@ -248,7 +248,8 @@ def do_cloudpipe_create(cs, args):
 
 
 def _poll_for_status(poll_fn, obj_id, action, final_ok_states,
-                     poll_period=5, show_progress=True):
+                     poll_period=5, show_progress=True,
+                     status_field="status", silent=False):
     """Block while an action is being performed, periodically printing
     progress.
     """
@@ -262,21 +263,32 @@ def _poll_for_status(poll_fn, obj_id, action, final_ok_states,
         sys.stdout.write(msg)
         sys.stdout.flush()
 
-    print
+    if not silent:
+        print
+
     while True:
         obj = poll_fn(obj_id)
-        status = obj.status.lower()
+
+        status = getattr(obj, status_field)
+
+        if status:
+            status = status.lower()
+
         progress = getattr(obj, 'progress', None) or 0
         if status in final_ok_states:
-            print_progress(100)
-            print "\nFinished"
+            if not silent:
+                print_progress(100)
+                print "\nFinished"
             break
         elif status == "error":
-            print "\nError %(action)s instance" % locals()
+            if not silent:
+                print "\nError %(action)s instance" % locals()
             break
-        else:
+
+        if not silent:
             print_progress(progress)
-            time.sleep(poll_period)
+
+        time.sleep(poll_period)
 
 
 def _translate_flavor_keys(collection):
@@ -752,6 +764,21 @@ def do_image_create(cs, args):
     if args.poll:
         _poll_for_status(cs.images.get, image_uuid, 'snapshotting',
                          ['active'])
+
+        # NOTE(sirp):  A race-condition exists between when the image finishes
+        # uploading and when the servers's `task_state` is cleared. To account
+        # for this, we need to poll a second time to ensure the `task_state` is
+        # cleared before returning, ensuring that a snapshot taken immediately
+        # after this function returns will succeed.
+        #
+        # A better long-term solution will be to separate 'snapshotting' and
+        # 'image-uploading' in Nova and clear the task-state once the VM
+        # snapshot is complete but before the upload begins.
+        task_state_field = "OS-EXT-STS:task_state"
+        if hasattr(server, task_state_field):
+            _poll_for_status(cs.servers.get, server.id, 'image_snapshot',
+                             [None], status_field=task_state_field,
+                             show_progress=False, silent=True)
 
 
 @utils.arg('server',
