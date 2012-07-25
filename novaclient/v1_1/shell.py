@@ -384,7 +384,8 @@ def do_image_list(cs, _args):
             return ''
 
     fmts = {'Server': parse_server_name}
-    utils.print_list(image_list, ['ID', 'Name', 'Status', 'Server'], fmts)
+    utils.print_list(image_list, ['ID', 'Name', 'Status', 'Server'],
+                     fmts, sortby_index=1)
 
 
 @utils.arg('image',
@@ -553,7 +554,7 @@ def do_list(cs, args):
     columns = [id_col, 'Name', 'Status', 'Networks']
     formatters = {'Networks': utils._format_servers_list_networks}
     utils.print_list(cs.servers.list(search_opts=search_opts), columns,
-                     formatters)
+                     formatters, sortby_index=1)
 
 
 @utils.arg('--hard',
