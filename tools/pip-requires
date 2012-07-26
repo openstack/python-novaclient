@@ -1,4 +1,4 @@
 argparse
 httplib2
-prettytable==0.6
+prettytable>=0.6,<0.7
 simplejson
