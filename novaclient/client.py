@@ -170,6 +170,7 @@ class HTTPClient(httplib2.Http):
         except exceptions.Unauthorized, ex:
             try:
                 self.authenticate()
+                kwargs['headers']['X-Auth-Token'] = self.auth_token
                 resp, body = self._time_request(self.management_url + url,
                                                 method, **kwargs)
                 return resp, body
