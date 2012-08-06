@@ -2,6 +2,7 @@ include AUTHORS
 include HACKING
 include LICENSE
 include README.rst
+include ChangeLog
 include run_tests.sh tox.ini
 include novaclient/versioninfo
 recursive-include doc *

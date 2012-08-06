@@ -11,4 +11,5 @@ build
 dist
 python_novaclient.egg-info
 AUTHORS
+ChangeLog
 novaclient/versioninfo
