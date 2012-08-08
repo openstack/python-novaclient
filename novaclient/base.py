@@ -281,6 +281,7 @@ class Resource(object):
     :param loaded: prevent lazy-loading if set to True
     """
     HUMAN_ID = False
+    NAME_ATTR = 'name'
 
     def __init__(self, manager, info, loaded=False):
         self.manager = manager
@@ -303,8 +304,8 @@ class Resource(object):
         """Subclasses may override this provide a pretty ID which can be used
         for bash completion.
         """
-        if 'name' in self.__dict__ and self.HUMAN_ID:
-            return utils.slugify(self.name)
+        if self.NAME_ATTR in self.__dict__ and self.HUMAN_ID:
+            return utils.slugify(getattr(self, self.NAME_ATTR))
         return None
 
     def _add_details(self, info):

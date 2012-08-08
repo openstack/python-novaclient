@@ -180,15 +180,14 @@ def find_resource(manager, name_or_id):
 
         # finally try to find entity by name
         try:
-            return manager.find(name=name_or_id)
+            resource = getattr(manager, 'resource_class', None)
+            name_attr = resource.NAME_ATTR if resource else 'name'
+            kwargs = {name_attr: name_or_id}
+            return manager.find(**kwargs)
         except exceptions.NotFound:
-            try:
-                # Volumes does not have name, but display_name
-                return manager.find(display_name=name_or_id)
-            except exceptions.NotFound:
-                msg = "No %s with a name or ID of '%s' exists." % \
-                    (manager.resource_class.__name__.lower(), name_or_id)
-                raise exceptions.CommandError(msg)
+            msg = "No %s with a name or ID of '%s' exists." % \
+                (manager.resource_class.__name__.lower(), name_or_id)
+            raise exceptions.CommandError(msg)
     except exceptions.NoUniqueMatch:
         msg = ("Multiple %s matches found for '%s', use an ID to be more"
                " specific." % (manager.resource_class.__name__.lower(),
