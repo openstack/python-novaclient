@@ -311,7 +311,8 @@ def _print_flavor_list(flavors):
         'Ephemeral',
         'Swap',
         'VCPUs',
-        'RXTX_Factor'])
+        'RXTX_Factor',
+        'Is_Public'])
 
 
 def do_flavor_list(cs, _args):
@@ -367,11 +368,74 @@ def do_flavor_show(cs, args):
      metavar='<factor>',
      help="RX/TX factor (default 1)",
      default=1)
+@utils.arg('--is-public',
+     metavar='<is-public>',
+     help="Make flavor accessible to the public (default true)",
+     type=utils.bool_from_str,
+     default=True)
 def do_flavor_create(cs, args):
     """Create a new flavor"""
     f = cs.flavors.create(args.name, args.ram, args.vcpus, args.disk, args.id,
-                          args.ephemeral, args.swap, args.rxtx_factor)
+                          args.ephemeral, args.swap, args.rxtx_factor,
+                          args.is_public)
     _print_flavor_list([f])
+
+
+@utils.arg('--flavor',
+     metavar='<flavor>',
+     help="Filter results by flavor name or ID.")
+@utils.arg('--tenant', metavar='<tenant_id>',
+           help='Filter results by tenant ID.')
+def do_flavor_access_list(cs, args):
+    """Print access information about the given flavor."""
+    if args.flavor and args.tenant:
+        raise exceptions.CommandError("Unable to filter results by "
+                                      "both --flavor and --tenant.")
+    elif args.flavor:
+        flavor = _find_flavor(cs, args.flavor)
+        if flavor.is_public:
+            raise exceptions.CommandError("Failed to get access list "
+                                          "for public flavor type.")
+        kwargs = {'flavor': flavor}
+    elif args.tenant:
+        kwargs = {'tenant': args.tenant}
+    else:
+        raise exceptions.CommandError("Unable to get all access lists. "
+                                      "Specify --flavor or --tenant")
+
+    try:
+        access_list = cs.flavor_access.list(**kwargs)
+    except NotImplementedError, e:
+        raise exceptions.CommandError("%s" % str(e))
+
+    columns = ['Flavor_ID', 'Tenant_ID']
+    utils.print_list(access_list, columns)
+
+
+@utils.arg('flavor',
+     metavar='<flavor>',
+     help="Filter results by flavor name or ID.")
+@utils.arg('tenant', metavar='<tenant_id>',
+           help='Filter results by tenant ID.')
+def do_flavor_access_add(cs, args):
+    """Add flavor access for the given tenant."""
+    flavor = _find_flavor(cs, args.flavor)
+    access_list = cs.flavor_access.add_tenant_access(flavor, args.tenant)
+    columns = ['Flavor_ID', 'Tenant_ID']
+    utils.print_list(access_list, columns)
+
+
+@utils.arg('flavor',
+     metavar='<flavor>',
+     help="Filter results by flavor name or ID.")
+@utils.arg('tenant', metavar='<tenant_id>',
+           help='Filter results by tenant ID.')
+def do_flavor_access_remove(cs, args):
+    """Remove flavor access for the given tenant."""
+    flavor = _find_flavor(cs, args.flavor)
+    access_list = cs.flavor_access.remove_tenant_access(flavor, args.tenant)
+    columns = ['Flavor_ID', 'Tenant_ID']
+    utils.print_list(access_list, columns)
 
 
 def do_image_list(cs, _args):

@@ -22,6 +22,13 @@ class Flavor(base.Resource):
         """
         return self._info.get("OS-FLV-EXT-DATA:ephemeral", 'N/A')
 
+    @property
+    def is_public(self):
+        """
+        Provide a user-friendly accessor to os-flavor-access:is_public
+        """
+        return self._info.get("os-flavor-access:is_public", 'N/A')
+
 
 class FlavorManager(base.ManagerWithFind):
     """
@@ -59,7 +66,7 @@ class FlavorManager(base.ManagerWithFind):
         self._delete("/flavors/%s" % base.getid(flavor))
 
     def create(self, name, ram, vcpus, disk, flavorid,
-               ephemeral=0, swap=0, rxtx_factor=1):
+               ephemeral=0, swap=0, rxtx_factor=1, is_public=True):
         """
         Create (allocate) a  floating ip for a tenant
 
@@ -83,6 +90,7 @@ class FlavorManager(base.ManagerWithFind):
                 "swap": int(swap),
                 "OS-FLV-EXT-DATA:ephemeral": int(ephemeral),
                 "rxtx_factor": int(rxtx_factor),
+                "os-flavor-access:is_public": bool(is_public),
             }
         }
 
