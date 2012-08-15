@@ -24,6 +24,8 @@ class Volume(base.Resource):
     """
     A volume is an extra block level storage to the OpenStack instances.
     """
+    NAME_ATTR = 'display_name'
+
     def __repr__(self):
         return "<Volume: %s>" % self.id
 
