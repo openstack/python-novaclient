@@ -463,7 +463,7 @@ class ServerManager(local_base.BootingManagerWithFind):
                       device mappings for this server.
         :param nics:  (optional extension) an ordered list of nics to be
                       added to this server, with information about
-                      connected networks, fixed ips, etc.
+                      connected networks, fixed ips, port etc.
         :param scheduler_hints: (optional extension) arbitrary key-value pairs
                             specified by the client to help boot an instance
         :param config_drive: (optional extension) value for config drive

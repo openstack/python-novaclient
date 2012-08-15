@@ -150,6 +150,8 @@ class BootingManagerWithFind(base.ManagerWithFind):
                     net_data['uuid'] = nic_info['net-id']
                 if nic_info['v4-fixed-ip']:
                     net_data['fixed_ip'] = nic_info['v4-fixed-ip']
+                if nic_info['port-id']:
+                    net_data['port'] = nic_info['port-id']
                 all_net_data.append(net_data)
             body['server']['networks'] = all_net_data
 
