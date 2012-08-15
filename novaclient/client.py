@@ -7,7 +7,18 @@
 OpenStack Client interface. Handles the REST calls and responses.
 """
 
+import logging
+import os
+import time
+import urlparse
+
 import httplib2
+import pkg_resources
+
+try:
+    import json
+except ImportError:
+    import simplejson as json
 
 has_keyring = False
 try:
@@ -15,16 +26,6 @@ try:
     has_keyring = True
 except ImportError:
     pass
-
-import logging
-import os
-import time
-import urlparse
-
-try:
-    import json
-except ImportError:
-    import simplejson as json
 
 # Python 2.5 compat fix
 if not hasattr(urlparse, 'parse_qsl'):
@@ -36,21 +37,32 @@ from novaclient import service_catalog
 from novaclient import utils
 
 
+def get_auth_system_url(auth_system):
+    """Load plugin-based auth_url"""
+    ep_name = 'openstack.client.auth_url'
+    for ep in pkg_resources.iter_entry_points(ep_name):
+        if ep.name == auth_system:
+            return ep.load()()
+    raise exceptions.AuthSystemNotFound(auth_system)
+
+
 class HTTPClient(httplib2.Http):
 
     USER_AGENT = 'python-novaclient'
 
-    def __init__(self, user, password, projectid, auth_url, insecure=False,
-                 timeout=None, proxy_tenant_id=None,
+    def __init__(self, user, password, projectid, auth_url=None,
+                 insecure=False, timeout=None, proxy_tenant_id=None,
                  proxy_token=None, region_name=None,
                  endpoint_type='publicURL', service_type=None,
                  service_name=None, volume_service_name=None,
                  timings=False, bypass_url=None, no_cache=False,
-                 http_log_debug=False):
+                 http_log_debug=False, auth_system='keystone'):
         super(HTTPClient, self).__init__(timeout=timeout)
         self.user = user
         self.password = password
         self.projectid = projectid
+        if not auth_url and auth_system and auth_system != 'keystone':
+            auth_url = get_auth_system_url(auth_system)
         self.auth_url = auth_url.rstrip('/')
         self.version = 'v1.1'
         self.region_name = region_name
@@ -74,6 +86,8 @@ class HTTPClient(httplib2.Http):
         # httplib2 overrides
         self.force_exception_to_status_code = True
         self.disable_ssl_certificate_validation = insecure
+
+        self.auth_system = auth_system
 
         self._logger = logging.getLogger(__name__)
         if self.http_log_debug:
@@ -199,7 +213,6 @@ class HTTPClient(httplib2.Http):
                 self.auth_url = url
                 self.service_catalog = \
                     service_catalog.ServiceCatalog(body)
-
                 if extract_token:
                     self.auth_token = self.service_catalog.get_token()
 
@@ -289,13 +302,20 @@ class HTTPClient(httplib2.Http):
         admin_url = urlparse.urlunsplit(
                         (scheme, new_netloc, path, query, frag))
 
+        # FIXME(chmouel): This is to handle backward compatibiliy when
+        # we didn't have a plugin mechanism for the auth_system. This
+        # should be removed in the future and have people move to
+        # OS_AUTH_SYSTEM=rackspace instead.
+        if "NOVA_RAX_AUTH" in os.environ:
+            self.auth_system = "rackspace"
+
         auth_url = self.auth_url
         if self.version == "v2.0":  # FIXME(chris): This should be better.
             while auth_url:
-                if "NOVA_RAX_AUTH" in os.environ:
-                    auth_url = self._rax_auth(auth_url)
-                else:
+                if not self.auth_system or self.auth_system == 'keystone':
                     auth_url = self._v2_auth(auth_url)
+                else:
+                    auth_url = self._plugin_auth(auth_url)
 
             # Are we acting on behalf of another user via an
             # existing token? If so, our actual endpoints may
@@ -354,6 +374,14 @@ class HTTPClient(httplib2.Http):
         else:
             raise exceptions.from_response(resp, body)
 
+    def _plugin_auth(self, auth_url):
+        """Load plugin-based authentication"""
+        ep_name = 'openstack.client.authenticate'
+        for ep in pkg_resources.iter_entry_points(ep_name):
+            if ep.name == self.auth_system:
+                return ep.load()(self, auth_url)
+        raise exceptions.AuthSystemNotFound(self.auth_system)
+
     def _v2_auth(self, url):
         """Authenticate against a v2.0 auth service."""
         body = {"auth": {
@@ -362,16 +390,6 @@ class HTTPClient(httplib2.Http):
 
         if self.projectid:
             body['auth']['tenantName'] = self.projectid
-
-        self._authenticate(url, body)
-
-    def _rax_auth(self, url):
-        """Authenticate against the Rackspace auth service."""
-        body = {"auth": {
-                "RAX-KSKEY:apiKeyCredentials": {
-                        "username": self.user,
-                        "apiKey": self.password,
-                        "tenantName": self.projectid}}}
 
         self._authenticate(url, body)
 

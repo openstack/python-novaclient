@@ -41,13 +41,14 @@ class Client(object):
     """
 
     # FIXME(jesse): project_id isn't required to authenticate
-    def __init__(self, username, api_key, project_id, auth_url,
+    def __init__(self, username, api_key, project_id, auth_url=None,
                   insecure=False, timeout=None, proxy_tenant_id=None,
                   proxy_token=None, region_name=None,
                   endpoint_type='publicURL', extensions=None,
                   service_type='compute', service_name=None,
                   volume_service_name=None, timings=False,
-                  bypass_url=None, no_cache=False, http_log_debug=False):
+                  bypass_url=None, no_cache=False, http_log_debug=False,
+                  auth_system='keystone'):
         # FIXME(comstud): Rename the api_key argument above when we
         # know it's not being used as keyword argument
         password = api_key
@@ -92,6 +93,7 @@ class Client(object):
                                     auth_url,
                                     insecure=insecure,
                                     timeout=timeout,
+                                    auth_system=auth_system,
                                     proxy_token=proxy_token,
                                     proxy_tenant_id=proxy_tenant_id,
                                     region_name=region_name,
