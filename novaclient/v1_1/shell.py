@@ -982,12 +982,17 @@ def do_volume_delete(cs, args):
     metavar='<volume>',
     help='ID of the volume to attach.')
 @utils.arg('device', metavar='<device>',
-    help='Name of the device e.g. /dev/vdb.')
+    help='Name of the device e.g. /dev/vdb. '
+         'Use "auto" for autoassign (if supported)')
 def do_volume_attach(cs, args):
     """Attach a volume to a server."""
-    cs.volumes.create_server_volume(_find_server(cs, args.server).id,
-                                        args.volume,
-                                        args.device)
+    if args.device == 'auto':
+        args.device = None
+
+    volume = cs.volumes.create_server_volume(_find_server(cs, args.server).id,
+                                             args.volume,
+                                             args.device)
+    _print_volume(volume)
 
 
 @utils.arg('server',
