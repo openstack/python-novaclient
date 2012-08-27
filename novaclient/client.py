@@ -114,7 +114,7 @@ class HTTPClient(httplib2.Http):
     def reset_timings(self):
         self.times = []
 
-    def http_log(self, args, kwargs, resp, body):
+    def http_log_req(self, args, kwargs):
         if not self.http_log_debug:
             return
 
@@ -132,6 +132,10 @@ class HTTPClient(httplib2.Http):
         self._logger.debug("\nREQ: %s\n" % "".join(string_parts))
         if 'body' in kwargs:
             self._logger.debug("REQ BODY: %s\n" % (kwargs['body']))
+
+    def http_log_resp(self, resp, body):
+        if not self.http_log_debug:
+            return
         self._logger.debug("RESP:%s %s\n", resp, body)
 
     def request(self, *args, **kwargs):
@@ -142,9 +146,9 @@ class HTTPClient(httplib2.Http):
             kwargs['headers']['Content-Type'] = 'application/json'
             kwargs['body'] = json.dumps(kwargs['body'])
 
+        self.http_log_req(args, kwargs)
         resp, body = super(HTTPClient, self).request(*args, **kwargs)
-
-        self.http_log(args, kwargs, resp, body)
+        self.http_log_resp(resp, body)
 
         if body:
             try:
@@ -179,7 +183,7 @@ class HTTPClient(httplib2.Http):
                 kwargs['headers']['X-Auth-Project-Id'] = self.projectid
 
             resp, body = self._time_request(self.management_url + url, method,
-                                      **kwargs)
+                                            **kwargs)
             return resp, body
         except exceptions.Unauthorized, ex:
             try:
@@ -217,12 +221,12 @@ class HTTPClient(httplib2.Http):
                     self.auth_token = self.service_catalog.get_token()
 
                 management_url = self.service_catalog.url_for(
-                               attr='region',
-                               filter_value=self.region_name,
-                               endpoint_type=self.endpoint_type,
-                               service_type=self.service_type,
-                               service_name=self.service_name,
-                               volume_service_name=self.volume_service_name,)
+                    attr='region',
+                    filter_value=self.region_name,
+                    endpoint_type=self.endpoint_type,
+                    service_type=self.service_type,
+                    service_name=self.service_name,
+                    volume_service_name=self.volume_service_name,)
                 self.management_url = management_url.rstrip('/')
                 return None
             except exceptions.AmbiguousEndpoints:
@@ -256,8 +260,8 @@ class HTTPClient(httplib2.Http):
         url = '/'.join([url, 'tokens', '%s?belongsTo=%s'
                         % (self.proxy_token, self.proxy_tenant_id)])
         self._logger.debug("Using Endpoint URL: %s" % url)
-        resp, body = self._time_request(url, "GET",
-                                  headers={'X-Auth_Token': self.auth_token})
+        resp, body = self._time_request(
+            url, "GET", headers={'X-Auth_Token': self.auth_token})
         return self._extract_service_catalog(url, resp, body,
                                              extract_token=False)
 
@@ -300,7 +304,7 @@ class HTTPClient(httplib2.Http):
         # Ideally this is going to have to be provided by the service catalog.
         new_netloc = netloc.replace(':%d' % port, ':%d' % (35357,))
         admin_url = urlparse.urlunsplit(
-                        (scheme, new_netloc, path, query, frag))
+            (scheme, new_netloc, path, query, frag))
 
         # FIXME(chmouel): This is to handle backward compatibiliy when
         # we didn't have a plugin mechanism for the auth_system. This
@@ -385,8 +389,8 @@ class HTTPClient(httplib2.Http):
     def _v2_auth(self, url):
         """Authenticate against a v2.0 auth service."""
         body = {"auth": {
-                   "passwordCredentials": {"username": self.user,
-                                           "password": self.password}}}
+                "passwordCredentials": {"username": self.user,
+                                        "password": self.password}}}
 
         if self.projectid:
             body['auth']['tenantName'] = self.projectid
