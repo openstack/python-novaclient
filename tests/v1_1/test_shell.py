@@ -229,7 +229,7 @@ class ShellTest(utils.TestCase):
         #                   {'rebuild': {'imageRef': 1}})
         self.assert_called('GET', '/images/2')
 
-        self.run_command('rebuild sample-server 1 --rebuild_password asdf')
+        self.run_command('rebuild sample-server 1 --rebuild-password asdf')
         # XXX need a way to test multiple calls
         #self.assert_called('POST', '/servers/1234/action',
         #                   {'rebuild': {'imageRef': 1, 'adminPass': 'asdf'}})
@@ -320,7 +320,7 @@ class ShellTest(utils.TestCase):
 
     def test_dns_create_private_domain(self):
         self.run_command('dns-create-private-domain testdomain '
-                         '--availability_zone av_zone')
+                         '--availability-zone av_zone')
         self.assert_called('PUT', '/os-floating-ip-dns/testdomain')
 
     def test_dns_delete(self):
@@ -428,13 +428,13 @@ class ShellTest(utils.TestCase):
                                             'block_migration': False,
                                             'disk_over_commit': False}})
         self.run_command('live-migration sample-server hostname \
-                         --block_migrate')
+                         --block-migrate')
         self.assert_called('POST', '/servers/1234/action',
                            {'os-migrateLive': {'host': 'hostname',
                                             'block_migration': True,
                                             'disk_over_commit': False}})
         self.run_command('live-migration sample-server hostname \
-                         --block_migrate --disk_over_commit')
+                         --block-migrate --disk-over-commit')
         self.assert_called('POST', '/servers/1234/action',
                            {'os-migrateLive': {'host': 'hostname',
                                             'block_migration': True,

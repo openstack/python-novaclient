@@ -11,8 +11,8 @@ First, you'll need an OpenStack Nova account and an API key. You get this
 by using the `nova-manage` command in OpenStack Nova.
 
 You'll need to provide :program:`nova` with your OpenStack username and
-API key. You can do this with the :option:`--os_username`, :option:`--os_password`
-and :option:`--os_tenant_id` options, but it's easier to just set them as
+API key. You can do this with the :option:`--os-username`, :option:`--os-password`
+and :option:`--os-tenant-id` options, but it's easier to just set them as
 environment variables by setting two environment variables:
 
 .. envvar:: OS_USERNAME
