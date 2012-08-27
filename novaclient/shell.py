@@ -28,6 +28,7 @@ import pkgutil
 import sys
 import logging
 
+import novaclient
 from novaclient import client
 from novaclient import exceptions as exc
 import novaclient.extension
@@ -80,6 +81,10 @@ class OpenStackComputeShell(object):
             action='store_true',
             help=argparse.SUPPRESS,
         )
+
+        parser.add_argument('--version',
+                            action='version',
+                            version=novaclient.__version__)
 
         parser.add_argument('--debug',
             default=False,
