@@ -26,6 +26,7 @@ class FlavorsTest(utils.TestCase):
         self.assertEqual(f.ram, 256)
         self.assertEqual(f.disk, 10)
         self.assertEqual(f.ephemeral, 10)
+        self.assertEqual(f.is_public, True)
 
     def test_get_flavor_details_diablo(self):
         f = cs.flavors.get(3)
@@ -34,6 +35,7 @@ class FlavorsTest(utils.TestCase):
         self.assertEqual(f.ram, 256)
         self.assertEqual(f.disk, 10)
         self.assertEqual(f.ephemeral, 'N/A')
+        self.assertEqual(f.is_public, 'N/A')
 
     def test_find(self):
         f = cs.flavors.find(ram=256)
@@ -46,7 +48,8 @@ class FlavorsTest(utils.TestCase):
         self.assertRaises(exceptions.NotFound, cs.flavors.find, disk=12345)
 
     def test_create(self):
-        f = cs.flavors.create("flavorcreate", 512, 1, 10, 1234, ephemeral=10)
+        f = cs.flavors.create("flavorcreate", 512, 1, 10, 1234, ephemeral=10,
+                              is_public=False)
 
         body = {
             "flavor": {
@@ -58,13 +61,14 @@ class FlavorsTest(utils.TestCase):
                 "id": 1234,
                 "swap": 0,
                 "rxtx_factor": 1,
+                "os-flavor-access:is_public": False,
             }
         }
 
         cs.assert_called('POST', '/flavors', body)
         self.assertTrue(isinstance(f, flavors.Flavor))
 
-    def test_create_ephemeral_defaults_to_zero(self):
+    def test_create_ephemeral_ispublic_defaults(self):
         f = cs.flavors.create("flavorcreate", 512, 1, 10, 1234)
 
         body = {
@@ -77,6 +81,7 @@ class FlavorsTest(utils.TestCase):
                 "id": 1234,
                 "swap": 0,
                 "rxtx_factor": 1,
+                "os-flavor-access:is_public": True,
             }
         }
 

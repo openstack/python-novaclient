@@ -359,7 +359,8 @@ class ShellTest(utils.TestCase):
 
     def test_flavor_create(self):
         self.run_command("flavor-create flavorcreate "
-                         "1234 512 10 1 --swap 1024 --ephemeral 10")
+                         "1234 512 10 1 --swap 1024 --ephemeral 10 "
+                         "--is-public true")
 
         body = {
             "flavor": {
@@ -371,6 +372,7 @@ class ShellTest(utils.TestCase):
                 "id": 1234,
                 "swap": 1024,
                 "rxtx_factor": 1,
+                "os-flavor-access:is_public": True,
             }
         }
 

@@ -42,6 +42,17 @@ def add_arg(f, *args, **kwargs):
         f.arguments.insert(0, (args, kwargs))
 
 
+def bool_from_str(val):
+    """Convert a string representation of a bool into a bool value"""
+
+    if not val:
+        return False
+    try:
+        return True if bool(int(val)) else False
+    except ValueError:
+        return val.lower() in ['true', 'yes', 'y']
+
+
 def add_resource_manager_extra_kwargs_hook(f, hook):
     """Adds hook to bind CLI arguments to ResourceManager calls.
 
