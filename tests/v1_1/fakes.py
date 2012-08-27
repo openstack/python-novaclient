@@ -934,3 +934,21 @@ class FakeHTTPClient(base_client.HTTPClient):
                           {'id': 1234,
                            'hypervisor_hostname': "hyper1",
                            'uptime': "fake uptime"}})
+
+    def get_os_networks(self, **kw):
+        return (200, {'networks': [{"label": "1", "cidr": "10.0.0.0/24"}]})
+
+    def get_os_networks_1(self, **kw):
+        return (200, {'network': {"label": "1", "cidr": "10.0.0.0/24"}})
+
+    def post_os_networks(self, **kw):
+        return (202, {'network': kw})
+
+    def delete_os_networks_networkdelete(self, **kw):
+        return (202, None)
+
+    def post_os_networks_add(self, **kw):
+        return (202, None)
+
+    def post_os_networks_networkdisassociate_action(self, **kw):
+        return (202, None)
