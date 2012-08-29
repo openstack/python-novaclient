@@ -1041,6 +1041,10 @@ def do_volume_show(cs, args):
     help='Optional snapshot id to create the volume from. (Default=None)')
 @utils.arg('--snapshot_id',
     help=argparse.SUPPRESS)
+@utils.arg('--image-id',
+    metavar='<image-id>',
+    help='Optional image id to create the volume from. (Default=None)',
+    default=None)
 @utils.arg('--display-name',
     metavar='<display-name>',
     default=None,
@@ -1070,7 +1074,8 @@ def do_volume_create(cs, args):
                         args.display_name,
                         args.display_description,
                         args.volume_type,
-                        args.availability_zone)
+                        args.availability_zone,
+                        imageRef=args.image_id)
 
 
 @utils.arg('volume', metavar='<volume>', help='ID of the volume to delete.')
