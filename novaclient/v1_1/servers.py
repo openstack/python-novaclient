@@ -83,9 +83,9 @@ class Server(base.Resource):
 
     def remove_floating_ip(self, address):
         """
-        Add floating IP to an instance
+        Remove floating IP from an instance
 
-        :param address: The ip address or FloatingIP to add to remove
+        :param address: The ip address or FloatingIP to remove
         """
         self.manager.remove_floating_ip(self, address)
 
