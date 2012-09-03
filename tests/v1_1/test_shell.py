@@ -15,6 +15,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import datetime
 import os
 import mock
 import sys
@@ -23,6 +24,7 @@ import tempfile
 import novaclient.shell
 import novaclient.client
 from novaclient import exceptions
+from novaclient.openstack.common import timeutils
 from tests.v1_1 import fakes
 from tests import utils
 
@@ -58,6 +60,8 @@ class ShellTest(utils.TestCase):
 
         #HACK(bcwaldon): replace this when we start using stubs
         novaclient.client.get_client_class = self.old_get_client_class
+
+        timeutils.clear_time_override()
 
     def run_command(self, cmd):
         self.shell.main(cmd.split())
@@ -351,6 +355,15 @@ class ShellTest(utils.TestCase):
                            '/os-simple-tenant-usage?' +
                            'start=2000-01-20T00:00:00&' +
                            'end=2005-02-01T00:00:00&' +
+                           'detailed=1')
+
+    def test_usage_list_no_args(self):
+        timeutils.set_time_override(datetime.datetime(2005, 2, 1, 0, 0))
+        self.run_command('usage-list')
+        self.assert_called('GET',
+                           '/os-simple-tenant-usage?' +
+                           'start=2005-01-04T00:00:00&' +
+                           'end=2005-02-02T00:00:00&' +
                            'detailed=1')
 
     def test_flavor_delete(self):

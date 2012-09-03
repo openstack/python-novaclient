@@ -22,6 +22,7 @@ import sys
 import time
 
 from novaclient import exceptions
+from novaclient.openstack.common import timeutils
 from novaclient import utils
 from novaclient.v1_1 import servers
 
@@ -1474,17 +1475,17 @@ def do_usage_list(cs, args):
     rows = ["Tenant ID", "Instances", "RAM MB-Hours", "CPU Hours",
             "Disk GB-Hours"]
 
+    now = timeutils.utcnow()
+
     if args.start:
         start = datetime.datetime.strptime(args.start, dateformat)
     else:
-        start = (datetime.datetime.today() -
-                 datetime.timedelta(weeks=4))
+        start = now - datetime.timedelta(weeks=4)
 
     if args.end:
         end = datetime.datetime.strptime(args.end, dateformat)
     else:
-        end = (datetime.datetime.today() +
-                 datetime.timedelta(days=1))
+        end = now + datetime.timedelta(days=1)
 
     def simplify_usage(u):
         simplerows = map(lambda x: x.lower().replace(" ", "_"), rows)
