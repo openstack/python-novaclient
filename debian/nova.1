@@ -1,0 +1,144 @@
+.TH NOVA "1" "February 2011" "nova" "User Commands"
+.SH NAME
+nova \- Command-line interface to the OpenStack Compute API.
+.SH SYNOPSIS
+.B "nova"
+[
+.I \-\-username USERNAME
+]
+[
+.I \-\-apikey APIKEY
+]
+[
+.I \-\-url AUTH_URL
+]
+.I <subcommand>
+.SH DESCRIPTION
+nova is a command line interface to the OpenStack Compute API.
+.PP
+.SH COMMAND OVERVIEW
+.TP
+.B "nova actions"
+Retrieve server actions.
+.TP
+.B "nova backup\-schedule"
+Show or edit the backup schedule for a server.
+.TP
+.B "nova backup\-schedule\-delete"
+Delete the backup schedule for a server.
+.TP
+.B "nova boot"
+Boot a new server.
+.TP
+.B "nova delete"
+Immediately shut down and delete a server.
+.TP
+.B "nova diagnostics"
+Retrieve server diagnostics.
+.TP
+.B "nova flavor\-list"
+Print a list of available 'flavors' (sizes of
+servers).
+.TP
+.B "nova help"
+Display help about this program or one of its subcommands.
+.TP
+.B "nova image\-create"
+Create a new image by taking a snapshot of a running server.
+.TP
+.B "nova image\-delete"
+Delete an image.
+.TP
+.B "nova image\-list"
+Print a list of available images to boot from.
+.TP
+.B "nova ip\-share"
+Share an IP address from the given IP group onto a server.
+.TP
+.B "nova ip\-unshare"
+Stop sharing an given address with a server.
+.TP
+.B "nova ipgroup\-create"
+Create a new IP group.
+.TP
+.B "nova ipgroup\-delete"
+Delete an IP group.
+.TP
+.B "nova ipgroup\-list"
+Show IP groups.
+.TP
+.B "nova ipgroup\-show"
+Show details about a particular IP group.
+.TP
+.B "nova list"
+List active servers.
+.TP
+.B "nova pause"
+Pause a server.
+.TP
+.B "nova reboot"
+Reboot a server.
+.TP
+.B "nova rebuild"
+Shutdown, re\-image, and re\-boot a server.
+.TP
+.B "nova rename"
+Rename a server.
+.TP
+.B "nova rescue"
+Rescue a server.
+.TP
+.B "nova resize"
+Resize a server.
+.TP
+.B "nova resize\-confirm"
+Confirm a previous resize.
+.TP
+.B "nova resize\-revert"
+Revert a previous resize (and return to the previous VM).
+.TP
+.B "nova resume"
+Resume a server.
+.TP
+.B "nova root\-password"
+Change the root password for a server.
+.TP
+.B "nova show"
+Show details about the given server.
+.TP
+.B "nova suspend"
+Suspend a server.
+.TP
+.B "nova unpause"
+Unpause a server.
+.TP
+.B "nova unrescue"
+Unrescue a server.
+.TP
+.B "nova zone"
+Show or edit a child zone.
+.TP
+.B "nova zone-add"
+Add a new child zone.
+.TP
+.B "nova zone-delete"
+Delete a zone.
+.TP
+.B "nova zone-info"
+Get this zones name and capabilities.
+.TP
+.B "nova zone-list"
+List the children of a zone.
+.SS "Optional arguments:"
+.TP
+\fB\-\-username\fR USERNAME
+Defaults to env[NOVA_USERNAME].
+.TP
+\fB\-\-apikey\fR APIKEY
+Defaults to env[NOVA_API_KEY].
+.TP
+\fB\-\-url\fR AUTH_URL
+Defaults to https://auth.api.rackspacecloud.com/v1.0 or env[NOVA_URL] if defined.
+.PP
+See "nova help COMMAND" for help on a specific command.
+.PP

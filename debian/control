@@ -1,31 +1,33 @@
 Source: python-novaclient
-Maintainer: Rackspace, based on work by Jacob Kaplan-Moss <github@racklabs.com>
 Section: python
 Priority: optional
-Build-Depends: python-setuptools (>= 0.6b3), python-all (>= 2.6.6-3), debhelper (>= 7.4.3)
-Standards-Version: 3.9.1
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Build-Depends: debhelper (>= 7.0.50),
+ python-all (>= 2.6),
+ python-argparse,
+ python-distribute,
+ python-httplib2,
+ python-mock (>= 0.7),
+ python-nose,
+ python-prettytable (>= 0.6),
+ python-simplejson,
+ python-unittest2,
+X-Python-Version: >= 2.7
+Standards-Version: 3.9.3
+Vcs-Browser: https://bazaar.launchpad.net/~openstack-ubuntu-packagers/python-novaclient/ubuntu/files
+Vcs-Bzr: https://bazaar.launchpad.net/~openstack-ubuntu-packagers/python-novaclient/ubuntu/
 
 Package: python-novaclient
 Architecture: all
-Depends: ${misc:Depends}, ${python:Depends}
-Description: Client library for OpenStack Nova API.
- Python bindings to the OpenStack Nova API
- ==================================================
- .
- This is a client for the OpenStack Nova API. There's a Python API (the
- ``novaclient`` module), and a command-line script (``nova``). Each
- implements 100% of the OpenStack Nova API.
- .
- [PENDING] `Full documentation is available`__.
- .
- __ http://packages.python.org/python-novaclient/
- .
- You'll also probably want to read `OpenStack Compute Developer Guide API`__ --
- the first bit, at least -- to get an idea of the concepts. Rackspace is doing
- the cloud hosting thing a bit differently from Amazon, and if you get the
- concepts this library should make more sense.
- .
- __ http://docs.openstack.org/api/
- .
- The project is hosted on `Launchpad`_, where bugs can be filed. The code is
- hosted on `Github`_. Patches must be submitted using `Gerrit`_, *not* Github
+Depends: python-argparse,
+ python-httplib2,
+ python-pkg-resources,
+ python-prettytable (>= 0.6),
+ python-simplejson,
+ python-keyring,
+ ${misc:Depends},
+ ${python:Depends}
+XB-Python-Version: ${python:Versions}
+Description: client library for OpenStack Compute API
+ Python novaclient library and nova CLI tool for interacting with OpenStack
+ Compute (Nova) through the OpenStack Compute API.

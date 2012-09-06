@@ -1,0 +1,2 @@
+version=3
+http://tarballs.openstack.org/python-novaclient/ python-novaclient-(.*).tar.gz
