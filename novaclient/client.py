@@ -151,6 +151,14 @@ class HTTPClient(httplib2.Http):
         self.http_log_resp(resp, body)
 
         if body:
+            # NOTE(alaski): Because force_exceptions_to_status_code=True
+            # httplib2 returns a connection refused event as a 400 response.
+            # To determine if it is a bad request or refused connection we need
+            # to check the body.  httplib2 tests check for 'Connection refused'
+            # or 'actively refused' in the body, so that's what we'll do.
+            if resp.status == 400:
+                if 'Connection refused' in body or 'actively refused' in body:
+                    raise exceptions.ConnectionRefused(body)
             try:
                 body = json.loads(body)
             except ValueError:

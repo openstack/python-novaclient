@@ -51,6 +51,17 @@ class AmbiguousEndpoints(Exception):
         return "AmbiguousEndpoints: %s" % repr(self.endpoints)
 
 
+class ConnectionRefused(Exception):
+    """
+    Connection refused: the server refused the connection.
+    """
+    def __init__(self, response=None):
+        self.response = response
+
+    def __str__(self):
+        return "ConnectionRefused: %s" % repr(self.response)
+
+
 class ClientException(Exception):
     """
     The base exception class for all exceptions this library raises.

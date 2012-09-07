@@ -10,6 +10,24 @@ fake_response = httplib2.Response({"status": 200})
 fake_body = '{"hi": "there"}'
 mock_request = mock.Mock(return_value=(fake_response, fake_body))
 
+refused_response = httplib2.Response({"status": 400})
+refused_body = '[Errno 111] Connection refused'
+refused_mock_request = mock.Mock(
+        return_value=(
+            refused_response,
+            refused_body,
+        )
+)
+
+bad_req_response = httplib2.Response({"status": 400})
+bad_req_body = ''
+bad_req_mock_request = mock.Mock(
+        return_value=(
+            bad_req_response,
+            bad_req_body,
+        )
+)
+
 
 def get_client():
     cl = client.HTTPClient("username", "password",
@@ -72,3 +90,21 @@ class ClientTest(utils.TestCase):
             self.assertRaises(exceptions.AuthorizationFailure, cl.authenticate)
 
         test_auth_call()
+
+    def test_connection_refused(self):
+        cl = get_client()
+
+        @mock.patch.object(httplib2.Http, "request", refused_mock_request)
+        def test_refused_call():
+            self.assertRaises(exceptions.ConnectionRefused, cl.get, "/hi")
+
+        test_refused_call()
+
+    def test_bad_request(self):
+        cl = get_client()
+
+        @mock.patch.object(httplib2.Http, "request", bad_req_mock_request)
+        def test_refused_call():
+            self.assertRaises(exceptions.BadRequest, cl.get, "/hi")
+
+        test_refused_call()
