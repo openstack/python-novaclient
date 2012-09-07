@@ -44,7 +44,8 @@ class VolumeManager(base.ManagerWithFind):
 
     def create(self, size, snapshot_id=None,
                     display_name=None, display_description=None,
-                    volume_type=None, availability_zone=None):
+                    volume_type=None, availability_zone=None,
+                    imageRef=None):
         """
         Create a volume.
 
@@ -55,13 +56,15 @@ class VolumeManager(base.ManagerWithFind):
         :param volume_type: Type of volume
         :param availability_zone: Availability Zone for volume
         :rtype: :class:`Volume`
+        :param imageRef: reference to an image stored in glance
         """
         body = {'volume': {'size': size,
                             'snapshot_id': snapshot_id,
                             'display_name': display_name,
                             'display_description': display_description,
                             'volume_type': volume_type,
-                            'availability_zone': availability_zone}}
+                            'availability_zone': availability_zone,
+                            'imageRef': imageRef}}
         return self._create('/volumes', body, 'volume')
 
     def get(self, volume_id):
