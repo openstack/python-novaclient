@@ -451,6 +451,22 @@ def do_flavor_access_remove(cs, args):
     utils.print_list(access_list, columns)
 
 
+def do_network_list(cs, _args):
+    """Print a list of available networks."""
+    network_list = cs.networks.list()
+    columns = ['ID', 'Label', 'Cidr']
+    utils.print_list(network_list, columns)
+
+
+@utils.arg('network',
+     metavar='<network>',
+     help="uuid or label of network")
+def do_network_show(cs, args):
+    """Show details about the given network."""
+    network = utils.find_resource(cs.networks, args.network)
+    utils.print_dict(network._info)
+
+
 def do_image_list(cs, _args):
     """Print a list of available images to boot from."""
     image_list = cs.images.list()
