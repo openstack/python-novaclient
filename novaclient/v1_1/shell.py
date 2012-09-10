@@ -826,7 +826,10 @@ def _print_server(cs, server):
 
     image = info.get('image', {})
     image_id = image.get('id', '')
-    info['image'] = '%s (%s)' % (_find_image(cs, image_id).name, image_id)
+    try:
+        info['image'] = '%s (%s)' % (_find_image(cs, image_id).name, image_id)
+    except Exception:
+        info['image'] = '%s (%s)' % ("Image not found", image_id)
 
     info.pop('links', None)
     info.pop('addresses', None)
