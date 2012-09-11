@@ -680,6 +680,11 @@ def do_reboot(cs, args):
     action="store_true",
     default=False,
     help='Blocks while instance rebuilds so progress can be reported.')
+@utils.arg('--minimal',
+    dest='minimal',
+    action="store_true",
+    default=False,
+    help='Skips flavor/image lookups when showing instances')
 def do_rebuild(cs, args):
     """Shutdown, re-image, and re-boot a server."""
     server = _find_server(cs, args.server)
@@ -692,7 +697,7 @@ def do_rebuild(cs, args):
 
     kwargs = utils.get_resource_manager_extra_kwargs(do_rebuild, args)
     s = server.rebuild(image, _password, **kwargs)
-    _print_server(cs, s)
+    _print_server(cs, args)
 
     if args.poll:
         _poll_for_status(cs.servers.get, server.id, 'rebuilding', ['active'])
@@ -897,14 +902,13 @@ def do_meta(cs, args):
         cs.servers.delete_meta(server, metadata.keys())
 
 
-def _print_server(cs, server):
+def _print_server(cs, args):
     # By default when searching via name we will do a
     # findall(name=blah) and due a REST /details which is not the same
     # as a .get() and doesn't get the information about flavors and
     # images. This fix it as we redo the call with the id which does a
     # .get() to get all informations.
-    if not 'flavor' in server._info:
-        server = _find_server(cs, server.id)
+    server = _find_server(cs, args.server)
 
     networks = server.networks
     info = server._info.copy()
@@ -913,14 +917,22 @@ def _print_server(cs, server):
 
     flavor = info.get('flavor', {})
     flavor_id = flavor.get('id', '')
-    info['flavor'] = '%s (%s)' % (_find_flavor(cs, flavor_id).name, flavor_id)
+    if args.minimal:
+        info['flavor'] = flavor_id
+    else:
+        info['flavor'] = '%s (%s)' % (_find_flavor(cs, flavor_id).name,
+                                      flavor_id)
 
     image = info.get('image', {})
     image_id = image.get('id', '')
-    try:
-        info['image'] = '%s (%s)' % (_find_image(cs, image_id).name, image_id)
-    except Exception:
-        info['image'] = '%s (%s)' % ("Image not found", image_id)
+    if args.minimal:
+        info['image'] = image_id
+    else:
+        try:
+            info['image'] = '%s (%s)' % (_find_image(cs, image_id).name,
+                                         image_id)
+        except Exception:
+            info['image'] = '%s (%s)' % ("Image not found", image_id)
 
     info.pop('links', None)
     info.pop('addresses', None)
@@ -928,11 +940,15 @@ def _print_server(cs, server):
     utils.print_dict(info)
 
 
+@utils.arg('--minimal',
+    dest='minimal',
+    action="store_true",
+    default=False,
+    help='Skips flavor/image lookups when showing instances')
 @utils.arg('server', metavar='<server>', help='Name or ID of server.')
 def do_show(cs, args):
     """Show details about the given server."""
-    s = _find_server(cs, args.server)
-    _print_server(cs, s)
+    _print_server(cs, args)
 
 
 @utils.arg('server', metavar='<server>', help='Name or ID of server.')
