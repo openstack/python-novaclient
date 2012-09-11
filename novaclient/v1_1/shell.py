@@ -314,8 +314,16 @@ def _translate_flavor_keys(collection):
                 setattr(item, to_key, item._info[from_key])
 
 
-def _print_flavor_list(flavors):
+def _print_flavor_extra_specs(flavor):
+    try:
+        return flavor.get_keys()
+    except exceptions.NotFound:
+        return "N/A"
+
+
+def _print_flavor_list(cs, flavors):
     _translate_flavor_keys(flavors)
+    formatters = {'extra_specs': _print_flavor_extra_specs}
     utils.print_list(flavors, [
         'ID',
         'Name',
@@ -325,7 +333,8 @@ def _print_flavor_list(flavors):
         'Swap',
         'VCPUs',
         'RXTX_Factor',
-        'Is_Public'])
+        'Is_Public',
+        'extra_specs'], formatters)
 
 
 def do_flavor_list(cs, _args):
@@ -334,7 +343,7 @@ def do_flavor_list(cs, _args):
     for flavor in flavors:
         # int needed for numerical sort
         flavor.id = int(flavor.id)
-    _print_flavor_list(flavors)
+    _print_flavor_list(cs, flavors)
 
 
 @utils.arg('id',
@@ -351,7 +360,7 @@ def do_flavor_delete(cs, args):
 def do_flavor_show(cs, args):
     """Show details about the given flavor."""
     flavor = _find_flavor(cs, args.flavor)
-    _print_flavor(flavor)
+    _print_flavor(cs, flavor)
 
 
 @utils.arg('name',
@@ -391,7 +400,31 @@ def do_flavor_create(cs, args):
     f = cs.flavors.create(args.name, args.ram, args.vcpus, args.disk, args.id,
                           args.ephemeral, args.swap, args.rxtx_factor,
                           args.is_public)
-    _print_flavor_list([f])
+    _print_flavor_list(cs, [f])
+
+
+@utils.arg('flavor',
+    metavar='<flavor>',
+    help="Name or ID of flavor")
+@utils.arg('action',
+    metavar='<action>',
+    choices=['set', 'unset'],
+    help="Actions: 'set' or 'unset'")
+@utils.arg('metadata',
+    metavar='<key=value>',
+    nargs='+',
+    action='append',
+    default=[],
+    help='Extra_specs to set/unset (only key is necessary on unset)')
+def do_flavor_key(cs, args):
+    """Set or unset extra_spec for a flavor."""
+    flavor = _find_flavor(cs, args.flavor)
+    keypair = _extract_metadata(args)
+
+    if args.action == 'set':
+        flavor.set_keys(keypair)
+    elif args.action == 'unset':
+        flavor.unset_keys(keypair.keys())
 
 
 @utils.arg('--flavor',
@@ -530,10 +563,11 @@ def _print_image(image):
     utils.print_dict(info)
 
 
-def _print_flavor(flavor):
+def _print_flavor(cs, flavor):
     info = flavor._info.copy()
     # ignore links, we don't need to present those
     info.pop('links')
+    info.update({"extra_specs": _print_flavor_extra_specs(flavor)})
     utils.print_dict(info)
 
 

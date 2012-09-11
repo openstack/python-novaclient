@@ -4,6 +4,7 @@ Flavor interface.
 """
 
 from novaclient import base
+from novaclient import exceptions
 
 
 class Flavor(base.Resource):
@@ -28,6 +29,43 @@ class Flavor(base.Resource):
         Provide a user-friendly accessor to os-flavor-access:is_public
         """
         return self._info.get("os-flavor-access:is_public", 'N/A')
+
+    def get_keys(self):
+        """
+        Get extra specs from a flavor.
+
+        :param flavor: The :class:`Flavor` to get extra specs from
+        """
+        _resp, body = self.manager.api.client.get(
+                            "/flavors/%s/os-extra_specs" %
+                            base.getid(self))
+        return body["extra_specs"]
+
+    def set_keys(self, metadata):
+        """
+        Set extra specs on a flavor.
+
+        :param flavor: The :class:`Flavor` to set extra spec on
+        :param metadata: A dict of key/value pairs to be set
+        """
+        body = {'extra_specs': metadata}
+        return self.manager._create(
+                            "/flavors/%s/os-extra_specs" % base.getid(self),
+                            body,
+                            "extra_specs",
+                            return_raw=True)
+
+    def unset_keys(self, keys):
+        """
+        Unset extra specs on a flavor.
+
+        :param flavor: The :class:`Flavor` to unset extra spec on
+        :param keys: A list of keys to be unset
+        """
+        for k in keys:
+            return self.manager._delete(
+                            "/flavors/%s/os-extra_specs/%s" % (
+                            base.getid(self), k))
 
 
 class FlavorManager(base.ManagerWithFind):

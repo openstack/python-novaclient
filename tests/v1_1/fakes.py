@@ -400,6 +400,24 @@ class FakeHTTPClient(base_client.HTTPClient):
     def post_flavors(self, body, **kw):
         return (202, {'flavor': self.get_flavors_detail()[1]['flavors'][0]})
 
+    def get_flavors_1_os_extra_specs(self, **kw):
+        return (200,
+            {'extra_specs': {"k1": "v1"}})
+
+    def get_flavors_2_os_extra_specs(self, **kw):
+        return (200,
+            {'extra_specs': {"k2": "v2"}})
+
+    def post_flavors_1_os_extra_specs(self, body, **kw):
+        assert body.keys() == ['extra_specs']
+        fakes.assert_has_keys(body['extra_specs'],
+                              required=['k1'])
+        return (200,
+            {'extra_specs': {"k1": "v1"}})
+
+    def delete_flavors_1_os_extra_specs_k1(self, **kw):
+        return (204, None)
+
     #
     # Flavor access
     #

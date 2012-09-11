@@ -91,3 +91,14 @@ class FlavorsTest(utils.TestCase):
     def test_delete(self):
         cs.flavors.delete("flavordelete")
         cs.assert_called('DELETE', '/flavors/flavordelete')
+
+    def test_set_keys(self):
+        f = cs.flavors.get(1)
+        f.set_keys({'k1': 'v1'})
+        cs.assert_called('POST', '/flavors/1/os-extra_specs',
+                         {"extra_specs": {'k1': 'v1'}})
+
+    def test_unset_keys(self):
+        f = cs.flavors.get(1)
+        f.unset_keys(['k1'])
+        cs.assert_called('DELETE', '/flavors/1/os-extra_specs/k1')
