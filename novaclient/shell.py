@@ -532,7 +532,7 @@ def main():
 
     except Exception, e:
         logger.debug(e, exc_info=1)
-        print >> sys.stderr, "ERROR: %s" % str(e)
+        print >> sys.stderr, "ERROR: %s" % unicode(e)
         sys.exit(1)
 
 

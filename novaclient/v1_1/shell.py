@@ -18,6 +18,7 @@
 import argparse
 import datetime
 import getpass
+import locale
 import os
 import sys
 import time
@@ -1458,6 +1459,10 @@ def _print_secgroups(secgroups):
 
 def _get_secgroup(cs, secgroup):
     for s in cs.security_groups.list():
+        encoding = (locale.getpreferredencoding() or
+            sys.stdin.encoding or
+            'UTF-8')
+        s.name = s.name.encode(encoding)
         if secgroup == s.name:
             return s
     raise exceptions.CommandError("Secgroup %s not found" % secgroup)
