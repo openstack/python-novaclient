@@ -7,11 +7,23 @@ cs = fakes.FakeClient()
 
 
 class SecurityGroupsTest(utils.TestCase):
-    def test_list_security_groups(self):
-        sgs = cs.security_groups.list()
-        cs.assert_called('GET', '/os-security-groups')
+    def _do_test_list_security_groups(self, search_opts, path):
+        sgs = cs.security_groups.list(search_opts=search_opts)
+        cs.assert_called('GET', path)
         for sg in sgs:
             self.assertTrue(isinstance(sg, security_groups.SecurityGroup))
+
+    def test_list_security_groups_all_tenants_on(self):
+        self._do_test_list_security_groups(
+            None, '/os-security-groups')
+
+    def test_list_security_groups_all_tenants_on(self):
+        self._do_test_list_security_groups(
+            {'all_tenants': 1}, '/os-security-groups?all_tenants=1')
+
+    def test_list_security_groups_all_tenants_off(self):
+        self._do_test_list_security_groups(
+            {'all_tenants': 0}, '/os-security-groups')
 
     def test_get_security_groups(self):
         sg = cs.security_groups.get(1)
