@@ -46,6 +46,37 @@ def get_auth_system_url(auth_system):
     raise exceptions.AuthSystemNotFound(auth_system)
 
 
+def _get_proxy_info():
+    """Work around httplib2 proxying bug.
+
+    Full details of the bug here:
+
+      http://code.google.com/p/httplib2/issues/detail?id=228
+
+    Basically, in the case of plain old http with httplib2>=0.7.5 we
+    want to ensure that PROXY_TYPE_HTTP_NO_TUNNEL is used.
+    """
+    def get_proxy_info(method):
+        pi = httplib2.ProxyInfo.from_environment(method)
+        if pi is None or method != 'http':
+            return pi
+
+        # We can't rely on httplib2.socks being available
+        # PROXY_TYPE_HTTP_NO_TUNNEL was introduced in 0.7.5
+        if not (hasattr(httplib2, 'socks') and
+                hasattr(httplib2.socks, 'PROXY_TYPE_HTTP_NO_TUNNEL')):
+            return pi
+
+        pi.proxy_type = httplib2.socks.PROXY_TYPE_HTTP_NO_TUNNEL
+        return pi
+
+    # 0.7.3 introduced configuring proxy from the environment
+    if not hasattr(httplib2.ProxyInfo, 'from_environment'):
+        return None
+
+    return get_proxy_info
+
+
 class HTTPClient(httplib2.Http):
 
     USER_AGENT = 'python-novaclient'
@@ -57,7 +88,8 @@ class HTTPClient(httplib2.Http):
                  service_name=None, volume_service_name=None,
                  timings=False, bypass_url=None, no_cache=False,
                  http_log_debug=False, auth_system='keystone'):
-        super(HTTPClient, self).__init__(timeout=timeout)
+        super(HTTPClient, self).__init__(timeout=timeout,
+                                         proxy_info=_get_proxy_info())
         self.user = user
         self.password = password
         self.projectid = projectid
