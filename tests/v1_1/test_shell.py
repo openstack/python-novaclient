@@ -82,6 +82,7 @@ class ShellTest(utils.TestCase):
                 'imageRef': '1',
                 'min_count': 1,
                 'max_count': 1,
+                'networks': [],
                 }},
         )
 
@@ -97,6 +98,7 @@ class ShellTest(utils.TestCase):
                 'metadata': {'foo': 'bar=pants', 'spam': 'eggs'},
                 'min_count': 1,
                 'max_count': 1,
+                'networks': [],
             }},
         )
 
@@ -111,6 +113,7 @@ class ShellTest(utils.TestCase):
                     'imageRef': '1',
                     'min_count': 1,
                     'max_count': 1,
+                    'networks': [],
                 },
                 'os:scheduler_hints': {'a': 'b=c'},
             },
@@ -152,6 +155,7 @@ class ShellTest(utils.TestCase):
                 'imageRef': '1',
                 'min_count': 1,
                 'max_count': 1,
+                'networks': [],
                 'personality': [
                    {'path': '/tmp/bar', 'contents': expected_file_data},
                    {'path': '/tmp/foo', 'contents': expected_file_data},
@@ -375,21 +379,6 @@ class ShellTest(utils.TestCase):
         self.run_command("flavor-create flavorcreate "
                          "1234 512 10 1 --swap 1024 --ephemeral 10 "
                          "--is-public true")
-
-        body = {
-            "flavor": {
-                "name": "flavorcreate",
-                "ram": 512,
-                "vcpus": 1,
-                "disk": 10,
-                "OS-FLV-EXT-DATA:ephemeral": 10,
-                "id": 1234,
-                "swap": 1024,
-                "rxtx_factor": 1,
-                "os-flavor-access:is_public": True,
-            }
-        }
-
         self.assert_called('POST', '/flavors', pos=-3)
         self.assert_called('GET', '/flavors/1', pos=-2)
         self.assert_called('GET', '/flavors/1/os-extra_specs', pos=-1)
