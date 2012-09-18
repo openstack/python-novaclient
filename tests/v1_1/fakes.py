@@ -25,7 +25,8 @@ class FakeClient(fakes.FakeClient, client.Client):
 
     def __init__(self, *args, **kwargs):
         client.Client.__init__(self, 'username', 'password',
-                               'project_id', 'auth_url')
+                               'project_id', 'auth_url',
+                               extensions=kwargs.get('extensions'))
         self.client = FakeHTTPClient(**kwargs)
 
 
@@ -66,6 +67,53 @@ class FakeHTTPClient(base_client.HTTPClient):
             return httplib2.Response(status), body
         else:
             return httplib2.Response({"status": status}), body
+
+    #
+    # List all extensions
+    #
+
+    def get_extensions(self, **kw):
+        exts = [
+            {
+                "alias": "NMN",
+                "description": "Multiple network support",
+                "links": [],
+                "name": "Multinic",
+                "namespace": ("http://docs.openstack.org/"
+                              "compute/ext/multinic/api/v1.1"),
+                "updated": "2011-06-09T00:00:00+00:00"
+            },
+            {
+                "alias": "OS-DCF",
+                "description": "Disk Management Extension",
+                "links": [],
+                "name": "DiskConfig",
+                "namespace": ("http://docs.openstack.org/"
+                              "compute/ext/disk_config/api/v1.1"),
+                "updated": "2011-09-27T00:00:00+00:00"
+            },
+            {
+                "alias": "OS-EXT-SRV-ATTR",
+                "description": "Extended Server Attributes support.",
+                "links": [],
+                "name": "ExtendedServerAttributes",
+                "namespace": ("http://docs.openstack.org/"
+                              "compute/ext/extended_status/api/v1.1"),
+                "updated": "2011-11-03T00:00:00+00:00"
+            },
+            {
+                "alias": "OS-EXT-STS",
+                "description": "Extended Status support",
+                "links": [],
+                "name": "ExtendedStatus",
+                "namespace": ("http://docs.openstack.org/"
+                              "compute/ext/extended_status/api/v1.1"),
+                "updated": "2011-11-03T00:00:00+00:00"
+            },
+        ]
+        return (200, {
+            "extensions": exts,
+        })
 
     #
     # Limits
