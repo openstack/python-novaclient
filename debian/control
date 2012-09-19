@@ -1,0 +1,33 @@
+Source: python-novaclient
+Section: python
+Priority: optional
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Build-Depends: debhelper (>= 7.0.50),
+ python-all (>= 2.6),
+ python-argparse,
+ python-distribute,
+ python-httplib2,
+ python-mock (>= 0.7),
+ python-nose,
+ python-prettytable,
+ python-simplejson,
+ python-unittest2,
+X-Python-Version: >= 2.7
+Standards-Version: 3.9.3
+Vcs-Browser: https://bazaar.launchpad.net/~openstack-ubuntu-packagers/python-novaclient/ubuntu/files
+Vcs-Bzr: https://bazaar.launchpad.net/~openstack-ubuntu-packagers/python-novaclient/ubuntu/
+
+Package: python-novaclient
+Architecture: all
+Depends: python-argparse,
+ python-httplib2,
+ python-pkg-resources,
+ python-prettytable,
+ python-simplejson,
+ python-keyring,
+ ${misc:Depends},
+ ${python:Depends}
+XB-Python-Version: ${python:Versions}
+Description: client library for OpenStack Compute API
+ Python novaclient library and nova CLI tool for interacting with OpenStack
+ Compute (Nova) through the OpenStack Compute API.

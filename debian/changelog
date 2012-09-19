@@ -1,0 +1,197 @@
+python-novaclient (1:2.6.10.37-0ubuntu1) quantal; urgency=low
+
+  [ Adam Gandelman ]
+  * debian/control: wrap-and-sort, set (>= 0.6) for py-prettytable
+    dependency. (LP: #1028638)
+
+
+  [ Chuck Short ]
+  * debian/control:
+    - Add python-keyring, python-unittest2
+    - Add python-simplejson
+    - Fix lintian warnings.
+  * debian/rules: Enable tests.
+  * debian/watch: Fix watch file
+
+
+ -- Chuck Short <zulcss@ubuntu.com>  Thu, 16 Aug 2012 12:41:00 -0500
+
+python-novaclient (1:2.6.10-0ubuntu1) quantal; urgency=low
+
+  * New usptream version
+  * debian/watch: Update
+  * debian/control: Add python-simplejson.
+
+ -- Chuck Short <zulcss@ubuntu.com>  Fri, 06 Jul 2012 10:27:11 -0400
+
+python-novaclient (2012.2~f2~20120618.605-0ubuntu1) quantal; urgency=low
+
+  * New upstream release.
+
+ -- Chuck Short <zulcss@ubuntu.com>  Fri, 22 Jun 2012 13:05:33 -0400
+
+python-novaclient (2012.2~f2~20120525.585-0ubuntu1) quantal; urgency=low
+
+  * New upstream release.
+
+ -- Chuck Short <zulcss@ubuntu.com>  Fri, 01 Jun 2012 11:11:33 -0400
+
+python-novaclient (2012.2~f1-0ubuntu1) quantal; urgency=low
+
+  * New upstream release.
+
+ -- Chuck Short <zulcss@ubuntu.com>  Thu, 24 May 2012 13:30:51 -0400
+
+python-novaclient (2012.1-0ubuntu1) precise; urgency=low
+
+  * New upstream release.
+
+ -- Chuck Short <zulcss@ubuntu.com>  Thu, 05 Apr 2012 10:54:32 -0400
+
+python-novaclient (2012.1~rc4-0ubuntu1) precise; urgency=low
+
+  * New upstream release.
+
+ -- Chuck Short <zulcss@ubuntu.com>  Wed, 04 Apr 2012 17:00:41 -0400
+
+python-novaclient (2012.1~rc3-0ubuntu1) precise; urgency=low
+
+  * New upstream release.
+
+ -- Chuck Short <zulcss@ubuntu.com>  Wed, 04 Apr 2012 09:38:11 -0400
+
+python-novaclient (2012.1~rc2-0ubuntu1) precise; urgency=low
+
+  * New upstream release.
+
+ -- Chuck Short <zulcss@ubuntu.com>  Mon, 02 Apr 2012 11:29:59 -0400
+
+python-novaclient (2012.1~rc1-0ubuntu1) precise; urgency=low
+
+  * New upstream release.
+
+ -- Chuck Short <zulcss@ubuntu.com>  Tue, 20 Mar 2012 11:27:33 -0400
+
+python-novaclient (2012.1~rc1~20120310.525-0ubuntu1) precise; urgency=low
+
+  * New upstream release.
+
+ -- Adam Gandelman <adamg@canonical.com>  Fri, 16 Mar 2012 11:56:12 -0700
+
+python-novaclient (2012.1~rc1~20120307.520-0ubuntu1) precise; urgency=low
+
+  * New upstream release.
+
+ -- Chuck Short <zulcss@ubuntu.com>  Fri, 09 Mar 2012 13:20:48 -0500
+
+python-novaclient (2012.1~e4-0ubuntu1) precise; urgency=low
+
+  * New upstream release.
+
+ -- Chuck Short <zulcss@ubuntu.com>  Fri, 02 Mar 2012 12:22:03 -0500
+
+python-novaclient (2012.1~e4~20120224.453-0ubuntu1) precise; urgency=low
+
+  * New upstream release.
+
+ -- Chuck Short <zulcss@ubuntu.com>  Fri, 24 Feb 2012 09:35:35 -0500
+
+python-novaclient (2012.1~e4~20120214.499-0ubuntu1) UNRELEASED; urgency=low
+
+  * New upstream snapshot
+  * debian/rules: Temporary disable FTBFS on testsuite failure, due to
+    attempts to write to ~/, which is incompatible with package builds.
+    This should be backed out when LP: #932468 is resolved.
+
+ -- Dave Walker (Daviey) <DaveWalker@ubuntu.com>  Wed, 15 Feb 2012 01:13:33 +0000
+
+python-novaclient (2012.1~e3~20120111.452-0ubuntu1) precise; urgency=low
+
+  * New upstream version.
+  * Make running the test suite better.
+  * Fix argparse import. (LP: #912069)
+
+ -- Chuck Short <zulcss@ubuntu.com>  Fri, 13 Jan 2012 12:30:26 +0100
+
+python-novaclient (2.6.7~bzr128-0ubuntu1) precise; urgency=low
+
+  * New upstream release.
+
+ -- Chuck Short <zulcss@ubuntu.com>  Fri, 11 Nov 2011 10:20:25 -0500
+
+python-novaclient (2.6.6~bzr124-0ubuntu1) precise; urgency=low
+
+  * New upstream release.
+  * debian/watch: Update watch file.
+  * debian/rules: add-get-orig-source.
+  * Use dh_python2
+
+ -- Chuck Short <zulcss@ubuntu.com>  Fri, 21 Oct 2011 13:16:39 -0400
+
+python-novaclient (2.6.4~bzr114-0ubuntu1) oneiric; urgency=low
+
+  * Put a version requirement on python-mock to catch failures earlier.
+
+ -- Monty Taylor <mordred@inaugust.com>  Wed, 21 Sep 2011 10:28:42 -0400
+
+python-novaclient (2.6.4~bzr111-0ubuntu1) oneiric; urgency=low
+
+  * New upstream release.
+  * Put in a branching condition in debian/rules to allow for lucid build.
+
+ -- Monty Taylor <mordred@inaugust.com>  Fri, 16 Sep 2011 15:34:20 -0400
+
+python-novaclient (2.6.4~bzr110-0ubuntu1) oneiric; urgency=low
+
+  * New upstream release.
+    - Fix FTBFS.
+    - Don't install tests with binary. LP: #838298
+  * debian/control: Add Vcs-Browser and Vcs-Bzr control fields.
+
+ -- Robie Basak <robie.basak@ubuntu.com>  Tue, 06 Sep 2011 10:14:21 +0100
+
+python-novaclient (2.6.4~bzr106-0ubuntu1) oneiric; urgency=low
+
+  * New upstream release.
+
+ -- Robie Basak <robie.basak@ubuntu.com>  Fri, 02 Sep 2011 16:09:49 +0100
+
+python-novaclient (2.6.1~bzr78-0ubuntu1) oneiric; urgency=low
+
+  [ Chuck Short ]
+  * New upstream version.
+
+  [ James Page ]
+  * Updates to support Ubuntu MIR (LP: #825127):
+    - debian/rules:
+      - Completed dh_python2 transition.
+      - Enabled test suite.
+    - debian/control:
+      - Bumped Standards-Version: 3.9.2, no changes.
+
+ -- Chuck Short <zulcss@ubuntu.com>  Fri, 26 Aug 2011 14:02:03 -0400
+
+python-novaclient (2.6.1~bzr74-0ubuntu1) oneiric; urgency=low
+
+  [ Dave Walker (Daviey) ]
+  * New upstream snapshot.
+
+  [ Monty Taylor ]
+  * Update packaging to use debhelper v7.
+  * Bump python-all build-dep down to just 2.6.
+
+ -- Dave Walker (Daviey) <DaveWalker@ubuntu.com>  Tue, 09 Aug 2011 14:36:37 +0100
+
+python-novaclient (2.5.9~bzr65-0ubuntu1) oneiric; urgency=low
+
+  * New upstream release.
+  * debian/watch: Add url for python-novaclient.
+  * dh_python2 transition.
+
+ -- Chuck Short <zulcss@ubuntu.com>  Tue, 02 Aug 2011 14:28:50 -0400
+
+python-novaclient (2.4-0ubuntu1) natty; urgency=low
+
+  * Initial upload (FFe LP: #732461)
+
+ -- Thierry Carrez (ttx) <thierry@openstack.org>  Wed, 09 Mar 2011 13:54:33 +0100

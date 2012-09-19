@@ -1,0 +1,14 @@
+#!/usr/bin/make -f
+
+
+%:
+	dh $@ --with python2
+
+get-orig-source:
+	 uscan --verbose --force-download --rename --destdir=../build-area
+
+
+override_dh_auto_test::
+ifeq (,$(filter nocheck,$(DEB_BUILD_OPTIONS)))
+	set -e ; for pyversion in $(shell pyversions -r); do $$pyversion setup.py test ; done
+endif
