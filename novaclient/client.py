@@ -129,9 +129,9 @@ class HTTPClient(httplib2.Http):
             header = ' -H "%s: %s"' % (element, kwargs['headers'][element])
             string_parts.append(header)
 
-        self._logger.debug("\nREQ: %s\n" % "".join(string_parts))
         if 'body' in kwargs:
-            self._logger.debug("REQ BODY: %s\n" % (kwargs['body']))
+            string_parts.append(" -d '%s'" % (kwargs['body']))
+        self._logger.debug("\nREQ: %s\n" % "".join(string_parts))
 
     def http_log_resp(self, resp, body):
         if not self.http_log_debug:
