@@ -124,6 +124,12 @@ class ServiceCatalogTest(utils.TestCase):
         self.assertRaises(exceptions.EndpointNotFound, sc.url_for,
                           "region", "South", service_type='compute')
 
+    def test_building_a_service_catalog_insensitive_case(self):
+        sc = service_catalog.ServiceCatalog(SERVICE_CATALOG)
+        # Matching south (and catalog has South).
+        self.assertRaises(exceptions.AmbiguousEndpoints, sc.url_for,
+                          'region', 'south', service_type='volume')
+
     def test_alternate_service_type(self):
         sc = service_catalog.ServiceCatalog(SERVICE_CATALOG)
 

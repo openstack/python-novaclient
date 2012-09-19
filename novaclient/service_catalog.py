@@ -71,7 +71,8 @@ class ServiceCatalog(object):
                 if service.get("type") == 'compute' and \
                             endpoint.get('versionId', '2') not in ('1.1', '2'):
                     continue
-                if not filter_value or endpoint.get(attr) == filter_value:
+                if not filter_value or \
+                        endpoint.get(attr).lower() == filter_value.lower():
                     endpoint["serviceName"] = service.get("name")
                     matching_endpoints.append(endpoint)
 
