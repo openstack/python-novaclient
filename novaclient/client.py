@@ -193,7 +193,7 @@ class HTTPClient(httplib2.Http):
             resp, body = self._time_request(self.management_url + url, method,
                                             **kwargs)
             return resp, body
-        except exceptions.Unauthorized, ex:
+        except exceptions.Unauthorized:
             try:
                 self.authenticate()
                 kwargs['headers']['X-Auth-Token'] = self.auth_token
@@ -201,7 +201,13 @@ class HTTPClient(httplib2.Http):
                                                 method, **kwargs)
                 return resp, body
             except exceptions.Unauthorized:
-                raise ex
+                # don't re-raise here or we lose the original exception
+                # traceback
+                pass
+
+            # we encountered an exceptions.Unauthorized.  re raise original
+            # exception with original traceback
+            raise
 
     def get(self, url, **kwargs):
         return self._cs_request(url, 'GET', **kwargs)
