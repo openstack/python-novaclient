@@ -525,3 +525,11 @@ class ShellTest(utils.TestCase):
     def test_quota_class_update(self):
         self.run_command('quota-class-update test --instances=5')
         self.assert_called('PUT', '/os-quota-class-sets/test')
+
+    def test_network_list(self):
+        self.run_command('network-list')
+        self.assert_called('GET', '/os-networks')
+
+    def test_network_show(self):
+        self.run_command('network-show 1')
+        self.assert_called('GET', '/os-networks/1')
