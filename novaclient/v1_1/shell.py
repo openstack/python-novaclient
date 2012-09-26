@@ -1080,10 +1080,25 @@ def _translate_volume_snapshot_keys(collection):
                 setattr(item, to_key, item._info[from_key])
 
 
+@utils.arg('--all-tenants',
+    dest='all_tenants',
+    metavar='<0|1>',
+    nargs='?',
+    type=int,
+    const=1,
+    default=0,
+    help='Display information from all tenants (Admin only).')
+@utils.arg('--all_tenants',
+    nargs='?',
+    type=int,
+    const=1,
+    help=argparse.SUPPRESS)
 @utils.service_type('volume')
-def do_volume_list(cs, _args):
+def do_volume_list(cs, args):
     """List all the volumes."""
-    volumes = cs.volumes.list()
+    all_tenants = int(os.environ.get("ALL_TENANTS", args.all_tenants))
+    search_opts = {'all_tenants': all_tenants}
+    volumes = cs.volumes.list(search_opts=search_opts)
     _translate_volume_keys(volumes)
 
     # Create a list of servers to which the volume is attached
