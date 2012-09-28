@@ -665,7 +665,7 @@ def do_image_delete(cs, args):
     nargs='?',
     type=int,
     const=1,
-    default=0,
+    default=int(utils.bool_from_str(os.environ.get("ALL_TENANTS", 'false'))),
     help='Display information from all tenants (Admin only).')
 @utils.arg('--all_tenants',
     nargs='?',
@@ -674,9 +674,8 @@ def do_image_delete(cs, args):
     help=argparse.SUPPRESS)
 def do_list(cs, args):
     """List active servers."""
-    all_tenants = int(os.environ.get("ALL_TENANTS", args.all_tenants))
     search_opts = {
-            'all_tenants': all_tenants,
+            'all_tenants': args.all_tenants,
             'reservation_id': args.reservation_id,
             'ip': args.ip,
             'ip6': args.ip6,
@@ -1086,7 +1085,7 @@ def _translate_volume_snapshot_keys(collection):
     nargs='?',
     type=int,
     const=1,
-    default=0,
+    default=int(utils.bool_from_str(os.environ.get("ALL_TENANTS", 'false'))),
     help='Display information from all tenants (Admin only).')
 @utils.arg('--all_tenants',
     nargs='?',
@@ -1096,8 +1095,7 @@ def _translate_volume_snapshot_keys(collection):
 @utils.service_type('volume')
 def do_volume_list(cs, args):
     """List all the volumes."""
-    all_tenants = int(os.environ.get("ALL_TENANTS", args.all_tenants))
-    search_opts = {'all_tenants': all_tenants}
+    search_opts = {'all_tenants': args.all_tenants}
     volumes = cs.volumes.list(search_opts=search_opts)
     _translate_volume_keys(volumes)
 
@@ -1568,7 +1566,7 @@ def do_secgroup_delete(cs, args):
     nargs='?',
     type=int,
     const=1,
-    default=0,
+    default=int(utils.bool_from_str(os.environ.get("ALL_TENANTS", 'false'))),
     help='Display information from all tenants (Admin only).')
 @utils.arg('--all_tenants',
     nargs='?',
@@ -1577,8 +1575,7 @@ def do_secgroup_delete(cs, args):
     help=argparse.SUPPRESS)
 def do_secgroup_list(cs, args):
     """List security groups for the current tenant."""
-    all_tenants = int(os.environ.get("ALL_TENANTS", args.all_tenants))
-    search_opts = {'all_tenants': all_tenants}
+    search_opts = {'all_tenants': args.all_tenants}
     _print_secgroups(cs.security_groups.list(search_opts=search_opts))
 
 
