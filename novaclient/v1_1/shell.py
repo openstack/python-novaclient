@@ -199,7 +199,7 @@ def _boot(cs, args, reservation_id=None, min_count=None, max_count=None):
         metavar='<key=value>',
         help="Send arbitrary key/value pairs to the scheduler for custom use.")
 @utils.arg('--nic',
-     metavar="<net-id=net-uuid,v4-fixed-ip=ip-addr>",
+     metavar="<net-id=net-uuid,v4-fixed-ip=ip-addr,port-id=port-uuid>",
      action='append',
      dest='nics',
      default=[],
