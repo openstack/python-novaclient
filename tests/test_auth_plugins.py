@@ -157,3 +157,27 @@ class AuthPluginTest(utils.TestCase):
             self.assertEquals(cs.client.auth_url, "http://faked/v2.0")
 
         test_auth_call()
+
+    def test_auth_system_raises_exception_when_missing_auth_url(self):
+        class MockAuthUrlEntrypoint(pkg_resources.EntryPoint):
+            def load(self):
+                return self.auth_url
+
+            def auth_url(self):
+                return None
+
+        def mock_iter_entry_points(_type):
+            return [MockAuthUrlEntrypoint("fakewithauthurl",
+                                          "fakewithauthurl.plugin",
+                                          ["auth_url"])]
+
+        @mock.patch.object(pkg_resources, "iter_entry_points",
+                           mock_iter_entry_points)
+        def test_auth_call():
+            with self.assertRaises(exceptions.EndpointNotFound):
+                cs = client.Client("username", "password", "project_id",
+                                   auth_system="fakewithauthurl",
+                                   no_cache=True)
+
+        test_auth_call()
+
