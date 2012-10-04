@@ -95,6 +95,8 @@ class HTTPClient(httplib2.Http):
         self.projectid = projectid
         if not auth_url and auth_system and auth_system != 'keystone':
             auth_url = get_auth_system_url(auth_system)
+            if not auth_url:
+                raise exceptions.EndpointNotFound()
         self.auth_url = auth_url.rstrip('/')
         self.version = 'v1.1'
         self.region_name = region_name
