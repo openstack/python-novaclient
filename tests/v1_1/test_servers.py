@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import StringIO
 
 from novaclient import exceptions
@@ -51,6 +53,38 @@ class ServersTest(utils.TestCase):
             flavor=1,
             meta={'foo': 'bar'},
             userdata=StringIO.StringIO('hello moto'),
+            files={
+                '/etc/passwd': 'some data',                 # a file
+                '/tmp/foo.txt': StringIO.StringIO('data'),   # a stream
+            },
+        )
+        cs.assert_called('POST', '/servers')
+        self.assertTrue(isinstance(s, servers.Server))
+
+    def test_create_server_userdata_unicode(self):
+        s = cs.servers.create(
+            name="My server",
+            image=1,
+            flavor=1,
+            meta={'foo': 'bar'},
+            userdata=u'こんにちは',
+            key_name="fakekey",
+            files={
+                '/etc/passwd': 'some data',                 # a file
+                '/tmp/foo.txt': StringIO.StringIO('data'),   # a stream
+            },
+        )
+        cs.assert_called('POST', '/servers')
+        self.assertTrue(isinstance(s, servers.Server))
+
+    def test_create_server_userdata_utf8(self):
+        s = cs.servers.create(
+            name="My server",
+            image=1,
+            flavor=1,
+            meta={'foo': 'bar'},
+            userdata='こんにちは',
+            key_name="fakekey",
             files={
                 '/etc/passwd': 'some data',                 # a file
                 '/tmp/foo.txt': StringIO.StringIO('data'),   # a stream
