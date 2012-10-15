@@ -928,6 +928,19 @@ def do_image_create(cs, args):
                              show_progress=False, silent=True)
 
 
+@utils.arg('server', metavar='<server>', help='Name or ID of server.')
+@utils.arg('name', metavar='<name>', help='Name of the backup image.')
+@utils.arg('backup_type', metavar='<backup-type>',
+           help='The backup type, like "daily" or "weekly".')
+@utils.arg('rotation', metavar='<rotation>',
+           help='Int parameter representing how many backups to keep around.')
+def do_backup(cs, args):
+    """ Backup a instance by create a 'backup' type snapshot """
+    _find_server(cs, args.server).backup(args.name,
+                                         args.backup_type,
+                                         args.rotation)
+
+
 @utils.arg('server',
      metavar='<server>',
      help="Name or ID of server")

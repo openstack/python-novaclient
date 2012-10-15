@@ -393,6 +393,10 @@ class FakeHTTPClient(base_client.HTTPClient):
             assert body[action].keys() == ['name']
         elif action == 'removeSecurityGroup':
             assert body[action].keys() == ['name']
+        elif action == 'createBackup':
+            assert set(body[action].keys()) == set(['name',
+                                                    'backup_type',
+                                                    'rotation'])
         else:
             raise AssertionError("Unexpected server action: %s" % action)
         return (resp, _body)

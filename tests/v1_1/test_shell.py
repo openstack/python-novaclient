@@ -533,3 +533,15 @@ class ShellTest(utils.TestCase):
     def test_network_show(self):
         self.run_command('network-show 1')
         self.assert_called('GET', '/os-networks/1')
+
+    def test_backup(self):
+        self.run_command('backup sample-server back1 daily 1')
+        self.assert_called('POST', '/servers/1234/action',
+                           {'createBackup': {'name': 'back1',
+                                             'backup_type': 'daily',
+                                             'rotation': '1'}})
+        self.run_command('backup 1234 back1 daily 1')
+        self.assert_called('POST', '/servers/1234/action',
+                           {'createBackup': {'name': 'back1',
+                                             'backup_type': 'daily',
+                                             'rotation': '1'}})

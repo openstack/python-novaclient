@@ -264,6 +264,13 @@ class ServersTest(utils.TestCase):
         cs.servers.unlock(s)
         cs.assert_called('POST', '/servers/1234/action')
 
+    def test_backup(self):
+        s = cs.servers.get(1234)
+        s.backup('back1', 'daily', 1)
+        cs.assert_called('POST', '/servers/1234/action')
+        cs.servers.backup(s, 'back1', 'daily', 2)
+        cs.assert_called('POST', '/servers/1234/action')
+
     def test_get_console_output_without_length(self):
         success = 'foo'
         s = cs.servers.get(1234)
