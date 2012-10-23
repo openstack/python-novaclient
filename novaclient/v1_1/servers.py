@@ -217,6 +217,17 @@ class Server(base.Resource):
         """
         self.manager.create_image(self, image_name, metadata)
 
+    def backup(self, backup_name, backup_type, rotation):
+        """
+        Backup a server instance.
+
+        :param backup_name: Name of the backup image
+        :param backup_type: The backup type, like 'daily' or 'weekly'
+        :param rotation: Int parameter representing how many backups to
+                        keep around.
+        """
+        self.manager.backup(self, backup_name, backup_type, rotation)
+
     def confirm_resize(self):
         """
         Confirm that the resize worked, thus removing the original server.
@@ -602,6 +613,21 @@ class ServerManager(local_base.BootingManagerWithFind):
         location = self._action('createImage', server, body)[0]['location']
         image_uuid = location.split('/')[-1]
         return image_uuid
+
+    def backup(self, server, backup_name, backup_type, rotation):
+        """
+        Backup a server instance.
+
+        :param server: The :class:`Server` (or its ID) to share onto.
+        :param backup_name: Name of the backup image
+        :param backup_type: The backup type, like 'daily' or 'weekly'
+        :param rotation: Int parameter representing how many backups to
+                        keep around.
+        """
+        body = {'name': backup_name,
+                'backup_type': backup_type,
+                'rotation': rotation}
+        self._action('createBackup', server, body)
 
     def set_meta(self, server, metadata):
         """
