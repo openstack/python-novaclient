@@ -118,6 +118,41 @@ class FlavorManager(base.ManagerWithFind):
         :rtype: :class:`Flavor`
         """
 
+        try:
+            ram = int(ram)
+        except:
+            raise exceptions.CommandError("Ram must be an integer.")
+
+        try:
+            vcpus = int(vcpus)
+        except:
+            raise exceptions.CommandError("VCPUs must be an integer.")
+
+        try:
+            disk = int(disk)
+        except:
+            raise exceptions.CommandError("Disk must be an integer.")
+
+        try:
+            flavorid = int(flavorid)
+        except:
+            raise exceptions.CommandError("Flavor ID must be an integer.")
+
+        try:
+            swap = int(swap)
+        except:
+            raise exceptions.CommandError("Swap must be an integer.")
+
+        try:
+            ephemerel = int(ephemeral)
+        except:
+            raise exceptions.CommandError("Ephemerel must be an integer.")
+
+        try:
+            rxtx_factor = int(rxtx_factor)
+        except:
+            raise exceptions.CommandError("rxtx_factor must be an integer.")
+
         body = {
             "flavor": {
                 "name": name,
