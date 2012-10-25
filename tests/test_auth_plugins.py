@@ -180,4 +180,3 @@ class AuthPluginTest(utils.TestCase):
                                    no_cache=True)
 
         test_auth_call()
-
