@@ -99,9 +99,6 @@ class FlavorsTest(utils.TestCase):
                           "flavorcreate", 512, 1, "invalid", 1234, swap=0,
                           ephemeral=0, rxtx_factor=1, is_public=True)
         self.assertRaises(exceptions.CommandError, cs.flavors.create,
-                          "flavorcreate", 512, 1, 10, "invalid", swap=0,
-                          ephemeral=0, rxtx_factor=1, is_public=True)
-        self.assertRaises(exceptions.CommandError, cs.flavors.create,
                           "flavorcreate", 512, 1, 10, 1234, swap="invalid",
                           ephemeral=0, rxtx_factor=1, is_public=True)
         self.assertRaises(exceptions.CommandError, cs.flavors.create,

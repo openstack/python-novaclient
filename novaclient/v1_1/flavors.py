@@ -133,10 +133,8 @@ class FlavorManager(base.ManagerWithFind):
         except:
             raise exceptions.CommandError("Disk must be an integer.")
 
-        try:
-            flavorid = int(flavorid)
-        except:
-            raise exceptions.CommandError("Flavor ID must be an integer.")
+        if flavorid == "auto":
+            flavorid = None
 
         try:
             swap = int(swap)
@@ -159,7 +157,7 @@ class FlavorManager(base.ManagerWithFind):
                 "ram": int(ram),
                 "vcpus": int(vcpus),
                 "disk": int(disk),
-                "id": int(flavorid),
+                "id": flavorid,
                 "swap": int(swap),
                 "OS-FLV-EXT-DATA:ephemeral": int(ephemeral),
                 "rxtx_factor": int(rxtx_factor),
