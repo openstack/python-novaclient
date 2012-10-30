@@ -48,9 +48,13 @@ def bool_from_str(val):
     if not val:
         return False
     try:
-        return True if bool(int(val)) else False
+        return bool(int(val))
     except ValueError:
-        return val.lower() in ['true', 'yes', 'y']
+        if val.lower() in ['true', 'yes', 'y']:
+            return True
+        if val.lower() in ['false', 'no', 'n']:
+            return False
+        raise
 
 
 def add_resource_manager_extra_kwargs_hook(f, hook):

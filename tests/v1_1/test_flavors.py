@@ -110,6 +110,9 @@ class FlavorsTest(utils.TestCase):
         self.assertRaises(exceptions.CommandError, cs.flavors.create,
                           "flavorcreate", 512, 1, 10, 1234, swap=0,
                           ephemeral=0, rxtx_factor="invalid", is_public=True)
+        self.assertRaises(exceptions.CommandError, cs.flavors.create,
+                          "flavorcreate", 512, 1, 10, 1234, swap=0,
+                          ephemeral=0, rxtx_factor=1, is_public='invalid')
 
     def test_delete(self):
         cs.flavors.delete("flavordelete")

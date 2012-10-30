@@ -5,6 +5,7 @@ Flavor interface.
 
 from novaclient import base
 from novaclient import exceptions
+from novaclient import utils
 
 
 class Flavor(base.Resource):
@@ -152,6 +153,11 @@ class FlavorManager(base.ManagerWithFind):
             rxtx_factor = int(rxtx_factor)
         except:
             raise exceptions.CommandError("rxtx_factor must be an integer.")
+
+        try:
+            is_public = utils.bool_from_str(is_public)
+        except:
+            raise exceptions.CommandError("is_public must be a boolean.")
 
         body = {
             "flavor": {
