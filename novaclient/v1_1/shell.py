@@ -1011,10 +1011,15 @@ def do_show(cs, args):
     _print_server(cs, args)
 
 
-@utils.arg('server', metavar='<server>', help='Name or ID of server.')
+@utils.arg('server', metavar='<server>', nargs='+',
+           help='Name or ID of server(s).')
 def do_delete(cs, args):
-    """Immediately shut down and delete a server."""
-    _find_server(cs, args.server).delete()
+    """Immediately shut down and delete specified server(s)."""
+    for server in args.server:
+        try:
+            _find_server(cs, server).delete()
+        except Exception, e:
+            print e
 
 
 def _find_server(cs, server):
