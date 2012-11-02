@@ -64,10 +64,19 @@ class FindResourceTestCase(test_utils.TestCase):
         self.manager = FakeManager(None)
 
     def test_find_none(self):
+        """Test a few non-valid inputs"""
         self.assertRaises(exceptions.CommandError,
                           utils.find_resource,
                           self.manager,
                           'asdf')
+        self.assertRaises(exceptions.CommandError,
+                          utils.find_resource,
+                          self.manager,
+                          None)
+        self.assertRaises(exceptions.CommandError,
+                          utils.find_resource,
+                          self.manager,
+                          {})
 
     def test_find_by_integer_id(self):
         output = utils.find_resource(self.manager, 1234)

@@ -175,10 +175,15 @@ def find_resource(manager, name_or_id):
     """Helper for the _find_* methods."""
     # first try to get entity as integer id
     try:
-        if isinstance(name_or_id, int) or name_or_id.isdigit():
+        is_intid = isinstance(name_or_id, int) or name_or_id.isdigit()
+    except AttributeError:
+        is_intid = False
+
+    if is_intid:
+        try:
             return manager.get(int(name_or_id))
-    except exceptions.NotFound:
-        pass
+        except exceptions.NotFound:
+            pass
 
     # now try to get entity as uuid
     try:
