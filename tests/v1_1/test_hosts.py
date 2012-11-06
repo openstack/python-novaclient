@@ -13,6 +13,18 @@ class HostsTest(utils.TestCase):
         cs.assert_called('GET', '/os-hosts/host')
         [self.assertTrue(isinstance(h, hosts.Host)) for h in hs]
 
+    def test_list_host(self):
+        hs = cs.hosts.list_all()
+        cs.assert_called('GET', '/os-hosts')
+        [self.assertTrue(isinstance(h, hosts.Host)) for h in hs]
+        [self.assertEqual(h.zone, 'nova1') for h in hs]
+
+    def test_list_host_with_zone(self):
+        hs = cs.hosts.list_all('nova')
+        cs.assert_called('GET', '/os-hosts?zone=nova')
+        [self.assertTrue(isinstance(h, hosts.Host)) for h in hs]
+        [self.assertEqual(h.zone, 'nova') for h in hs]
+
     def test_update_enable(self):
         host = cs.hosts.get('sample_host')[0]
         values = {"status": "enabled"}

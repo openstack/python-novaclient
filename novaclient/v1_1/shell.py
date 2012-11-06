@@ -1945,10 +1945,13 @@ def do_host_describe(cs, args):
     utils.print_list(result, columns)
 
 
+@utils.arg('--zone', metavar='<zone>', default=None,
+           help='Filters the list, returning only those '
+                'hosts in the availability zone <zone>.')
 def do_host_list(cs, args):
     """List all hosts by service"""
-    columns = ["host_name", "service"]
-    result = cs.hosts.list_all()
+    columns = ["host_name", "service", "zone"]
+    result = cs.hosts.list_all(args.zone)
     utils.print_list(result, columns)
 
 

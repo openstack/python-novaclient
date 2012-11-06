@@ -62,5 +62,8 @@ class HostManager(base.ManagerWithFind):
         url = "/os-hosts/%s/%s" % (host, action)
         return self._get(url)
 
-    def list_all(self):
-        return self._list("/os-hosts", "hosts")
+    def list_all(self, zone=None):
+        url = '/os-hosts'
+        if zone:
+            url = '/os-hosts?zone=%s' % zone
+        return self._list(url, "hosts")

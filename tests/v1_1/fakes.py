@@ -882,6 +882,16 @@ class FakeHTTPClient(base_client.HTTPClient):
                  {'resource': {'project': 'admin', 'host': 'dummy',
                   'cpu': 1, 'memory_mb': 2048, 'disk_gb': 30}}]})
 
+    def get_os_hosts(self, **kw):
+        zone = kw.get('zone', 'nova1')
+        return (200, {'hosts':
+                    [{'host': 'host1',
+                      'service': 'nova-compute',
+                      'zone': zone},
+                     {'host': 'host1',
+                      'service': 'nova-cert',
+                      'zone': zone}]})
+
     def get_os_hosts_sample_host(self, *kw):
         return (200, {'host': [{'resource': {'host': 'sample_host'}}], })
 

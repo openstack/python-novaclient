@@ -454,6 +454,14 @@ class ShellTest(utils.TestCase):
         self.assert_called('POST', '/servers/1234/action',
                            {'os-resetState': {'state': 'active'}})
 
+    def test_host_list(self):
+        self.run_command('host-list')
+        self.assert_called('GET', '/os-hosts')
+
+    def test_host_list_with_zone(self):
+        self.run_command('host-list --zone nova')
+        self.assert_called('GET', '/os-hosts?zone=nova')
+
     def test_host_update_status(self):
         self.run_command('host-update sample-host_1 --status enabled')
         body = {'status': 'enabled'}
