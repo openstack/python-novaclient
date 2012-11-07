@@ -49,7 +49,11 @@ def _boot(cs, args, reservation_id=None, min_count=None, max_count=None):
         raise exceptions.CommandError("you need to specify a Flavor ID ")
 
     flavor = _find_flavor(cs, args.flavor)
-    image = _find_image(cs, args.image)
+
+    if args.image:
+        image = _find_image(cs, args.image)
+    else:
+        image = None
 
     meta = dict(v.split('=', 1) for v in args.meta)
 
@@ -237,8 +241,11 @@ def do_boot(cs, args):
     info['flavor'] = _find_flavor(cs, flavor_id).name
 
     image = info.get('image', {})
-    image_id = image.get('id', '')
-    info['image'] = _find_image(cs, image_id).name
+    if image:
+        image_id = image.get('id', '')
+        info['image'] = _find_image(cs, image_id).name
+    else:  # Booting from volume
+        info['image'] = "Attempt to boot from volume - no image supplied"
 
     info.pop('links', None)
     info.pop('addresses', None)
@@ -992,15 +999,18 @@ def _print_server(cs, args):
                                       flavor_id)
 
     image = info.get('image', {})
-    image_id = image.get('id', '')
-    if args.minimal:
-        info['image'] = image_id
-    else:
-        try:
-            info['image'] = '%s (%s)' % (_find_image(cs, image_id).name,
-                                         image_id)
-        except Exception:
-            info['image'] = '%s (%s)' % ("Image not found", image_id)
+    if image:
+        image_id = image.get('id', '')
+        if args.minimal:
+            info['image'] = image_id
+        else:
+            try:
+                info['image'] = '%s (%s)' % (_find_image(cs, image_id).name,
+                                             image_id)
+            except Exception:
+                info['image'] = '%s (%s)' % ("Image not found", image_id)
+    else:  # Booted from volume
+        info['image'] = "Attempt to boot from volume - no image supplied"
 
     info.pop('links', None)
     info.pop('addresses', None)

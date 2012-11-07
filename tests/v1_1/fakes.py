@@ -248,6 +248,34 @@ class FakeHTTPClient(base_client.HTTPClient):
                 "metadata": {
                     "Server Label": "DB 1"
                 }
+            },
+            {
+                "id": 9012,
+                "name": "sample-server3",
+                "image": "",
+                "flavor": {
+                    "id": 1,
+                    "name": "256 MB Server",
+                },
+                "hostId": "9e107d9d372bb6826bd81d3542a419d6",
+                "status": "ACTIVE",
+                "addresses": {
+                    "public": [{
+                        "version": 4,
+                        "addr": "4.5.6.7",
+                    },
+                    {
+                        "version": 4,
+                        "addr": "5.6.9.8",
+                    }],
+                    "private": [{
+                        "version": 4,
+                        "addr": "10.13.12.13",
+                    }],
+                },
+                "metadata": {
+                    "Server Label": "DB 1"
+                }
             }
         ]})
 
@@ -261,12 +289,23 @@ class FakeHTTPClient(base_client.HTTPClient):
                 fakes.assert_has_keys(pfile, required=['path', 'contents'])
         return (202, self.get_servers_1234()[1])
 
+    def post_os_volumes_boot(self, body, **kw):
+        assert set(body.keys()) <= set(['server', 'os:scheduler_hints'])
+        fakes.assert_has_keys(body['server'],
+                        required=['name', 'block_device_mapping', 'flavorRef'],
+                        optional=['imageRef'])
+        return (202, self.get_servers_9012()[1])
+
     def get_servers_1234(self, **kw):
         r = {'server': self.get_servers_detail()[1]['servers'][0]}
         return (200, r)
 
     def get_servers_5678(self, **kw):
         r = {'server': self.get_servers_detail()[1]['servers'][1]}
+        return (200, r)
+
+    def get_servers_9012(self, **kw):
+        r = {'server': self.get_servers_detail()[1]['servers'][2]}
         return (200, r)
 
     def put_servers_1234(self, body, **kw):
