@@ -24,6 +24,7 @@ import httplib2
 import imp
 import itertools
 import os
+import pkg_resources
 import pkgutil
 import sys
 import logging
@@ -257,7 +258,8 @@ class OpenStackComputeShell(object):
         extensions = []
         for name, module in itertools.chain(
                 self._discover_via_python_path(),
-                self._discover_via_contrib_path(version)):
+                self._discover_via_contrib_path(version),
+                self._discover_via_entry_points()):
 
             extension = novaclient.extension.Extension(name, module)
             extensions.append(extension)
@@ -287,6 +289,13 @@ class OpenStackComputeShell(object):
                 continue
 
             module = imp.load_source(name, ext_path)
+            yield name, module
+
+    def _discover_via_entry_points(self):
+        for ep in pkg_resources.iter_entry_points('novaclient.extension'):
+            name = ep.name
+            module = ep.load()
+
             yield name, module
 
     def _add_bash_completion_subparser(self, subparsers):
