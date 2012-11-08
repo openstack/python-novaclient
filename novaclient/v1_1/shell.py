@@ -2020,7 +2020,8 @@ def do_hypervisor_servers(cs, args):
     for hyper in hypers:
         hyper_host = hyper.hypervisor_hostname
         hyper_id = hyper.id
-        instances.extend([InstanceOnHyper(id=serv['uuid'],
+        if hasattr(hyper, 'servers'):
+            instances.extend([InstanceOnHyper(id=serv['uuid'],
                                           name=serv['name'],
                                           hypervisor_hostname=hyper_host,
                                           hypervisor_id=hyper_id)
