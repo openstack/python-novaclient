@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from datetime import datetime
 import httplib2
 import urlparse
 
@@ -867,6 +868,35 @@ class FakeHTTPClient(base_client.HTTPClient):
 
     def delete_os_aggregates_1(self, **kw):
         return (202, None)
+
+    #
+    # Services
+    #
+    def get_os_services(self, **kw):
+        host = kw.get('host', 'host1')
+        service = kw.get('service', 'nova-compute')
+        return (200, {'services':
+                     [{'binary': service,
+                       'host': host,
+                       'zone': 'nova',
+                       'status': 'enabled',
+                       'state': 'up',
+                       'updated_at': datetime(2012, 10, 29, 13, 42, 2)},
+                      {'binary': service,
+                       'host': host,
+                       'zone': 'nova',
+                       'status': 'disabled',
+                       'state': 'down',
+                       'updated_at': datetime(2012, 9, 18, 8, 3, 38)},
+                      ]})
+
+    def put_os_services_enable(self, body, **kw):
+        return (200, {'host': body['host'], 'service': body['service'],
+                'disabled': False})
+
+    def put_os_services_disable(self, body, **kw):
+        return (200, {'host': body['host'], 'service': body['service'],
+                'disabled': True})
 
     #
     # Hosts
