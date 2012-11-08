@@ -55,10 +55,9 @@ class ShellTest(utils.TestCase):
             '(?m)^\s+root-password\s+Change the root password',
             '(?m)^See "nova help COMMAND" for help on a specific command',
         ]
-        for argstr in ['--help', 'help']:
-            help_text = self.shell(argstr)
-            for r in required:
-                self.assertRegexpMatches(help_text, r)
+        help_text = self.shell('help')
+        for r in required:
+            self.assertRegexpMatches(help_text, r)
 
     def test_help_on_subcommand(self):
         required = [
@@ -66,11 +65,6 @@ class ShellTest(utils.TestCase):
             '(?m)^Change the root password',
             '(?m)^Positional arguments:',
         ]
-        argstrings = [
-            'root-password --help',
-            'help root-password',
-        ]
-        for argstr in argstrings:
-            help_text = self.shell(argstr)
-            for r in required:
-                self.assertRegexpMatches(help_text, r)
+        help_text = self.shell('help root-password')
+        for r in required:
+            self.assertRegexpMatches(help_text, r)
