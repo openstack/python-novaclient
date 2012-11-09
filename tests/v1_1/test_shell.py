@@ -515,11 +515,11 @@ class ShellTest(utils.TestCase):
         self.assert_called('GET', '/os-hypervisors/statistics')
 
     def test_quota_show(self):
-        self.run_command('quota-show test')
+        self.run_command('quota-show --tenant test')
         self.assert_called('GET', '/os-quota-sets/test')
 
     def test_quota_defaults(self):
-        self.run_command('quota-defaults test')
+        self.run_command('quota-defaults --tenant test')
         self.assert_called('GET', '/os-quota-sets/test/defaults')
 
     def test_quota_update(self):
