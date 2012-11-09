@@ -215,7 +215,7 @@ class Server(base.Resource):
         :param image_name: The name to assign the newly create image.
         :param metadata: Metadata to assign to the image.
         """
-        self.manager.create_image(self, image_name, metadata)
+        return self.manager.create_image(self, image_name, metadata)
 
     def backup(self, backup_name, backup_type, rotation):
         """
