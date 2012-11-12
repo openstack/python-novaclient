@@ -1844,6 +1844,49 @@ def do_x509_get_root_cert(cs, args):
         print "Wrote x509 root cert to %s" % args.filename
 
 
+@utils.arg('--hypervisor', metavar='<hypervisor>', default=None,
+           help='type of hypervisor.')
+def do_agent_list(cs, args):
+    """List all builds"""
+    result = cs.agents.list(args.hypervisor)
+    columns = ["Agent_id", "Hypervisor", "OS", "Architecture", "Version",
+               'Md5hash', 'Url']
+    utils.print_list(result, columns)
+
+
+@utils.arg('os', metavar='<os>', help='type of os.')
+@utils.arg('architecture', metavar='<architecture>',
+           help='type of architecture')
+@utils.arg('version', metavar='<version>', help='version')
+@utils.arg('url', metavar='<url>', help='url')
+@utils.arg('md5hash', metavar='<md5hash>', help='md5 hash')
+@utils.arg('hypervisor', metavar='<hypervisor>', default='xen',
+           help='type of hypervisor.')
+def do_agent_create(cs, args):
+    """Creates a new agent build."""
+    result = cs.agents.create(args.os, args.architecture,
+                              args.version, args.url,
+                              args.md5hash, args.hypervisor)
+    utils.print_dict(result._info.copy())
+
+
+@utils.arg('id', metavar='<id>', help='id of the agent-build')
+def do_agent_delete(cs, args):
+    """Deletes an existing agent build."""
+    cs.agents.delete(args.id)
+
+
+@utils.arg('id', metavar='<id>', help='id of the agent-build')
+@utils.arg('version', metavar='<version>', help='version')
+@utils.arg('url', metavar='<url>', help='url')
+@utils.arg('md5hash', metavar='<md5hash>', help='md5hash')
+def do_agent_modify(cs, args):
+    """Modify an existing agent build."""
+    result = cs.agents.update(args.id, args.version,
+                              args.url, args.md5hash)
+    utils.print_dict(result['agent'])
+
+
 def do_aggregate_list(cs, args):
     """Print a list of all aggregates."""
     aggregates = cs.aggregates.list()
