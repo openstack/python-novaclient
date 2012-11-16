@@ -2157,7 +2157,10 @@ _quota_resources = ['instances', 'cores', 'ram', 'volumes', 'gigabytes',
 def _quota_show(quotas):
     quota_dict = {}
     for resource in _quota_resources:
-        quota_dict[resource] = getattr(quotas, resource, None)
+        try:
+            quota_dict[resource] = getattr(quotas, resource)
+        except AttributeError:
+            pass
     utils.print_dict(quota_dict)
 
 
