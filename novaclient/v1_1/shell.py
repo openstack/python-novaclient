@@ -2120,6 +2120,10 @@ def do_credentials(cs, _args):
     dest='identity',
     help='Private key file, same as the -i option to the ssh command.',
     default='')
+@utils.arg('--extra-opts',
+    dest='extra',
+    help='Extra options to pass to ssh. see: man ssh',
+    default='')
 def do_ssh(cs, args):
     """SSH into a server."""
     addresses = _find_server(cs, args.server).addresses
@@ -2138,10 +2142,11 @@ def do_ssh(cs, args):
             break
 
     identity = '-i %s' % args.identity if len(args.identity) else ''
+    extra = args.extra if len(args.extra) else ''
 
     if ip_address:
-        os.system("ssh -%d -p%d %s %s@%s" % (version, args.port, identity,
-                                             args.login, ip_address))
+        os.system("ssh -%d -p%d %s %s@%s %s" % (version, args.port, identity,
+                                             args.login, ip_address, extra))
     else:
         pretty_version = "IPv%d" % version
         print "ERROR: No %s %s address found." % (address_type,
