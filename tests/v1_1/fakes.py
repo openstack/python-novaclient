@@ -1119,3 +1119,32 @@ class FakeHTTPClient(base_client.HTTPClient):
 
     def post_os_networks_networkdisassociate_action(self, **kw):
         return (202, None)
+
+    def get_os_fping(self, **kw):
+        return (
+            200, {
+                'servers': [
+                    {
+                        "id": "1",
+                        "project_id": "fake-project",
+                        "alive": True,
+                    },
+                    {
+                        "id": "2",
+                        "project_id": "fake-project",
+                        "alive": True,
+                    },
+                ]
+            }
+        )
+
+    def get_os_fping_1(self, **kw):
+        return (
+            200, {
+                'server': {
+                    "id": "1",
+                    "project_id": "fake-project",
+                    "alive": True,
+                }
+            }
+        )
