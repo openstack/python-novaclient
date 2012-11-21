@@ -66,7 +66,7 @@ class BootingManagerWithFind(base.ManagerWithFind):
         """
         body = {"server": {
             "name": name,
-            "imageRef": str(base.getid(image)),
+            "imageRef": str(base.getid(image)) if image else '',
             "flavorRef": str(base.getid(flavor)),
         }}
         if userdata:

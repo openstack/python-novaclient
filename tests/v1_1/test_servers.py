@@ -136,7 +136,7 @@ class ServersTest(utils.TestCase):
                           flavor={"id": 1, "name": "256 MB Server"})
 
         sl = cs.servers.findall(flavor={"id": 1, "name": "256 MB Server"})
-        self.assertEqual([s.id for s in sl], [1234, 5678])
+        self.assertEqual([s.id for s in sl], [1234, 5678, 9012])
 
     def test_reboot_server(self):
         s = cs.servers.get(1234)
