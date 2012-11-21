@@ -104,7 +104,7 @@ class FlavorManager(base.ManagerWithFind):
         """
         self._delete("/flavors/%s" % base.getid(flavor))
 
-    def create(self, name, ram, vcpus, disk, flavorid,
+    def create(self, name, ram, vcpus, disk, flavorid=None,
                ephemeral=0, swap=0, rxtx_factor=1, is_public=True):
         """
         Create (allocate) a  floating ip for a tenant
@@ -113,7 +113,9 @@ class FlavorManager(base.ManagerWithFind):
         :param ram: Memory in MB for the flavor
         :param vcpu: Number of VCPUs for the flavor
         :param disk: Size of local disk in GB
-        :param flavorid: Integer ID for the flavor
+        :param flavorid: ID for the flavor (optional). You can use the reserved
+                         value ``"auto"`` to have Nova generate a UUID for the
+                         flavor in cases where you cannot simply pass ``None``.
         :param swap: Swap space in MB
         :param rxtx_factor: RX/TX factor
         :rtype: :class:`Flavor`
@@ -143,9 +145,9 @@ class FlavorManager(base.ManagerWithFind):
             raise exceptions.CommandError("Swap must be an integer.")
 
         try:
-            ephemerel = int(ephemeral)
+            ephemeral = int(ephemeral)
         except:
-            raise exceptions.CommandError("Ephemerel must be an integer.")
+            raise exceptions.CommandError("Ephemeral must be an integer.")
 
         try:
             rxtx_factor = int(rxtx_factor)
