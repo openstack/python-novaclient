@@ -810,7 +810,7 @@ def do_resize_revert(cs, args):
     default=False,
     help='Blocks while instance migrates so progress can be reported.')
 def do_migrate(cs, args):
-    """Migrate a server."""
+    """Migrate a server. The new host will be selected by the scheduler."""
     server = _find_server(cs, args.server)
     server.migrate()
 
