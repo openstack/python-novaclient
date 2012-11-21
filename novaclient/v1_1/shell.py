@@ -1949,6 +1949,33 @@ def do_reset_state(cs, args):
     _find_server(cs, args.server).reset_state(args.state)
 
 
+@utils.arg('--host', metavar='<hostname>', default=None,
+           help='Name of host.')
+@utils.arg('--servicename', metavar='<servicename>', default=None,
+           help='Name of service.')
+def do_service_list(cs, args):
+    """Show a list of all running services. Filter by host & service name."""
+    result = cs.services.list(args.host, args.servicename)
+    columns = ["Binary", "Host", "Zone", "Status", "State", "Updated_at"]
+    utils.print_list(result, columns)
+
+
+@utils.arg('host', metavar='<hostname>', help='Name of host.')
+@utils.arg('service', metavar='<servicename>', help='Name of service.')
+def do_service_enable(cs, args):
+    """Enable the service"""
+    result = cs.services.enable(args.host, args.service)
+    utils.print_list([result], ['Host', 'Service', 'Disabled'])
+
+
+@utils.arg('host', metavar='<hostname>', help='Name of host.')
+@utils.arg('service', metavar='<servicename>', help='Name of service.')
+def do_service_disable(cs, args):
+    """Enable the service"""
+    result = cs.services.disable(args.host, args.service)
+    utils.print_list([result], ['Host', 'Service', 'Disabled'])
+
+
 @utils.arg('host', metavar='<hostname>', help='Name of host.')
 def do_host_describe(cs, args):
     """Describe a specific host"""

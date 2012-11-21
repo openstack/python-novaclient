@@ -454,6 +454,32 @@ class ShellTest(utils.TestCase):
         self.assert_called('POST', '/servers/1234/action',
                            {'os-resetState': {'state': 'active'}})
 
+    def test_services_list(self):
+        self.run_command('service-list')
+        self.assert_called('GET', '/os-services')
+
+    def test_services_list_with_host(self):
+        self.run_command('service-list --host host1')
+        self.assert_called('GET', '/os-services?host=host1')
+
+    def test_services_list_with_servicename(self):
+        self.run_command('service-list --servicename nova-cert')
+        self.assert_called('GET', '/os-services?service=nova-cert')
+
+    def test_services_list_with_host_servicename(self):
+        self.run_command('service-list --host host1 --servicename nova-cert')
+        self.assert_called('GET', '/os-services?host=host1&service=nova-cert')
+
+    def test_services_enable(self):
+        self.run_command('service-enable host1 nova-cert')
+        body = {'host': 'host1', 'service': 'nova-cert'}
+        self.assert_called('PUT', '/os-services/enable', body)
+
+    def test_services_disable(self):
+        self.run_command('service-disable host1 nova-cert')
+        body = {'host': 'host1', 'service': 'nova-cert'}
+        self.assert_called('PUT', '/os-services/disable', body)
+
     def test_host_list(self):
         self.run_command('host-list')
         self.assert_called('GET', '/os-hosts')
