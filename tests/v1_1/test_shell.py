@@ -512,6 +512,20 @@ class ShellTest(utils.TestCase):
         body = {'host': 'host1', 'service': 'nova-cert'}
         self.assert_called('PUT', '/os-services/disable', body)
 
+    def test_fixed_ips_get(self):
+        self.run_command('fixed-ip-get 192.168.1.1')
+        self.assert_called('GET', '/os-fixed-ips/192.168.1.1')
+
+    def test_fixed_ips_reserve(self):
+        self.run_command('fixed-ip-reserve 192.168.1.1')
+        body = {'reserve': None}
+        self.assert_called('POST', '/os-fixed-ips/192.168.1.1/action', body)
+
+    def test_fixed_ips_unreserve(self):
+        self.run_command('fixed-ip-unreserve 192.168.1.1')
+        body = {'unreserve': None}
+        self.assert_called('POST', '/os-fixed-ips/192.168.1.1/action', body)
+
     def test_host_list(self):
         self.run_command('host-list')
         self.assert_called('GET', '/os-hosts')
