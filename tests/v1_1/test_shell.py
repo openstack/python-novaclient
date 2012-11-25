@@ -270,6 +270,15 @@ class ShellTest(utils.TestCase):
         self.assert_called('POST', '/servers/1234/action',
                            {'changePassword': {'adminPass': 'p'}})
 
+    def test_scrub(self):
+        self.run_command('scrub 4ffc664c198e435e9853f2538fbcd7a7')
+        self.assert_called('GET', '/os-networks', pos=-4)
+        self.assert_called('GET', '/os-security-groups?all_tenants=1',
+                          pos=-3)
+        self.assert_called('POST', '/os-networks/1/action',
+                           {"disassociate": None}, pos=-2)
+        self.assert_called('DELETE', '/os-security-groups/1')
+
     def test_show(self):
         self.run_command('show 1234')
         self.assert_called('GET', '/servers/1234', pos=-3)
