@@ -16,6 +16,7 @@
 """Cloudpipe interface."""
 
 from novaclient import base
+from novaclient.v1_1 import networks
 
 
 class Cloudpipe(base.Resource):
@@ -46,3 +47,16 @@ class CloudpipeManager(base.ManagerWithFind):
         Get a list of cloudpipe instances.
         """
         return self._list('/os-cloudpipe', 'cloudpipes')
+
+    def update(self, address, port):
+        """
+        Update VPN address and port for all networks associated
+        with the project defined by authentication
+
+        :param address: IP address
+        :param port: Port number
+        """
+
+        body = {'configure_project': {'vpn_ip': address,
+                                      'vpn_port': port}}
+        self._update("/os-cloudpipe/configure-project", body)
