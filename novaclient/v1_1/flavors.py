@@ -105,7 +105,7 @@ class FlavorManager(base.ManagerWithFind):
         self._delete("/flavors/%s" % base.getid(flavor))
 
     def create(self, name, ram, vcpus, disk, flavorid=None,
-               ephemeral=0, swap=0, rxtx_factor=1, is_public=True):
+               ephemeral=0, swap=0, rxtx_factor=1.0, is_public=True):
         """
         Create (allocate) a  floating ip for a tenant
 
@@ -150,9 +150,9 @@ class FlavorManager(base.ManagerWithFind):
             raise exceptions.CommandError("Ephemeral must be an integer.")
 
         try:
-            rxtx_factor = int(rxtx_factor)
+            rxtx_factor = float(rxtx_factor)
         except:
-            raise exceptions.CommandError("rxtx_factor must be an integer.")
+            raise exceptions.CommandError("rxtx_factor must be a float.")
 
         try:
             is_public = utils.bool_from_str(is_public)
@@ -168,7 +168,7 @@ class FlavorManager(base.ManagerWithFind):
                 "id": flavorid,
                 "swap": int(swap),
                 "OS-FLV-EXT-DATA:ephemeral": int(ephemeral),
-                "rxtx_factor": int(rxtx_factor),
+                "rxtx_factor": float(rxtx_factor),
                 "os-flavor-access:is_public": bool(is_public),
             }
         }

@@ -394,7 +394,7 @@ def do_flavor_show(cs, args):
 @utils.arg('--rxtx-factor',
      metavar='<factor>',
      help="RX/TX factor (default 1)",
-     default=1)
+     default=1.0)
 @utils.arg('--is-public',
      metavar='<is-public>',
      help="Make flavor accessible to the public (default true)",
