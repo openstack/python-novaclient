@@ -615,6 +615,31 @@ class FakeHTTPClient(base_client.HTTPClient):
     def delete_os_floating_ip_dns_testdomain_entries_testname(self, **kw):
         return (200, None)
 
+    def get_os_floating_ips_bulk(self, **kw):
+        return (200, {'floating_ip_info': [
+            {'id': 1, 'fixed_ip': '10.0.0.1', 'ip': '11.0.0.1'},
+            {'id': 2, 'fixed_ip': '10.0.0.2', 'ip': '11.0.0.2'},
+        ]})
+
+    def get_os_floating_ips_bulk_testHost(self, **kw):
+        return (200, {'floating_ip_info': [
+            {'id': 1, 'fixed_ip': '10.0.0.1', 'ip': '11.0.0.1'},
+            {'id': 2, 'fixed_ip': '10.0.0.2', 'ip': '11.0.0.2'},
+        ]})
+
+    def post_os_floating_ips_bulk(self, **kw):
+        params = kw.get('body').get('floating_ips_bulk_create')
+        pool = params.get('pool', 'defaultPool')
+        interface = params.get('interface', 'defaultInterface')
+        return (200, {'floating_ips_bulk_create':
+                          {'ip_range': '192.168.1.0/30',
+                           'pool': pool,
+                           'interface': interface}})
+
+    def put_os_floating_ips_bulk_delete(self, **kw):
+        ip_range = kw.get('body').get('ip_range')
+        return (200, {'floating_ips_bulk_delete': ip_range})
+
     #
     # Images
     #
