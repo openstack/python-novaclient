@@ -162,14 +162,14 @@ class FlavorManager(base.ManagerWithFind):
         body = {
             "flavor": {
                 "name": name,
-                "ram": int(ram),
-                "vcpus": int(vcpus),
-                "disk": int(disk),
+                "ram": ram,
+                "vcpus": vcpus,
+                "disk": disk,
                 "id": flavorid,
-                "swap": int(swap),
-                "OS-FLV-EXT-DATA:ephemeral": int(ephemeral),
-                "rxtx_factor": float(rxtx_factor),
-                "os-flavor-access:is_public": bool(is_public),
+                "swap": swap,
+                "OS-FLV-EXT-DATA:ephemeral": ephemeral,
+                "rxtx_factor": rxtx_factor,
+                "os-flavor-access:is_public": is_public,
             }
         }
 
