@@ -60,7 +60,7 @@ class FlavorsTest(utils.TestCase):
                 "OS-FLV-EXT-DATA:ephemeral": 10,
                 "id": 1234,
                 "swap": 0,
-                "rxtx_factor": 1,
+                "rxtx_factor": 1.0,
                 "os-flavor-access:is_public": False,
             }
         }
@@ -80,7 +80,7 @@ class FlavorsTest(utils.TestCase):
                 "OS-FLV-EXT-DATA:ephemeral": 0,
                 "id": 1234,
                 "swap": 0,
-                "rxtx_factor": 1,
+                "rxtx_factor": 1.0,
                 "os-flavor-access:is_public": True,
             }
         }
@@ -91,25 +91,25 @@ class FlavorsTest(utils.TestCase):
     def test_invalid_parameters_create(self):
         self.assertRaises(exceptions.CommandError, cs.flavors.create,
                           "flavorcreate", "invalid", 1, 10, 1234, swap=0,
-                          ephemeral=0, rxtx_factor=1, is_public=True)
+                          ephemeral=0, rxtx_factor=1.0, is_public=True)
         self.assertRaises(exceptions.CommandError, cs.flavors.create,
                           "flavorcreate", 512, "invalid", 10, 1234, swap=0,
-                          ephemeral=0, rxtx_factor=1, is_public=True)
+                          ephemeral=0, rxtx_factor=1.0, is_public=True)
         self.assertRaises(exceptions.CommandError, cs.flavors.create,
                           "flavorcreate", 512, 1, "invalid", 1234, swap=0,
-                          ephemeral=0, rxtx_factor=1, is_public=True)
+                          ephemeral=0, rxtx_factor=1.0, is_public=True)
         self.assertRaises(exceptions.CommandError, cs.flavors.create,
                           "flavorcreate", 512, 1, 10, 1234, swap="invalid",
-                          ephemeral=0, rxtx_factor=1, is_public=True)
+                          ephemeral=0, rxtx_factor=1.0, is_public=True)
         self.assertRaises(exceptions.CommandError, cs.flavors.create,
                           "flavorcreate", 512, 1, 10, 1234, swap=0,
-                          ephemeral="invalid", rxtx_factor=1, is_public=True)
+                          ephemeral="invalid", rxtx_factor=1.0, is_public=True)
         self.assertRaises(exceptions.CommandError, cs.flavors.create,
                           "flavorcreate", 512, 1, 10, 1234, swap=0,
                           ephemeral=0, rxtx_factor="invalid", is_public=True)
         self.assertRaises(exceptions.CommandError, cs.flavors.create,
                           "flavorcreate", 512, 1, 10, 1234, swap=0,
-                          ephemeral=0, rxtx_factor=1, is_public='invalid')
+                          ephemeral=0, rxtx_factor=1.0, is_public='invalid')
 
     def test_delete(self):
         cs.flavors.delete("flavordelete")
