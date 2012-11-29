@@ -453,6 +453,9 @@ class FakeHTTPClient(base_client.HTTPClient):
     def post_os_cloudpipe(self, **ks):
         return (202, {'instance_id': '9d5824aa-20e6-4b9f-b967-76a699fc51fd'})
 
+    def put_os_cloudpipe_configure_project(self, **kw):
+        return (202, None)
+
     #
     # Flavors
     #

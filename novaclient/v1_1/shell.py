@@ -269,6 +269,13 @@ def do_cloudpipe_create(cs, args):
     cs.cloudpipe.create(args.project)
 
 
+@utils.arg('address', metavar='<ip address>', help='New IP Address.')
+@utils.arg('port', metavar='<port>', help='New Port.')
+def do_cloudpipe_configure(cs, args):
+    """Create a cloudpipe instance for the given project"""
+    cs.cloudpipe.update(args.address, args.port)
+
+
 def _poll_for_status(poll_fn, obj_id, action, final_ok_states,
                      poll_period=5, show_progress=True,
                      status_field="status", silent=False):

@@ -614,6 +614,21 @@ class ShellTest(utils.TestCase):
         self.run_command('network-show 1')
         self.assert_called('GET', '/os-networks/1')
 
+    def test_cloudpipe_list(self):
+        self.run_command('cloudpipe-list')
+        self.assert_called('GET', '/os-cloudpipe')
+
+    def test_cloudpipe_create(self):
+        self.run_command('cloudpipe-create myproject')
+        body = {'cloudpipe': {'project_id': "myproject"}}
+        self.assert_called('POST', '/os-cloudpipe', body)
+
+    def test_cloudpipe_configure(self):
+        self.run_command('cloudpipe-configure 192.168.1.1 1234')
+        body = {'configure_project': {'vpn_ip': "192.168.1.1",
+                                      'vpn_port': '1234'}}
+        self.assert_called('PUT', '/os-cloudpipe/configure-project', body)
+
     def test_backup(self):
         self.run_command('backup sample-server back1 daily 1')
         self.assert_called('POST', '/servers/1234/action',
