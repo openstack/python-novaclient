@@ -37,7 +37,8 @@ class QuotaSetManager(base.ManagerWithFind):
         return self._get("/os-quota-sets/%s" % (tenant_id), "quota_set")
 
     def update(self, tenant_id, metadata_items=None,
-               injected_file_content_bytes=None, volumes=None, gigabytes=None,
+               injected_file_content_bytes=None, injected_file_path_bytes=None,
+               volumes=None, gigabytes=None,
                ram=None, floating_ips=None, instances=None,
                injected_files=None, cores=None):
 
@@ -45,6 +46,7 @@ class QuotaSetManager(base.ManagerWithFind):
                 'tenant_id': tenant_id,
                 'metadata_items': metadata_items,
                 'injected_file_content_bytes': injected_file_content_bytes,
+                'injected_file_path_bytes': injected_file_path_bytes,
                 'volumes': volumes,
                 'gigabytes': gigabytes,
                 'ram': ram,
