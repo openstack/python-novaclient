@@ -25,6 +25,7 @@ from novaclient.v1_1 import volumes
 from novaclient.v1_1 import volume_snapshots
 from novaclient.v1_1 import volume_types
 from novaclient.v1_1 import services
+from novaclient.v1_1 import fixed_ips
 
 
 class Client(object):
@@ -88,6 +89,7 @@ class Client(object):
         self.hosts = hosts.HostManager(self)
         self.hypervisors = hypervisors.HypervisorManager(self)
         self.services = services.ServiceManager(self)
+        self.fixed_ips = fixed_ips.FixedIPsManager(self)
 
         # Add in any extensions...
         if extensions:

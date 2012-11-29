@@ -1987,6 +1987,25 @@ def do_service_disable(cs, args):
     utils.print_list([result], ['Host', 'Service', 'Disabled'])
 
 
+@utils.arg('fixed_ip', metavar='<fixed_ip>', help='Fixed IP Address.')
+def do_fixed_ip_get(cs, args):
+    """Get info on a fixed ip"""
+    result = cs.fixed_ips.get(args.fixed_ip)
+    utils.print_list([result], ['address', 'cidr', 'hostname', 'host'])
+
+
+@utils.arg('fixed_ip', metavar='<fixed_ip>', help='Fixed IP Address.')
+def do_fixed_ip_reserve(cs, args):
+    """Reserve a fixed ip"""
+    cs.fixed_ips.reserve(args.fixed_ip)
+
+
+@utils.arg('fixed_ip', metavar='<fixed_ip>', help='Fixed IP Address.')
+def do_fixed_ip_unreserve(cs, args):
+    """Unreserve a fixed ip"""
+    cs.fixed_ips.unreserve(args.fixed_ip)
+
+
 @utils.arg('host', metavar='<hostname>', help='Name of host.')
 def do_host_describe(cs, args):
     """Describe a specific host"""
