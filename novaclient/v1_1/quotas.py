@@ -40,11 +40,12 @@ class QuotaSetManager(base.ManagerWithFind):
                injected_file_content_bytes=None, injected_file_path_bytes=None,
                volumes=None, gigabytes=None,
                ram=None, floating_ips=None, instances=None,
-               injected_files=None, cores=None):
+               injected_files=None, cores=None, key_pairs=None):
 
         body = {'quota_set': {
                 'tenant_id': tenant_id,
                 'metadata_items': metadata_items,
+                'key_pairs': key_pairs,
                 'injected_file_content_bytes': injected_file_content_bytes,
                 'injected_file_path_bytes': injected_file_path_bytes,
                 'volumes': volumes,

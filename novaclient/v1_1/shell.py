@@ -2221,7 +2221,7 @@ def do_ssh(cs, args):
 
 _quota_resources = ['instances', 'cores', 'ram', 'volumes', 'gigabytes',
                     'floating_ips', 'metadata_items', 'injected_files',
-                    'injected_file_content_bytes',
+                    'key_pairs', 'injected_file_content_bytes',
                     'injected_file_path_bytes']
 
 
@@ -2332,6 +2332,11 @@ def do_quota_defaults(cs, args):
     type=int,
     default=None,
     help='New value for the "injected-file-path-bytes" quota.')
+@utils.arg('--key-pairs',
+    metavar='<key-pairs>',
+    type=int,
+    default=None,
+    help='New value for the "key-pairs" quota.')
 def do_quota_update(cs, args):
     """Update the quotas for a tenant."""
 
@@ -2407,6 +2412,11 @@ def do_quota_class_show(cs, args):
     type=int,
     default=None,
     help='New value for the "injected-file-path-bytes" quota.')
+@utils.arg('--key-pairs',
+    metavar='<key-pairs>',
+    type=int,
+    default=None,
+    help='New value for the "key-pairs" quota.')
 def do_quota_class_update(cs, args):
     """Update the quotas for a quota class."""
 
