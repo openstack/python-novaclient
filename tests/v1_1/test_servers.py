@@ -2,6 +2,8 @@
 
 import StringIO
 
+import mock
+
 from novaclient import exceptions
 from novaclient.v1_1 import servers
 from tests import utils
@@ -45,6 +47,38 @@ class ServersTest(utils.TestCase):
         )
         cs.assert_called('POST', '/servers')
         self.assertTrue(isinstance(s, servers.Server))
+
+    def test_create_server_boot_from_volume_with_nics(self):
+        old_boot = cs.servers._boot
+
+        nics = [{'net-id': '11111111-1111-1111-1111-111111111111',
+                 'v4-fixed-ip': '10.0.0.7'}]
+        bdm = {"volume_size": "1",
+               "volume_id": "11111111-1111-1111-1111-111111111111",
+               "delete_on_termination": "0",
+               "device_name": "vda"}
+
+        def wrapped_boot(url, key, *boot_args, **boot_kwargs):
+            self.assertEqual(boot_kwargs['block_device_mapping'], bdm)
+            self.assertEqual(boot_kwargs['nics'], nics)
+            return old_boot(url, key, *boot_args, **boot_kwargs)
+
+        @mock.patch.object(cs.servers, '_boot', wrapped_boot)
+        def test_create_server_from_volume():
+            s = cs.servers.create(
+                name="My server",
+                image=1,
+                flavor=1,
+                meta={'foo': 'bar'},
+                userdata="hello moto",
+                key_name="fakekey",
+                block_device_mapping=bdm,
+                nics=nics
+            )
+            cs.assert_called('POST', '/os-volumes_boot')
+            self.assertTrue(isinstance(s, servers.Server))
+
+        test_create_server_from_volume()
 
     def test_create_server_userdata_file_object(self):
         s = cs.servers.create(

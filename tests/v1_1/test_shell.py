@@ -82,7 +82,6 @@ class ShellTest(utils.TestCase):
                 'imageRef': '1',
                 'min_count': 1,
                 'max_count': 1,
-                'networks': [],
                 }},
         )
 
@@ -125,7 +124,6 @@ class ShellTest(utils.TestCase):
                 'metadata': {'foo': 'bar=pants', 'spam': 'eggs'},
                 'min_count': 1,
                 'max_count': 1,
-                'networks': [],
             }},
         )
 
@@ -140,7 +138,6 @@ class ShellTest(utils.TestCase):
                     'imageRef': '1',
                     'min_count': 1,
                     'max_count': 1,
-                    'networks': [],
                 },
                 'os:scheduler_hints': {'a': 'b=c'},
             },
@@ -182,7 +179,6 @@ class ShellTest(utils.TestCase):
                 'imageRef': '1',
                 'min_count': 1,
                 'max_count': 1,
-                'networks': [],
                 'personality': [
                    {'path': '/tmp/bar', 'contents': expected_file_data},
                    {'path': '/tmp/foo', 'contents': expected_file_data},

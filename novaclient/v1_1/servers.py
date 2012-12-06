@@ -502,6 +502,7 @@ class ServerManager(local_base.BootingManagerWithFind):
             boot_kwargs['block_device_mapping'] = block_device_mapping
         else:
             resource_url = "/servers"
+        if nics:
             boot_kwargs['nics'] = nics
 
         response_key = "server"
