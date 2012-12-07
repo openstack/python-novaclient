@@ -89,8 +89,7 @@ class AuthPluginTest(utils.TestCase):
         @mock.patch.object(httplib2.Http, "request", mock_request)
         def test_auth_call():
             cs = client.Client("username", "password", "project_id",
-                               "auth_url/v2.0", auth_system="fake",
-                               no_cache=True)
+                               "auth_url/v2.0", auth_system="fake")
             cs.client.authenticate()
 
             headers = requested_headers(cs)
@@ -113,8 +112,7 @@ class AuthPluginTest(utils.TestCase):
         @mock.patch.object(httplib2.Http, "request", mock_request)
         def test_auth_call():
             cs = client.Client("username", "password", "project_id",
-                               "auth_url/v2.0", auth_system="notexists",
-                               no_cache=True)
+                               "auth_url/v2.0", auth_system="notexists")
             self.assertRaises(exceptions.AuthSystemNotFound,
                               cs.client.authenticate)
 
@@ -151,8 +149,7 @@ class AuthPluginTest(utils.TestCase):
         @mock.patch.object(httplib2.Http, "request", mock_request)
         def test_auth_call():
             cs = client.Client("username", "password", "project_id",
-                               auth_system="fakewithauthurl",
-                               no_cache=True)
+                               auth_system="fakewithauthurl")
             cs.client.authenticate()
             self.assertEquals(cs.client.auth_url, "http://faked/v2.0")
 
@@ -176,7 +173,6 @@ class AuthPluginTest(utils.TestCase):
         def test_auth_call():
             with self.assertRaises(exceptions.EndpointNotFound):
                 cs = client.Client("username", "password", "project_id",
-                                   auth_system="fakewithauthurl",
-                                   no_cache=True)
+                                   auth_system="fakewithauthurl")
 
         test_auth_call()

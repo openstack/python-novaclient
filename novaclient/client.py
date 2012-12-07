@@ -86,7 +86,8 @@ class HTTPClient(httplib2.Http):
                  proxy_token=None, region_name=None,
                  endpoint_type='publicURL', service_type=None,
                  service_name=None, volume_service_name=None,
-                 timings=False, bypass_url=None, no_cache=False,
+                 timings=False, bypass_url=None,
+                 os_cache=False, no_cache=True,
                  http_log_debug=False, auth_system='keystone'):
         super(HTTPClient, self).__init__(timeout=timeout,
                                          proxy_info=_get_proxy_info())
@@ -106,7 +107,7 @@ class HTTPClient(httplib2.Http):
         self.volume_service_name = volume_service_name
         self.timings = timings
         self.bypass_url = bypass_url
-        self.no_cache = no_cache
+        self.os_cache = os_cache or not no_cache
         self.http_log_debug = http_log_debug
 
         self.times = []  # [("item", starttime, endtime), ...]
@@ -130,8 +131,7 @@ class HTTPClient(httplib2.Http):
             self._logger.addHandler(ch)
 
     def use_token_cache(self, use_it):
-        # One day I'll stop using negative naming.
-        self.no_cache = not use_it
+        self.os_cache = use_it
 
     def unauthenticate(self):
         """Forget all of our authentication information."""
@@ -316,7 +316,7 @@ class HTTPClient(httplib2.Http):
                 if key is None:
                     keys[index] = '?'
             keyring_key = "/".join(keys)
-            if not self.no_cache and not self.used_keyring:
+            if self.os_cache and not self.used_keyring:
                 # Lookup the token/mgmt url from the keyring first time
                 # through.
                 # If we come through again, it's because the old token
@@ -388,7 +388,7 @@ class HTTPClient(httplib2.Http):
             self.set_management_url(self.bypass_url)
 
         # Store the token/mgmt url in the keyring for later requests.
-        if has_keyring and not self.no_cache:
+        if has_keyring and self.os_cache:
             try:
                 keyring_value = "%s|%s" % (self.auth_token,
                                            self.management_url)
