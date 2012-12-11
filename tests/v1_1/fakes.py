@@ -783,7 +783,8 @@ class FakeHTTPClient(base_client.HTTPClient):
     #
     def get_os_security_groups(self, **kw):
         return (200, {"security_groups": [
-                {'id': 1, 'name': 'test', 'description': 'FAKE_SECURITY_GROUP'}
+                {'id': 1, 'name': 'test', 'description': 'FAKE_SECURITY_GROUP',
+                 'tenant_id': '4ffc664c198e435e9853f2538fbcd7a7'}
         ]})
 
     def get_os_security_groups_1(self, **kw):
@@ -1119,13 +1120,18 @@ class FakeHTTPClient(base_client.HTTPClient):
                            'uptime': "fake uptime"}})
 
     def get_os_networks(self, **kw):
-        return (200, {'networks': [{"label": "1", "cidr": "10.0.0.0/24"}]})
+        return (200, {'networks': [{"label": "1", "cidr": "10.0.0.0/24",
+                'project_id': '4ffc664c198e435e9853f2538fbcd7a7',
+                'id': '1'}]})
 
     def get_os_networks_1(self, **kw):
         return (200, {'network': {"label": "1", "cidr": "10.0.0.0/24"}})
 
     def post_os_networks(self, **kw):
         return (202, {'network': kw})
+
+    def post_os_networks_1_action(self, **kw):
+        return (202, None)
 
     def delete_os_networks_networkdelete(self, **kw):
         return (202, None)

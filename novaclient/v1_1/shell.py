@@ -496,6 +496,23 @@ def do_flavor_access_remove(cs, args):
     utils.print_list(access_list, columns)
 
 
+@utils.arg('project_id', metavar='<project_id>',
+           help='The ID of the project.')
+def do_scrub(cs, args):
+    """Deletes data associated with the project"""
+    networks_list = cs.networks.list()
+    networks_list = [network for network in networks_list
+                 if getattr(network, 'project_id', '') == args.project_id]
+    search_opts = {'all_tenants': 1}
+    groups = cs.security_groups.list(search_opts)
+    groups = [group for group in groups
+              if group.tenant_id == args.project_id]
+    for network in networks_list:
+        cs.networks.disassociate(network)
+    for group in groups:
+        cs.security_groups.delete(group)
+
+
 def do_network_list(cs, _args):
     """Print a list of available networks."""
     network_list = cs.networks.list()
