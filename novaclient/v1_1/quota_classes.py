@@ -36,7 +36,8 @@ class QuotaClassSetManager(base.ManagerWithFind):
                          "quota_class_set")
 
     def update(self, class_name, metadata_items=None,
-               injected_file_content_bytes=None, volumes=None, gigabytes=None,
+               injected_file_content_bytes=None, injected_file_path_bytes=None,
+               volumes=None, gigabytes=None,
                ram=None, floating_ips=None, instances=None,
                injected_files=None, cores=None):
 
@@ -44,6 +45,7 @@ class QuotaClassSetManager(base.ManagerWithFind):
                 'class_name': class_name,
                 'metadata_items': metadata_items,
                 'injected_file_content_bytes': injected_file_content_bytes,
+                'injected_file_path_bytes': injected_file_path_bytes,
                 'volumes': volumes,
                 'gigabytes': gigabytes,
                 'ram': ram,
