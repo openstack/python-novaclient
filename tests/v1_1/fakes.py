@@ -1195,3 +1195,15 @@ class FakeHTTPClient(base_client.HTTPClient):
                 }
             }
         )
+
+    def post_os_networks(self, **kw):
+        return (202, {'network': kw})
+
+    def post_os_networks_1_action(self, **kw):
+        return (202, None)
+
+    def post_os_networks_networktest_action(self, **kw):
+        return (202, None)
+
+    def post_os_networks_2_action(self, **kw):
+        return (202, None)
