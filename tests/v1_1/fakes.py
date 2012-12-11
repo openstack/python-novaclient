@@ -740,7 +740,8 @@ class FakeHTTPClient(base_client.HTTPClient):
                       'floating_ips': 1,
                       'instances': 1,
                       'injected_files': 1,
-                      'cores': 1}})
+                      'cores': 1,
+                      'keypairs': 1}})
 
     def get_os_quota_sets_test_defaults(self):
         return (200, {'quota_set': {
@@ -754,7 +755,8 @@ class FakeHTTPClient(base_client.HTTPClient):
                       'floating_ips': 1,
                       'instances': 1,
                       'injected_files': 1,
-                      'cores': 1}})
+                      'cores': 1,
+                      'keypairs': 1}})
 
     def put_os_quota_sets_test(self, body, **kw):
         assert body.keys() == ['quota_set']
@@ -771,7 +773,8 @@ class FakeHTTPClient(base_client.HTTPClient):
                       'floating_ips': 1,
                       'instances': 1,
                       'injected_files': 1,
-                      'cores': 1}})
+                      'cores': 1,
+                      'keypairs': 1}})
 
     #
     # Quota Classes
@@ -789,7 +792,8 @@ class FakeHTTPClient(base_client.HTTPClient):
                       'floating_ips': 1,
                       'instances': 1,
                       'injected_files': 1,
-                      'cores': 1}})
+                      'cores': 1,
+                      'keypairs': 1}})
 
     def put_os_quota_class_sets_test(self, body, **kw):
         assert body.keys() == ['quota_class_set']
@@ -806,7 +810,8 @@ class FakeHTTPClient(base_client.HTTPClient):
                       'floating_ips': 1,
                       'instances': 1,
                       'injected_files': 1,
-                      'cores': 1}})
+                      'cores': 1,
+                      'keypairs': 1}})
 
     #
     # Security Groups
