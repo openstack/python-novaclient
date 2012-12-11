@@ -2204,10 +2204,10 @@ def do_host_list(cs, args):
 
 
 @utils.arg('host', metavar='<hostname>', help='Name of host.')
-@utils.arg('--status', metavar='<status>', default=None, dest='status',
+@utils.arg('--status', metavar='<enable|disable>', default=None, dest='status',
            help='Either enable or disable a host.')
 @utils.arg('--maintenance',
-    metavar='<maintenance-mode>',
+    metavar='<enable|disable>',
     default=None,
     dest='maintenance',
     help='Either put or resume host to/from maintenance.')
