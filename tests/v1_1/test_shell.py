@@ -395,6 +395,29 @@ class ShellTest(utils.TestCase):
         self.run_command('dns-domains')
         self.assert_called('GET', '/os-floating-ip-dns')
 
+    def test_floating_ip_bulk_list(self):
+        self.run_command('floating-ip-bulk-list')
+        self.assert_called('GET', '/os-floating-ips-bulk')
+
+    def test_floating_ip_bulk_create(self):
+        self.run_command('floating-ip-bulk-create 10.0.0.1/24')
+        self.assert_called('POST', '/os-floating-ips-bulk',
+                           {'floating_ips_bulk_create':
+                                {'ip_range': '10.0.0.1/24'}})
+
+    def test_floating_ip_bulk_create_host_and_interface(self):
+        self.run_command('floating-ip-bulk-create 10.0.0.1/24 --pool testPool \
+                         --interface ethX')
+        self.assert_called('POST', '/os-floating-ips-bulk',
+                           {'floating_ips_bulk_create':
+                                {'ip_range': '10.0.0.1/24',
+                                 'pool': 'testPool', 'interface': 'ethX'}})
+
+    def test_floating_ip_bulk_delete(self):
+        self.run_command('floating-ip-bulk-delete 10.0.0.1/24')
+        self.assert_called('PUT', '/os-floating-ips-bulk/delete',
+                                {'ip_range': '10.0.0.1/24'})
+
     def test_usage_list(self):
         self.run_command('usage-list --start 2000-01-20 --end 2005-02-01')
         self.assert_called('GET',
