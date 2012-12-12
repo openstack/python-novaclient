@@ -380,7 +380,7 @@ def do_flavor_show(cs, args):
      help="Name of the new flavor")
 @utils.arg('id',
      metavar='<id>',
-     help="Unique integer ID for the new flavor")
+     help="Unique ID (integer or UUID) for the new flavor")
 @utils.arg('ram',
      metavar='<ram>',
      help="Memory size in MB")
@@ -802,7 +802,6 @@ def do_image_delete(cs, args):
 @utils.arg('--flavor',
     dest='flavor',
     metavar='<flavor>',
-    type=int,
     default=None,
     help='Search by flavor ID')
 @utils.arg('--image',
