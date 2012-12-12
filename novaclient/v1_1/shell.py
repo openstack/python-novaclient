@@ -2235,6 +2235,25 @@ def do_host_action(cs, args):
     utils.print_list([result], ['HOST', 'power_action'])
 
 
+def do_coverage_start(cs, args):
+    """Start Nova coverage reporting"""
+    cs.coverage.start()
+    print "Coverage collection started"
+
+
+def do_coverage_stop(cs, args):
+    """Stop Nova coverage reporting"""
+    cs.coverage.stop()
+    print "Coverage collection stopped"
+
+
+@utils.arg('filename', metavar='<filename>', help='report filename')
+def do_coverage_report(cs, args):
+    """Generate a coverage report"""
+    cov = cs.coverage.report(args.filename)
+    print "Report path: %s" % cov[-1]['path']
+
+
 @utils.arg('--matching', metavar='<hostname>', default=None,
            help='List hypervisors matching the given <hostname>.')
 def do_hypervisor_list(cs, args):

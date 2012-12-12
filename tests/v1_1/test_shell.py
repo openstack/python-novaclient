@@ -590,6 +590,18 @@ class ShellTest(utils.TestCase):
         self.run_command('host-action sample-host --action reboot')
         self.assert_called('GET', '/os-hosts/sample-host/reboot')
 
+    def test_coverage_start(self):
+        self.run_command('coverage-start')
+        self.assert_called('POST', '/os-coverage/action')
+
+    def test_coverage_stop(self):
+        self.run_command('coverage-stop')
+        self.assert_called('POST', '/os-coverage/action')
+
+    def test_coverage_report(self):
+        self.run_command('coverage-report report')
+        self.assert_called_anytime('POST', '/os-coverage/action')
+
     def test_hypervisor_list(self):
         self.run_command('hypervisor-list')
         self.assert_called('GET', '/os-hypervisors')

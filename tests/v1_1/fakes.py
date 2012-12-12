@@ -1227,3 +1227,11 @@ class FakeHTTPClient(base_client.HTTPClient):
 
     def post_os_networks_2_action(self, **kw):
         return (202, None)
+
+    def post_os_coverage_action(self, body, **kw):
+        if 'report' not in body:
+            return (200, None)
+        else:
+            return (200, {
+                'path': '/tmp/tmpdir/' + body['report']['file']
+            })
