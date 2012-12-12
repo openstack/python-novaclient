@@ -93,7 +93,8 @@ class OpenStackComputeShell(object):
             help="Print debugging output")
 
         parser.add_argument('--no-cache',
-            default=utils.env('OS_NO_CACHE', default=True),
+            default=not utils.bool_from_str(
+                    utils.env('OS_NO_CACHE', default='true')),
             action='store_false',
             dest='os_cache',
             help=argparse.SUPPRESS)
