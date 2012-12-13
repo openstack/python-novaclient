@@ -72,6 +72,38 @@ class ShellTest(utils.TestCase):
     def assert_called_anytime(self, method, url, body=None):
         return self.shell.cs.assert_called_anytime(method, url, body)
 
+    def test_agents_list_with_hypervisor(self):
+        self.run_command('agent-list --hypervisor xen')
+        self.assert_called('GET', '/os-agents?hypervisor=xen')
+
+    def test_agents_create(self):
+        self.run_command('agent-create win x86 7.0 '
+                         '/xxx/xxx/xxx '
+                         'add6bb58e139be103324d04d82d8f546 '
+                         'kvm')
+        self.assert_called(
+            'POST', '/os-agents',
+            {'agent': {
+                     'hypervisor': 'kvm',
+                     'os': 'win',
+                     'architecture': 'x86',
+                     'version': '7.0',
+                     'url': '/xxx/xxx/xxx',
+                     'md5hash': 'add6bb58e139be103324d04d82d8f546'}})
+
+    def test_agents_delete(self):
+        self.run_command('agent-delete 1')
+        self.assert_called('DELETE', '/os-agents/1')
+
+    def test_agents_modify(self):
+        self.run_command('agent-modify 1 8.0 /yyy/yyyy/yyyy '
+                         'add6bb58e139be103324d04d82d8f546')
+        self.assert_called('PUT', '/os-agents/1',
+                          {"para": {
+                               "url": "/yyy/yyyy/yyyy",
+                               "version": "8.0",
+                               "md5hash": "add6bb58e139be103324d04d82d8f546"}})
+
     def test_boot(self):
         self.run_command('boot --flavor 1 --image 1 some-server')
         self.assert_called_anytime(

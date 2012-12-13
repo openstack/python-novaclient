@@ -70,6 +70,49 @@ class FakeHTTPClient(base_client.HTTPClient):
             return httplib2.Response({"status": status}), body
 
     #
+    # agents
+    #
+
+    def get_os_agents(self, **kw):
+        hypervisor = kw.get('hypervisor', 'kvm')
+        return (200, {'agents':
+                    [{'hypervisor': hypervisor,
+                      'os': 'win',
+                     'architecture': 'x86',
+                     'version': '7.0',
+                     'url': 'xxx://xxxx/xxx/xxx',
+                     'md5hash': 'add6bb58e139be103324d04d82d8f545',
+                     'id': 1},
+                    {'hypervisor': hypervisor,
+                     'os': 'linux',
+                     'architecture': 'x86',
+                     'version': '16.0',
+                     'url': 'xxx://xxxx/xxx/xxx1',
+                     'md5hash': 'add6bb58e139be103324d04d82d8f546',
+                     'id': 2},
+                    ]})
+
+    def post_os_agents(self, body):
+        return (200, {'agent': {
+                          'url': '/xxx/xxx/xxx',
+                          'hypervisor': body['agent']['hypervisor'],
+                          'md5hash': 'add6bb58e139be103324d04d82d8f546',
+                          'version': '7.0',
+                          'architecture': 'x86',
+                          'os': 'win',
+                          'id': 1}})
+
+    def delete_os_agents_1(self, **kw):
+        return (202, None)
+
+    def put_os_agents_1(self, body, **kw):
+        return (200, {"agent": {
+                           "url": "/yyy/yyyy/yyyy",
+                           "version": "8.0",
+                           "md5hash": "add6bb58e139be103324d04d82d8f546",
+                           'id': 1}})
+
+    #
     # List all extensions
     #
 

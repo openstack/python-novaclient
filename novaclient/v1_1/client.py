@@ -1,4 +1,5 @@
 from novaclient import client
+from novaclient.v1_1 import agents
 from novaclient.v1_1 import certs
 from novaclient.v1_1 import cloudpipe
 from novaclient.v1_1 import aggregates
@@ -66,6 +67,7 @@ class Client(object):
         self.servers = servers.ServerManager(self)
 
         # extensions
+        self.agents = agents.AgentsManager(self)
         self.dns_domains = floating_ip_dns.FloatingIPDNSDomainManager(self)
         self.dns_entries = floating_ip_dns.FloatingIPDNSEntryManager(self)
         self.cloudpipe = cloudpipe.CloudpipeManager(self)
