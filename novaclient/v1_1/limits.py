@@ -70,10 +70,12 @@ class LimitsManager(base.Manager):
 
     resource_class = Limits
 
-    def get(self):
+    def get(self, reserved=False):
         """
         Get a specific extension.
 
         :rtype: :class:`Limits`
         """
-        return self._get("/limits", "limits")
+        query_string = "?reserved=1" if reserved else ""
+
+        return self._get("/limits%s" % query_string, "limits")

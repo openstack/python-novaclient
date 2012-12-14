@@ -1909,9 +1909,14 @@ def do_keypair_list(cs, args):
     utils.print_list(keypairs, columns)
 
 
+@utils.arg('--reserved',
+           dest='reserved',
+           action='store_true',
+           default=False,
+           help='Include reservations count.')
 def do_absolute_limits(cs, args):
     """Print a list of absolute limits for a user"""
-    limits = cs.limits.get().absolute
+    limits = cs.limits.get(args.reserved).absolute
     columns = ['Name', 'Value']
     utils.print_list(limits, columns)
 

@@ -744,3 +744,10 @@ class ShellTest(utils.TestCase):
                            {'createBackup': {'name': 'back1',
                                              'backup_type': 'daily',
                                              'rotation': '1'}})
+
+    def test_absolute_limits(self):
+        self.run_command('absolute-limits')
+        self.assert_called('GET', '/limits')
+
+        self.run_command('absolute-limits --reserved')
+        self.assert_called('GET', '/limits?reserved=1')

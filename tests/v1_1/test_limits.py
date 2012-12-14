@@ -31,6 +31,23 @@ class LimitsTest(utils.TestCase):
         for limit in abs_limits:
             self.assertTrue(limit in expected)
 
+    def test_absolute_limits_reserved(self):
+        obj = cs.limits.get(reserved=True)
+
+        expected = (
+            limits.AbsoluteLimit("maxTotalRAMSize", 51200),
+            limits.AbsoluteLimit("maxServerMeta", 5),
+            limits.AbsoluteLimit("maxImageMeta", 5),
+            limits.AbsoluteLimit("maxPersonality", 5),
+            limits.AbsoluteLimit("maxPersonalitySize", 10240),
+        )
+
+        abs_limits = list(obj.absolute)
+        self.assertEqual(len(abs_limits), len(expected))
+
+        for limit in abs_limits:
+            self.assertTrue(limit in expected)
+
     def test_rate_limits(self):
         obj = cs.limits.get()
 
