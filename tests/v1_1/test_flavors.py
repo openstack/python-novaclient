@@ -28,6 +28,15 @@ class FlavorsTest(utils.TestCase):
         self.assertEqual(f.ephemeral, 10)
         self.assertEqual(f.is_public, True)
 
+    def test_get_flavor_details_alphanum_id(self):
+        f = cs.flavors.get('aa1')
+        cs.assert_called('GET', '/flavors/aa1')
+        self.assertTrue(isinstance(f, flavors.Flavor))
+        self.assertEqual(f.ram, 128)
+        self.assertEqual(f.disk, 0)
+        self.assertEqual(f.ephemeral, 0)
+        self.assertEqual(f.is_public, True)
+
     def test_get_flavor_details_diablo(self):
         f = cs.flavors.get(3)
         cs.assert_called('GET', '/flavors/3')

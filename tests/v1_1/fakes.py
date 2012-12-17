@@ -506,7 +506,8 @@ class FakeHTTPClient(base_client.HTTPClient):
     def get_flavors(self, **kw):
         return (200, {'flavors': [
             {'id': 1, 'name': '256 MB Server'},
-            {'id': 2, 'name': '512 MB Server'}
+            {'id': 2, 'name': '512 MB Server'},
+            {'id': 'aa1', 'name': '128 MB Server'}
         ]})
 
     def get_flavors_detail(self, **kw):
@@ -519,6 +520,10 @@ class FakeHTTPClient(base_client.HTTPClient):
              'OS-FLV-EXT-DATA:ephemeral': 20,
              'os-flavor-access:is_public': False,
              'links': {}},
+            {'id': 'aa1', 'name': '128 MB Server', 'ram': 128, 'disk': 0,
+             'OS-FLV-EXT-DATA:ephemeral': 0,
+             'os-flavor-access:is_public': True,
+             'links': {}}
         ]})
 
     def get_flavors_1(self, **kw):
@@ -531,6 +536,10 @@ class FakeHTTPClient(base_client.HTTPClient):
         # Diablo has no ephemeral
         return (200, {'flavor': {'id': 3, 'name': '256 MB Server',
                                  'ram': 256, 'disk': 10}})
+
+    def get_flavors_aa1(self, **kw):
+        # Aplhanumeric flavor id are allowed.
+        return (200, {'flavor': self.get_flavors_detail()[1]['flavors'][2]})
 
     def delete_flavors_flavordelete(self, **kw):
         return (202, None)
@@ -545,6 +554,10 @@ class FakeHTTPClient(base_client.HTTPClient):
     def get_flavors_2_os_extra_specs(self, **kw):
         return (200,
             {'extra_specs': {"k2": "v2"}})
+
+    def get_flavors_aa1_os_extra_specs(self, **kw):
+        return (200,
+            {'extra_specs': {"k3": "v3"}})
 
     def post_flavors_1_os_extra_specs(self, body, **kw):
         assert body.keys() == ['extra_specs']

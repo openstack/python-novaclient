@@ -74,6 +74,7 @@ class FlavorManager(base.ManagerWithFind):
     Manage :class:`Flavor` resources.
     """
     resource_class = Flavor
+    is_alphanum_id_allowed = True
 
     def list(self, detailed=True):
         """

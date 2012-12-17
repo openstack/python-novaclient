@@ -226,12 +226,16 @@ class ShellTest(utils.TestCase):
 
     def test_flavor_list(self):
         self.run_command('flavor-list')
-        self.assert_called('GET', '/flavors/2/os-extra_specs')
+        self.assert_called('GET', '/flavors/aa1/os-extra_specs')
         self.assert_called_anytime('GET', '/flavors/detail')
 
     def test_flavor_show(self):
         self.run_command('flavor-show 1')
         self.assert_called_anytime('GET', '/flavors/1')
+
+    def test_flavor_show_with_alphanum_id(self):
+        self.run_command('flavor-show aa1')
+        self.assert_called_anytime('GET', '/flavors/aa1')
 
     def test_image_show(self):
         self.run_command('image-show 1')

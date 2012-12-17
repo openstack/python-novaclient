@@ -192,6 +192,13 @@ def find_resource(manager, name_or_id):
     except (ValueError, exceptions.NotFound):
         pass
 
+    # for str id which is not uuid (for Flavor search currently)
+    if getattr(manager, 'is_alphanum_id_allowed', False):
+        try:
+            return manager.get(name_or_id)
+        except exceptions.NotFound:
+            pass
+
     try:
         try:
             return manager.find(human_id=name_or_id)
