@@ -522,7 +522,7 @@ class FakeHTTPClient(base_client.HTTPClient):
         return (
             200,
             {},
-            {'cloudpipes': [{'project_id':1}]}
+            {'cloudpipes': [{'project_id': 1}]}
         )
 
     def post_os_cloudpipe(self, **ks):
@@ -1061,10 +1061,18 @@ class FakeHTTPClient(base_client.HTTPClient):
     # Security Groups
     #
     def get_os_security_groups(self, **kw):
-        return (200, {}, {"security_groups": [
-                {'id': 1, 'name': 'test', 'description': 'FAKE_SECURITY_GROUP',
-                 'tenant_id': '4ffc664c198e435e9853f2538fbcd7a7'}
-        ]})
+        return (200, {},
+                {"security_groups": [
+                    dict(description="FAKE_SECURITY_GROUP", id=1, name="test",
+                         rules=[{
+                                    'id': 1,
+                                    'parent_group_id': 1,
+                                    'group_id': 2,
+                                    'ip_protocol': 'TCP',
+                                    'from_port': 22,
+                                    'to_port': 22,
+                                    'cidr': '10.0.0.0/8'}],
+                         tenant_id='4ffc664c198e435e9853f2538fbcd7a7')]})
 
     def get_os_security_groups_1(self, **kw):
         return (200, {}, {"security_group":
@@ -1109,40 +1117,48 @@ class FakeHTTPClient(base_client.HTTPClient):
     # Tenant Usage
     #
     def get_os_simple_tenant_usage(self, **kw):
-        return (200, {}, {u'tenant_usages': [{
-            u'total_memory_mb_usage': 25451.762807466665,
-            u'total_vcpus_usage': 49.71047423333333,
-            u'total_hours': 49.71047423333333,
-            u'tenant_id': u'7b0a1d73f8fb41718f3343c207597869',
-            u'stop': u'2012-01-22 19:48:41.750722',
-            u'server_usages': [{
-                u'hours': 49.71047423333333,
-                u'uptime': 27035, u'local_gb': 0, u'ended_at': None,
-                u'name': u'f15image1',
-                u'tenant_id': u'7b0a1d73f8fb41718f3343c207597869',
-                u'vcpus': 1, u'memory_mb': 512, u'state': u'active',
-                u'flavor': u'm1.tiny',
-                u'started_at': u'2012-01-20 18:06:06.479998'}],
-            u'start': u'2011-12-25 19:48:41.750687',
-            u'total_local_gb_usage': 0.0}]})
+        return (200, {},
+                {u'tenant_usages': [{
+                    u'total_memory_mb_usage': 25451.762807466665,
+                    u'total_vcpus_usage': 49.71047423333333,
+                    u'total_hours': 49.71047423333333,
+                    u'tenant_id': u'7b0a1d73f8fb41718f3343c207597869',
+                    u'stop': u'2012-01-22 19:48:41.750722',
+                    u'server_usages': [{
+                        u'hours': 49.71047423333333,
+                        u'uptime': 27035,
+                        u'local_gb': 0,
+                        u'ended_at': None,
+                        u'name': u'f15image1',
+                        u'tenant_id': u'7b0a1d73f8fb41718f3343c207597869',
+                        u'vcpus': 1,
+                        u'memory_mb': 512,
+                        u'state': u'active',
+                        u'flavor': u'm1.tiny',
+                        u'started_at': u'2012-01-20 18:06:06.479998'}],
+                    u'start': u'2011-12-25 19:48:41.750687',
+                    u'total_local_gb_usage': 0.0}]})
 
     def get_os_simple_tenant_usage_tenantfoo(self, **kw):
-        return (200, {}, {u'tenant_usage': {
-            u'total_memory_mb_usage': 25451.762807466665,
-            u'total_vcpus_usage': 49.71047423333333,
-            u'total_hours': 49.71047423333333,
-            u'tenant_id': u'7b0a1d73f8fb41718f3343c207597869',
-            u'stop': u'2012-01-22 19:48:41.750722',
-            u'server_usages': [{
-                u'hours': 49.71047423333333,
-                u'uptime': 27035, u'local_gb': 0, u'ended_at': None,
-                u'name': u'f15image1',
-                u'tenant_id': u'7b0a1d73f8fb41718f3343c207597869',
-                u'vcpus': 1, u'memory_mb': 512, u'state': u'active',
-                u'flavor': u'm1.tiny',
-                u'started_at': u'2012-01-20 18:06:06.479998'}],
-            u'start': u'2011-12-25 19:48:41.750687',
-            u'total_local_gb_usage': 0.0}})
+        return (200, {},
+                {u'tenant_usage': {
+                    u'total_memory_mb_usage': 25451.762807466665,
+                    u'total_vcpus_usage': 49.71047423333333,
+                    u'total_hours': 49.71047423333333,
+                    u'tenant_id': u'7b0a1d73f8fb41718f3343c207597869',
+                    u'stop': u'2012-01-22 19:48:41.750722',
+                    u'server_usages': [{
+                        u'hours': 49.71047423333333,
+                        u'uptime': 27035, u'local_gb': 0,
+                        u'ended_at': None,
+                        u'name': u'f15image1',
+                        u'tenant_id': u'7b0a1d73f8fb41718f3343c207597869',
+                        u'vcpus': 1, u'memory_mb': 512,
+                        u'state': u'active',
+                        u'flavor': u'm1.tiny',
+                        u'started_at': u'2012-01-20 18:06:06.479998'}],
+                    u'start': u'2011-12-25 19:48:41.750687',
+                    u'total_local_gb_usage': 0.0}})
 
     def get_os_simple_tenant_usage_test(self, **kw):
         return (200, {}, {u'tenant_usage': {
@@ -1153,10 +1169,12 @@ class FakeHTTPClient(base_client.HTTPClient):
             u'stop': u'2012-01-22 19:48:41.750722',
             u'server_usages': [{
                 u'hours': 49.71047423333333,
-                u'uptime': 27035, u'local_gb': 0, u'ended_at': None,
+                u'uptime': 27035, u'local_gb': 0,
+                u'ended_at': None,
                 u'name': u'f15image1',
                 u'tenant_id': u'7b0a1d73f8fb41718f3343c207597869',
-                u'vcpus': 1, u'memory_mb': 512, u'state': u'active',
+                u'vcpus': 1, u'memory_mb': 512,
+                u'state': u'active',
                 u'flavor': u'm1.tiny',
                 u'started_at': u'2012-01-20 18:06:06.479998'}],
             u'start': u'2011-12-25 19:48:41.750687',
@@ -1171,18 +1189,20 @@ class FakeHTTPClient(base_client.HTTPClient):
             u'stop': u'2012-01-22 19:48:41.750722',
             u'server_usages': [{
                 u'hours': 49.71047423333333,
-                u'uptime': 27035, u'local_gb': 0, u'ended_at': None,
+                u'uptime': 27035, u'local_gb': 0,
+                u'ended_at': None,
                 u'name': u'f15image1',
                 u'tenant_id': u'7b0a1d73f8fb41718f3343c207597869',
-                u'vcpus': 1, u'memory_mb': 512, u'state': u'active',
+                u'vcpus': 1, u'memory_mb': 512,
+                u'state': u'active',
                 u'flavor': u'm1.tiny',
                 u'started_at': u'2012-01-20 18:06:06.479998'}],
             u'start': u'2011-12-25 19:48:41.750687',
             u'total_local_gb_usage': 0.0}})
-
     #
     # Certificates
     #
+
     def get_os_certificates_root(self, **kw):
         return (
             200,
@@ -1200,12 +1220,13 @@ class FakeHTTPClient(base_client.HTTPClient):
     #
     # Aggregates
     #
+
     def get_os_aggregates(self, *kw):
         return (200, {}, {"aggregates": [
-            {'id':'1',
+            {'id': '1',
              'name': 'test',
              'availability_zone': 'nova1'},
-            {'id':'2',
+            {'id': '2',
              'name': 'test2',
              'availability_zone': 'nova1'},
         ]})

@@ -26,12 +26,35 @@ cs = fakes.FakeClient()
 
 class FpingTest(utils.TestCase):
 
+    def test_fping_repr(self):
+        r = cs.fping.get(1)
+        self.assertEqual(repr(r), "<Fping: 1>")
+
     def test_list_fpings(self):
         fl = cs.fping.list()
         cs.assert_called('GET', '/os-fping')
-        [self.assertTrue(isinstance(f, fping.Fping)) for f in fl]
-        [self.assertEqual(f.project_id, "fake-project") for f in fl]
-        [self.assertEqual(f.alive, True) for f in fl]
+        for f in fl:
+            self.assertTrue(isinstance(f, fping.Fping))
+            self.assertEqual(f.project_id, "fake-project")
+            self.assertEqual(f.alive, True)
+
+    def test_list_fpings_all_tenants(self):
+        fl = cs.fping.list(all_tenants=True)
+        for f in fl:
+            self.assertTrue(isinstance(f, fping.Fping))
+        cs.assert_called('GET', '/os-fping?all_tenants=1')
+
+    def test_list_fpings_exclude(self):
+        fl = cs.fping.list(exclude=['1'])
+        for f in fl:
+            self.assertTrue(isinstance(f, fping.Fping))
+        cs.assert_called('GET', '/os-fping?exclude=1')
+
+    def test_list_fpings_include(self):
+        fl = cs.fping.list(include=['1'])
+        for f in fl:
+            self.assertTrue(isinstance(f, fping.Fping))
+        cs.assert_called('GET', '/os-fping?include=1')
 
     def test_get_fping(self):
         f = cs.fping.get(1)
