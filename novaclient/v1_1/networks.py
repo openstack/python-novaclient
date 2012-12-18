@@ -18,6 +18,7 @@ Network interface.
 """
 
 from novaclient import base
+from novaclient import exceptions
 
 
 class Network(base.Resource):
@@ -55,7 +56,8 @@ class NetworkManager(base.ManagerWithFind):
         :param network: The ID of the :class:`Network` to get.
         :rtype: :class:`Network`
         """
-        return self._get("/os-networks/%s" % base.getid(network), "network")
+        return self._get("/os-networks/%s" % base.getid(network),
+                         "network")
 
     def delete(self, network):
         """
@@ -107,11 +109,11 @@ class NetworkManager(base.ManagerWithFind):
         elif disassociate_host:
             body = {"disassociate_host": None}
         else:
-            raise CommandError(
+            raise exceptions.CommandError(
                 "Must disassociate either host or project or both")
 
-        self.api.client.post("/os-networks/%s/action" % base.getid(network),
-                             body=body)
+        self.api.client.post("/os-networks/%s/action" %
+                             base.getid(network), body=body)
 
     def associate_host(self, network, host):
         """
@@ -120,7 +122,8 @@ class NetworkManager(base.ManagerWithFind):
         :param network: The ID of the :class:`Network`.
         :param host: The name of the host to associate the network with
         """
-        self.api.client.post("/os-networks/%s/action" % base.getid(network),
+        self.api.client.post("/os-networks/%s/action" %
+                             base.getid(network),
                              body={"associate_host": host})
 
     def associate_project(self, network):

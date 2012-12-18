@@ -16,8 +16,6 @@
 from datetime import datetime
 import urlparse
 
-import requests
-
 from novaclient import client as base_client
 from novaclient.v1_1 import client
 from tests import fakes
@@ -65,10 +63,6 @@ class FakeHTTPClient(base_client.HTTPClient):
         # Note the call
         self.callstack.append((method, url, kwargs.get('body', None)))
 
-        if 'body' in kwargs:
-            b = kwargs['body']
-        else:
-            b = ''
         status, headers, body = getattr(self, callback)(**kwargs)
         r = utils.TestResponse({
             "status_code": status,
@@ -655,9 +649,6 @@ class FakeHTTPClient(base_client.HTTPClient):
         return (200, {}, {'floating_ip':
             {'id': 1, 'fixed_ip': '10.0.0.1', 'ip': '11.0.0.1'}
         })
-
-    def post_os_floating_ips(self, body, **kw):
-        return (202, {}, self.get_os_floating_ips_1()[1])
 
     def post_os_floating_ips(self, body):
         if body.get('pool'):
@@ -1289,14 +1280,11 @@ class FakeHTTPClient(base_client.HTTPClient):
                 'project_id': '4ffc664c198e435e9853f2538fbcd7a7',
                 'id': '1'}]})
 
-    def get_os_networks_1(self, **kw):
-        return (200, {}, {'network': {"label": "1", "cidr": "10.0.0.0/24"}})
-
     def post_os_networks(self, **kw):
         return (202, {}, {'network': kw})
 
-    def post_os_networks_1_action(self, **kw):
-        return (202, {}, None)
+    def get_os_networks_1(self, **kw):
+        return (200, {}, {'network': {"label": "1", "cidr": "10.0.0.0/24"}})
 
     def delete_os_networks_networkdelete(self, **kw):
         return (202, {}, None)
@@ -1336,8 +1324,13 @@ class FakeHTTPClient(base_client.HTTPClient):
             }
         )
 
-    def post_os_networks(self, **kw):
-        return (202, {}, {'network': kw})
+    def post_os_coverage_action(self, body, **kw):
+        if 'report' not in body:
+            return (200, {}, None)
+        else:
+            return (200, {}, {
+                'path': '/tmp/tmpdir/' + body['report']['file']
+            })
 
     def post_os_networks_1_action(self, **kw):
         return (202, {}, None)

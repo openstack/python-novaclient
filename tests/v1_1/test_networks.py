@@ -31,7 +31,8 @@ class NetworksTest(utils.TestCase):
 
     def test_associate_project(self):
         cs.networks.associate_project('networktest')
-        cs.assert_called('POST', '/os-networks/add', {'id': 'networktest'})
+        cs.assert_called('POST', '/os-networks/add',
+                         {'id': 'networktest'})
 
     def test_associate_host(self):
         cs.networks.associate_host('networktest', 'testHost')
@@ -40,17 +41,20 @@ class NetworksTest(utils.TestCase):
 
     def test_disassociate(self):
         cs.networks.disassociate('networkdisassociate')
-        cs.assert_called('POST', '/os-networks/networkdisassociate/action',
+        cs.assert_called('POST',
+                         '/os-networks/networkdisassociate/action',
                          {'disassociate': None})
 
     def test_disassociate_host_only(self):
         cs.networks.disassociate('networkdisassociate', True, False)
-        cs.assert_called('POST', '/os-networks/networkdisassociate/action',
+        cs.assert_called('POST',
+                         '/os-networks/networkdisassociate/action',
                          {'disassociate_host': None})
 
     def test_disassociate_project(self):
         cs.networks.disassociate('networkdisassociate', False, True)
-        cs.assert_called('POST', '/os-networks/networkdisassociate/action',
+        cs.assert_called('POST',
+                         '/os-networks/networkdisassociate/action',
                          {'disassociate_project': None})
 
     def test_add(self):

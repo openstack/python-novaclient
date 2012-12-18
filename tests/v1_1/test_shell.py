@@ -738,11 +738,6 @@ class ShellTest(utils.TestCase):
         body = {'id': "1"}
         self.assert_called('POST', '/os-networks/add', body)
 
-    def test_network_disassociate(self):
-        self.run_command('network-disassociate 1')
-        body = {'disassociate': None}
-        self.assert_called('POST', '/os-networks/1/action', body)
-
     def test_network_disassociate_host(self):
         self.run_command('network-disassociate --host-only 1 2')
         body = {'disassociate_host': None}
@@ -752,12 +747,6 @@ class ShellTest(utils.TestCase):
         self.run_command('network-disassociate --project-only 1 2')
         body = {'disassociate_project': None}
         self.assert_called('POST', '/os-networks/2/action', body)
-
-    def test_network_create_v4(self):
-        self.run_command('network-create --fixed-range-v4 10.0.1.0/24 \
-                          new_network')
-        body = {'cidr': '10.0.1.0/24', 'label': 'new_network'}
-        self.assert_called('POST', '/os-networks', body)
 
     def test_network_create_v4(self):
         self.run_command('network-create --fixed-range-v4 10.0.1.0/24 \
