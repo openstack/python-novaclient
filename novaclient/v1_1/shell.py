@@ -358,12 +358,13 @@ def do_flavor_list(cs, _args):
     _print_flavor_list(cs, flavors)
 
 
-@utils.arg('id',
-     metavar='<id>',
-     help="Unique ID of the flavor to delete")
+@utils.arg('flavor',
+    metavar='<flavor>',
+    help="Name or ID of the flavor to delete")
 def do_flavor_delete(cs, args):
     """Delete a specific flavor"""
-    cs.flavors.delete(args.id)
+    flavorid = _find_flavor(cs, args.flavor)
+    cs.flavors.delete(flavorid)
 
 
 @utils.arg('flavor',
@@ -803,12 +804,12 @@ def do_image_delete(cs, args):
     dest='flavor',
     metavar='<flavor>',
     default=None,
-    help='Search by flavor ID')
+    help='Search by flavor name or ID')
 @utils.arg('--image',
     dest='image',
     metavar='<image>',
     default=None,
-    help='Search by image ID')
+    help='Search by image name or ID')
 @utils.arg('--host',
     dest='host',
     metavar='<hostname>',
@@ -836,14 +837,20 @@ def do_image_delete(cs, args):
     help='Display information from single tenant (Admin only).')
 def do_list(cs, args):
     """List active servers."""
+    imageid = None
+    flavorid = None
+    if args.image:
+        imageid = _find_image(cs, args.image).id
+    if args.flavor:
+        flavorid = _find_flavor(cs, args.flavor).id
     search_opts = {
             'all_tenants': args.all_tenants,
             'reservation_id': args.reservation_id,
             'ip': args.ip,
             'ip6': args.ip6,
             'name': args.name,
-            'image': args.image,
-            'flavor': args.flavor,
+            'image': imageid,
+            'flavor': flavorid,
             'status': args.status,
             'project_id': args.tenant,
             'host': args.host,

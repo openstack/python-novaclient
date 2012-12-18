@@ -535,6 +535,9 @@ class FakeHTTPClient(base_client.HTTPClient):
     def delete_flavors_flavordelete(self, **kw):
         return (202, None)
 
+    def delete_flavors_2(self, **kw):
+        return (202, None)
+
     def post_flavors(self, body, **kw):
         return (202, {'flavor': self.get_flavors_detail()[1]['flavors'][0]})
 
