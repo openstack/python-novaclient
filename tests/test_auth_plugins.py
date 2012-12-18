@@ -13,9 +13,9 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import httplib2
 import mock
 import pkg_resources
+import requests
 
 try:
     import json
@@ -52,12 +52,11 @@ def mock_http_request(resp=None):
             },
         }
 
-    auth_response = httplib2.Response({
-        "status": 200,
-        "body": json.dumps(resp),
+    auth_response = utils.TestResponse({
+        "status_code": 200,
+        "text": json.dumps(resp),
     })
-    return mock.Mock(return_value=(auth_response,
-                                   json.dumps(resp)))
+    return mock.Mock(return_value=(auth_response))
 
 
 def requested_headers(cs):
@@ -86,7 +85,7 @@ class AuthPluginTest(utils.TestCase):
 
         @mock.patch.object(pkg_resources, "iter_entry_points",
                            mock_iter_entry_points)
-        @mock.patch.object(httplib2.Http, "request", mock_request)
+        @mock.patch.object(requests, "request", mock_request)
         def test_auth_call():
             cs = client.Client("username", "password", "project_id",
                                "auth_url/v2.0", auth_system="fake")
@@ -95,9 +94,13 @@ class AuthPluginTest(utils.TestCase):
             headers = requested_headers(cs)
             token_url = cs.client.auth_url + "/tokens"
 
-            mock_request.assert_called_with(token_url, "POST",
-                                            headers=headers,
-                                            body='{"fake": "me"}')
+            mock_request.assert_called_with(
+                "POST",
+                token_url,
+                headers=headers,
+                data='{"fake": "me"}',
+                allow_redirects=True,
+                **self.TEST_REQUEST_BASE)
 
         test_auth_call()
 
@@ -109,7 +112,7 @@ class AuthPluginTest(utils.TestCase):
 
         @mock.patch.object(pkg_resources, "iter_entry_points",
                            mock_iter_entry_points)
-        @mock.patch.object(httplib2.Http, "request", mock_request)
+        @mock.patch.object(requests, "request", mock_request)
         def test_auth_call():
             cs = client.Client("username", "password", "project_id",
                                "auth_url/v2.0", auth_system="notexists")
@@ -146,7 +149,7 @@ class AuthPluginTest(utils.TestCase):
 
         @mock.patch.object(pkg_resources, "iter_entry_points",
                            mock_iter_entry_points)
-        @mock.patch.object(httplib2.Http, "request", mock_request)
+        @mock.patch.object(requests, "request", mock_request)
         def test_auth_call():
             cs = client.Client("username", "password", "project_id",
                                auth_system="fakewithauthurl")

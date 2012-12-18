@@ -56,7 +56,8 @@ class Client(object):
                   service_type='compute', service_name=None,
                   volume_service_name=None, timings=False,
                   bypass_url=None, os_cache=False, no_cache=True,
-                  http_log_debug=False, auth_system='keystone'):
+                  http_log_debug=False, auth_system='keystone',
+                  cacert=None):
         # FIXME(comstud): Rename the api_key argument above when we
         # know it's not being used as keyword argument
         password = api_key
@@ -122,7 +123,8 @@ class Client(object):
                                     timings=timings,
                                     bypass_url=bypass_url,
                                     os_cache=self.os_cache,
-                                    http_log_debug=http_log_debug)
+                                    http_log_debug=http_log_debug,
+                                    cacert=cacert)
 
     def set_management_url(self, url):
         self.client.set_management_url(url)

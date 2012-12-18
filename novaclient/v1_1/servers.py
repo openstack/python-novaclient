@@ -611,7 +611,8 @@ class ServerManager(local_base.BootingManagerWithFind):
         :param meta: Metadata to give newly-created image entity
         """
         body = {'name': image_name, 'metadata': metadata or {}}
-        location = self._action('createImage', server, body)[0]['location']
+        resp = self._action('createImage', server, body)[0]
+        location = resp.headers['location']
         image_uuid = location.split('/')[-1]
         return image_uuid
 

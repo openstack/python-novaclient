@@ -9,11 +9,12 @@ OpenStack Client interface. Handles the REST calls and responses.
 
 import logging
 import os
+import sys
 import time
 import urlparse
 
-import httplib2
 import pkg_resources
+import requests
 
 try:
     import json
@@ -46,40 +47,13 @@ def get_auth_system_url(auth_system):
     raise exceptions.AuthSystemNotFound(auth_system)
 
 
-def _get_proxy_info():
-    """Work around httplib2 proxying bug.
-
-    Full details of the bug here:
-
-      http://code.google.com/p/httplib2/issues/detail?id=228
-
-    Basically, in the case of plain old http with httplib2>=0.7.5 we
-    want to ensure that PROXY_TYPE_HTTP_NO_TUNNEL is used.
-    """
-    def get_proxy_info(method):
-        pi = httplib2.ProxyInfo.from_environment(method)
-        if pi is None or method != 'http':
-            return pi
-
-        # We can't rely on httplib2.socks being available
-        # PROXY_TYPE_HTTP_NO_TUNNEL was introduced in 0.7.5
-        if not (hasattr(httplib2, 'socks') and
-                hasattr(httplib2.socks, 'PROXY_TYPE_HTTP_NO_TUNNEL')):
-            return pi
-
-        pi.proxy_type = httplib2.socks.PROXY_TYPE_HTTP_NO_TUNNEL
-        return pi
-
-    # 0.7.3 introduced configuring proxy from the environment
-    if not hasattr(httplib2.ProxyInfo, 'from_environment'):
-        return None
-
-    return get_proxy_info
-
-
-class HTTPClient(httplib2.Http):
+class HTTPClient(object):
 
     USER_AGENT = 'python-novaclient'
+
+    requests_config = {
+        'danger_mode': False,
+    }
 
     def __init__(self, user, password, projectid, auth_url=None,
                  insecure=False, timeout=None, proxy_tenant_id=None,
@@ -88,9 +62,8 @@ class HTTPClient(httplib2.Http):
                  service_name=None, volume_service_name=None,
                  timings=False, bypass_url=None,
                  os_cache=False, no_cache=True,
-                 http_log_debug=False, auth_system='keystone'):
-        super(HTTPClient, self).__init__(timeout=timeout,
-                                         proxy_info=_get_proxy_info())
+                 http_log_debug=False, auth_system='keystone',
+                 cacert=None):
         self.user = user
         self.password = password
         self.projectid = projectid
@@ -118,9 +91,13 @@ class HTTPClient(httplib2.Http):
         self.proxy_tenant_id = proxy_tenant_id
         self.used_keyring = False
 
-        # httplib2 overrides
-        self.force_exception_to_status_code = True
-        self.disable_ssl_certificate_validation = insecure
+        if insecure:
+            self.verify_cert = False
+        else:
+            if cacert:
+                self.verify_cert = cacert
+            else:
+                self.verify_cert = True
 
         self.auth_system = auth_system
 
@@ -129,6 +106,7 @@ class HTTPClient(httplib2.Http):
             ch = logging.StreamHandler()
             self._logger.setLevel(logging.DEBUG)
             self._logger.addHandler(ch)
+            self.requests_config['verbose'] = sys.stderr
 
     def use_token_cache(self, use_it):
         self.os_cache = use_it
@@ -167,40 +145,53 @@ class HTTPClient(httplib2.Http):
             string_parts.append(" -d '%s'" % (kwargs['body']))
         self._logger.debug("\nREQ: %s\n" % "".join(string_parts))
 
-    def http_log_resp(self, resp, body):
+    def http_log_resp(self, resp):
         if not self.http_log_debug:
             return
-        self._logger.debug("RESP:%s %s\n", resp, body)
+        self._logger.debug(
+            "RESP: [%s] %s\nRESP BODY: %s\n",
+            resp.status_code,
+            resp.headers,
+            resp.text)
 
-    def request(self, *args, **kwargs):
+    def request(self, url, method, **kwargs):
         kwargs.setdefault('headers', kwargs.get('headers', {}))
         kwargs['headers']['User-Agent'] = self.USER_AGENT
         kwargs['headers']['Accept'] = 'application/json'
         if 'body' in kwargs:
             kwargs['headers']['Content-Type'] = 'application/json'
-            kwargs['body'] = json.dumps(kwargs['body'])
+            kwargs['data'] = json.dumps(kwargs['body'])
+            del kwargs['body']
 
-        self.http_log_req(args, kwargs)
-        resp, body = super(HTTPClient, self).request(*args, **kwargs)
-        self.http_log_resp(resp, body)
+        self.http_log_req((url, method,), kwargs)
+        resp = requests.request(
+            method,
+            url,
+            verify=self.verify_cert,
+            config=self.requests_config,
+            **kwargs)
+        self.http_log_resp(resp)
 
-        if body:
+        if resp.text:
+            # TODO(dtroyer): verify the note below in a requests context
             # NOTE(alaski): Because force_exceptions_to_status_code=True
             # httplib2 returns a connection refused event as a 400 response.
             # To determine if it is a bad request or refused connection we need
             # to check the body.  httplib2 tests check for 'Connection refused'
             # or 'actively refused' in the body, so that's what we'll do.
-            if resp.status == 400:
-                if 'Connection refused' in body or 'actively refused' in body:
-                    raise exceptions.ConnectionRefused(body)
+            if resp.status_code == 400:
+                if ('Connection refused' in resp.text or
+                    'actively refused' in resp.text):
+                    raise exceptions.ConnectionRefused(resp.text)
             try:
-                body = json.loads(body)
+                body = json.loads(resp.text)
             except ValueError:
                 pass
+                body = None
         else:
             body = None
 
-        if resp.status >= 400:
+        if resp.status_code >= 400:
             raise exceptions.from_response(resp, body)
 
         return resp, body
@@ -254,7 +245,7 @@ class HTTPClient(httplib2.Http):
         We may get redirected to another site, fail or actually get
         back a service catalog with a token and our endpoints."""
 
-        if resp.status == 200:  # content must always present
+        if resp.status_code == 200:  # content must always present
             try:
                 self.auth_url = url
                 self.service_catalog = \
@@ -281,8 +272,8 @@ class HTTPClient(httplib2.Http):
                 print "Could not find any suitable endpoint. Correct region?"
                 raise
 
-        elif resp.status == 305:
-            return resp['location']
+        elif resp.status_code == 305:
+            return resp.headers['location']
         else:
             raise exceptions.from_response(resp, body)
 
@@ -407,16 +398,16 @@ class HTTPClient(httplib2.Http):
             headers['X-Auth-Project-Id'] = self.projectid
 
         resp, body = self._time_request(url, 'GET', headers=headers)
-        if resp.status in (200, 204):  # in some cases we get No Content
+        if resp.status_code in (200, 204):  # in some cases we get No Content
             try:
                 mgmt_header = 'x-server-management-url'
-                self.management_url = resp[mgmt_header].rstrip('/')
-                self.auth_token = resp['x-auth-token']
+                self.management_url = resp.headers[mgmt_header].rstrip('/')
+                self.auth_token = resp.headers['x-auth-token']
                 self.auth_url = url
-            except KeyError:
+            except (KeyError, TypeError):
                 raise exceptions.AuthorizationFailure()
-        elif resp.status == 305:
-            return resp['location']
+        elif resp.status_code == 305:
+            return resp.headers['location']
         else:
             raise exceptions.from_response(resp, body)
 
@@ -444,13 +435,11 @@ class HTTPClient(httplib2.Http):
         token_url = url + "/tokens"
 
         # Make sure we follow redirects when trying to reach Keystone
-        tmp_follow_all_redirects = self.follow_all_redirects
-        self.follow_all_redirects = True
-
-        try:
-            resp, body = self._time_request(token_url, "POST", body=body)
-        finally:
-            self.follow_all_redirects = tmp_follow_all_redirects
+        resp, body = self._time_request(
+            token_url,
+            "POST",
+            body=body,
+            allow_redirects=True)
 
         return self._extract_service_catalog(url, resp, body)
 

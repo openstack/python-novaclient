@@ -143,16 +143,19 @@ _code_map = dict((c.http_status, c) for c in [BadRequest, Unauthorized,
 def from_response(response, body):
     """
     Return an instance of an ClientException or subclass
-    based on an httplib2 response.
+    based on an requests response.
 
     Usage::
 
-        resp, body = http.request(...)
-        if resp.status != 200:
-            raise exception_from_response(resp, body)
+        resp, body = requests.request(...)
+        if resp.status_code != 200:
+            raise exception_from_response(resp, rest.text)
     """
-    cls = _code_map.get(response.status, ClientException)
-    request_id = response.get('x-compute-request-id')
+    cls = _code_map.get(response.status_code, ClientException)
+    if response.headers:
+        request_id = response.headers.get('x-compute-request-id')
+    else:
+        request_id = None
     if body:
         message = "n/a"
         details = "n/a"
@@ -160,7 +163,7 @@ def from_response(response, body):
             error = body[body.keys()[0]]
             message = error.get('message', None)
             details = error.get('details', None)
-        return cls(code=response.status, message=message, details=details,
+        return cls(code=response.status_code, message=message, details=details,
                    request_id=request_id)
     else:
-        return cls(code=response.status, request_id=request_id)
+        return cls(code=response.status_code, request_id=request_id)

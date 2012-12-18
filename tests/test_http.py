@@ -1,32 +1,28 @@
-import httplib2
 import mock
+import requests
 
 from novaclient import client
 from novaclient import exceptions
 from tests import utils
 
 
-fake_response = httplib2.Response({"status": 200})
-fake_body = '{"hi": "there"}'
-mock_request = mock.Mock(return_value=(fake_response, fake_body))
+fake_response = utils.TestResponse({
+    "status_code": 200,
+    "text": '{"hi": "there"}',
+})
+mock_request = mock.Mock(return_value=(fake_response))
 
-refused_response = httplib2.Response({"status": 400})
-refused_body = '[Errno 111] Connection refused'
-refused_mock_request = mock.Mock(
-        return_value=(
-            refused_response,
-            refused_body,
-        )
-)
+refused_response = utils.TestResponse({
+    "status_code": 400,
+    "text": '[Errno 111] Connection refused',
+})
+refused_mock_request = mock.Mock(return_value=(refused_response))
 
-bad_req_response = httplib2.Response({"status": 400})
-bad_req_body = ''
-bad_req_mock_request = mock.Mock(
-        return_value=(
-            bad_req_response,
-            bad_req_body,
-        )
-)
+bad_req_response = utils.TestResponse({
+    "status_code": 400,
+    "text": '',
+})
+bad_req_mock_request = mock.Mock(return_value=(bad_req_response))
 
 
 def get_client():
@@ -47,7 +43,7 @@ class ClientTest(utils.TestCase):
     def test_get(self):
         cl = get_authed_client()
 
-        @mock.patch.object(httplib2.Http, "request", mock_request)
+        @mock.patch.object(requests, "request", mock_request)
         @mock.patch('time.time', mock.Mock(return_value=1234))
         def test_get_call():
             resp, body = cl.get("/hi")
@@ -56,8 +52,11 @@ class ClientTest(utils.TestCase):
                        "User-Agent": cl.USER_AGENT,
                        'Accept': 'application/json',
             }
-            mock_request.assert_called_with("http://example.com/hi",
-                                            "GET", headers=headers)
+            mock_request.assert_called_with(
+                "GET",
+                "http://example.com/hi",
+                headers=headers,
+                **self.TEST_REQUEST_BASE)
             # Automatic JSON parsing
             self.assertEqual(body, {"hi": "there"})
 
@@ -66,7 +65,7 @@ class ClientTest(utils.TestCase):
     def test_post(self):
         cl = get_authed_client()
 
-        @mock.patch.object(httplib2.Http, "request", mock_request)
+        @mock.patch.object(requests, "request", mock_request)
         def test_post_call():
             cl.post("/hi", body=[1, 2, 3])
             headers = {
@@ -76,8 +75,12 @@ class ClientTest(utils.TestCase):
                 'Accept': 'application/json',
                 "User-Agent": cl.USER_AGENT
             }
-            mock_request.assert_called_with("http://example.com/hi", "POST",
-                                            headers=headers, body='[1, 2, 3]')
+            mock_request.assert_called_with(
+                "POST",
+                "http://example.com/hi",
+                headers=headers,
+                data='[1, 2, 3]',
+                **self.TEST_REQUEST_BASE)
 
         test_post_call()
 
@@ -85,7 +88,7 @@ class ClientTest(utils.TestCase):
         cl = get_client()
 
         # response must not have x-server-management-url header
-        @mock.patch.object(httplib2.Http, "request", mock_request)
+        @mock.patch.object(requests, "request", mock_request)
         def test_auth_call():
             self.assertRaises(exceptions.AuthorizationFailure, cl.authenticate)
 
@@ -94,7 +97,7 @@ class ClientTest(utils.TestCase):
     def test_connection_refused(self):
         cl = get_client()
 
-        @mock.patch.object(httplib2.Http, "request", refused_mock_request)
+        @mock.patch.object(requests, "request", refused_mock_request)
         def test_refused_call():
             self.assertRaises(exceptions.ConnectionRefused, cl.get, "/hi")
 
@@ -103,7 +106,7 @@ class ClientTest(utils.TestCase):
     def test_bad_request(self):
         cl = get_client()
 
-        @mock.patch.object(httplib2.Http, "request", bad_req_mock_request)
+        @mock.patch.object(requests, "request", bad_req_mock_request)
         def test_refused_call():
             self.assertRaises(exceptions.BadRequest, cl.get, "/hi")
 

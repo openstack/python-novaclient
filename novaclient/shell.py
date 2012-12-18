@@ -20,7 +20,6 @@ Command-line interface to the OpenStack Nova API.
 
 import argparse
 import glob
-import httplib2
 import imp
 import itertools
 import os
@@ -196,6 +195,13 @@ class OpenStackComputeShell(object):
         parser.add_argument('--os_compute_api_version',
             help=argparse.SUPPRESS)
 
+        parser.add_argument('--os-cacert',
+            metavar='<ca-certificate>',
+            default=utils.env('OS_CACERT', default=None),
+            help='Specify a CA bundle file to use in '
+                 'verifying a TLS (https) server certificate. '
+                 'Defaults to env[OS_CACERT]')
+
         parser.add_argument('--insecure',
             default=utils.env('NOVACLIENT_INSECURE', default=False),
             action='store_true',
@@ -349,8 +355,6 @@ class OpenStackComputeShell(object):
         logger.setLevel(logging.DEBUG)
         logger.addHandler(streamhandler)
 
-        httplib2.debuglevel = 1
-
     def main(self, argv):
         # Parse args once to find version and debug settings
         parser = self.get_base_parser()
@@ -393,7 +397,7 @@ class OpenStackComputeShell(object):
                 os_region_name, os_auth_system, endpoint_type, insecure,
                 service_type, service_name, volume_service_name,
                 username, apikey, projectid, url, region_name,
-                bypass_url, os_cache) = (
+                bypass_url, os_cache, cacert) = (
                         args.os_username, args.os_password,
                         args.os_tenant_name, args.os_auth_url,
                         args.os_region_name, args.os_auth_system,
@@ -401,7 +405,8 @@ class OpenStackComputeShell(object):
                         args.service_name, args.volume_service_name,
                         args.username, args.apikey, args.projectid,
                         args.url, args.region_name,
-                        args.bypass_url, args.os_cache)
+                        args.bypass_url, args.os_cache,
+                        args.os_cacert)
 
         if not endpoint_type:
             endpoint_type = DEFAULT_NOVA_ENDPOINT_TYPE
@@ -472,7 +477,8 @@ class OpenStackComputeShell(object):
                 service_name=service_name, auth_system=os_auth_system,
                 volume_service_name=volume_service_name,
                 timings=args.timings, bypass_url=bypass_url,
-                os_cache=os_cache, http_log_debug=options.debug)
+                os_cache=os_cache, http_log_debug=options.debug,
+                cacert=cacert)
 
         try:
             if not utils.isunauthenticated(args.func):

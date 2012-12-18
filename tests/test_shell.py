@@ -1,6 +1,5 @@
 import cStringIO
 import os
-import httplib2
 import sys
 
 from novaclient import exceptions
@@ -43,11 +42,6 @@ class ShellTest(utils.TestCase):
 
     def test_help_unknown_command(self):
         self.assertRaises(exceptions.CommandError, self.shell, 'help foofoo')
-
-    def test_debug(self):
-        httplib2.debuglevel = 0
-        self.shell('--debug help')
-        assert httplib2.debuglevel == 1
 
     def test_help(self):
         required = [
