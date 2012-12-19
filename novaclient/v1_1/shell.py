@@ -2474,7 +2474,7 @@ def do_quota_show(cs, args):
     """List the quotas for a tenant."""
 
     if not args.tenant:
-        _quota_show(cs.quotas.get(cs.project_id))
+        raise exceptions.CommandError("you need to specify a Tenant ID ")
     else:
         _quota_show(cs.quotas.get(args.tenant))
 

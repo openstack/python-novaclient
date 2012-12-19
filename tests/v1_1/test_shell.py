@@ -650,6 +650,11 @@ class ShellTest(utils.TestCase):
         self.run_command('quota-show --tenant test')
         self.assert_called('GET', '/os-quota-sets/test')
 
+    def test_quota_show_no_tenant(self):
+        self.assertRaises(exceptions.CommandError,
+                          self.run_command,
+                          'quota-show')
+
     def test_quota_defaults(self):
         self.run_command('quota-defaults --tenant test')
         self.assert_called('GET', '/os-quota-sets/test/defaults')
