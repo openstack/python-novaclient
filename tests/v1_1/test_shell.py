@@ -224,6 +224,24 @@ class ShellTest(utils.TestCase):
         cmd = 'boot some-server --image 1 --file /foo=%s' % invalid_file
         self.assertRaises(exceptions.CommandError, self.run_command, cmd)
 
+    def test_boot_num_instances(self):
+        self.run_command('boot --image 1 --flavor 1 --num-instances 3 server')
+        self.assert_called_anytime(
+            'POST', '/servers',
+            {
+                'server': {
+                    'flavorRef': '1',
+                    'name': 'server',
+                    'imageRef': '1',
+                    'min_count': 1,
+                    'max_count': 3,
+                }
+            })
+
+    def test_boot_invalid_num_instances(self):
+        cmd = 'boot --image 1 --flavor 1 --num-instances 1  server'
+        self.assertRaises(exceptions.CommandError, self.run_command, cmd)
+
     def test_flavor_list(self):
         self.run_command('flavor-list')
         self.assert_called('GET', '/flavors/aa1/os-extra_specs')
