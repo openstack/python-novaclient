@@ -3,6 +3,7 @@ from novaclient.v1_1 import agents
 from novaclient.v1_1 import certs
 from novaclient.v1_1 import cloudpipe
 from novaclient.v1_1 import aggregates
+from novaclient.v1_1 import coverage_ext
 from novaclient.v1_1 import flavors
 from novaclient.v1_1 import flavor_access
 from novaclient.v1_1 import floating_ip_dns
@@ -95,6 +96,7 @@ class Client(object):
         self.fixed_ips = fixed_ips.FixedIPsManager(self)
         self.floating_ips_bulk = floating_ips_bulk.FloatingIPBulkManager(self)
         self.os_cache = os_cache or not no_cache
+        self.coverage = coverage_ext.CoverageManager(self)
 
         # Add in any extensions...
         if extensions:
