@@ -468,8 +468,8 @@ class ShellTest(utils.TestCase):
                            'detailed=1')
 
     def test_flavor_delete(self):
-        self.run_command("flavor-delete flavordelete")
-        self.assert_called('DELETE', '/flavors/flavordelete')
+        self.run_command("flavor-delete 2")
+        self.assert_called('DELETE', '/flavors/2')
 
     def test_flavor_create(self):
         self.run_command("flavor-create flavorcreate "
