@@ -363,7 +363,7 @@ class FakeHTTPClient(base_client.HTTPClient):
     def put_servers_1234(self, body, **kw):
         assert body.keys() == ['server']
         fakes.assert_has_keys(body['server'], optional=['name', 'adminPass'])
-        return (204, {}, None)
+        return (204, {}, body)
 
     def delete_servers_1234(self, **kw):
         return (202, {}, None)
@@ -711,12 +711,12 @@ class FakeHTTPClient(base_client.HTTPClient):
         else:
             fakes.assert_has_keys(body['domain_entry'],
                             required=['project', 'scope'])
-        return (205, {}, None)
+        return (205, {}, body)
 
     def put_os_floating_ip_dns_testdomain_entries_testname(self, body, **kw):
         fakes.assert_has_keys(body['dns_entry'],
                         required=['ip', 'dns_type'])
-        return (205, {}, None)
+        return (205, {}, body)
 
     def delete_os_floating_ip_dns_testdomain(self, **kw):
         return (200, {}, None)
@@ -1080,7 +1080,7 @@ class FakeHTTPClient(base_client.HTTPClient):
     #
     def get_os_services(self, **kw):
         host = kw.get('host', 'host1')
-        service = kw.get('service', 'nova-compute')
+        service = kw.get('binary', 'nova-compute')
         return (200, {}, {'services':
                      [{'binary': service,
                        'host': host,
@@ -1097,12 +1097,14 @@ class FakeHTTPClient(base_client.HTTPClient):
                       ]})
 
     def put_os_services_enable(self, body, **kw):
-        return (200, {}, {'host': body['host'], 'service': body['service'],
-                'disabled': False})
+        return (200, {}, {'service': {'host': body['host'],
+                                      'binary': body['binary'],
+                                      'disabled': False}})
 
     def put_os_services_disable(self, body, **kw):
-        return (200, {}, {'host': body['host'], 'service': body['service'],
-                'disabled': True})
+        return (200, {}, {'service': {'host': body['host'],
+                                      'binary': body['binary'],
+                                      'disabled': True}})
 
     #
     # Fixed IPs
@@ -1134,10 +1136,10 @@ class FakeHTTPClient(base_client.HTTPClient):
     def get_os_hosts(self, **kw):
         zone = kw.get('zone', 'nova1')
         return (200, {}, {'hosts':
-                    [{'host': 'host1',
+                    [{'host_name': 'host1',
                       'service': 'nova-compute',
                       'zone': zone},
-                     {'host': 'host1',
+                     {'host_name': 'host1',
                       'service': 'nova-cert',
                       'zone': zone}]})
 
@@ -1145,34 +1147,34 @@ class FakeHTTPClient(base_client.HTTPClient):
         return (200, {}, {'host': [{'resource': {'host': 'sample_host'}}], })
 
     def put_os_hosts_sample_host_1(self, body, **kw):
-        return (200, {}, {'host': 'sample-host_1',
-                      'status': 'enabled'})
+        return (200, {}, {'host': {'host_name': 'sample-host_1',
+                                   'status': 'enabled'}})
 
     def put_os_hosts_sample_host_2(self, body, **kw):
-        return (200, {}, {'host': 'sample-host_2',
-                      'maintenance_mode': 'on_maintenance'})
+        return (200, {}, {'host': {'host_name': 'sample-host_2',
+                                   'maintenance_mode': 'on_maintenance'}})
 
     def put_os_hosts_sample_host_3(self, body, **kw):
-        return (200, {}, {'host': 'sample-host_3',
-                      'status': 'enabled',
-                      'maintenance_mode': 'on_maintenance'})
+        return (200, {}, {'host': {'host_name': 'sample-host_3',
+                                   'status': 'enabled',
+                                   'maintenance_mode': 'on_maintenance'}})
 
-    def get_os_hosts_sample_host_startup(self, **kw):
-        return (200, {}, {'host': 'sample_host',
-                      'power_action': 'startup'})
+    def post_os_hosts_sample_host_startup(self, **kw):
+        return (200, {}, {'host': {'host_name': 'sample_host',
+                                   'power_action': 'startup'}})
 
-    def get_os_hosts_sample_host_reboot(self, **kw):
-        return (200, {}, {'host': 'sample_host',
-                      'power_action': 'reboot'})
+    def post_os_hosts_sample_host_reboot(self, **kw):
+        return (200, {}, {'host': {'host_name': 'sample_host',
+                                   'power_action': 'reboot'}})
 
-    def get_os_hosts_sample_host_shutdown(self, **kw):
-        return (200, {}, {'host': 'sample_host',
-                      'power_action': 'shutdown'})
+    def post_os_hosts_sample_host_shutdown(self, **kw):
+        return (200, {}, {'host': {'host_name': 'sample_host',
+                                   'power_action': 'shutdown'}})
 
     def put_os_hosts_sample_host(self, body, **kw):
-        result = {'host': 'dummy'}
-        result.update(body)
-        return (200, {}, result)
+        result = {'host_name': 'dummy'}
+        result.update(body['host'])
+        return (200, {}, {'host': result})
 
     def get_os_hypervisors(self, **kw):
         return (200, {}, {"hypervisors": [

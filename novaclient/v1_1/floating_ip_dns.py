@@ -59,9 +59,9 @@ class FloatingIPDNSDomainManager(base.ManagerWithFind):
         body = {'domain_entry':
                  {'scope': 'private',
                   'availability_zone': availability_zone}}
-
         return self._update('/os-floating-ip-dns/%s' % _quote_domain(fqdomain),
-                            body)
+                            body,
+                            'domain_entry')
 
     def create_public(self, fqdomain, project):
         """Add or modify a public DNS domain."""
@@ -70,7 +70,8 @@ class FloatingIPDNSDomainManager(base.ManagerWithFind):
                   'project': project}}
 
         return self._update('/os-floating-ip-dns/%s' % _quote_domain(fqdomain),
-                            body)
+                            body,
+                            'domain_entry')
 
     def delete(self, fqdomain):
         """Delete the specified domain"""
@@ -115,7 +116,8 @@ class FloatingIPDNSEntryManager(base.ManagerWithFind):
 
         return self._update("/os-floating-ip-dns/%s/entries/%s" %
                             (_quote_domain(domain), name),
-                            body)
+                            body,
+                            "dns_entry")
 
     def modify_ip(self, domain, name, ip):
         """Add a new DNS entry."""
@@ -125,7 +127,8 @@ class FloatingIPDNSEntryManager(base.ManagerWithFind):
 
         return self._update("/os-floating-ip-dns/%s/entries/%s" %
                             (_quote_domain(domain), name),
-                            body)
+                            body,
+                            "dns_entry")
 
     def delete(self, domain, name):
         """Delete entry specified by name and domain."""

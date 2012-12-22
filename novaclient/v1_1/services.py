@@ -34,29 +34,28 @@ class Service(base.Resource):
 class ServiceManager(base.ManagerWithFind):
     resource_class = Service
 
-    def list(self, host=None, service=None):
+    def list(self, host=None, binary=None):
         """
         Describes cpu/memory/hdd info for host.
 
         :param host: destination host name.
         """
         url = "/os-services"
+        filters = []
         if host:
-            url = "/os-services?host=%s" % host
-        if service:
-            url = "/os-services?service=%s" % service
-        if host and service:
-            url = "/os-services?host=%s&service=%s" % (host, service)
+            filters.append("host=%s" % host)
+        if binary:
+            filters.append("binary=%s" % binary)
+        if filters:
+            url = "%s?%s" % (url, "&".join(filters))
         return self._list(url, "services")
 
-    def enable(self, host, service):
-        """Enable the service specified by hostname and servicename"""
-        body = {"host": host, "service": service}
-        result = self._update("/os-services/enable", body)
-        return self.resource_class(self, result)
+    def enable(self, host, binary):
+        """Enable the service specified by hostname and binary"""
+        body = {"host": host, "binary": binary}
+        return self._update("/os-services/enable", body, "service")
 
-    def disable(self, host, service):
-        """Enable the service specified by hostname and servicename"""
-        body = {"host": host, "service": service}
-        result = self._update("/os-services/disable", body)
-        return self.resource_class(self, result)
+    def disable(self, host, binary):
+        """Enable the service specified by hostname and binary"""
+        body = {"host": host, "binary": binary}
+        return self._update("/os-services/disable", body, "service")

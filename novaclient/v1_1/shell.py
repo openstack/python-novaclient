@@ -2077,7 +2077,7 @@ def do_agent_modify(cs, args):
     """Modify an existing agent build."""
     result = cs.agents.update(args.id, args.version,
                               args.url, args.md5hash)
-    utils.print_dict(result['agent'])
+    utils.print_dict(result._info)
 
 
 def do_aggregate_list(cs, args):

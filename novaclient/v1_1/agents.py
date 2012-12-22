@@ -49,7 +49,7 @@ class AgentsManager(base.ManagerWithFind):
                        'version': version,
                        'url': url,
                        'md5hash': md5hash}}
-        return self._update('/os-agents/%s' % id, body)
+        return self._update('/os-agents/%s' % id, body, 'agent')
 
     def create(self, os, architecture, version,
                url, md5hash, hypervisor):
