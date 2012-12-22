@@ -1245,12 +1245,12 @@ def do_remove_fixed_ip(cs, args):
 
 
 def _find_volume(cs, volume):
-    """Get a volume by ID."""
+    """Get a volume by name or ID."""
     return utils.find_resource(cs.volumes, volume)
 
 
 def _find_volume_snapshot(cs, snapshot):
-    """Get a volume snapshot by ID."""
+    """Get a volume snapshot by name or ID."""
     return utils.find_resource(cs.volume_snapshots, snapshot)
 
 
@@ -1308,7 +1308,7 @@ def do_volume_list(cs, args):
                         'Size', 'Volume Type', 'Attached to'])
 
 
-@utils.arg('volume', metavar='<volume>', help='ID of the volume.')
+@utils.arg('volume', metavar='<volume>', help='Name or ID of the volume.')
 @utils.service_type('volume')
 def do_volume_show(cs, args):
     """Show details about a volume."""
@@ -1364,7 +1364,9 @@ def do_volume_create(cs, args):
     _print_volume(volume)
 
 
-@utils.arg('volume', metavar='<volume>', help='ID of the volume to delete.')
+@utils.arg('volume',
+    metavar='<volume>',
+    help='Name or ID of the volume to delete.')
 @utils.service_type('volume')
 def do_volume_delete(cs, args):
     """Remove a volume."""
@@ -1413,7 +1415,9 @@ def do_volume_snapshot_list(cs, _args):
                         'Size'])
 
 
-@utils.arg('snapshot', metavar='<snapshot>', help='ID of the snapshot.')
+@utils.arg('snapshot',
+    metavar='<snapshot>',
+    help='Name or ID of the snapshot.')
 @utils.service_type('volume')
 def do_volume_snapshot_show(cs, args):
     """Show details about a snapshot."""
@@ -1451,13 +1455,13 @@ def do_volume_snapshot_create(cs, args):
     _print_volume_snapshot(snapshot)
 
 
-@utils.arg('snapshot_id',
-    metavar='<snapshot-id>',
-    help='ID of the snapshot to delete.')
+@utils.arg('snapshot',
+    metavar='<snapshot>',
+    help='Name or ID of the snapshot to delete.')
 @utils.service_type('volume')
 def do_volume_snapshot_delete(cs, args):
     """Remove a snapshot."""
-    snapshot = _find_volume_snapshot(cs, args.snapshot_id)
+    snapshot = _find_volume_snapshot(cs, args.snapshot)
     snapshot.delete()
 
 
