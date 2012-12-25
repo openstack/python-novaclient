@@ -21,6 +21,8 @@ import mock
 import sys
 import tempfile
 
+import fixtures
+
 import novaclient.shell
 import novaclient.client
 from novaclient import exceptions
@@ -29,39 +31,45 @@ from tests.v1_1 import fakes
 from tests import utils
 
 
-class ShellTest(utils.TestCase):
+class ShellFixture(fixtures.Fixture):
 
-    # Patch os.environ to avoid required auth info.
     def setUp(self):
-        """Run before each test."""
-        self.old_environment = os.environ.copy()
-        os.environ = {
-            'NOVA_USERNAME': 'username',
-            'NOVA_PASSWORD': 'password',
-            'NOVA_PROJECT_ID': 'project_id',
-            'OS_COMPUTE_API_VERSION': '1.1',
-            'NOVA_URL': 'http://no.where',
-        }
-
+        super(ShellFixture, self).setUp()
         self.shell = novaclient.shell.OpenStackComputeShell()
 
-        #HACK(bcwaldon): replace this when we start using stubs
-        self.old_get_client_class = novaclient.client.get_client_class
-        novaclient.client.get_client_class = lambda *_: fakes.FakeClient
-
     def tearDown(self):
-        os.environ = self.old_environment
         # For some method like test_image_meta_bad_action we are
         # testing a SystemExit to be thrown and object self.shell has
         # no time to get instantatiated which is OK in this case, so
         # we make sure the method is there before launching it.
         if hasattr(self.shell, 'cs'):
             self.shell.cs.clear_callstack()
+        super(ShellFixture, self).tearDown()
 
-        #HACK(bcwaldon): replace this when we start using stubs
-        novaclient.client.get_client_class = self.old_get_client_class
 
-        timeutils.clear_time_override()
+class ShellTest(utils.TestCase):
+
+    FAKE_ENV = {
+        'NOVA_USERNAME': 'username',
+        'NOVA_PASSWORD': 'password',
+        'NOVA_PROJECT_ID': 'project_id',
+        'OS_COMPUTE_API_VERSION': '1.1',
+        'NOVA_URL': 'http://no.where',
+    }
+
+    def setUp(self):
+        """Run before each test."""
+        super(ShellTest, self).setUp()
+
+        for var in self.FAKE_ENV:
+            self.useFixture(fixtures.EnvironmentVariable(var,
+                                                         self.FAKE_ENV[var]))
+        self.shell = self.useFixture(ShellFixture()).shell
+
+        self.useFixture(fixtures.MonkeyPatch(
+            'novaclient.client.get_client_class',
+            lambda *_: fakes.FakeClient))
+        self.addCleanup(timeutils.clear_time_override)
 
     def run_command(self, cmd):
         self.shell.main(cmd.split())

@@ -1,6 +1,9 @@
 import cStringIO
-import os
+import re
 import sys
+
+import fixtures
+from testtools import matchers
 
 from novaclient import exceptions
 import novaclient.shell
@@ -9,16 +12,18 @@ from tests import utils
 
 class ShellTest(utils.TestCase):
 
-    # Patch os.environ to avoid required auth info.
+    FAKE_ENV = {
+        'OS_USERNAME': 'username',
+        'OS_PASSWORD': 'password',
+        'OS_TENANT_NAME': 'tenant_name',
+        'OS_AUTH_URL': 'http://no.where',
+    }
+
     def setUp(self):
-        global _old_env
-        fake_env = {
-            'OS_USERNAME': 'username',
-            'OS_PASSWORD': 'password',
-            'OS_TENANT_NAME': 'tenant_name',
-            'OS_AUTH_URL': 'http://no.where',
-        }
-        _old_env, os.environ = os.environ, fake_env.copy()
+        super(ShellTest, self).setUp()
+        for var in self.FAKE_ENV:
+            self.useFixture(fixtures.EnvironmentVariable(var,
+                                                         self.FAKE_ENV[var]))
 
     def shell(self, argstr):
         orig = sys.stdout
@@ -36,29 +41,27 @@ class ShellTest(utils.TestCase):
 
         return out
 
-    def tearDown(self):
-        global _old_env
-        os.environ = _old_env
-
     def test_help_unknown_command(self):
         self.assertRaises(exceptions.CommandError, self.shell, 'help foofoo')
 
     def test_help(self):
         required = [
-            '^usage: ',
-            '(?m)^\s+root-password\s+Change the root password',
-            '(?m)^See "nova help COMMAND" for help on a specific command',
+            '.*?^usage: ',
+            '.*?^\s+root-password\s+Change the root password',
+            '.*?^See "nova help COMMAND" for help on a specific command',
         ]
         help_text = self.shell('help')
         for r in required:
-            self.assertRegexpMatches(help_text, r)
+            self.assertThat(help_text,
+                            matchers.MatchesRegex(r, re.DOTALL | re.MULTILINE))
 
     def test_help_on_subcommand(self):
         required = [
-            '^usage: nova root-password',
-            '(?m)^Change the root password',
-            '(?m)^Positional arguments:',
+            '.*?^usage: nova root-password',
+            '.*?^Change the root password',
+            '.*?^Positional arguments:',
         ]
         help_text = self.shell('help root-password')
         for r in required:
-            self.assertRegexpMatches(help_text, r)
+            self.assertThat(help_text,
+                            matchers.MatchesRegex(r, re.DOTALL | re.MULTILINE))

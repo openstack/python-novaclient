@@ -1,8 +1,8 @@
 import requests
-import unittest2
+import testtools
 
 
-class TestCase(unittest2.TestCase):
+class TestCase(testtools.TestCase):
     TEST_REQUEST_BASE = {
         'config': {'danger_mode': False},
         'verify': True,

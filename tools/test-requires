@@ -1,5 +1,6 @@
 distribute>=0.6.24
 
+fixtures
 mock
 nose
 nose-exclude
@@ -8,4 +9,4 @@ openstack.nose_plugin
 nosehtmloutput
 pep8==1.1
 sphinx>=1.1.2
-unittest2
+testtools

@@ -61,6 +61,7 @@ class FakeDisplayManager(FakeManager):
 class FindResourceTestCase(test_utils.TestCase):
 
     def setUp(self):
+        super(FindResourceTestCase, self).setUp()
         self.manager = FakeManager(None)
 
     def test_find_none(self):
