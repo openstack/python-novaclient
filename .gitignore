@@ -1,5 +1,7 @@
 .coverage
 .venv
+.testrepository
+subunit.log
 .tox
 *,cover
 cover

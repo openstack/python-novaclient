@@ -1,12 +1,10 @@
 distribute>=0.6.24
 
-fixtures
+coverage
+discover
+fixtures>=0.3.12
 mock
-nose
-nose-exclude
-nosexcover
-openstack.nose_plugin
-nosehtmloutput
 pep8==1.1
 sphinx>=1.1.2
-testtools
+testrepository>=0.0.13
+testtools>=0.9.26

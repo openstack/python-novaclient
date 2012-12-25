@@ -34,7 +34,6 @@ setuptools.setup(
     url="https://github.com/openstack/python-novaclient",
     packages=setuptools.find_packages(exclude=['tests', 'tests.*']),
     install_requires=setup.parse_requirements(),
-    test_suite="nose.collector",
     cmdclass=setup.get_cmdclass(),
     classifiers=[
         "Development Status :: 5 - Production/Stable",
