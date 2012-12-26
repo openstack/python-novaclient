@@ -863,6 +863,57 @@ class FakeHTTPClient(base_client.HTTPClient):
                       'security_groups': 1,
                       'security_group_rules': 1}})
 
+    def get_os_quota_sets_97f4c221bff44578b0300df4ef119353(self, **kw):
+        return (200, {}, {'quota_set': {
+                      'tenant_id': '97f4c221bff44578b0300df4ef119353',
+                      'metadata_items': [],
+                      'injected_file_content_bytes': 1,
+                      'injected_file_path_bytes': 1,
+                      'volumes': 1,
+                      'gigabytes': 1,
+                      'ram': 1,
+                      'floating_ips': 1,
+                      'instances': 1,
+                      'injected_files': 1,
+                      'cores': 1,
+                      'keypairs': 1,
+                      'security_groups': 1,
+                      'security_group_rules': 1}})
+
+    def put_os_quota_sets_97f4c221_bff4_4578_b030_0df4ef119353(self, **kw):
+        return (200, {}, {'quota_set': {
+                      'tenant_id': '97f4c221-bff4-4578-b030-0df4ef119353',
+                      'metadata_items': [],
+                      'injected_file_content_bytes': 1,
+                      'injected_file_path_bytes': 1,
+                      'volumes': 1,
+                      'gigabytes': 1,
+                      'ram': 1,
+                      'floating_ips': 1,
+                      'instances': 1,
+                      'injected_files': 1,
+                      'cores': 1,
+                      'keypairs': 1,
+                      'security_groups': 1,
+                      'security_group_rules': 1}})
+
+    def get_os_quota_sets_97f4c221_bff4_4578_b030_0df4ef119353(self, **kw):
+        return (200, {}, {'quota_set': {
+                      'tenant_id': '97f4c221-bff4-4578-b030-0df4ef119353',
+                      'metadata_items': [],
+                      'injected_file_content_bytes': 1,
+                      'injected_file_path_bytes': 1,
+                      'volumes': 1,
+                      'gigabytes': 1,
+                      'ram': 1,
+                      'floating_ips': 1,
+                      'instances': 1,
+                      'injected_files': 1,
+                      'cores': 1,
+                      'keypairs': 1,
+                      'security_groups': 1,
+                      'security_group_rules': 1}})
+
     def get_os_quota_sets_test_defaults(self):
         return (200, {}, {'quota_set': {
                       'tenant_id': 'test',
@@ -880,12 +931,12 @@ class FakeHTTPClient(base_client.HTTPClient):
                       'security_groups': 1,
                       'security_group_rules': 1}})
 
-    def put_os_quota_sets_test(self, body, **kw):
+    def put_os_quota_sets_97f4c221bff44578b0300df4ef119353(self, body, **kw):
         assert body.keys() == ['quota_set']
         fakes.assert_has_keys(body['quota_set'],
                               required=['tenant_id'])
         return (200, {}, {'quota_set': {
-                      'tenant_id': 'test',
+                      'tenant_id': '97f4c221bff44578b0300df4ef119353',
                       'metadata_items': [],
                       'injected_file_content_bytes': 1,
                       'injected_file_path_bytes': 1,
@@ -927,6 +978,27 @@ class FakeHTTPClient(base_client.HTTPClient):
                               required=['class_name'])
         return (200, {}, {'quota_class_set': {
                       'class_name': 'test',
+                      'metadata_items': [],
+                      'injected_file_content_bytes': 1,
+                      'injected_file_path_bytes': 1,
+                      'volumes': 2,
+                      'gigabytes': 1,
+                      'ram': 1,
+                      'floating_ips': 1,
+                      'instances': 1,
+                      'injected_files': 1,
+                      'cores': 1,
+                      'keypairs': 1,
+                      'security_groups': 1,
+                      'security_group_rules': 1}})
+
+    def put_os_quota_class_sets_97f4c221bff44578b0300df4ef119353(self,
+                                                            body, **kw):
+        assert body.keys() == ['quota_class_set']
+        fakes.assert_has_keys(body['quota_class_set'],
+                              required=['class_name'])
+        return (200, {}, {'quota_class_set': {
+                      'class_name': '97f4c221bff44578b0300df4ef119353',
                       'metadata_items': [],
                       'injected_file_content_bytes': 1,
                       'injected_file_path_bytes': 1,

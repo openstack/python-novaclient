@@ -2532,6 +2532,10 @@ def _quota_show(quotas):
 
 def _quota_update(manager, identifier, args):
     updates = {}
+    if not utils.is_uuid_like(identifier):
+        raise exceptions.CommandError(
+                     "error: Invalid tenant-id %s supplied for update"
+                       % identifier)
     for resource in _quota_resources:
         val = getattr(args, resource, None)
         if val is not None:

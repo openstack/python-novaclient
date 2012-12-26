@@ -702,16 +702,27 @@ class ShellTest(utils.TestCase):
         self.assert_called('GET', '/os-quota-sets/test/defaults')
 
     def test_quota_update(self):
-        self.run_command('quota-update test --instances=5')
-        self.assert_called('PUT', '/os-quota-sets/test')
+        self.run_command(
+                        'quota-update 97f4c221bff44578b0300df4ef119353 \
+                         --instances=5')
+        self.assert_called('PUT',
+                        '/os-quota-sets/97f4c221bff44578b0300df4ef119353')
+
+    def test_quota_update_error(self):
+        self.assertRaises(exceptions.CommandError,
+                          self.run_command,
+                         'quota-update 7f4c221-bff4-4578-b030-0df4ef119353 \
+                          --instances=5')
 
     def test_quota_class_show(self):
         self.run_command('quota-class-show test')
         self.assert_called('GET', '/os-quota-class-sets/test')
 
     def test_quota_class_update(self):
-        self.run_command('quota-class-update test --instances=5')
-        self.assert_called('PUT', '/os-quota-class-sets/test')
+        self.run_command('quota-class-update 97f4c221bff44578b0300df4ef119353 \
+                          --instances=5')
+        self.assert_called('PUT',
+                       '/os-quota-class-sets/97f4c221bff44578b0300df4ef119353')
 
     def test_network_list(self):
         self.run_command('network-list')
