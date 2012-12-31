@@ -5,16 +5,12 @@ This is a client for the OpenStack Nova API. There's a Python API (the
 ``novaclient`` module), and a command-line script (``nova``). Each
 implements 100% of the OpenStack Nova API.
 
-[PENDING] `Full documentation is available`__.
+See the `OpenStack CLI guide`_ for information on how to use the ``nova``
+command-line tool. You may also want to look at the
+`OpenStack API documentation`_.
 
-__ http://packages.python.org/python-novaclient/
-
-You'll also probably want to read `OpenStack Compute Developer Guide API`__ --
-the first bit, at least -- to get an idea of the concepts. Rackspace is doing
-the cloud hosting thing a bit differently from Amazon, and if you get the
-concepts this library should make more sense.
-
-__ http://docs.openstack.org/api/
+.. _OpenStack CLI Guide: http://docs.openstack.org/cli/quick-start/content/
+.. _OpenStack API documentation: http://docs.openstack.org/api/
 
 The project is hosted on `Launchpad`_, where bugs can be filed. The code is
 hosted on `Github`_. Patches must be submitted using `Gerrit`_, *not* Github
@@ -24,11 +20,9 @@ pull requests.
 .. _Launchpad: https://launchpad.net/python-novaclient
 .. _Gerrit: http://wiki.openstack.org/GerritWorkflow
 
-This code a fork of `Jacobian's python-cloudservers`__ If you need API support
-for the Rackspace API solely or the BSD license, you should use that repository.
-python-client is licensed under the Apache License like the rest of OpenStack.
+python-novaclient is licensed under the Apache License like the rest of
+OpenStack.
 
-__ http://github.com/jacobian/python-cloudservers
 
 .. contents:: Contents:
    :local:
@@ -37,7 +31,7 @@ Command-line API
 ----------------
 
 Installing this package gets you a shell command, ``nova``, that you
-can use to interact with any Rackspace compatible API (including OpenStack).
+can use to interact with any OpenStack cloud.
 
 You'll need to provide your OpenStack username and password. You can do this
 with the ``--os-username``, ``--os-password`` and  ``--os-tenant-name``
@@ -237,9 +231,8 @@ You'll find complete documentation on the shell by running
 Python API
 ----------
 
-[PENDING] There's also a `complete Python API`__.
+There's also a complete Python API, but it has not yet been documented.
 
-__ http://packages.python.org/python-novaclient/
 
 Quick-start using keystone::
 
@@ -252,8 +245,3 @@ Quick-start using keystone::
     [...]
     >>> nt.keypairs.list()
     [...]
-
-What's new?
------------
-
-[PENDING] See `the release notes <http://packages.python.org/python-novaclient/releases.html>`_.
