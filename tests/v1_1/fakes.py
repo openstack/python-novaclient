@@ -479,6 +479,8 @@ class FakeHTTPClient(base_client.HTTPClient):
             return (202, {}, {'output': 'foo'})
         elif action == 'os-getVNCConsole':
             assert body[action].keys() == ['type']
+        elif action == 'os-getSPICEConsole':
+            assert body[action].keys() == ['type']
         elif action == 'os-migrateLive':
             assert set(body[action].keys()) == set(['host',
                                                     'block_migration',

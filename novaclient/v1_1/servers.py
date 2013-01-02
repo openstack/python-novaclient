@@ -66,6 +66,14 @@ class Server(base.Resource):
         """
         return self.manager.get_vnc_console(self, console_type)
 
+    def get_spice_console(self, console_type):
+        """
+        Get spice console for a Server.
+
+        :param console_type: Type of console ('spice-html5')
+        """
+        return self.manager.get_spice_console(self, console_type)
+
     def get_password(self, private_key):
         """
         Get password for a Server.
@@ -395,6 +403,17 @@ class ServerManager(local_base.BootingManagerWithFind):
         """
 
         return self._action('os-getVNCConsole', server,
+                            {'type': console_type})[1]
+
+    def get_spice_console(self, server, console_type):
+        """
+        Get a spice console for an instance
+
+        :param server: The :class:`Server` (or its ID) to add an IP to.
+        :param console_type: Type of spice console to get ('spice-html5')
+        """
+
+        return self._action('os-getSPICEConsole', server,
                             {'type': console_type})[1]
 
     def get_password(self, server, private_key):

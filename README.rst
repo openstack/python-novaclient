@@ -119,6 +119,7 @@ You'll find complete documentation on the shell by running
         floating-ip-pool-list
                             List all floating ip pools.
         get-vnc-console     Get a vnc console to a server.
+        get-spice-console   Get a spice console to a server.
         host-action         Perform a power action on a host.
         host-update         Update host settings.
         image-create        Create a new image by taking a snapshot of a running
