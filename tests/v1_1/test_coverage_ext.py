@@ -34,7 +34,8 @@ class CoverageTest(utils.TestCase):
 
     def test_stop_coverage(self):
         c = cs.coverage.stop()
-        cs.assert_called('POST', '/os-coverage/action')
+        return_dict = {'path': '/tmp/tmpdir/report'}
+        cs.assert_called_anytime('POST', '/os-coverage/action')
 
     def test_report_coverage(self):
         c = cs.coverage.report('report')

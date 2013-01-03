@@ -650,7 +650,7 @@ class ShellTest(utils.TestCase):
 
     def test_coverage_stop(self):
         self.run_command('coverage-stop')
-        self.assert_called('POST', '/os-coverage/action')
+        self.assert_called_anytime('POST', '/os-coverage/action')
 
     def test_coverage_report(self):
         self.run_command('coverage-report report')
