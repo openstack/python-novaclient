@@ -1231,7 +1231,7 @@ def _find_flavor(cs, flavor):
     metavar='<network-id>',
     help='Network ID.')
 def do_add_fixed_ip(cs, args):
-    """Add new IP address to network."""
+    """Add new IP address on a network to server."""
     server = _find_server(cs, args.server)
     server.add_fixed_ip(args.network_id)
 
