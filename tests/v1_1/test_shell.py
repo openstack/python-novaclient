@@ -578,20 +578,20 @@ class ShellTest(utils.TestCase):
 
     def test_services_list_with_servicename(self):
         self.run_command('service-list --servicename nova-cert')
-        self.assert_called('GET', '/os-services?service=nova-cert')
+        self.assert_called('GET', '/os-services?binary=nova-cert')
 
     def test_services_list_with_host_servicename(self):
         self.run_command('service-list --host host1 --servicename nova-cert')
-        self.assert_called('GET', '/os-services?host=host1&service=nova-cert')
+        self.assert_called('GET', '/os-services?host=host1&binary=nova-cert')
 
     def test_services_enable(self):
         self.run_command('service-enable host1 nova-cert')
-        body = {'host': 'host1', 'service': 'nova-cert'}
+        body = {'host': 'host1', 'binary': 'nova-cert'}
         self.assert_called('PUT', '/os-services/enable', body)
 
     def test_services_disable(self):
         self.run_command('service-disable host1 nova-cert')
-        body = {'host': 'host1', 'service': 'nova-cert'}
+        body = {'host': 'host1', 'binary': 'nova-cert'}
         self.assert_called('PUT', '/os-services/disable', body)
 
     def test_fixed_ips_get(self):
@@ -618,31 +618,31 @@ class ShellTest(utils.TestCase):
 
     def test_host_update_status(self):
         self.run_command('host-update sample-host_1 --status enabled')
-        body = {'status': 'enabled'}
+        body = {'host': {'status': 'enabled'}}
         self.assert_called('PUT', '/os-hosts/sample-host_1', body)
 
     def test_host_update_maintenance(self):
         self.run_command('host-update sample-host_2 --maintenance enable')
-        body = {'maintenance_mode': 'enable'}
+        body = {'host': {'maintenance_mode': 'enable'}}
         self.assert_called('PUT', '/os-hosts/sample-host_2', body)
 
     def test_host_update_multiple_settings(self):
         self.run_command('host-update sample-host_3 '
                          '--status disabled --maintenance enable')
-        body = {'status': 'disabled', 'maintenance_mode': 'enable'}
+        body = {'host': {'status': 'disabled', 'maintenance_mode': 'enable'}}
         self.assert_called('PUT', '/os-hosts/sample-host_3', body)
 
     def test_host_startup(self):
         self.run_command('host-action sample-host --action startup')
-        self.assert_called('GET', '/os-hosts/sample-host/startup')
+        self.assert_called('POST', '/os-hosts/sample-host/startup')
 
     def test_host_shutdown(self):
         self.run_command('host-action sample-host --action shutdown')
-        self.assert_called('GET', '/os-hosts/sample-host/shutdown')
+        self.assert_called('POST', '/os-hosts/sample-host/shutdown')
 
     def test_host_reboot(self):
         self.run_command('host-action sample-host --action reboot')
-        self.assert_called('GET', '/os-hosts/sample-host/reboot')
+        self.assert_called('POST', '/os-hosts/sample-host/reboot')
 
     def test_coverage_start(self):
         self.run_command('coverage-start')

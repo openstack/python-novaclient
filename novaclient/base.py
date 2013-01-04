@@ -136,12 +136,9 @@ class Manager(utils.HookableMixin):
         if cache:
             cache.write("%s\n" % val)
 
-    def _get(self, url, response_key=None):
+    def _get(self, url, response_key):
         _resp, body = self.api.client.get(url)
-        if response_key:
-            return self.resource_class(self, body[response_key], loaded=True)
-        else:
-            return self.resource_class(self, body, loaded=True)
+        return self.resource_class(self, body[response_key], loaded=True)
 
     def _create(self, url, body, response_key, return_raw=False, **kwargs):
         self.run_hooks('modify_body_for_create', body, **kwargs)
@@ -156,10 +153,13 @@ class Manager(utils.HookableMixin):
     def _delete(self, url):
         _resp, _body = self.api.client.delete(url)
 
-    def _update(self, url, body, **kwargs):
+    def _update(self, url, body, response_key=None, **kwargs):
         self.run_hooks('modify_body_for_update', body, **kwargs)
         _resp, body = self.api.client.put(url, body=body)
-        return body
+        if response_key:
+            return self.resource_class(self, body[response_key])
+        else:
+            return body
 
 
 class ManagerWithFind(Manager):

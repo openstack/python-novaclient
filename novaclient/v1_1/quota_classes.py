@@ -25,7 +25,7 @@ class QuotaClassSet(base.Resource):
         return self.class_name
 
     def update(self, *args, **kwargs):
-        self.manager.update(self.class_name, *args, **kwargs)
+        return self.manager.update(self.class_name, *args, **kwargs)
 
 
 class QuotaClassSetManager(base.ManagerWithFind):
@@ -62,4 +62,6 @@ class QuotaClassSetManager(base.ManagerWithFind):
             if body['quota_class_set'][key] is None:
                 body['quota_class_set'].pop(key)
 
-        self._update('/os-quota-class-sets/%s' % (class_name), body)
+        return self._update('/os-quota-class-sets/%s' % (class_name),
+                            body,
+                            'quota_class_set')

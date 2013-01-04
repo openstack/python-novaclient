@@ -65,4 +65,4 @@ class AgentsTest(utils.TestCase):
                        "version": "8.0",
                        "md5hash": "add6bb58e139be103324d04d82d8f546"}}
         cs.assert_called('PUT', '/os-agents/1', body)
-        self.assertEqual(1, ag['agent']['id'])
+        self.assertEqual(1, ag.id)

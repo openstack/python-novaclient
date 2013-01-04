@@ -62,9 +62,9 @@ class AggregateManager(base.ManagerWithFind):
     def update(self, aggregate, values):
         """Update the name and/or availability zone."""
         body = {'aggregate': values}
-        result = self._update("/os-aggregates/%s" % base.getid(aggregate),
-                              body)
-        return self.resource_class(self, result["aggregate"])
+        return self._update("/os-aggregates/%s" % base.getid(aggregate),
+                            body,
+                            "aggregate")
 
     def add_host(self, aggregate, host):
         """Add a host into the Host Aggregate."""

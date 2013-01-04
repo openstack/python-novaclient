@@ -525,7 +525,7 @@ class ServerManager(local_base.BootingManagerWithFind):
             },
         }
 
-        self._update("/servers/%s" % base.getid(server), body)
+        return self._update("/servers/%s" % base.getid(server), body, "server")
 
     def change_password(self, server, password):
         """
