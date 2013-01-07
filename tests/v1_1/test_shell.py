@@ -790,3 +790,24 @@ class ShellTest(utils.TestCase):
 
         self.run_command('absolute-limits --reserved')
         self.assert_called('GET', '/limits?reserved=1')
+
+    def test_evacuate(self):
+        self.run_command('evacuate sample-server new_host')
+        self.assert_called('POST', '/servers/1234/action',
+                           {'evacuate': {'host': 'new_host',
+                                         'onSharedStorage': False}})
+        self.run_command('evacuate sample-server new_host '
+                            '--password NewAdminPass')
+        self.assert_called('POST', '/servers/1234/action',
+                           {'evacuate': {'host': 'new_host',
+                                         'onSharedStorage': False,
+                                         'adminPass': 'NewAdminPass'}})
+        self.run_command('evacuate sample-server new_host')
+        self.assert_called('POST', '/servers/1234/action',
+                           {'evacuate': {'host': 'new_host',
+                                         'onSharedStorage': False}})
+        self.run_command('evacuate sample-server new_host '
+                            '--on-shared-storage')
+        self.assert_called('POST', '/servers/1234/action',
+                           {'evacuate': {'host': 'new_host',
+                                         'onSharedStorage': True}})

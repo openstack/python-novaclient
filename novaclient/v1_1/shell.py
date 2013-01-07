@@ -2701,3 +2701,25 @@ def do_quota_class_update(cs, args):
     """Update the quotas for a quota class."""
 
     _quota_update(cs.quota_classes, args.class_name, args)
+
+
+@utils.arg('server', metavar='<server>', help='Name or ID of server.')
+@utils.arg('host', metavar='<host>', help='Name or ID of target host.')
+@utils.arg('--password',
+    dest='password',
+    metavar='<password>',
+    default=None,
+    help="Set the provided password on the evacuated instance. Not applicable "
+            "with on-shared-storage flag")
+@utils.arg('--on-shared-storage',
+    dest='on_shared_storage',
+    action="store_true",
+    default=False,
+    help='Specifies whether instance files located on shared storage')
+def do_evacuate(cs, args):
+    """Evacuate server from failed host to specified one."""
+    server = _find_server(cs, args.server)
+
+    res = server.evacuate(args.host, args.on_shared_storage, args.password)[0]
+    if type(res) is dict:
+        utils.print_dict(res)

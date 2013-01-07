@@ -281,6 +281,17 @@ class Server(base.Resource):
         """
         self.manager.remove_security_group(self, security_group)
 
+    def evacuate(self, host, on_shared_storage, password=None):
+        """
+        Evacuate an instance from failed host to specified host.
+
+        :param host: Name of the target host
+        :param on_shared_storage: Specifies whether instance files located
+                        on shared storage
+        :param password: string to set as password on the evacuated server.
+        """
+        return self.manager.evacuate(self, host, on_shared_storage, password)
+
 
 class ServerManager(local_base.BootingManagerWithFind):
     resource_class = Server
@@ -706,6 +717,26 @@ class ServerManager(local_base.BootingManagerWithFind):
 
         """
         self._action('removeSecurityGroup', server, {'name': security_group})
+
+    def evacuate(self, server, host, on_shared_storage, password=None):
+        """
+        Evacuate a server instance.
+
+        :param server: The :class:`Server` (or its ID) to share onto.
+        :param host: Name of the target host.
+        :param on_shared_storage: Specifies whether instance files located
+                        on shared storage
+        :param password: string to set as password on the evacuated server.
+        """
+        body = {
+                'host': host,
+                'onSharedStorage': on_shared_storage,
+                }
+
+        if password is not None:
+            body['adminPass'] = password
+
+        return self._action('evacuate', server, body)
 
     def _action(self, action, server, info=None, **kwargs):
         """

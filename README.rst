@@ -108,6 +108,7 @@ You'll find complete documentation on the shell by running
                             and name.
         endpoints           Discover endpoints that get returned from the
                             authenticate services
+        evacuate            Evacuate a server from failed host
         flavor-create       Create a new flavor
         flavor-delete       Delete a specific flavor
         flavor-list         Print a list of available 'flavors' (sizes of

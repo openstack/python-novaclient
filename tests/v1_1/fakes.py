@@ -489,6 +489,11 @@ class FakeHTTPClient(base_client.HTTPClient):
             assert set(body[action].keys()) == set(['name',
                                                     'backup_type',
                                                     'rotation'])
+        elif action == 'evacuate':
+            keys = body[action].keys()
+            if 'adminPass' in keys:
+                keys.remove('adminPass')
+            assert set(keys) == set(['host', 'onSharedStorage'])
         else:
             raise AssertionError("Unexpected server action: %s" % action)
         return (resp, _headers, _body)

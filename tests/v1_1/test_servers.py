@@ -399,3 +399,10 @@ class ServersTest(utils.TestCase):
         cs.assert_called('POST', '/servers/1234/action')
         cs.servers.remove_security_group(s, 'oldsg')
         cs.assert_called('POST', '/servers/1234/action')
+
+    def test_evacuate(self):
+        s = cs.servers.get(1234)
+        s.evacuate('fake_target_host', 'True')
+        cs.assert_called('POST', '/servers/1234/action')
+        cs.servers.evacuate(s, 'fake_target_host', 'False', 'NewAdminPassword')
+        cs.assert_called('POST', '/servers/1234/action')
