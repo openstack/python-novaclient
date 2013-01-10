@@ -58,8 +58,9 @@ class HostManager(base.ManagerWithFind):
 
     def host_action(self, host, action):
         """Performs an action on a host."""
-        url = "/os-hosts/%s/%s" % (host, action)
-        return self._create(url, None, "host")
+        body = {action: None}
+        url = '/os-hosts/%s/action' % host
+        return self.api.client.post(url, body=body)
 
     def list_all(self, zone=None):
         url = '/os-hosts'
