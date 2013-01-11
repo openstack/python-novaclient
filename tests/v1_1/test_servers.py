@@ -328,6 +328,16 @@ class ServersTest(utils.TestCase):
         self.assertEqual(cs.servers.get_console_output(s, length=50), success)
         cs.assert_called('POST', '/servers/1234/action')
 
+    def test_get_password(self):
+        s = cs.servers.get(1234)
+        self.assertEqual(s.get_password('/foo/id_rsa'), '')
+        cs.assert_called('GET', '/servers/1234/os-server-password')
+
+    def test_clear_password(self):
+        s = cs.servers.get(1234)
+        s.clear_password()
+        cs.assert_called('DELETE', '/servers/1234/os-server-password')
+
     def test_get_server_actions(self):
         s = cs.servers.get(1234)
         actions = s.actions()

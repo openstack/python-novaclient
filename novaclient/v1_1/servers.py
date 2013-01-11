@@ -22,6 +22,7 @@ Server interface.
 import urllib
 
 from novaclient import base
+from novaclient import crypto
 from novaclient.v1_1 import base as local_base
 
 
@@ -64,6 +65,21 @@ class Server(base.Resource):
         :param console_type: Type of console ('novnc' or 'xvpvnc')
         """
         return self.manager.get_vnc_console(self, console_type)
+
+    def get_password(self, private_key):
+        """
+        Get password for a Server.
+
+        :param private_key: Path to private key file for decryption
+        """
+        return self.manager.get_password(self, private_key)
+
+    def clear_password(self):
+        """
+        Get password for a Server.
+
+        """
+        return self.manager.clear_password(self)
 
     def add_fixed_ip(self, network_id):
         """
@@ -380,6 +396,35 @@ class ServerManager(local_base.BootingManagerWithFind):
 
         return self._action('os-getVNCConsole', server,
                             {'type': console_type})[1]
+
+    def get_password(self, server, private_key):
+        """
+        Get password for an instance
+
+        Requires that openssl in installed and in the path
+
+        :param server: The :class:`Server` (or its ID) to add an IP to.
+        :param private_key: The private key to decrypt password
+        """
+
+        _resp, body = self.api.client.get("/servers/%s/os-server-password"
+                                          % base.getid(server))
+        if body and body.get('password'):
+            try:
+                return crypto.decrypt_password(private_key, body['password'])
+            except Exception as exc:
+                return '%sFailed to decrypt:\n%s' % (exc, body['password'])
+        return ''
+
+    def clear_password(self, server):
+        """
+        Clear password for an instance
+
+        :param server: The :class:`Server` (or its ID) to add an IP to.
+        """
+
+        return self._delete("/servers/%s/os-server-password"
+                            % base.getid(server))
 
     def stop(self, server):
         """

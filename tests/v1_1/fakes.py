@@ -411,6 +411,16 @@ class FakeHTTPClient(base_client.HTTPClient):
         return (202, {}, None)
 
     #
+    # Server password
+    #
+
+    def get_servers_1234_os_server_password(self, **kw):
+        return (200, {}, {'password': ''})
+
+    def delete_servers_1234_os_server_password(self, **kw):
+        return (202, {}, None)
+
+    #
     # Server actions
     #
 
