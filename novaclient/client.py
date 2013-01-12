@@ -82,6 +82,10 @@ class HTTPClient(object):
         self.bypass_url = bypass_url
         self.os_cache = os_cache or not no_cache
         self.http_log_debug = http_log_debug
+        if timeout is not None:
+            self.timeout = float(timeout)
+        else:
+            self.timeout = None
 
         self.times = []  # [("item", starttime, endtime), ...]
 
@@ -162,6 +166,8 @@ class HTTPClient(object):
             kwargs['headers']['Content-Type'] = 'application/json'
             kwargs['data'] = json.dumps(kwargs['body'])
             del kwargs['body']
+        if self.timeout is not None:
+            kwargs.setdefault('timeout', self.timeout)
 
         self.http_log_req((url, method,), kwargs)
         resp = requests.request(
