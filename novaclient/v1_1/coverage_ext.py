@@ -20,7 +20,7 @@ from novaclient import base
 
 class Coverage(base.Resource):
     def __repr__(self):
-            return "<Coverage: %s>" % self.name
+        return "<Coverage: %s>" % self.name
 
 
 class CoverageManager(base.ManagerWithFind):
@@ -41,7 +41,7 @@ class CoverageManager(base.ManagerWithFind):
         url = '/os-coverage/action'
         return self.api.client.post(url, body=body)
 
-    def report(self, filename, xml=False):
+    def report(self, filename, xml=False, html=True):
         body = {
             'report': {
                 'file': filename,
@@ -49,6 +49,8 @@ class CoverageManager(base.ManagerWithFind):
         }
         if xml:
             body['report']['xml'] = True
+        elif html:
+            body['report']['html'] = True
         self.run_hooks('modify_body_for_action', body)
         url = '/os-coverage/action'
         return self.api.client.post(url, body=body)

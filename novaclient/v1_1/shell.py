@@ -2311,8 +2311,8 @@ def do_coverage_start(cs, args):
 
 def do_coverage_stop(cs, args):
     """Stop Nova coverage reporting"""
-    cs.coverage.stop()
-    print "Coverage collection stopped"
+    out = cs.coverage.stop()
+    print "Coverage data file path: %s" % out[-1]['path']
 
 
 @utils.arg('filename', metavar='<filename>', help='report filename')
