@@ -174,8 +174,9 @@ class AuthPluginTest(utils.TestCase):
         @mock.patch.object(pkg_resources, "iter_entry_points",
                            mock_iter_entry_points)
         def test_auth_call():
-            with self.assertRaises(exceptions.EndpointNotFound):
-                cs = client.Client("username", "password", "project_id",
-                                   auth_system="fakewithauthurl")
+            self.assertRaises(
+                exceptions.EndpointNotFound,
+                client.Client, "username", "password", "project_id",
+                auth_system="fakewithauthurl")
 
         test_auth_call()
