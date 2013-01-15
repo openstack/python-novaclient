@@ -751,7 +751,7 @@ class ShellTest(utils.TestCase):
         body = {'disassociate_host': None}
         self.assert_called('POST', '/os-networks/2/action', body)
 
-    def test_network_disassociate(self):
+    def test_network_disassociate_project(self):
         self.run_command('network-disassociate --project-only 1 2')
         body = {'disassociate_project': None}
         self.assert_called('POST', '/os-networks/2/action', body)
