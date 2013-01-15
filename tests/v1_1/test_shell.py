@@ -642,15 +642,15 @@ class ShellTest(utils.TestCase):
 
     def test_host_startup(self):
         self.run_command('host-action sample-host --action startup')
-        self.assert_called('POST', '/os-hosts/sample-host/startup')
+        self.assert_called('POST', '/os-hosts/sample-host/action', {'startup': None})
 
     def test_host_shutdown(self):
         self.run_command('host-action sample-host --action shutdown')
-        self.assert_called('POST', '/os-hosts/sample-host/shutdown')
+        self.assert_called('POST', '/os-hosts/sample-host/action', {'shutdown': None})
 
     def test_host_reboot(self):
         self.run_command('host-action sample-host --action reboot')
-        self.assert_called('POST', '/os-hosts/sample-host/reboot')
+        self.assert_called('POST', '/os-hosts/sample-host/action', {'reboot': None})
 
     def test_coverage_start(self):
         self.run_command('coverage-start')

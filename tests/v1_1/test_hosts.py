@@ -50,17 +50,14 @@ class HostsTest(utils.TestCase):
     def test_host_startup(self):
         host = cs.hosts.get('sample_host')[0]
         result = host.startup()
-        cs.assert_called('POST', '/os-hosts/sample_host/startup')
-        self.assertTrue(isinstance(result, hosts.Host))
+        cs.assert_called('POST', '/os-hosts/sample_host/action', {'startup': None})
 
     def test_host_reboot(self):
         host = cs.hosts.get('sample_host')[0]
         result = host.reboot()
-        cs.assert_called('POST', '/os-hosts/sample_host/reboot')
-        self.assertTrue(isinstance(result, hosts.Host))
+        cs.assert_called('POST', '/os-hosts/sample_host/action', {'reboot': None})
 
     def test_host_shutdown(self):
         host = cs.hosts.get('sample_host')[0]
         result = host.shutdown()
-        cs.assert_called('POST', '/os-hosts/sample_host/shutdown')
-        self.assertTrue(isinstance(result, hosts.Host))
+        cs.assert_called('POST', '/os-hosts/sample_host/action', {'shutdown': None})
