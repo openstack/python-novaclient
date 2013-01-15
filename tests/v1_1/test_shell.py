@@ -117,6 +117,20 @@ class ShellTest(utils.TestCase):
                 }},
         )
 
+    def test_boot_image_with(self):
+        self.run_command("boot --flavor 1"
+                         " --image-with test_key=test_value some-server")
+        self.assert_called_anytime(
+            'POST', '/servers',
+            {'server': {
+                'flavorRef': '1',
+                'name': 'some-server',
+                'imageRef': '1',
+                'min_count': 1,
+                'max_count': 1,
+                }},
+        )
+
     def test_boot_no_image_no_bdms(self):
         cmd = 'boot --flavor 1 some-server'
         self.assertRaises(exceptions.CommandError, self.run_command, cmd)
