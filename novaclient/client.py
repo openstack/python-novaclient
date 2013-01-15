@@ -141,8 +141,8 @@ class HTTPClient(object):
             header = ' -H "%s: %s"' % (element, kwargs['headers'][element])
             string_parts.append(header)
 
-        if 'body' in kwargs:
-            string_parts.append(" -d '%s'" % (kwargs['body']))
+        if 'data' in kwargs:
+            string_parts.append(" -d '%s'" % (kwargs['data']))
         self._logger.debug("\nREQ: %s\n" % "".join(string_parts))
 
     def http_log_resp(self, resp):
