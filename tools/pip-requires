@@ -1,5 +1,5 @@
 argparse
 iso8601>=0.1.4
 prettytable>=0.6,<0.7
-requests<1.0
+requests>=0.8
 simplejson

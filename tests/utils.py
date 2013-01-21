@@ -7,7 +7,6 @@ import testtools
 
 class TestCase(testtools.TestCase):
     TEST_REQUEST_BASE = {
-        'config': {'danger_mode': False},
         'verify': True,
     }
 

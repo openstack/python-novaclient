@@ -43,8 +43,7 @@ class ClientTest(utils.TestCase):
             requests.request.assert_called_with(mock.ANY, mock.ANY,
                                                 timeout=2,
                                                 headers=mock.ANY,
-                                                verify=mock.ANY,
-                                                config=mock.ANY)
+                                                verify=mock.ANY)
 
     def test_get_client_class_v2(self):
         output = novaclient.client.get_client_class('2')

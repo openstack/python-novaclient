@@ -44,10 +44,6 @@ class HTTPClient(object):
 
     USER_AGENT = 'python-novaclient'
 
-    requests_config = {
-        'danger_mode': False,
-    }
-
     def __init__(self, user, password, projectid, auth_url=None,
                  insecure=False, timeout=None, proxy_tenant_id=None,
                  proxy_token=None, region_name=None,
@@ -104,7 +100,8 @@ class HTTPClient(object):
             ch = logging.StreamHandler()
             self._logger.setLevel(logging.DEBUG)
             self._logger.addHandler(ch)
-            self.requests_config['verbose'] = sys.stderr
+            if hasattr(requests, logging):
+                requests.logging.getLogger(requests.__name__).addHandler(ch)
 
     def use_token_cache(self, use_it):
         self.os_cache = use_it
@@ -167,7 +164,6 @@ class HTTPClient(object):
             method,
             url,
             verify=self.verify_cert,
-            config=self.requests_config,
             **kwargs)
         self.http_log_resp(resp)
 
