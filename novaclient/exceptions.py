@@ -66,11 +66,14 @@ class ClientException(Exception):
     """
     The base exception class for all exceptions this library raises.
     """
-    def __init__(self, code, message=None, details=None, request_id=None):
+    def __init__(self, code, message=None, details=None, request_id=None,
+                 url=None, method=None):
         self.code = code
         self.message = message or self.__class__.message
         self.details = details
         self.request_id = request_id
+        self.url = url
+        self.method = method
 
     def __str__(self):
         formatted_string = "%s (HTTP %s)" % (self.message, self.code)
@@ -140,7 +143,7 @@ _code_map = dict((c.http_status, c) for c in [BadRequest, Unauthorized,
                    Forbidden, NotFound, OverLimit, HTTPNotImplemented])
 
 
-def from_response(response, body):
+def from_response(response, body, url, method=None):
     """
     Return an instance of an ClientException or subclass
     based on an requests response.
@@ -164,6 +167,7 @@ def from_response(response, body):
             message = error.get('message', None)
             details = error.get('details', None)
         return cls(code=response.status_code, message=message, details=details,
-                   request_id=request_id)
+                   request_id=request_id, url=url, method=method)
     else:
-        return cls(code=response.status_code, request_id=request_id)
+        return cls(code=response.status_code, request_id=request_id, url=url,
+                method=method)

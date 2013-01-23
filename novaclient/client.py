@@ -192,7 +192,7 @@ class HTTPClient(object):
             body = None
 
         if resp.status_code >= 400:
-            raise exceptions.from_response(resp, body)
+            raise exceptions.from_response(resp, body, url, method)
 
         return resp, body
 
@@ -275,7 +275,7 @@ class HTTPClient(object):
         elif resp.status_code == 305:
             return resp.headers['location']
         else:
-            raise exceptions.from_response(resp, body)
+            raise exceptions.from_response(resp, body, url)
 
     def _fetch_endpoints_from_auth(self, url):
         """We have a token, but don't know the final endpoint for
@@ -409,7 +409,7 @@ class HTTPClient(object):
         elif resp.status_code == 305:
             return resp.headers['location']
         else:
-            raise exceptions.from_response(resp, body)
+            raise exceptions.from_response(resp, body, url)
 
     def _plugin_auth(self, auth_url):
         """Load plugin-based authentication"""
