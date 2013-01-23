@@ -1,3 +1,7 @@
+import StringIO
+import sys
+
+import mock
 
 from novaclient import exceptions
 from novaclient import utils
@@ -99,3 +103,63 @@ class FindResourceTestCase(test_utils.TestCase):
         display_manager = FakeDisplayManager(None)
         output = utils.find_resource(display_manager, 'entity_three')
         self.assertEqual(output, display_manager.get('4242'))
+
+
+class _FakeResult(object):
+    def __init__(self, name, value):
+        self.name = name
+        self.value = value
+
+
+class PrintResultTestCase(test_utils.TestCase):
+    @mock.patch('sys.stdout', StringIO.StringIO())
+    def test_print_list_sort_by_str(self):
+        objs = [_FakeResult("k1", 1),
+                _FakeResult("k3", 2),
+                _FakeResult("k2", 3)]
+
+        utils.print_list(objs, ["Name", "Value"], sortby_index=0)
+
+        self.assertEqual(sys.stdout.getvalue(),
+                         '+------+-------+\n'
+                         '| Name | Value |\n'
+                         '+------+-------+\n'
+                         '| k1   | 1     |\n'
+                         '| k2   | 3     |\n'
+                         '| k3   | 2     |\n'
+                         '+------+-------+\n')
+
+    @mock.patch('sys.stdout', StringIO.StringIO())
+    def test_print_list_sort_by_integer(self):
+        objs = [_FakeResult("k1", 1),
+                _FakeResult("k3", 2),
+                _FakeResult("k2", 3)]
+
+        utils.print_list(objs, ["Name", "Value"], sortby_index=1)
+
+        self.assertEqual(sys.stdout.getvalue(),
+                         '+------+-------+\n'
+                         '| Name | Value |\n'
+                         '+------+-------+\n'
+                         '| k1   | 1     |\n'
+                         '| k3   | 2     |\n'
+                         '| k2   | 3     |\n'
+                         '+------+-------+\n')
+
+    # without sorting
+    @mock.patch('sys.stdout', StringIO.StringIO())
+    def test_print_list_sort_by_none(self):
+        objs = [_FakeResult("k1", 1),
+                _FakeResult("k3", 3),
+                _FakeResult("k2", 2)]
+
+        utils.print_list(objs, ["Name", "Value"], sortby_index=None)
+
+        self.assertEqual(sys.stdout.getvalue(),
+                         '+------+-------+\n'
+                         '| Name | Value |\n'
+                         '+------+-------+\n'
+                         '| k1   | 1     |\n'
+                         '| k3   | 3     |\n'
+                         '| k2   | 2     |\n'
+                         '+------+-------+\n')

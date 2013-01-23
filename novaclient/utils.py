@@ -161,7 +161,10 @@ def print_list(objs, fields, formatters={}, sortby_index=0):
                 row.append(data)
         pt.add_row(row)
 
-    print pt.get_string(sortby=sortby)
+    if sortby is not None:
+        print pt.get_string(sortby=sortby)
+    else:
+        print pt.get_string()
 
 
 def print_dict(d, dict_property="Property"):
