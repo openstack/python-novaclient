@@ -305,3 +305,16 @@ def slugify(value):
     value = unicodedata.normalize('NFKD', value).encode('ascii', 'ignore')
     value = unicode(_slugify_strip_re.sub('', value).strip().lower())
     return _slugify_hyphenate_re.sub('-', value)
+
+
+def is_uuid_like(val):
+    """
+    The UUID which doesn't contain hyphens or 'A-F' is allowed.
+    """
+    try:
+        if uuid.UUID(val) and val.isalnum() and val.islower():
+            return True
+        else:
+            return False
+    except (TypeError, ValueError, AttributeError):
+        return False
