@@ -1793,14 +1793,21 @@ def _print_secgroups(secgroups):
 
 
 def _get_secgroup(cs, secgroup):
+    match_found = False
     for s in cs.security_groups.list():
         encoding = (locale.getpreferredencoding() or
             sys.stdin.encoding or
             'UTF-8')
         s.name = s.name.encode(encoding)
         if secgroup == s.name:
-            return s
-    raise exceptions.CommandError("Secgroup %s not found" % secgroup)
+            if match_found != False:
+                msg = ("Multiple security group matches found for name"
+                       " '%s', use an ID to be more specific." % secgroup)
+                raise exceptions.NoUniqueMatch(msg)
+            match_found = s
+    if match_found is False:
+        raise exceptions.CommandError("Secgroup %s not found" % secgroup)
+    return match_found
 
 
 @utils.arg('secgroup', metavar='<secgroup>', help='ID of security group.')
