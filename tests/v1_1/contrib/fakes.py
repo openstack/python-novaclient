@@ -42,3 +42,90 @@ class FakeHTTPClient(fakes.FakeHTTPClient):
 
     def delete_os_tenant_networks_1(self, **kw):
         return (204, {}, None)
+
+    def get_os_baremetal_nodes(self, **kw):
+        return (
+            200, {}, {
+                'nodes': [
+                    {
+                        "id": 1,
+                        "instance_uuid": None,
+                        "pm_address": "1.2.3.4",
+                        "interfaces": [],
+                        "cpus": 2,
+                        "local_gb": 10,
+                        "memory_mb": 5,
+                        "pm_address": "2.3.4.5",
+                        "pm_user": "pmuser",
+                        "pm_password": "pmpass",
+                        "prov_mac_address": "aa:bb:cc:dd:ee:ff",
+                        "prov_vlan_id": 1,
+                        "service_host": "somehost",
+                        "terminal_port": 8080,
+                    }
+                ]
+            }
+        )
+
+    def get_os_baremetal_nodes_1(self, **kw):
+        return (
+            200, {}, {
+                'node': {
+                    "id": 1,
+                    "instance_uuid": None,
+                    "pm_address": "1.2.3.4",
+                    "interfaces": [],
+                    "cpus": 2,
+                    "local_gb": 10,
+                    "memory_mb": 5,
+                    "pm_user": "pmuser",
+                    "pm_password": "pmpass",
+                    "prov_mac_address": "aa:bb:cc:dd:ee:ff",
+                    "prov_vlan_id": 1,
+                    "service_host": "somehost",
+                    "terminal_port": 8080,
+                }
+            }
+        )
+
+    def post_os_baremetal_nodes(self, **kw):
+        return (
+            200, {}, {
+                'node': {
+                    "id": 1,
+                    "instance_uuid": None,
+                    "cpus": 2,
+                    "local_gb": 10,
+                    "memory_mb": 5,
+                    "pm_address": "2.3.4.5",
+                    "pm_user": "pmuser",
+                    "pm_password": "pmpass",
+                    "prov_mac_address": "aa:bb:cc:dd:ee:ff",
+                    "prov_vlan_id": 1,
+                    "service_host": "somehost",
+                    "terminal_port": 8080,
+                }
+            }
+        )
+
+    def delete_os_baremetal_nodes_1(self, **kw):
+        return (202, {}, {})
+
+    def post_os_baremetal_nodes_1_action(self, **kw):
+        body = kw['body']
+        action = body.keys()[0]
+        if action == "add_interface":
+            return (
+                200, {}, {
+                    'interface': {
+                        "id": 2,
+                        "address": "bb:cc:dd:ee:ff:aa",
+                        "datapath_id": 1,
+                        "port_no": 2,
+                    }
+                }
+            )
+        elif action == "remove_interface":
+            return (202, {}, {})
+        else:
+            return (500, {}, {})
