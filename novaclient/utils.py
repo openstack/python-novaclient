@@ -170,8 +170,21 @@ def print_list(objs, fields, formatters={}, sortby_index=0):
 def print_dict(d, dict_property="Property"):
     pt = prettytable.PrettyTable([dict_property, 'Value'], caching=False)
     pt.align = 'l'
-    [pt.add_row(list(r)) for r in d.iteritems()]
-    print pt.get_string(sortby=dict_property)
+    for k, v in d.iteritems():
+        # convert dict to str to check length
+        if isinstance(v, dict):
+            v = str(v)
+        # if value has a newline, add in multiple rows
+        # e.g. fault with stacktrace
+        if v and isinstance(v, basestring) and r'\n' in v:
+            lines = v.strip().split(r'\n')
+            col1 = k
+            for line in lines:
+                pt.add_row([col1, line])
+                col1 = ''
+        else:
+            pt.add_row([k, v])
+    print pt.get_string()
 
 
 def find_resource(manager, name_or_id):
