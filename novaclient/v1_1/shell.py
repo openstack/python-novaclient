@@ -29,6 +29,28 @@ from novaclient import utils
 from novaclient.v1_1 import servers
 
 
+def _key_value_pairing(text):
+    try:
+        (k, v) = text.split('=', 1)
+        return (k, v)
+    except ValueError:
+        msg = "%r is not in the format of key=value" % text
+        raise argparse.ArgumentTypeError(msg)
+
+
+def _match_image(cs, wanted_properties):
+    image_list = cs.images.list()
+    images_matched = []
+    match = set(wanted_properties)
+    for img in image_list:
+        try:
+            if match == match.intersection(set(img.metadata.items())):
+                images_matched.append(img)
+        except AttributeError:
+            pass
+    return images_matched
+
+
 def _boot(cs, args, reservation_id=None, min_count=None, max_count=None):
     """Boot a new server."""
     if min_count is None:
@@ -42,9 +64,23 @@ def _boot(cs, args, reservation_id=None, min_count=None, max_count=None):
         raise exceptions.CommandError("min_instances nor max_instances should"
                                       "be 0")
 
-    if not args.image and not args.block_device_mapping:
+    if args.image:
+        image = _find_image(cs, args.image)
+    else:
+        image = None
+
+    if not image and args.image_with:
+        images = _match_image(cs, args.image_with)
+        if images:
+            # TODO(harlowja): log a warning that we
+            # are selecting the first of many?
+            image = images[0]
+
+    if not image and not args.block_device_mapping:
         raise exceptions.CommandError("you need to specify an Image ID "
-                                      "or a block device mapping ")
+                                      "or a block device mapping "
+                                      "or provide a set of properties to match"
+                                      " against an image")
     if not args.flavor:
         raise exceptions.CommandError("you need to specify a Flavor ID ")
 
@@ -54,11 +90,6 @@ def _boot(cs, args, reservation_id=None, min_count=None, max_count=None):
         max_count = args.num_instances
 
     flavor = _find_flavor(cs, args.flavor)
-
-    if args.image:
-        image = _find_image(cs, args.image)
-    else:
-        image = None
 
     meta = dict(v.split('=', 1) for v in args.meta)
 
@@ -154,6 +185,12 @@ def _boot(cs, args, reservation_id=None, min_count=None, max_count=None):
      default=None,
      metavar='<image>',
      help="Image ID (see 'nova image-list'). ")
+@utils.arg('--image-with',
+     default=[],
+     type=_key_value_pairing,
+     action='append',
+     metavar='<key=value>',
+     help="Image metadata property (see 'nova image-show'). ")
 @utils.arg('--num-instances',
      default=None,
      type=int,
