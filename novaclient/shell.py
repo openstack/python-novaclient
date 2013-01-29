@@ -42,6 +42,20 @@ DEFAULT_NOVA_SERVICE_TYPE = 'compute'
 logger = logging.getLogger(__name__)
 
 
+def positive_non_zero_float(text):
+    if text is None:
+        return None
+    try:
+        value = float(text)
+    except ValueError:
+        msg = "%s must be a float" % text
+        raise argparse.ArgumentTypeError(msg)
+    if value <= 0:
+        msg = "%s must be greater than 0" % text
+        raise argparse.ArgumentTypeError(msg)
+    return value
+
+
 class NovaClientArgumentParser(argparse.ArgumentParser):
 
     def __init__(self, *args, **kwargs):
@@ -111,6 +125,12 @@ class OpenStackComputeShell(object):
             default=False,
             action='store_true',
             help="Print call timing info")
+
+        parser.add_argument('--timeout',
+            default=600,
+            metavar='<seconds>',
+            type=positive_non_zero_float,
+            help="Set HTTP call timeout (in seconds)")
 
         parser.add_argument('--os-username',
             metavar='<auth-user-name>',
@@ -397,7 +417,7 @@ class OpenStackComputeShell(object):
                 os_region_name, os_auth_system, endpoint_type, insecure,
                 service_type, service_name, volume_service_name,
                 username, apikey, projectid, url, region_name,
-                bypass_url, os_cache, cacert) = (
+                bypass_url, os_cache, cacert, timeout) = (
                         args.os_username, args.os_password,
                         args.os_tenant_name, args.os_auth_url,
                         args.os_region_name, args.os_auth_system,
@@ -406,7 +426,7 @@ class OpenStackComputeShell(object):
                         args.username, args.apikey, args.projectid,
                         args.url, args.region_name,
                         args.bypass_url, args.os_cache,
-                        args.os_cacert)
+                        args.os_cacert, args.timeout)
 
         if not endpoint_type:
             endpoint_type = DEFAULT_NOVA_ENDPOINT_TYPE
@@ -478,7 +498,7 @@ class OpenStackComputeShell(object):
                 volume_service_name=volume_service_name,
                 timings=args.timings, bypass_url=bypass_url,
                 os_cache=os_cache, http_log_debug=options.debug,
-                cacert=cacert)
+                cacert=cacert, timeout=timeout)
 
         try:
             if not utils.isunauthenticated(args.func):
