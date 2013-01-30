@@ -113,3 +113,11 @@ Text encoding
     returntext = do_some_magic_with(mytext)
     returnstring = returntext.encode('utf-8')
     outfile.write(returnstring)
+
+Running Tests
+-------------
+The testing system is based on a combination of tox and testr. If you just
+want to run the whole suite, run `tox` and all will be fine. However, if
+you'd like to dig in a bit more, you might want to learn some things about
+testr itself. A basic walkthrough for OpenStack can be found at
+http://wiki.openstack.org/testr
