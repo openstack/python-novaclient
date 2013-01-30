@@ -1982,7 +1982,7 @@ def do_keypair_add(cs, args):
 
     if pub_key:
         try:
-            with open(pub_key) as f:
+            with open(os.path.expanduser(pub_key)) as f:
                 pub_key = f.read()
         except IOError, e:
             raise exceptions.CommandError("Can't open or read '%s': %s" % \
