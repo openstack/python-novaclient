@@ -19,14 +19,22 @@ Command-line interface to the OpenStack Nova API.
 """
 
 import argparse
+import getpass
 import glob
 import imp
 import itertools
+import logging
 import os
 import pkg_resources
 import pkgutil
 import sys
-import logging
+
+HAS_KEYRING = False
+try:
+    import keyring
+    HAS_KEYRING = True
+except ImportError:
+    pass
 
 import novaclient
 from novaclient import client
@@ -54,6 +62,108 @@ def positive_non_zero_float(text):
         msg = "%s must be greater than 0" % text
         raise argparse.ArgumentTypeError(msg)
     return value
+
+
+class SecretsHelper(object):
+    def __init__(self, args, client):
+        self.args = args
+        self.client = client
+        self.key = None
+
+    def _validate_string(self, text):
+        if text is None or len(text) == 0:
+            return False
+        return True
+
+    def _make_key(self):
+        if self.key is not None:
+            return self.key
+        keys = [
+            self.client.auth_url,
+            self.client.projectid,
+            self.client.user,
+            self.client.region_name,
+            self.client.endpoint_type,
+            self.client.service_type,
+            self.client.service_name,
+            self.client.volume_service_name,
+        ]
+        for (index, key) in enumerate(keys):
+            if key is None:
+                keys[index] = '?'
+            else:
+                keys[index] = str(keys[index])
+        self.key = "/".join(keys)
+        return self.key
+
+    def _prompt_password(self, verify=True):
+        pw = None
+        if hasattr(sys.stdin, 'isatty') and sys.stdin.isatty():
+            # Check for Ctl-D
+            try:
+                while True:
+                    pw1 = getpass.getpass('OS Password: ')
+                    if verify:
+                        pw2 = getpass.getpass('Please verify: ')
+                    else:
+                        pw2 = pw1
+                    if pw1 == pw2 and self._validate_string(pw1):
+                        pw = pw1
+                        break
+            except EOFError:
+                pass
+        return pw
+
+    def save(self, auth_token, management_url):
+        if not HAS_KEYRING or not self.args.os_cache:
+            return
+        if (auth_token == self.auth_token and
+            management_url == self.management_url):
+            # Nothing changed....
+            return
+        if not all([management_url, auth_token]):
+            raise ValueError("Unable to save empty management url/auth token")
+        value = "|".join([str(auth_token), str(management_url)])
+        keyring.set_password("novaclient_auth", self._make_key(), value)
+
+    @property
+    def password(self):
+        if self._validate_string(self.args.os_password):
+            return self.args.os_password
+        if self._validate_string(self.args.apikey):
+            return self.args.apikey
+        verify_pass = utils.bool_from_str(utils.getenv("OS_VERIFY_PASSWORD"))
+        return self._prompt_password(verify_pass)
+
+    @property
+    def management_url(self):
+        if not HAS_KEYRING:
+            return None
+        management_url = None
+        try:
+            block = keyring.get_password('novaclient_auth', self._make_key())
+            if block:
+                _token, management_url = block.split('|', 1)
+        except ValueError:
+            pass
+        return management_url
+
+    @property
+    def auth_token(self):
+        # Now is where it gets complicated since we
+        # want to look into the keyring module, if it
+        # exists and see if anything was provided in that
+        # file that we can use.
+        if not HAS_KEYRING:
+            return None
+        token = None
+        try:
+            block = keyring.get_password('novaclient_auth', self._make_key())
+            if block:
+                token, _management_url = block.split('|', 1)
+        except ValueError:
+            pass
+        return token
 
 
 class NovaClientArgumentParser(argparse.ArgumentParser):
@@ -413,20 +523,23 @@ class OpenStackComputeShell(object):
             self.do_bash_completion(args)
             return 0
 
-        (os_username, os_password, os_tenant_name, os_auth_url,
+        (os_username, os_tenant_name, os_auth_url,
                 os_region_name, os_auth_system, endpoint_type, insecure,
                 service_type, service_name, volume_service_name,
-                username, apikey, projectid, url, region_name,
+                username, projectid, url, region_name,
                 bypass_url, os_cache, cacert, timeout) = (
-                        args.os_username, args.os_password,
+                        args.os_username,
                         args.os_tenant_name, args.os_auth_url,
                         args.os_region_name, args.os_auth_system,
                         args.endpoint_type, args.insecure, args.service_type,
                         args.service_name, args.volume_service_name,
-                        args.username, args.apikey, args.projectid,
+                        args.username, args.projectid,
                         args.url, args.region_name,
                         args.bypass_url, args.os_cache,
                         args.os_cacert, args.timeout)
+
+        # Fetched and set later as needed
+        os_password = None
 
         if not endpoint_type:
             endpoint_type = DEFAULT_NOVA_ENDPOINT_TYPE
@@ -437,7 +550,6 @@ class OpenStackComputeShell(object):
 
         #FIXME(usrleon): Here should be restrict for project id same as
         # for os_username or os_password but for compatibility it is not.
-
         if not utils.isunauthenticated(args.func):
             if not os_username:
                 if not username:
@@ -445,14 +557,6 @@ class OpenStackComputeShell(object):
                             "via either --os-username or env[OS_USERNAME]")
                 else:
                     os_username = username
-
-            if not os_password:
-                if not apikey:
-                    raise exc.CommandError("You must provide a password "
-                            "via either --os-password or via "
-                            "env[OS_PASSWORD]")
-                else:
-                    os_password = apikey
 
             if not os_tenant_name:
                 if not projectid:
@@ -499,6 +603,39 @@ class OpenStackComputeShell(object):
                 timings=args.timings, bypass_url=bypass_url,
                 os_cache=os_cache, http_log_debug=options.debug,
                 cacert=cacert, timeout=timeout)
+
+        # Now check for the password/token of which pieces of the
+        # identifying keyring key can come from the underlying client
+        if not utils.isunauthenticated(args.func):
+            helper = SecretsHelper(args, self.cs.client)
+            use_pw = True
+            auth_token, management_url = (helper.auth_token,
+                                          helper.management_url)
+            if auth_token and management_url:
+                self.cs.client.auth_token = auth_token
+                self.cs.client.management_url = management_url
+                # Try to auth with the given info, if it fails
+                # go into password mode...
+                try:
+                    self.cs.authenticate()
+                    use_pw = False
+                except (exc.Unauthorized, exc.AuthorizationFailure):
+                    # Likely it expired or just didn't work...
+                    self.cs.client.auth_token = None
+                    self.cs.client.management_url = None
+            if use_pw:
+                # Auth using token must have failed or not happened
+                # at all, so now switch to password mode and save
+                # the token when its gotten... using our keyring
+                # saver
+                os_password = helper.password
+                if not os_password:
+                    raise exc.CommandError(
+                        'Expecting a password provided via either '
+                        '--os-password, env[OS_PASSWORD], or '
+                        'prompted response')
+                self.cs.client.password = os_password
+                self.cs.client.keyring_saver = helper
 
         try:
             if not utils.isunauthenticated(args.func):

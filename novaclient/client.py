@@ -21,13 +21,6 @@ try:
 except ImportError:
     import simplejson as json
 
-has_keyring = False
-try:
-    import keyring
-    has_keyring = True
-except ImportError:
-    pass
-
 # Python 2.5 compat fix
 if not hasattr(urlparse, 'parse_qsl'):
     import cgi
@@ -93,7 +86,8 @@ class HTTPClient(object):
         self.auth_token = None
         self.proxy_token = proxy_token
         self.proxy_tenant_id = proxy_tenant_id
-        self.used_keyring = False
+        self.keyring_saver = None
+        self.keyring_saved = False
 
         if insecure:
             self.verify_cert = False
@@ -119,7 +113,6 @@ class HTTPClient(object):
         """Forget all of our authentication information."""
         self.management_url = None
         self.auth_token = None
-        self.used_keyring = False
 
     def set_management_url(self, url):
         self.management_url = url
@@ -305,29 +298,6 @@ class HTTPClient(object):
                                              extract_token=False)
 
     def authenticate(self):
-        if has_keyring:
-            keys = [self.auth_url, self.projectid, self.user, self.region_name,
-                    self.endpoint_type, self.service_type, self.service_name,
-                    self.volume_service_name]
-            for index, key in enumerate(keys):
-                if key is None:
-                    keys[index] = '?'
-            keyring_key = "/".join(keys)
-            if self.os_cache and not self.used_keyring:
-                # Lookup the token/mgmt url from the keyring first time
-                # through.
-                # If we come through again, it's because the old token
-                # was rejected.
-                try:
-                    block = keyring.get_password("novaclient_auth",
-                                                 keyring_key)
-                    if block:
-                        self.used_keyring = True
-                        self.auth_token, self.management_url = block.split('|')
-                        return
-                except Exception:
-                    pass
-
         magic_tuple = urlparse.urlsplit(self.auth_url)
         scheme, netloc, path, query, frag = magic_tuple
         port = magic_tuple.port
@@ -385,14 +355,10 @@ class HTTPClient(object):
             self.set_management_url(self.bypass_url)
 
         # Store the token/mgmt url in the keyring for later requests.
-        if has_keyring and self.os_cache:
-            try:
-                keyring_value = "%s|%s" % (self.auth_token,
-                                           self.management_url)
-                keyring.set_password("novaclient_auth",
-                                     keyring_key, keyring_value)
-            except Exception:
-                pass
+        if self.keyring_saver and self.os_cache and not self.keyring_saved:
+            self.keyring_saver.save(self.auth_token, self.management_url)
+            # Don't save it again
+            self.keyring_saved = True
 
     def _v1_auth(self, url):
         if self.proxy_token:
@@ -427,9 +393,13 @@ class HTTPClient(object):
 
     def _v2_auth(self, url):
         """Authenticate against a v2.0 auth service."""
-        body = {"auth": {
-                "passwordCredentials": {"username": self.user,
-                                        "password": self.password}}}
+        if self.auth_token:
+            body = {"auth": {
+                    "token": {"id": self.auth_token}}}
+        else:
+            body = {"auth": {
+                    "passwordCredentials": {"username": self.user,
+                                            "password": self.password}}}
 
         if self.projectid:
             body['auth']['tenantName'] = self.projectid
