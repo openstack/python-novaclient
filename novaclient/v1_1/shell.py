@@ -2597,7 +2597,7 @@ def do_quota_show(cs, args):
     """List the quotas for a tenant."""
 
     if not args.tenant:
-        raise exceptions.CommandError("you need to specify a Tenant ID ")
+        _quota_show(cs.quotas.get(cs.client.tenant_id))
     else:
         _quota_show(cs.quotas.get(args.tenant))
 
@@ -2610,7 +2610,7 @@ def do_quota_defaults(cs, args):
     """List the default quotas for a tenant."""
 
     if not args.tenant:
-        _quota_show(cs.quotas.defaults(cs.project_id))
+        _quota_show(cs.quotas.defaults(cs.client.tenant_id))
     else:
         _quota_show(cs.quotas.defaults(args.tenant))
 
