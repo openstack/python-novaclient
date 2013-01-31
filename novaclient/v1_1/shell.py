@@ -2072,6 +2072,55 @@ def do_usage_list(cs, args):
     utils.print_list(usage_list, rows)
 
 
+@utils.arg('--start', metavar='<start>',
+           help='Usage range start date ex 2012-01-20 (default: 4 weeks ago)',
+           default=None)
+@utils.arg('--end', metavar='<end>',
+           help='Usage range end date, ex 2012-01-20 (default: tomorrow) ',
+           default=None)
+@utils.arg('--tenant', metavar='<tenant-id>',
+           default=None,
+           help='UUID or name of tenant to get usage for.')
+def do_usage(cs, args):
+    """Show usage data for a single tenant"""
+    dateformat = "%Y-%m-%d"
+    rows = ["Instances", "RAM MB-Hours", "CPU Hours", "Disk GB-Hours"]
+
+    now = timeutils.utcnow()
+
+    if args.start:
+        start = datetime.datetime.strptime(args.start, dateformat)
+    else:
+        start = now - datetime.timedelta(weeks=4)
+
+    if args.end:
+        end = datetime.datetime.strptime(args.end, dateformat)
+    else:
+        end = now + datetime.timedelta(days=1)
+
+    def simplify_usage(u):
+        simplerows = map(lambda x: x.lower().replace(" ", "_"), rows)
+
+        setattr(u, simplerows[0], "%d" % len(u.server_usages))
+        setattr(u, simplerows[1], "%.2f" % u.total_memory_mb_usage)
+        setattr(u, simplerows[2], "%.2f" % u.total_vcpus_usage)
+        setattr(u, simplerows[3], "%.2f" % u.total_local_gb_usage)
+
+    if args.tenant:
+        usage = cs.usage.get(args.tenant, start, end)
+    else:
+        usage = cs.usage.get(cs.client.tenant_id, start, end)
+
+    print "Usage from %s to %s:" % (start.strftime(dateformat),
+                                    end.strftime(dateformat))
+
+    if getattr(usage, 'total_vcpus_usage', None):
+        simplify_usage(usage)
+        utils.print_list([usage], rows)
+    else:
+        print 'None'
+
+
 @utils.arg('pk_filename',
     metavar='<private-key-filename>',
     nargs='?',
