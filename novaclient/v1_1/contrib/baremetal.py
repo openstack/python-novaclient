@@ -178,12 +178,13 @@ class BareMetalNodeManager(base.ManagerWithFind):
     help='ShellInABox port?')
 def do_baremetal_node_create(cs, args):
     """Create a baremetal node"""
-    return cs.baremetal.create(args.service_host, args.cpus,
+    node = cs.baremetal.create(args.service_host, args.cpus,
             args.memory_mb, args.local_gb, args.prov_mac_address,
             pm_address=args.pm_address, pm_user=args.pm_user,
             pm_password=args.pm_password,
             prov_vlan_id=args.prov_vlan_id,
             terminal_port=args.terminal_port)
+    _print_baremetal_resource(node)
 
 
 @utils.arg('node',
@@ -212,7 +213,7 @@ def _translate_baremetal_node_keys(collection):
                 setattr(item, to_key, item._info[from_key])
 
 
-def _print_baremetal_nodes_list(cs, nodes):
+def _print_baremetal_nodes_list(nodes):
     """Print the list of baremetal nodes"""
     _translate_baremetal_node_keys(nodes)
     utils.print_list(nodes, [
@@ -233,7 +234,7 @@ def _print_baremetal_nodes_list(cs, nodes):
 def do_baremetal_node_list(cs, _args):
     """Print a list of available baremetal nodes."""
     nodes = cs.baremetal.list()
-    _print_baremetal_nodes_list(cs, nodes)
+    _print_baremetal_nodes_list(nodes)
 
 
 def _find_baremetal_node(cs, node):
@@ -241,9 +242,9 @@ def _find_baremetal_node(cs, node):
     return utils.find_resource(cs.baremetal, node)
 
 
-def _print_baremetal_node(cs, node):
-    """Print the details of a baremetal node"""
-    info = node._info.copy()
+def _print_baremetal_resource(resource):
+    """Print the details of a baremetal resource"""
+    info = resource._info.copy()
     utils.print_dict(info)
 
 
@@ -253,7 +254,7 @@ def _print_baremetal_node(cs, node):
 def do_baremetal_node_show(cs, args):
     """Show information about a node"""
     node = _find_baremetal_node(cs, args.node)
-    _print_baremetal_node(cs, node)
+    _print_baremetal_resource(node)
 
 
 @utils.arg('node',
@@ -272,8 +273,9 @@ def do_baremetal_node_show(cs, args):
     help="OpenFlow port number of interface")
 def do_baremetal_add_interface(cs, args):
     """Add a network interface to a baremetal node"""
-    return cs.baremetal.add_interface(args.node, args.address,
+    bmif = cs.baremetal.add_interface(args.node, args.address,
             args.datapath_id, args.port_no)
+    _print_baremetal_resource(bmif)
 
 
 @utils.arg('node', metavar='<node>', help="ID of node")
