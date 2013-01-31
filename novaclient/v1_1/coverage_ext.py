@@ -41,7 +41,7 @@ class CoverageManager(base.ManagerWithFind):
         url = '/os-coverage/action'
         return self.api.client.post(url, body=body)
 
-    def report(self, filename, xml=False, html=True):
+    def report(self, filename, xml=False, html=False):
         body = {
             'report': {
                 'file': filename,
