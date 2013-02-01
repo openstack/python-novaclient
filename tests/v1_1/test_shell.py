@@ -508,7 +508,8 @@ class ShellTest(utils.TestCase):
                            'detailed=1')
 
     def test_usage(self):
-        self.run_command('usage --start 2000-01-20 --end 2005-02-01 --tenant test')
+        self.run_command('usage --start 2000-01-20 --end 2005-02-01 '
+                         '--tenant test')
         self.assert_called('GET',
                            '/os-simple-tenant-usage/test?' +
                            'start=2000-01-20T00:00:00&' +
@@ -670,15 +671,18 @@ class ShellTest(utils.TestCase):
 
     def test_host_startup(self):
         self.run_command('host-action sample-host --action startup')
-        self.assert_called('POST', '/os-hosts/sample-host/action', {'startup': None})
+        self.assert_called(
+            'POST', '/os-hosts/sample-host/action', {'startup': None})
 
     def test_host_shutdown(self):
         self.run_command('host-action sample-host --action shutdown')
-        self.assert_called('POST', '/os-hosts/sample-host/action', {'shutdown': None})
+        self.assert_called(
+            'POST', '/os-hosts/sample-host/action', {'shutdown': None})
 
     def test_host_reboot(self):
         self.run_command('host-action sample-host --action reboot')
-        self.assert_called('POST', '/os-hosts/sample-host/action', {'reboot': None})
+        self.assert_called(
+            'POST', '/os-hosts/sample-host/action', {'reboot': None})
 
     def test_coverage_start(self):
         self.run_command('coverage-start')
