@@ -428,7 +428,8 @@ def do_flavor_show(cs, args):
      help="Name of the new flavor")
 @utils.arg('id',
      metavar='<id>',
-     help="Unique ID (integer or UUID) for the new flavor")
+     help="Unique ID (integer or UUID) for the new flavor."
+     " If specifying 'auto', a UUID will be generated as id")
 @utils.arg('ram',
      metavar='<ram>',
      help="Memory size in MB")
