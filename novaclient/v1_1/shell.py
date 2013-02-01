@@ -2149,9 +2149,13 @@ def do_x509_create_cert(cs, args):
 
     certs = cs.certs.create()
 
-    with open(args.pk_filename, 'w') as private_key:
-        private_key.write(certs.private_key)
-        print "Wrote private key to %s" % args.pk_filename
+    try:
+        old_umask = os.umask(0o377)
+        with open(args.pk_filename, 'w') as private_key:
+            private_key.write(certs.private_key)
+            print "Wrote private key to %s" % args.pk_filename
+    finally:
+        os.umask(old_umask)
 
     with open(args.cert_filename, 'w') as cert:
         cert.write(certs.data)
