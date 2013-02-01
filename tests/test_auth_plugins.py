@@ -35,6 +35,9 @@ def mock_http_request(resp=None):
                 "token": {
                     "expires": "12345",
                     "id": "FAKE_ID",
+                    "tenant": {
+                        "id": "FAKE_TENANT_ID",
+                    }
                 },
                 "serviceCatalog": [
                     {

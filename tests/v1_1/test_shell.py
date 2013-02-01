@@ -707,13 +707,16 @@ class ShellTest(utils.TestCase):
         self.assert_called('GET', '/os-quota-sets/test')
 
     def test_quota_show_no_tenant(self):
-        self.assertRaises(exceptions.CommandError,
-                          self.run_command,
-                          'quota-show')
+        self.run_command('quota-show')
+        self.assert_called('GET', '/os-quota-sets/tenant_id')
 
     def test_quota_defaults(self):
         self.run_command('quota-defaults --tenant test')
         self.assert_called('GET', '/os-quota-sets/test/defaults')
+
+    def test_quota_defaults_no_nenant(self):
+        self.run_command('quota-defaults')
+        self.assert_called('GET', '/os-quota-sets/tenant_id/defaults')
 
     def test_quota_update(self):
         self.run_command(

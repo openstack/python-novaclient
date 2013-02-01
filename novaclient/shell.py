@@ -114,16 +114,18 @@ class SecretsHelper(object):
                 pass
         return pw
 
-    def save(self, auth_token, management_url):
+    def save(self, auth_token, management_url, tenant_id):
         if not HAS_KEYRING or not self.args.os_cache:
             return
         if (auth_token == self.auth_token and
             management_url == self.management_url):
             # Nothing changed....
             return
-        if not all([management_url, auth_token]):
+        if not all([management_url, auth_token, tenant_id]):
             raise ValueError("Unable to save empty management url/auth token")
-        value = "|".join([str(auth_token), str(management_url)])
+        value = "|".join([str(auth_token),
+                          str(management_url),
+                          str(tenant_id)])
         keyring.set_password("novaclient_auth", self._make_key(), value)
 
     @property
@@ -143,7 +145,7 @@ class SecretsHelper(object):
         try:
             block = keyring.get_password('novaclient_auth', self._make_key())
             if block:
-                _token, management_url = block.split('|', 1)
+                _token, management_url, _tenant_id = block.split('|', 2)
         except ValueError:
             pass
         return management_url
@@ -160,10 +162,23 @@ class SecretsHelper(object):
         try:
             block = keyring.get_password('novaclient_auth', self._make_key())
             if block:
-                token, _management_url = block.split('|', 1)
+                token, _management_url, _tenant_id = block.split('|', 2)
         except ValueError:
             pass
         return token
+
+    @property
+    def tenant_id(self):
+        if not HAS_KEYRING:
+            return None
+        tenant_id = None
+        try:
+            block = keyring.get_password('novaclient_auth', self._make_key())
+            if block:
+                _token, _management_url, tenant_id = block.split('|', 2)
+        except ValueError:
+            pass
+        return tenant_id
 
 
 class NovaClientArgumentParser(argparse.ArgumentParser):
@@ -609,9 +624,11 @@ class OpenStackComputeShell(object):
         if not utils.isunauthenticated(args.func):
             helper = SecretsHelper(args, self.cs.client)
             use_pw = True
-            auth_token, management_url = (helper.auth_token,
-                                          helper.management_url)
-            if auth_token and management_url:
+            tenant_id, auth_token, management_url = (helper.tenant_id,
+                                                     helper.auth_token,
+                                                     helper.management_url)
+            if tenant_id and auth_token and management_url:
+                self.cs.client.tenant_id = tenant_id
                 self.cs.client.auth_token = auth_token
                 self.cs.client.management_url = management_url
                 # Try to auth with the given info, if it fails

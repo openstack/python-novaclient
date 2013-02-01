@@ -251,6 +251,7 @@ class HTTPClient(object):
                     service_catalog.ServiceCatalog(body)
                 if extract_token:
                     self.auth_token = self.service_catalog.get_token()
+                    self.tenant_id = self.service_catalog.get_tenant_id()
 
                 management_url = self.service_catalog.url_for(
                     attr='region',
@@ -356,7 +357,9 @@ class HTTPClient(object):
 
         # Store the token/mgmt url in the keyring for later requests.
         if self.keyring_saver and self.os_cache and not self.keyring_saved:
-            self.keyring_saver.save(self.auth_token, self.management_url)
+            self.keyring_saver.save(self.auth_token,
+                                    self.management_url,
+                                    self.tenant_id)
             # Don't save it again
             self.keyring_saved = True
 
