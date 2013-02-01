@@ -209,7 +209,7 @@ class OpenStackComputeShell(object):
         parser = NovaClientArgumentParser(
             prog='nova',
             description=__doc__.strip(),
-            epilog='See "nova help COMMAND" '\
+            epilog='See "nova help COMMAND" '
                    'for help on a specific command.',
             add_help=False,
             formatter_class=OpenStackHelpFormatter,

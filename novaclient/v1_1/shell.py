@@ -110,7 +110,7 @@ def _boot(cs, args, reservation_id=None, min_count=None, max_count=None):
         try:
             userdata = open(args.user_data)
         except IOError, e:
-            raise exceptions.CommandError("Can't open '%s': %s" % \
+            raise exceptions.CommandError("Can't open '%s': %s" %
                                           (args.user_data, e))
     else:
         userdata = None
@@ -200,14 +200,14 @@ def _boot(cs, args, reservation_id=None, min_count=None, max_count=None):
      metavar="<key=value>",
      action='append',
      default=[],
-     help="Record arbitrary key/value metadata to /meta.js "\
+     help="Record arbitrary key/value metadata to /meta.js "
           "on the new server. Can be specified multiple times.")
 @utils.arg('--file',
      metavar="<dst-path=src-path>",
      action='append',
      dest='files',
      default=[],
-     help="Store arbitrary files from <src-path> locally to <dst-path> "\
+     help="Store arbitrary files from <src-path> locally to <dst-path> "
           "on the new server. You may store up to 5 files.")
 @utils.arg('--key-name',
     metavar='<key-name>',
@@ -1961,7 +1961,7 @@ def do_secgroup_delete_group_rule(cs, args):
         if (rule.get('ip_protocol') == params.get('ip_protocol') and
             rule.get('from_port') == params.get('from_port') and
             rule.get('to_port') == params.get('to_port') and
-            rule.get('group', {}).get('name') == \
+            rule.get('group', {}).get('name') ==
                      params.get('group_name')):
             return cs.security_group_rules.delete(rule['id'])
 
@@ -1985,7 +1985,7 @@ def do_keypair_add(cs, args):
             with open(os.path.expanduser(pub_key)) as f:
                 pub_key = f.read()
         except IOError, e:
-            raise exceptions.CommandError("Can't open or read '%s': %s" % \
+            raise exceptions.CommandError("Can't open or read '%s': %s" %
                                                           (pub_key, e))
 
     keypair = cs.keypairs.create(name, pub_key)
