@@ -2251,7 +2251,8 @@ def _print_aggregate_details(aggregate):
 
 
 @utils.arg('server', metavar='<server>', help='Name or ID of server.')
-@utils.arg('host', metavar='<host>', help='destination host name.')
+@utils.arg('host', metavar='<host>', default=None, nargs='?',
+    help='destination host name.')
 @utils.arg('--block-migrate',
     action='store_true',
     dest='block_migrate',
