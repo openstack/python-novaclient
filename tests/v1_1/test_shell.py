@@ -507,6 +507,20 @@ class ShellTest(utils.TestCase):
                            'end=2005-02-02T00:00:00&' +
                            'detailed=1')
 
+    def test_usage(self):
+        self.run_command('usage --start 2000-01-20 --end 2005-02-01 --tenant test')
+        self.assert_called('GET',
+                           '/os-simple-tenant-usage/test?' +
+                           'start=2000-01-20T00:00:00&' +
+                           'end=2005-02-01T00:00:00')
+
+    def test_usage_no_tenant(self):
+        self.run_command('usage --start 2000-01-20 --end 2005-02-01')
+        self.assert_called('GET',
+                           '/os-simple-tenant-usage/tenant_id?' +
+                           'start=2000-01-20T00:00:00&' +
+                           'end=2005-02-01T00:00:00')
+
     def test_flavor_delete(self):
         self.run_command("flavor-delete 2")
         self.assert_called('DELETE', '/flavors/2')
