@@ -2442,9 +2442,14 @@ def do_host_action(cs, args):
     utils.print_list([result], ['HOST', 'power_action'])
 
 
+@utils.arg('--combine',
+           dest='combine',
+           action="store_true",
+           default=False,
+           help='Generate a single report for all services.')
 def do_coverage_start(cs, args):
     """Start Nova coverage reporting"""
-    cs.coverage.start()
+    cs.coverage.start(combine=args.combine)
     print "Coverage collection started"
 
 
@@ -2455,9 +2460,22 @@ def do_coverage_stop(cs, args):
 
 
 @utils.arg('filename', metavar='<filename>', help='report filename')
+@utils.arg('--html',
+           dest='html',
+           action="store_true",
+           default=False,
+           help='Generate HTML reports instead of text ones.')
+@utils.arg('--xml',
+           dest='xml',
+           action="store_true",
+           default=False,
+           help='Generate XML reports instead of text ones.')
 def do_coverage_report(cs, args):
     """Generate a coverage report"""
-    cov = cs.coverage.report(args.filename)
+    if args.html == True and args.xml == True:
+        raise exceptions.CommandError("--html and --xml must not be "
+                                      "specified together.")
+    cov = cs.coverage.report(args.filename, xml=args.xml, html=args.html)
     print "Report path: %s" % cov[-1]['path']
 
 

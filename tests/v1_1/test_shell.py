@@ -689,6 +689,11 @@ class ShellTest(utils.TestCase):
         self.run_command('coverage-start')
         self.assert_called('POST', '/os-coverage/action')
 
+    def test_coverage_start_with_combine(self):
+        self.run_command('coverage-start --combine')
+        body = {'start': {'combine': True}}
+        self.assert_called('POST', '/os-coverage/action', body)
+
     def test_coverage_stop(self):
         self.run_command('coverage-stop')
         self.assert_called_anytime('POST', '/os-coverage/action')
@@ -696,6 +701,16 @@ class ShellTest(utils.TestCase):
     def test_coverage_report(self):
         self.run_command('coverage-report report')
         self.assert_called_anytime('POST', '/os-coverage/action')
+
+    def test_coverage_report_with_html(self):
+        self.run_command('coverage-report report --html')
+        body = {'report': {'html': True, 'file': 'report'}}
+        self.assert_called_anytime('POST', '/os-coverage/action', body)
+
+    def test_coverage_report_with_xml(self):
+        self.run_command('coverage-report report --xml')
+        body = {'report': {'xml': True, 'file': 'report'}}
+        self.assert_called_anytime('POST', '/os-coverage/action', body)
 
     def test_hypervisor_list(self):
         self.run_command('hypervisor-list')
