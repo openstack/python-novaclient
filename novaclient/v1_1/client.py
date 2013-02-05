@@ -1,8 +1,25 @@
+# vim: tabstop=4 shiftwidth=4 softtabstop=4
+# Copyright 2012 OpenStack LLC.
+# Copyright 2013 IBM Corp.
+#
+#    Licensed under the Apache License, Version 2.0 (the "License"); you may
+#    not use this file except in compliance with the License. You may obtain
+#    a copy of the License at
+#
+#         http://www.apache.org/licenses/LICENSE-2.0
+#
+#    Unless required by applicable law or agreed to in writing, software
+#    distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+#    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+#    License for the specific language governing permissions and limitations
+#    under the License
+
 from novaclient import client
 from novaclient.v1_1 import agents
 from novaclient.v1_1 import certs
 from novaclient.v1_1 import cloudpipe
 from novaclient.v1_1 import aggregates
+from novaclient.v1_1 import availability_zones
 from novaclient.v1_1 import coverage_ext
 from novaclient.v1_1 import flavors
 from novaclient.v1_1 import flavor_access
@@ -98,6 +115,8 @@ class Client(object):
         self.floating_ips_bulk = floating_ips_bulk.FloatingIPBulkManager(self)
         self.os_cache = os_cache or not no_cache
         self.coverage = coverage_ext.CoverageManager(self)
+        self.availability_zones = \
+            availability_zones.AvailabilityZoneManager(self)
 
         # Add in any extensions...
         if extensions:

@@ -1,6 +1,7 @@
 # Copyright 2010 Jacob Kaplan-Moss
 
 # Copyright 2011 OpenStack LLC.
+# Copyright 2013 IBM Corp.
 # All Rights Reserved.
 #
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -16,6 +17,7 @@
 #    under the License.
 
 import argparse
+import copy
 import datetime
 import getpass
 import locale
@@ -26,6 +28,7 @@ import time
 from novaclient import exceptions
 from novaclient.openstack.common import timeutils
 from novaclient import utils
+from novaclient.v1_1 import availability_zones
 from novaclient.v1_1 import servers
 
 
@@ -367,13 +370,16 @@ def _poll_for_status(poll_fn, obj_id, action, final_ok_states,
         time.sleep(poll_period)
 
 
-def _translate_flavor_keys(collection):
-    convert = [('ram', 'memory_mb')]
+def _translate_keys(collection, convert):
     for item in collection:
         keys = item.__dict__.keys()
         for from_key, to_key in convert:
             if from_key in keys and to_key not in keys:
                 setattr(item, to_key, item._info[from_key])
+
+
+def _translate_flavor_keys(collection):
+    _translate_keys(collection, [('ram', 'memory_mb')])
 
 
 def _print_flavor_extra_specs(flavor):
@@ -1301,21 +1307,20 @@ def _print_volume_snapshot(snapshot):
 
 
 def _translate_volume_keys(collection):
-    convert = [('displayName', 'display_name'), ('volumeType', 'volume_type')]
-    for item in collection:
-        keys = item.__dict__.keys()
-        for from_key, to_key in convert:
-            if from_key in keys and to_key not in keys:
-                setattr(item, to_key, item._info[from_key])
+    _translate_keys(collection,
+                    [('displayName', 'display_name'),
+                     ('volumeType', 'volume_type')])
 
 
 def _translate_volume_snapshot_keys(collection):
-    convert = [('displayName', 'display_name'), ('volumeId', 'volume_id')]
-    for item in collection:
-        keys = item.__dict__.keys()
-        for from_key, to_key in convert:
-            if from_key in keys and to_key not in keys:
-                setattr(item, to_key, item._info[from_key])
+    _translate_keys(collection,
+                    [('displayName', 'display_name'),
+                     ('volumeId', 'volume_id')])
+
+
+def _translate_availability_zone_keys(collection):
+    _translate_keys(collection,
+                    [('zoneName', 'name'), ('zoneState', 'status')])
 
 
 @utils.arg('--all-tenants',
@@ -2857,3 +2862,64 @@ def do_evacuate(cs, args):
     res = server.evacuate(args.host, args.on_shared_storage, args.password)[0]
     if type(res) is dict:
         utils.print_dict(res)
+
+
+def _treeizeAvailabilityZone(zone):
+    """Build a tree view for availability zones"""
+    AvailabilityZone = availability_zones.AvailabilityZone
+
+    az = AvailabilityZone(copy.deepcopy(zone.manager),
+                          copy.deepcopy(zone._info), zone._loaded)
+    result = []
+
+    # Zone tree view item
+    az.zoneName = zone.zoneName
+    az.zoneState = ('available'
+                    if zone.zoneState['available'] else 'not available')
+    az._info['zoneName'] = az.zoneName
+    az._info['zoneState'] = az.zoneState
+    result.append(az)
+
+    if zone.hosts is not None:
+        for (host, services) in zone.hosts.items():
+            # Host tree view item
+            az = AvailabilityZone(copy.deepcopy(zone.manager),
+                                  copy.deepcopy(zone._info), zone._loaded)
+            az.zoneName = '|- %s' % host
+            az.zoneState = ''
+            az._info['zoneName'] = az.zoneName
+            az._info['zoneState'] = az.zoneState
+            result.append(az)
+
+            for (svc, state) in services.items():
+                # Service tree view item
+                az = AvailabilityZone(copy.deepcopy(zone.manager),
+                                      copy.deepcopy(zone._info), zone._loaded)
+                az.zoneName = '| |- %s' % svc
+                az.zoneState = '%s %s %s' % (
+                               'enabled' if state['active'] else 'disabled',
+                               ':-)' if state['available'] else 'XXX',
+                               timeutils.strtime(state['updated_at']))
+                az._info['zoneName'] = az.zoneName
+                az._info['zoneState'] = az.zoneState
+                result.append(az)
+    return result
+
+
+@utils.service_type('compute')
+def do_availability_zone_list(cs, _args):
+    """List all the availability zones."""
+    try:
+        availability_zones = cs.availability_zones.list()
+    except exceptions.Forbidden, e:  # policy doesn't allow probably
+        try:
+            availability_zones = cs.availability_zones.list(detailed=False)
+        except:
+            raise e
+
+    result = []
+    for zone in availability_zones:
+        result += _treeizeAvailabilityZone(zone)
+    _translate_availability_zone_keys(result)
+    utils.print_list(result, ['Name', 'Status'],
+                     sortby_index=None)

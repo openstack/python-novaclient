@@ -1,6 +1,7 @@
 # Copyright 2010 Jacob Kaplan-Moss
 
 # Copyright 2011 OpenStack LLC.
+# Copyright 2012 IBM Corp.
 # All Rights Reserved.
 #
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -862,3 +863,7 @@ class ShellTest(utils.TestCase):
     def test_clear_password(self):
         self.run_command('clear-password sample-server')
         self.assert_called('DELETE', '/servers/1234/os-server-password')
+
+    def test_availability_zone_list(self):
+            self.run_command('availability-zone-list')
+            self.assert_called('GET', '/os-availability-zone/detail')

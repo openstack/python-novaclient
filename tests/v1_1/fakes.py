@@ -1,5 +1,6 @@
 # Copyright (c) 2011 X.commerce, a business unit of eBay Inc.
 # Copyright 2011 OpenStack, LLC
+# Copyright 2013 IBM Corp.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -1501,3 +1502,41 @@ class FakeHTTPClient(base_client.HTTPClient):
             return (200, {}, {
                 'path': '/tmp/tmpdir/' + body['report']['file']
             })
+
+    def get_os_availability_zone(self, **kw):
+        return (200, {}, {"availabilityZoneInfo": [
+                              {"zoneName": "zone-1",
+                               "zoneState": {"available": True},
+                               "hosts": None},
+                              {"zoneName": "zone-2",
+                               "zoneState": {"available": False},
+                               "hosts": None}]})
+
+    def get_os_availability_zone_detail(self, **kw):
+        return (200, {}, {"availabilityZoneInfo": [
+                              {"zoneName": "zone-1",
+                               "zoneState": {"available": True},
+                               "hosts": {
+                                   "fake_host-1": {
+                                       "nova-compute": {"active": True,
+                                           "available": True,
+                                           "updated_at":
+                                   datetime(2012, 12, 26, 14, 45, 25, 0)}}}},
+                              {"zoneName": "internal",
+                               "zoneState": {"available": True},
+                               "hosts": {
+                                   "fake_host-1": {
+                                       "nova-sched": {
+                                           "active": True,
+                                           "available": True,
+                                           "updated_at":
+                                   datetime(2012, 12, 26, 14, 45, 25, 0)}},
+                                   "fake_host-2": {
+                                       "nova-network": {
+                                           "active": True,
+                                           "available": False,
+                                           "updated_at":
+                                   datetime(2012, 12, 26, 14, 45, 24, 0)}}}},
+                              {"zoneName": "zone-2",
+                               "zoneState": {"available": False},
+                               "hosts": None}]})
