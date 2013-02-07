@@ -1924,7 +1924,11 @@ def do_secgroup_delete(cs, args):
 def do_secgroup_list(cs, args):
     """List security groups for the current tenant."""
     search_opts = {'all_tenants': args.all_tenants}
-    _print_secgroups(cs.security_groups.list(search_opts=search_opts))
+    columns = ['Name', 'Description']
+    if args.all_tenants:
+        columns.append('Tenant_ID')
+    groups = cs.security_groups.list(search_opts=search_opts)
+    utils.print_list(groups, columns)
 
 
 @utils.arg('secgroup', metavar='<secgroup>', help='Name of security group.')
