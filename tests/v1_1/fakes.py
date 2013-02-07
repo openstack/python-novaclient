@@ -264,7 +264,14 @@ class FakeHTTPClient(base_client.HTTPClient):
                 "metadata": {
                     "Server Label": "Web Head 1",
                     "Image Version": "2.1"
-                }
+                },
+                "OS-EXT-SRV-ATTR:host": "computenode1",
+                "security_groups": [{
+                    'id': 1, 'name': 'securitygroup1',
+                    'description': 'FAKE_SECURITY_GROUP',
+                    'tenant_id': '4ffc664c198e435e9853f2538fbcd7a7'
+                }],
+                "OS-EXT-MOD:some_thing": "mod_some_thing_value",
             },
             {
                 "id": 5678,
@@ -295,7 +302,8 @@ class FakeHTTPClient(base_client.HTTPClient):
                 },
                 "metadata": {
                     "Server Label": "DB 1"
-                }
+                },
+                "OS-EXT-SRV-ATTR:host": "computenode2",
             },
             {
                 "id": 9012,
