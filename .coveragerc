@@ -1,0 +1,7 @@
+[run]
+branch = True
+source = novaclient
+omit = novaclient/openstack/*
+
+[report]
+ignore-errors = True
