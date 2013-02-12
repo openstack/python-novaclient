@@ -2921,7 +2921,7 @@ def _treeizeAvailabilityZone(zone):
                 az.zoneState = '%s %s %s' % (
                                'enabled' if state['active'] else 'disabled',
                                ':-)' if state['available'] else 'XXX',
-                               timeutils.strtime(state['updated_at']))
+                               state['updated_at'])
                 az._info['zoneName'] = az.zoneName
                 az._info['zoneState'] = az.zoneState
                 result.append(az)
