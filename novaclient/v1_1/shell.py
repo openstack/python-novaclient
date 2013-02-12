@@ -2232,7 +2232,9 @@ def do_aggregate_list(cs, args):
 @utils.arg('name', metavar='<name>', help='Name of aggregate.')
 @utils.arg('availability_zone',
     metavar='<availability-zone>',
-    help='The availability zone of the aggregate.')
+    default=None,
+    nargs='?',
+    help='The availability zone of the aggregate (optional).')
 def do_aggregate_create(cs, args):
     """Create a new aggregate with the specified details."""
     aggregate = cs.aggregates.create(args.name, args.availability_zone)
