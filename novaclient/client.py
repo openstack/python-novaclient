@@ -100,7 +100,7 @@ class HTTPClient(object):
             ch = logging.StreamHandler()
             self._logger.setLevel(logging.DEBUG)
             self._logger.addHandler(ch)
-            if hasattr(requests, logging):
+            if hasattr(requests, 'logging'):
                 requests.logging.getLogger(requests.__name__).addHandler(ch)
 
     def use_token_cache(self, use_it):
