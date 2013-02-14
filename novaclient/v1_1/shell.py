@@ -2890,7 +2890,7 @@ def _treeizeAvailabilityZone(zone):
     """Build a tree view for availability zones"""
     AvailabilityZone = availability_zones.AvailabilityZone
 
-    az = AvailabilityZone(copy.deepcopy(zone.manager),
+    az = AvailabilityZone(zone.manager,
                           copy.deepcopy(zone._info), zone._loaded)
     result = []
 
@@ -2905,7 +2905,7 @@ def _treeizeAvailabilityZone(zone):
     if zone.hosts is not None:
         for (host, services) in zone.hosts.items():
             # Host tree view item
-            az = AvailabilityZone(copy.deepcopy(zone.manager),
+            az = AvailabilityZone(zone.manager,
                                   copy.deepcopy(zone._info), zone._loaded)
             az.zoneName = '|- %s' % host
             az.zoneState = ''
@@ -2915,7 +2915,7 @@ def _treeizeAvailabilityZone(zone):
 
             for (svc, state) in services.items():
                 # Service tree view item
-                az = AvailabilityZone(copy.deepcopy(zone.manager),
+                az = AvailabilityZone(zone.manager,
                                       copy.deepcopy(zone._info), zone._loaded)
                 az.zoneName = '| |- %s' % svc
                 az.zoneState = '%s %s %s' % (
