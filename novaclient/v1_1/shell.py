@@ -889,6 +889,11 @@ def do_image_delete(cs, args):
     metavar='<tenant>',
     nargs='?',
     help='Display information from single tenant (Admin only).')
+@utils.arg('--fields',
+    default=None,
+    metavar='<fields>',
+    help='Comma-separated list of fields to display. '
+         'Use the show command to see which fields are available.')
 def do_list(cs, args):
     """List active servers."""
     imageid = None
@@ -910,11 +915,32 @@ def do_list(cs, args):
             'host': args.host,
             'instance_name': args.instance_name}
 
+    filters = {'flavor': lambda f: f['id'],
+               'security_groups': utils._format_security_groups}
+
+    formatters = {}
+    field_titles = []
+    if args.fields:
+        for field in args.fields.split(','):
+            field_title, formatter = utils._make_field_formatter(field,
+                                                                 filters)
+            field_titles.append(field_title)
+            formatters[field_title] = formatter
+
     id_col = 'ID'
 
-    columns = [id_col, 'Name', 'Status', 'Networks']
-    formatters = {'Networks': utils._format_servers_list_networks}
-    utils.print_list(cs.servers.list(search_opts=search_opts), columns,
+    servers = cs.servers.list(search_opts=search_opts)
+    convert = [('OS-EXT-SRV-ATTR:host', 'host'),
+               ('OS-EXT-STS:task_state', 'task_state'),
+               ('OS-EXT-SRV-ATTR:instance_name', 'instance_name'),
+               ('hostId', 'host_id')]
+    _translate_keys(servers, convert)
+    if field_titles:
+        columns = [id_col] + field_titles
+    else:
+        columns = [id_col, 'Name', 'Status', 'Networks']
+    formatters['Networks'] = utils._format_servers_list_networks
+    utils.print_list(servers, columns,
                      formatters, sortby_index=1)
 
 

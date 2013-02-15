@@ -19,6 +19,7 @@
 import datetime
 import os
 import mock
+import StringIO
 import sys
 import tempfile
 
@@ -322,6 +323,16 @@ class ShellTest(utils.TestCase):
     def test_list(self):
         self.run_command('list')
         self.assert_called('GET', '/servers/detail')
+
+    @mock.patch('sys.stdout', StringIO.StringIO())
+    def test_list_fields(self):
+        self.run_command('list --fields '
+                         'host,security_groups,OS-EXT-MOD:some_thing')
+        self.assert_called('GET', '/servers/detail')
+        self.assertIn('computenode1', sys.stdout.getvalue())
+        self.assertIn('securitygroup1', sys.stdout.getvalue())
+        self.assertIn('OS-EXT-MOD: Some Thing', sys.stdout.getvalue())
+        self.assertIn('mod_some_thing_value', sys.stdout.getvalue())
 
     def test_reboot(self):
         self.run_command('reboot sample-server')

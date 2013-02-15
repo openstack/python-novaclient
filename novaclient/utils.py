@@ -250,6 +250,46 @@ def _format_servers_list_networks(server):
     return '; '.join(output)
 
 
+def _format_security_groups(groups):
+    return ', '.join(group['name'] for group in groups)
+
+
+def _format_field_name(attr):
+    """Format an object attribute in a human-friendly way."""
+    # Split at ':' and leave the extension name as-is.
+    parts = attr.rsplit(':', 1)
+    name = parts[-1].replace('_', ' ')
+    # Don't title() on mixed case
+    if name.isupper() or name.islower():
+        name = name.title()
+    parts[-1] = name
+    return ': '.join(parts)
+
+
+def _make_field_formatter(attr, filters=None):
+    """
+    Given an object attribute, return a formatted field name and a
+    formatter suitable for passing to print_list.
+
+    Optionally pass a dict mapping attribute names to a function. The function
+    will be passed the value of the attribute and should return the string to
+    display.
+    """
+    filter_ = None
+    if filters:
+        filter_ = filters.get(attr)
+
+    def get_field(obj):
+        field = getattr(obj, attr, '')
+        if field and filter_:
+            field = filter_(field)
+        return field
+
+    name = _format_field_name(attr)
+    formatter = get_field
+    return name, formatter
+
+
 class HookableMixin(object):
     """Mixin so classes can register and run hooks."""
     _hooks_map = {}
