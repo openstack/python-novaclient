@@ -62,12 +62,12 @@ class AvailabilityZoneTest(utils.TestCase):
 
         l0 = [u'zone-1', u'available']
         l1 = [u'|- fake_host-1', u'']
-        l2 = [u'| |- nova-compute', u'enabled :-) 2012-12-26T14:45:25.000000']
+        l2 = [u'| |- nova-compute', u'enabled :-) 2012-12-26 14:45:25']
         l3 = [u'internal', u'available']
         l4 = [u'|- fake_host-1', u'']
-        l5 = [u'| |- nova-sched', u'enabled :-) 2012-12-26T14:45:25.000000']
+        l5 = [u'| |- nova-sched', u'enabled :-) 2012-12-26 14:45:25']
         l6 = [u'|- fake_host-2', u'']
-        l7 = [u'| |- nova-network', u'enabled XXX 2012-12-26T14:45:24.000000']
+        l7 = [u'| |- nova-network', u'enabled XXX 2012-12-26 14:45:24']
         l8 = [u'zone-2', u'not available']
 
         z0 = shell._treeizeAvailabilityZone(zones[0])
