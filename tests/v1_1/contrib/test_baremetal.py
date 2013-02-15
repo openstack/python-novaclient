@@ -59,3 +59,7 @@ class BaremetalExtensionTest(utils.TestCase):
     def test_node_remove_interface(self):
         cs.baremetal.remove_interface(1, "bb:cc:dd:ee:ff:aa")
         cs.assert_called('POST', '/os-baremetal-nodes/1/action')
+
+    def test_node_list_interfaces(self):
+        il = cs.baremetal.list_interfaces(1)
+        cs.assert_called('GET', '/os-baremetal-nodes/1')
