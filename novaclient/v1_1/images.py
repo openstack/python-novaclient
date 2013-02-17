@@ -2,6 +2,7 @@
 """
 Image interface.
 """
+import urllib
 
 from novaclient import base
 
@@ -37,16 +38,21 @@ class ImageManager(base.ManagerWithFind):
         """
         return self._get("/images/%s" % base.getid(image), "image")
 
-    def list(self, detailed=True):
+    def list(self, detailed=True, limit=None):
         """
         Get a list of all images.
 
         :rtype: list of :class:`Image`
+        :param limit: maximum number of images to return.
         """
-        if detailed is True:
-            return self._list("/images/detail", "images")
-        else:
-            return self._list("/images", "images")
+        params = {}
+        detail = ''
+        if detailed:
+            detail = '/detail'
+        if limit:
+            params['limit'] = int(limit)
+        query = '?%s' % urllib.urlencode(params) if params else ''
+        return self._list('/images%s%s' % (detail, query), 'images')
 
     def delete(self, image):
         """
