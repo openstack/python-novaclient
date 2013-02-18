@@ -1074,3 +1074,15 @@ class ShellTest(utils.TestCase):
     def test_security_group_delete(self):
         self.run_command('secgroup-delete test')
         self.assert_called('DELETE', '/os-security-groups/1')
+
+    def test_interface_list(self):
+        self.run_command('interface-list 1234')
+        self.assert_called('GET', '/servers/1234/os-interface')
+
+    def test_interface_attach(self):
+        self.run_command('interface-attach --port-id port_id 1234')
+        self.assert_called('POST', '/servers/1234/os-interface')
+
+    def test_interface_detach(self):
+        self.run_command('interface-detach 1234 port_id')
+        self.assert_called('DELETE', '/servers/1234/os-interface/port_id')

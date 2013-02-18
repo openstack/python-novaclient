@@ -1569,3 +1569,24 @@ class FakeHTTPClient(base_client.HTTPClient):
                               {"zoneName": "zone-2",
                                "zoneState": {"available": False},
                                "hosts": None}]})
+
+    def get_servers_1234_os_interface(self, **kw):
+        return (200, {}, {"interfaceAttachments": [
+                             {"port_state": "ACTIVE",
+                              "net_id": "net-id-1",
+                              "port_id": "port-id-1",
+                              "mac_address": "aa:bb:cc:dd:ee:ff",
+                              "fixed_ips": [{"ip_address": "1.2.3.4"}],
+                              },
+                             {"port_state": "ACTIVE",
+                              "net_id": "net-id-1",
+                              "port_id": "port-id-1",
+                              "mac_address": "aa:bb:cc:dd:ee:ff",
+                              "fixed_ips": [{"ip_address": "1.2.3.4"}],
+                              }]})
+
+    def post_servers_1234_os_interface(self, **kw):
+        return (200, {}, {'interfaceAttachment': {}})
+
+    def delete_servers_1234_os_interface_port_id(self, **kw):
+        return (200, {}, None)

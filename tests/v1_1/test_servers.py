@@ -424,3 +424,18 @@ class ServersTest(utils.TestCase):
         cs.assert_called('POST', '/servers/1234/action')
         cs.servers.evacuate(s, 'fake_target_host', 'False', 'NewAdminPassword')
         cs.assert_called('POST', '/servers/1234/action')
+
+    def test_interface_list(self):
+        s = cs.servers.get(1234)
+        s.interface_list()
+        cs.assert_called('GET', '/servers/1234/os-interface')
+
+    def test_interface_attach(self):
+        s = cs.servers.get(1234)
+        s.interface_attach(None, None, None)
+        cs.assert_called('POST', '/servers/1234/os-interface')
+
+    def test_interface_detach(self):
+        s = cs.servers.get(1234)
+        s.interface_detach('port-id')
+        cs.assert_called('DELETE', '/servers/1234/os-interface/port-id')

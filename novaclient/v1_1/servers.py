@@ -316,6 +316,24 @@ class Server(base.Resource):
         """
         return self.manager.evacuate(self, host, on_shared_storage, password)
 
+    def interface_list(self):
+        """
+        List interfaces attached to an instance.
+        """
+        return self.manager.interface_list(self)
+
+    def interface_attach(self, port_id, net_id, fixed_ip):
+        """
+        Attach a network interface to an instance.
+        """
+        return self.manager.interface_attach(self, port_id, net_id, fixed_ip)
+
+    def interface_detach(self, port_id):
+        """
+        Detach a network interface from an instance.
+        """
+        return self.manager.interface_detach(self, port_id)
+
 
 class ServerManager(local_base.BootingManagerWithFind):
     resource_class = Server
@@ -801,6 +819,45 @@ class ServerManager(local_base.BootingManagerWithFind):
             body['adminPass'] = password
 
         return self._action('evacuate', server, body)
+
+    def interface_list(self, server):
+        """
+        List attached network interfaces
+
+        :param server: The :class:`Server` (or its ID) to query.
+        """
+        return self._list('/servers/%s/os-interface' % base.getid(server),
+                          'interfaceAttachments')
+
+    def interface_attach(self, server, port_id, net_id, fixed_ip):
+        """
+        Attach a network_interface to an instance.
+
+        :param server: The :class:`Server` (or its ID) to attach to.
+        :param port_id: The port to attach.
+        """
+
+        body = {'interfaceAttachment': {}}
+        if port_id:
+            body['interfaceAttachment']['port_id'] = port_id
+        if net_id:
+            body['interfaceAttachment']['net_id'] = net_id
+        if fixed_ip:
+            body['interfaceAttachment']['fixed_ips'] = [
+                {'ip_address': fixed_ip}]
+
+        return self._create('/servers/%s/os-interface' % base.getid(server),
+                            body, 'interfaceAttachment')
+
+    def interface_detach(self, server, port_id):
+        """
+        Detach a network_interface from an instance.
+
+        :param server: The :class:`Server` (or its ID) to detach from.
+        :param port_id: The port to detach.
+        """
+        self._delete('/servers/%s/os-interface/%s' % (base.getid(server),
+                                                      port_id))
 
     def _action(self, action, server, info=None, **kwargs):
         """

@@ -2914,6 +2914,57 @@ def do_evacuate(cs, args):
         utils.print_dict(res)
 
 
+def _print_interfaces(interfaces):
+    columns = ['Port State', 'Port ID', 'Net ID', 'IP addresses',
+               'MAC Address']
+
+    class FormattedInterface(object):
+        def __init__(self, interface):
+            for col in columns:
+                key = col.lower().replace(" ", "_")
+                if hasattr(interface, key):
+                    setattr(self, key, getattr(interface, key))
+            self.ip_addresses = ",".join([fip['ip_address']
+                                          for fip in interface.fixed_ips])
+    utils.print_list([FormattedInterface(i) for i in interfaces], columns)
+
+
+@utils.arg('server', metavar='<server>', help='Name or ID of server.')
+def do_interface_list(cs, args):
+    """List interfaces attached to an instance."""
+    server = _find_server(cs, args.server)
+
+    res = server.interface_list()
+    if type(res) is list:
+        _print_interfaces(res)
+
+
+@utils.arg('server', metavar='<server>', help='Name or ID of server.')
+@utils.arg('--port-id', metavar='<port_id>', help='Port ID.', dest="port_id")
+@utils.arg('--net-id', metavar='<fixed_ip>', help='Network ID',
+           default=None, dest="net_id")
+@utils.arg('--fixed-ip', metavar='<fixed_ip>', help='Requested fixed IP.',
+           default=None, dest="fixed_ip")
+def do_interface_attach(cs, args):
+    """Attach a network interface to an instance."""
+    server = _find_server(cs, args.server)
+
+    res = server.interface_attach(args.port_id, args.net_id, args.fixed_ip)
+    if type(res) is dict:
+        utils.print_dict(res)
+
+
+@utils.arg('server', metavar='<server>', help='Name or ID of server.')
+@utils.arg('port_id', metavar='<port_id>', help='Port ID.')
+def do_interface_detach(cs, args):
+    """Detach a network interface from an instance."""
+    server = _find_server(cs, args.server)
+
+    res = server.interface_detach(args.port_id)
+    if type(res) is dict:
+        utils.print_dict(res)
+
+
 def _treeizeAvailabilityZone(zone):
     """Build a tree view for availability zones"""
     AvailabilityZone = availability_zones.AvailabilityZone
