@@ -708,7 +708,7 @@ class OpenStackComputeShell(object):
 
         commands.remove('bash-completion')
         commands.remove('bash_completion')
-        print ' '.join(commands | options)
+        print(' '.join(commands | options))
 
     @utils.arg('command', metavar='<subcommand>', nargs='?',
                     help='Display help for <subcommand>')
@@ -738,9 +738,9 @@ def main():
     try:
         OpenStackComputeShell().main(sys.argv[1:])
 
-    except Exception, e:
+    except Exception as e:
         logger.debug(e, exc_info=1)
-        print >> sys.stderr, "ERROR: %s" % unicode(e)
+        print("ERROR: %s" % unicode(e), file=sys.stderr)
         sys.exit(1)
 
 

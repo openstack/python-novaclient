@@ -213,7 +213,7 @@ class HTTPClient(object):
             resp, body = self._time_request(self.management_url + url, method,
                                             **kwargs)
             return resp, body
-        except exceptions.Unauthorized, ex:
+        except exceptions.Unauthorized as e:
             try:
                 self.authenticate()
                 kwargs['headers']['X-Auth-Token'] = self.auth_token
@@ -221,7 +221,7 @@ class HTTPClient(object):
                                                 method, **kwargs)
                 return resp, body
             except exceptions.Unauthorized:
-                raise ex
+                raise e
 
     def get(self, url, **kwargs):
         return self._cs_request(url, 'GET', **kwargs)
@@ -259,13 +259,13 @@ class HTTPClient(object):
                 self.management_url = management_url.rstrip('/')
                 return None
             except exceptions.AmbiguousEndpoints:
-                print "Found more than one valid endpoint. Use a more " \
-                      "restrictive filter"
+                print("Found more than one valid endpoint. Use a more "
+                      "restrictive filter")
                 raise
             except KeyError:
                 raise exceptions.AuthorizationFailure()
             except exceptions.EndpointNotFound:
-                print "Could not find any suitable endpoint. Correct region?"
+                print("Could not find any suitable endpoint. Correct region?")
                 raise
 
         elif resp.status_code == 305:
