@@ -162,9 +162,9 @@ def print_list(objs, fields, formatters={}, sortby_index=0):
         pt.add_row(row)
 
     if sortby is not None:
-        print pt.get_string(sortby=sortby)
+        print(pt.get_string(sortby=sortby))
     else:
-        print pt.get_string()
+        print(pt.get_string())
 
 
 def print_dict(d, dict_property="Property"):
@@ -184,7 +184,7 @@ def print_dict(d, dict_property="Property"):
                 col1 = ''
         else:
             pt.add_row([k, v])
-    print pt.get_string()
+    print(pt.get_string())
 
 
 def find_resource(manager, name_or_id):

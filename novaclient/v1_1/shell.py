@@ -101,7 +101,7 @@ def _boot(cs, args, reservation_id=None, min_count=None, max_count=None):
         dst, src = f.split('=', 1)
         try:
             files[dst] = open(src)
-        except IOError, e:
+        except IOError as e:
             raise exceptions.CommandError("Can't open '%s': %s" % (src, e))
 
     # use the os-keypair extension
@@ -112,7 +112,7 @@ def _boot(cs, args, reservation_id=None, min_count=None, max_count=None):
     if args.user_data:
         try:
             userdata = open(args.user_data)
-        except IOError, e:
+        except IOError as e:
             raise exceptions.CommandError("Can't open '%s': %s" %
                                           (args.user_data, e))
     else:
@@ -357,11 +357,11 @@ def _poll_for_status(poll_fn, obj_id, action, final_ok_states,
         if status in final_ok_states:
             if not silent:
                 print_progress(100)
-                print "\nFinished"
+                print("\nFinished")
             break
         elif status == "error":
             if not silent:
-                print "\nError %(action)s instance" % locals()
+                print("\nError %(action)s instance" % locals())
             break
 
         if not silent:
@@ -518,7 +518,7 @@ def do_flavor_access_list(cs, args):
 
     try:
         access_list = cs.flavor_access.list(**kwargs)
-    except NotImplementedError, e:
+    except NotImplementedError as e:
         raise exceptions.CommandError("%s" % str(e))
 
     columns = ['Flavor_ID', 'Tenant_ID']
@@ -1274,8 +1274,8 @@ def do_delete(cs, args):
     for server in args.server:
         try:
             _find_server(cs, server).delete()
-        except Exception, e:
-            print e
+        except Exception as e:
+            print(e)
 
 
 def _find_server(cs, server):
@@ -1606,7 +1606,7 @@ def do_get_password(cs, args):
     """Get password for a server."""
     server = _find_server(cs, args.server)
     data = server.get_password(args.private_key)
-    print data
+    print(data)
 
 
 @utils.arg('server', metavar='<server>', help='Name or ID of server.')
@@ -1629,7 +1629,7 @@ def do_console_log(cs, args):
     """Get console log output of a server."""
     server = _find_server(cs, args.server)
     data = server.get_console_output(length=args.length)
-    print data
+    print(data)
 
 
 @utils.arg('server', metavar='<server>', help='Name or ID of server.')
@@ -2016,7 +2016,7 @@ def do_keypair_add(cs, args):
         try:
             with open(os.path.expanduser(pub_key)) as f:
                 pub_key = f.read()
-        except IOError, e:
+        except IOError as e:
             raise exceptions.CommandError("Can't open or read '%s': %s" %
                                                           (pub_key, e))
 
@@ -2024,7 +2024,7 @@ def do_keypair_add(cs, args):
 
     if not pub_key:
         private_key = keypair.private_key
-        print private_key
+        print(private_key)
 
 
 @utils.arg('name', metavar='<name>', help='Keypair name to delete.')
@@ -2095,8 +2095,8 @@ def do_usage_list(cs, args):
 
     usage_list = cs.usage.list(start, end, detailed=True)
 
-    print "Usage from %s to %s:" % (start.strftime(dateformat),
-                                    end.strftime(dateformat))
+    print("Usage from %s to %s:" % (start.strftime(dateformat),
+                                    end.strftime(dateformat)))
 
     for usage in usage_list:
         simplify_usage(usage)
@@ -2143,14 +2143,14 @@ def do_usage(cs, args):
     else:
         usage = cs.usage.get(cs.client.tenant_id, start, end)
 
-    print "Usage from %s to %s:" % (start.strftime(dateformat),
-                                    end.strftime(dateformat))
+    print("Usage from %s to %s:" % (start.strftime(dateformat),
+                                    end.strftime(dateformat)))
 
     if getattr(usage, 'total_vcpus_usage', None):
         simplify_usage(usage)
         utils.print_list([usage], rows)
     else:
-        print 'None'
+        print('None')
 
 
 @utils.arg('pk_filename',
@@ -2179,13 +2179,13 @@ def do_x509_create_cert(cs, args):
         old_umask = os.umask(0o377)
         with open(args.pk_filename, 'w') as private_key:
             private_key.write(certs.private_key)
-            print "Wrote private key to %s" % args.pk_filename
+            print("Wrote private key to %s" % args.pk_filename)
     finally:
         os.umask(old_umask)
 
     with open(args.cert_filename, 'w') as cert:
         cert.write(certs.data)
-        print "Wrote x509 certificate to %s" % args.cert_filename
+        print("Wrote x509 certificate to %s" % args.cert_filename)
 
 
 @utils.arg('filename',
@@ -2202,7 +2202,7 @@ def do_x509_get_root_cert(cs, args):
     with open(args.filename, 'w') as cert:
         cacert = cs.certs.get()
         cert.write(cacert.data)
-        print "Wrote x509 root cert to %s" % args.filename
+        print("Wrote x509 root cert to %s" % args.filename)
 
 
 @utils.arg('--hypervisor', metavar='<hypervisor>', default=None,
@@ -2271,7 +2271,7 @@ def do_aggregate_create(cs, args):
 def do_aggregate_delete(cs, args):
     """Delete the aggregate by its id."""
     cs.aggregates.delete(args.id)
-    print "Aggregate %s has been successfully deleted." % args.id
+    print("Aggregate %s has been successfully deleted." % args.id)
 
 
 @utils.arg('id', metavar='<id>', help='Aggregate id to update.')
@@ -2288,7 +2288,7 @@ def do_aggregate_update(cs, args):
         updates["availability_zone"] = args.availability_zone
 
     aggregate = cs.aggregates.update(args.id, updates)
-    print "Aggregate %s has been successfully updated." % args.id
+    print("Aggregate %s has been successfully updated." % args.id)
     _print_aggregate_details(aggregate)
 
 
@@ -2303,7 +2303,7 @@ def do_aggregate_set_metadata(cs, args):
     """Update the metadata associated with the aggregate."""
     metadata = _extract_metadata(args)
     aggregate = cs.aggregates.set_metadata(args.id, metadata)
-    print "Aggregate %s has been successfully updated." % args.id
+    print("Aggregate %s has been successfully updated." % args.id)
     _print_aggregate_details(aggregate)
 
 
@@ -2312,7 +2312,7 @@ def do_aggregate_set_metadata(cs, args):
 def do_aggregate_add_host(cs, args):
     """Add the host to the specified aggregate."""
     aggregate = cs.aggregates.add_host(args.id, args.host)
-    print "Aggregate %s has been successfully updated." % args.id
+    print("Aggregate %s has been successfully updated." % args.id)
     _print_aggregate_details(aggregate)
 
 
@@ -2322,7 +2322,7 @@ def do_aggregate_add_host(cs, args):
 def do_aggregate_remove_host(cs, args):
     """Remove the specified host from the specified aggregate."""
     aggregate = cs.aggregates.remove_host(args.id, args.host)
-    print "Aggregate %s has been successfully updated." % args.id
+    print("Aggregate %s has been successfully updated." % args.id)
     _print_aggregate_details(aggregate)
 
 
@@ -2478,13 +2478,13 @@ def do_host_action(cs, args):
 def do_coverage_start(cs, args):
     """Start Nova coverage reporting"""
     cs.coverage.start(combine=args.combine)
-    print "Coverage collection started"
+    print("Coverage collection started")
 
 
 def do_coverage_stop(cs, args):
     """Stop Nova coverage reporting"""
     out = cs.coverage.stop()
-    print "Coverage data file path: %s" % out[-1]['path']
+    print("Coverage data file path: %s" % out[-1]['path'])
 
 
 @utils.arg('filename', metavar='<filename>', help='report filename')
@@ -2504,7 +2504,7 @@ def do_coverage_report(cs, args):
         raise exceptions.CommandError("--html and --xml must not be "
                                       "specified together.")
     cov = cs.coverage.report(args.filename, xml=args.xml, html=args.html)
-    print "Report path: %s" % cov[-1]['path']
+    print("Report path: %s" % cov[-1]['path'])
 
 
 @utils.arg('--matching', metavar='<hostname>', default=None,
@@ -2640,8 +2640,8 @@ def do_ssh(cs, args):
     version = 6 if args.ipv6 else 4
 
     if address_type not in addresses:
-        print "ERROR: No %s addresses found for '%s'." % (address_type,
-                                                          args.server)
+        print("ERROR: No %s addresses found for '%s'." % (address_type,
+                                                          args.server))
         return
 
     ip_address = None
@@ -2658,8 +2658,8 @@ def do_ssh(cs, args):
                                                 args.extra))
     else:
         pretty_version = "IPv%d" % version
-        print "ERROR: No %s %s address found." % (address_type,
-                                                  pretty_version)
+        print("ERROR: No %s %s address found." % (address_type,
+                                                  pretty_version))
         return
 
 
@@ -2961,7 +2961,7 @@ def do_availability_zone_list(cs, _args):
     """List all the availability zones."""
     try:
         availability_zones = cs.availability_zones.list()
-    except exceptions.Forbidden, e:  # policy doesn't allow probably
+    except exceptions.Forbidden as e:  # policy doesn't allow probably
         try:
             availability_zones = cs.availability_zones.list(detailed=False)
         except:
