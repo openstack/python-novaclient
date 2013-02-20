@@ -176,7 +176,7 @@ def _get_git_post_version():
             revno = len(out.split("\n"))
             sha = _run_shell_command("git describe --always")
         else:
-            tag_infos = tag_info.split("-")
+            tag_infos = str(tag_info).split("-")
             base_version = "-".join(tag_infos[:-2])
             (revno, sha) = tag_infos[-2:]
         return "%s.%s.%s" % (base_version, revno, sha)
@@ -277,7 +277,7 @@ def get_cmdclass():
 
         class LocalBuildDoc(BuildDoc):
             def generate_autoindex(self):
-                print "**Autodocumenting from %s" % os.path.abspath(os.curdir)
+                print("**Autodocumenting from %s" % os.path.abspath(os.curdir))
                 modules = {}
                 option_dict = self.distribution.get_option_dict('build_sphinx')
                 source_dir = os.path.join(option_dict['source_dir'][1], 'api')
@@ -302,7 +302,7 @@ def get_cmdclass():
                         values = dict(module=module, heading=heading,
                                       underline=underline)
 
-                        print "Generating %s" % output_filename
+                        print("Generating %s" % output_filename)
                         with open(output_filename, 'w') as output_file:
                             output_file.write(_rst_template % values)
                         autoindex.write("   %s.rst\n" % module)
