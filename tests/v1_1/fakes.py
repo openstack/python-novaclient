@@ -497,6 +497,8 @@ class FakeHTTPClient(base_client.HTTPClient):
                                                     'disk_over_commit'])
         elif action == 'os-resetState':
             assert body[action].keys() == ['state']
+        elif action == 'resetNetwork':
+            assert body[action] is None
         elif action == 'addSecurityGroup':
             assert body[action].keys() == ['name']
         elif action == 'removeSecurityGroup':

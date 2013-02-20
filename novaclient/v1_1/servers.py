@@ -293,6 +293,12 @@ class Server(base.Resource):
         """
         self.manager.reset_state(self, state)
 
+    def reset_network(self):
+        """
+        Reset network of an instance.
+        """
+        self.manager.reset_network(self)
+
     def add_security_group(self, security_group):
         """
         Add a security group to an instance.
@@ -761,6 +767,12 @@ class ServerManager(local_base.BootingManagerWithFind):
                       Defaults to 'error'.
         """
         self._action('os-resetState', server, dict(state=state))
+
+    def reset_network(self, server):
+        """
+        Reset network of an instance.
+        """
+        self._action('resetNetwork', server)
 
     def add_security_group(self, server, security_group):
         """

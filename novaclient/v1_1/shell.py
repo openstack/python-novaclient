@@ -2374,6 +2374,12 @@ def do_reset_state(cs, args):
     _find_server(cs, args.server).reset_state(args.state)
 
 
+@utils.arg('server', metavar='<server>', help='Name or ID of server.')
+def do_reset_network(cs, args):
+    """Reset network of an instance."""
+    _find_server(cs, args.server).reset_network()
+
+
 @utils.arg('--host', metavar='<hostname>', default=None,
            help='Name of host.')
 @utils.arg('--servicename', metavar='<servicename>', default=None,

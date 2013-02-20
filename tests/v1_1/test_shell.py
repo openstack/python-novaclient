@@ -759,6 +759,11 @@ class ShellTest(utils.TestCase):
         self.assert_called('POST', '/servers/1234/action',
                            {'os-resetState': {'state': 'active'}})
 
+    def test_reset_network(self):
+        self.run_command('reset-network sample-server')
+        self.assert_called('POST', '/servers/1234/action',
+                           {'resetNetwork': None})
+
     def test_services_list(self):
         self.run_command('service-list')
         self.assert_called('GET', '/os-services')

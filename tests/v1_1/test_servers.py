@@ -404,6 +404,13 @@ class ServersTest(utils.TestCase):
         cs.servers.reset_state(s, 'newstate')
         cs.assert_called('POST', '/servers/1234/action')
 
+    def test_reset_network(self):
+        s = cs.servers.get(1234)
+        s.reset_network()
+        cs.assert_called('POST', '/servers/1234/action')
+        cs.servers.reset_network(s)
+        cs.assert_called('POST', '/servers/1234/action')
+
     def test_add_security_group(self):
         s = cs.servers.get(1234)
         s.add_security_group('newsg')
