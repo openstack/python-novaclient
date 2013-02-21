@@ -35,6 +35,7 @@ try:
     HAS_KEYRING = True
     try:
         if isinstance(keyring.get_keyring(), keyring.backend.GnomeKeyring):
+            import gnomekeyring
             KeyringIOError = gnomekeyring.IOError
         else:
             KeyringIOError = IOError
