@@ -143,7 +143,7 @@ class SecretsHelper(object):
             return self.args.os_password
         if self._validate_string(self.args.apikey):
             return self.args.apikey
-        verify_pass = utils.bool_from_str(utils.getenv("OS_VERIFY_PASSWORD"))
+        verify_pass = utils.bool_from_str(utils.env("OS_VERIFY_PASSWORD"))
         return self._prompt_password(verify_pass)
 
     @property
