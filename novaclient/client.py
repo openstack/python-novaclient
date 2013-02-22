@@ -240,7 +240,8 @@ class HTTPClient(object):
         We may get redirected to another site, fail or actually get
         back a service catalog with a token and our endpoints."""
 
-        if resp.status_code == 200:  # content must always present
+        # content must always present
+        if resp.status_code == 200 or resp.status_code == 201:
             try:
                 self.auth_url = url
                 self.service_catalog = \
