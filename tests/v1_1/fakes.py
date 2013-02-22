@@ -1061,18 +1061,39 @@ class FakeHTTPClient(base_client.HTTPClient):
     # Security Groups
     #
     def get_os_security_groups(self, **kw):
-        return (200, {},
-                {"security_groups": [
-                    dict(description="FAKE_SECURITY_GROUP", id=1, name="test",
-                         rules=[{
-                                    'id': 1,
-                                    'parent_group_id': 1,
-                                    'group_id': 2,
-                                    'ip_protocol': 'TCP',
-                                    'from_port': 22,
-                                    'to_port': 22,
-                                    'cidr': '10.0.0.0/8'}],
-                         tenant_id='4ffc664c198e435e9853f2538fbcd7a7')]})
+        return (200, {}, {"security_groups": [
+            {"name": "test",
+             "description": "FAKE_SECURITY_GROUP",
+             "tenant_id":
+                 "4ffc664c198e435e9853f2538fbcd7a7",
+             "id": 1,
+             "rules": [
+                 {"id": 11,
+                  "group": {},
+                  "ip_protocol": "TCP",
+                  "from_port": 22,
+                  "to_port": 22,
+                  "parent_group_id": 1,
+                  "ip_range":
+                      {"cidr": "10.0.0.0/8"}},
+                 {"id": 12,
+                  "group": {
+                      "tenant_id":
+                          "272bee4c1e624cd4a72a6b0ea55b4582",
+                      "name": "test2"},
+
+                  "ip_protocol": "TCP",
+                  "from_port": 222,
+                  "to_port": 222,
+                  "parent_group_id": 1,
+                  "ip_range": {}}]},
+            {"name": "test2",
+             "description": "FAKE_SECURITY_GROUP2",
+             "tenant_id": "272bee4c1e624cd4a72a6b0ea55b4582",
+             "id": 2,
+             "rules": []}
+            ]}
+        )
 
     def get_os_security_groups_1(self, **kw):
         return (200, {}, {"security_group":
@@ -1101,6 +1122,12 @@ class FakeHTTPClient(base_client.HTTPClient):
         ]})
 
     def delete_os_security_group_rules_1(self, **kw):
+        return (202, {}, None)
+
+    def delete_os_security_group_rules_11(self, **kw):
+        return (202, {}, None)
+
+    def delete_os_security_group_rules_12(self, **kw):
         return (202, {}, None)
 
     def post_os_security_group_rules(self, body, **kw):

@@ -1880,7 +1880,7 @@ def do_secgroup_delete_rule(cs, args):
 
     secgroup = _get_secgroup(cs, args.secgroup)
     for rule in secgroup.rules:
-        if (rule['ip_protocol'] == args.ip_proto and
+        if (rule['ip_protocol'].upper() == args.ip_proto.upper() and
             rule['from_port'] == int(args.from_port) and
             rule['to_port'] == int(args.to_port) and
             rule['ip_range']['cidr'] == args.cidr):
@@ -1953,7 +1953,7 @@ def do_secgroup_add_group_rule(cs, args):
         if not (args.ip_proto and args.from_port and args.to_port):
             raise exceptions.CommandError("ip_proto, from_port, and to_port"
                                            " must be specified together")
-        params['ip_protocol'] = args.ip_proto
+        params['ip_protocol'] = args.ip_proto.upper()
         params['from_port'] = args.from_port
         params['to_port'] = args.to_port
 
@@ -1985,12 +1985,13 @@ def do_secgroup_delete_group_rule(cs, args):
         if not (args.ip_proto and args.from_port and args.to_port):
             raise exceptions.CommandError("ip_proto, from_port, and to_port"
                                            " must be specified together")
-        params['ip_protocol'] = args.ip_proto
+        params['ip_protocol'] = args.ip_proto.upper()
         params['from_port'] = int(args.from_port)
         params['to_port'] = int(args.to_port)
 
     for rule in secgroup.rules:
-        if (rule.get('ip_protocol') == params.get('ip_protocol') and
+        if (rule.get('ip_protocol').upper() == params.get(
+                                               'ip_protocol').upper() and
             rule.get('from_port') == params.get('from_port') and
             rule.get('to_port') == params.get('to_port') and
             rule.get('group', {}).get('name') ==

@@ -1063,6 +1063,33 @@ class ShellTest(utils.TestCase):
                                 'cidr': '10.0.0.0/8',
                                 'group_id': None}})
 
+    def test_security_group_delete_rule(self):
+        self.run_command('secgroup-delete-rule test TCP 22 22 10.0.0.0/8')
+        self.assert_called('DELETE', '/os-security-group-rules/11')
+
+    def test_security_group_delete_rule_protocol_case(self):
+        self.run_command('secgroup-delete-rule test tcp 22 22 10.0.0.0/8')
+        self.assert_called('DELETE', '/os-security-group-rules/11')
+
+    def test_security_group_add_group_rule(self):
+        self.run_command('secgroup-add-group-rule test test2 tcp 22 22')
+        self.assert_called('POST', '/os-security-group-rules',
+                           {'security_group_rule':
+                               {'from_port': '22',
+                                'ip_protocol': 'TCP',
+                                'to_port': '22',
+                                'parent_group_id': 1,
+                                'cidr': None,
+                                'group_id': 2}})
+
+    def test_security_group_delete_group_rule(self):
+        self.run_command('secgroup-delete-group-rule test test2 TCP 222 222')
+        self.assert_called('DELETE', '/os-security-group-rules/12')
+
+    def test_security_group_delete_group_rule_protocol_case(self):
+        self.run_command('secgroup-delete-group-rule test test2 tcp 222 222')
+        self.assert_called('DELETE', '/os-security-group-rules/12')
+
     def test_security_group_list_rules(self):
         self.run_command('secgroup-list-rules test')
         self.assert_called('GET', '/os-security-groups')
