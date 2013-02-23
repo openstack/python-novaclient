@@ -322,7 +322,7 @@ def do_cloudpipe_create(cs, args):
 @utils.arg('address', metavar='<ip address>', help='New IP Address.')
 @utils.arg('port', metavar='<port>', help='New Port.')
 def do_cloudpipe_configure(cs, args):
-    """Create a cloudpipe instance for the given project"""
+    """Update the VPN IP/port of a cloudpipe instance"""
     cs.cloudpipe.update(args.address, args.port)
 
 
