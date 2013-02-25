@@ -2909,7 +2909,7 @@ def do_evacuate(cs, args):
     """Evacuate server from failed host to specified one."""
     server = _find_server(cs, args.server)
 
-    res = server.evacuate(args.host, args.on_shared_storage, args.password)[0]
+    res = server.evacuate(args.host, args.on_shared_storage, args.password)[1]
     if type(res) is dict:
         utils.print_dict(res)
 
