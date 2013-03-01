@@ -40,6 +40,17 @@ class FakeHTTPClient(base_client.HTTPClient):
         self.auth_url = 'auth_url'
         self.tenant_id = 'tenant_id'
         self.callstack = []
+        self.projectid = 'projectid'
+        self.user = 'user'
+        self.region_name = 'region_name'
+        self.endpoint_type = 'endpoint_type'
+        self.service_type = 'service_type'
+        self.service_name = 'service_name'
+        self.volume_service_name = 'volume_service_name'
+        self.timings = 'timings'
+        self.bypass_url = 'bypass_url'
+        self.os_cache = 'os_cache'
+        self.http_log_debug = 'http_log_debug'
 
     def _cs_request(self, url, method, **kwargs):
         # Check that certain things are called correctly
