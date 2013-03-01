@@ -712,9 +712,14 @@ def do_network_create(cs, args):
     cs.networks.create(**kwargs)
 
 
+@utils.arg('--limit',
+     dest="limit",
+     metavar="<limit>",
+     help='number of images to return per request')
 def do_image_list(cs, _args):
     """Print a list of available images to boot from."""
-    image_list = cs.images.list()
+    limit = _args.limit
+    image_list = cs.images.list(limit=limit)
 
     def parse_server_name(image):
         try:

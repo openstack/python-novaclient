@@ -18,6 +18,10 @@ class ImagesTest(utils.TestCase):
         cs.assert_called('GET', '/images')
         [self.assertTrue(isinstance(i, images.Image)) for i in il]
 
+    def test_list_images_with_limit(self):
+        il = cs.images.list(limit=4)
+        cs.assert_called('GET', '/images/detail?limit=4')
+
     def test_get_image_details(self):
         i = cs.images.get(1)
         cs.assert_called('GET', '/images/1')
