@@ -1,6 +1,7 @@
 import os
 import re
 import sys
+import textwrap
 import uuid
 
 import prettytable
@@ -167,13 +168,15 @@ def print_list(objs, fields, formatters={}, sortby_index=0):
         print(pt.get_string())
 
 
-def print_dict(d, dict_property="Property"):
+def print_dict(d, dict_property="Property", wrap=0):
     pt = prettytable.PrettyTable([dict_property, 'Value'], caching=False)
     pt.align = 'l'
     for k, v in d.iteritems():
         # convert dict to str to check length
         if isinstance(v, dict):
             v = str(v)
+        if wrap > 0:
+            v = textwrap.fill(str(v), wrap)
         # if value has a newline, add in multiple rows
         # e.g. fault with stacktrace
         if v and isinstance(v, basestring) and r'\n' in v:
