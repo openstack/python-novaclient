@@ -38,7 +38,7 @@ class TenantNetworkExtensionTests(utils.TestCase):
     def test_get_tenant_network(self):
         net = cs.tenant_networks.get(1)
         cs.assert_called('GET', '/os-tenant-networks/1')
-        print net
+        print(net)
 
     def test_create_tenant_networks(self):
         cs.tenant_networks.create(label="net",
