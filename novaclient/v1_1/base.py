@@ -18,6 +18,7 @@
 import base64
 
 from novaclient import base
+from novaclient.openstack.common import strutils
 
 
 # FIXME(sirp): Now that v1_0 has been removed, this can be merged with
@@ -72,8 +73,8 @@ class BootingManagerWithFind(base.ManagerWithFind):
         if userdata:
             if hasattr(userdata, 'read'):
                 userdata = userdata.read()
-            elif isinstance(userdata, unicode):
-                userdata = userdata.encode('utf-8')
+
+            userdata = strutils.safe_encode(userdata)
             body["server"]["user_data"] = base64.b64encode(userdata)
         if meta:
             body["server"]["metadata"] = meta

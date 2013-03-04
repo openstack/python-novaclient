@@ -49,6 +49,7 @@ import novaclient
 from novaclient import client
 from novaclient import exceptions as exc
 import novaclient.extension
+from novaclient.openstack.common import strutils
 from novaclient import utils
 from novaclient.v1_1 import shell as shell_v1_1
 
@@ -738,11 +739,11 @@ class OpenStackHelpFormatter(argparse.HelpFormatter):
 
 def main():
     try:
-        OpenStackComputeShell().main(sys.argv[1:])
+        OpenStackComputeShell().main(map(strutils.safe_decode, sys.argv[1:]))
 
     except Exception as e:
         logger.debug(e, exc_info=1)
-        print("ERROR: %s" % unicode(e), file=sys.stderr)
+        print("ERROR: %s" % strutils.safe_encode(unicode(e)), file=sys.stderr)
         sys.exit(1)
 
 
