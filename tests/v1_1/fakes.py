@@ -954,7 +954,7 @@ class FakeHTTPClient(base_client.HTTPClient):
                       'security_groups': 1,
                       'security_group_rules': 1}})
 
-    def get_os_quota_sets_test_defaults(self):
+    def get_os_quota_sets_97f4c221bff44578b0300df4ef119353_defaults(self):
         return (200, {}, {'quota_set': {
                       'tenant_id': 'test',
                       'metadata_items': [],

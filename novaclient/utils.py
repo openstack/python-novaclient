@@ -358,3 +358,10 @@ def is_uuid_like(val):
             return False
     except (TypeError, ValueError, AttributeError):
         return False
+
+
+def check_uuid_like(val):
+    if not is_uuid_like(val):
+        raise exceptions.CommandError(
+                     "error: Invalid tenant-id %s supplied"
+                       % val)

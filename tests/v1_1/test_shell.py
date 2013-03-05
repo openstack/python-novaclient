@@ -895,16 +895,26 @@ class ShellTest(utils.TestCase):
         self.assert_called('GET', '/os-hypervisors/statistics')
 
     def test_quota_show(self):
-        self.run_command('quota-show --tenant test')
-        self.assert_called('GET', '/os-quota-sets/test')
+        self.run_command('quota-show --tenant '
+                '97f4c221bff44578b0300df4ef119353')
+        self.assert_called('GET',
+                '/os-quota-sets/97f4c221bff44578b0300df4ef119353')
+        self.assertRaises(exceptions.CommandError,
+                          self.run_command,
+                          'quota-show --tenant not_uuid')
 
     def test_quota_show_no_tenant(self):
         self.run_command('quota-show')
         self.assert_called('GET', '/os-quota-sets/tenant_id')
 
     def test_quota_defaults(self):
-        self.run_command('quota-defaults --tenant test')
-        self.assert_called('GET', '/os-quota-sets/test/defaults')
+        self.run_command('quota-defaults --tenant '
+                '97f4c221bff44578b0300df4ef119353')
+        self.assert_called('GET',
+                '/os-quota-sets/97f4c221bff44578b0300df4ef119353/defaults')
+        self.assertRaises(exceptions.CommandError,
+                          self.run_command,
+                          'quota-defaults --tenant not_uuid')
 
     def test_quota_defaults_no_nenant(self):
         self.run_command('quota-defaults')

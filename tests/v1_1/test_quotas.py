@@ -29,7 +29,7 @@ class QuotaSetsTest(utils.TestCase):
         cs.assert_called('GET', '/os-quota-sets/%s' % tenant_id)
 
     def test_tenant_quotas_defaults(self):
-        tenant_id = 'test'
+        tenant_id = '97f4c221bff44578b0300df4ef119353'
         cs.quotas.defaults(tenant_id)
         cs.assert_called('GET', '/os-quota-sets/%s/defaults' % tenant_id)
 
