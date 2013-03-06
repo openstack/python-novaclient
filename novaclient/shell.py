@@ -46,6 +46,7 @@ except ImportError:
     pass
 
 import novaclient
+import novaclient.auth_plugin
 from novaclient import client
 from novaclient import exceptions as exc
 import novaclient.extension
@@ -398,6 +399,9 @@ class OpenStackComputeShell(object):
         parser.add_argument('--bypass_url',
             help=argparse.SUPPRESS)
 
+        # The auth-system-plugins might require some extra options
+        novaclient.auth_plugin.load_auth_system_opts(parser)
+
         return parser
 
     def get_subcommand_parser(self, version):
@@ -514,10 +518,14 @@ class OpenStackComputeShell(object):
                             format=streamformat)
 
     def main(self, argv):
+
         # Parse args once to find version and debug settings
         parser = self.get_base_parser()
         (options, args) = parser.parse_known_args(argv)
         self.setup_debugging(options.debug)
+
+        # Discover available auth plugins
+        novaclient.auth_plugin.discover_auth_systems()
 
         # build available subcommands based on version
         self.extensions = self._discover_extensions(
@@ -566,6 +574,11 @@ class OpenStackComputeShell(object):
                         args.bypass_url, args.os_cache,
                         args.os_cacert, args.timeout)
 
+        if os_auth_system and os_auth_system != "keystone":
+            auth_plugin = novaclient.auth_plugin.load_plugin(os_auth_system)
+        else:
+            auth_plugin = None
+
         # Fetched and set later as needed
         os_password = None
 
@@ -579,12 +592,16 @@ class OpenStackComputeShell(object):
         #FIXME(usrleon): Here should be restrict for project id same as
         # for os_username or os_password but for compatibility it is not.
         if not utils.isunauthenticated(args.func):
-            if not os_username:
-                if not username:
-                    raise exc.CommandError("You must provide a username "
-                            "via either --os-username or env[OS_USERNAME]")
-                else:
-                    os_username = username
+            if auth_plugin:
+                auth_plugin.parse_opts(args)
+
+            if not auth_plugin or not auth_plugin.opts:
+                if not os_username:
+                    if not username:
+                        raise exc.CommandError("You must provide a username "
+                                "via either --os-username or env[OS_USERNAME]")
+                    else:
+                        os_username = username
 
             if not os_tenant_name:
                 if not projectid:
@@ -597,8 +614,7 @@ class OpenStackComputeShell(object):
             if not os_auth_url:
                 if not url:
                     if os_auth_system and os_auth_system != 'keystone':
-                        os_auth_url = \
-                            client.get_auth_system_url(os_auth_system)
+                        os_auth_url = auth_plugin.get_auth_url()
                 else:
                     os_auth_url = url
 
@@ -627,6 +643,7 @@ class OpenStackComputeShell(object):
                 region_name=os_region_name, endpoint_type=endpoint_type,
                 extensions=self.extensions, service_type=service_type,
                 service_name=service_name, auth_system=os_auth_system,
+                auth_plugin=auth_plugin,
                 volume_service_name=volume_service_name,
                 timings=args.timings, bypass_url=bypass_url,
                 os_cache=os_cache, http_log_debug=options.debug,
@@ -636,7 +653,12 @@ class OpenStackComputeShell(object):
         # identifying keyring key can come from the underlying client
         if not utils.isunauthenticated(args.func):
             helper = SecretsHelper(args, self.cs.client)
-            use_pw = True
+            if (auth_plugin and auth_plugin.opts and
+                    "os_password" not in auth_plugin.opts):
+                use_pw = False
+            else:
+                use_pw = True
+
             tenant_id, auth_token, management_url = (helper.tenant_id,
                                                      helper.auth_token,
                                                      helper.management_url)
