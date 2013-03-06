@@ -606,7 +606,7 @@ class OpenStackComputeShell(object):
                             "via either --os-auth-url or env[OS_AUTH_URL] "
                             "or specify an auth_system which defines a "
                             "default url with --os-auth-system "
-                            "or env[OS_AUTH_SYSTEM")
+                            "or env[OS_AUTH_SYSTEM]")
 
             if not os_region_name and region_name:
                 os_region_name = region_name
