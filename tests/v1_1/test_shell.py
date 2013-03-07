@@ -369,6 +369,8 @@ class ShellTest(utils.TestCase):
     def test_boot_invalid_num_instances(self):
         cmd = 'boot --image 1 --flavor 1 --num-instances 1  server'
         self.assertRaises(exceptions.CommandError, self.run_command, cmd)
+        cmd = 'boot --image 1 --flavor 1 --num-instances 0  server'
+        self.assertRaises(exceptions.CommandError, self.run_command, cmd)
 
     def test_flavor_list(self):
         self.run_command('flavor-list')

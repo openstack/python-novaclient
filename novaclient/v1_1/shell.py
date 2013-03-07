@@ -87,7 +87,7 @@ def _boot(cs, args, reservation_id=None, min_count=None, max_count=None):
     if not args.flavor:
         raise exceptions.CommandError("you need to specify a Flavor ID ")
 
-    if args.num_instances:
+    if args.num_instances is not None:
         if args.num_instances <= 1:
             raise exceptions.CommandError("num_instances should be > 1")
         max_count = args.num_instances
