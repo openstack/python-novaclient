@@ -133,7 +133,7 @@ class ShellTest(utils.TestCase):
         required = ('You must provide an auth url'
                     ' via either --os-auth-url or env[OS_AUTH_URL] or'
                     ' specify an auth_system which defines a default url'
-                    ' with --os-auth-system or env[OS_AUTH_SYSTEM',)
+                    ' with --os-auth-system or env[OS_AUTH_SYSTEM]',)
         self.make_env(exclude='OS_AUTH_URL')
         try:
             self.shell('list')
