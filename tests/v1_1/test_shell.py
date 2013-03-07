@@ -814,18 +814,18 @@ class ShellTest(utils.TestCase):
 
     def test_host_update_status(self):
         self.run_command('host-update sample-host_1 --status enabled')
-        body = {'host': {'status': 'enabled'}}
+        body = {'status': 'enabled'}
         self.assert_called('PUT', '/os-hosts/sample-host_1', body)
 
     def test_host_update_maintenance(self):
         self.run_command('host-update sample-host_2 --maintenance enable')
-        body = {'host': {'maintenance_mode': 'enable'}}
+        body = {'maintenance_mode': 'enable'}
         self.assert_called('PUT', '/os-hosts/sample-host_2', body)
 
     def test_host_update_multiple_settings(self):
         self.run_command('host-update sample-host_3 '
                          '--status disabled --maintenance enable')
-        body = {'host': {'status': 'disabled', 'maintenance_mode': 'enable'}}
+        body = {'status': 'disabled', 'maintenance_mode': 'enable'}
         self.assert_called('PUT', '/os-hosts/sample-host_3', body)
 
     def test_host_startup(self):

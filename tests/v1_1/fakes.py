@@ -1357,10 +1357,10 @@ class FakeHTTPClient(base_client.HTTPClient):
     def get_os_hosts(self, **kw):
         zone = kw.get('zone', 'nova1')
         return (200, {}, {'hosts':
-                    [{'host_name': 'host1',
+                    [{'host': 'host1',
                       'service': 'nova-compute',
                       'zone': zone},
-                     {'host_name': 'host1',
+                     {'host': 'host1',
                       'service': 'nova-cert',
                       'zone': zone}]})
 
@@ -1368,25 +1368,25 @@ class FakeHTTPClient(base_client.HTTPClient):
         return (200, {}, {'host': [{'resource': {'host': 'sample_host'}}], })
 
     def put_os_hosts_sample_host_1(self, body, **kw):
-        return (200, {}, {'host': {'host_name': 'sample-host_1',
-                                   'status': 'enabled'}})
+        return (200, {}, {'host': 'sample-host_1',
+                      'status': 'enabled'})
 
     def put_os_hosts_sample_host_2(self, body, **kw):
-        return (200, {}, {'host': {'host_name': 'sample-host_2',
-                                   'maintenance_mode': 'on_maintenance'}})
+        return (200, {}, {'host': 'sample-host_2',
+                      'maintenance_mode': 'on_maintenance'})
 
     def put_os_hosts_sample_host_3(self, body, **kw):
-        return (200, {}, {'host': {'host_name': 'sample-host_3',
-                                   'status': 'enabled',
-                                   'maintenance_mode': 'on_maintenance'}})
+        return (200, {}, {'host': 'sample-host_3',
+                      'status': 'enabled',
+                      'maintenance_mode': 'on_maintenance'})
 
     def post_os_hosts_sample_host_action(self, **kw):
         return (202, {}, None)
 
     def put_os_hosts_sample_host(self, body, **kw):
-        result = {'host_name': 'dummy'}
-        result.update(body['host'])
-        return (200, {}, {'host': result})
+        result = {'host': 'dummy'}
+        result.update(body)
+        return (200, {}, result)
 
     def get_os_hypervisors(self, **kw):
         return (200, {}, {"hypervisors": [
