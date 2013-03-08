@@ -156,10 +156,11 @@ class Manager(utils.HookableMixin):
     def _update(self, url, body, response_key=None, **kwargs):
         self.run_hooks('modify_body_for_update', body, **kwargs)
         _resp, body = self.api.client.put(url, body=body)
-        if response_key:
-            return self.resource_class(self, body[response_key])
-        else:
-            return body
+        if body:
+            if response_key:
+                return self.resource_class(self, body[response_key])
+            else:
+                return self.resource_class(self, body)
 
 
 class ManagerWithFind(Manager):
