@@ -56,7 +56,6 @@ class BareMetalNodeManager(base.ManagerWithFind):
                pm_address=None,
                pm_user=None,
                pm_password=None,
-               prov_vlan_id=None,
                terminal_port=None):
         """
         Create a baremetal node.
@@ -69,7 +68,6 @@ class BareMetalNodeManager(base.ManagerWithFind):
         :param pm_user: Username for the node's power management
         :param pm_password: Password for the node's power management
         :param prov_mac_address: MAC address to provision the node
-        :param prov_vlan_id: VLAN ID to use to provision the node
         :param terminal_port: ShellInABox port
         :rtype: :class:`BareMetalNode`
         """
@@ -81,7 +79,6 @@ class BareMetalNodeManager(base.ManagerWithFind):
                         'pm_user': pm_user,
                         'pm_password': pm_password,
                         'prov_mac_address': prov_mac_address,
-                        'prov_vlan_id': prov_vlan_id,
                         'terminal_port': terminal_port}}
 
         return self._create('/os-baremetal-nodes', body, 'node')
@@ -182,10 +179,6 @@ class BareMetalNodeManager(base.ManagerWithFind):
 @utils.arg('--pm_password', default=None,
     metavar='<pm_password>',
     help='Password for the node\'s power management')
-@utils.arg('--prov_vlan_id', default=None,
-    metavar='<prov_vlan_id>',
-    type=int,
-    help='VLAN ID to use to provision the node')
 @utils.arg('--terminal_port', default=None,
     metavar='<terminal_port>',
     type=int,
@@ -196,7 +189,6 @@ def do_baremetal_node_create(cs, args):
             args.memory_mb, args.local_gb, args.prov_mac_address,
             pm_address=args.pm_address, pm_user=args.pm_user,
             pm_password=args.pm_password,
-            prov_vlan_id=args.prov_vlan_id,
             terminal_port=args.terminal_port)
     _print_baremetal_resource(node)
 
@@ -214,7 +206,6 @@ def _translate_baremetal_node_keys(collection):
     convert = [('service_host', 'host'),
                ('local_gb', 'disk_gb'),
                ('prov_mac_address', 'mac_address'),
-               ('prov_vlan_id', 'vlan'),
                ('pm_address', 'pm_address'),
                ('pm_user', 'pm_username'),
                ('pm_password', 'pm_password'),
@@ -237,7 +228,6 @@ def _print_baremetal_nodes_list(nodes):
         'Memory_MB',
         'Disk_GB',
         'MAC Address',
-        'VLAN',
         'PM Address',
         'PM Username',
         'PM Password',
