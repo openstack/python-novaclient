@@ -2608,12 +2608,15 @@ def do_endpoints(cs, _args):
         utils.print_dict(e['endpoints'][0], e['name'])
 
 
+@utils.arg('--wrap', dest='wrap', metavar='<integer>', default=64,
+           help='wrap PKI tokens to a specified length, or 0 to disable')
 def do_credentials(cs, _args):
     """Show user credentials returned from auth"""
     ensure_service_catalog_present(cs)
     catalog = cs.client.service_catalog.catalog
-    utils.print_dict(catalog['access']['user'], "User Credentials")
-    utils.print_dict(catalog['access']['token'], "Token")
+    utils.print_dict(catalog['access']['user'], "User Credentials",
+                     wrap=int(_args.wrap))
+    utils.print_dict(catalog['access']['token'], "Token", wrap=int(_args.wrap))
 
 
 @utils.arg('server', metavar='<server>', help='Name or ID of server.')
