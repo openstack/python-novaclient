@@ -125,6 +125,20 @@ class ShellTest(utils.TestCase):
             }},
         )
 
+    def test_boot_multiple(self):
+        self.run_command('boot --flavor 1 --image 1'
+                         ' --num-instances 3 some-server')
+        self.assert_called_anytime(
+            'POST', '/servers',
+            {'server': {
+                'flavorRef': '1',
+                'name': 'some-server',
+                'imageRef': '1',
+                'min_count': 1,
+                'max_count': 3,
+            }},
+        )
+
     def test_boot_image_with(self):
         self.run_command("boot --flavor 1"
                          " --image-with test_key=test_value some-server")
@@ -466,6 +480,14 @@ class ShellTest(utils.TestCase):
         self.run_command('list')
         self.assert_called('GET', '/servers/detail')
 
+    def test_list_with_images(self):
+        self.run_command('list --image 1')
+        self.assert_called('GET', '/servers/detail?image=1')
+
+    def test_list_with_flavors(self):
+        self.run_command('list --flavor 1')
+        self.assert_called('GET', '/servers/detail?flavor=1')
+
     @mock.patch('sys.stdout', StringIO.StringIO())
     def test_list_fields(self):
         self.run_command('list --fields '
@@ -486,16 +508,62 @@ class ShellTest(utils.TestCase):
 
     def test_rebuild(self):
         self.run_command('rebuild sample-server 1')
-        # XXX need a way to test multiple calls
-        # self.assert_called('POST', '/servers/1234/action',
-        #                   {'rebuild': {'imageRef': 1}})
+        self.assert_called('POST', '/servers/1234/action',
+                           {'rebuild': {'imageRef': 1}}, pos=-4)
+        self.assert_called('GET', '/servers/detail', pos=-3)
+        self.assert_called('GET', '/flavors/1', pos=-2)
         self.assert_called('GET', '/images/2')
 
         self.run_command('rebuild sample-server 1 --rebuild-password asdf')
-        # XXX need a way to test multiple calls
-        # self.assert_called('POST', '/servers/1234/action',
-        #                   {'rebuild': {'imageRef': 1, 'adminPass': 'asdf'}})
+        self.assert_called('POST', '/servers/1234/action',
+                           {'rebuild': {'imageRef': 1, 'adminPass': 'asdf'}},
+                           pos=-4)
+        self.assert_called('GET', '/flavors/1', pos=-2)
         self.assert_called('GET', '/images/2')
+
+    def test_start(self):
+        self.run_command('start sample-server')
+        self.assert_called('POST', '/servers/1234/action', {'os-start': None})
+
+    def test_stop(self):
+        self.run_command('stop sample-server')
+        self.assert_called('POST', '/servers/1234/action', {'os-stop': None})
+
+    def test_pause(self):
+        self.run_command('pause sample-server')
+        self.assert_called('POST', '/servers/1234/action', {'pause': None})
+
+    def test_unpause(self):
+        self.run_command('unpause sample-server')
+        self.assert_called('POST', '/servers/1234/action', {'unpause': None})
+
+    def test_lock(self):
+        self.run_command('lock sample-server')
+        self.assert_called('POST', '/servers/1234/action', {'lock': None})
+
+    def test_unlock(self):
+        self.run_command('unlock sample-server')
+        self.assert_called('POST', '/servers/1234/action', {'unlock': None})
+
+    def test_suspend(self):
+        self.run_command('suspend sample-server')
+        self.assert_called('POST', '/servers/1234/action', {'suspend': None})
+
+    def test_resume(self):
+        self.run_command('resume sample-server')
+        self.assert_called('POST', '/servers/1234/action', {'resume': None})
+
+    def test_rescue(self):
+        self.run_command('rescue sample-server')
+        self.assert_called('POST', '/servers/1234/action', {'rescue': None})
+
+    def test_unrescue(self):
+        self.run_command('unrescue sample-server')
+        self.assert_called('POST', '/servers/1234/action', {'unrescue': None})
+
+    def test_migrate(self):
+        self.run_command('migrate sample-server')
+        self.assert_called('POST', '/servers/1234/action', {'migrate': None})
 
     def test_rename(self):
         self.run_command('rename sample-server newname')
@@ -622,6 +690,18 @@ class ShellTest(utils.TestCase):
         self.run_command('dns-domains')
         self.assert_called('GET', '/os-floating-ip-dns')
 
+    def test_floating_ip_list(self):
+        self.run_command('floating-ip-list')
+        self.assert_called('GET', '/os-floating-ips')
+
+    def test_floating_ip_create(self):
+        self.run_command('floating-ip-create')
+        self.assert_called('GET', '/os-floating-ips/1')
+
+    def test_floating_ip_delete(self):
+        self.run_command('floating-ip-delete 11.0.0.1')
+        self.assert_called('DELETE', '/os-floating-ips/1')
+
     def test_floating_ip_bulk_list(self):
         self.run_command('floating-ip-bulk-list')
         self.assert_called('GET', '/os-floating-ips-bulk')
@@ -645,6 +725,16 @@ class ShellTest(utils.TestCase):
         self.run_command('floating-ip-bulk-delete 10.0.0.1/24')
         self.assert_called('PUT', '/os-floating-ips-bulk/delete',
                            {'ip_range': '10.0.0.1/24'})
+
+    def test_server_floating_ip_add(self):
+        self.run_command('add-floating-ip sample-server 11.0.0.1')
+        self.assert_called('POST', '/servers/1234/action',
+                           {'addFloatingIp': {'address': '11.0.0.1'}})
+
+    def test_server_floating_ip_remove(self):
+        self.run_command('remove-floating-ip sample-server 11.0.0.1')
+        self.assert_called('POST', '/servers/1234/action',
+                           {'removeFloatingIp': {'address': '11.0.0.1'}})
 
     def test_usage_list(self):
         self.run_command('usage-list --start 2000-01-20 --end 2005-02-01')
@@ -996,6 +1086,16 @@ class ShellTest(utils.TestCase):
         cmd = 'network-create 10.0.1.0'
         self.assertRaises(exceptions.CommandError, self.run_command, cmd)
 
+    def test_add_fixed_ip(self):
+        self.run_command('add-fixed-ip sample-server 1')
+        self.assert_called('POST', '/servers/1234/action',
+                           {'addFixedIp': {'networkId': '1'}})
+
+    def test_remove_fixed_ip(self):
+        self.run_command('remove-fixed-ip sample-server 10.0.0.10')
+        self.assert_called('POST', '/servers/1234/action',
+                           {'removeFixedIp': {'address': '10.0.0.10'}})
+
     def test_backup(self):
         self.run_command('backup sample-server back1 daily 1')
         self.assert_called('POST', '/servers/1234/action',
@@ -1109,14 +1209,62 @@ class ShellTest(utils.TestCase):
         self.run_command('secgroup-delete test')
         self.assert_called('DELETE', '/os-security-groups/1')
 
+    def test_server_security_group_add(self):
+        self.run_command('add-secgroup sample-server testgroup')
+        self.assert_called('POST', '/servers/1234/action',
+                           {'addSecurityGroup': {'name': 'testgroup'}})
+
+    def test_server_security_group_remove(self):
+        self.run_command('remove-secgroup sample-server testgroup')
+        self.assert_called('POST', '/servers/1234/action',
+                           {'removeSecurityGroup': {'name': 'testgroup'}})
+
     def test_interface_list(self):
         self.run_command('interface-list 1234')
         self.assert_called('GET', '/servers/1234/os-interface')
 
     def test_interface_attach(self):
         self.run_command('interface-attach --port-id port_id 1234')
-        self.assert_called('POST', '/servers/1234/os-interface')
+        self.assert_called('POST', '/servers/1234/os-interface',
+                           {'interfaceAttachment': {'port_id': 'port_id'}})
 
     def test_interface_detach(self):
         self.run_command('interface-detach 1234 port_id')
         self.assert_called('DELETE', '/servers/1234/os-interface/port_id')
+
+    def test_volume_list(self):
+        self.run_command('volume-list')
+        self.assert_called('GET', '/volumes/detail')
+
+    def test_volume_show(self):
+        self.run_command('volume-show Work')
+        self.assert_called('GET', '/volumes/detail')
+
+    def test_volume_create(self):
+        self.run_command('volume-create 2 --display-name Work')
+        self.assert_called('POST', '/volumes',
+                           {'volume':
+                               {'display_name': 'Work',
+                                'imageRef': None,
+                                'availability_zone': None,
+                                'volume_type': None,
+                                'display_description': None,
+                                'snapshot_id': None,
+                                'size': 2}})
+
+    def test_volume_delete(self):
+        self.run_command('volume-delete Work')
+        self.assert_called('DELETE',
+                           '/volumes/15e59938-07d5-11e1-90e3-e3dffe0c5983')
+
+    def test_volume_attach(self):
+        self.run_command('volume-attach sample-server Work /dev/vdb')
+        self.assert_called('POST', '/servers/1234/os-volume_attachments',
+                           {'volumeAttachment':
+                               {'device': '/dev/vdb',
+                                'volumeId': 'Work'}})
+
+    def test_volume_detach(self):
+        self.run_command('volume-detach sample-server Work')
+        self.assert_called('DELETE',
+                           '/servers/1234/os-volume_attachments/Work')

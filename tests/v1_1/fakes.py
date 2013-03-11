@@ -474,9 +474,26 @@ class FakeHTTPClient(base_client.HTTPClient):
             assert body[action] is None
         elif action == 'os-start':
             assert body[action] is None
+        elif action == 'start':
+            assert body[action] is None
+        elif action == 'stop':
+            assert body[action] is None
+        elif action == 'pause':
+            assert body[action] is None
+        elif action == 'unpause':
+            assert body[action] is None
+        elif action == 'lock':
+            assert body[action] is None
+        elif action == 'unlock':
+            assert body[action] is None
         elif action == 'rescue':
             assert body[action] is None
+            _body = {'Password': 'RescuePassword'}
         elif action == 'unrescue':
+            assert body[action] is None
+        elif action == 'resume':
+            assert body[action] is None
+        elif action == 'suspend':
             assert body[action] is None
         elif action == 'lock':
             assert body[action] is None
@@ -1630,3 +1647,49 @@ class FakeHTTPClient(base_client.HTTPClient):
 
     def delete_servers_1234_os_interface_port_id(self, **kw):
         return (200, {}, None)
+
+    # NOTE (vkhomenko):
+    # Volume responses was taken from:
+    # https://wiki.openstack.org/wiki/CreateVolumeFromImage
+    # http://jorgew.github.com/block-storage-api/content/
+    # GET_listDetailVolumes_v1__tenantId__volumes_detail_.html
+    # I suppose they are outdated and should be updated after Cinder released
+
+    def get_volumes_detail(self, **kw):
+        return (200, {}, {"volumes": [
+                            {"display_name": "Work",
+                             "display_description": "volume for work",
+                             "status": "ATTACHED",
+                             "id": "15e59938-07d5-11e1-90e3-e3dffe0c5983",
+                             "created_at": "2011-09-09T00:00:00Z",
+                             "attached": "2011-11-11T00:00:00Z",
+                             "size": 1024,
+                             "attachments": [
+                                {"id": "3333",
+                                 "links": ''}],
+                             "metadata": {}}]})
+
+    def post_volumes(self, **kw):
+        return (200, {}, {"volume":
+                {"status": "creating",
+                 "display_name": "vol-007",
+                 "attachments": [(0)],
+                 "availability_zone": "cinder",
+                 "created_at": "2012-08-13T10:57:17.000000",
+                 "display_description": "create volume from image",
+                 "image_id": "f4cf905f-7c58-4d7b-8314-8dd8a2d1d483",
+                 "volume_type": "None",
+                 "metadata": {},
+                 "id": "5cb239f6-1baf-4fe1-bd78-c852cf00fa39",
+                 "size": 1}})
+
+    def delete_volumes_15e59938_07d5_11e1_90e3_e3dffe0c5983(self, **kw):
+        return (200, {}, {})
+
+    def post_servers_1234_os_volume_attachments(self, **kw):
+        return (200, {}, {"volumeAttachment":
+                {"device": "/dev/vdb",
+                 "volumeId": 2}})
+
+    def delete_servers_1234_os_volume_attachments_Work(self, **kw):
+        return (200, {}, {})
