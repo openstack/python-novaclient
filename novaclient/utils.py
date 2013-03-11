@@ -6,6 +6,7 @@ import uuid
 import prettytable
 
 from novaclient import exceptions
+from novaclient.openstack.common import strutils
 
 
 def arg(*args, **kwargs):
@@ -139,7 +140,7 @@ def pretty_choice_list(l):
 
 
 def print_list(objs, fields, formatters={}, sortby_index=0):
-    if sortby_index == None:
+    if sortby_index is None:
         sortby = None
     else:
         sortby = fields[sortby_index]
@@ -162,9 +163,9 @@ def print_list(objs, fields, formatters={}, sortby_index=0):
         pt.add_row(row)
 
     if sortby is not None:
-        print(pt.get_string(sortby=sortby))
+        print(strutils.safe_encode(pt.get_string(sortby=sortby)))
     else:
-        print(pt.get_string())
+        print(strutils.safe_encode(pt.get_string()))
 
 
 def print_dict(d, dict_property="Property"):
@@ -184,7 +185,7 @@ def print_dict(d, dict_property="Property"):
                 col1 = ''
         else:
             pt.add_row([k, v])
-    print(pt.get_string())
+    print(strutils.safe_encode(pt.get_string()))
 
 
 def find_resource(manager, name_or_id):
@@ -203,9 +204,9 @@ def find_resource(manager, name_or_id):
 
     # now try to get entity as uuid
     try:
-        uuid.UUID(str(name_or_id))
+        uuid.UUID(strutils.safe_encode(name_or_id))
         return manager.get(name_or_id)
-    except (ValueError, exceptions.NotFound):
+    except (TypeError, ValueError, exceptions.NotFound):
         pass
 
     # for str id which is not uuid (for Flavor search currently)
