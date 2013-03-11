@@ -2697,10 +2697,7 @@ def _quota_show(quotas):
 
 def _quota_update(manager, identifier, args):
     updates = {}
-    if not utils.is_uuid_like(identifier):
-        raise exceptions.CommandError(
-                     "error: Invalid tenant-id %s supplied for update"
-                       % identifier)
+    utils.check_uuid_like(identifier)
     for resource in _quota_resources:
         val = getattr(args, resource, None)
         if val is not None:
@@ -2713,26 +2710,28 @@ def _quota_update(manager, identifier, args):
 @utils.arg('--tenant',
     metavar='<tenant-id>',
     default=None,
-    help='UUID or name of tenant to list the quotas for.')
+    help='UUID of tenant to list the quotas for.')
 def do_quota_show(cs, args):
     """List the quotas for a tenant."""
 
     if not args.tenant:
         _quota_show(cs.quotas.get(cs.client.tenant_id))
     else:
+        utils.check_uuid_like(args.tenant)
         _quota_show(cs.quotas.get(args.tenant))
 
 
 @utils.arg('--tenant',
     metavar='<tenant-id>',
     default=None,
-    help='UUID or name of tenant to list the default quotas for.')
+    help='UUID of tenant to list the default quotas for.')
 def do_quota_defaults(cs, args):
     """List the default quotas for a tenant."""
 
     if not args.tenant:
         _quota_show(cs.quotas.defaults(cs.client.tenant_id))
     else:
+        utils.check_uuid_like(args.tenant)
         _quota_show(cs.quotas.defaults(args.tenant))
 
 
