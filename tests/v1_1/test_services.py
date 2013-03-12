@@ -47,7 +47,7 @@ class ServicesTest(utils.TestCase):
         [self.assertEqual(s.host, 'host1') for s in svs]
 
     def test_list_services_with_host_binary(self):
-        svs = cs.services.list('host2', 'nova-cert')
+        svs = cs.services.list(host='host2', binary='nova-cert')
         cs.assert_called('GET', '/os-services?host=host2&binary=nova-cert')
         [self.assertTrue(isinstance(s, services.Service)) for s in svs]
         [self.assertEqual(s.binary, 'nova-cert') for s in svs]
@@ -58,11 +58,11 @@ class ServicesTest(utils.TestCase):
         values = {"host": "host1", 'binary': 'nova-cert'}
         cs.assert_called('PUT', '/os-services/enable', values)
         self.assertTrue(isinstance(service, services.Service))
-        self.assertFalse(service.disabled)
+        self.assertEqual(service.status, 'enabled')
 
     def test_services_disable(self):
         service = cs.services.disable('host1', 'nova-cert')
         values = {"host": "host1", 'binary': 'nova-cert'}
         cs.assert_called('PUT', '/os-services/disable', values)
         self.assertTrue(isinstance(service, services.Service))
-        self.assertTrue(service.disabled)
+        self.assertEqual(service.status, 'disabled')

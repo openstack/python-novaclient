@@ -2392,29 +2392,29 @@ def do_reset_network(cs, args):
 
 @utils.arg('--host', metavar='<hostname>', default=None,
            help='Name of host.')
-@utils.arg('--servicename', metavar='<servicename>', default=None,
-           help='Name of service.')
+@utils.arg('--binary', metavar='<binary>', default=None,
+           help='Service binary.')
 def do_service_list(cs, args):
-    """Show a list of all running services. Filter by host & service name."""
-    result = cs.services.list(args.host, args.servicename)
+    """Show a list of all running services. Filter by host & binary."""
+    result = cs.services.list(host=args.host, binary=args.binary)
     columns = ["Binary", "Host", "Zone", "Status", "State", "Updated_at"]
     utils.print_list(result, columns)
 
 
 @utils.arg('host', metavar='<hostname>', help='Name of host.')
-@utils.arg('service', metavar='<servicename>', help='Name of service.')
+@utils.arg('binary', metavar='<binary>', help='Service binary.')
 def do_service_enable(cs, args):
     """Enable the service"""
-    result = cs.services.enable(args.host, args.service)
-    utils.print_list([result], ['Host', 'Service', 'Disabled'])
+    result = cs.services.enable(args.host, args.binary)
+    utils.print_list([result], ['Host', 'Binary', 'Status'])
 
 
 @utils.arg('host', metavar='<hostname>', help='Name of host.')
-@utils.arg('service', metavar='<servicename>', help='Name of service.')
+@utils.arg('binary', metavar='<binary>', help='Service binary.')
 def do_service_disable(cs, args):
     """Enable the service"""
-    result = cs.services.disable(args.host, args.service)
-    utils.print_list([result], ['Host', 'Service', 'Disabled'])
+    result = cs.services.disable(args.host, args.binary)
+    utils.print_list([result], ['Host', 'Binary', 'Status'])
 
 
 @utils.arg('fixed_ip', metavar='<fixed_ip>', help='Fixed IP Address.')

@@ -864,12 +864,12 @@ class ShellTest(utils.TestCase):
         self.run_command('service-list --host host1')
         self.assert_called('GET', '/os-services?host=host1')
 
-    def test_services_list_with_servicename(self):
-        self.run_command('service-list --servicename nova-cert')
+    def test_services_list_with_binary(self):
+        self.run_command('service-list --binary nova-cert')
         self.assert_called('GET', '/os-services?binary=nova-cert')
 
-    def test_services_list_with_host_servicename(self):
-        self.run_command('service-list --host host1 --servicename nova-cert')
+    def test_services_list_with_host_binary(self):
+        self.run_command('service-list --host host1 --binary nova-cert')
         self.assert_called('GET', '/os-services?host=host1&binary=nova-cert')
 
     def test_services_enable(self):
