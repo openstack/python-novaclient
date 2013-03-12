@@ -54,7 +54,7 @@ class HostManager(base.ManagerWithFind):
 
     def update(self, host, values):
         """Update status or maintenance mode for the host."""
-        return self._update("/os-hosts/%s" % host, {"host": values}, "host")
+        return self._update("/os-hosts/%s" % host, values)
 
     def host_action(self, host, action):
         """Performs an action on a host."""
