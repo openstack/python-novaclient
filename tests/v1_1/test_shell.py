@@ -991,9 +991,6 @@ class ShellTest(utils.TestCase):
                 '97f4c221bff44578b0300df4ef119353')
         self.assert_called('GET',
                 '/os-quota-sets/97f4c221bff44578b0300df4ef119353')
-        self.assertRaises(exceptions.CommandError,
-                          self.run_command,
-                          'quota-show --tenant not_uuid')
 
     def test_quota_show_no_tenant(self):
         self.run_command('quota-show')
@@ -1004,9 +1001,6 @@ class ShellTest(utils.TestCase):
                 '97f4c221bff44578b0300df4ef119353')
         self.assert_called('GET',
                 '/os-quota-sets/97f4c221bff44578b0300df4ef119353/defaults')
-        self.assertRaises(exceptions.CommandError,
-                          self.run_command,
-                          'quota-defaults --tenant not_uuid')
 
     def test_quota_defaults_no_nenant(self):
         self.run_command('quota-defaults')
@@ -1018,12 +1012,6 @@ class ShellTest(utils.TestCase):
             ' --instances=5')
         self.assert_called('PUT',
                            '/os-quota-sets/97f4c221bff44578b0300df4ef119353')
-
-    def test_quota_update_error(self):
-        self.assertRaises(exceptions.CommandError,
-                          self.run_command,
-                          'quota-update 7f4c221-bff4-4578-b030-0df4ef119353'
-                          ' --instances=5')
 
     def test_quota_class_show(self):
         self.run_command('quota-class-show test')
