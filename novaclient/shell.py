@@ -507,11 +507,11 @@ class OpenStackComputeShell(object):
         if not debug:
             return
 
-        streamhandler = logging.StreamHandler()
         streamformat = "%(levelname)s (%(module)s:%(lineno)d) %(message)s"
-        streamhandler.setFormatter(logging.Formatter(streamformat))
-        logger.setLevel(logging.DEBUG)
-        logger.addHandler(streamhandler)
+        # Set up the root logger to debug so that the submodules can
+        # print debug messages
+        logging.basicConfig(level=logging.DEBUG,
+                            format=streamformat)
 
     def main(self, argv):
         # Parse args once to find version and debug settings

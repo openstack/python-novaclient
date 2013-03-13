@@ -97,11 +97,17 @@ class HTTPClient(object):
 
         self._logger = logging.getLogger(__name__)
         if self.http_log_debug:
+            # Logging level is already set on the root logger
             ch = logging.StreamHandler()
-            self._logger.setLevel(logging.DEBUG)
             self._logger.addHandler(ch)
+            self._logger.propagate = False
             if hasattr(requests, 'logging'):
-                requests.logging.getLogger(requests.__name__).addHandler(ch)
+                rql = requests.logging.getLogger(requests.__name__)
+                rql.addHandler(ch)
+                # Since we have already setup the root logger on debug, we
+                # have to set it up here on WARNING (its original level)
+                # otherwise we will get all the requests logging messanges
+                rql.setLevel(logging.WARNING)
 
     def use_token_cache(self, use_it):
         self.os_cache = use_it
