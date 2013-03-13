@@ -1,5 +1,5 @@
 # Copyright (c) 2011 X.commerce, a business unit of eBay Inc.
-# Copyright 2011 OpenStack, LLC
+# Copyright 2011 OpenStack Foundation
 # Copyright 2013 IBM Corp.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

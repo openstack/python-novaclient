@@ -1,6 +1,6 @@
 # Copyright 2010 Jacob Kaplan-Moss
 
-# Copyright 2011 OpenStack LLC.
+# Copyright 2011 OpenStack Foundation
 # Copyright 2012 IBM Corp.
 # All Rights Reserved.
 #
