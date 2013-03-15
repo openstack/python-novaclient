@@ -2683,10 +2683,10 @@ def do_ssh(cs, args):
 
 
 _quota_resources = ['instances', 'cores', 'ram', 'volumes', 'gigabytes',
-                    'floating_ips', 'metadata_items', 'injected_files',
-                    'key_pairs', 'injected_file_content_bytes',
-                    'injected_file_path_bytes', 'security_groups',
-                    'security_group_rules']
+                    'floating_ips', 'fixed_ips', 'metadata_items',
+                    'injected_files', 'key_pairs',
+                    'injected_file_content_bytes', 'injected_file_path_bytes',
+                    'security_groups', 'security_group_rules']
 
 
 def _quota_show(quotas):
@@ -2767,6 +2767,11 @@ def do_quota_defaults(cs, args):
 @utils.arg('--floating_ips',
     type=int,
     help=argparse.SUPPRESS)
+@utils.arg('--fixed-ips',
+    metavar='<fixed-ips>',
+    type=int,
+    default=None,
+    help='New value for the "fixed-ips" quota.')
 @utils.arg('--metadata-items',
     metavar='<metadata-items>',
     type=int,

@@ -1002,7 +1002,7 @@ class ShellTest(utils.TestCase):
         self.assert_called('GET',
                 '/os-quota-sets/97f4c221bff44578b0300df4ef119353/defaults')
 
-    def test_quota_defaults_no_nenant(self):
+    def test_quota_defaults_no_tenant(self):
         self.run_command('quota-defaults')
         self.assert_called('GET', '/os-quota-sets/tenant_id/defaults')
 
@@ -1012,6 +1012,15 @@ class ShellTest(utils.TestCase):
             ' --instances=5')
         self.assert_called('PUT',
                            '/os-quota-sets/97f4c221bff44578b0300df4ef119353')
+
+    def test_quota_update_fixed_ip(self):
+        self.run_command(
+            'quota-update 97f4c221bff44578b0300df4ef119353'
+            ' --fixed-ips=5')
+        self.assert_called(
+            'PUT', '/os-quota-sets/97f4c221bff44578b0300df4ef119353',
+            {'quota_set': {'fixed_ips': 5,
+                           'tenant_id': '97f4c221bff44578b0300df4ef119353'}})
 
     def test_quota_class_show(self):
         self.run_command('quota-class-show test')

@@ -39,7 +39,7 @@ class QuotaSetManager(base.ManagerWithFind):
     def update(self, tenant_id, metadata_items=None,
                injected_file_content_bytes=None, injected_file_path_bytes=None,
                volumes=None, gigabytes=None,
-               ram=None, floating_ips=None, instances=None,
+               ram=None, floating_ips=None, fixed_ips=None, instances=None,
                injected_files=None, cores=None, key_pairs=None,
                security_groups=None, security_group_rules=None):
 
@@ -53,6 +53,7 @@ class QuotaSetManager(base.ManagerWithFind):
                 'gigabytes': gigabytes,
                 'ram': ram,
                 'floating_ips': floating_ips,
+                'fixed_ips': fixed_ips,
                 'instances': instances,
                 'injected_files': injected_files,
                 'cores': cores,
