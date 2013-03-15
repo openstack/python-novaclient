@@ -16,8 +16,6 @@
 from tests import utils
 from tests.v1_1 import fakes
 
-from novaclient import exceptions
-
 cs = fakes.FakeClient()
 
 
