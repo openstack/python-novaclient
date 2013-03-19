@@ -35,6 +35,8 @@ setuptools.setup(
     packages=setuptools.find_packages(exclude=['tests', 'tests.*']),
     install_requires=setup.parse_requirements(),
     cmdclass=setup.get_cmdclass(),
+    setup_requires=['setuptools_git>=0.4'],
+    include_package_data=True,
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Environment :: Console",
