@@ -1318,15 +1318,15 @@ class FakeHTTPClient(base_client.HTTPClient):
     #
     def get_os_services(self, **kw):
         host = kw.get('host', 'host1')
-        service = kw.get('binary', 'nova-compute')
+        binary = kw.get('binary', 'nova-compute')
         return (200, {}, {'services':
-                     [{'binary': service,
+                     [{'binary': binary,
                        'host': host,
                        'zone': 'nova',
                        'status': 'enabled',
                        'state': 'up',
                        'updated_at': datetime(2012, 10, 29, 13, 42, 2)},
-                      {'binary': service,
+                      {'binary': binary,
                        'host': host,
                        'zone': 'nova',
                        'status': 'disabled',
@@ -1337,12 +1337,12 @@ class FakeHTTPClient(base_client.HTTPClient):
     def put_os_services_enable(self, body, **kw):
         return (200, {}, {'service': {'host': body['host'],
                                       'binary': body['binary'],
-                                      'disabled': False}})
+                                      'status': 'enabled'}})
 
     def put_os_services_disable(self, body, **kw):
         return (200, {}, {'service': {'host': body['host'],
                                       'binary': body['binary'],
-                                      'disabled': True}})
+                                      'status': 'disabled'}})
 
     #
     # Fixed IPs
