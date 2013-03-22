@@ -129,7 +129,7 @@ You'll find complete documentation on the shell by running
         image-meta          Set or Delete metadata on an image.
         image-show          Show details about the given image.
         keypair-add         Create a new key pair for use with instances
-        keypair-delete      Delete keypair by its id
+        keypair-delete      Delete keypair by its name
         keypair-list        Print a list of keypairs for a user
         list                List active servers.
         live-migration      Migrates a running instance to a new machine.

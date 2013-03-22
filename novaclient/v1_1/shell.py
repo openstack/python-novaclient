@@ -2039,7 +2039,7 @@ def do_keypair_add(cs, args):
 
 @utils.arg('name', metavar='<name>', help='Keypair name to delete.')
 def do_keypair_delete(cs, args):
-    """Delete keypair by its id"""
+    """Delete keypair by its name"""
     name = args.name
     cs.keypairs.delete(name)
 
