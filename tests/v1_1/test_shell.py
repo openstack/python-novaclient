@@ -71,8 +71,10 @@ class ShellTest(utils.TestCase):
             lambda *_: fakes.FakeClient))
         self.addCleanup(timeutils.clear_time_override)
 
+    @mock.patch('sys.stdout', StringIO.StringIO())
     def run_command(self, cmd):
         self.shell.main(cmd.split())
+        return sys.stdout.getvalue()
 
     def assert_called(self, method, url, body=None, **kwargs):
         return self.shell.cs.assert_called(method, url, body, **kwargs)
@@ -488,15 +490,14 @@ class ShellTest(utils.TestCase):
         self.run_command('list --flavor 1')
         self.assert_called('GET', '/servers/detail?flavor=1')
 
-    @mock.patch('sys.stdout', StringIO.StringIO())
     def test_list_fields(self):
-        self.run_command('list --fields '
+        output = self.run_command('list --fields '
                          'host,security_groups,OS-EXT-MOD:some_thing')
         self.assert_called('GET', '/servers/detail')
-        self.assertIn('computenode1', sys.stdout.getvalue())
-        self.assertIn('securitygroup1', sys.stdout.getvalue())
-        self.assertIn('OS-EXT-MOD: Some Thing', sys.stdout.getvalue())
-        self.assertIn('mod_some_thing_value', sys.stdout.getvalue())
+        self.assertIn('computenode1', output)
+        self.assertIn('securitygroup1', output)
+        self.assertIn('OS-EXT-MOD: Some Thing', output)
+        self.assertIn('mod_some_thing_value', output)
 
     def test_reboot(self):
         self.run_command('reboot sample-server')
