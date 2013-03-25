@@ -103,7 +103,8 @@ function copy_subunit_log {
 
 function run_pep8 {
   echo "Running pep8 ..."
-  srcfiles="--exclude=.venv,.git,.tox,dist,doc,*openstack/common*,*lib/python*,*egg ."
+  srcfiles="--exclude=.venv,.git,.tox,dist,doc,*openstack/common*,*lib/python*"
+  srcfiles+=",*egg,build ."
   # Just run PEP8 in current environment
   #
   ignore="--ignore=E12,E711,E721,E712"
