@@ -102,7 +102,12 @@ class ShellTest(utils.TestCase):
     def test_bash_completion(self):
         stdout, stderr = self.shell('bash-completion')
         # just check we have some output
-        required = ['--matching --wrap help secgroup-delete-rule --priority']
+        required = [
+            '.*--matching',
+            '.*--wrap',
+            '.*help',
+            '.*secgroup-delete-rule',
+            '.*--priority']
         for r in required:
             self.assertThat((stdout + stderr),
                             matchers.MatchesRegex(r, re.DOTALL | re.MULTILINE))
