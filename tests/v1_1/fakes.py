@@ -1693,3 +1693,23 @@ class FakeHTTPClient(base_client.HTTPClient):
 
     def delete_servers_1234_os_volume_attachments_Work(self, **kw):
         return (200, {}, {})
+
+    def get_servers_1234_os_instance_actions(self, **kw):
+        return (200, {}, {"instanceActions":
+                [{"instance_uuid": "1234",
+                  "user_id": "b968c25e04ab405f9fe4e6ca54cce9a5",
+                  "start_time": "2013-03-25T13:45:09.000000",
+                  "request_id": "req-abcde12345",
+                  "action": "create",
+                  "message": None,
+                  "project_id": "04019601fe3648c0abd4f4abfb9e6106"}]})
+
+    def get_servers_1234_os_instance_actions_req_abcde12345(self, **kw):
+        return (200, {}, {"instanceAction":
+                {"instance_uuid": "1234",
+                 "user_id": "b968c25e04ab405f9fe4e6ca54cce9a5",
+                 "start_time": "2013-03-25T13:45:09.000000",
+                 "request_id": "req-abcde12345",
+                 "action": "create",
+                 "message": None,
+                 "project_id": "04019601fe3648c0abd4f4abfb9e6106"}})
