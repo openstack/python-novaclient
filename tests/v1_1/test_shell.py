@@ -1276,3 +1276,12 @@ class ShellTest(utils.TestCase):
         self.run_command('volume-detach sample-server Work')
         self.assert_called('DELETE',
                            '/servers/1234/os-volume_attachments/Work')
+
+    def test_instance_action_list(self):
+        self.run_command('instance-action-list sample-server')
+        self.assert_called('GET', '/servers/1234/os-instance-actions')
+
+    def test_instance_action_get(self):
+        self.run_command('instance-action sample-server req-abcde12345')
+        self.assert_called('GET',
+                '/servers/1234/os-instance-actions/req-abcde12345')
