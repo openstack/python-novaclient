@@ -20,10 +20,8 @@ FAKE_ENV = {'OS_USERNAME': 'username',
 class ShellTest(utils.TestCase):
 
     def make_env(self, exclude=None):
-        for var, val in FAKE_ENV.items():
-            if var == exclude:
-                continue
-            self.useFixture(fixtures.EnvironmentVariable(var, val))
+        env = dict((k, v) for k, v in FAKE_ENV.items() if k != exclude)
+        self.useFixture(fixtures.MonkeyPatch('os.environ', env))
 
     def setUp(self):
         super(ShellTest, self).setUp()
