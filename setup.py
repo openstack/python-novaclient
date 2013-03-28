@@ -50,5 +50,4 @@ setuptools.setup(
     entry_points={
         "console_scripts": ["nova = novaclient.shell:main"]
     },
-    data_files=[('novaclient', ['novaclient/versioninfo'])]
 )
