@@ -1088,6 +1088,31 @@ class ShellTest(utils.TestCase):
         cmd = 'network-create 10.0.1.0'
         self.assertRaises(exceptions.CommandError, self.run_command, cmd)
 
+    def test_network_create_multi_host(self):
+        self.run_command('network-create --fixed-range-v4 192.168.0.0/24'
+                         ' --multi-host=T new_network')
+        body = {'network': {'cidr': '192.168.0.0/24', 'label': 'new_network',
+                            'multi_host': True}}
+        self.assert_called('POST', '/os-networks', body)
+
+        self.run_command('network-create --fixed-range-v4 192.168.0.0/24'
+                         ' --multi-host=True new_network')
+        body = {'network': {'cidr': '192.168.0.0/24', 'label': 'new_network',
+                            'multi_host': True}}
+        self.assert_called('POST', '/os-networks', body)
+
+        self.run_command('network-create --fixed-range-v4 192.168.0.0/24'
+                         ' --multi-host=1 new_network')
+        body = {'network': {'cidr': '192.168.0.0/24', 'label': 'new_network',
+                            'multi_host': True}}
+        self.assert_called('POST', '/os-networks', body)
+
+        self.run_command('network-create --fixed-range-v4 192.168.1.0/24'
+                         ' --multi-host=F new_network')
+        body = {'network': {'cidr': '192.168.1.0/24', 'label': 'new_network',
+                            'multi_host': False}}
+        self.assert_called('POST', '/os-networks', body)
+
     def test_add_fixed_ip(self):
         self.run_command('add-fixed-ip sample-server 1')
         self.assert_called('POST', '/servers/1234/action',

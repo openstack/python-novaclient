@@ -26,6 +26,7 @@ import sys
 import time
 
 from novaclient import exceptions
+from novaclient.openstack.common import strutils
 from novaclient.openstack.common import timeutils
 from novaclient import utils
 from novaclient.v1_1 import availability_zones
@@ -708,6 +709,9 @@ def do_network_create(cs, args):
         raise exceptions.CommandError(
             "Must specify eith fixed_range_v4 or fixed_range_v6")
     kwargs = _filter_network_create_options(args)
+    if args.multi_host is not None:
+        kwargs['multi_host'] = bool(args.multi_host == 'T' or
+                                    strutils.bool_from_string(args.multi_host))
 
     cs.networks.create(**kwargs)
 
