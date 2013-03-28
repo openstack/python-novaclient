@@ -1,6 +1,5 @@
 include AUTHORS
 include ChangeLog
-include novaclient/versioninfo
 
 exclude .gitignore
 exclude .gitreview

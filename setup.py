@@ -21,14 +21,14 @@ from novaclient.openstack.common import setup
 
 def read_file(file_name):
     return open(os.path.join(os.path.dirname(__file__), file_name)).read()
-
+project = 'python-novaclient'
 
 setuptools.setup(
-    name="python-novaclient",
-    version=setup.get_post_version('novaclient'),
-    author="Rackspace, based on work by Jacob Kaplan-Moss",
-    author_email="github@racklabs.com",
-    description="Client library for OpenStack Nova API.",
+    name=project,
+    version=setup.get_version(project),
+    author='OpenStack',
+    author_email='openstack-dev@lists.openstack.org',
+    description="Client library for OpenStack Compute API.",
     long_description=read_file("README.rst"),
     license="Apache License, Version 2.0",
     url="https://github.com/openstack/python-novaclient",
