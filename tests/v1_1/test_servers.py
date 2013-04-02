@@ -338,18 +338,6 @@ class ServersTest(utils.TestCase):
         s.clear_password()
         cs.assert_called('DELETE', '/servers/1234/os-server-password')
 
-    def test_get_server_actions(self):
-        s = cs.servers.get(1234)
-        actions = s.actions()
-        self.assertTrue(actions is not None)
-        cs.assert_called('GET', '/servers/1234/actions')
-
-        actions_from_manager = cs.servers.actions(1234)
-        self.assertTrue(actions_from_manager is not None)
-        cs.assert_called('GET', '/servers/1234/actions')
-
-        self.assertEqual(actions, actions_from_manager)
-
     def test_get_server_diagnostics(self):
         s = cs.servers.get(1234)
         diagnostics = s.diagnostics()
