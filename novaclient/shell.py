@@ -31,17 +31,18 @@ import pkgutil
 import sys
 
 HAS_KEYRING = False
+all_errors = ValueError
 try:
     import keyring
     HAS_KEYRING = True
     try:
         if isinstance(keyring.get_keyring(), keyring.backend.GnomeKeyring):
             import gnomekeyring
-            KeyringIOError = gnomekeyring.IOError
-        else:
-            KeyringIOError = IOError
+            all_errors = (ValueError,
+                          gnomekeyring.IOError,
+                          gnomekeyring.NoKeyringDaemonError)
     except Exception:
-        KeyringIOError = IOError
+        pass
 except ImportError:
     pass
 
@@ -157,7 +158,7 @@ class SecretsHelper(object):
             block = keyring.get_password('novaclient_auth', self._make_key())
             if block:
                 _token, management_url, _tenant_id = block.split('|', 2)
-        except (KeyringIOError, ValueError):
+        except all_errors:
             pass
         return management_url
 
@@ -174,7 +175,7 @@ class SecretsHelper(object):
             block = keyring.get_password('novaclient_auth', self._make_key())
             if block:
                 token, _management_url, _tenant_id = block.split('|', 2)
-        except (KeyringIOError, ValueError):
+        except all_errors:
             pass
         return token
 
@@ -187,7 +188,7 @@ class SecretsHelper(object):
             block = keyring.get_password('novaclient_auth', self._make_key())
             if block:
                 _token, _management_url, tenant_id = block.split('|', 2)
-        except (KeyringIOError, ValueError):
+        except all_errors:
             pass
         return tenant_id
 
