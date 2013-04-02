@@ -1885,7 +1885,8 @@ def do_secgroup_delete_rule(cs, args):
 
     secgroup = _get_secgroup(cs, args.secgroup)
     for rule in secgroup.rules:
-        if (rule['ip_protocol'].upper() == args.ip_proto.upper() and
+        if (rule['ip_protocol'] and
+            rule['ip_protocol'].upper() == args.ip_proto.upper() and
             rule['from_port'] == int(args.from_port) and
             rule['to_port'] == int(args.to_port) and
             rule['ip_range']['cidr'] == args.cidr):
