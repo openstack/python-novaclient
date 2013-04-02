@@ -149,7 +149,7 @@ class SecretsHelper(object):
 
     @property
     def management_url(self):
-        if not HAS_KEYRING:
+        if not HAS_KEYRING or not self.args.os_cache:
             return None
         management_url = None
         try:
@@ -166,7 +166,7 @@ class SecretsHelper(object):
         # want to look into the keyring module, if it
         # exists and see if anything was provided in that
         # file that we can use.
-        if not HAS_KEYRING:
+        if not HAS_KEYRING or not self.args.os_cache:
             return None
         token = None
         try:
@@ -179,7 +179,7 @@ class SecretsHelper(object):
 
     @property
     def tenant_id(self):
-        if not HAS_KEYRING:
+        if not HAS_KEYRING or not self.args.os_cache:
             return None
         tenant_id = None
         try:
