@@ -1,4 +1,5 @@
 import os
+import pkg_resources
 import re
 import sys
 import textwrap
@@ -369,3 +370,12 @@ def check_uuid_like(val):
         raise exceptions.CommandError(
                      "error: Invalid tenant-id %s supplied"
                        % val)
+
+
+def _load_entry_point(ep_name, name=None):
+    """Try to load the entry point ep_name that matches name."""
+    for ep in pkg_resources.iter_entry_points(ep_name, name=name):
+        try:
+            return ep.load()
+        except (ImportError, pkg_resources.UnknownExtra, AttributeError):
+            continue
