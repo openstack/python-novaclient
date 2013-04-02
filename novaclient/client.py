@@ -335,7 +335,10 @@ class HTTPClient(object):
             # existing token? If so, our actual endpoints may
             # be different than that of the admin token.
             if self.proxy_token:
-                self._fetch_endpoints_from_auth(admin_url)
+                if self.bypass_url:
+                    self.set_management_url(self.bypass_url)
+                else:
+                    self._fetch_endpoints_from_auth(admin_url)
                 # Since keystone no longer returns the user token
                 # with the endpoints any more, we need to replace
                 # our service account token with the user token.
