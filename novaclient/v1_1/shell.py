@@ -916,7 +916,7 @@ def do_list(cs, args):
             'image': imageid,
             'flavor': flavorid,
             'status': args.status,
-            'project_id': args.tenant,
+            'tenant_id': args.tenant,
             'host': args.host,
             'instance_name': args.instance_name}
 
