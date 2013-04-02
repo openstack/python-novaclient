@@ -1130,15 +1130,6 @@ def do_diagnostics(cs, args):
 
 
 @utils.arg('server', metavar='<server>', help='Name or ID of server.')
-def do_actions(cs, args):
-    """Retrieve server actions."""
-    server = _find_server(cs, args.server)
-    utils.print_list(
-        cs.servers.actions(server),
-        ["Created_At", "Action", "Error"])
-
-
-@utils.arg('server', metavar='<server>', help='Name or ID of server.')
 def do_root_password(cs, args):
     """
     Change the root password for a server.

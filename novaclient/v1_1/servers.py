@@ -177,10 +177,6 @@ class Server(base.Resource):
         """Diagnostics -- Retrieve server diagnostics."""
         return self.manager.diagnostics(self)
 
-    def actions(self):
-        """Actions -- Retrieve server actions."""
-        return self.manager.actions(self)
-
     def migrate(self):
         """
         Migrate a server to a new host.
@@ -533,11 +529,6 @@ class ServerManager(local_base.BootingManagerWithFind):
         """Retrieve server diagnostics."""
         return self.api.client.get("/servers/%s/diagnostics" %
                                    base.getid(server))
-
-    def actions(self, server):
-        """Retrieve server actions."""
-        return self._list("/servers/%s/actions" % base.getid(server),
-                          "actions")
 
     def create(self, name, image, flavor, meta=None, files=None,
                reservation_id=None, min_count=None,
