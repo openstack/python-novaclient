@@ -30,6 +30,14 @@ from novaclient import exceptions
 from novaclient import service_catalog
 from novaclient import utils
 
+# set requests to automatically retry on ConnectionError
+if hasattr(requests, 'defaults'):
+    # requests < 1.0
+    requests.defaults.defaults['max_retries'] = 3
+elif hasattr(requests, 'adapters'):
+    # requests >= 1.0
+    requests.adapters.DEFAULT_RETRIES = 3
+
 
 class HTTPClient(object):
 
