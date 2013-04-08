@@ -150,7 +150,11 @@ class ShellTest(utils.TestCase):
     def test_password(self, mock_getpass, mock_stdin):
         self.make_env(exclude='OS_PASSWORD')
         stdout, stderr = self.shell('list')
-        self.assertEqual((stdout + stderr), '\n')
+        self.assertEqual((stdout + stderr),
+                         '+----+------+--------+----------+\n'
+                         '| ID | Name | Status | Networks |\n'
+                         '+----+------+--------+----------+\n'
+                         '+----+------+--------+----------+\n')
 
     @mock.patch('sys.stdin', side_effect=mock.MagicMock)
     @mock.patch('getpass.getpass', side_effect=EOFError)
