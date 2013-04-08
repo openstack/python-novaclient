@@ -36,7 +36,7 @@ class QuotaSetManager(base.ManagerWithFind):
             tenant_id = tenant_id.tenant_id
         return self._get("/os-quota-sets/%s" % (tenant_id), "quota_set")
 
-    def update(self, tenant_id, metadata_items=None,
+    def update(self, tenant_id, force=None, metadata_items=None,
                injected_file_content_bytes=None, injected_file_path_bytes=None,
                volumes=None, gigabytes=None,
                ram=None, floating_ips=None, fixed_ips=None, instances=None,
@@ -58,7 +58,8 @@ class QuotaSetManager(base.ManagerWithFind):
                 'injected_files': injected_files,
                 'cores': cores,
                 'security_groups': security_groups,
-                'security_group_rules': security_group_rules}}
+                'security_group_rules': security_group_rules,
+                'force': force}}
 
         for key in body['quota_set'].keys():
             if body['quota_set'][key] is None:
