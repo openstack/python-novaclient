@@ -2408,7 +2408,7 @@ def do_service_enable(cs, args):
 @utils.arg('host', metavar='<hostname>', help='Name of host.')
 @utils.arg('binary', metavar='<binary>', help='Service binary.')
 def do_service_disable(cs, args):
-    """Enable the service"""
+    """Disable the service"""
     result = cs.services.disable(args.host, args.binary)
     utils.print_list([result], ['Host', 'Binary', 'Status'])
 
