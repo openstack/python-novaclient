@@ -2519,6 +2519,12 @@ def do_coverage_report(cs, args):
     print("Report path: %s" % cov[-1]['path'])
 
 
+def do_coverage_reset(cs, args):
+    """Reset coverage data."""
+    cs.coverage.reset()
+    print("Coverage data reset")
+
+
 @utils.arg('--matching', metavar='<hostname>', default=None,
            help='List hypervisors matching the given <hostname>.')
 def do_hypervisor_list(cs, args):

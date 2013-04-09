@@ -957,6 +957,11 @@ class ShellTest(utils.TestCase):
         body = {'report': {'xml': True, 'file': 'report'}}
         self.assert_called_anytime('POST', '/os-coverage/action', body)
 
+    def test_coverage_reset(self):
+        self.run_command('coverage-reset')
+        body = {'reset': {}}
+        self.assert_called_anytime('POST', '/os-coverage/action', body)
+
     def test_hypervisor_list(self):
         self.run_command('hypervisor-list')
         self.assert_called('GET', '/os-hypervisors')
