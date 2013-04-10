@@ -32,6 +32,13 @@ class ServersTest(utils.TestCase):
         self.assertEqual(s.id, 1234)
         self.assertEqual(s.status, 'BUILD')
 
+    def test_get_server_promote_details(self):
+        s1 = cs.servers.list(detailed=False)[0]
+        s2 = cs.servers.list(detailed=True)[0]
+        self.assertNotEquals(s1._info, s2._info)
+        s1.get()
+        self.assertEquals(s1._info, s2._info)
+
     def test_create_server(self):
         s = cs.servers.create(
             name="My server",
