@@ -313,6 +313,7 @@ class Resource(object):
         for (k, v) in info.iteritems():
             try:
                 setattr(self, k, v)
+                self._info[k] = v
             except AttributeError:
                 # In this case we already defined the attribute on the class
                 pass
