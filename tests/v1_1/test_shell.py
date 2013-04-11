@@ -1113,6 +1113,13 @@ class ShellTest(utils.TestCase):
                             'multi_host': False}}
         self.assert_called('POST', '/os-networks', body)
 
+    def test_network_create_vlan(self):
+        self.run_command('network-create --fixed-range-v4 192.168.0.0/24'
+                         ' --vlan=200 new_network')
+        body = {'network': {'cidr': '192.168.0.0/24', 'label': 'new_network',
+                            'vlan_start': '200'}}
+        self.assert_called('POST', '/os-networks', body)
+
     def test_add_fixed_ip(self):
         self.run_command('add-fixed-ip sample-server 1')
         self.assert_called('POST', '/servers/1234/action',
