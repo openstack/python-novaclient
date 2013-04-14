@@ -1566,7 +1566,7 @@ class FakeHTTPClient(base_client.HTTPClient):
         return (202, {}, None)
 
     def post_os_coverage_action(self, body, **kw):
-        if 'start' in body:
+        if 'start' in body or 'reset' in body:
             return (200, {}, None)
         elif 'stop' in body:
             return (200, {}, {'path': '/tmp/tmpdir/'})

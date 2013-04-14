@@ -54,3 +54,9 @@ class CoverageManager(base.ManagerWithFind):
         self.run_hooks('modify_body_for_action', body)
         url = '/os-coverage/action'
         return self.api.client.post(url, body=body)
+
+    def reset(self):
+        body = {'reset': {}}
+        self.run_hooks('modify_body_for_action', body)
+        url = '/os-coverage/action'
+        return self.api.client.post(url, body=body)
