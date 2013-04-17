@@ -1,4 +1,3 @@
-from novaclient import exceptions
 from novaclient.v1_1 import certs
 from tests import utils
 from tests.v1_1 import fakes

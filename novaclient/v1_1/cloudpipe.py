@@ -16,7 +16,6 @@
 """Cloudpipe interface."""
 
 from novaclient import base
-from novaclient.v1_1 import networks
 
 
 class Cloudpipe(base.Resource):

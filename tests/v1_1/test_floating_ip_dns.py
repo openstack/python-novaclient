@@ -1,4 +1,3 @@
-from novaclient import exceptions
 from novaclient.v1_1 import floating_ip_dns
 from tests.v1_1 import fakes
 from tests import utils

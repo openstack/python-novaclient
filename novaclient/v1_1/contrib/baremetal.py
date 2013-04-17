@@ -16,9 +16,6 @@
 """
 Baremetal interface (v2 extension).
 """
-
-import urllib
-
 from novaclient import base
 from novaclient import utils
 

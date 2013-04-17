@@ -17,8 +17,6 @@
 # See: http://wiki.openstack.org/Nova/CoverageExtension for more information
 # and usage explanation for this API extension
 
-from novaclient import exceptions
-from novaclient.v1_1 import flavors
 from tests import utils
 from tests.v1_1 import fakes
 

@@ -15,7 +15,6 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from novaclient import exceptions
 from novaclient.v1_1 import fping
 from tests import utils
 from tests.v1_1 import fakes

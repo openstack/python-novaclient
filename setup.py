@@ -14,7 +14,6 @@
 
 import os
 import setuptools
-import sys
 
 from novaclient.openstack.common import setup
 

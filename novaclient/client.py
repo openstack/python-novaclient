@@ -9,11 +9,9 @@ OpenStack Client interface. Handles the REST calls and responses.
 
 import logging
 import os
-import sys
 import time
 import urlparse
 
-import pkg_resources
 import requests
 
 try:
