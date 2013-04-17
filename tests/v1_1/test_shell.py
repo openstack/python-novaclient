@@ -390,6 +390,10 @@ class ShellTest(utils.TestCase):
 
     def test_flavor_list(self):
         self.run_command('flavor-list')
+        self.assert_called_anytime('GET', '/flavors/detail')
+
+    def test_flavor_list_with_extra_specs(self):
+        self.run_command('flavor-list --extra-specs')
         self.assert_called('GET', '/flavors/aa1/os-extra_specs')
         self.assert_called_anytime('GET', '/flavors/detail')
 
@@ -771,9 +775,8 @@ class ShellTest(utils.TestCase):
         self.run_command("flavor-create flavorcreate "
                          "1234 512 10 1 --swap 1024 --ephemeral 10 "
                          "--is-public true")
-        self.assert_called('POST', '/flavors', pos=-3)
-        self.assert_called('GET', '/flavors/1', pos=-2)
-        self.assert_called('GET', '/flavors/1/os-extra_specs', pos=-1)
+        self.assert_called('POST', '/flavors', pos=-2)
+        self.assert_called('GET', '/flavors/1', pos=-1)
 
     def test_aggregate_list(self):
         self.run_command('aggregate-list')

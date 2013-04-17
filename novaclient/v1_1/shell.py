@@ -391,10 +391,10 @@ def _print_flavor_extra_specs(flavor):
         return "N/A"
 
 
-def _print_flavor_list(cs, flavors):
+def _print_flavor_list(cs, flavors, show_extra_specs=False):
     _translate_flavor_keys(flavors)
-    formatters = {'extra_specs': _print_flavor_extra_specs}
-    utils.print_list(flavors, [
+
+    headers = [
         'ID',
         'Name',
         'Memory_MB',
@@ -404,13 +404,26 @@ def _print_flavor_list(cs, flavors):
         'VCPUs',
         'RXTX_Factor',
         'Is_Public',
-        'extra_specs'], formatters)
+    ]
+
+    if show_extra_specs:
+        formatters = {'extra_specs': _print_flavor_extra_specs}
+        headers.append('extra_specs')
+    else:
+        formatters = {}
+
+    utils.print_list(flavors, headers, formatters)
 
 
-def do_flavor_list(cs, _args):
+@utils.arg('--extra-specs',
+           dest='extra_specs',
+           action='store_true',
+           default=False,
+           help='Get extra-specs of each flavor.')
+def do_flavor_list(cs, args):
     """Print a list of available 'flavors' (sizes of servers)."""
     flavors = cs.flavors.list()
-    _print_flavor_list(cs, flavors)
+    _print_flavor_list(cs, flavors, args.extra_specs)
 
 
 @utils.arg('flavor',
