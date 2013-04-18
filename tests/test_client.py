@@ -38,12 +38,12 @@ class ClientTest(utils.TestCase):
             'x-server-management-url': 'blah.com',
             'x-auth-token': 'blah',
         }
-        with mock.patch('requests.request', mock_request):
+        with mock.patch('requests.Session.request', mock_request):
             instance.authenticate()
-            requests.request.assert_called_with(mock.ANY, mock.ANY,
-                                                timeout=2,
-                                                headers=mock.ANY,
-                                                verify=mock.ANY)
+            requests.Session.request.assert_called_with(mock.ANY, mock.ANY,
+                                                        timeout=2,
+                                                        headers=mock.ANY,
+                                                        verify=mock.ANY)
 
     def test_get_client_class_v2(self):
         output = novaclient.client.get_client_class('2')

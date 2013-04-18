@@ -103,6 +103,8 @@ class HTTPClient(object):
                 # have to set it up here on WARNING (its original level)
                 # otherwise we will get all the requests logging messanges
                 rql.setLevel(logging.WARNING)
+        # requests within the same session can reuse TCP connections from pool
+        self.http = requests.Session()
 
     def use_token_cache(self, use_it):
         self.os_cache = use_it
@@ -161,7 +163,7 @@ class HTTPClient(object):
             kwargs.setdefault('timeout', self.timeout)
 
         self.http_log_req((url, method,), kwargs)
-        resp = requests.request(
+        resp = self.http.request(
             method,
             url,
             verify=self.verify_cert,
