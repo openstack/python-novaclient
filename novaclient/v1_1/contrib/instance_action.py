@@ -62,4 +62,5 @@ def do_instance_action_list(cs, args):
     """List actions on a server."""
     server = utils.find_resource(cs.servers, args.server)
     actions = cs.instance_action.list(server)
-    utils.print_list(actions, ['Action', 'Request_ID', 'Message'])
+    utils.print_list(actions,
+        ['Action', 'Request_ID', 'Message', 'Start_Time'], sortby_index=3)
