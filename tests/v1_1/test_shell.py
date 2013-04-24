@@ -397,6 +397,10 @@ class ShellTest(utils.TestCase):
         self.assert_called('GET', '/flavors/aa1/os-extra_specs')
         self.assert_called_anytime('GET', '/flavors/detail')
 
+    def test_flavor_list_with_all(self):
+        self.run_command('flavor-list --all')
+        self.assert_called('GET', '/flavors/detail?is_public=None')
+
     def test_flavor_show(self):
         self.run_command('flavor-show 1')
         self.assert_called_anytime('GET', '/flavors/1')

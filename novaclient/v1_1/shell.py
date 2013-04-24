@@ -420,9 +420,17 @@ def _print_flavor_list(cs, flavors, show_extra_specs=False):
            action='store_true',
            default=False,
            help='Get extra-specs of each flavor.')
+@utils.arg('--all',
+           dest='all',
+           action='store_true',
+           default=False,
+           help='Display all flavors (Admin only).')
 def do_flavor_list(cs, args):
     """Print a list of available 'flavors' (sizes of servers)."""
-    flavors = cs.flavors.list()
+    if args.all:
+        flavors = cs.flavors.list(is_public=None)
+    else:
+        flavors = cs.flavors.list()
     _print_flavor_list(cs, flavors, args.extra_specs)
 
 

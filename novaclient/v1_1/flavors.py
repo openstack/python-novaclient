@@ -2,6 +2,7 @@
 """
 Flavor interface.
 """
+import urllib
 
 from novaclient import base
 from novaclient import exceptions
@@ -76,16 +77,25 @@ class FlavorManager(base.ManagerWithFind):
     resource_class = Flavor
     is_alphanum_id_allowed = True
 
-    def list(self, detailed=True):
+    def list(self, detailed=True, is_public=True):
         """
         Get a list of all flavors.
 
         :rtype: list of :class:`Flavor`.
         """
-        if detailed is True:
-            return self._list("/flavors/detail", "flavors")
-        else:
-            return self._list("/flavors", "flavors")
+        qparams = {}
+        # is_public is ternary - None means give all flavors.
+        # By default Nova assumes True and gives admins public flavors
+        # and flavors from their own projects only.
+        if not is_public:
+            qparams['is_public'] = is_public
+        query_string = "?%s" % urllib.urlencode(qparams) if qparams else ""
+
+        detail = ""
+        if detailed:
+            detail = "/detail"
+
+        return self._list("/flavors%s%s" % (detail, query_string), "flavors")
 
     def get(self, flavor):
         """

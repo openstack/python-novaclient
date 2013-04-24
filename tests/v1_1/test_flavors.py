@@ -12,12 +12,20 @@ class FlavorsTest(utils.TestCase):
     def test_list_flavors(self):
         fl = cs.flavors.list()
         cs.assert_called('GET', '/flavors/detail')
-        [self.assertTrue(isinstance(f, flavors.Flavor)) for f in fl]
+        for flavor in fl:
+            self.assertTrue(isinstance(flavor, flavors.Flavor))
 
     def test_list_flavors_undetailed(self):
         fl = cs.flavors.list(detailed=False)
         cs.assert_called('GET', '/flavors')
-        [self.assertTrue(isinstance(f, flavors.Flavor)) for f in fl]
+        for flavor in fl:
+            self.assertTrue(isinstance(flavor, flavors.Flavor))
+
+    def test_list_flavors_is_public(self):
+        fl = cs.flavors.list(is_public=None)
+        cs.assert_called('GET', '/flavors/detail?is_public=None')
+        for flavor in fl:
+            self.assertTrue(isinstance(flavor, flavors.Flavor))
 
     def test_get_flavor_details(self):
         f = cs.flavors.get(1)
