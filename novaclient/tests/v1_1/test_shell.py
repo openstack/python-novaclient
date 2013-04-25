@@ -1298,6 +1298,9 @@ class ShellTest(utils.TestCase):
         self.run_command('absolute-limits --reserved')
         self.assert_called('GET', '/limits?reserved=1')
 
+        self.run_command('absolute-limits --tenant 1234')
+        self.assert_called('GET', '/limits?tenant_id=1234')
+
     def test_evacuate(self):
         self.run_command('evacuate sample-server new_host')
         self.assert_called('POST', '/servers/1234/action',

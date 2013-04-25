@@ -14,6 +14,11 @@ class LimitsTest(utils.TestCase):
         cs.assert_called('GET', '/limits')
         self.assertTrue(isinstance(obj, limits.Limits))
 
+    def test_get_limits_for_a_tenant(self):
+        obj = cs.limits.get(tenant_id=1234)
+        cs.assert_called('GET', '/limits?tenant_id=1234')
+        self.assertTrue(isinstance(obj, limits.Limits))
+
     def test_absolute_limits(self):
         obj = cs.limits.get()
 
@@ -42,6 +47,7 @@ class LimitsTest(utils.TestCase):
             limits.AbsoluteLimit("maxPersonalitySize", 10240),
         )
 
+        cs.assert_called('GET', '/limits?reserved=1')
         abs_limits = list(obj.absolute)
         self.assertEqual(len(abs_limits), len(expected))
 

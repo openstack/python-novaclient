@@ -1,5 +1,7 @@
 # Copyright 2011 OpenStack Foundation
 
+import urllib
+
 from novaclient import base
 
 
@@ -70,12 +72,17 @@ class LimitsManager(base.Manager):
 
     resource_class = Limits
 
-    def get(self, reserved=False):
+    def get(self, reserved=False, tenant_id=None):
         """
         Get a specific extension.
 
         :rtype: :class:`Limits`
         """
-        query_string = "?reserved=1" if reserved else ""
+        opts = {}
+        if reserved:
+            opts['reserved'] = 1
+        if tenant_id:
+            opts['tenant_id'] = tenant_id
+        query_string = "?%s" % urllib.urlencode(opts) if opts else ""
 
         return self._get("/limits%s" % query_string, "limits")
