@@ -482,6 +482,11 @@ class ShellTest(utils.TestCase):
         self.run_command('image-delete 1')
         self.assert_called('DELETE', '/images/1')
 
+    def test_image_delete_multiple(self):
+        self.run_command('image-delete 1 2')
+        self.assert_called('DELETE', '/images/1', pos=-3)
+        self.assert_called('DELETE', '/images/2', pos=-1)
+
     def test_list(self):
         self.run_command('list')
         self.assert_called('GET', '/servers/detail')

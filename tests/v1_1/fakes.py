@@ -806,7 +806,7 @@ class FakeHTTPClient(base_client.HTTPClient):
                 "links": {},
             },
             {
-                "id": 743,
+                "id": 2,
                 "name": "My Server Backup",
                 "serverId": 1234,
                 "updated": "2010-10-10T12:00:00Z",
@@ -837,6 +837,9 @@ class FakeHTTPClient(base_client.HTTPClient):
             {'metadata': self.get_images_1()[2]['image']['metadata']})
 
     def delete_images_1(self, **kw):
+        return (204, {}, None)
+
+    def delete_images_2(self, **kw):
         return (204, {}, None)
 
     def delete_images_1_metadata_test_key(self, **kw):
