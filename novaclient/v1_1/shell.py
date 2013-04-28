@@ -380,6 +380,31 @@ def _translate_keys(collection, convert):
                 setattr(item, to_key, item._info[from_key])
 
 
+def _translate_extended_states(collection):
+    power_states = [
+        'NOSTATE',      # 0x00
+        'Running',      # 0x01
+        '',             # 0x02
+        'Paused',       # 0x03
+        'Shutdown',     # 0x04
+        '',             # 0x05
+        'Crashed',      # 0x06
+        'Suspended'     # 0x07
+    ]
+
+    for item in collection:
+        try:
+            setattr(item, 'power_state',
+                power_states[getattr(item, 'power_state')]
+            )
+        except AttributeError:
+            setattr(item, 'power_state', "N/A")
+        try:
+            getattr(item, 'task_state')
+        except AttributeError:
+            setattr(item, 'task_state', "N/A")
+
+
 def _translate_flavor_keys(collection):
     _translate_keys(collection, [('ram', 'memory_mb')])
 
@@ -964,12 +989,21 @@ def do_list(cs, args):
     convert = [('OS-EXT-SRV-ATTR:host', 'host'),
                ('OS-EXT-STS:task_state', 'task_state'),
                ('OS-EXT-SRV-ATTR:instance_name', 'instance_name'),
+               ('OS-EXT-STS:power_state', 'power_state'),
                ('hostId', 'host_id')]
     _translate_keys(servers, convert)
+    _translate_extended_states(servers)
     if field_titles:
         columns = [id_col] + field_titles
     else:
-        columns = [id_col, 'Name', 'Status', 'Networks']
+        columns = [
+            id_col,
+            'Name',
+            'Status',
+            'Task State',
+            'Power State',
+            'Networks'
+        ]
     formatters['Networks'] = utils._format_servers_list_networks
     utils.print_list(servers, columns,
                      formatters, sortby_index=1)
