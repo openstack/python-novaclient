@@ -839,16 +839,15 @@ def do_image_show(cs, args):
     _print_image(image)
 
 
-@utils.arg('image', metavar='<image>', help='Name or ID of image.')
+@utils.arg('image', metavar='<image>', nargs='+',
+           help='Name or ID of image(s).')
 def do_image_delete(cs, args):
-    """
-    Delete an image.
-
-    It should go without saying, but you can only delete images you
-    created.
-    """
-    image = _find_image(cs, args.image)
-    image.delete()
+    """Delete specified image(s)."""
+    for image in args.image:
+        try:
+            _find_image(cs, image).delete()
+        except Exception as e:
+            print "Delete for image %s failed: %s" % (image, e)
 
 
 @utils.arg('--reservation-id',
