@@ -171,8 +171,8 @@ def generate_authors():
                            " log --format='%aN <%aE>' | sort -u | "
                            "egrep -v '" + jenkins_email + "'")
             changelog = _run_shell_command(git_log_cmd)
-            signed_cmd = ("git log --git-dir=" + git_dir +
-                          " | grep -i Co-authored-by: | sort -u")
+            signed_cmd = ("git --git-dir=" + git_dir +
+                          " log | grep -i Co-authored-by: | sort -u")
             signed_entries = _run_shell_command(signed_cmd)
             if signed_entries:
                 new_entries = "\n".join(
@@ -226,21 +226,15 @@ def get_cmdclass():
     # just ignore it
     try:
         from sphinx.setup_command import BuildDoc
-        from sphinx import application
-
-        class LocalSphinx(application.Sphinx):
-
-            def __init__(self, *args, **kwargs):
-                kwargs['warningiserror'] = True
-                super(LocalSphinx, self).__init__(*args, **kwargs)
 
         class LocalBuildDoc(BuildDoc):
 
             builders = ['html', 'man']
 
-            def generate_autoindex(self, option_dict):
+            def generate_autoindex(self):
                 print "**Autodocumenting from %s" % os.path.abspath(os.curdir)
                 modules = {}
+                option_dict = self.distribution.get_option_dict('build_sphinx')
                 source_dir = os.path.join(option_dict['source_dir'][1], 'api')
                 if not os.path.exists(source_dir):
                     os.makedirs(source_dir)
@@ -269,13 +263,8 @@ def get_cmdclass():
                         autoindex.write("   %s.rst\n" % module)
 
             def run(self):
-                option_dict = self.distribution.get_option_dict(
-                    'build_sphinx')
-                if ('autoindex' in option_dict and
-                        not os.getenv('SPHINX_DEBUG')):
-                    self.generate_autoindex(option_dict)
-                if 'warnerrors' in option_dict:
-                    application.Sphinx = LocalSphinx
+                if not os.getenv('SPHINX_DEBUG'):
+                    self.generate_autoindex()
 
                 for builder in self.builders:
                     self.builder = builder
