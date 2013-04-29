@@ -154,20 +154,27 @@ def from_response(response, body, url, method=None):
         if resp.status_code != 200:
             raise exception_from_response(resp, rest.text)
     """
-    cls = _code_map.get(response.status_code, ClientException)
+    kwargs = {
+        'code': response.status_code,
+        'method': method,
+        'url': url,
+        'request_id': None,
+    }
+
     if response.headers:
-        request_id = response.headers.get('x-compute-request-id')
-    else:
-        request_id = None
+        kwargs['request_id'] = response.headers.get('x-compute-request-id')
+
     if body:
         message = "n/a"
         details = "n/a"
+
         if hasattr(body, 'keys'):
             error = body[body.keys()[0]]
             message = error.get('message', None)
             details = error.get('details', None)
-        return cls(code=response.status_code, message=message, details=details,
-                   request_id=request_id, url=url, method=method)
-    else:
-        return cls(code=response.status_code, request_id=request_id, url=url,
-                method=method)
+
+        kwargs['message'] = message
+        kwargs['details'] = details
+
+    cls = _code_map.get(response.status_code, ClientException)
+    return cls(**kwargs)
