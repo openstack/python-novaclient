@@ -151,10 +151,10 @@ class ShellTest(utils.TestCase):
         self.make_env(exclude='OS_PASSWORD')
         stdout, stderr = self.shell('list')
         self.assertEqual((stdout + stderr),
-                         '+----+------+--------+----------+\n'
-                         '| ID | Name | Status | Networks |\n'
-                         '+----+------+--------+----------+\n'
-                         '+----+------+--------+----------+\n')
+            '+----+------+--------+------------+-------------+----------+\n'
+            '| ID | Name | Status | Task State | Power State | Networks |\n'
+            '+----+------+--------+------------+-------------+----------+\n'
+            '+----+------+--------+------------+-------------+----------+\n')
 
     @mock.patch('sys.stdin', side_effect=mock.MagicMock)
     @mock.patch('getpass.getpass', side_effect=EOFError)
