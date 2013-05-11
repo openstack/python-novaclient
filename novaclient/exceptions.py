@@ -123,6 +123,14 @@ class OverLimit(ClientException):
     http_status = 413
     message = "Over limit"
 
+    def __init__(self, *args, **kwargs):
+        try:
+            self.retry_after = int(kwargs.pop('retry_after'))
+        except (KeyError, ValueError):
+            self.retry_after = 0
+
+        super(OverLimit, self).__init__(*args, **kwargs)
+
 
 # NotImplemented is a python keyword.
 class HTTPNotImplemented(ClientException):
@@ -163,6 +171,9 @@ def from_response(response, body, url, method=None):
 
     if response.headers:
         kwargs['request_id'] = response.headers.get('x-compute-request-id')
+
+        if 'retry-after' in response.headers:
+            kwargs['retry_after'] = response.headers.get('retry-after')
 
     if body:
         message = "n/a"
