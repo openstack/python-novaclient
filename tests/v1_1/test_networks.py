@@ -28,6 +28,29 @@ class NetworksTest(utils.TestCase):
                          {'network': {'label': 'foo'}})
         self.assertTrue(isinstance(f, networks.Network))
 
+    def test_create_allparams(self):
+        params = {
+            'label': 'bar',
+            'bridge': 'br0',
+            'bridge_interface': 'int0',
+            'cidr': '192.0.2.0/24',
+            'cidr_v6': '2001:DB8::/32',
+            'dns1': '1.1.1.1',
+            'dns2': '1.1.1.2',
+            'fixed_cidr': '198.51.100.0/24',
+            'gateway': '192.0.2.1',
+            'gateway_v6': '2001:DB8::1',
+            'multi_host': 'T',
+            'priority': '1',
+            'project_id': '1',
+            'vlan_start': 1,
+            'vpn_start': 1
+        }
+
+        f = cs.networks.create(**params)
+        cs.assert_called('POST', '/os-networks', {'network': params})
+        self.assertTrue(isinstance(f, networks.Network))
+
     def test_associate_project(self):
         cs.networks.associate_project('networktest')
         cs.assert_called('POST', '/os-networks/add',
