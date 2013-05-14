@@ -141,7 +141,7 @@ def pretty_choice_list(l):
     return ', '.join("'%s'" % i for i in l)
 
 
-def print_list(objs, fields, formatters={}, sortby_index=0):
+def print_list(objs, fields, formatters={}, sortby_index=None):
     if sortby_index is None:
         sortby = None
     else:
