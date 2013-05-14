@@ -134,35 +134,37 @@ class FlavorManager(base.ManagerWithFind):
 
         try:
             ram = int(ram)
-        except:
+        except (TypeError, ValueError):
             raise exceptions.CommandError("Ram must be an integer.")
-
         try:
             vcpus = int(vcpus)
-        except:
+        except (TypeError, ValueError):
             raise exceptions.CommandError("VCPUs must be an integer.")
-
         try:
             disk = int(disk)
-        except:
+        except (TypeError, ValueError):
             raise exceptions.CommandError("Disk must be an integer.")
 
         if flavorid == "auto":
             flavorid = None
+        elif not utils.is_uuid_like(flavorid):
+            try:
+                flavorid = int(flavorid)
+            except (TypeError, ValueError):
+                raise exceptions.CommandError("Flavor ID must be an integer "
+                                              "or a UUID or auto.")
 
         try:
             swap = int(swap)
-        except:
+        except (TypeError, ValueError):
             raise exceptions.CommandError("Swap must be an integer.")
-
         try:
             ephemeral = int(ephemeral)
-        except:
+        except (TypeError, ValueError):
             raise exceptions.CommandError("Ephemeral must be an integer.")
-
         try:
             rxtx_factor = float(rxtx_factor)
-        except:
+        except (TypeError, ValueError):
             raise exceptions.CommandError("rxtx_factor must be a float.")
 
         try:
