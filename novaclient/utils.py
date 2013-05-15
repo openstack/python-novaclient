@@ -196,15 +196,9 @@ def find_resource(manager, name_or_id):
     """Helper for the _find_* methods."""
     # first try to get entity as integer id
     try:
-        is_intid = isinstance(name_or_id, int) or name_or_id.isdigit()
-    except AttributeError:
-        is_intid = False
-
-    if is_intid:
-        try:
-            return manager.get(int(name_or_id))
-        except exceptions.NotFound:
-            pass
+        return manager.get(int(name_or_id))
+    except (TypeError, ValueError, exceptions.NotFound):
+        pass
 
     # now try to get entity as uuid
     try:
@@ -363,13 +357,6 @@ def is_uuid_like(val):
             return False
     except (TypeError, ValueError, AttributeError):
         return False
-
-
-def check_uuid_like(val):
-    if not is_uuid_like(val):
-        raise exceptions.CommandError(
-                     "error: Invalid tenant-id %s supplied"
-                       % val)
 
 
 def _load_entry_point(ep_name, name=None):

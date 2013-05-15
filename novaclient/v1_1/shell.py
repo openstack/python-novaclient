@@ -416,7 +416,7 @@ def _print_flavor_extra_specs(flavor):
         return "N/A"
 
 
-def _print_flavor_list(cs, flavors, show_extra_specs=False):
+def _print_flavor_list(flavors, show_extra_specs=False):
     _translate_flavor_keys(flavors)
 
     headers = [
@@ -456,7 +456,7 @@ def do_flavor_list(cs, args):
         flavors = cs.flavors.list(is_public=None)
     else:
         flavors = cs.flavors.list()
-    _print_flavor_list(cs, flavors, args.extra_specs)
+    _print_flavor_list(flavors, args.extra_specs)
 
 
 @utils.arg('flavor',
@@ -466,6 +466,7 @@ def do_flavor_delete(cs, args):
     """Delete a specific flavor"""
     flavorid = _find_flavor(cs, args.flavor)
     cs.flavors.delete(flavorid)
+    _print_flavor_list([flavorid])
 
 
 @utils.arg('flavor',
@@ -474,7 +475,7 @@ def do_flavor_delete(cs, args):
 def do_flavor_show(cs, args):
     """Show details about the given flavor."""
     flavor = _find_flavor(cs, args.flavor)
-    _print_flavor(cs, flavor)
+    _print_flavor(flavor)
 
 
 @utils.arg('name',
@@ -515,7 +516,7 @@ def do_flavor_create(cs, args):
     f = cs.flavors.create(args.name, args.ram, args.vcpus, args.disk, args.id,
                           args.ephemeral, args.swap, args.rxtx_factor,
                           args.is_public)
-    _print_flavor_list(cs, [f])
+    _print_flavor_list([f])
 
 
 @utils.arg('flavor',
@@ -848,7 +849,7 @@ def _print_image(image):
     utils.print_dict(info)
 
 
-def _print_flavor(cs, flavor):
+def _print_flavor(flavor):
     info = flavor._info.copy()
     # ignore links, we don't need to present those
     info.pop('links')

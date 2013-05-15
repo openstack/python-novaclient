@@ -109,10 +109,16 @@ You'll find complete documentation on the shell by running
         endpoints           Discover endpoints that get returned from the
                             authenticate services
         evacuate            Evacuate a server from failed host
-        flavor-create       Create a new flavor
-        flavor-delete       Delete a specific flavor
+        flavor-create       Create a new flavor.
+        flavor-delete       Delete a specific flavor.
         flavor-list         Print a list of available 'flavors' (sizes of
                             servers).
+        flavor-show         Show details about the given flavor.
+        flavor-key          Set or unset extra_spec for a flavor.
+        flavor-access-list  Print access information about the given flavor.
+        flavor-access-add   Add flavor access for the given tenant.
+        flavor-access-remove
+                            Remove flavor access for the given tenant.
         floating-ip-create  Allocate a floating IP for the current tenant.
         floating-ip-delete  De-allocate a floating IP.
         floating-ip-list    List floating ips for this tenant.
