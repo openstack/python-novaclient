@@ -680,8 +680,9 @@ def do_network_associate_project(cs, args):
 
 def _filter_network_create_options(args):
     valid_args = ['label', 'cidr', 'vlan_start', 'vpn_start', 'cidr_v6',
-                  'gateway', 'gateway_v6', 'bridge', 'multi_host', 'dns1',
-                  'dns2', 'uuid', 'fixed_cidr', 'project_id', 'priority']
+                  'gateway', 'gateway_v6', 'bridge', 'bridge_interface',
+                  'multi_host', 'dns1', 'dns2', 'uuid', 'fixed_cidr',
+                  'project_id', 'priority']
     kwargs = {}
     for k, v in args.__dict__.items():
         if k in valid_args and v is not None:
