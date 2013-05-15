@@ -19,6 +19,7 @@
 Base utilities to build API operation managers and objects on top of.
 """
 
+import abc
 import contextlib
 import hashlib
 import os
@@ -167,6 +168,13 @@ class ManagerWithFind(Manager):
     """
     Like a `Manager`, but with additional `find()`/`findall()` methods.
     """
+
+    __metaclass__ = abc.ABCMeta
+
+    @abc.abstractmethod
+    def list(self):
+        pass
+
     def find(self, **kwargs):
         """
         Find a single item with attributes matching ``**kwargs``.
@@ -203,9 +211,6 @@ class ManagerWithFind(Manager):
                 continue
 
         return found
-
-    def list(self):
-        raise NotImplementedError
 
 
 class BootingManagerWithFind(ManagerWithFind):

@@ -21,7 +21,7 @@ class Coverage(base.Resource):
         return "<Coverage: %s>" % self.name
 
 
-class CoverageManager(base.ManagerWithFind):
+class CoverageManager(base.Manager):
 
     resource_class = Coverage
 

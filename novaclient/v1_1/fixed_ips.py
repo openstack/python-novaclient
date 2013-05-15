@@ -27,7 +27,7 @@ class FixedIP(base.Resource):
         return "<FixedIP: %s>" % self.address
 
 
-class FixedIPsManager(base.ManagerWithFind):
+class FixedIPsManager(base.Manager):
     resource_class = FixedIP
 
     def get(self, fixed_ip):

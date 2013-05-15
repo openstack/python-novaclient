@@ -14,13 +14,13 @@ class HostsTest(utils.TestCase):
         [self.assertTrue(isinstance(h, hosts.Host)) for h in hs]
 
     def test_list_host(self):
-        hs = cs.hosts.list_all()
+        hs = cs.hosts.list()
         cs.assert_called('GET', '/os-hosts')
         [self.assertTrue(isinstance(h, hosts.Host)) for h in hs]
         [self.assertEqual(h.zone, 'nova1') for h in hs]
 
     def test_list_host_with_zone(self):
-        hs = cs.hosts.list_all('nova')
+        hs = cs.hosts.list('nova')
         cs.assert_called('GET', '/os-hosts?zone=nova')
         [self.assertTrue(isinstance(h, hosts.Host)) for h in hs]
         [self.assertEqual(h.zone, 'nova') for h in hs]
