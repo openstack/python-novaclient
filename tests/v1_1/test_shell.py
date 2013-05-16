@@ -1229,9 +1229,9 @@ class ShellTest(utils.TestCase):
         self.run_command('secgroup-add-rule test tcp 22 22 10.0.0.0/8')
         self.assert_called('POST', '/os-security-group-rules',
                            {'security_group_rule':
-                               {'from_port': '22',
+                               {'from_port': 22,
                                 'ip_protocol': 'tcp',
-                                'to_port': '22',
+                                'to_port': 22,
                                 'parent_group_id': 1,
                                 'cidr': '10.0.0.0/8',
                                 'group_id': None}})
@@ -1248,9 +1248,9 @@ class ShellTest(utils.TestCase):
         self.run_command('secgroup-add-group-rule test test2 tcp 22 22')
         self.assert_called('POST', '/os-security-group-rules',
                            {'security_group_rule':
-                               {'from_port': '22',
+                               {'from_port': 22,
                                 'ip_protocol': 'TCP',
-                                'to_port': '22',
+                                'to_port': 22,
                                 'parent_group_id': 1,
                                 'cidr': None,
                                 'group_id': 2}})

@@ -1878,10 +1878,18 @@ def _print_secgroup_rules(rules):
 
 
 def _print_secgroups(secgroups):
-    utils.print_list(secgroups, ['Name', 'Description'])
+    utils.print_list(secgroups, ['Id', 'Name', 'Description'])
 
 
 def _get_secgroup(cs, secgroup):
+    # Check secgroup is an ID
+    if utils.is_uuid_like(strutils.safe_encode(secgroup)):
+        try:
+            return cs.security_groups.get(secgroup)
+        except exceptions.NotFound:
+            pass
+
+    # Check secgroup as a name
     match_found = False
     for s in cs.security_groups.list():
         encoding = (locale.getpreferredencoding() or
@@ -1895,11 +1903,14 @@ def _get_secgroup(cs, secgroup):
                 raise exceptions.NoUniqueMatch(msg)
             match_found = s
     if match_found is False:
-        raise exceptions.CommandError("Secgroup %s not found" % secgroup)
+        raise exceptions.CommandError("Secgroup ID or name '%s' not found."
+                                      % secgroup)
     return match_found
 
 
-@utils.arg('secgroup', metavar='<secgroup>', help='ID of security group.')
+@utils.arg('secgroup',
+    metavar='<secgroup>',
+    help='ID or name of security group.')
 @utils.arg('ip_proto',
     metavar='<ip-proto>',
     help='IP protocol (icmp, tcp, udp).')
@@ -1921,7 +1932,9 @@ def do_secgroup_add_rule(cs, args):
     _print_secgroup_rules([rule])
 
 
-@utils.arg('secgroup', metavar='<secgroup>', help='ID of security group.')
+@utils.arg('secgroup',
+    metavar='<secgroup>',
+    help='ID or name of security group.')
 @utils.arg('ip_proto',
     metavar='<ip-proto>',
     help='IP protocol (icmp, tcp, udp).')
@@ -1934,7 +1947,6 @@ def do_secgroup_add_rule(cs, args):
 @utils.arg('cidr', metavar='<cidr>', help='CIDR for address range.')
 def do_secgroup_delete_rule(cs, args):
     """Delete a rule from a security group."""
-
     secgroup = _get_secgroup(cs, args.secgroup)
     for rule in secgroup.rules:
         if (rule['ip_protocol'] and
@@ -1942,6 +1954,7 @@ def do_secgroup_delete_rule(cs, args):
             rule['from_port'] == int(args.from_port) and
             rule['to_port'] == int(args.to_port) and
             rule['ip_range']['cidr'] == args.cidr):
+            _print_secgroup_rules([rule])
             return cs.security_group_rules.delete(rule['id'])
 
     raise exceptions.CommandError("Rule not found")
@@ -1952,13 +1965,18 @@ def do_secgroup_delete_rule(cs, args):
            help='Description of security group.')
 def do_secgroup_create(cs, args):
     """Create a security group."""
-    _print_secgroups([cs.security_groups.create(args.name, args.description)])
+    secgroup = cs.security_groups.create(args.name, args.description)
+    _print_secgroups([secgroup])
 
 
-@utils.arg('secgroup', metavar='<secgroup>', help='Name of security group.')
+@utils.arg('secgroup',
+    metavar='<secgroup>',
+    help='ID or name of security group.')
 def do_secgroup_delete(cs, args):
     """Delete a security group."""
-    cs.security_groups.delete(_get_secgroup(cs, args.secgroup))
+    secgroup = _get_secgroup(cs, args.secgroup)
+    cs.security_groups.delete(secgroup)
+    _print_secgroups([secgroup])
 
 
 @utils.arg('--all-tenants',
@@ -1977,24 +1995,28 @@ def do_secgroup_delete(cs, args):
 def do_secgroup_list(cs, args):
     """List security groups for the current tenant."""
     search_opts = {'all_tenants': args.all_tenants}
-    columns = ['Name', 'Description']
+    columns = ['Id', 'Name', 'Description']
     if args.all_tenants:
         columns.append('Tenant_ID')
     groups = cs.security_groups.list(search_opts=search_opts)
     utils.print_list(groups, columns)
 
 
-@utils.arg('secgroup', metavar='<secgroup>', help='Name of security group.')
+@utils.arg('secgroup',
+    metavar='<secgroup>',
+    help='ID or name of security group.')
 def do_secgroup_list_rules(cs, args):
     """List rules for a security group."""
     secgroup = _get_secgroup(cs, args.secgroup)
     _print_secgroup_rules(secgroup.rules)
 
 
-@utils.arg('secgroup', metavar='<secgroup>', help='ID of security group.')
+@utils.arg('secgroup',
+    metavar='<secgroup>',
+    help='ID or name of security group.')
 @utils.arg('source_group',
     metavar='<source-group>',
-    help='ID of source group.')
+    help='ID or name of source group.')
 @utils.arg('ip_proto',
     metavar='<ip-proto>',
     help='IP protocol (icmp, tcp, udp).')
@@ -2023,10 +2045,12 @@ def do_secgroup_add_group_rule(cs, args):
     _print_secgroup_rules([rule])
 
 
-@utils.arg('secgroup', metavar='<secgroup>', help='ID of security group.')
+@utils.arg('secgroup',
+    metavar='<secgroup>',
+    help='ID or name of security group.')
 @utils.arg('source_group',
     metavar='<source-group>',
-    help='ID of source group.')
+    help='ID or name of source group.')
 @utils.arg('ip_proto',
     metavar='<ip-proto>',
     help='IP protocol (icmp, tcp, udp).')
