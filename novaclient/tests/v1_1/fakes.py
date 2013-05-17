@@ -517,7 +517,9 @@ class FakeHTTPClient(base_client.HTTPClient):
         elif action == 'removeFixedIp':
             assert body[action].keys() == ['address']
         elif action == 'addFloatingIp':
-            assert body[action].keys() == ['address']
+            assert (body[action].keys() == ['address'] or
+                    body[action].keys() == ['fixed_address',
+                                                'address'])
         elif action == 'removeFloatingIp':
             assert body[action].keys() == ['address']
         elif action == 'createImage':

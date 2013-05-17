@@ -1707,10 +1707,14 @@ def do_console_log(cs, args):
 
 @utils.arg('server', metavar='<server>', help='Name or ID of server.')
 @utils.arg('address', metavar='<address>', help='IP Address.')
+@utils.arg('--fixed-address',
+           metavar='<fixed_address>',
+           default=None,
+           help='Fixed IP Address to associate with.')
 def do_add_floating_ip(cs, args):
     """Add a floating IP address to a server."""
     server = _find_server(cs, args.server)
-    server.add_floating_ip(args.address)
+    server.add_floating_ip(args.address, args.fixed_address)
 
 
 @utils.arg('server', metavar='<server>', help='Name or ID of server.')
