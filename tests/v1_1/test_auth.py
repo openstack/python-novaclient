@@ -125,7 +125,7 @@ class AuthenticateAgainstKeystoneTests(utils.TestCase):
         }
         correct_response = json.dumps(dict_correct_response)
         dict_responses = [
-            {"headers": {'location':'http://127.0.0.1:5001'},
+            {"headers": {'location': 'http://127.0.0.1:5001'},
              "status_code": 305,
              "text": "Use proxy"},
             # Configured on admin port, nova redirects to v2.0 port.

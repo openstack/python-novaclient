@@ -61,5 +61,5 @@ class BaremetalExtensionTest(utils.TestCase):
         cs.assert_called('POST', '/os-baremetal-nodes/1/action')
 
     def test_node_list_interfaces(self):
-        il = cs.baremetal.list_interfaces(1)
+        cs.baremetal.list_interfaces(1)
         cs.assert_called('GET', '/os-baremetal-nodes/1')

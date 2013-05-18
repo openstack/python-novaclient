@@ -36,7 +36,7 @@ class TenantNetworkExtensionTests(utils.TestCase):
         self.assertTrue(len(nets) > 0)
 
     def test_get_tenant_network(self):
-        net = cs.tenant_networks.get(1)
+        cs.tenant_networks.get(1)
         cs.assert_called('GET', '/os-tenant-networks/1')
 
     def test_create_tenant_networks(self):
