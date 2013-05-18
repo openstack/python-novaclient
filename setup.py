@@ -12,41 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import os
 import setuptools
 
-from novaclient.openstack.common import setup
-
-
-def read_file(file_name):
-    return open(os.path.join(os.path.dirname(__file__), file_name)).read()
-project = 'python-novaclient'
 
 setuptools.setup(
-    name=project,
-    version=setup.get_version(project),
-    author='OpenStack',
-    author_email='openstack-dev@lists.openstack.org',
-    description="Client library for OpenStack Compute API.",
-    long_description=read_file("README.rst"),
-    license="Apache License, Version 2.0",
-    url="https://github.com/openstack/python-novaclient",
-    packages=setuptools.find_packages(exclude=['tests', 'tests.*']),
-    install_requires=setup.parse_requirements(),
-    cmdclass=setup.get_cmdclass(),
-    setup_requires=['setuptools_git>=0.4'],
-    include_package_data=True,
-    classifiers=[
-        "Development Status :: 5 - Production/Stable",
-        "Environment :: Console",
-        "Environment :: OpenStack",
-        "Intended Audience :: Developers",
-        "Intended Audience :: Information Technology",
-        "License :: OSI Approved :: Apache Software License",
-        "Operating System :: OS Independent",
-        "Programming Language :: Python"
+    setup_requires=[
+        'd2to1>=0.2.10,<0.3',
+        'pbr>=0.5,<0.6'
     ],
-    entry_points={
-        "console_scripts": ["nova = novaclient.shell:main"]
-    },
+    d2to1=True
 )

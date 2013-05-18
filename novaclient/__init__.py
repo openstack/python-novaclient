@@ -12,12 +12,7 @@
 #   License for the specific language governing permissions and limitations
 #   under the License.
 
-from novaclient.openstack.common import version
+import pbr.version
 
-version_info = version.VersionInfo('python-novaclient')
-# We have a circular import problem when we first run python setup.py sdist
-# It's harmless, so deflect it.
-try:
-    __version__ = version_info.version_string()
-except AttributeError:
-    __version__ = None
+
+__version__ = pbr.version.VersionInfo('python-novaclient').version_string()

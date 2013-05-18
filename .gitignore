@@ -11,8 +11,8 @@ cover
 *~
 build
 dist
-python_novaclient.egg-info
 AUTHORS
 ChangeLog
 novaclient/versioninfo
-setuptools_git-*.egg/
+*.egg
+*egg-info
