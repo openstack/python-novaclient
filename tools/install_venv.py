@@ -32,8 +32,8 @@ import platform
 
 ROOT = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 VENV = os.path.join(ROOT, '.venv')
-PIP_REQUIRES = os.path.join(ROOT, 'tools', 'pip-requires')
-TEST_REQUIRES = os.path.join(ROOT, 'tools', 'test-requires')
+PIP_REQUIRES = os.path.join(ROOT, 'requirements.txt')
+TEST_REQUIRES = os.path.join(ROOT, 'test-requirements.txt')
 PY_VERSION = "python%s.%s" % (sys.version_info[0], sys.version_info[1])
 
 
