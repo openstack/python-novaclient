@@ -102,13 +102,8 @@ function copy_subunit_log {
 }
 
 function run_pep8 {
-  echo "Running pep8 ..."
-  srcfiles="--exclude=.venv,.git,.tox,dist,doc,*openstack/common*,*lib/python*"
-  srcfiles+=",*egg,build ."
-  # Just run PEP8 in current environment
-  #
-  ignore="--ignore=E12,E711,E721,E712"
-  ${wrapper} pep8 ${ignore} --show-source ${srcfiles}
+  echo "Running flake8 ..."
+  ${wrapper} flake8
 }
 
 TESTRTESTS="testr run --parallel $testropts"
