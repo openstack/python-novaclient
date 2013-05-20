@@ -62,8 +62,10 @@ class HostManager(base.ManagerWithFind):
         url = '/os-hosts/%s/action' % host
         return self.api.client.post(url, body=body)
 
-    def list_all(self, zone=None):
+    def list(self, zone=None):
         url = '/os-hosts'
         if zone:
             url = '/os-hosts?zone=%s' % zone
         return self._list(url, "hosts")
+
+    list_all = list

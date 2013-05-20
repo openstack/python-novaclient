@@ -29,7 +29,7 @@ class Certificate(base.Resource):
                          len(self.data))
 
 
-class CertificateManager(base.ManagerWithFind):
+class CertificateManager(base.Manager):
     """
     Manage :class:`Certificate` resources.
     """

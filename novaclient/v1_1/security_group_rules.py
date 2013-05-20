@@ -28,7 +28,7 @@ class SecurityGroupRule(base.Resource):
         self.manager.delete(self)
 
 
-class SecurityGroupRuleManager(base.ManagerWithFind):
+class SecurityGroupRuleManager(base.Manager):
     resource_class = SecurityGroupRule
 
     def create(self, parent_group_id, ip_protocol=None, from_port=None,

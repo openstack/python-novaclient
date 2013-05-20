@@ -47,7 +47,7 @@ class FloatingIPDNSDomain(base.Resource):
         return None
 
 
-class FloatingIPDNSDomainManager(base.ManagerWithFind):
+class FloatingIPDNSDomainManager(base.Manager):
     resource_class = FloatingIPDNSDomain
 
     def domains(self):
@@ -90,7 +90,7 @@ class FloatingIPDNSEntry(base.Resource):
         return self.manager.get(self.domain, self.name)
 
 
-class FloatingIPDNSEntryManager(base.ManagerWithFind):
+class FloatingIPDNSEntryManager(base.Manager):
     resource_class = FloatingIPDNSEntry
 
     def get(self, domain, name):
