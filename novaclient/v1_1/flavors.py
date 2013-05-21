@@ -7,6 +7,7 @@ import urllib
 from novaclient import base
 from novaclient import exceptions
 from novaclient import utils
+from novaclient.openstack.common import uuidutils
 
 
 class Flavor(base.Resource):
@@ -147,7 +148,7 @@ class FlavorManager(base.ManagerWithFind):
 
         if flavorid == "auto":
             flavorid = None
-        elif not utils.is_uuid_like(flavorid):
+        elif not uuidutils.is_uuid_like(flavorid):
             try:
                 flavorid = int(flavorid)
             except (TypeError, ValueError):

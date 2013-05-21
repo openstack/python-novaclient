@@ -346,19 +346,6 @@ def slugify(value):
     return _slugify_hyphenate_re.sub('-', value)
 
 
-def is_uuid_like(val):
-    """
-    The UUID which doesn't contain hyphens or 'A-F' is allowed.
-    """
-    try:
-        if uuid.UUID(val) and val.isalnum() and val.islower():
-            return True
-        else:
-            return False
-    except (TypeError, ValueError, AttributeError):
-        return False
-
-
 def _load_entry_point(ep_name, name=None):
     """Try to load the entry point ep_name that matches name."""
     for ep in pkg_resources.iter_entry_points(ep_name, name=name):
