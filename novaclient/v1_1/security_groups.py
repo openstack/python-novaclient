@@ -29,6 +29,9 @@ class SecurityGroup(base.Resource):
     def delete(self):
         self.manager.delete(self)
 
+    def update(self):
+        self.manager.update(self)
+
 
 class SecurityGroupManager(base.ManagerWithFind):
     resource_class = SecurityGroup
@@ -43,6 +46,19 @@ class SecurityGroupManager(base.ManagerWithFind):
         """
         body = {"security_group": {"name": name, 'description': description}}
         return self._create('/os-security-groups', body, 'security_group')
+
+    def update(self, group, name, description):
+        """
+        Update a security group
+
+        :param group: The security group to delete (group or ID)
+        :param name: name for the security group to update
+        :param description: description for the security group to update
+        :rtype: the security group object
+        """
+        body = {"security_group": {"name": name, 'description': description}}
+        return self._update('/os-security-groups/%s' % base.getid(group),
+                            body, 'security_group')
 
     def delete(self, group):
         """
