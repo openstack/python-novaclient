@@ -82,7 +82,6 @@ def get_resource_manager_extra_kwargs(f, args, allow_conflicts=False):
     hooks = getattr(f, "resource_manager_kwargs_hooks", [])
     extra_kwargs = {}
     for hook in hooks:
-        hook_name = hook.__name__
         hook_kwargs = hook(args)
 
         conflicting_keys = set(hook_kwargs.keys()) & set(extra_kwargs.keys())

@@ -1063,7 +1063,7 @@ def do_rebuild(cs, args):
         _password = None
 
     kwargs = utils.get_resource_manager_extra_kwargs(do_rebuild, args)
-    s = server.rebuild(image, _password, **kwargs)
+    server.rebuild(image, _password, **kwargs)
     _print_server(cs, args)
 
     if args.poll:
@@ -1671,7 +1671,7 @@ def do_get_password(cs, args):
 def do_clear_password(cs, args):
     """Clear password for a server."""
     server = _find_server(cs, args.server)
-    data = server.clear_password()
+    server.clear_password()
 
 
 def _print_floating_ip_list(floating_ips):
