@@ -49,11 +49,20 @@ class SecurityGroupRulesTest(utils.TestCase):
 
     def test_invalid_parameters_create(self):
         self.assertRaises(exceptions.CommandError,
-                          cs.security_group_rules.create, "secgrouprulecreate",
-                          1, "invalid", 1, 65535, "10.0.0.0/16")
+            cs.security_group_rules.create,
+            1, "invalid_ip_protocol", 1, 65535, "10.0.0.0/16", 101)
         self.assertRaises(exceptions.CommandError,
-                          cs.security_group_rules.create, "secgrouprulecreate",
-                          1, "tcp", "invalid", 65535, "10.0.0.0/16")
+            cs.security_group_rules.create,
+            1, "tcp", "invalid_from_port", 65535, "10.0.0.0/16", 101)
         self.assertRaises(exceptions.CommandError,
-                          cs.security_group_rules.create, "secgrouprulecreate",
-                          1, "tcp", 1, "invalid", "10.0.0.0/16")
+            cs.security_group_rules.create,
+            1, "tcp", 1, "invalid_to_port", "10.0.0.0/16", 101)
+
+    def test_security_group_rule_str(self):
+        sg = cs.security_group_rules.create(1, "tcp", 1, 65535, "10.0.0.0/16")
+        self.assertEquals('1', str(sg))
+
+    def test_security_group_rule_del(self):
+        sg = cs.security_group_rules.create(1, "tcp", 1, 65535, "10.0.0.0/16")
+        sg.delete()
+        cs.assert_called('DELETE', '/os-security-group-rules/1')
