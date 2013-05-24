@@ -37,15 +37,6 @@ class QuotaSetsTest(utils.TestCase):
         cs.assert_called('PUT',
                    '/os-quota-sets/97f4c221bff44578b0300df4ef119353')
 
-    def test_force_update_quota(self):
-        q = cs.quotas.get('97f4c221bff44578b0300df4ef119353')
-        q.update(cores=2, force=True)
-        cs.assert_called(
-            'PUT', '/os-quota-sets/97f4c221bff44578b0300df4ef119353',
-            {'quota_set': {'force': True,
-                           'cores': 2,
-                           'tenant_id': '97f4c221bff44578b0300df4ef119353'}})
-
     def test_refresh_quota(self):
         q = cs.quotas.get('test')
         q2 = cs.quotas.get('test')
