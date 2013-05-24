@@ -91,7 +91,7 @@ class HTTPClient(object):
         self.auth_plugin = auth_plugin
 
         self._logger = logging.getLogger(__name__)
-        if self.http_log_debug:
+        if self.http_log_debug and not self._logger.handlers:
             # Logging level is already set on the root logger
             ch = logging.StreamHandler()
             self._logger.addHandler(ch)

@@ -111,3 +111,12 @@ class ClientTest(utils.TestCase):
             self.assertRaises(exceptions.BadRequest, cl.get, "/hi")
 
         test_refused_call()
+
+    def test_client_logger(self):
+        cl1 = client.HTTPClient("username", "password", "project_id",
+                                "auth_test", http_log_debug=True)
+        self.assertEquals(len(cl1._logger.handlers), 1)
+
+        cl2 = client.HTTPClient("username", "password", "project_id",
+                                "auth_test", http_log_debug=True)
+        self.assertEquals(len(cl2._logger.handlers), 1)
