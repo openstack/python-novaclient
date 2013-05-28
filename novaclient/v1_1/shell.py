@@ -100,11 +100,14 @@ def _boot(cs, args, reservation_id=None, min_count=None, max_count=None):
 
     files = {}
     for f in args.files:
-        dst, src = f.split('=', 1)
         try:
+            dst, src = f.split('=', 1)
             files[dst] = open(src)
         except IOError as e:
             raise exceptions.CommandError("Can't open '%s': %s" % (src, e))
+        except ValueError as e:
+            raise exceptions.CommandError("Invalid file argument '%s'. File "
+            "arguments must be of the form '--file <dst-path=src-path>'" % f)
 
     # use the os-keypair extension
     key_name = None
@@ -139,8 +142,14 @@ def _boot(cs, args, reservation_id=None, min_count=None, max_count=None):
     for nic_str in args.nics:
         nic_info = {"net-id": "", "v4-fixed-ip": "", "port-id": ""}
         for kv_str in nic_str.split(","):
-            k, v = kv_str.split("=", 1)
-            nic_info[k] = v
+            try:
+                k, v = kv_str.split("=", 1)
+                nic_info[k] = v
+            except ValueError as e:
+                raise exceptions.CommandError(
+                    "Invalid nic argument '%s'. Nic arguments must be of the "
+                    "form --nic <net-id=net-uuid[,v4-fixed-ip=ip-addr]"
+                    "[,port-id=port-uuid]>" % nic_str)
         nics.append(nic_info)
 
     hints = {}
