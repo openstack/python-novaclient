@@ -1,6 +1,9 @@
 import cStringIO
+import prettytable
 import re
 import sys
+
+from distutils.version import StrictVersion
 
 import fixtures
 import mock
@@ -148,13 +151,21 @@ class ShellTest(utils.TestCase):
     @mock.patch('sys.stdin', side_effect=mock.MagicMock)
     @mock.patch('getpass.getpass', return_value='password')
     def test_password(self, mock_getpass, mock_stdin):
+        # default output of empty tables differs depending between prettytable
+        # versions
+        if (hasattr(prettytable, '__version__') and
+            StrictVersion(prettytable.__version__) < StrictVersion('0.7.2')):
+            ex = '\n'
+        else:
+            ex = (
+              '+----+------+--------+------------+-------------+----------+\n'
+              '| ID | Name | Status | Task State | Power State | Networks |\n'
+              '+----+------+--------+------------+-------------+----------+\n'
+              '+----+------+--------+------------+-------------+----------+\n'
+            )
         self.make_env(exclude='OS_PASSWORD')
         stdout, stderr = self.shell('list')
-        self.assertEqual((stdout + stderr),
-            '+----+------+--------+------------+-------------+----------+\n'
-            '| ID | Name | Status | Task State | Power State | Networks |\n'
-            '+----+------+--------+------------+-------------+----------+\n'
-            '+----+------+--------+------------+-------------+----------+\n')
+        self.assertEqual((stdout + stderr), ex)
 
     @mock.patch('sys.stdin', side_effect=mock.MagicMock)
     @mock.patch('getpass.getpass', side_effect=EOFError)
