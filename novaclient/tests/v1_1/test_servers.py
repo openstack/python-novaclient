@@ -169,9 +169,9 @@ class ServersTest(utils.TestCase):
                          {'metadata': {'test_key': 'test_value'}})
 
     def test_find(self):
-        s = cs.servers.find(name='sample-server')
+        server = cs.servers.find(name='sample-server')
         cs.assert_called('GET', '/servers/detail')
-        self.assertEqual(s.name, 'sample-server')
+        self.assertEqual(server.name, 'sample-server')
 
         self.assertRaises(exceptions.NoUniqueMatch, cs.servers.find,
                           flavor={"id": 1, "name": "256 MB Server"})

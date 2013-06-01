@@ -14,4 +14,4 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from novaclient.v1_1.client import Client
+from novaclient.v1_1.client import Client   # noqa

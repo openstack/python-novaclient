@@ -170,7 +170,7 @@ class FlavorManager(base.ManagerWithFind):
 
         try:
             is_public = utils.bool_from_str(is_public)
-        except:
+        except Exception:
             raise exceptions.CommandError("is_public must be a boolean.")
 
         body = {

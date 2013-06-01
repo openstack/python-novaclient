@@ -1251,7 +1251,7 @@ def do_image_create(cs, args):
 @utils.arg('rotation', metavar='<rotation>',
            help='Int parameter representing how many backups to keep around.')
 def do_backup(cs, args):
-    """ Backup a instance by create a 'backup' type snapshot """
+    """Backup a instance by create a 'backup' type snapshot """
     _find_server(cs, args.server).backup(args.name,
                                          args.backup_type,
                                          args.rotation)
@@ -3127,7 +3127,7 @@ def do_availability_zone_list(cs, _args):
     except exceptions.Forbidden as e:  # policy doesn't allow probably
         try:
             availability_zones = cs.availability_zones.list(detailed=False)
-        except:
+        except Exception:
             raise e
 
     result = []

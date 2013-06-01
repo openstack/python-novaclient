@@ -536,7 +536,7 @@ class ServerManager(local_base.BootingManagerWithFind):
                key_name=None, availability_zone=None,
                block_device_mapping=None, nics=None, scheduler_hints=None,
                config_drive=None, **kwargs):
-        # TODO: (anthony) indicate in doc string if param is an extension
+        # TODO(anthony): indicate in doc string if param is an extension
         # and/or optional
         """
         Create (boot) a new server.

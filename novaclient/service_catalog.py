@@ -50,7 +50,7 @@ class ServiceCatalog(object):
                 raise novaclient.exceptions.EndpointNotFound()
 
         # We don't always get a service catalog back ...
-        if not 'serviceCatalog' in self.catalog['access']:
+        if 'serviceCatalog' not in self.catalog['access']:
             return None
 
         # Full catalog ...

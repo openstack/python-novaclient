@@ -27,7 +27,6 @@ import optparse
 import os
 import subprocess
 import sys
-import platform
 
 
 ROOT = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
