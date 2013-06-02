@@ -2137,6 +2137,22 @@ def do_keypair_list(cs, args):
     utils.print_list(keypairs, columns)
 
 
+def _print_keypair(keypair):
+    kp = keypair._info.copy()
+    pk = kp.pop('public_key')
+    utils.print_dict(kp)
+    print "Public key: %s" % pk
+
+
+@utils.arg('keypair',
+    metavar='<keypair>',
+    help="Name or ID of keypair")
+def do_keypair_show(cs, args):
+    """Show details about the given keypair."""
+    keypair = cs.keypairs.get(args.keypair)
+    _print_keypair(keypair)
+
+
 @utils.arg('--reserved',
            dest='reserved',
            action='store_true',

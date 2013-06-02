@@ -848,6 +848,9 @@ class FakeHTTPClient(base_client.HTTPClient):
     #
     # Keypairs
     #
+    def get_os_keypairs_test(self, *kw):
+        return (200, {}, {'keypair': self.get_os_keypairs()[2]['keypairs'][0]})
+
     def get_os_keypairs(self, *kw):
         return (200, {}, {"keypairs": [
             {'fingerprint': 'FAKE_KEYPAIR', 'name': 'test'}

@@ -8,6 +8,12 @@ cs = fakes.FakeClient()
 
 class KeypairsTest(utils.TestCase):
 
+    def test_get_keypair(self):
+        kp = cs.keypairs.get('test')
+        cs.assert_called('GET', '/os-keypairs/test')
+        self.assertTrue(isinstance(kp, keypairs.Keypair))
+        self.assertEqual(kp.name, 'test')
+
     def test_list_keypairs(self):
         kps = cs.keypairs.list()
         cs.assert_called('GET', '/os-keypairs')

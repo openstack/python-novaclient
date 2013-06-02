@@ -45,6 +45,15 @@ class Keypair(base.Resource):
 class KeypairManager(base.ManagerWithFind):
     resource_class = Keypair
 
+    def get(self, keypair):
+        """
+        Get a keypair.
+
+        :param keypair: The ID of the keypair to get.
+        :rtype: :class:`Keypair`
+        """
+        return self._get("/os-keypairs/%s" % base.getid(keypair), "keypair")
+
     def create(self, name, public_key=None):
         """
         Create a keypair
