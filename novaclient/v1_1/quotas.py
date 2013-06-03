@@ -69,3 +69,6 @@ class QuotaSetManager(base.Manager):
     def defaults(self, tenant_id):
         return self._get('/os-quota-sets/%s/defaults' % tenant_id,
                          'quota_set')
+
+    def delete(self, tenant_id):
+        self._delete("/os-quota-sets/%s" % tenant_id)

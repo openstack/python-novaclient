@@ -45,3 +45,8 @@ class QuotaSetsTest(utils.TestCase):
         self.assertNotEqual(q.volumes, q2.volumes)
         q2.get()
         self.assertEqual(q.volumes, q2.volumes)
+
+    def test_quotas_delete(self):
+        tenant_id = 'test'
+        cs.quotas.delete(tenant_id)
+        cs.assert_called('DELETE', '/os-quota-sets/%s' % tenant_id)
