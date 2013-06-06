@@ -1017,6 +1017,18 @@ class ShellTest(utils.TestCase):
                            {'evacuate': {'host': None,
                                          'onSharedStorage': True}}, pos=4)
 
+    def test_host_servers_migrate(self):
+        self.run_command('host-servers-migrate hyper')
+        self.assert_called('GET', '/os-hypervisors/hyper/servers', pos=0)
+        self.assert_called('POST',
+                           '/servers/uuid1/action', {'migrate': None}, pos=1)
+        self.assert_called('POST',
+                           '/servers/uuid2/action', {'migrate': None}, pos=2)
+        self.assert_called('POST',
+                           '/servers/uuid3/action', {'migrate': None}, pos=3)
+        self.assert_called('POST',
+                           '/servers/uuid4/action', {'migrate': None}, pos=4)
+
     def test_coverage_start(self):
         self.run_command('coverage-start')
         self.assert_called('POST', '/os-coverage/action')
