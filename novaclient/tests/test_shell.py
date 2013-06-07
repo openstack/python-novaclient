@@ -119,7 +119,7 @@ class ShellTest(utils.TestCase):
         self.make_env(exclude='OS_USERNAME')
         try:
             self.shell('list')
-        except exceptions.CommandError, message:
+        except exceptions.CommandError as message:
             self.assertEqual(required, message.args)
         else:
             self.fail('CommandError not raised')
@@ -130,7 +130,7 @@ class ShellTest(utils.TestCase):
         self.make_env(exclude='OS_TENANT_NAME')
         try:
             self.shell('list')
-        except exceptions.CommandError, message:
+        except exceptions.CommandError as message:
             self.assertEqual(required, message.args)
         else:
             self.fail('CommandError not raised')
@@ -143,7 +143,7 @@ class ShellTest(utils.TestCase):
         self.make_env(exclude='OS_AUTH_URL')
         try:
             self.shell('list')
-        except exceptions.CommandError, message:
+        except exceptions.CommandError as message:
             self.assertEqual(required, message.args)
         else:
             self.fail('CommandError not raised')
@@ -176,7 +176,7 @@ class ShellTest(utils.TestCase):
         self.make_env(exclude='OS_PASSWORD')
         try:
             self.shell('list')
-        except exceptions.CommandError, message:
+        except exceptions.CommandError as message:
             self.assertEqual(required, message.args)
         else:
             self.fail('CommandError not raised')
