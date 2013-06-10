@@ -656,6 +656,32 @@ class ShellTest(utils.TestCase):
         self.assert_called('DELETE', '/servers/1234/metadata/key1')
         self.assert_called('DELETE', '/servers/1234/metadata/key2', pos=-2)
 
+    def test_set_host_meta(self):
+        self.run_command('host-meta hyper set key1=val1 key2=val2')
+        self.assert_called('GET', '/os-hypervisors/hyper/servers', pos=0)
+        self.assert_called('POST', '/servers/uuid1/metadata',
+                           {'metadata': {'key1': 'val1', 'key2': 'val2'}},
+                           pos=1)
+        self.assert_called('POST', '/servers/uuid2/metadata',
+                           {'metadata': {'key1': 'val1', 'key2': 'val2'}},
+                           pos=2)
+        self.assert_called('POST', '/servers/uuid3/metadata',
+                           {'metadata': {'key1': 'val1', 'key2': 'val2'}},
+                           pos=3)
+        self.assert_called('POST', '/servers/uuid4/metadata',
+                           {'metadata': {'key1': 'val1', 'key2': 'val2'}},
+                           pos=4)
+
+    def test_set_host_meta_with_no_servers(self):
+        self.run_command('host-meta hyper_no_servers set key1=val1 key2=val2')
+        self.assert_called('GET', '/os-hypervisors/hyper_no_servers/servers')
+
+    def test_delete_host_meta(self):
+        self.run_command('host-meta hyper delete key1')
+        self.assert_called('GET', '/os-hypervisors/hyper/servers', pos=0)
+        self.assert_called('DELETE', '/servers/uuid1/metadata/key1', pos=1)
+        self.assert_called('DELETE', '/servers/uuid2/metadata/key1', pos=2)
+
     def test_dns_create(self):
         self.run_command('dns-create 192.168.1.1 testname testdomain')
         self.assert_called('PUT',

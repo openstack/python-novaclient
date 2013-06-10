@@ -398,6 +398,30 @@ class FakeHTTPClient(base_client.HTTPClient):
     def get_servers_1234_diagnostics(self, **kw):
         return (200, {}, {'data': 'Fake diagnostics'})
 
+    def post_servers_uuid1_metadata(self, **kw):
+        return (204, {}, {'metadata': {'key1': 'val1'}})
+
+    def post_servers_uuid2_metadata(self, **kw):
+        return (204, {}, {'metadata': {'key1': 'val1'}})
+
+    def post_servers_uuid3_metadata(self, **kw):
+        return (204, {}, {'metadata': {'key1': 'val1'}})
+
+    def post_servers_uuid4_metadata(self, **kw):
+        return (204, {}, {'metadata': {'key1': 'val1'}})
+
+    def delete_servers_uuid1_metadata_key1(self, **kw):
+        return (200, {}, {'data': 'Fake diagnostics'})
+
+    def delete_servers_uuid2_metadata_key1(self, **kw):
+        return (200, {}, {'data': 'Fake diagnostics'})
+
+    def delete_servers_uuid3_metadata_key1(self, **kw):
+        return (200, {}, {'data': 'Fake diagnostics'})
+
+    def delete_servers_uuid4_metadata_key1(self, **kw):
+        return (200, {}, {'data': 'Fake diagnostics'})
+
     #
     # Server Addresses
     #
@@ -1475,6 +1499,10 @@ class FakeHTTPClient(base_client.HTTPClient):
                             {'name': 'inst4', 'uuid': 'uuid4'}
                             ]}
                     ]})
+
+    def get_os_hypervisors_hyper_no_servers_servers(self, **kw):
+        return (200, {}, {'hypervisors':
+                          [{'id': 1234, 'hypervisor_hostname': 'hyper1'}]})
 
     def get_os_hypervisors_1234(self, **kw):
         return (200, {}, {'hypervisor':
