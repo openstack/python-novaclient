@@ -1038,6 +1038,12 @@ class FakeHTTPClient(base_client.HTTPClient):
                       'security_groups': 1,
                       'security_group_rules': 1}})
 
+    def delete_os_quota_sets_test(self, **kw):
+        return (202, {}, {})
+
+    def delete_os_quota_sets_97f4c221bff44578b0300df4ef119353(self, **kw):
+        return (202, {}, {})
+
     #
     # Quota Classes
     #

@@ -1109,6 +1109,12 @@ class ShellTest(utils.TestCase):
             {'quota_set': {'fixed_ips': 5,
                            'tenant_id': '97f4c221bff44578b0300df4ef119353'}})
 
+    def test_quota_delete(self):
+        self.run_command('quota-delete --tenant '
+                         '97f4c221bff44578b0300df4ef119353')
+        self.assert_called('DELETE',
+                           '/os-quota-sets/97f4c221bff44578b0300df4ef119353')
+
     def test_quota_class_show(self):
         self.run_command('quota-class-show test')
         self.assert_called('GET', '/os-quota-class-sets/test')
