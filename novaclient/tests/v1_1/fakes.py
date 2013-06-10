@@ -1702,3 +1702,15 @@ class FakeHTTPClient(base_client.HTTPClient):
                  "action": "create",
                  "message": None,
                  "project_id": "04019601fe3648c0abd4f4abfb9e6106"}})
+
+    def post_servers_uuid1_action(self, **kw):
+        return 202, {}, {}
+
+    def post_servers_uuid2_action(self, **kw):
+        return 202, {}, {}
+
+    def post_servers_uuid3_action(self, **kw):
+        return 202, {}, {}
+
+    def post_servers_uuid4_action(self, **kw):
+        return 202, {}, {}

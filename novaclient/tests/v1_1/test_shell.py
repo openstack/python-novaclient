@@ -942,6 +942,55 @@ class ShellTest(utils.TestCase):
         self.assert_called(
             'POST', '/os-hosts/sample-host/action', {'reboot': None})
 
+    def test_host_evacuate(self):
+        self.run_command('host-evacuate hyper --target target_hyper')
+        self.assert_called('GET', '/os-hypervisors/hyper/servers', pos=0)
+        self.assert_called('POST', '/servers/uuid1/action',
+                           {'evacuate': {'host': 'target_hyper',
+                                         'onSharedStorage': False}}, pos=1)
+        self.assert_called('POST', '/servers/uuid2/action',
+                           {'evacuate': {'host': 'target_hyper',
+                                         'onSharedStorage': False}}, pos=2)
+        self.assert_called('POST', '/servers/uuid3/action',
+                           {'evacuate': {'host': 'target_hyper',
+                                         'onSharedStorage': False}}, pos=3)
+        self.assert_called('POST', '/servers/uuid4/action',
+                           {'evacuate': {'host': 'target_hyper',
+                                         'onSharedStorage': False}}, pos=4)
+
+    def test_host_evacuate_with_shared_storage(self):
+        self.run_command(
+            'host-evacuate --on-shared-storage hyper --target target_hyper')
+        self.assert_called('GET', '/os-hypervisors/hyper/servers', pos=0)
+        self.assert_called('POST', '/servers/uuid1/action',
+                           {'evacuate': {'host': 'target_hyper',
+                                         'onSharedStorage': True}}, pos=1)
+        self.assert_called('POST', '/servers/uuid2/action',
+                           {'evacuate': {'host': 'target_hyper',
+                                         'onSharedStorage': True}}, pos=2)
+        self.assert_called('POST', '/servers/uuid3/action',
+                           {'evacuate': {'host': 'target_hyper',
+                                         'onSharedStorage': True}}, pos=3)
+        self.assert_called('POST', '/servers/uuid4/action',
+                           {'evacuate': {'host': 'target_hyper',
+                                         'onSharedStorage': True}}, pos=4)
+
+    def test_host_evacuate_with_no_target_host(self):
+        self.run_command('host-evacuate --on-shared-storage hyper')
+        self.assert_called('GET', '/os-hypervisors/hyper/servers', pos=0)
+        self.assert_called('POST', '/servers/uuid1/action',
+                           {'evacuate': {'host': None,
+                                         'onSharedStorage': True}}, pos=1)
+        self.assert_called('POST', '/servers/uuid2/action',
+                           {'evacuate': {'host': None,
+                                         'onSharedStorage': True}}, pos=2)
+        self.assert_called('POST', '/servers/uuid3/action',
+                           {'evacuate': {'host': None,
+                                         'onSharedStorage': True}}, pos=3)
+        self.assert_called('POST', '/servers/uuid4/action',
+                           {'evacuate': {'host': None,
+                                         'onSharedStorage': True}}, pos=4)
+
     def test_coverage_start(self):
         self.run_command('coverage-start')
         self.assert_called('POST', '/os-coverage/action')
