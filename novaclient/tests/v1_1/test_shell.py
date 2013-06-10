@@ -1377,3 +1377,15 @@ class ShellTest(utils.TestCase):
         self.run_command('instance-action sample-server req-abcde12345')
         self.assert_called('GET',
                 '/servers/1234/os-instance-actions/req-abcde12345')
+
+    def test_cell_show(self):
+        self.run_command('cell-show child_cell')
+        self.assert_called('GET', '/os-cells/child_cell')
+
+    def test_cell_capacities_with_cell_name(self):
+        self.run_command('cell-capacities --cell child_cell')
+        self.assert_called('GET', '/os-cells/child_cell/capacities')
+
+    def test_cell_capacities_without_cell_name(self):
+        self.run_command('cell-capacities')
+        self.assert_called('GET', '/os-cells/capacities')

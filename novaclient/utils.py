@@ -169,8 +169,8 @@ def print_list(objs, fields, formatters={}, sortby_index=None):
         print(strutils.safe_encode(pt.get_string()))
 
 
-def print_dict(d, dict_property="Property", wrap=0):
-    pt = prettytable.PrettyTable([dict_property, 'Value'], caching=False)
+def print_dict(d, dict_property="Property", dict_value="Value", wrap=0):
+    pt = prettytable.PrettyTable([dict_property, dict_value], caching=False)
     pt.align = 'l'
     for k, v in d.iteritems():
         # convert dict to str to check length
