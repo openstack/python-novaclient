@@ -1160,6 +1160,12 @@ class FakeHTTPClient(base_client.HTTPClient):
                 self.get_os_security_groups()[2]['security_groups'][0]}
         return (202, {}, r)
 
+    def put_os_security_groups_1(self, body, **kw):
+        assert body.keys() == ['security_group']
+        fakes.assert_has_keys(body['security_group'],
+                              required=['name', 'description'])
+        return (205, {}, body)
+
     #
     # Security Group Rules
     #

@@ -160,6 +160,7 @@ You'll find complete documentation on the shell by running
                             Add a source group rule to a security group.
         secgroup-add-rule   Add a rule to a security group.
         secgroup-create     Create a security group.
+        secgroup-update     Update a security group.
         secgroup-delete     Delete a security group.
         secgroup-delete-group-rule
                             Delete a source group rule from a security group.

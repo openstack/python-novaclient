@@ -1981,6 +1981,19 @@ def do_secgroup_create(cs, args):
 @utils.arg('secgroup',
     metavar='<secgroup>',
     help='ID or name of security group.')
+@utils.arg('name', metavar='<name>', help='Name of security group.')
+@utils.arg('description', metavar='<description>',
+           help='Description of security group.')
+def do_secgroup_update(cs, args):
+    """Update a security group."""
+    sg = _get_secgroup(cs, args.secgroup)
+    secgroup = cs.security_groups.update(sg, args.name, args.description)
+    _print_secgroups([secgroup])
+
+
+@utils.arg('secgroup',
+    metavar='<secgroup>',
+    help='ID or name of security group.')
 def do_secgroup_delete(cs, args):
     """Delete a security group."""
     secgroup = _get_secgroup(cs, args.secgroup)

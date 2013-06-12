@@ -1287,6 +1287,13 @@ class ShellTest(utils.TestCase):
                                {'name': 'test',
                                 'description': 'FAKE_SECURITY_GROUP'}})
 
+    def test_security_group_update(self):
+        self.run_command('secgroup-update test te FAKE_SECURITY_GROUP')
+        self.assert_called('PUT', '/os-security-groups/1',
+                           {'security_group':
+                               {'name': 'te',
+                                'description': 'FAKE_SECURITY_GROUP'}})
+
     def test_security_group_list(self):
         self.run_command('secgroup-list')
         self.assert_called('GET', '/os-security-groups')
