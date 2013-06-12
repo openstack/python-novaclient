@@ -635,6 +635,32 @@ class ShellTest(utils.TestCase):
         self.run_command('delete sample-server')
         self.assert_called('DELETE', '/servers/1234')
 
+    def test_delete_two_with_two_existent(self):
+        self.run_command('delete 1234 5678')
+        self.assert_called('DELETE', '/servers/1234', pos=-3)
+        self.assert_called('DELETE', '/servers/5678', pos=-1)
+        self.run_command('delete sample-server sample-server2')
+        self.assert_called('DELETE', '/servers/1234', pos=-3)
+        self.assert_called('DELETE', '/servers/5678', pos=-1)
+
+    def test_delete_two_with_one_nonexistent(self):
+        self.run_command('delete 1234 123456789')
+        self.assert_called_anytime('DELETE', '/servers/1234')
+        self.run_command('delete sample-server nonexistentserver')
+        self.assert_called_anytime('DELETE', '/servers/1234')
+
+    def test_delete_one_with_one_nonexistent(self):
+        cmd = 'delete 123456789'
+        self.assertRaises(exceptions.CommandError, self.run_command, cmd)
+        cmd = 'delete nonexistent-server1'
+        self.assertRaises(exceptions.CommandError, self.run_command, cmd)
+
+    def test_delete_two_with_two_nonexistent(self):
+        cmd = 'delete 123456789 987654321'
+        self.assertRaises(exceptions.CommandError, self.run_command, cmd)
+        cmd = 'delete nonexistent-server1 nonexistent-server2'
+        self.assertRaises(exceptions.CommandError, self.run_command, cmd)
+
     def test_diagnostics(self):
         self.run_command('diagnostics 1234')
         self.assert_called('GET', '/servers/1234/diagnostics')
