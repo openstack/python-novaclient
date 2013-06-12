@@ -116,7 +116,7 @@ class FlavorManager(base.ManagerWithFind):
         """
         self._delete("/flavors/%s" % base.getid(flavor))
 
-    def create(self, name, ram, vcpus, disk, flavorid=None,
+    def create(self, name, ram, vcpus, disk, flavorid="auto",
                ephemeral=0, swap=0, rxtx_factor=1.0, is_public=True):
         """
         Create (allocate) a  floating ip for a tenant
