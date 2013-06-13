@@ -1996,3 +1996,48 @@ class FakeHTTPClient(base_client.HTTPClient):
         return (200, {}, {'events': [
                     {'name': 'network-changed',
                      'server_uuid': '1234'}]})
+
+    #
+    # Server Groups
+    #
+
+    def get_os_server_groups(self, *kw):
+        return (200, {},
+                {"server_groups": [
+                 {"members": [], "metadata": {},
+                  "id": "2cbd51f4-fafe-4cdb-801b-cf913a6f288b",
+                  "policies": [], "name": "ig1"},
+                 {"members": [], "metadata": {},
+                  "id": "4473bb03-4370-4bfb-80d3-dc8cffc47d94",
+                  "policies": ["anti-affinity"], "name": "ig2"},
+                 {"members": [], "metadata": {"key": "value"},
+                  "id": "31ab9bdb-55e1-4ac3-b094-97eeb1b65cc4",
+                  "policies": [], "name": "ig3"},
+                 {"members": ["2dccb4a1-02b9-482a-aa23-5799490d6f5d"],
+                  "metadata": {},
+                  "id": "4890bb03-7070-45fb-8453-d34556c87d94",
+                  "policies": ["anti-affinity"], "name": "ig2"}]})
+
+    def _return_server_group(self):
+        r = {'server_group':
+             self.get_os_server_groups()[2]['server_groups'][0]}
+        return (200, {}, r)
+
+    def post_os_server_groups(self, body, **kw):
+        return self._return_server_group()
+
+    def get_os_server_groups_2cbd51f4_fafe_4cdb_801b_cf913a6f288b(self,
+                                                                    **kw):
+        return self._return_server_group()
+
+    def put_os_server_groups_2cbd51f4_fafe_4cdb_801b_cf913a6f288b(self,
+                                                                    **kw):
+        return self._return_server_group()
+
+    def post_os_server_groups_2cbd51f4_fafe_4cdb_801b_cf913a6f288b_action(
+            self, body, **kw):
+        return self._return_server_group()
+
+    def delete_os_server_groups_2cbd51f4_fafe_4cdb_801b_cf913a6f288b(
+            self, **kw):
+        return (202, {}, None)

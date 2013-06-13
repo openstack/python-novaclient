@@ -3512,3 +3512,42 @@ def do_availability_zone_list(cs, _args):
     _translate_availability_zone_keys(result)
     utils.print_list(result, ['Name', 'Status'],
                      sortby_index=None)
+
+
+def _print_server_group_details(server_group):
+    columns = ['Id', 'Name', 'Policies', 'Members', 'Metadata']
+    utils.print_list(server_group, columns)
+
+
+def do_server_group_list(cs, args):
+    """Print a list of all server groups."""
+    server_groups = cs.server_groups.list()
+    _print_server_group_details(server_groups)
+
+
+@utils.arg('name', metavar='<name>', help='Server group name.')
+@utils.arg('--policy', metavar='<policy>', action='append',
+           dest='policies', default=[], type=str,
+           help='Policies for the server groups')
+def do_server_group_create(cs, args):
+    """Create a new server group with the specified details."""
+    kwargs = {'name': args.name,
+              'policies': args.policies}
+    server_group = cs.server_groups.create(**kwargs)
+    _print_server_group_details([server_group])
+
+
+@utils.arg('id', metavar='<id>',
+           help="Unique ID of the server group to delete")
+def do_server_group_delete(cs, args):
+    """Delete a specific server group."""
+    cs.server_groups.delete(args.id)
+    print("Instance group %s has been successfully deleted." % args.id)
+
+
+@utils.arg('id', metavar='<id>',
+           help="Unique ID of the server group to get")
+def do_server_group_get(cs, args):
+    """Get a specific server group."""
+    server_group = cs.server_groups.get(args.id)
+    _print_server_group_details([server_group])

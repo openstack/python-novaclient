@@ -37,6 +37,7 @@ from novaclient.v1_1 import quota_classes
 from novaclient.v1_1 import quotas
 from novaclient.v1_1 import security_group_rules
 from novaclient.v1_1 import security_groups
+from novaclient.v1_1 import server_groups
 from novaclient.v1_1 import servers
 from novaclient.v1_1 import services
 from novaclient.v1_1 import usage
@@ -116,6 +117,7 @@ class Client(object):
         self.os_cache = os_cache or not no_cache
         self.availability_zones = \
             availability_zones.AvailabilityZoneManager(self)
+        self.server_groups = server_groups.ServerGroupsManager(self)
 
         # Add in any extensions...
         if extensions:
