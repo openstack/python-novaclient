@@ -140,16 +140,26 @@ def _boot(cs, args, reservation_id=None, min_count=None, max_count=None):
 
     nics = []
     for nic_str in args.nics:
+        err_msg = ("Invalid nic argument '%s'. Nic arguments must be of the "
+                   "form --nic <net-id=net-uuid,v4-fixed-ip=ip-addr,"
+                   "port-id=port-uuid>, with at minimum net-id or port-id "
+                   "specified." % nic_str)
         nic_info = {"net-id": "", "v4-fixed-ip": "", "port-id": ""}
+
         for kv_str in nic_str.split(","):
             try:
                 k, v = kv_str.split("=", 1)
-                nic_info[k] = v
             except ValueError as e:
-                raise exceptions.CommandError(
-                    "Invalid nic argument '%s'. Nic arguments must be of the "
-                    "form --nic <net-id=net-uuid[,v4-fixed-ip=ip-addr]"
-                    "[,port-id=port-uuid]>" % nic_str)
+                raise exceptions.CommandError(err_msg)
+
+            if k in nic_info:
+                nic_info[k] = v
+            else:
+                raise exceptions.CommandError(err_msg)
+
+        if not nic_info['net-id'] and not nic_info['port-id']:
+            raise exceptions.CommandError(err_msg)
+
         nics.append(nic_info)
 
     hints = {}
@@ -268,11 +278,13 @@ def _boot(cs, args, reservation_id=None, min_count=None, max_count=None):
      action='append',
      dest='nics',
      default=[],
-     help="Create a NIC on the server.\n"
-           "Specify option multiple times to create multiple NICs.\n"
-           "net-id: attach NIC to network with this UUID (optional)\n"
-           "v4-fixed-ip: IPv4 fixed address for NIC (optional).\n"
-           "port-id: attach NIC to port with this UUID (optional)")
+     help="Create a NIC on the server. "
+           "Specify option multiple times to create multiple NICs. "
+           "net-id: attach NIC to network with this UUID "
+           "(required if no port-id), "
+           "v4-fixed-ip: IPv4 fixed address for NIC (optional), "
+           "port-id: attach NIC to port with this UUID "
+           "(required if no net-id)")
 @utils.arg('--config-drive',
      metavar="<value>",
      dest='config_drive',
