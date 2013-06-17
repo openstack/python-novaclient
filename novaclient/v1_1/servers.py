@@ -97,13 +97,15 @@ class Server(base.Resource):
         """
         self.manager.add_fixed_ip(self, network_id)
 
-    def add_floating_ip(self, address):
+    def add_floating_ip(self, address, fixed_address=None):
         """
         Add floating IP to an instance
 
         :param address: The ip address or FloatingIP to add to the instance
+        :param fixed_address: The fixedIP address the FloatingIP is to be
+               associated with (optional)
         """
-        self.manager.add_floating_ip(self, address)
+        self.manager.add_floating_ip(self, address, fixed_address)
 
     def remove_floating_ip(self, address):
         """
@@ -392,16 +394,24 @@ class ServerManager(local_base.BootingManagerWithFind):
         """
         self._action('removeFixedIp', server, {'address': address})
 
-    def add_floating_ip(self, server, address):
+    def add_floating_ip(self, server, address, fixed_address=None):
         """
         Add a floating ip to an instance
 
         :param server: The :class:`Server` (or its ID) to add an IP to.
         :param address: The FloatingIP or string floating address to add.
+        :param fixed_address: The FixedIP the floatingIP should be
+                              associated with (optional)
         """
 
         address = address.ip if hasattr(address, 'ip') else address
-        self._action('addFloatingIp', server, {'address': address})
+        if fixed_address:
+            if hasattr(fixed_address, 'ip'):
+                fixed_address = fixed_address.ip
+            self._action('addFloatingIp', server,
+                         {'address': address, 'fixed_address': fixed_address})
+        else:
+            self._action('addFloatingIp', server, {'address': address})
 
     def remove_floating_ip(self, server, address):
         """
