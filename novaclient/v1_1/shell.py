@@ -31,6 +31,7 @@ from novaclient.openstack.common import timeutils
 from novaclient.openstack.common import uuidutils
 from novaclient import utils
 from novaclient.v1_1 import availability_zones
+from novaclient.v1_1 import quotas
 from novaclient.v1_1 import servers
 
 
@@ -2839,7 +2840,13 @@ def _quota_update(manager, identifier, args):
             updates[resource] = val
 
     if updates:
-        manager.update(identifier, **updates)
+        # default value of force is None to make sure this client
+        # will be compatibile with old nova server
+        force_update = getattr(args, 'force', None)
+        if isinstance(manager, quotas.QuotaSetManager):
+            manager.update(identifier, force=force_update, **updates)
+        else:
+            manager.update(identifier, **updates)
 
 
 @utils.arg('--tenant',
@@ -2948,6 +2955,12 @@ def do_quota_defaults(cs, args):
     type=int,
     default=None,
     help='New value for the "security-group-rules" quota.')
+@utils.arg('--force',
+    dest='force',
+    action="store_true",
+    default=None,
+    help='Whether force update the quota even if the already used'
+            ' and reserved exceeds the new quota')
 def do_quota_update(cs, args):
     """Update the quotas for a tenant."""
 
