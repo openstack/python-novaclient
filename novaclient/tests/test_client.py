@@ -45,6 +45,44 @@ class ClientTest(utils.TestCase):
                                                         headers=mock.ANY,
                                                         verify=mock.ANY)
 
+    def test_client_reauth(self):
+        instance = novaclient.client.HTTPClient(user='user',
+                                                password='password',
+                                                projectid='project',
+                                                timeout=2,
+                                                auth_url="http://www.blah.com")
+        instance.auth_token = 'foobar'
+        instance.management_url = 'http://example.com'
+        instance.version = 'v2.0'
+        mock_request = mock.Mock()
+        mock_request.side_effect = novaclient.exceptions.Unauthorized(401)
+        with mock.patch('requests.Session.request', mock_request):
+            try:
+                instance.get('/servers/detail')
+            except Exception:
+                pass
+            get_headers = {'X-Auth-Project-Id': 'project',
+                           'X-Auth-Token': 'foobar',
+                           'User-Agent': 'python-novaclient',
+                           'Accept': 'application/json'}
+            reauth_headers = {'Content-Type': 'application/json',
+                              'Accept': 'application/json',
+                              'User-Agent': 'python-novaclient'}
+            data = ('{"auth": {"tenantName": "project", "passwordCredentials":'
+                    ' {"username": "user", "password": "password"}}}')
+            expected = [mock.call('GET',
+                                  'http://example.com/servers/detail',
+                                  timeout=mock.ANY,
+                                  headers=get_headers,
+                                  verify=mock.ANY),
+                        mock.call('POST', 'http://www.blah.com/tokens',
+                                  timeout=mock.ANY,
+                                  headers=reauth_headers,
+                                  allow_redirects=mock.ANY,
+                                  data=data,
+                                  verify=mock.ANY)]
+            self.assertEqual(mock_request.call_args_list, expected)
+
     def test_get_client_class_v2(self):
         output = novaclient.client.get_client_class('2')
         self.assertEqual(output, novaclient.v1_1.client.Client)

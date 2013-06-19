@@ -218,6 +218,9 @@ class HTTPClient(object):
             return resp, body
         except exceptions.Unauthorized as e:
             try:
+                # frist discard auth token, to avoid the possibly expired
+                # token being re-used in the re-authentication attempt
+                self.unauthenticate()
                 self.authenticate()
                 kwargs['headers']['X-Auth-Token'] = self.auth_token
                 resp, body = self._time_request(self.management_url + url,
