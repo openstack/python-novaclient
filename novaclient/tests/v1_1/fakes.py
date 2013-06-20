@@ -1762,3 +1762,32 @@ class FakeHTTPClient(base_client.HTTPClient):
 
     def post_servers_uuid4_action(self, **kw):
         return 202, {}, {}
+
+    def get_os_cells_child_cell(self, **kw):
+        cell = {'cell': {
+                    'username': 'cell1_user',
+                    'name': 'cell1',
+                    'rpc_host': '10.0.1.10',
+                    '_info': {
+                        'username': 'cell1_user',
+                        'rpc_host': '10.0.1.10',
+                        'type': 'child',
+                        'name': 'cell1',
+                        'rpc_port': 5673
+                        },
+                    'type': 'child',
+                    'rpc_port': 5673,
+                    '_loaded': True
+                }}
+        return (200, {}, cell)
+
+    def get_os_cells_capacities(self, **kw):
+        cell_capacities_response = {"cell": {"capacities": {"ram_free": {
+            "units_by_mb": {"8192": 0, "512": 13, "4096": 1, "2048": 3,
+                            "16384": 0}, "total_mb": 7680}, "disk_free": {
+            "units_by_mb": {"81920": 11, "20480": 46, "40960": 23, "163840": 5,
+                            "0": 0}, "total_mb": 1052672}}}}
+        return (200, {}, cell_capacities_response)
+
+    def get_os_cells_child_cell_capacities(self, **kw):
+        return self.get_os_cells_capacities()
