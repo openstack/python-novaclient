@@ -26,9 +26,11 @@ import imp
 import itertools
 import logging
 import os
-import pkg_resources
 import pkgutil
 import sys
+
+import pkg_resources
+import six
 
 HAS_KEYRING = False
 all_errors = ValueError
@@ -766,7 +768,8 @@ def main():
 
     except Exception as e:
         logger.debug(e, exc_info=1)
-        print("ERROR: %s" % strutils.safe_encode(unicode(e)), file=sys.stderr)
+        print("ERROR: %s" % strutils.safe_encode(six.text_type(e)),
+              file=sys.stderr)
         sys.exit(1)
 
 

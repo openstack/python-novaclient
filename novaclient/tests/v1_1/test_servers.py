@@ -3,6 +3,7 @@
 import StringIO
 
 import mock
+import six
 
 from novaclient import exceptions
 from novaclient.v1_1 import servers
@@ -108,7 +109,7 @@ class ServersTest(utils.TestCase):
             image=1,
             flavor=1,
             meta={'foo': 'bar'},
-            userdata=u'こんにちは',
+            userdata=six.u('こんにちは'),
             key_name="fakekey",
             files={
                 '/etc/passwd': 'some data',                 # a file

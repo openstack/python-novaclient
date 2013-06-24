@@ -6,6 +6,7 @@ import textwrap
 import uuid
 
 import prettytable
+import six
 
 from novaclient import exceptions
 from novaclient.openstack.common import strutils
@@ -339,9 +340,9 @@ def slugify(value):
     """
     import unicodedata
     if not isinstance(value, unicode):
-        value = unicode(value)
+        value = six.text_type(value)
     value = unicodedata.normalize('NFKD', value).encode('ascii', 'ignore')
-    value = unicode(_slugify_strip_re.sub('', value).strip().lower())
+    value = six.text_type(_slugify_strip_re.sub('', value).strip().lower())
     return _slugify_hyphenate_re.sub('-', value)
 
 
