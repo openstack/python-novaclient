@@ -19,6 +19,8 @@ Volume interface (1.1 extension).
 
 import urllib
 
+import six
+
 from novaclient import base
 
 
@@ -86,7 +88,7 @@ class VolumeManager(base.ManagerWithFind):
         """
         search_opts = search_opts or {}
 
-        qparams = dict((k, v) for (k, v) in search_opts.iteritems() if v)
+        qparams = dict((k, v) for (k, v) in six.iteritems(search_opts) if v)
 
         query_string = '?%s' % urllib.urlencode(qparams) if qparams else ''
 

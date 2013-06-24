@@ -21,6 +21,8 @@ Server interface.
 
 import urllib
 
+import six
+
 from novaclient import base
 from novaclient import crypto
 from novaclient.v1_1 import base as local_base
@@ -365,7 +367,7 @@ class ServerManager(local_base.BootingManagerWithFind):
 
         qparams = {}
 
-        for opt, val in search_opts.iteritems():
+        for opt, val in six.iteritems(search_opts):
             if val:
                 qparams[opt] = val
 
