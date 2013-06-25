@@ -2190,6 +2190,12 @@ def do_keypair_show(cs, args):
     _print_keypair(keypair)
 
 
+@utils.arg('--tenant',
+           #nova db searches by project_id
+           dest='tenant',
+           metavar='<tenant>',
+           nargs='?',
+           help='Display information from single tenant (Admin only).')
 @utils.arg('--reserved',
            dest='reserved',
            action='store_true',
@@ -2197,7 +2203,7 @@ def do_keypair_show(cs, args):
            help='Include reservations count.')
 def do_absolute_limits(cs, args):
     """Print a list of absolute limits for a user"""
-    limits = cs.limits.get(args.reserved).absolute
+    limits = cs.limits.get(args.reserved, args.tenant).absolute
     columns = ['Name', 'Value']
     utils.print_list(limits, columns)
 
