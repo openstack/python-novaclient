@@ -144,8 +144,6 @@ class SecretsHelper(object):
     def password(self):
         if self._validate_string(self.args.os_password):
             return self.args.os_password
-        if self._validate_string(self.args.apikey):
-            return self.args.apikey
         verify_pass = utils.bool_from_str(utils.env("OS_VERIFY_PASSWORD"))
         return self._prompt_password(verify_pass)
 
@@ -367,32 +365,6 @@ class OpenStackComputeShell(object):
                  "not be verified against any certificate authorities. "
                  "This option should be used with caution.")
 
-        # FIXME(dtroyer): The args below are here for diablo compatibility,
-        #                 remove them in folsum cycle
-
-        # alias for --os-username, left in for backwards compatibility
-        parser.add_argument('--username',
-            help=argparse.SUPPRESS)
-
-        # alias for --os-region-name, left in for backwards compatibility
-        parser.add_argument('--region_name',
-            help=argparse.SUPPRESS)
-
-        # alias for --os-password, left in for backwards compatibility
-        parser.add_argument('--apikey', '--password', dest='apikey',
-            default=utils.env('NOVA_API_KEY'),
-            help=argparse.SUPPRESS)
-
-        # alias for --os-tenant-name, left in for backward compatibility
-        parser.add_argument('--projectid', '--tenant_name', dest='projectid',
-            default=utils.env('NOVA_PROJECT_ID'),
-            help=argparse.SUPPRESS)
-
-        # alias for --os-auth-url, left in for backward compatibility
-        parser.add_argument('--url', '--auth_url', dest='url',
-            default=utils.env('NOVA_URL'),
-            help=argparse.SUPPRESS)
-
         parser.add_argument('--bypass-url',
             metavar='<bypass-url>',
             dest='bypass_url',
@@ -563,15 +535,12 @@ class OpenStackComputeShell(object):
         (os_username, os_tenant_name, os_auth_url,
                 os_region_name, os_auth_system, endpoint_type, insecure,
                 service_type, service_name, volume_service_name,
-                username, projectid, url, region_name,
                 bypass_url, os_cache, cacert, timeout) = (
                         args.os_username,
                         args.os_tenant_name, args.os_auth_url,
                         args.os_region_name, args.os_auth_system,
                         args.endpoint_type, args.insecure, args.service_type,
                         args.service_name, args.volume_service_name,
-                        args.username, args.projectid,
-                        args.url, args.region_name,
                         args.bypass_url, args.os_cache,
                         args.os_cacert, args.timeout)
 
@@ -598,26 +567,17 @@ class OpenStackComputeShell(object):
 
             if not auth_plugin or not auth_plugin.opts:
                 if not os_username:
-                    if not username:
-                        raise exc.CommandError("You must provide a username "
-                                "via either --os-username or env[OS_USERNAME]")
-                    else:
-                        os_username = username
+                    raise exc.CommandError("You must provide a username "
+                            "via either --os-username or env[OS_USERNAME]")
 
             if not os_tenant_name:
-                if not projectid:
-                    raise exc.CommandError("You must provide a tenant name "
-                            "via either --os-tenant-name or "
-                            "env[OS_TENANT_NAME]")
-                else:
-                    os_tenant_name = projectid
+                raise exc.CommandError("You must provide a tenant name "
+                        "via either --os-tenant-name or "
+                        "env[OS_TENANT_NAME]")
 
             if not os_auth_url:
-                if not url:
-                    if os_auth_system and os_auth_system != 'keystone':
-                        os_auth_url = auth_plugin.get_auth_url()
-                else:
-                    os_auth_url = url
+                if os_auth_system and os_auth_system != 'keystone':
+                    os_auth_url = auth_plugin.get_auth_url()
 
             if not os_auth_url:
                     raise exc.CommandError("You must provide an auth url "
@@ -625,9 +585,6 @@ class OpenStackComputeShell(object):
                             "or specify an auth_system which defines a "
                             "default url with --os-auth-system "
                             "or env[OS_AUTH_SYSTEM]")
-
-            if not os_region_name and region_name:
-                os_region_name = region_name
 
         if (options.os_compute_api_version and
                 options.os_compute_api_version != '1.0'):
