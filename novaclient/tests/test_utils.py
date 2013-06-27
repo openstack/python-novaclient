@@ -69,7 +69,7 @@ class FindResourceTestCase(test_utils.TestCase):
         self.manager = FakeManager(None)
 
     def test_find_none(self):
-        """Test a few non-valid inputs"""
+        """Test a few non-valid inputs."""
         self.assertRaises(exceptions.CommandError,
                           utils.find_resource,
                           self.manager,

@@ -181,7 +181,7 @@ class BareMetalNodeManager(base.ManagerWithFind):
     type=int,
     help='ShellInABox port?')
 def do_baremetal_node_create(cs, args):
-    """Create a baremetal node"""
+    """Create a baremetal node."""
     node = cs.baremetal.create(args.service_host, args.cpus,
             args.memory_mb, args.local_gb, args.prov_mac_address,
             pm_address=args.pm_address, pm_user=args.pm_user,
@@ -194,7 +194,7 @@ def do_baremetal_node_create(cs, args):
     metavar='<node>',
     help='ID of the node to delete.')
 def do_baremetal_node_delete(cs, args):
-    """Remove a baremetal node and any associated interfaces"""
+    """Remove a baremetal node and any associated interfaces."""
     node = _find_baremetal_node(cs, args.node)
     cs.baremetal.delete(node)
 
@@ -216,7 +216,7 @@ def _translate_baremetal_node_keys(collection):
 
 
 def _print_baremetal_nodes_list(nodes):
-    """Print the list of baremetal nodes"""
+    """Print the list of baremetal nodes."""
     _translate_baremetal_node_keys(nodes)
     utils.print_list(nodes, [
         'ID',
@@ -233,7 +233,7 @@ def _print_baremetal_nodes_list(nodes):
 
 
 def do_baremetal_node_list(cs, _args):
-    """Print a list of available baremetal nodes"""
+    """Print list of available baremetal nodes."""
     nodes = cs.baremetal.list()
     _print_baremetal_nodes_list(nodes)
 
@@ -244,13 +244,13 @@ def _find_baremetal_node(cs, node):
 
 
 def _print_baremetal_resource(resource):
-    """Print the details of a baremetal resource"""
+    """Print details of a baremetal resource."""
     info = resource._info.copy()
     utils.print_dict(info)
 
 
 def _print_baremetal_node_interfaces(interfaces):
-    """Print the interfaces of a baremetal node"""
+    """Print interfaces of a baremetal node."""
     utils.print_list(interfaces, [
         'ID',
         'Datapath_ID',
@@ -263,7 +263,7 @@ def _print_baremetal_node_interfaces(interfaces):
      metavar='<node>',
      help="ID of node")
 def do_baremetal_node_show(cs, args):
-    """Show information about a baremetal node"""
+    """Show information about a baremetal node."""
     node = _find_baremetal_node(cs, args.node)
     _print_baremetal_resource(node)
 
@@ -283,7 +283,7 @@ def do_baremetal_node_show(cs, args):
     metavar='<port_no>',
     help="OpenFlow port number of interface")
 def do_baremetal_interface_add(cs, args):
-    """Add a network interface to a baremetal node"""
+    """Add a network interface to a baremetal node."""
     bmif = cs.baremetal.add_interface(args.node, args.address,
             args.datapath_id, args.port_no)
     _print_baremetal_resource(bmif)
@@ -292,12 +292,12 @@ def do_baremetal_interface_add(cs, args):
 @utils.arg('node', metavar='<node>', help="ID of node")
 @utils.arg('address', metavar='<address>', help="MAC address of interface")
 def do_baremetal_interface_remove(cs, args):
-    """Remove a network interface from a baremetal node"""
+    """Remove a network interface from a baremetal node."""
     cs.baremetal.remove_interface(args.node, args.address)
 
 
 @utils.arg('node', metavar='<node>', help="ID of node")
 def do_baremetal_interface_list(cs, args):
-    """List network interfaces associated with a baremetal node"""
+    """List network interfaces associated with a baremetal node."""
     interfaces = cs.baremetal.list_interfaces(args.node)
     _print_baremetal_node_interfaces(interfaces)

@@ -42,7 +42,7 @@ class FlavorAccessManager(base.ManagerWithFind):
                           'flavor_access')
 
     def _list_by_tenant(self, tenant):
-        """Print flavor list shared with the given tenant"""
+        """Print flavor list shared with the given tenant."""
         # TODO(uni): need to figure out a proper URI for list_by_tenant
         # since current API already provided current tenant_id information
         raise NotImplementedError('Sorry, query by tenant not supported.')

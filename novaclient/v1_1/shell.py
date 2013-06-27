@@ -341,14 +341,14 @@ def do_cloudpipe_list(cs, _args):
 
 @utils.arg('project', metavar='<project>', help='Name of the project.')
 def do_cloudpipe_create(cs, args):
-    """Create a cloudpipe instance for the given project"""
+    """Create a cloudpipe instance for the given project."""
     cs.cloudpipe.create(args.project)
 
 
 @utils.arg('address', metavar='<ip address>', help='New IP Address.')
 @utils.arg('port', metavar='<port>', help='New Port.')
 def do_cloudpipe_configure(cs, args):
-    """Update the VPN IP/port of a cloudpipe instance"""
+    """Update the VPN IP/port of a cloudpipe instance."""
     cs.cloudpipe.update(args.address, args.port)
 
 
@@ -627,7 +627,7 @@ def do_flavor_access_remove(cs, args):
 @utils.arg('project_id', metavar='<project_id>',
            help='The ID of the project.')
 def do_scrub(cs, args):
-    """Deletes data associated with the project"""
+    """Delete data associated with the project."""
     networks_list = cs.networks.list()
     networks_list = [network for network in networks_list
                  if getattr(network, 'project_id', '') == args.project_id]
@@ -1266,7 +1266,7 @@ def do_image_create(cs, args):
 @utils.arg('rotation', metavar='<rotation>',
            help='Int parameter representing how many backups to keep around.')
 def do_backup(cs, args):
-    """Backup a instance by create a 'backup' type snapshot """
+    """Backup a instance by create a 'backup' type snapshot."""
     _find_server(cs, args.server).backup(args.name,
                                          args.backup_type,
                                          args.rotation)
@@ -1789,7 +1789,7 @@ def do_floating_ip_pool_list(cs, _args):
 @utils.arg('--host', dest='host', metavar='<host>', default=None,
            help='Filter by host')
 def do_floating_ip_bulk_list(cs, args):
-    """List all floating ips"""
+    """List all floating ips."""
     utils.print_list(cs.floating_ips_bulk.list(args.host), ['project_id',
                                                             'address',
                                                             'instance_uuid',
@@ -1803,13 +1803,13 @@ def do_floating_ip_bulk_list(cs, args):
 @utils.arg('--interface', metavar='<interface>', default=None,
            help='Interface for new Floating IPs')
 def do_floating_ip_bulk_create(cs, args):
-    """Bulk create floating ips by range"""
+    """Bulk create floating ips by range."""
     cs.floating_ips_bulk.create(args.ip_range, args.pool, args.interface)
 
 
 @utils.arg('ip_range', metavar='<range>', help='Address range to delete')
 def do_floating_ip_bulk_delete(cs, args):
-    """Bulk delete floating ips by range"""
+    """Bulk delete floating ips by range."""
     cs.floating_ips_bulk.delete(args.ip_range)
 
 
@@ -2143,7 +2143,7 @@ def do_secgroup_delete_group_rule(cs, args):
 @utils.arg('--pub_key',
     help=argparse.SUPPRESS)
 def do_keypair_add(cs, args):
-    """Create a new key pair for use with instances"""
+    """Create a new key pair for use with instances."""
     name = args.name
     pub_key = args.pub_key
 
@@ -2164,7 +2164,7 @@ def do_keypair_add(cs, args):
 
 @utils.arg('name', metavar='<name>', help='Keypair name to delete.')
 def do_keypair_delete(cs, args):
-    """Delete keypair by its name"""
+    """Delete keypair given by its name."""
     name = args.name
     cs.keypairs.delete(name)
 
@@ -2224,7 +2224,7 @@ def do_rate_limits(cs, args):
            help='Usage range end date, ex 2012-01-20 (default: tomorrow) ',
            default=None)
 def do_usage_list(cs, args):
-    """List usage data for all tenants"""
+    """List usage data for all tenants."""
     dateformat = "%Y-%m-%d"
     rows = ["Tenant ID", "Instances", "RAM MB-Hours", "CPU Hours",
             "Disk GB-Hours"]
@@ -2271,7 +2271,7 @@ def do_usage_list(cs, args):
            default=None,
            help='UUID or name of tenant to get usage for.')
 def do_usage(cs, args):
-    """Show usage data for a single tenant"""
+    """Show usage data for a single tenant."""
     dateformat = "%Y-%m-%d"
     rows = ["Instances", "RAM MB-Hours", "CPU Hours", "Disk GB-Hours"]
 
@@ -2321,7 +2321,7 @@ def do_usage(cs, args):
     default='cert.pem',
     help='Filename for the X.509 certificate [Default: cert.pem]')
 def do_x509_create_cert(cs, args):
-    """Create x509 cert for a user in tenant"""
+    """Create x509 cert for a user in tenant."""
 
     if os.path.exists(args.pk_filename):
         raise exceptions.CommandError("Unable to write privatekey - %s exists."
@@ -2351,7 +2351,7 @@ def do_x509_create_cert(cs, args):
            default='cacert.pem',
            help='Filename to write the x509 root cert.')
 def do_x509_get_root_cert(cs, args):
-    """Fetches the x509 root cert."""
+    """Fetch the x509 root cert."""
     if os.path.exists(args.filename):
         raise exceptions.CommandError("Unable to write x509 root cert - \
                                       %s exists." % args.filename)
@@ -2365,7 +2365,7 @@ def do_x509_get_root_cert(cs, args):
 @utils.arg('--hypervisor', metavar='<hypervisor>', default=None,
            help='type of hypervisor.')
 def do_agent_list(cs, args):
-    """List all builds"""
+    """List all builds."""
     result = cs.agents.list(args.hypervisor)
     columns = ["Agent_id", "Hypervisor", "OS", "Architecture", "Version",
                'Md5hash', 'Url']
@@ -2381,7 +2381,7 @@ def do_agent_list(cs, args):
 @utils.arg('hypervisor', metavar='<hypervisor>', default='xen',
            help='type of hypervisor.')
 def do_agent_create(cs, args):
-    """Creates a new agent build."""
+    """Create new agent build."""
     result = cs.agents.create(args.os, args.architecture,
                               args.version, args.url,
                               args.md5hash, args.hypervisor)
@@ -2390,7 +2390,7 @@ def do_agent_create(cs, args):
 
 @utils.arg('id', metavar='<id>', help='id of the agent-build')
 def do_agent_delete(cs, args):
-    """Deletes an existing agent build."""
+    """Delete existing agent build."""
     cs.agents.delete(args.id)
 
 
@@ -2399,7 +2399,7 @@ def do_agent_delete(cs, args):
 @utils.arg('url', metavar='<url>', help='url')
 @utils.arg('md5hash', metavar='<md5hash>', help='md5hash')
 def do_agent_modify(cs, args):
-    """Modify an existing agent build."""
+    """Modify existing agent build."""
     result = cs.agents.update(args.id, args.version,
                               args.url, args.md5hash)
     utils.print_dict(result._info)
@@ -2515,7 +2515,7 @@ def _print_aggregate_details(aggregate):
     action='store_true',
     help=argparse.SUPPRESS)
 def do_live_migration(cs, args):
-    """Migrates a running instance to a new machine."""
+    """Migrate running instance to a new machine."""
     _find_server(cs, args.server).live_migrate(args.host,
                                                args.block_migrate,
                                                args.disk_over_commit)
@@ -2527,7 +2527,7 @@ def do_live_migration(cs, args):
            help='Request the instance be reset to "active" state instead '
            'of "error" state (the default).')
 def do_reset_state(cs, args):
-    """Reset the state of an instance"""
+    """Reset the state of an instance."""
     _find_server(cs, args.server).reset_state(args.state)
 
 
@@ -2555,7 +2555,7 @@ def do_service_list(cs, args):
 @utils.arg('host', metavar='<hostname>', help='Name of host.')
 @utils.arg('binary', metavar='<binary>', help='Service binary.')
 def do_service_enable(cs, args):
-    """Enable the service"""
+    """Enable the service."""
     result = cs.services.enable(args.host, args.binary)
     utils.print_list([result], ['Host', 'Binary', 'Status'])
 
@@ -2565,7 +2565,7 @@ def do_service_enable(cs, args):
 @utils.arg('--reason', metavar='<reason>',
            help='Reason for disabling service.')
 def do_service_disable(cs, args):
-    """Disable the service"""
+    """Disable the service."""
     if args.reason:
         result = cs.services.disable_log_reason(args.host, args.binary,
                                                 args.reason)
@@ -2578,26 +2578,26 @@ def do_service_disable(cs, args):
 
 @utils.arg('fixed_ip', metavar='<fixed_ip>', help='Fixed IP Address.')
 def do_fixed_ip_get(cs, args):
-    """Get info on a fixed ip"""
+    """Retrieve info on a fixed ip."""
     result = cs.fixed_ips.get(args.fixed_ip)
     utils.print_list([result], ['address', 'cidr', 'hostname', 'host'])
 
 
 @utils.arg('fixed_ip', metavar='<fixed_ip>', help='Fixed IP Address.')
 def do_fixed_ip_reserve(cs, args):
-    """Reserve a fixed ip"""
+    """Reserve a fixed IP."""
     cs.fixed_ips.reserve(args.fixed_ip)
 
 
 @utils.arg('fixed_ip', metavar='<fixed_ip>', help='Fixed IP Address.')
 def do_fixed_ip_unreserve(cs, args):
-    """Unreserve a fixed ip"""
+    """Unreserve a fixed IP."""
     cs.fixed_ips.unreserve(args.fixed_ip)
 
 
 @utils.arg('host', metavar='<hostname>', help='Name of host.')
 def do_host_describe(cs, args):
-    """Describe a specific host"""
+    """Describe a specific host."""
     result = cs.hosts.get(args.host)
     columns = ["HOST", "PROJECT", "cpu", "memory_mb", "disk_gb"]
     utils.print_list(result, columns)
@@ -2607,7 +2607,7 @@ def do_host_describe(cs, args):
            help='Filters the list, returning only those '
                 'hosts in the availability zone <zone>.')
 def do_host_list(cs, args):
-    """List all hosts by service"""
+    """List all hosts by service."""
     columns = ["host_name", "service", "zone"]
     result = cs.hosts.list(args.zone)
     utils.print_list(result, columns)
@@ -2651,13 +2651,13 @@ def do_host_action(cs, args):
            default=False,
            help='Generate a single report for all services.')
 def do_coverage_start(cs, args):
-    """Start Nova coverage reporting"""
+    """Start Nova coverage reporting."""
     cs.coverage.start(combine=args.combine)
     print("Coverage collection started")
 
 
 def do_coverage_stop(cs, args):
-    """Stop Nova coverage reporting"""
+    """Stop Nova coverage reporting."""
     out = cs.coverage.stop()
     print("Coverage data file path: %s" % out[-1]['path'])
 
@@ -2674,7 +2674,7 @@ def do_coverage_stop(cs, args):
            default=False,
            help='Generate XML reports instead of text ones.')
 def do_coverage_report(cs, args):
-    """Generate a coverage report"""
+    """Generate coverage report."""
     if args.html == True and args.xml == True:
         raise exceptions.CommandError("--html and --xml must not be "
                                       "specified together.")
@@ -2770,7 +2770,7 @@ def ensure_service_catalog_present(cs):
 
 
 def do_endpoints(cs, _args):
-    """Discover endpoints that get returned from the authenticate services"""
+    """Discover endpoints that get returned from the authenticate services."""
     ensure_service_catalog_present(cs)
     catalog = cs.client.service_catalog.catalog
     for e in catalog['access']['serviceCatalog']:
@@ -2780,7 +2780,7 @@ def do_endpoints(cs, _args):
 @utils.arg('--wrap', dest='wrap', metavar='<integer>', default=64,
            help='wrap PKI tokens to a specified length, or 0 to disable')
 def do_credentials(cs, _args):
-    """Show user credentials returned from auth"""
+    """Show user credentials returned from auth."""
     ensure_service_catalog_present(cs)
     catalog = cs.client.service_catalog.catalog
     utils.print_dict(catalog['access']['user'], "User Credentials",
@@ -3172,7 +3172,7 @@ def do_interface_detach(cs, args):
 
 
 def _treeizeAvailabilityZone(zone):
-    """Build a tree view for availability zones"""
+    """Build a tree view for availability zones."""
     AvailabilityZone = availability_zones.AvailabilityZone
 
     az = AvailabilityZone(zone.manager,

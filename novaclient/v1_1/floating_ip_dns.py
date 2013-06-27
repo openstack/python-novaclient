@@ -74,7 +74,7 @@ class FloatingIPDNSDomainManager(base.Manager):
                             'domain_entry')
 
     def delete(self, fqdomain):
-        """Delete the specified domain"""
+        """Delete the specified domain."""
         self._delete("/os-floating-ip-dns/%s" % _quote_domain(fqdomain))
 
 

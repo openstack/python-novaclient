@@ -57,7 +57,7 @@ class HostManager(base.ManagerWithFind):
         return self._update("/os-hosts/%s" % host, values)
 
     def host_action(self, host, action):
-        """Performs an action on a host."""
+        """Perform an action on a host."""
         body = {action: None}
         url = '/os-hosts/%s/action' % host
         return self.api.client.post(url, body=body)

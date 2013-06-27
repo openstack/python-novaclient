@@ -36,7 +36,7 @@ class AgentsManager(base.ManagerWithFind):
     resource_class = Agent
 
     def list(self, hypervisor=None):
-        """Lists all agent builds."""
+        """List all agent builds."""
         url = "/os-agents"
         if hypervisor:
             url = "/os-agents?hypervisor=%s" % hypervisor
@@ -53,7 +53,7 @@ class AgentsManager(base.ManagerWithFind):
 
     def create(self, os, architecture, version,
                url, md5hash, hypervisor):
-        """Creates a new agent build"""
+        """Create a new agent build."""
         body = {'agent': {
                         'hypervisor': hypervisor,
                         'os': os,

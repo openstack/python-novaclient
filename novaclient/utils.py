@@ -47,7 +47,7 @@ def add_arg(f, *args, **kwargs):
 
 
 def bool_from_str(val):
-    """Convert a string representation of a bool into a bool value"""
+    """Convert a string representation of a bool into a bool value."""
 
     if not val:
         return False
@@ -62,7 +62,7 @@ def bool_from_str(val):
 
 
 def add_resource_manager_extra_kwargs_hook(f, hook):
-    """Adds hook to bind CLI arguments to ResourceManager calls.
+    """Add hook to bind CLI arguments to ResourceManager calls.
 
     The `do_foo` calls in shell.py will receive CLI args and then in turn pass
     them through to the ResourceManager. Before passing through the args, the
