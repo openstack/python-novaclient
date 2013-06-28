@@ -123,6 +123,18 @@ class Server(base.Resource):
         """
         self.manager.stop(self)
 
+    def force_delete(self):
+        """
+        Force delete -- Force delete a server.
+        """
+        self.manager.force_delete(self)
+
+    def restore(self):
+        """
+        Restore -- Restore a server in 'soft-deleted' state.
+        """
+        self.manager.restore(self)
+
     def start(self):
         """
         Start -- Start the paused server.
@@ -482,6 +494,18 @@ class ServerManager(local_base.BootingManagerWithFind):
         Stop the server.
         """
         return self._action('os-stop', server, None)
+
+    def force_delete(self, server):
+        """
+        Force delete the server.
+        """
+        return self._action('forceDelete', server, None)
+
+    def restore(self, server):
+        """
+        Restore soft-deleted server.
+        """
+        return self._action('restore', server, None)
 
     def start(self, server):
         """

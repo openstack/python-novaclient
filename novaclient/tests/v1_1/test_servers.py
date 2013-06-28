@@ -284,6 +284,20 @@ class ServersTest(utils.TestCase):
         cs.servers.stop(s)
         cs.assert_called('POST', '/servers/1234/action')
 
+    def test_force_delete(self):
+        s = cs.servers.get(1234)
+        s.force_delete()
+        cs.assert_called('POST', '/servers/1234/action')
+        cs.servers.force_delete(s)
+        cs.assert_called('POST', '/servers/1234/action')
+
+    def test_restore(self):
+        s = cs.servers.get(1234)
+        s.restore()
+        cs.assert_called('POST', '/servers/1234/action')
+        cs.servers.restore(s)
+        cs.assert_called('POST', '/servers/1234/action')
+
     def test_start(self):
         s = cs.servers.get(1234)
         s.start()
