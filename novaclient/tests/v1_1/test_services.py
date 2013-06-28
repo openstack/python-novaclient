@@ -66,3 +66,12 @@ class ServicesTest(utils.TestCase):
         cs.assert_called('PUT', '/os-services/disable', values)
         self.assertTrue(isinstance(service, services.Service))
         self.assertEqual(service.status, 'disabled')
+
+    def test_services_disable_log_reason(self):
+        service = cs.services.disable_log_reason('compute1', 'nova-compute',
+                                                 'disable bad host')
+        values = {'host': 'compute1', 'binary': 'nova-compute',
+                  'disabled_reason': 'disable bad host'}
+        cs.assert_called('PUT', '/os-services/disable-log-reason', values)
+        self.assertTrue(isinstance(service, services.Service))
+        self.assertEqual(service.status, 'disabled')

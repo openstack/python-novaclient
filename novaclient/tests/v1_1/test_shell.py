@@ -956,6 +956,12 @@ class ShellTest(utils.TestCase):
         body = {'host': 'host1', 'binary': 'nova-cert'}
         self.assert_called('PUT', '/os-services/disable', body)
 
+    def test_services_disable_with_reason(self):
+        self.run_command('service-disable host1 nova-cert --reason no_reason')
+        body = {'host': 'host1', 'binary': 'nova-cert',
+                'disabled_reason': 'no_reason'}
+        self.assert_called('PUT', '/os-services/disable-log-reason', body)
+
     def test_fixed_ips_get(self):
         self.run_command('fixed-ip-get 192.168.1.1')
         self.assert_called('GET', '/os-fixed-ips/192.168.1.1')
