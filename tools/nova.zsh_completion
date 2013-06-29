@@ -1,0 +1,29 @@
+#compdef nova
+
+local -a nbc _nova_opts _nova_flags _nova_opts_exp cur prev
+
+nbc=(${(ps: :)$(_call_program options "$service bash-completion" 2>/dev/null)})
+_nova_opts=(${nbc:#-*})
+_nova_flags=(${(M)nbc:#-*})
+_nova_opt_exp=${${nbc:#-*}// /|}
+cur=$words[CURRENT]
+prev=$words[(( CURRENT - 1 ))]
+
+_checkcomp(){
+    for word in $words[@]; do
+        if [[ -n ${_nova_opts[(r)$word]} ]]; then
+            return 0
+        fi
+    done
+    return 1
+}
+
+echo $_nova_opts[@] |grep --color nova
+if [[ "$prev" != "help" ]] && _checkcomp; then
+    COMPLETION_CACHE=(~/.novaclient/*/*-cache)
+    cflags=($_nova_flags[@] ${(ps: :)$(cat $COMPLETION_CACHE 2>/dev/null)})
+    compadd "$@" -d $cflags[@]
+else
+    compadd "$@" -d $_nova_opts[@]
+fi
+
