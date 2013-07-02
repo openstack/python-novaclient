@@ -395,7 +395,7 @@ class HTTPClient(object):
             raise exceptions.from_response(resp, body, url)
 
     def _plugin_auth(self, auth_url):
-        self.auth_plugin.authenticate(self, auth_url)
+        return self.auth_plugin.authenticate(self, auth_url)
 
     def _v2_auth(self, url):
         """Authenticate against a v2.0 auth service."""
@@ -410,7 +410,7 @@ class HTTPClient(object):
         if self.projectid:
             body['auth']['tenantName'] = self.projectid
 
-        self._authenticate(url, body)
+        return self._authenticate(url, body)
 
     def _authenticate(self, url, body, **kwargs):
         """Authenticate and extract the service catalog."""

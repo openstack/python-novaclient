@@ -96,9 +96,97 @@ class AuthenticateAgainstKeystoneTests(utils.TestCase):
 
         test_auth_call()
 
-    def test_auth_redirect(self):
+    def test_v1_auth_redirect(self):
         cs = client.Client("username", "password", "project_id",
                            "auth_url/v1.0", service_type='compute')
+        dict_correct_response = {
+            "access": {
+                "token": {
+                    "expires": "12345",
+                    "id": "FAKE_ID",
+                    "tenant": {
+                        "id": "FAKE_TENANT_ID",
+                    }
+                },
+                "serviceCatalog": [
+                    {
+                        "type": "compute",
+                        "endpoints": [
+                            {
+                                "adminURL": "http://localhost:8774/v1.1",
+                                "region": "RegionOne",
+                                "internalURL": "http://localhost:8774/v1.1",
+                                "publicURL": "http://localhost:8774/v1.1/",
+                            },
+                        ],
+                    },
+                ],
+            },
+        }
+        correct_response = json.dumps(dict_correct_response)
+        dict_responses = [
+            {"headers": {'location': 'http://127.0.0.1:5001'},
+             "status_code": 305,
+             "text": "Use proxy"},
+            # Configured on admin port, nova redirects to v2.0 port.
+            # When trying to connect on it, keystone auth succeed by v1.0
+            # protocol (through headers) but tokens are being returned in
+            # body (looks like keystone bug). Leaved for compatibility.
+            {"headers": {},
+             "status_code": 200,
+             "text": correct_response},
+            {"headers": {},
+             "status_code": 200,
+             "text": correct_response}
+        ]
+
+        responses = [(utils.TestResponse(resp)) for resp in dict_responses]
+
+        def side_effect(*args, **kwargs):
+            return responses.pop(0)
+
+        mock_request = mock.Mock(side_effect=side_effect)
+
+        @mock.patch.object(requests.Session, "request", mock_request)
+        def test_auth_call():
+            cs.client.authenticate()
+            headers = {
+                'User-Agent': cs.client.USER_AGENT,
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+            }
+            body = {
+                'auth': {
+                    'passwordCredentials': {
+                        'username': cs.client.user,
+                        'password': cs.client.password,
+                     },
+                     'tenantName': cs.client.projectid,
+                 },
+            }
+
+            token_url = cs.client.auth_url + "/tokens"
+            kwargs = copy.copy(self.TEST_REQUEST_BASE)
+            kwargs['headers'] = headers
+            kwargs['data'] = json.dumps(body)
+            mock_request.assert_called_with(
+                "POST",
+                token_url,
+                allow_redirects=True,
+                **kwargs)
+
+            resp = dict_correct_response
+            endpoints = resp["access"]["serviceCatalog"][0]['endpoints']
+            public_url = endpoints[0]["publicURL"].rstrip('/')
+            self.assertEqual(cs.client.management_url, public_url)
+            token_id = resp["access"]["token"]["id"]
+            self.assertEqual(cs.client.auth_token, token_id)
+
+        test_auth_call()
+
+    def test_v2_auth_redirect(self):
+        cs = client.Client("username", "password", "project_id",
+                           "auth_url/v2.0", service_type='compute')
         dict_correct_response = {
             "access": {
                 "token": {
