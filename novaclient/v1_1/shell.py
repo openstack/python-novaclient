@@ -16,6 +16,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from __future__ import print_function
+
 import argparse
 import copy
 import datetime
@@ -896,7 +898,7 @@ def do_image_delete(cs, args):
         try:
             _find_image(cs, image).delete()
         except Exception as e:
-            print "Delete for image %s failed: %s" % (image, e)
+            print("Delete for image %s failed: %s" % (image, e))
 
 
 @utils.arg('--reservation-id',
@@ -2178,7 +2180,7 @@ def _print_keypair(keypair):
     kp = keypair._info.copy()
     pk = kp.pop('public_key')
     utils.print_dict(kp)
-    print "Public key: %s" % pk
+    print("Public key: %s" % pk)
 
 
 @utils.arg('keypair',
