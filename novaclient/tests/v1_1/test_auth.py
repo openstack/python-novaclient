@@ -325,6 +325,79 @@ class AuthenticateAgainstKeystoneTests(utils.TestCase):
 
         test_auth_call()
 
+    def test_authenticate_with_token_success(self):
+        cs = client.Client("username", None, "project_id",
+                           "auth_url/v2.0", service_type='compute')
+        cs.client.auth_token = "FAKE_ID"
+        resp = {
+            "access": {
+                "token": {
+                    "expires": "12345",
+                    "id": "FAKE_ID",
+                    "tenant": {
+                        "id": "FAKE_TENANT_ID",
+                    }
+                },
+                "serviceCatalog": [
+                    {
+                        "type": "compute",
+                        "endpoints": [
+                            {
+                                "region": "RegionOne",
+                                "adminURL": "http://localhost:8774/v1.1",
+                                "internalURL": "http://localhost:8774/v1.1",
+                                "publicURL": "http://localhost:8774/v1.1/",
+                            },
+                        ],
+                    },
+                ],
+            },
+        }
+        auth_response = utils.TestResponse({
+            "status_code": 200,
+            "text": json.dumps(resp),
+        })
+
+        mock_request = mock.Mock(return_value=(auth_response))
+
+        with mock.patch.object(requests.Session, "request", mock_request):
+            cs.client.authenticate()
+            headers = {
+                'User-Agent': cs.client.USER_AGENT,
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-Auth-Token': "FAKE_ID",
+            }
+
+            token_url = cs.client.auth_url + "/tokens/FAKE_ID"
+            mock_request.assert_called_with(
+                "GET",
+                token_url,
+                headers=headers,
+                data="null",
+                allow_redirects=True,
+                **self.TEST_REQUEST_BASE)
+
+            endpoints = resp["access"]["serviceCatalog"][0]['endpoints']
+            public_url = endpoints[0]["publicURL"].rstrip('/')
+            self.assertEqual(cs.client.management_url, public_url)
+            token_id = resp["access"]["token"]["id"]
+            self.assertEqual(cs.client.auth_token, token_id)
+
+    def test_authenticate_with_token_failure(self):
+        cs = client.Client("username", None, "project_id", "auth_url/v2.0")
+        cs.client.auth_token = "FAKE_ID"
+        resp = {"unauthorized": {"message": "Unauthorized", "code": "401"}}
+        auth_response = utils.TestResponse({
+            "status_code": 401,
+            "text": json.dumps(resp),
+        })
+
+        mock_request = mock.Mock(return_value=(auth_response))
+
+        with mock.patch.object(requests.Session, "request", mock_request):
+            self.assertRaises(exceptions.Unauthorized, cs.client.authenticate)
+
 
 class AuthenticationTests(utils.TestCase):
     def test_authenticate_success(self):

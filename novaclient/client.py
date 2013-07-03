@@ -412,17 +412,28 @@ class HTTPClient(object):
 
     def _authenticate(self, url, body, **kwargs):
         """Authenticate and extract the service catalog."""
+        method = "POST"
         token_url = url + "/tokens"
 
+        # if we have a valid auth token, use it instead of generating a new one
+        if self.auth_token:
+            kwargs.setdefault('headers', {})['X-Auth-Token'] = self.auth_token
+            token_url += "/" + self.auth_token
+            method = "GET"
+            body = None
+
+        if self.auth_token and self.tenant_id and self.management_url:
+            return None
+
         # Make sure we follow redirects when trying to reach Keystone
-        resp, body = self._time_request(
+        resp, respbody = self._time_request(
             token_url,
-            "POST",
+            method,
             body=body,
             allow_redirects=True,
             **kwargs)
 
-        return self._extract_service_catalog(url, resp, body)
+        return self._extract_service_catalog(url, resp, respbody)
 
 
 def get_client_class(version):
