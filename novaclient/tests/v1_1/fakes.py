@@ -487,10 +487,6 @@ class FakeHTTPClient(base_client.HTTPClient):
             assert body[action] is None
         elif action == 'os-start':
             assert body[action] is None
-        elif action == 'start':
-            assert body[action] is None
-        elif action == 'stop':
-            assert body[action] is None
         elif action == 'pause':
             assert body[action] is None
         elif action == 'unpause':
