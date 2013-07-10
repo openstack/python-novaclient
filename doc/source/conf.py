@@ -39,8 +39,8 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'python-novaclient'
-copyright = u'OpenStack Contributors'
+project = 'python-novaclient'
+copyright = 'OpenStack Contributors'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -93,8 +93,8 @@ pygments_style = 'sphinx'
 # List of tuples 'sourcefile', 'target', u'title', u'Authors name', 'manual'
 
 man_pages = [
-    ('man/nova', 'nova', u'OpenStack Nova command line client',
-     [u'OpenStack Contributors'], 1),
+    ('man/nova', 'nova', 'OpenStack Nova command line client',
+     ['OpenStack Contributors'], 1),
 ]
 
 # -- Options for HTML output --------------------------------------------------
@@ -183,8 +183,8 @@ htmlhelp_basename = 'python-novaclientdoc'
 # (source start file, target name, title, author, documentclass [howto/manual])
 # .
 latex_documents = [
-    ('index', 'python-novaclient.tex', u'python-novaclient Documentation',
-    u'Rackspace - based on work by Jacob Kaplan-Moss', 'manual'),
+    ('index', 'python-novaclient.tex', 'python-novaclient Documentation',
+    'Rackspace - based on work by Jacob Kaplan-Moss', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
