@@ -2486,7 +2486,7 @@ def do_aggregate_remove_host(cs, args):
 @utils.arg('id', metavar='<id>', help='Aggregate id.')
 def do_aggregate_details(cs, args):
     """Show details of the specified aggregate."""
-    _print_aggregate_details(cs.aggregates.get_details(args.id))
+    _print_aggregate_details(cs.aggregates.get(args.id))
 
 
 def _print_aggregate_details(aggregate):
