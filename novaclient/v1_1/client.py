@@ -65,8 +65,8 @@ class Client(object):
 
     """
 
-    # FIXME(jesse): projectid isn't required to authenticate
-    def __init__(self, username, api_key, projectid, auth_url=None,
+    # FIXME(jesse): project_id isn't required to authenticate
+    def __init__(self, username, api_key, project_id, auth_url=None,
                   insecure=False, timeout=None, proxy_tenant_id=None,
                   proxy_token=None, region_name=None,
                   endpoint_type='publicURL', extensions=None,
@@ -79,7 +79,7 @@ class Client(object):
         # FIXME(comstud): Rename the api_key argument above when we
         # know it's not being used as keyword argument
         password = api_key
-        self.projectid = projectid
+        self.projectid = project_id
         self.tenant_id = tenant_id
         self.flavors = flavors.FlavorManager(self)
         self.flavor_access = flavor_access.FlavorAccessManager(self)
@@ -129,7 +129,7 @@ class Client(object):
 
         self.client = client.HTTPClient(username,
                                     password,
-                                    projectid=projectid,
+                                    projectid=project_id,
                                     tenant_id=tenant_id,
                                     auth_url=auth_url,
                                     insecure=insecure,
