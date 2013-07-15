@@ -1385,6 +1385,12 @@ class FakeHTTPClient(base_client.HTTPClient):
                                       'binary': body['binary'],
                                       'status': 'disabled'}})
 
+    def put_os_services_disable_log_reason(self, body, **kw):
+        return (200, {}, {'service': {'host': body['host'],
+                          'binary': body['binary'],
+                          'status': 'disabled',
+                          'disabled_reason': body['disabled_reason']}})
+
     #
     # Fixed IPs
     #
