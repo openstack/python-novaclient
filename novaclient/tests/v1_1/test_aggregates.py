@@ -35,6 +35,15 @@ class AggregatesTest(utils.TestCase):
         cs.assert_called('POST', '/os-aggregates', body)
         self.assertTrue(isinstance(aggregate, aggregates.Aggregate))
 
+    def test_get(self):
+        aggregate = cs.aggregates.get("1")
+        cs.assert_called('GET', '/os-aggregates/1')
+        self.assertTrue(isinstance(aggregate, aggregates.Aggregate))
+
+        aggregate2 = cs.aggregates.get(aggregate)
+        cs.assert_called('GET', '/os-aggregates/1')
+        self.assertTrue(isinstance(aggregate2, aggregates.Aggregate))
+
     def test_get_details(self):
         aggregate = cs.aggregates.get_details("1")
         cs.assert_called('GET', '/os-aggregates/1')
@@ -45,7 +54,7 @@ class AggregatesTest(utils.TestCase):
         self.assertTrue(isinstance(aggregate2, aggregates.Aggregate))
 
     def test_update(self):
-        aggregate = cs.aggregates.get_details("1")
+        aggregate = cs.aggregates.get("1")
         values = {"name": "foo"}
         body = {"aggregate": values}
 
@@ -58,7 +67,7 @@ class AggregatesTest(utils.TestCase):
         self.assertTrue(isinstance(result2, aggregates.Aggregate))
 
     def test_update_with_availability_zone(self):
-        aggregate = cs.aggregates.get_details("1")
+        aggregate = cs.aggregates.get("1")
         values = {"name": "foo", "availability_zone": "new_zone"}
         body = {"aggregate": values}
 
@@ -67,7 +76,7 @@ class AggregatesTest(utils.TestCase):
         self.assertTrue(isinstance(result3, aggregates.Aggregate))
 
     def test_add_host(self):
-        aggregate = cs.aggregates.get_details("1")
+        aggregate = cs.aggregates.get("1")
         host = "host1"
         body = {"add_host": {"host": "host1"}}
 
@@ -84,7 +93,7 @@ class AggregatesTest(utils.TestCase):
         self.assertTrue(isinstance(result3, aggregates.Aggregate))
 
     def test_remove_host(self):
-        aggregate = cs.aggregates.get_details("1")
+        aggregate = cs.aggregates.get("1")
         host = "host1"
         body = {"remove_host": {"host": "host1"}}
 
@@ -101,7 +110,7 @@ class AggregatesTest(utils.TestCase):
         self.assertTrue(isinstance(result3, aggregates.Aggregate))
 
     def test_set_metadata(self):
-        aggregate = cs.aggregates.get_details("1")
+        aggregate = cs.aggregates.get("1")
         metadata = {"foo": "bar"}
         body = {"set_metadata": {"metadata": metadata}}
 

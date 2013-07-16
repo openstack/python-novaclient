@@ -54,10 +54,16 @@ class AggregateManager(base.ManagerWithFind):
                               'availability_zone': availability_zone}}
         return self._create('/os-aggregates', body, 'aggregate')
 
-    def get_details(self, aggregate):
+    def get(self, aggregate):
         """Get details of the specified aggregate."""
         return self._get('/os-aggregates/%s' % (base.getid(aggregate)),
                          "aggregate")
+
+    # NOTE:(dtroyer): utils.find_resource() uses manager.get() but we need to
+    #                 keep the API backward compatible
+    def get_details(self, aggregate):
+        """Get details of the specified aggregate."""
+        return self.get(aggregate)
 
     def update(self, aggregate, values):
         """Update the name and/or availability zone."""
