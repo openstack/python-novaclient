@@ -536,16 +536,21 @@ class ShellTest(utils.TestCase):
 
     def test_rebuild(self):
         self.run_command('rebuild sample-server 1')
+        self.assert_called('GET', '/servers', pos=-8)
+        self.assert_called('GET', '/servers/1234', pos=-7)
+        self.assert_called('GET', '/images/1', pos=-6)
         self.assert_called('POST', '/servers/1234/action',
-                           {'rebuild': {'imageRef': 1}}, pos=-4)
-        self.assert_called('GET', '/servers/detail', pos=-3)
+                           {'rebuild': {'imageRef': 1}}, pos=-5)
         self.assert_called('GET', '/flavors/1', pos=-2)
         self.assert_called('GET', '/images/2')
 
         self.run_command('rebuild sample-server 1 --rebuild-password asdf')
+        self.assert_called('GET', '/servers', pos=-8)
+        self.assert_called('GET', '/servers/1234', pos=-7)
+        self.assert_called('GET', '/images/1', pos=-6)
         self.assert_called('POST', '/servers/1234/action',
                            {'rebuild': {'imageRef': 1, 'adminPass': 'asdf'}},
-                           pos=-4)
+                           pos=-5)
         self.assert_called('GET', '/flavors/1', pos=-2)
         self.assert_called('GET', '/images/2')
 
@@ -668,7 +673,11 @@ class ShellTest(utils.TestCase):
         self.assert_called('DELETE', '/servers/1234', pos=-3)
         self.assert_called('DELETE', '/servers/5678', pos=-1)
         self.run_command('delete sample-server sample-server2')
-        self.assert_called('DELETE', '/servers/1234', pos=-3)
+        self.assert_called('GET', '/servers', pos=-6)
+        self.assert_called('GET', '/servers/1234', pos=-5)
+        self.assert_called('DELETE', '/servers/1234', pos=-4)
+        self.assert_called('GET', '/servers', pos=-3)
+        self.assert_called('GET', '/servers/5678', pos=-2)
         self.assert_called('DELETE', '/servers/5678', pos=-1)
 
     def test_delete_two_with_one_nonexistent(self):
@@ -1518,7 +1527,12 @@ class ShellTest(utils.TestCase):
 
     def test_volume_show(self):
         self.run_command('volume-show Work')
-        self.assert_called('GET', '/volumes/detail')
+        self.assert_called('GET', '/volumes', pos=-2)
+        self.assert_called(
+            'GET',
+            '/volumes/15e59938-07d5-11e1-90e3-e3dffe0c5983',
+            pos=-1
+        )
 
     def test_volume_create(self):
         self.run_command('volume-create 2 --display-name Work')

@@ -22,6 +22,7 @@ Base utilities to build API operation managers and objects on top of.
 import abc
 import contextlib
 import hashlib
+import inspect
 import os
 
 import six
@@ -197,11 +198,23 @@ class ManagerWithFind(Manager):
         found = []
         searches = kwargs.items()
 
-        for obj in self.list():
+        detailed = True
+        if 'detailed' in inspect.getargspec(self.list).args:
+            detailed = ("human_id" not in kwargs and
+                        "name" not in kwargs and
+                        "display_name" not in kwargs)
+            listing = self.list(detailed=detailed)
+        else:
+            listing = self.list()
+
+        for obj in listing:
             try:
                 if all(getattr(obj, attr) == value
-                                    for (attr, value) in searches):
-                    found.append(obj)
+                        for (attr, value) in searches):
+                    if detailed:
+                        found.append(obj)
+                    else:
+                        found.append(self.get(obj.id))
             except AttributeError:
                 continue
 

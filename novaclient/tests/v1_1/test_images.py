@@ -45,7 +45,8 @@ class ImagesTest(utils.TestCase):
     def test_find(self):
         i = cs.images.find(name="CentOS 5.2")
         self.assertEqual(i.id, 1)
-        cs.assert_called('GET', '/images/detail')
+        cs.assert_called('GET', '/images', pos=-2)
+        cs.assert_called('GET', '/images/1', pos=-1)
 
         iml = cs.images.findall(status='SAVING')
         self.assertEqual(len(iml), 1)

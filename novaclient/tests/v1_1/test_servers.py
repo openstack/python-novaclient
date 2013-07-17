@@ -171,7 +171,8 @@ class ServersTest(utils.TestCase):
 
     def test_find(self):
         server = cs.servers.find(name='sample-server')
-        cs.assert_called('GET', '/servers/detail')
+        cs.assert_called('GET', '/servers', pos=-2)
+        cs.assert_called('GET', '/servers/1234', pos=-1)
         self.assertEqual(server.name, 'sample-server')
 
         self.assertRaises(exceptions.NoUniqueMatch, cs.servers.find,
