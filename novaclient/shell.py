@@ -290,6 +290,11 @@ class OpenStackComputeShell(object):
         parser.add_argument('--os_tenant_name',
             help=argparse.SUPPRESS)
 
+        parser.add_argument('--os-tenant-id',
+            metavar='<auth-tenant-id>',
+            default=utils.env('OS_TENANT_ID'),
+            help='Defaults to env[OS_TENANT_ID].')
+
         parser.add_argument('--os-auth-url',
             metavar='<auth-url>',
             default=utils.env('OS_AUTH_URL', 'NOVA_URL'),
@@ -534,12 +539,13 @@ class OpenStackComputeShell(object):
             self.do_bash_completion(args)
             return 0
 
-        (os_username, os_tenant_name, os_auth_url,
+        (os_username, os_tenant_name, os_tenant_id, os_auth_url,
                 os_region_name, os_auth_system, endpoint_type, insecure,
                 service_type, service_name, volume_service_name,
                 bypass_url, os_cache, cacert, timeout) = (
                         args.os_username,
-                        args.os_tenant_name, args.os_auth_url,
+                        args.os_tenant_name, args.os_tenant_id,
+                        args.os_auth_url,
                         args.os_region_name, args.os_auth_system,
                         args.endpoint_type, args.insecure, args.service_type,
                         args.service_name, args.volume_service_name,
@@ -572,10 +578,11 @@ class OpenStackComputeShell(object):
                     raise exc.CommandError("You must provide a username "
                             "via either --os-username or env[OS_USERNAME]")
 
-            if not os_tenant_name:
+            if not os_tenant_name and not os_tenant_id:
                 raise exc.CommandError("You must provide a tenant name "
-                        "via either --os-tenant-name or "
-                        "env[OS_TENANT_NAME]")
+                        "or tenant id via --os-tenant-name, "
+                        "--os-tenant-id, env[OS_TENANT_NAME] "
+                        "or env[OS_TENANT_ID]")
 
             if not os_auth_url:
                 if os_auth_system and os_auth_system != 'keystone':
@@ -590,16 +597,19 @@ class OpenStackComputeShell(object):
 
         if (options.os_compute_api_version and
                 options.os_compute_api_version != '1.0'):
-            if not os_tenant_name:
+            if not os_tenant_name and not os_tenant_id:
                 raise exc.CommandError("You must provide a tenant name "
-                        "via either --os-tenant-name or env[OS_TENANT_NAME]")
+                        "or tenant id via --os-tenant-name, "
+                        "--os-tenant-id, env[OS_TENANT_NAME] "
+                        "or env[OS_TENANT_ID]")
 
             if not os_auth_url:
                 raise exc.CommandError("You must provide an auth url "
                         "via either --os-auth-url or env[OS_AUTH_URL]")
 
         self.cs = client.Client(options.os_compute_api_version, os_username,
-                os_password, os_tenant_name, os_auth_url, insecure,
+                os_password, os_tenant_name, tenant_id=os_tenant_id,
+                auth_url=os_auth_url, insecure=insecure,
                 region_name=os_region_name, endpoint_type=endpoint_type,
                 extensions=self.extensions, service_type=service_type,
                 service_name=service_name, auth_system=os_auth_system,

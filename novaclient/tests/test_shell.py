@@ -19,11 +19,16 @@ FAKE_ENV = {'OS_USERNAME': 'username',
             'OS_TENANT_NAME': 'tenant_name',
             'OS_AUTH_URL': 'http://no.where'}
 
+FAKE_ENV2 = {'OS_USERNAME': 'username',
+             'OS_PASSWORD': 'password',
+             'OS_TENANT_ID': 'tenant_id',
+             'OS_AUTH_URL': 'http://no.where'}
+
 
 class ShellTest(utils.TestCase):
 
-    def make_env(self, exclude=None):
-        env = dict((k, v) for k, v in FAKE_ENV.items() if k != exclude)
+    def make_env(self, exclude=None, fake_env=FAKE_ENV):
+        env = dict((k, v) for k, v in fake_env.items() if k != exclude)
         self.useFixture(fixtures.MonkeyPatch('os.environ', env))
 
     def setUp(self):
@@ -125,9 +130,22 @@ class ShellTest(utils.TestCase):
             self.fail('CommandError not raised')
 
     def test_no_tenant_name(self):
-        required = ('You must provide a tenant name'
-                    ' via either --os-tenant-name or env[OS_TENANT_NAME]',)
+        required = ('You must provide a tenant name or tenant id'
+                    ' via --os-tenant-name, --os-tenant-id,'
+                    ' env[OS_TENANT_NAME] or env[OS_TENANT_ID]',)
         self.make_env(exclude='OS_TENANT_NAME')
+        try:
+            self.shell('list')
+        except exceptions.CommandError as message:
+            self.assertEqual(required, message.args)
+        else:
+            self.fail('CommandError not raised')
+
+    def test_no_tenant_id(self):
+        required = ('You must provide a tenant name or tenant id'
+                    ' via --os-tenant-name, --os-tenant-id,'
+                    ' env[OS_TENANT_NAME] or env[OS_TENANT_ID]',)
+        self.make_env(exclude='OS_TENANT_ID', fake_env=FAKE_ENV2)
         try:
             self.shell('list')
         except exceptions.CommandError as message:

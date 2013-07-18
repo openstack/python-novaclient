@@ -33,7 +33,7 @@ class HTTPClient(object):
 
     USER_AGENT = 'python-novaclient'
 
-    def __init__(self, user, password, projectid, auth_url=None,
+    def __init__(self, user, password, projectid=None, auth_url=None,
                  insecure=False, timeout=None, proxy_tenant_id=None,
                  proxy_token=None, region_name=None,
                  endpoint_type='publicURL', service_type=None,
@@ -42,10 +42,11 @@ class HTTPClient(object):
                  os_cache=False, no_cache=True,
                  http_log_debug=False, auth_system='keystone',
                  auth_plugin=None,
-                 cacert=None):
+                 cacert=None, tenant_id=None):
         self.user = user
         self.password = password
         self.projectid = projectid
+        self.tenant_id = tenant_id
 
         if auth_system and auth_system != 'keystone' and not auth_plugin:
             raise exceptions.AuthSystemNotFound(auth_system)
@@ -407,7 +408,9 @@ class HTTPClient(object):
                     "passwordCredentials": {"username": self.user,
                                             "password": self.password}}}
 
-        if self.projectid:
+        if self.tenant_id:
+            body['auth']['tenantId'] = self.tenant_id
+        elif self.projectid:
             body['auth']['tenantName'] = self.projectid
 
         self._authenticate(url, body)
