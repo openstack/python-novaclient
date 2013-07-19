@@ -3122,7 +3122,7 @@ def do_evacuate(cs, args):
 
 def _print_interfaces(interfaces):
     columns = ['Port State', 'Port ID', 'Net ID', 'IP addresses',
-               'MAC Address']
+               'MAC Addr']
 
     class FormattedInterface(object):
         def __init__(self, interface):
