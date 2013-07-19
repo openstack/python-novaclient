@@ -1607,3 +1607,14 @@ class ShellTest(utils.TestCase):
     def test_cell_capacities_without_cell_name(self):
         self.run_command('cell-capacities')
         self.assert_called('GET', '/os-cells/capacities')
+
+    def test_migration_list(self):
+        self.run_command('migration-list')
+        self.assert_called('GET', '/os-migrations')
+
+    def test_migration_list_with_filters(self):
+        self.run_command('migration-list --host host1 --cell_name child1 '
+                         '--status finished')
+        self.assert_called('GET',
+                           '/os-migrations?status=finished&host=host1'
+                           '&cell_name=child1')
