@@ -1126,12 +1126,20 @@ class ShellTest(utils.TestCase):
         self.run_command('hypervisor-servers hyper')
         self.assert_called('GET', '/os-hypervisors/hyper/servers')
 
-    def test_hypervisor_show(self):
+    def test_hypervisor_show_by_id(self):
         self.run_command('hypervisor-show 1234')
         self.assert_called('GET', '/os-hypervisors/1234')
 
-    def test_hypervisor_uptime(self):
+    def test_hypervisor_show_by_name(self):
+        self.run_command('hypervisor-show hyper1')
+        self.assert_called('GET', '/os-hypervisors/detail')
+
+    def test_hypervisor_uptime_by_id(self):
         self.run_command('hypervisor-uptime 1234')
+        self.assert_called('GET', '/os-hypervisors/1234/uptime')
+
+    def test_hypervisor_uptime_by_name(self):
+        self.run_command('hypervisor-uptime hyper1')
         self.assert_called('GET', '/os-hypervisors/1234/uptime')
 
     def test_hypervisor_stats(self):

@@ -2688,6 +2688,11 @@ def do_coverage_reset(cs, args):
     print("Coverage data reset")
 
 
+def _find_hypervisor(cs, hypervisor):
+    """Get a hypervisor by name or ID."""
+    return utils.find_resource(cs.hypervisors, hypervisor)
+
+
 @utils.arg('--matching', metavar='<hostname>', default=None,
            help='List hypervisors matching the given <hostname>.')
 def do_hypervisor_list(cs, args):
@@ -2728,12 +2733,12 @@ def do_hypervisor_servers(cs, args):
                                  'Hypervisor Hostname'])
 
 
-@utils.arg('hypervisor_id',
-    metavar='<hypervisor-id>',
-    help='The ID of the hypervisor to show the details of.')
+@utils.arg('hypervisor',
+    metavar='<hypervisor>',
+    help='Name or ID of the hypervisor to show the details of.')
 def do_hypervisor_show(cs, args):
     """Display the details of the specified hypervisor."""
-    hyper = utils.find_resource(cs.hypervisors, args.hypervisor_id)
+    hyper = _find_hypervisor(cs, args.hypervisor)
 
     # Build up the dict
     info = hyper._info.copy()
@@ -2744,12 +2749,13 @@ def do_hypervisor_show(cs, args):
     utils.print_dict(info)
 
 
-@utils.arg('hypervisor_id',
-    metavar='<hypervisor-id>',
-    help='The ID of the hypervisor to show the uptime of.')
+@utils.arg('hypervisor',
+    metavar='<hypervisor>',
+    help='Name or ID of the hypervisor to show the uptime of.')
 def do_hypervisor_uptime(cs, args):
     """Display the uptime of the specified hypervisor."""
-    hyper = cs.hypervisors.uptime(args.hypervisor_id)
+    hyper = _find_hypervisor(cs, args.hypervisor)
+    hyper = cs.hypervisors.uptime(hyper)
 
     # Output the uptime information
     utils.print_dict(hyper._info.copy())
