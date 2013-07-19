@@ -865,44 +865,83 @@ class ShellTest(utils.TestCase):
         self.assert_called('POST', '/os-aggregates', body, pos=-2)
         self.assert_called('GET', '/os-aggregates/1', pos=-1)
 
-    def test_aggregate_delete(self):
+    def test_aggregate_delete_by_id(self):
         self.run_command('aggregate-delete 1')
         self.assert_called('DELETE', '/os-aggregates/1')
 
-    def test_aggregate_update(self):
+    def test_aggregate_delete_by_name(self):
+        self.run_command('aggregate-delete test')
+        self.assert_called('DELETE', '/os-aggregates/1')
+
+    def test_aggregate_update_by_id(self):
         self.run_command('aggregate-update 1 new_name')
         body = {"aggregate": {"name": "new_name"}}
         self.assert_called('PUT', '/os-aggregates/1', body, pos=-2)
         self.assert_called('GET', '/os-aggregates/1', pos=-1)
 
-    def test_aggregate_update_with_availability_zone(self):
+    def test_aggregate_update_by_name(self):
+        self.run_command('aggregate-update test new_name')
+        body = {"aggregate": {"name": "new_name"}}
+        self.assert_called('PUT', '/os-aggregates/1', body, pos=-2)
+        self.assert_called('GET', '/os-aggregates/1', pos=-1)
+
+    def test_aggregate_update_with_availability_zone_by_id(self):
         self.run_command('aggregate-update 1 foo new_zone')
         body = {"aggregate": {"name": "foo", "availability_zone": "new_zone"}}
         self.assert_called('PUT', '/os-aggregates/1', body, pos=-2)
         self.assert_called('GET', '/os-aggregates/1', pos=-1)
 
-    def test_aggregate_set_metadata(self):
+    def test_aggregate_update_with_availability_zone_by_name(self):
+        self.run_command('aggregate-update test foo new_zone')
+        body = {"aggregate": {"name": "foo", "availability_zone": "new_zone"}}
+        self.assert_called('PUT', '/os-aggregates/1', body, pos=-2)
+        self.assert_called('GET', '/os-aggregates/1', pos=-1)
+
+    def test_aggregate_set_metadata_by_id(self):
         self.run_command('aggregate-set-metadata 1 foo=bar delete_key')
         body = {"set_metadata": {"metadata": {"foo": "bar",
                                               "delete_key": None}}}
         self.assert_called('POST', '/os-aggregates/1/action', body, pos=-2)
         self.assert_called('GET', '/os-aggregates/1', pos=-1)
 
-    def test_aggregate_add_host(self):
+    def test_aggregate_set_metadata_by_name(self):
+        self.run_command('aggregate-set-metadata test foo=bar delete_key')
+        body = {"set_metadata": {"metadata": {"foo": "bar",
+                                              "delete_key": None}}}
+        self.assert_called('POST', '/os-aggregates/1/action', body, pos=-2)
+        self.assert_called('GET', '/os-aggregates/1', pos=-1)
+
+    def test_aggregate_add_host_by_id(self):
         self.run_command('aggregate-add-host 1 host1')
         body = {"add_host": {"host": "host1"}}
         self.assert_called('POST', '/os-aggregates/1/action', body, pos=-2)
         self.assert_called('GET', '/os-aggregates/1', pos=-1)
 
-    def test_aggregate_remove_host(self):
+    def test_aggregate_add_host_by_name(self):
+        self.run_command('aggregate-add-host test host1')
+        body = {"add_host": {"host": "host1"}}
+        self.assert_called('POST', '/os-aggregates/1/action', body, pos=-2)
+        self.assert_called('GET', '/os-aggregates/1', pos=-1)
+
+    def test_aggregate_remove_host_by_id(self):
         self.run_command('aggregate-remove-host 1 host1')
         body = {"remove_host": {"host": "host1"}}
         self.assert_called('POST', '/os-aggregates/1/action', body, pos=-2)
         self.assert_called('GET', '/os-aggregates/1', pos=-1)
 
-    def test_aggregate_details(self):
+    def test_aggregate_remove_host_by_name(self):
+        self.run_command('aggregate-remove-host test host1')
+        body = {"remove_host": {"host": "host1"}}
+        self.assert_called('POST', '/os-aggregates/1/action', body, pos=-2)
+        self.assert_called('GET', '/os-aggregates/1', pos=-1)
+
+    def test_aggregate_details_by_id(self):
         self.run_command('aggregate-details 1')
         self.assert_called('GET', '/os-aggregates/1')
+
+    def test_aggregate_details_by_name(self):
+        self.run_command('aggregate-details test')
+        self.assert_called('GET', '/os-aggregates')
 
     def test_live_migration(self):
         self.run_command('live-migration sample-server hostname')
