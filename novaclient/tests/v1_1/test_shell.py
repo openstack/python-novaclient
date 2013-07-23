@@ -275,7 +275,6 @@ class ShellTest(utils.TestCase):
                 'name': 'some-server',
                 'block_device_mapping': [
                     {
-                        'volume_size': '',
                         'volume_id': 'blah',
                         'delete_on_termination': '0',
                         'device_name': 'vda'

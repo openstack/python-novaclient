@@ -139,7 +139,8 @@ class BootingManagerWithFind(base.ManagerWithFind):
                     else:
                         bdm_dict['volume_id'] = id
                 if len(mapping_parts) > 2:
-                    bdm_dict['volume_size'] = mapping_parts[2]
+                    if mapping_parts[2]:
+                        bdm_dict['volume_size'] = str(int(mapping_parts[2]))
                 if len(mapping_parts) > 3:
                     bdm_dict['delete_on_termination'] = mapping_parts[3]
                 bdm.append(bdm_dict)
