@@ -19,11 +19,6 @@ try:
 except ImportError:
     import simplejson as json
 
-# Python 2.5 compat fix
-if not hasattr(urlparse, 'parse_qsl'):
-    import cgi
-    urlparse.parse_qsl = cgi.parse_qsl
-
 from novaclient import exceptions
 from novaclient import service_catalog
 from novaclient import utils
