@@ -148,6 +148,14 @@ class OverLimit(ClientException):
         super(OverLimit, self).__init__(*args, **kwargs)
 
 
+class RateLimit(OverLimit):
+    """
+    HTTP 429 - Rate limit: you've sent too many requests for this time period.
+    """
+    http_status = 429
+    message = "Rate limit"
+
+
 # NotImplemented is a python keyword.
 class HTTPNotImplemented(ClientException):
     """
@@ -164,7 +172,8 @@ class HTTPNotImplemented(ClientException):
 #
 # Instead, we have to hardcode it:
 _error_classes = [BadRequest, Unauthorized, Forbidden, NotFound,
-                  MethodNotAllowed, Conflict, OverLimit, HTTPNotImplemented]
+                  MethodNotAllowed, Conflict, OverLimit, RateLimit,
+                  HTTPNotImplemented]
 _code_map = dict((c.http_status, c) for c in _error_classes)
 
 
