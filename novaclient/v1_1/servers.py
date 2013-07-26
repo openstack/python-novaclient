@@ -25,7 +25,6 @@ import six
 
 from novaclient import base
 from novaclient import crypto
-from novaclient.v1_1 import base as local_base
 
 
 REBOOT_SOFT, REBOOT_HARD = 'SOFT', 'HARD'
@@ -341,7 +340,7 @@ class Server(base.Resource):
         return self.manager.interface_detach(self, port_id)
 
 
-class ServerManager(local_base.BootingManagerWithFind):
+class ServerManager(base.BootingManagerWithFind):
     resource_class = Server
 
     def get(self, server):
