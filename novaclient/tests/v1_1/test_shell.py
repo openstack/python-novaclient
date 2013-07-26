@@ -289,6 +289,163 @@ class ShellTest(utils.TestCase):
             }},
         )
 
+    def test_boot_image_bdms_v2(self):
+        self.run_command(
+            'boot --flavor 1 --image 1 --block-device id=fake-id,'
+            'source=volume,dest=volume,device=vda,size=1,format=ext4,'
+            'type=disk,shutdown=preserve some-server'
+        )
+        self.assert_called_anytime(
+            'POST', '/os-volumes_boot',
+            {'server': {
+                'flavorRef': '1',
+                'name': 'some-server',
+                'block_device_mapping_v2': [
+                    {
+                        'uuid': 1,
+                        'source_type': 'image',
+                        'destination_type': 'local',
+                        'boot_index': 0,
+                        'delete_on_termination': True,
+                    },
+                    {
+                        'uuid': 'fake-id',
+                        'source_type': 'volume',
+                        'destination_type': 'volume',
+                        'device_name': 'vda',
+                        'volume_size': '1',
+                        'guest_format': 'ext4',
+                        'device_type': 'disk',
+                        'delete_on_termination': False,
+                    },
+                ],
+                'imageRef': '1',
+                'min_count': 1,
+                'max_count': 1,
+            }},
+        )
+
+    def test_boot_no_image_bdms_v2(self):
+        self.run_command(
+            'boot --flavor 1 --block-device id=fake-id,source=volume,'
+            'dest=volume,bus=virtio,device=vda,size=1,format=ext4,bootindex=0,'
+            'type=disk,shutdown=preserve some-server'
+        )
+        self.assert_called_anytime(
+            'POST', '/os-volumes_boot',
+            {'server': {
+                'flavorRef': '1',
+                'name': 'some-server',
+                'block_device_mapping_v2': [
+                    {
+                        'uuid': 'fake-id',
+                        'source_type': 'volume',
+                        'destination_type': 'volume',
+                        'disk_bus': 'virtio',
+                        'device_name': 'vda',
+                        'volume_size': '1',
+                        'guest_format': 'ext4',
+                        'boot_index': '0',
+                        'device_type': 'disk',
+                        'delete_on_termination': False,
+                    }
+                ],
+                'imageRef': '',
+                'min_count': 1,
+                'max_count': 1,
+            }},
+        )
+
+        cmd = 'boot --flavor 1 --boot-volume fake-id some-server'
+        self.run_command(cmd)
+        self.assert_called_anytime(
+            'POST', '/os-volumes_boot',
+            {'server': {
+                'flavorRef': '1',
+                'name': 'some-server',
+                'block_device_mapping_v2': [
+                    {
+                        'uuid': 'fake-id',
+                        'source_type': 'volume',
+                        'destination_type': 'volume',
+                        'boot_index': 0,
+                        'delete_on_termination': False,
+                    }
+                ],
+                'imageRef': '',
+                'min_count': 1,
+                'max_count': 1,
+            }},
+        )
+
+        cmd = 'boot --flavor 1 --snapshot fake-id some-server'
+        self.run_command(cmd)
+        self.assert_called_anytime(
+            'POST', '/os-volumes_boot',
+            {'server': {
+                'flavorRef': '1',
+                'name': 'some-server',
+                'block_device_mapping_v2': [
+                    {
+                        'uuid': 'fake-id',
+                        'source_type': 'snapshot',
+                        'destination_type': 'volume',
+                        'boot_index': 0,
+                        'delete_on_termination': False,
+                    }
+                ],
+                'imageRef': '',
+                'min_count': 1,
+                'max_count': 1,
+            }},
+        )
+
+        self.run_command('boot --flavor 1 --swap 1 some-server')
+        self.assert_called_anytime(
+            'POST', '/os-volumes_boot',
+            {'server': {
+                'flavorRef': '1',
+                'name': 'some-server',
+                'block_device_mapping_v2': [
+                    {
+                        'source_type': 'blank',
+                        'destination_type': 'local',
+                        'boot_index': -1,
+                        'guest_format': 'swap',
+                        'volume_size': '1',
+                        'delete_on_termination': True,
+                    }
+                ],
+                'imageRef': '',
+                'min_count': 1,
+                'max_count': 1,
+            }},
+        )
+
+        self.run_command(
+            'boot --flavor 1 --ephemeral size=1,format=ext4 some-server'
+        )
+        self.assert_called_anytime(
+            'POST', '/os-volumes_boot',
+            {'server': {
+                'flavorRef': '1',
+                'name': 'some-server',
+                'block_device_mapping_v2': [
+                    {
+                        'source_type': 'blank',
+                        'destination_type': 'local',
+                        'boot_index': -1,
+                        'guest_format': 'ext4',
+                        'volume_size': '1',
+                        'delete_on_termination': True,
+                    }
+                ],
+                'imageRef': '',
+                'min_count': 1,
+                'max_count': 1,
+            }},
+        )
+
     def test_boot_metadata(self):
         self.run_command('boot --image 1 --flavor 1 --meta foo=bar=pants'
                          ' --meta spam=eggs some-server ')

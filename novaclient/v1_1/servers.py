@@ -583,7 +583,8 @@ class ServerManager(base.BootingManagerWithFind):
                reservation_id=None, min_count=None,
                max_count=None, security_groups=None, userdata=None,
                key_name=None, availability_zone=None,
-               block_device_mapping=None, nics=None, scheduler_hints=None,
+               block_device_mapping=None, block_device_mapping_v2=None,
+               nics=None, scheduler_hints=None,
                config_drive=None, disk_config=None, **kwargs):
         # TODO(anthony): indicate in doc string if param is an extension
         # and/or optional
@@ -610,6 +611,8 @@ class ServerManager(base.BootingManagerWithFind):
         :param availability_zone: Name of the availability zone for instance
                                   placement.
         :param block_device_mapping: (optional extension) A dict of block
+                      device mappings for this server.
+        :param block_device_mapping_v2: (optional extension) A dict of block
                       device mappings for this server.
         :param nics:  (optional extension) an ordered list of nics to be
                       added to this server, with information about
@@ -642,6 +645,9 @@ class ServerManager(base.BootingManagerWithFind):
         if block_device_mapping:
             resource_url = "/os-volumes_boot"
             boot_kwargs['block_device_mapping'] = block_device_mapping
+        elif block_device_mapping_v2:
+            resource_url = "/os-volumes_boot"
+            boot_kwargs['block_device_mapping_v2'] = block_device_mapping_v2
         else:
             resource_url = "/servers"
         if nics:

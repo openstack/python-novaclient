@@ -364,8 +364,18 @@ class FakeHTTPClient(base_client.HTTPClient):
     def post_os_volumes_boot(self, body, **kw):
         assert set(body.keys()) <= set(['server', 'os:scheduler_hints'])
         fakes.assert_has_keys(body['server'],
-                        required=['name', 'block_device_mapping', 'flavorRef'],
+                        required=['name', 'flavorRef'],
                         optional=['imageRef'])
+
+        # Require one, and only one, of the keys for bdm
+        if 'block_device_mapping' not in body['server']:
+            if 'block_device_mapping_v2' not in body['server']:
+                raise AssertionError(
+                    "missing required keys: 'block_device_mapping'"
+                )
+        elif 'block_device_mapping_v2' in body['server']:
+            raise AssertionError("found extra keys: 'block_device_mapping'")
+
         return (202, {}, self.get_servers_9012()[2])
 
     def get_servers_1234(self, **kw):

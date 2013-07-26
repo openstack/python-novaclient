@@ -36,6 +36,20 @@ from novaclient.v1_1 import quotas
 from novaclient.v1_1 import servers
 
 
+CLIENT_BDM2_KEYS = {
+    'id': 'uuid',
+    'source': 'source_type',
+    'dest': 'destination_type',
+    'bus': 'disk_bus',
+    'device': 'device_name',
+    'size': 'volume_size',
+    'format': 'guest_format',
+    'bootindex': 'boot_index',
+    'type': 'device_type',
+    'shutdown': 'delete_on_termination',
+}
+
+
 def _key_value_pairing(text):
     try:
         (k, v) = text.split('=', 1)
@@ -56,6 +70,66 @@ def _match_image(cs, wanted_properties):
         except AttributeError:
             pass
     return images_matched
+
+
+def _parse_block_device_mapping_v2(args, image):
+    bdm = []
+
+    if args.boot_volume:
+        bdm_dict = {'uuid': args.boot_volume, 'source_type': 'volume',
+                    'destination_type': 'volume', 'boot_index': 0,
+                    'delete_on_termination': False}
+        bdm.append(bdm_dict)
+
+    if args.snapshot:
+        bdm_dict = {'uuid': args.snapshot, 'source_type': 'snapshot',
+                    'destination_type': 'volume', 'boot_index': 0,
+                    'delete_on_termination': False}
+        bdm.append(bdm_dict)
+
+    for device_spec in args.block_device:
+        spec_dict = dict(v.split('=') for v in device_spec.split(','))
+        bdm_dict = {}
+
+        for key, value in spec_dict.iteritems():
+            bdm_dict[CLIENT_BDM2_KEYS[key]] = value
+
+        # Convert the delete_on_termination to a boolean or set it to true by
+        # default for local block devices when not specified.
+        if 'delete_on_termination' in bdm_dict:
+            action = bdm_dict['delete_on_termination']
+            bdm_dict['delete_on_termination'] = (action == 'remove')
+        elif bdm_dict.get('destination_type') == 'local':
+            bdm_dict['delete_on_termination'] = True
+
+        bdm.append(bdm_dict)
+
+    for ephemeral_spec in args.ephemeral:
+        bdm_dict = {'source_type': 'blank', 'destination_type': 'local',
+                    'boot_index': -1, 'delete_on_termination': True}
+
+        eph_dict = dict(v.split('=') for v in ephemeral_spec.split(','))
+        if 'size' in eph_dict:
+            bdm_dict['volume_size'] = eph_dict['size']
+        if 'format' in eph_dict:
+            bdm_dict['guest_format'] = eph_dict['format']
+
+        bdm.append(bdm_dict)
+
+    if args.swap:
+        bdm_dict = {'source_type': 'blank', 'destination_type': 'local',
+                    'boot_index': -1, 'delete_on_termination': True,
+                    'guest_format': 'swap', 'volume_size': args.swap}
+        bdm.append(bdm_dict)
+
+    # Append the image to the list only if we have new style BDMs
+    if bdm and not args.block_device_mapping and image:
+        bdm_dict = {'uuid': image.id, 'source_type': 'image',
+                    'destination_type': 'local', 'boot_index': 0,
+                    'delete_on_termination': True}
+        bdm.insert(0, bdm_dict)
+
+    return bdm
 
 
 def _boot(cs, args, reservation_id=None, min_count=None, max_count=None):
@@ -83,11 +157,6 @@ def _boot(cs, args, reservation_id=None, min_count=None, max_count=None):
             # are selecting the first of many?
             image = images[0]
 
-    if not image and not args.block_device_mapping:
-        raise exceptions.CommandError("you need to specify an Image ID "
-                                      "or a block device mapping "
-                                      "or provide a set of properties to match"
-                                      " against an image")
     if not args.flavor:
         raise exceptions.CommandError("you need to specify a Flavor ID ")
 
@@ -139,6 +208,25 @@ def _boot(cs, args, reservation_id=None, min_count=None, max_count=None):
     for bdm in args.block_device_mapping:
         device_name, mapping = bdm.split('=', 1)
         block_device_mapping[device_name] = mapping
+
+    block_device_mapping_v2 = _parse_block_device_mapping_v2(args, image)
+
+    n_boot_args = len(filter(None, (image, args.boot_volume, args.snapshot)))
+    have_bdm = block_device_mapping_v2 or block_device_mapping
+
+    # Fail if more than one boot devices are present
+    # or if there is no device to boot from.
+    if n_boot_args > 1 or n_boot_args == 0 and not have_bdm:
+        raise exceptions.CommandError(
+            "you need to specify at least one source ID (Image, Snapshot or "
+            "Volume), a block device mapping or provide a set of properties "
+            "to match against an image")
+
+    if block_device_mapping and block_device_mapping_v2:
+        raise exceptions.CommandError(
+            "you can't mix old block devices (--block-device-mapping) "
+            "with the new ones (--block-device, --boot-volume, --snapshot, "
+            "--ephemeral, --swap)")
 
     nics = []
     for nic_str in args.nics:
@@ -196,6 +284,7 @@ def _boot(cs, args, reservation_id=None, min_count=None, max_count=None):
             availability_zone=availability_zone,
             security_groups=security_groups,
             block_device_mapping=block_device_mapping,
+            block_device_mapping_v2=block_device_mapping_v2,
             nics=nics,
             scheduler_hints=hints,
             config_drive=config_drive)
@@ -217,6 +306,14 @@ def _boot(cs, args, reservation_id=None, min_count=None, max_count=None):
      action='append',
      metavar='<key=value>',
      help="Image metadata property (see 'nova image-show'). ")
+@utils.arg('--boot-volume',
+    default=None,
+    metavar="<volume_id>",
+    help="Volume ID to boot from.")
+@utils.arg('--snapshot',
+    default=None,
+    metavar="<snapshot_id>",
+    help="Sapshot ID to boot from (will create a volume).")
 @utils.arg('--num-instances',
      default=None,
      type=int,
@@ -269,6 +366,31 @@ def _boot(cs, args, reservation_id=None, min_count=None, max_count=None):
 @utils.arg('--block_device_mapping',
     action='append',
     help=argparse.SUPPRESS)
+@utils.arg('--block-device',
+    metavar="key1=value1[,key2=value2...]",
+    action='append',
+    default=[],
+    help="Block device mapping with the keys: "
+         "id=image_id, snapshot_id or volume_id, "
+         "source=source type (image, snapshot, volume or blank), "
+         "dest=destination type of the block device (volume or local), "
+         "bus=device's bus, "
+         "device=name of the device (e.g. vda, xda, ...), "
+         "size=size of the block device in GB, "
+         "format=device will be formatted (e.g. swap, ext3, ntfs, ...), "
+         "bootindex=integer used for ordering the boot disks, "
+         "type=device type (e.g. disk, cdrom, ...) and "
+         "shutdown=shutdown behaviour (either preserve or remove).")
+@utils.arg('--swap',
+    metavar="<swap_size>",
+    default=None,
+    help="Create and attach a local swap block device of <swap_size> MB.")
+@utils.arg('--ephemeral',
+    metavar="size=<size>[,format=<format>]",
+    action='append',
+    default=[],
+    help="Create and attach a local ephemeral block device of <size> GB "
+         "and format it to <format>.")
 @utils.arg('--hint',
         action='append',
         dest='scheduler_hints',

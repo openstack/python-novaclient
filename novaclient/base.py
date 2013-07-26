@@ -232,13 +232,45 @@ class ManagerWithFind(Manager):
 
 class BootingManagerWithFind(ManagerWithFind):
     """Like a `ManagerWithFind`, but has the ability to boot servers."""
+
+    def _parse_block_device_mapping(self, block_device_mapping):
+        bdm = []
+
+        for device_name, mapping in block_device_mapping.iteritems():
+            #
+            # The mapping is in the format:
+            # <id>:[<type>]:[<size(GB)>]:[<delete_on_terminate>]
+            #
+            bdm_dict = {'device_name': device_name}
+
+            mapping_parts = mapping.split(':')
+            source_id = mapping_parts[0]
+            if len(mapping_parts) == 1:
+                bdm_dict['volume_id'] = source_id
+
+            elif len(mapping_parts) > 1:
+                source_type = mapping_parts[1]
+                if source_type.startswith('snap'):
+                    bdm_dict['snapshot_id'] = source_id
+                else:
+                    bdm_dict['volume_id'] = source_id
+
+            if len(mapping_parts) > 2 and mapping_parts[2]:
+                bdm_dict['volume_size'] = str(int(mapping_parts[2]))
+
+            if len(mapping_parts) > 3:
+                bdm_dict['delete_on_termination'] = mapping_parts[3]
+
+            bdm.append(bdm_dict)
+        return bdm
+
     def _boot(self, resource_url, response_key, name, image, flavor,
               meta=None, files=None, userdata=None,
               reservation_id=None, return_raw=False, min_count=None,
               max_count=None, security_groups=None, key_name=None,
-              availability_zone=None, block_device_mapping=None, nics=None,
-              scheduler_hints=None, config_drive=None, admin_pass=None,
-              disk_config=None, **kwargs):
+              availability_zone=None, block_device_mapping=None,
+              block_device_mapping_v2=None, nics=None, scheduler_hints=None,
+              config_drive=None, admin_pass=None, disk_config=None, **kwargs):
         """
         Create (boot) a new server.
 
@@ -263,6 +295,8 @@ class BootingManagerWithFind(ManagerWithFind):
                                   placement.
         :param block_device_mapping: A dict of block device mappings for this
                                      server.
+        :param block_device_mapping_v2: A dict of block device mappings V2 for
+                                        this server.
         :param nics:  (optional extension) an ordered list of nics to be
                       added to this server, with information about
                       connected networks, fixed ips, etc.
@@ -329,30 +363,10 @@ class BootingManagerWithFind(ManagerWithFind):
 
         # Block device mappings are passed as a list of dictionaries
         if block_device_mapping:
-            bdm = body['server']['block_device_mapping'] = []
-            for device_name, mapping in block_device_mapping.items():
-                #
-                # The mapping is in the format:
-                # <id>:[<type>]:[<size(GB)>]:[<delete_on_terminate>]
-                #
-                bdm_dict = {'device_name': device_name}
-
-                mapping_parts = mapping.split(':')
-                id = mapping_parts[0]
-                if len(mapping_parts) == 1:
-                    bdm_dict['volume_id'] = id
-                if len(mapping_parts) > 1:
-                    type = mapping_parts[1]
-                    if type.startswith('snap'):
-                        bdm_dict['snapshot_id'] = id
-                    else:
-                        bdm_dict['volume_id'] = id
-                if len(mapping_parts) > 2:
-                    if mapping_parts[2]:
-                        bdm_dict['volume_size'] = str(int(mapping_parts[2]))
-                if len(mapping_parts) > 3:
-                    bdm_dict['delete_on_termination'] = mapping_parts[3]
-                bdm.append(bdm_dict)
+            body['server']['block_device_mapping'] = \
+                    self._parse_block_device_mapping(block_device_mapping)
+        elif block_device_mapping_v2:
+            body['server']['block_device_mapping_v2'] = block_device_mapping_v2
 
         if nics is not None:
             # NOTE(tr3buchet): nics can be an empty list
