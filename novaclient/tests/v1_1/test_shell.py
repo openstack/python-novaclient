@@ -649,6 +649,20 @@ class ShellTest(utils.TestCase):
         self.run_command('delete sample-server')
         self.assert_called('DELETE', '/servers/1234')
 
+    def test_force_delete(self):
+        self.run_command('force-delete 1234')
+        self.assert_called('POST', '/servers/1234/action',
+                           {'forceDelete': None})
+        self.run_command('force-delete sample-server')
+        self.assert_called('POST', '/servers/1234/action',
+                           {'forceDelete': None})
+
+    def test_restore(self):
+        self.run_command('restore 1234')
+        self.assert_called('POST', '/servers/1234/action', {'restore': None})
+        self.run_command('restore sample-server')
+        self.assert_called('POST', '/servers/1234/action', {'restore': None})
+
     def test_delete_two_with_two_existent(self):
         self.run_command('delete 1234 5678')
         self.assert_called('DELETE', '/servers/1234', pos=-3)
