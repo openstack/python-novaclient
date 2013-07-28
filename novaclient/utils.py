@@ -192,7 +192,7 @@ def print_dict(d, dict_property="Property", dict_value="Value", wrap=0):
     print(strutils.safe_encode(pt.get_string()))
 
 
-def find_resource(manager, name_or_id):
+def find_resource(manager, name_or_id, **find_args):
     """Helper for the _find_* methods."""
     # first try to get entity as integer id
     try:
@@ -216,7 +216,7 @@ def find_resource(manager, name_or_id):
 
     try:
         try:
-            return manager.find(human_id=name_or_id)
+            return manager.find(human_id=name_or_id, **find_args)
         except exceptions.NotFound:
             pass
 

@@ -20,9 +20,11 @@ import urlparse
 import six
 
 from novaclient import client as base_client
-from novaclient.v1_1 import client
+from novaclient import exceptions
+from novaclient.openstack.common import strutils
 from novaclient.tests import fakes
 from novaclient.tests import utils
+from novaclient.v1_1 import client
 
 
 class FakeClient(fakes.FakeClient, client.Client):
@@ -67,6 +69,7 @@ class FakeHTTPClient(base_client.HTTPClient):
         munged_url = url.rsplit('?', 1)[0]
         munged_url = munged_url.strip('/').replace('/', '_').replace('.', '_')
         munged_url = munged_url.replace('-', '_')
+        munged_url = munged_url.replace(' ', '_')
 
         callback = "%s_%s" % (method.lower(), munged_url)
 
@@ -594,7 +597,7 @@ class FakeHTTPClient(base_client.HTTPClient):
         ]})
 
     def get_flavors_detail(self, **kw):
-        return (200, {}, {'flavors': [
+        flavors = {'flavors': [
             {'id': 1, 'name': '256 MB Server', 'ram': 256, 'disk': 10,
              'OS-FLV-EXT-DATA:ephemeral': 10,
              'os-flavor-access:is_public': True,
@@ -607,20 +610,45 @@ class FakeHTTPClient(base_client.HTTPClient):
              'OS-FLV-EXT-DATA:ephemeral': 0,
              'os-flavor-access:is_public': True,
              'links': {}}
-        ]})
+        ]}
+
+        if 'is_public' not in kw:
+            filter_is_public = True
+        else:
+            if kw['is_public'].lower() == 'none':
+                filter_is_public = None
+            else:
+                filter_is_public = strutils.bool_from_string(kw['is_public'],
+                                                             True)
+
+        if filter_is_public is not None:
+            if filter_is_public:
+                flavors['flavors'] = [
+                        v for v in flavors['flavors']
+                            if v['os-flavor-access:is_public']
+                        ]
+            else:
+                flavors['flavors'] = [
+                        v for v in flavors['flavors']
+                            if not v['os-flavor-access:is_public']
+                        ]
+
+        return (200, {}, flavors)
 
     def get_flavors_1(self, **kw):
         return (
             200,
             {},
-            {'flavor': self.get_flavors_detail()[2]['flavors'][0]}
+            {'flavor':
+                self.get_flavors_detail(is_public='None')[2]['flavors'][0]}
         )
 
     def get_flavors_2(self, **kw):
         return (
             200,
             {},
-            {'flavor': self.get_flavors_detail()[2]['flavors'][1]}
+            {'flavor':
+                self.get_flavors_detail(is_public='None')[2]['flavors'][1]}
         )
 
     def get_flavors_3(self, **kw):
@@ -636,12 +664,16 @@ class FakeHTTPClient(base_client.HTTPClient):
             }},
         )
 
+    def get_flavors_512_MB_Server(self, **kw):
+        raise exceptions.NotFound('404')
+
     def get_flavors_aa1(self, **kw):
         # Aplhanumeric flavor id are allowed.
         return (
             200,
             {},
-            {'flavor': self.get_flavors_detail()[2]['flavors'][2]}
+            {'flavor':
+                self.get_flavors_detail(is_public='None')[2]['flavors'][2]}
         )
 
     def delete_flavors_flavordelete(self, **kw):
@@ -654,7 +686,8 @@ class FakeHTTPClient(base_client.HTTPClient):
         return (
             202,
             {},
-            {'flavor': self.get_flavors_detail()[2]['flavors'][0]}
+            {'flavor':
+                self.get_flavors_detail(is_public='None')[2]['flavors'][0]}
         )
 
     def get_flavors_1_os_extra_specs(self, **kw):

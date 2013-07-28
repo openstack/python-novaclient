@@ -605,7 +605,7 @@ def do_flavor_access_list(cs, args):
            help='Filter results by tenant ID.')
 def do_flavor_access_add(cs, args):
     """Add flavor access for the given tenant."""
-    flavor = _find_flavor(cs, args.flavor)
+    flavor = _find_flavor_for_admin(cs, args.flavor)
     access_list = cs.flavor_access.add_tenant_access(flavor, args.tenant)
     columns = ['Flavor_ID', 'Tenant_ID']
     utils.print_list(access_list, columns)
@@ -618,7 +618,7 @@ def do_flavor_access_add(cs, args):
            help='Filter results by tenant ID.')
 def do_flavor_access_remove(cs, args):
     """Remove flavor access for the given tenant."""
-    flavor = _find_flavor(cs, args.flavor)
+    flavor = _find_flavor_for_admin(cs, args.flavor)
     access_list = cs.flavor_access.remove_tenant_access(flavor, args.tenant)
     columns = ['Flavor_ID', 'Tenant_ID']
     utils.print_list(access_list, columns)
@@ -1374,6 +1374,14 @@ def _find_server(cs, server):
 def _find_image(cs, image):
     """Get an image by name or ID."""
     return utils.find_resource(cs.images, image)
+
+
+def _find_flavor_for_admin(cs, flavor):
+    """Get a flavor for administrator by name, ID, or RAM size."""
+    try:
+        return utils.find_resource(cs.flavors, flavor, is_public='None')
+    except exceptions.NotFound:
+        return cs.flavors.find(ram=flavor)
 
 
 def _find_flavor(cs, flavor):

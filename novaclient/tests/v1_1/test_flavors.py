@@ -21,9 +21,21 @@ class FlavorsTest(utils.TestCase):
         for flavor in fl:
             self.assertTrue(isinstance(flavor, flavors.Flavor))
 
-    def test_list_flavors_is_public(self):
+    def test_list_flavors_is_public_none(self):
         fl = cs.flavors.list(is_public=None)
         cs.assert_called('GET', '/flavors/detail?is_public=None')
+        for flavor in fl:
+            self.assertTrue(isinstance(flavor, flavors.Flavor))
+
+    def test_list_flavors_is_public_false(self):
+        fl = cs.flavors.list(is_public=False)
+        cs.assert_called('GET', '/flavors/detail?is_public=False')
+        for flavor in fl:
+            self.assertTrue(isinstance(flavor, flavors.Flavor))
+
+    def test_list_flavors_is_public_true(self):
+        fl = cs.flavors.list(is_public=True)
+        cs.assert_called('GET', '/flavors/detail')
         for flavor in fl:
             self.assertTrue(isinstance(flavor, flavors.Flavor))
 
@@ -59,8 +71,8 @@ class FlavorsTest(utils.TestCase):
         cs.assert_called('GET', '/flavors/detail')
         self.assertEqual(f.name, '256 MB Server')
 
-        f = cs.flavors.find(disk=20)
-        self.assertEqual(f.name, '512 MB Server')
+        f = cs.flavors.find(disk=0)
+        self.assertEqual(f.name, '128 MB Server')
 
         self.assertRaises(exceptions.NotFound, cs.flavors.find, disk=12345)
 

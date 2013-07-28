@@ -73,7 +73,10 @@ class ShellTest(utils.TestCase):
 
     @mock.patch('sys.stdout', StringIO.StringIO())
     def run_command(self, cmd):
-        self.shell.main(cmd.split())
+        if isinstance(cmd, list):
+            self.shell.main(cmd)
+        else:
+            self.shell.main(cmd.split())
         return sys.stdout.getvalue()
 
     def assert_called(self, method, url, body=None, **kwargs):
@@ -449,13 +452,23 @@ class ShellTest(utils.TestCase):
         cmd = 'flavor-access-list'
         self.assertRaises(exceptions.CommandError, self.run_command, cmd)
 
-    def test_flavor_access_add(self):
+    def test_flavor_access_add_by_id(self):
         self.run_command('flavor-access-add 2 proj2')
         self.assert_called('POST', '/flavors/2/action',
                            {'addTenantAccess': {'tenant': 'proj2'}})
 
-    def test_flavor_access_remove(self):
+    def test_flavor_access_add_by_name(self):
+        self.run_command(['flavor-access-add', '512 MB Server', 'proj2'])
+        self.assert_called('POST', '/flavors/2/action',
+                           {'addTenantAccess': {'tenant': 'proj2'}})
+
+    def test_flavor_access_remove_by_id(self):
         self.run_command('flavor-access-remove 2 proj2')
+        self.assert_called('POST', '/flavors/2/action',
+                           {'removeTenantAccess': {'tenant': 'proj2'}})
+
+    def test_flavor_access_remove_by_name(self):
+        self.run_command(['flavor-access-remove', '512 MB Server', 'proj2'])
         self.assert_called('POST', '/flavors/2/action',
                            {'removeTenantAccess': {'tenant': 'proj2'}})
 

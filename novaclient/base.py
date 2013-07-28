@@ -199,13 +199,19 @@ class ManagerWithFind(Manager):
         searches = kwargs.items()
 
         detailed = True
-        if 'detailed' in inspect.getargspec(self.list).args:
+        list_kwargs = {}
+
+        list_argspec = inspect.getargspec(self.list)
+        if 'detailed' in list_argspec.args:
             detailed = ("human_id" not in kwargs and
                         "name" not in kwargs and
                         "display_name" not in kwargs)
-            listing = self.list(detailed=detailed)
-        else:
-            listing = self.list()
+            list_kwargs['detailed'] = detailed
+
+        if 'is_public' in list_argspec.args and 'is_public' in kwargs:
+            list_kwargs['is_public'] = kwargs['is_public']
+
+        listing = self.list(**list_kwargs)
 
         for obj in listing:
             try:
