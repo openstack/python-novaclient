@@ -3167,7 +3167,7 @@ def do_interface_list(cs, args):
 
 @utils.arg('server', metavar='<server>', help='Name or ID of server.')
 @utils.arg('--port-id', metavar='<port_id>', help='Port ID.', dest="port_id")
-@utils.arg('--net-id', metavar='<fixed_ip>', help='Network ID',
+@utils.arg('--net-id', metavar='<net_id>', help='Network ID',
            default=None, dest="net_id")
 @utils.arg('--fixed-ip', metavar='<fixed_ip>', help='Requested fixed IP.',
            default=None, dest="fixed_ip")
