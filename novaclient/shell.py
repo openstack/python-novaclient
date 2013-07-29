@@ -469,7 +469,7 @@ class OpenStackComputeShell(object):
             command = attr[3:].replace('_', '-')
             callback = getattr(actions_module, attr)
             desc = callback.__doc__ or ''
-            action_help = desc.strip().split('\n')[0]
+            action_help = desc.strip()
             arguments = getattr(callback, 'arguments', [])
 
             subparser = subparsers.add_parser(command,
