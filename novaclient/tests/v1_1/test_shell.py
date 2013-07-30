@@ -1213,6 +1213,12 @@ class ShellTest(utils.TestCase):
         self.assert_called('GET',
                 '/os-quota-sets/97f4c221bff44578b0300df4ef119353')
 
+    def test_user_quota_show(self):
+        self.run_command('quota-show --tenant '
+                '97f4c221bff44578b0300df4ef119353 --user u1')
+        self.assert_called('GET',
+                '/os-quota-sets/97f4c221bff44578b0300df4ef119353?user_id=u1')
+
     def test_quota_show_no_tenant(self):
         self.run_command('quota-show')
         self.assert_called('GET', '/os-quota-sets/tenant_id')
@@ -1234,6 +1240,17 @@ class ShellTest(utils.TestCase):
         self.assert_called(
             'PUT',
             '/os-quota-sets/97f4c221bff44578b0300df4ef119353',
+            {'quota_set': {'instances': 5,
+                           'tenant_id': '97f4c221bff44578b0300df4ef119353'}})
+
+    def test_user_quota_update(self):
+        self.run_command(
+            'quota-update 97f4c221bff44578b0300df4ef119353'
+            ' --user=u1'
+            ' --instances=5')
+        self.assert_called(
+            'PUT',
+            '/os-quota-sets/97f4c221bff44578b0300df4ef119353?user_id=u1',
             {'quota_set': {'instances': 5,
                            'tenant_id': '97f4c221bff44578b0300df4ef119353'}})
 
@@ -1261,6 +1278,13 @@ class ShellTest(utils.TestCase):
                          '97f4c221bff44578b0300df4ef119353')
         self.assert_called('DELETE',
                            '/os-quota-sets/97f4c221bff44578b0300df4ef119353')
+
+    def test_user_quota_delete(self):
+        self.run_command('quota-delete --tenant '
+                         '97f4c221bff44578b0300df4ef119353 '
+                         '--user u1')
+        self.assert_called('DELETE',
+                '/os-quota-sets/97f4c221bff44578b0300df4ef119353?user_id=u1')
 
     def test_quota_class_show(self):
         self.run_command('quota-class-show test')

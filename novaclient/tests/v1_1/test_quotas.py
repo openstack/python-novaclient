@@ -26,6 +26,13 @@ class QuotaSetsTest(utils.TestCase):
         cs.quotas.get(tenant_id)
         cs.assert_called('GET', '/os-quota-sets/%s' % tenant_id)
 
+    def test_user_quotas_get(self):
+        tenant_id = 'test'
+        user_id = 'fake_user'
+        cs.quotas.get(tenant_id, user_id=user_id)
+        url = '/os-quota-sets/%s?user_id=%s' % (tenant_id, user_id)
+        cs.assert_called('GET', url)
+
     def test_tenant_quotas_defaults(self):
         tenant_id = '97f4c221bff44578b0300df4ef119353'
         cs.quotas.defaults(tenant_id)
@@ -36,6 +43,14 @@ class QuotaSetsTest(utils.TestCase):
         q.update(volumes=2)
         cs.assert_called('PUT',
                    '/os-quota-sets/97f4c221bff44578b0300df4ef119353')
+
+    def test_update_user_quota(self):
+        tenant_id = '97f4c221bff44578b0300df4ef119353'
+        user_id = 'fake_user'
+        q = cs.quotas.get(tenant_id)
+        q.update(volumes=2, user_id=user_id)
+        url = '/os-quota-sets/%s?user_id=%s' % (tenant_id, user_id)
+        cs.assert_called('PUT', url)
 
     def test_force_update_quota(self):
         q = cs.quotas.get('97f4c221bff44578b0300df4ef119353')
@@ -59,3 +74,10 @@ class QuotaSetsTest(utils.TestCase):
         tenant_id = 'test'
         cs.quotas.delete(tenant_id)
         cs.assert_called('DELETE', '/os-quota-sets/%s' % tenant_id)
+
+    def test_user_quotas_delete(self):
+        tenant_id = 'test'
+        user_id = 'fake_user'
+        cs.quotas.delete(tenant_id, user_id=user_id)
+        url = '/os-quota-sets/%s?user_id=%s' % (tenant_id, user_id)
+        cs.assert_called('DELETE', url)
