@@ -1444,8 +1444,17 @@ class FakeHTTPClient(base_client.HTTPClient):
                       'status': 'enabled',
                       'maintenance_mode': 'on_maintenance'})
 
-    def post_os_hosts_sample_host_action(self, **kw):
-        return (202, {}, None)
+    def get_os_hosts_sample_host_reboot(self, **kw):
+        return (200, {}, {'host': 'sample_host',
+                          'power_action': 'reboot'})
+
+    def get_os_hosts_sample_host_startup(self, **kw):
+        return (200, {}, {'host': 'sample_host',
+                          'power_action': 'startup'})
+
+    def get_os_hosts_sample_host_shutdown(self, **kw):
+        return (200, {}, {'host': 'sample_host',
+                          'power_action': 'shutdown'})
 
     def put_os_hosts_sample_host(self, body, **kw):
         result = {'host': 'dummy'}
