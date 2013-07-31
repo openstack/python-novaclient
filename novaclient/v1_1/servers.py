@@ -570,7 +570,7 @@ class ServerManager(base.BootingManagerWithFind):
                max_count=None, security_groups=None, userdata=None,
                key_name=None, availability_zone=None,
                block_device_mapping=None, nics=None, scheduler_hints=None,
-               config_drive=None, **kwargs):
+               config_drive=None, disk_config=None, **kwargs):
         # TODO(anthony): indicate in doc string if param is an extension
         # and/or optional
         """
@@ -604,6 +604,9 @@ class ServerManager(base.BootingManagerWithFind):
                             specified by the client to help boot an instance
         :param config_drive: (optional extension) value for config drive
                             either boolean, or volume-id
+        :param disk_config: (optional extension) control how the disk is
+                            partitioned when the server is created.  possible
+                            values are 'AUTO' or 'MANUAL'.
         """
         if not min_count:
             min_count = 1
@@ -620,7 +623,7 @@ class ServerManager(base.BootingManagerWithFind):
             max_count=max_count, security_groups=security_groups,
             key_name=key_name, availability_zone=availability_zone,
             scheduler_hints=scheduler_hints, config_drive=config_drive,
-            **kwargs)
+            disk_config=disk_config, **kwargs)
 
         if block_device_mapping:
             resource_url = "/os-volumes_boot"
@@ -674,17 +677,23 @@ class ServerManager(base.BootingManagerWithFind):
         """
         self._action('reboot', server, {'type': reboot_type})
 
-    def rebuild(self, server, image, password=None, **kwargs):
+    def rebuild(self, server, image, password=None, disk_config=None,
+                **kwargs):
         """
         Rebuild -- shut down and then re-image -- a server.
 
         :param server: The :class:`Server` (or its ID) to share onto.
         :param image: the :class:`Image` (or its ID) to re-image with.
         :param password: string to set as password on the rebuilt server.
+        :param disk_config: partitioning mode to use on the rebuilt server.
+                            Valid values are 'AUTO' or 'MANUAL'
         """
         body = {'imageRef': base.getid(image)}
         if password is not None:
             body['adminPass'] = password
+        if disk_config is not None:
+            body['OS-DCF:diskConfig'] = disk_config
+
         _resp, body = self._action('rebuild', server, body, **kwargs)
         return Server(self, body['server'])
 
@@ -696,12 +705,14 @@ class ServerManager(base.BootingManagerWithFind):
         """
         self._action('migrate', server)
 
-    def resize(self, server, flavor, **kwargs):
+    def resize(self, server, flavor, disk_config=None, **kwargs):
         """
         Resize a server's resources.
 
         :param server: The :class:`Server` (or its ID) to share onto.
         :param flavor: the :class:`Flavor` (or its ID) to resize to.
+        :param disk_config: partitioning mode to use on the rebuilt server.
+                            Valid values are 'AUTO' or 'MANUAL'
 
         Until a resize event is confirmed with :meth:`confirm_resize`, the old
         server will be kept around and you'll be able to roll back to the old
@@ -709,6 +720,9 @@ class ServerManager(base.BootingManagerWithFind):
         automatically confirmed after 24 hours.
         """
         info = {'flavorRef': base.getid(flavor)}
+        if disk_config is not None:
+            info['OS-DCF:diskConfig'] = disk_config
+
         self._action('resize', server, info=info, **kwargs)
 
     def confirm_resize(self, server):

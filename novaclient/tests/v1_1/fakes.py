@@ -473,10 +473,11 @@ class FakeHTTPClient(base_client.HTTPClient):
             keys = body[action].keys()
             if 'adminPass' in keys:
                 keys.remove('adminPass')
-            assert keys == ['imageRef']
+            assert 'imageRef' in keys
             _body = self.get_servers_1234()[2]
         elif action == 'resize':
-            assert body[action].keys() == ['flavorRef']
+            keys = body[action].keys()
+            assert 'flavorRef' in keys
         elif action == 'confirmResize':
             assert body[action] is None
             # This one method returns a different response code

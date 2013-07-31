@@ -135,6 +135,29 @@ class ServersTest(utils.TestCase):
         cs.assert_called('POST', '/servers')
         self.assertTrue(isinstance(s, servers.Server))
 
+    def _create_disk_config(self, disk_config):
+        s = cs.servers.create(
+            name="My server",
+            image=1,
+            flavor=1,
+            disk_config=disk_config
+        )
+        cs.assert_called('POST', '/servers')
+        self.assertTrue(isinstance(s, servers.Server))
+
+        # verify disk config param was used in the request:
+        last_request = cs.client.callstack[-1]
+        body = last_request[-1]
+        server = body['server']
+        self.assertTrue('OS-DCF:diskConfig' in server)
+        self.assertEqual(disk_config, server['OS-DCF:diskConfig'])
+
+    def test_create_server_disk_config_auto(self):
+        self._create_disk_config('AUTO')
+
+    def test_create_server_disk_config_manual(self):
+        self._create_disk_config('MANUAL')
+
     def test_update_server(self):
         s = cs.servers.get(1234)
 
@@ -199,12 +222,41 @@ class ServersTest(utils.TestCase):
         cs.servers.rebuild(s, image=1, password='5678')
         cs.assert_called('POST', '/servers/1234/action')
 
+    def _rebuild_resize_disk_config(self, disk_config, operation="rebuild"):
+        s = cs.servers.get(1234)
+
+        if operation == "rebuild":
+            s.rebuild(image=1, disk_config=disk_config)
+        elif operation == "resize":
+            s.resize(flavor=1, disk_config=disk_config)
+        cs.assert_called('POST', '/servers/1234/action')
+
+        # verify disk config param was used in the request:
+        last_request = cs.client.callstack[-1]
+        body = last_request[-1]
+
+        d = body[operation]
+        self.assertTrue('OS-DCF:diskConfig' in d)
+        self.assertEqual(disk_config, d['OS-DCF:diskConfig'])
+
+    def test_rebuild_server_disk_config_auto(self):
+        self._rebuild_resize_disk_config('AUTO')
+
+    def test_rebuild_server_disk_config_manual(self):
+        self._rebuild_resize_disk_config('MANUAL')
+
     def test_resize_server(self):
         s = cs.servers.get(1234)
         s.resize(flavor=1)
         cs.assert_called('POST', '/servers/1234/action')
         cs.servers.resize(s, flavor=1)
         cs.assert_called('POST', '/servers/1234/action')
+
+    def test_resize_server_disk_config_auto(self):
+        self._rebuild_resize_disk_config('AUTO', 'resize')
+
+    def test_resize_server_disk_config_manual(self):
+        self._rebuild_resize_disk_config('MANUAL', 'resize')
 
     def test_confirm_resized_server(self):
         s = cs.servers.get(1234)

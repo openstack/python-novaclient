@@ -231,7 +231,7 @@ class BootingManagerWithFind(ManagerWithFind):
               max_count=None, security_groups=None, key_name=None,
               availability_zone=None, block_device_mapping=None, nics=None,
               scheduler_hints=None, config_drive=None, admin_pass=None,
-              **kwargs):
+              disk_config=None, **kwargs):
         """
         Create (boot) a new server.
 
@@ -264,6 +264,8 @@ class BootingManagerWithFind(ManagerWithFind):
         :param config_drive: (optional extension) value for config drive
                             either boolean, or volume-id
         :param admin_pass: admin password for the server.
+        :param disk_config: (optional extension) control how the disk is
+                            partitioned when the server is created.
         """
         body = {"server": {
             "name": name,
@@ -359,6 +361,9 @@ class BootingManagerWithFind(ManagerWithFind):
                     net_data['port'] = nic_info['port-id']
                 all_net_data.append(net_data)
             body['server']['networks'] = all_net_data
+
+        if disk_config is not None:
+            body['server']['OS-DCF:diskConfig'] = disk_config
 
         return self._create(resource_url, body, response_key,
                             return_raw=return_raw, **kwargs)
