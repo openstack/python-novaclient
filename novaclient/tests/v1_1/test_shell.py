@@ -1070,17 +1070,17 @@ class ShellTest(utils.TestCase):
     def test_host_startup(self):
         self.run_command('host-action sample-host --action startup')
         self.assert_called(
-            'POST', '/os-hosts/sample-host/action', {'startup': None})
+            'GET', '/os-hosts/sample-host/startup')
 
     def test_host_shutdown(self):
         self.run_command('host-action sample-host --action shutdown')
         self.assert_called(
-            'POST', '/os-hosts/sample-host/action', {'shutdown': None})
+            'GET', '/os-hosts/sample-host/shutdown')
 
     def test_host_reboot(self):
         self.run_command('host-action sample-host --action reboot')
         self.assert_called(
-            'POST', '/os-hosts/sample-host/action', {'reboot': None})
+            'GET', '/os-hosts/sample-host/reboot')
 
     def test_host_evacuate(self):
         self.run_command('host-evacuate hyper --target target_hyper')
