@@ -198,7 +198,8 @@ You'll find complete documentation on the shell by running
         x509-create-cert    Create x509 cert for a user in tenant
         x509-get-root-cert  Fetches the x509 root cert.
         bash-completion     Prints all of the commands and options to stdout so
-                            that the
+                            that the nova.bash_completion script doesn't have to
+                            hard code them.
         help                Display help about this program or one of its
                             subcommands.
 
