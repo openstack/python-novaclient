@@ -119,6 +119,20 @@ class VolumeManager(base.ManagerWithFind):
         return self._create("/servers/%s/os-volume_attachments" % server_id,
             body, "volumeAttachment")
 
+    def update_server_volume(self, server_id, attachment_id, new_volume_id):
+        """
+        Update the volume identified by the attachment ID, that is attached to
+        the given server ID
+
+        :param server_id: The ID of the server
+        :param attachment_id: The ID of the attachment
+        :param new_volume_id: The ID of the new volume to attach
+        :rtype: :class:`Volume`
+        """
+        body = {'volumeAttachment': {'volumeId': new_volume_id}}
+        return self._update("/servers/%s/os-volume_attachments/%s" %
+            (server_id, attachment_id,), body, "volumeAttachment")
+
     def get_server_volume(self, server_id, attachment_id):
         """
         Get the volume identified by the attachment ID, that is attached to

@@ -1582,6 +1582,11 @@ class ShellTest(utils.TestCase):
                                {'device': '/dev/vdb',
                                 'volumeId': 'Work'}})
 
+    def test_volume_update(self):
+        self.run_command('volume-update sample-server Work Work')
+        self.assert_called('PUT', '/servers/1234/os-volume_attachments/Work',
+                           {'volumeAttachment': {'volumeId': 'Work'}})
+
     def test_volume_detach(self):
         self.run_command('volume-detach sample-server Work')
         self.assert_called('DELETE',
