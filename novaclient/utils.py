@@ -353,3 +353,12 @@ def _load_entry_point(ep_name, name=None):
             return ep.load()
         except (ImportError, pkg_resources.UnknownExtra, AttributeError):
             continue
+
+
+def is_integer_like(val):
+    """Returns validation of a value as an integer."""
+    try:
+        value = int(val)
+        return True
+    except (TypeError, ValueError, AttributeError):
+        return False

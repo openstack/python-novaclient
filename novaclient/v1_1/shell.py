@@ -30,7 +30,6 @@ import time
 from novaclient import exceptions
 from novaclient.openstack.common import strutils
 from novaclient.openstack.common import timeutils
-from novaclient.openstack.common import uuidutils
 from novaclient import utils
 from novaclient.v1_1 import availability_zones
 from novaclient.v1_1 import quotas
@@ -1918,7 +1917,7 @@ def _print_secgroups(secgroups):
 
 def _get_secgroup(cs, secgroup):
     # Check secgroup is an ID
-    if uuidutils.is_uuid_like(strutils.safe_encode(secgroup)):
+    if utils.is_integer_like(strutils.safe_encode(secgroup)):
         try:
             return cs.security_groups.get(secgroup)
         except exceptions.NotFound:
