@@ -1,8 +1,7 @@
-d2to1>=0.2.10,<0.3
-pbr>=0.5,<0.6
+pbr>=0.5.16,<0.6
 argparse
 iso8601>=0.1.4
-prettytable>=0.6,<0.8
-requests>=0.8
-simplejson
+PrettyTable>=0.6,<0.8
+requests>=1.1,<1.2.3
+simplejson>=2.0.9
 six
