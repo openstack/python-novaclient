@@ -1545,6 +1545,10 @@ class ShellTest(utils.TestCase):
         self.assert_called('POST', '/servers/1234/action',
                            {'removeSecurityGroup': {'name': 'testgroup'}})
 
+    def test_server_security_group_list(self):
+        self.run_command('list-secgroup 1234')
+        self.assert_called('GET', '/servers/1234/os-security-groups')
+
     def test_interface_list(self):
         self.run_command('interface-list 1234')
         self.assert_called('GET', '/servers/1234/os-interface')

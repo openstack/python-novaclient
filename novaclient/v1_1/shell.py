@@ -1780,6 +1780,14 @@ def do_remove_secgroup(cs, args):
     server.remove_security_group(args.secgroup)
 
 
+@utils.arg('server', metavar='<server>', help='Name or ID of server.')
+def do_list_secgroup(cs, args):
+    """List Security Group(s) of a server."""
+    server = _find_server(cs, args.server)
+    groups = server.list_security_group()
+    _print_secgroups(groups)
+
+
 @utils.arg('pool',
            metavar='<floating-ip-pool>',
            help='Name of Floating IP Pool. (Optional)',

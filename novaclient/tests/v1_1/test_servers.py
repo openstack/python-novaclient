@@ -501,6 +501,11 @@ class ServersTest(utils.TestCase):
         cs.servers.remove_security_group(s, 'oldsg')
         cs.assert_called('POST', '/servers/1234/action')
 
+    def test_list_security_group(self):
+        s = cs.servers.get(1234)
+        s.list_security_group()
+        cs.assert_called('GET', '/servers/1234/os-security-groups')
+
     def test_evacuate(self):
         s = cs.servers.get(1234)
         s.evacuate('fake_target_host', 'True')

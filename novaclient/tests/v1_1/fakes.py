@@ -430,6 +430,16 @@ class FakeHTTPClient(base_client.HTTPClient):
     def delete_servers_uuid4_metadata_key1(self, **kw):
         return (200, {}, {'data': 'Fake diagnostics'})
 
+    def get_servers_1234_os_security_groups(self, **kw):
+        return (200, {}, {
+            "security_groups": [{
+                'id': 1,
+                'name': 'securitygroup1',
+                'description': 'FAKE_SECURITY_GROUP',
+                'tenant_id': '4ffc664c198e435e9853f2538fbcd7a7',
+                'rules': []}]
+        })
+
     #
     # Server Addresses
     #
