@@ -56,6 +56,7 @@ import novaclient.extension
 from novaclient.openstack.common import strutils
 from novaclient import utils
 from novaclient.v1_1 import shell as shell_v1_1
+from novaclient.v3 import shell as shell_v3
 
 DEFAULT_OS_COMPUTE_API_VERSION = "1.1"
 DEFAULT_NOVA_ENDPOINT_TYPE = 'publicURL'
@@ -353,7 +354,8 @@ class OpenStackComputeShell(object):
             metavar='<compute-api-ver>',
             default=utils.env('OS_COMPUTE_API_VERSION',
                 default=DEFAULT_OS_COMPUTE_API_VERSION),
-            help='Accepts 1.1, defaults to env[OS_COMPUTE_API_VERSION].')
+            help='Accepts 1.1 or 3, '
+                 'defaults to env[OS_COMPUTE_API_VERSION].')
         parser.add_argument('--os_compute_api_version',
             help=argparse.SUPPRESS)
 
@@ -394,6 +396,7 @@ class OpenStackComputeShell(object):
             actions_module = {
                 '1.1': shell_v1_1,
                 '2': shell_v1_1,
+                '3': shell_v3,
             }[version]
         except KeyError:
             actions_module = shell_v1_1
