@@ -1,3 +1,18 @@
+# Copyright (c) 2013, OpenStack
+# All Rights Reserved.
+#
+#    Licensed under the Apache License, Version 2.0 (the "License"); you may
+#    not use this file except in compliance with the License. You may obtain
+#    a copy of the License at
+#
+#         http://www.apache.org/licenses/LICENSE-2.0
+#
+#    Unless required by applicable law or agreed to in writing, software
+#    distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+#    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+#    License for the specific language governing permissions and limitations
+#    under the License.
+
 from novaclient import exceptions
 from novaclient.v1_1 import flavors
 from novaclient.tests import utils
@@ -76,6 +91,29 @@ class FlavorsTest(utils.TestCase):
                 "disk": 10,
                 "OS-FLV-EXT-DATA:ephemeral": 10,
                 "id": 1234,
+                "swap": 0,
+                "rxtx_factor": 1.0,
+                "os-flavor-access:is_public": False,
+            }
+        }
+
+        cs.assert_called('POST', '/flavors', body)
+        self.assertTrue(isinstance(f, flavors.Flavor))
+
+    def test_create_with_id_as_string(self):
+        flavor_id = 'foobar'
+        f = cs.flavors.create("flavorcreate", 512,
+                              1, 10, flavor_id, ephemeral=10,
+                              is_public=False)
+
+        body = {
+            "flavor": {
+                "name": "flavorcreate",
+                "ram": 512,
+                "vcpus": 1,
+                "disk": 10,
+                "OS-FLV-EXT-DATA:ephemeral": 10,
+                "id": flavor_id,
                 "swap": 0,
                 "rxtx_factor": 1.0,
                 "os-flavor-access:is_public": False,
