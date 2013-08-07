@@ -363,12 +363,15 @@ class ServerManager(base.BootingManagerWithFind):
         """
         return self._get("/servers/%s" % base.getid(server), "server")
 
-    def list(self, detailed=True, search_opts=None):
+    def list(self, detailed=True, search_opts=None, marker=None, limit=None):
         """
         Get a list of servers.
 
         :param detailed: Whether to return detailed server info (optional).
         :param search_opts: Search options to filter out servers (optional).
+        :param marker: Begin returning servers that appear later in the server
+                       list than that represented by this server id (optional).
+        :param limit: Maximum number of servers to return (optional).
 
         :rtype: list of :class:`Server`
         """
@@ -380,6 +383,12 @@ class ServerManager(base.BootingManagerWithFind):
         for opt, val in six.iteritems(search_opts):
             if val:
                 qparams[opt] = val
+
+        if marker:
+            qparams['marker'] = marker
+
+        if limit:
+            qparams['limit'] = limit
 
         query_string = "?%s" % urlutils.urlencode(qparams) if qparams else ""
 

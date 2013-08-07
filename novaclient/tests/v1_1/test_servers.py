@@ -26,6 +26,12 @@ class ServersTest(utils.TestCase):
         cs.assert_called('GET', '/servers')
         [self.assertTrue(isinstance(s, servers.Server)) for s in sl]
 
+    def test_list_servers_with_marker_limit(self):
+        sl = cs.servers.list(marker=1234, limit=2)
+        cs.assert_called('GET', '/servers/detail?marker=1234&limit=2')
+        for s in sl:
+            self.assertTrue(isinstance(s, servers.Server))
+
     def test_get_server_details(self):
         s = cs.servers.get(1234)
         cs.assert_called('GET', '/servers/1234')
