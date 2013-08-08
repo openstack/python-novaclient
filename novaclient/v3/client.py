@@ -15,37 +15,6 @@
 #    under the License.
 
 from novaclient import client
-from novaclient.v1_1 import agents
-from novaclient.v1_1 import certs
-from novaclient.v1_1 import cloudpipe
-from novaclient.v1_1 import aggregates
-from novaclient.v1_1 import availability_zones
-from novaclient.v1_1 import coverage_ext
-from novaclient.v1_1 import flavors
-from novaclient.v1_1 import flavor_access
-from novaclient.v1_1 import floating_ip_dns
-from novaclient.v1_1 import floating_ips
-from novaclient.v1_1 import floating_ip_pools
-from novaclient.v1_1 import fping
-from novaclient.v1_1 import hosts
-from novaclient.v1_1 import hypervisors
-from novaclient.v1_1 import images
-from novaclient.v1_1 import keypairs
-from novaclient.v1_1 import limits
-from novaclient.v1_1 import networks
-from novaclient.v1_1 import quota_classes
-from novaclient.v1_1 import quotas
-from novaclient.v1_1 import security_group_rules
-from novaclient.v1_1 import security_groups
-from novaclient.v1_1 import servers
-from novaclient.v1_1 import usage
-from novaclient.v1_1 import virtual_interfaces
-from novaclient.v1_1 import volumes
-from novaclient.v1_1 import volume_snapshots
-from novaclient.v1_1 import volume_types
-from novaclient.v1_1 import services
-from novaclient.v1_1 import fixed_ips
-from novaclient.v1_1 import floating_ips_bulk
 
 
 class Client(object):
@@ -66,7 +35,7 @@ class Client(object):
     """
 
     # FIXME(jesse): project_id isn't required to authenticate
-    def __init__(self, username, api_key, project_id, auth_url=None,
+    def __init__(self, username, password, project_id, auth_url=None,
                   insecure=False, timeout=None, proxy_tenant_id=None,
                   proxy_token=None, region_name=None,
                   endpoint_type='publicURL', extensions=None,
@@ -76,49 +45,7 @@ class Client(object):
                   http_log_debug=False, auth_system='keystone',
                   auth_plugin=None,
                   cacert=None, tenant_id=None):
-        # FIXME(comstud): Rename the api_key argument above when we
-        # know it's not being used as keyword argument
-        password = api_key
-        self.projectid = project_id
-        self.tenant_id = tenant_id
-        self.flavors = flavors.FlavorManager(self)
-        self.flavor_access = flavor_access.FlavorAccessManager(self)
-        self.images = images.ImageManager(self)
-        self.limits = limits.LimitsManager(self)
-        self.servers = servers.ServerManager(self)
-
-        # extensions
-        self.agents = agents.AgentsManager(self)
-        self.dns_domains = floating_ip_dns.FloatingIPDNSDomainManager(self)
-        self.dns_entries = floating_ip_dns.FloatingIPDNSEntryManager(self)
-        self.cloudpipe = cloudpipe.CloudpipeManager(self)
-        self.certs = certs.CertificateManager(self)
-        self.floating_ips = floating_ips.FloatingIPManager(self)
-        self.floating_ip_pools = floating_ip_pools.FloatingIPPoolManager(self)
-        self.fping = fping.FpingManager(self)
-        self.volumes = volumes.VolumeManager(self)
-        self.volume_snapshots = volume_snapshots.SnapshotManager(self)
-        self.volume_types = volume_types.VolumeTypeManager(self)
-        self.keypairs = keypairs.KeypairManager(self)
-        self.networks = networks.NetworkManager(self)
-        self.quota_classes = quota_classes.QuotaClassSetManager(self)
-        self.quotas = quotas.QuotaSetManager(self)
-        self.security_groups = security_groups.SecurityGroupManager(self)
-        self.security_group_rules = \
-            security_group_rules.SecurityGroupRuleManager(self)
-        self.usage = usage.UsageManager(self)
-        self.virtual_interfaces = \
-            virtual_interfaces.VirtualInterfaceManager(self)
-        self.aggregates = aggregates.AggregateManager(self)
-        self.hosts = hosts.HostManager(self)
-        self.hypervisors = hypervisors.HypervisorManager(self)
-        self.services = services.ServiceManager(self)
-        self.fixed_ips = fixed_ips.FixedIPsManager(self)
-        self.floating_ips_bulk = floating_ips_bulk.FloatingIPBulkManager(self)
-        self.os_cache = os_cache or not no_cache
-        self.coverage = coverage_ext.CoverageManager(self)
-        self.availability_zones = \
-            availability_zones.AvailabilityZoneManager(self)
+        #TODO(bnemec): Add back in v3 extensions
 
         # Add in any extensions...
         if extensions:
