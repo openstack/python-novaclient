@@ -318,7 +318,7 @@ class Server(base.Resource):
 
     def remove_security_group(self, security_group):
         """
-        Remova a security group from an instance.
+        Remove a security group from an instance.
         """
         self.manager.remove_security_group(self, security_group)
 
@@ -463,7 +463,7 @@ class ServerManager(base.BootingManagerWithFind):
         """
         Get password for an instance
 
-        Requires that openssl in installed and in the path
+        Requires that openssl is installed and in the path
 
         :param server: The :class:`Server` (or its ID) to add an IP to.
         :param private_key: The private key to decrypt password
@@ -834,20 +834,20 @@ class ServerManager(base.BootingManagerWithFind):
 
     def add_security_group(self, server, security_group):
         """
-        Add a Security Group to a instance
+        Add a Security Group to an instance
 
         :param server: ID of the instance.
-        :param security_grou: The name of security group to add.
+        :param security_group: The name of security group to add.
 
         """
         self._action('addSecurityGroup', server, {'name': security_group})
 
     def remove_security_group(self, server, security_group):
         """
-        Add a Security Group to a instance
+        Add a Security Group to an instance
 
         :param server: ID of the instance.
-        :param security_grou: The name of security group to remove.
+        :param security_group: The name of security group to remove.
 
         """
         self._action('removeSecurityGroup', server, {'name': security_group})

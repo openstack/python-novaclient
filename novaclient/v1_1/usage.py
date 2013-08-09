@@ -7,7 +7,7 @@ from novaclient import base
 
 class Usage(base.Resource):
     """
-    Usage contains infomartion about a tenants physical resource usage
+    Usage contains information about a tenant's physical resource usage
     """
     def __repr__(self):
         return "<ComputeUsage>"
