@@ -367,9 +367,9 @@ class ServerManager(base.BootingManagerWithFind):
     def list(self, detailed=True, search_opts=None):
         """
         Get a list of servers.
-        Optional detailed returns details server info.
-        Optional reservation_id only returns instances with that
-        reservation_id.
+
+        :param detailed: Whether to return detailed server info (optional).
+        :param search_opts: Search options to filter out servers (optional).
 
         :rtype: list of :class:`Server`
         """
