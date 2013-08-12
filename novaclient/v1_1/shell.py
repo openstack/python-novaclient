@@ -206,11 +206,11 @@ def _boot(cs, args, reservation_id=None, min_count=None, max_count=None):
 @utils.arg('--flavor',
      default=None,
      metavar='<flavor>',
-     help="Flavor ID (see 'nova flavor-list').")
+     help="Name or ID of flavor (see 'nova flavor-list').")
 @utils.arg('--image',
      default=None,
      metavar='<image>',
-     help="Image ID (see 'nova image-list'). ")
+     help="Name or ID of image (see 'nova image-list'). ")
 @utils.arg('--image-with',
      default=[],
      type=_key_value_pairing,
