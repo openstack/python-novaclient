@@ -53,7 +53,7 @@ class FakeClient(object):
                 found = True
                 break
 
-        assert found, 'Expected %s %s; got %s' % \
+        assert found, 'Expected %s; got %s' % \
                               (expected, self.client.callstack)
         if body is not None:
             try:
