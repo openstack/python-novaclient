@@ -1,13 +1,9 @@
-# Install bounded pep8/pyflakes first, then let flake8 install
-pep8==1.4.5
-pyflakes==0.7.2
-flake8==2.0
 hacking>=0.5.6,<0.7
 
 coverage>=3.6
 discover
 fixtures>=0.3.12
-keyring
+keyring>=1.6.1
 mock>=0.8.0
 sphinx>=1.1.2
 testrepository>=0.0.17
