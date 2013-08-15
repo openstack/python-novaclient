@@ -386,7 +386,7 @@ def _poll_for_status(poll_fn, obj_id, action, final_ok_states,
             break
         elif status == "error":
             if not silent:
-                print("\nError %(action)s instance" % locals())
+                print("\nError %s instance" % action)
             break
 
         if not silent:
