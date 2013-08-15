@@ -29,4 +29,30 @@ class FakeClient(fakes.FakeClient, client.Client):
 
 
 class FakeHTTPClient(fakes_v1_1.FakeHTTPClient):
-    pass
+    #
+    # Hosts
+    #
+    def put_os_hosts_sample_host_1(self, body, **kw):
+        return (200, {}, {'host': {'host': 'sample-host_1',
+                      'status': 'enabled'}})
+
+    def put_os_hosts_sample_host_2(self, body, **kw):
+        return (200, {}, {'host': {'host': 'sample-host_2',
+                      'maintenance_mode': 'on_maintenance'}})
+
+    def put_os_hosts_sample_host_3(self, body, **kw):
+        return (200, {}, {'host': {'host': 'sample-host_3',
+                      'status': 'enabled',
+                      'maintenance_mode': 'on_maintenance'}})
+
+    def get_os_hosts_sample_host_reboot(self, **kw):
+        return (200, {}, {'host': {'host': 'sample_host',
+                          'power_action': 'reboot'}})
+
+    def get_os_hosts_sample_host_startup(self, **kw):
+        return (200, {}, {'host': {'host': 'sample_host',
+                          'power_action': 'startup'}})
+
+    def get_os_hosts_sample_host_shutdown(self, **kw):
+        return (200, {}, {'host': {'host': 'sample_host',
+                          'power_action': 'shutdown'}})
