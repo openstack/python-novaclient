@@ -1,4 +1,4 @@
-import cStringIO
+import io
 import prettytable
 import re
 import sys
@@ -43,8 +43,8 @@ class ShellTest(utils.TestCase):
         orig = sys.stdout
         orig_stderr = sys.stderr
         try:
-            sys.stdout = cStringIO.StringIO()
-            sys.stderr = cStringIO.StringIO()
+            sys.stdout = io.BytesIO()
+            sys.stderr = io.BytesIO()
             _shell = novaclient.shell.OpenStackComputeShell()
             _shell.main(argstr.split())
         except SystemExit:

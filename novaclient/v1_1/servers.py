@@ -19,12 +19,11 @@
 Server interface.
 """
 
-import urllib
-
 import six
 
 from novaclient import base
 from novaclient import crypto
+from novaclient.openstack.common.py3kcompat import urlutils
 
 
 REBOOT_SOFT, REBOOT_HARD = 'SOFT', 'HARD'
@@ -382,7 +381,7 @@ class ServerManager(base.BootingManagerWithFind):
             if val:
                 qparams[opt] = val
 
-        query_string = "?%s" % urllib.urlencode(qparams) if qparams else ""
+        query_string = "?%s" % urlutils.urlencode(qparams) if qparams else ""
 
         detail = ""
         if detailed:

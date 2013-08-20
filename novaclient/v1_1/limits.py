@@ -1,8 +1,7 @@
 # Copyright 2011 OpenStack Foundation
 
-import urllib
-
 from novaclient import base
+from novaclient.openstack.common.py3kcompat import urlutils
 
 
 class Limits(base.Resource):
@@ -83,6 +82,6 @@ class LimitsManager(base.Manager):
             opts['reserved'] = 1
         if tenant_id:
             opts['tenant_id'] = tenant_id
-        query_string = "?%s" % urllib.urlencode(opts) if opts else ""
+        query_string = "?%s" % urlutils.urlencode(opts) if opts else ""
 
         return self._get("/limits%s" % query_string, "limits")

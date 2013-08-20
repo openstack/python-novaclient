@@ -1,4 +1,4 @@
-import StringIO
+import io
 import sys
 
 import mock
@@ -112,7 +112,7 @@ class _FakeResult(object):
 
 
 class PrintResultTestCase(test_utils.TestCase):
-    @mock.patch('sys.stdout', StringIO.StringIO())
+    @mock.patch('sys.stdout', io.BytesIO())
     def test_print_list_sort_by_str(self):
         objs = [_FakeResult("k1", 1),
                 _FakeResult("k3", 2),
@@ -129,7 +129,7 @@ class PrintResultTestCase(test_utils.TestCase):
                          '| k3   | 2     |\n'
                          '+------+-------+\n')
 
-    @mock.patch('sys.stdout', StringIO.StringIO())
+    @mock.patch('sys.stdout', io.BytesIO())
     def test_print_list_sort_by_integer(self):
         objs = [_FakeResult("k1", 1),
                 _FakeResult("k3", 2),
@@ -147,7 +147,7 @@ class PrintResultTestCase(test_utils.TestCase):
                          '+------+-------+\n')
 
     # without sorting
-    @mock.patch('sys.stdout', StringIO.StringIO())
+    @mock.patch('sys.stdout', io.BytesIO())
     def test_print_list_sort_by_none(self):
         objs = [_FakeResult("k1", 1),
                 _FakeResult("k3", 3),
