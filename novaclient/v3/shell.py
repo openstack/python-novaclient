@@ -1479,6 +1479,23 @@ def do_get_spice_console(cs, args):
 
 
 @utils.arg('server', metavar='<server>', help='Name or ID of server.')
+@utils.arg('console_type',
+    metavar='<console-type>',
+    help='Type of rdp console ("rdp-html5").')
+def do_get_rdp_console(cs, args):
+    """Get a rdp console to a server."""
+    server = _find_server(cs, args.server)
+    data = server.get_rdp_console(args.console_type)
+
+    class RDPConsole:
+        def __init__(self, console_dict):
+            self.type = console_dict['type']
+            self.url = console_dict['url']
+
+    utils.print_list([RDPConsole(data['console'])], ['Type', 'Url'])
+
+
+@utils.arg('server', metavar='<server>', help='Name or ID of server.')
 @utils.arg('private_key',
     metavar='<private-key>',
     help='Private key (used locally to decrypt password) (Optional). '

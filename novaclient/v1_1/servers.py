@@ -76,6 +76,14 @@ class Server(base.Resource):
         """
         return self.manager.get_spice_console(self, console_type)
 
+    def get_rdp_console(self, console_type):
+        """
+        Get rdp console for a Server.
+
+        :param console_type: Type of console ('rdp-html5')
+        """
+        return self.manager.get_rdp_console(self, console_type)
+
     def get_password(self, private_key=None):
         """
         Get password for a Server.
@@ -642,6 +650,17 @@ class ServerManager(base.BootingManagerWithFind):
         """
 
         return self._action('os-getSPICEConsole', server,
+                            {'type': console_type})[1]
+
+    def get_rdp_console(self, server, console_type):
+        """
+        Get a rdp console for an instance
+
+        :param server: The :class:`Server` (or its ID) to add an IP to.
+        :param console_type: Type of rdp console to get ('rdp-html5')
+        """
+
+        return self._action('os-getRDPConsole', server,
                             {'type': console_type})[1]
 
     def get_password(self, server, private_key=None):

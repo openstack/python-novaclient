@@ -510,6 +510,14 @@ class ServersTest(utils.TestCase):
         cs.servers.get_spice_console(s, 'fake')
         cs.assert_called('POST', '/servers/1234/action')
 
+    def test_get_rdp_console(self):
+        s = cs.servers.get(1234)
+        s.get_rdp_console('fake')
+        cs.assert_called('POST', '/servers/1234/action')
+
+        cs.servers.get_rdp_console(s, 'fake')
+        cs.assert_called('POST', '/servers/1234/action')
+
     def test_create_image(self):
         s = cs.servers.get(1234)
         s.create_image('123')
