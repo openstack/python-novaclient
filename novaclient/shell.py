@@ -28,6 +28,7 @@ import logging
 import os
 import pkgutil
 import sys
+import netrc
 
 import pkg_resources
 import six
@@ -111,6 +112,11 @@ class SecretsHelper(object):
         self.key = "/".join(keys)
         return self.key
 
+    def _pwd_from_netrc(self):
+        nrcInst = netrc.netrc()
+        (login, account, password) = nrcInst.authenticators('novaclient')
+        return password
+
     def _prompt_password(self, verify=True):
         pw = None
         if hasattr(sys.stdin, 'isatty') and sys.stdin.isatty():
@@ -147,6 +153,10 @@ class SecretsHelper(object):
     def password(self):
         if self._validate_string(self.args.os_password):
             return self.args.os_password
+
+        pwdNRC = self._pwd_from_netrc()
+        if pwdNRC: return pwdNRC
+        
         verify_pass = utils.bool_from_str(utils.env("OS_VERIFY_PASSWORD"))
         return self._prompt_password(verify_pass)
 
@@ -578,8 +588,12 @@ class OpenStackComputeShell(object):
 
             if not auth_plugin or not auth_plugin.opts:
                 if not os_username:
-                    raise exc.CommandError("You must provide a username "
-                            "via either --os-username or env[OS_USERNAME]")
+                    nrcInst = netrc.netrc()
+                    (login, acct, pwd) = nrcInst.authenticators('novaclient')
+                    os_username = login
+                    if not os_username:
+                        raise exc.CommandError("You must provide a username "
+                                               "via either --os-username or env[OS_USERNAME]")
 
             if not os_tenant_name and not os_tenant_id:
                 raise exc.CommandError("You must provide a tenant name "
