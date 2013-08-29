@@ -17,9 +17,8 @@
 Hypervisors interface (1.1 extension).
 """
 
-import urllib
-
 from novaclient import base
+from novaclient.openstack.common.py3kcompat import urlutils
 
 
 class Hypervisor(base.Resource):
@@ -49,7 +48,7 @@ class HypervisorManager(base.ManagerWithFind):
         """
         target = 'servers' if servers else 'search'
         url = ('/os-hypervisors/%s/%s' %
-               (urllib.quote(hypervisor_match, safe=''), target))
+               (urlutils.quote(hypervisor_match, safe=''), target))
         return self._list(url, 'hypervisors')
 
     def get(self, hypervisor):

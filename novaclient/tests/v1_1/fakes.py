@@ -15,13 +15,13 @@
 # limitations under the License.
 
 from datetime import datetime
-import urlparse
 
 import six
 
 from novaclient import client as base_client
 from novaclient import exceptions
 from novaclient.openstack.common import strutils
+from novaclient.openstack.common.py3kcompat import urlutils
 from novaclient.tests import fakes
 from novaclient.tests import utils
 from novaclient.v1_1 import client
@@ -64,7 +64,7 @@ class FakeHTTPClient(base_client.HTTPClient):
             assert 'body' in kwargs
 
         # Call the method
-        args = urlparse.parse_qsl(urlparse.urlparse(url)[4])
+        args = urlutils.parse_qsl(urlutils.urlparse(url)[4])
         kwargs.update(args)
         munged_url = url.rsplit('?', 1)[0]
         munged_url = munged_url.strip('/').replace('/', '_').replace('.', '_')

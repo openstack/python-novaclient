@@ -17,11 +17,10 @@
 Volume interface (1.1 extension).
 """
 
-import urllib
-
 import six
 
 from novaclient import base
+from novaclient.openstack.common.py3kcompat import urlutils
 
 
 class Volume(base.Resource):
@@ -90,7 +89,7 @@ class VolumeManager(base.ManagerWithFind):
 
         qparams = dict((k, v) for (k, v) in six.iteritems(search_opts) if v)
 
-        query_string = '?%s' % urllib.urlencode(qparams) if qparams else ''
+        query_string = '?%s' % urlutils.urlencode(qparams) if qparams else ''
 
         if detailed is True:
             return self._list("/volumes/detail%s" % query_string, "volumes")

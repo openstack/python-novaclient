@@ -10,7 +10,6 @@ OpenStack Client interface. Handles the REST calls and responses.
 import logging
 import os
 import time
-import urlparse
 
 import requests
 
@@ -22,6 +21,7 @@ except ImportError:
 from novaclient import exceptions
 from novaclient import service_catalog
 from novaclient import utils
+from novaclient.openstack.common.py3kcompat import urlutils
 
 
 class HTTPClient(object):
@@ -298,7 +298,7 @@ class HTTPClient(object):
                                              extract_token=False)
 
     def authenticate(self):
-        magic_tuple = urlparse.urlsplit(self.auth_url)
+        magic_tuple = urlutils.urlsplit(self.auth_url)
         scheme, netloc, path, query, frag = magic_tuple
         port = magic_tuple.port
         if port is None:
@@ -312,7 +312,7 @@ class HTTPClient(object):
         # TODO(sandy): Assume admin endpoint is 35357 for now.
         # Ideally this is going to have to be provided by the service catalog.
         new_netloc = netloc.replace(':%d' % port, ':%d' % (35357,))
-        admin_url = urlparse.urlunsplit(
+        admin_url = urlutils.urlunsplit(
             (scheme, new_netloc, path, query, frag))
 
         # FIXME(chmouel): This is to handle backward compatibiliy when

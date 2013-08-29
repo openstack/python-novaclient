@@ -17,9 +17,9 @@
 #    under the License.
 
 import datetime
+import io
 import os
 import mock
-import StringIO
 import sys
 import tempfile
 
@@ -71,7 +71,7 @@ class ShellTest(utils.TestCase):
             lambda *_: fakes.FakeClient))
         self.addCleanup(timeutils.clear_time_override)
 
-    @mock.patch('sys.stdout', StringIO.StringIO())
+    @mock.patch('sys.stdout', io.BytesIO())
     def run_command(self, cmd):
         if isinstance(cmd, list):
             self.shell.main(cmd)

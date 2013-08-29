@@ -2,11 +2,10 @@
 """
 Flavor interface.
 """
-import urllib
-
 from novaclient import base
 from novaclient import exceptions
 from novaclient import utils
+from novaclient.openstack.common.py3kcompat import urlutils
 
 
 class Flavor(base.Resource):
@@ -89,7 +88,7 @@ class FlavorManager(base.ManagerWithFind):
         # and flavors from their own projects only.
         if not is_public:
             qparams['is_public'] = is_public
-        query_string = "?%s" % urllib.urlencode(qparams) if qparams else ""
+        query_string = "?%s" % urlutils.urlencode(qparams) if qparams else ""
 
         detail = ""
         if detailed:

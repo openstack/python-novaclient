@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import StringIO
+import io
 
 import mock
 import six
@@ -50,7 +50,7 @@ class ServersTest(utils.TestCase):
             key_name="fakekey",
             files={
                 '/etc/passwd': 'some data',                 # a file
-                '/tmp/foo.txt': StringIO.StringIO('data'),   # a stream
+                '/tmp/foo.txt': io.BytesIO('data'),   # a stream
             }
         )
         cs.assert_called('POST', '/servers')
@@ -94,10 +94,10 @@ class ServersTest(utils.TestCase):
             image=1,
             flavor=1,
             meta={'foo': 'bar'},
-            userdata=StringIO.StringIO('hello moto'),
+            userdata=io.BytesIO('hello moto'),
             files={
                 '/etc/passwd': 'some data',                 # a file
-                '/tmp/foo.txt': StringIO.StringIO('data'),   # a stream
+                '/tmp/foo.txt': io.BytesIO('data'),   # a stream
             },
         )
         cs.assert_called('POST', '/servers')
@@ -113,7 +113,7 @@ class ServersTest(utils.TestCase):
             key_name="fakekey",
             files={
                 '/etc/passwd': 'some data',                 # a file
-                '/tmp/foo.txt': StringIO.StringIO('data'),   # a stream
+                '/tmp/foo.txt': io.BytesIO('data'),   # a stream
             },
         )
         cs.assert_called('POST', '/servers')
@@ -129,7 +129,7 @@ class ServersTest(utils.TestCase):
             key_name="fakekey",
             files={
                 '/etc/passwd': 'some data',                 # a file
-                '/tmp/foo.txt': StringIO.StringIO('data'),   # a stream
+                '/tmp/foo.txt': io.BytesIO('data'),   # a stream
             },
         )
         cs.assert_called('POST', '/servers')
