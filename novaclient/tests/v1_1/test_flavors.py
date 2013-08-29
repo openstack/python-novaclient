@@ -182,6 +182,16 @@ class FlavorsTest(utils.TestCase):
         cs.flavors.delete("flavordelete")
         cs.assert_called('DELETE', '/flavors/flavordelete')
 
+    def test_delete_with_flavor_instance(self):
+        f = cs.flavors.get(2)
+        cs.flavors.delete(f)
+        cs.assert_called('DELETE', '/flavors/2')
+
+    def test_delete_with_flavor_instance_method(self):
+        f = cs.flavors.get(2)
+        f.delete()
+        cs.assert_called('DELETE', '/flavors/2')
+
     def test_set_keys(self):
         f = cs.flavors.get(1)
         f.set_keys({'k1': 'v1'})
