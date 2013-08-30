@@ -129,3 +129,9 @@ class FakeHTTPClient(fakes.FakeHTTPClient):
             return (202, {}, {})
         else:
             return (500, {}, {})
+
+    def post_os_assisted_volume_snapshots(self, **kw):
+        return (202, {}, {'snapshot': {'id': 'blah', 'volumeId': '1'}})
+
+    def delete_os_assisted_volume_snapshots_x(self, **kw):
+        return (202, {}, {})
