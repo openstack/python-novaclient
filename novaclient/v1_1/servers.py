@@ -24,7 +24,7 @@ import six
 from novaclient import base
 from novaclient import crypto
 from novaclient.openstack.common.py3kcompat import urlutils
-
+from novaclient.v1_1.security_groups import SecurityGroup
 
 REBOOT_SOFT, REBOOT_HARD = 'SOFT', 'HARD'
 
@@ -320,6 +320,12 @@ class Server(base.Resource):
         Remove a security group from an instance.
         """
         self.manager.remove_security_group(self, security_group)
+
+    def list_security_group(self):
+        """
+        List security group(s) of an instance.
+        """
+        return self.manager.list_security_group(self)
 
     def evacuate(self, host, on_shared_storage, password=None):
         """
@@ -859,6 +865,16 @@ class ServerManager(base.BootingManagerWithFind):
 
         """
         self._action('removeSecurityGroup', server, {'name': security_group})
+
+    def list_security_group(self, server):
+        """
+        List Security Group(s) of an instance
+
+        :param server: ID of the instance.
+
+        """
+        return self._list('/servers/%s/os-security-groups' %
+                          base.getid(server), 'security_groups', SecurityGroup)
 
     def evacuate(self, server, host, on_shared_storage, password=None):
         """
