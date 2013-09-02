@@ -212,7 +212,12 @@ class ManagerWithFind(Manager):
             list_kwargs['detailed'] = detailed
 
         if 'is_public' in list_argspec.args and 'is_public' in kwargs:
-            list_kwargs['is_public'] = kwargs['is_public']
+            is_public = kwargs['is_public']
+            list_kwargs['is_public'] = is_public
+            if is_public is None:
+                tmp_kwargs = kwargs.copy()
+                del tmp_kwargs['is_public']
+                searches = tmp_kwargs.items()
 
         listing = self.list(**list_kwargs)
 
