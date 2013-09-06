@@ -17,7 +17,7 @@
 #
 
 """
-Python2/Python3 compatibility layer for openstack
+Python2/Python3 compatibility layer for OpenStack
 """
 
 import six
@@ -27,6 +27,7 @@ if six.PY3:
     import urllib.parse
 
     urlencode = urllib.parse.urlencode
+    urljoin = urllib.parse.urljoin
     quote = urllib.parse.quote
     parse_qsl = urllib.parse.parse_qsl
     urlparse = urllib.parse.urlparse
@@ -42,6 +43,7 @@ else:
 
     parse = urlparse
     parse_qsl = parse.parse_qsl
+    urljoin = parse.urljoin
     urlparse = parse.urlparse
     urlsplit = parse.urlsplit
     urlunsplit = parse.urlunsplit
