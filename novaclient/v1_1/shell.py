@@ -2396,7 +2396,7 @@ def do_usage_list(cs, args):
         end = now + datetime.timedelta(days=1)
 
     def simplify_usage(u):
-        simplerows = map(lambda x: x.lower().replace(" ", "_"), rows)
+        simplerows = [x.lower().replace(" ", "_") for x in rows]
 
         setattr(u, simplerows[0], u.tenant_id)
         setattr(u, simplerows[1], "%d" % len(u.server_usages))
@@ -2442,7 +2442,7 @@ def do_usage(cs, args):
         end = now + datetime.timedelta(days=1)
 
     def simplify_usage(u):
-        simplerows = map(lambda x: x.lower().replace(" ", "_"), rows)
+        simplerows = [x.lower().replace(" ", "_") for x in rows]
 
         setattr(u, simplerows[0], "%d" % len(u.server_usages))
         setattr(u, simplerows[1], "%.2f" % u.total_memory_mb_usage)
