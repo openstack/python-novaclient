@@ -17,13 +17,13 @@
 #    under the License.
 
 import datetime
-import io
 import os
 import mock
 import sys
 import tempfile
 
 import fixtures
+import six
 
 import novaclient.client
 from novaclient import exceptions
@@ -71,7 +71,7 @@ class ShellTest(utils.TestCase):
             lambda *_: fakes.FakeClient))
         self.addCleanup(timeutils.clear_time_override)
 
-    @mock.patch('sys.stdout', io.BytesIO())
+    @mock.patch('sys.stdout', six.StringIO())
     def run_command(self, cmd):
         if isinstance(cmd, list):
             self.shell.main(cmd)
