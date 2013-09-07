@@ -27,6 +27,8 @@ import os
 import sys
 import time
 
+import six
+
 from novaclient import exceptions
 from novaclient.openstack.common import strutils
 from novaclient.openstack.common import timeutils
@@ -91,7 +93,7 @@ def _parse_block_device_mapping_v2(args, image):
         spec_dict = dict(v.split('=') for v in device_spec.split(','))
         bdm_dict = {}
 
-        for key, value in spec_dict.iteritems():
+        for key, value in six.iteritems(spec_dict):
             bdm_dict[CLIENT_BDM2_KEYS[key]] = value
 
         # Convert the delete_on_termination to a boolean or set it to true by
