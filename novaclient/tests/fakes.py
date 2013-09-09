@@ -6,6 +6,8 @@ wrong the tests might raise AssertionError. I've indicated in comments the
 places where actual behavior differs from the spec.
 """
 
+from novaclient import base
+
 
 def assert_has_keys(dict, required=[], optional=[]):
     keys = dict.keys()
@@ -71,3 +73,8 @@ class FakeClient(object):
 
     def authenticate(self):
         pass
+
+
+# Fake class that will be used as an extension
+class FakeManager(base.Manager):
+    pass

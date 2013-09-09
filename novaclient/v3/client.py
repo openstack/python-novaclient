@@ -72,7 +72,7 @@ class Client(object):
                                     volume_service_name=volume_service_name,
                                     timings=timings,
                                     bypass_url=bypass_url,
-                                    os_cache=self.os_cache,
+                                    os_cache=os_cache,
                                     http_log_debug=http_log_debug,
                                     cacert=cacert)
 

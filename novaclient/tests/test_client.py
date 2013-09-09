@@ -18,7 +18,10 @@ import mock
 import requests
 
 import novaclient.client
+import novaclient.extension
+import novaclient.tests.fakes as fakes
 import novaclient.v1_1.client
+import novaclient.v3.client
 from novaclient.tests import utils
 
 
@@ -83,6 +86,10 @@ class ClientTest(utils.TestCase):
                                   verify=mock.ANY)]
             self.assertEqual(mock_request.call_args_list, expected)
 
+    def test_get_client_class_v3(self):
+        output = novaclient.client.get_client_class('3')
+        self.assertEqual(output, novaclient.v3.client.Client)
+
     def test_get_client_class_v2(self):
         output = novaclient.client.get_client_class('2')
         self.assertEqual(output, novaclient.v1_1.client.Client)
@@ -139,3 +146,43 @@ class ClientTest(utils.TestCase):
 
         cs.reset_timings()
         self.assertEqual(0, len(cs.get_timings()))
+
+    def test_client_set_management_url_v3(self):
+        cs = novaclient.v3.client.Client("user", "password", "project_id",
+                                         auth_url="foo/v2")
+        cs.set_management_url("blabla")
+        self.assertEqual("blabla", cs.client.management_url)
+
+    def test_client_get_reset_timings_v3(self):
+        cs = novaclient.v3.client.Client("user", "password", "project_id",
+                                           auth_url="foo/v2")
+        self.assertEqual(0, len(cs.get_timings()))
+        cs.client.times.append("somevalue")
+        self.assertEqual(["somevalue"], cs.get_timings())
+
+        cs.reset_timings()
+        self.assertEquals(0, len(cs.get_timings()))
+
+    def test_clent_extensions_v3(self):
+        fake_attribute_name1 = "FakeAttribute1"
+        fake_attribute_name2 = "FakeAttribute2"
+        extensions = [
+            novaclient.extension.Extension(fake_attribute_name1,
+                                fakes),
+            novaclient.extension.Extension(fake_attribute_name2,
+                                utils),
+        ]
+
+        cs = novaclient.v3.client.Client("user", "password", "project_id",
+                                           auth_url="foo/v2",
+                                           extensions=extensions)
+        self.assertTrue(isinstance(getattr(cs, fake_attribute_name1, None),
+                                   fakes.FakeManager))
+        self.assertFalse(hasattr(cs, fake_attribute_name2))
+
+    @mock.patch.object(novaclient.client.HTTPClient, 'authenticate')
+    def test_authenticate_call_v3(self, mock_authenticate):
+        cs = novaclient.v3.client.Client("user", "password", "project_id",
+                                           auth_url="foo/v2")
+        cs.authenticate()
+        self.assertTrue(mock_authenticate.called)
