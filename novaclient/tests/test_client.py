@@ -122,3 +122,20 @@ class ClientTest(utils.TestCase):
                                            auth_url="foo/v2", no_cache=False)
         self.assertEqual(True, cs.os_cache)
         self.assertEqual(True, cs.client.os_cache)
+
+    def test_client_set_management_url_v1_1(self):
+        cs = novaclient.v1_1.client.Client("user", "password", "project_id",
+                                           auth_url="foo/v2")
+        cs.set_management_url("blabla")
+        self.assertEqual("blabla", cs.client.management_url)
+
+    def test_client_get_reset_timings_v1_1(self):
+        cs = novaclient.v1_1.client.Client("user", "password", "project_id",
+                                           auth_url="foo/v2")
+        self.assertEqual(0, len(cs.get_timings()))
+        cs.client.times.append("somevalue")
+        self.assertEqual(1, len(cs.get_timings()))
+        self.assertEqual("somevalue", cs.get_timings()[0])
+
+        cs.reset_timings()
+        self.assertEqual(0, len(cs.get_timings()))
