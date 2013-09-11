@@ -343,7 +343,8 @@ def slugify(value):
     import unicodedata
     if not isinstance(value, unicode):
         value = six.text_type(value)
-    value = unicodedata.normalize('NFKD', value).encode('ascii', 'ignore')
+    value = unicodedata.normalize('NFKD', value).encode('ascii',
+                    'ignore').decode("ascii")
     value = six.text_type(_slugify_strip_re.sub('', value).strip().lower())
     return _slugify_hyphenate_re.sub('-', value)
 
