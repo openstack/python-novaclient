@@ -366,6 +366,13 @@ class BootingManagerWithFind(ManagerWithFind):
             body['server']['block_device_mapping'] = \
                     self._parse_block_device_mapping(block_device_mapping)
         elif block_device_mapping_v2:
+            # Append the image to the list only if we have new style BDMs
+            if image:
+                bdm_dict = {'uuid': image.id, 'source_type': 'image',
+                            'destination_type': 'local', 'boot_index': 0,
+                            'delete_on_termination': True}
+                block_device_mapping_v2.insert(0, bdm_dict)
+
             body['server']['block_device_mapping_v2'] = block_device_mapping_v2
 
         if nics is not None:
