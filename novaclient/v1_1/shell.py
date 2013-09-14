@@ -318,7 +318,7 @@ def _boot(cs, args, reservation_id=None, min_count=None, max_count=None):
      default=None,
      type=int,
      metavar='<number>',
-     help="boot multi instances at a time")
+     help="boot multi instances at a time (limited by quota).")
 @utils.arg('--meta',
      metavar="<key=value>",
      action='append',
