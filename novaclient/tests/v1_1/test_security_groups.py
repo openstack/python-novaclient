@@ -29,7 +29,7 @@ class SecurityGroupsTest(utils.TestCase):
         sg = cs.security_groups.get(1)
         cs.assert_called('GET', '/os-security-groups/1')
         self.assertTrue(isinstance(sg, security_groups.SecurityGroup))
-        self.assertEquals('1', str(sg))
+        self.assertEqual('1', str(sg))
 
     def test_delete_security_group(self):
         sg = cs.security_groups.list()[0]

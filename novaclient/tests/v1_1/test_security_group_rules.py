@@ -60,7 +60,7 @@ class SecurityGroupRulesTest(utils.TestCase):
 
     def test_security_group_rule_str(self):
         sg = cs.security_group_rules.create(1, "tcp", 1, 65535, "10.0.0.0/16")
-        self.assertEquals('1', str(sg))
+        self.assertEqual('1', str(sg))
 
     def test_security_group_rule_del(self):
         sg = cs.security_group_rules.create(1, "tcp", 1, 65535, "10.0.0.0/16")
