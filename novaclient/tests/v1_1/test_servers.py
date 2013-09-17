@@ -42,7 +42,7 @@ class ServersTest(utils.TestCase):
         s2 = cs.servers.list(detailed=True)[0]
         self.assertNotEquals(s1._info, s2._info)
         s1.get()
-        self.assertEquals(s1._info, s2._info)
+        self.assertEqual(s1._info, s2._info)
 
     def test_create_server(self):
         s = cs.servers.create(

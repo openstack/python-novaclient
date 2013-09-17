@@ -171,7 +171,7 @@ class DeprecatedAuthPluginTest(utils.TestCase):
                                auth_system="fakewithauthurl",
                                auth_plugin=plugin)
             cs.client.authenticate()
-            self.assertEquals(cs.client.auth_url, "http://faked/v2.0")
+            self.assertEqual(cs.client.auth_url, "http://faked/v2.0")
 
         test_auth_call()
 
@@ -301,7 +301,7 @@ class AuthPluginTest(utils.TestCase):
         cs = client.Client("username", "password", "project_id",
                     auth_system="fakewithauthurl",
                     auth_plugin=plugin)
-        self.assertEquals(cs.client.auth_url, "http://faked/v2.0")
+        self.assertEqual(cs.client.auth_url, "http://faked/v2.0")
 
     @mock.patch.object(pkg_resources, "iter_entry_points")
     def test_exception_if_no_authenticate(self, mock_iter_entry_points):
