@@ -611,11 +611,13 @@ class FakeHTTPClient(base_client.HTTPClient):
     #
 
     def get_flavors(self, **kw):
-        return (200, {}, {'flavors': [
-            {'id': 1, 'name': '256 MB Server'},
-            {'id': 2, 'name': '512 MB Server'},
-            {'id': 'aa1', 'name': '128 MB Server'}
-        ]})
+        status, header, flavors = self.get_flavors_detail(**kw)
+        for flavor in flavors['flavors']:
+            for k in flavor.keys():
+                if k not in ['id', 'name']:
+                    del flavor[k]
+
+        return (200, {}, flavors)
 
     def get_flavors_detail(self, **kw):
         flavors = {'flavors': [

@@ -227,6 +227,7 @@ def find_resource(manager, name_or_id, **find_args):
             resource = getattr(manager, 'resource_class', None)
             name_attr = resource.NAME_ATTR if resource else 'name'
             kwargs = {name_attr: name_or_id}
+            kwargs.update(find_args)
             return manager.find(**kwargs)
         except exceptions.NotFound:
             msg = "No %s with a name or ID of '%s' exists." % \
