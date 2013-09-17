@@ -68,6 +68,12 @@ class Flavor(base.Resource):
                             "/flavors/%s/os-extra_specs/%s" % (
                             base.getid(self), k))
 
+    def delete(self):
+        """
+        Delete this flavor.
+        """
+        self.manager.delete(self)
+
 
 class FlavorManager(base.ManagerWithFind):
     """
