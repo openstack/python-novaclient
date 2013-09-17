@@ -122,13 +122,6 @@ def _parse_block_device_mapping_v2(args, image):
                     'guest_format': 'swap', 'volume_size': args.swap}
         bdm.append(bdm_dict)
 
-    # Append the image to the list only if we have new style BDMs
-    if bdm and not args.block_device_mapping and image:
-        bdm_dict = {'uuid': image.id, 'source_type': 'image',
-                    'destination_type': 'local', 'boot_index': 0,
-                    'delete_on_termination': True}
-        bdm.insert(0, bdm_dict)
-
     return bdm
 
 
