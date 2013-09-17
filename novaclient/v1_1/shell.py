@@ -3023,19 +3023,26 @@ def do_ssh(cs, args):
 
 _quota_resources = ['instances', 'cores', 'ram', 'volumes', 'gigabytes',
                     'floating_ips', 'fixed_ips', 'metadata_items',
-                    'injected_files', 'key_pairs',
-                    'injected_file_content_bytes', 'injected_file_path_bytes',
+                    'injected_files', 'injected_file_content_bytes',
+                    'injected_file_path_bytes', 'key_pairs',
                     'security_groups', 'security_group_rules']
 
 
 def _quota_show(quotas):
-    quota_dict = {}
+    class FormattedQuota(object):
+        def __init__(self, key, value):
+            setattr(self, 'quota', key)
+            setattr(self, 'limit', value)
+
+    quota_list = []
     for resource in _quota_resources:
         try:
-            quota_dict[resource] = getattr(quotas, resource)
+            quota = FormattedQuota(resource, getattr(quotas, resource))
+            quota_list.append(quota)
         except AttributeError:
             pass
-    utils.print_dict(quota_dict)
+    columns = ['Quota', 'Limit']
+    utils.print_list(quota_list, columns)
 
 
 def _quota_update(manager, identifier, args):
