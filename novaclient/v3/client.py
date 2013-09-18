@@ -15,6 +15,7 @@
 #    under the License.
 
 from novaclient import client
+from novaclient.v3 import hosts
 
 
 class Client(object):
@@ -45,7 +46,11 @@ class Client(object):
                   http_log_debug=False, auth_system='keystone',
                   auth_plugin=None,
                   cacert=None, tenant_id=None):
+        self.projectid = project_id
+        self.tenant_id = tenant_id
+        self.os_cache = os_cache or not no_cache
         #TODO(bnemec): Add back in v3 extensions
+        self.hosts = hosts.HostManager(self)
 
         # Add in any extensions...
         if extensions:
