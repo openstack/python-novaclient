@@ -3002,8 +3002,9 @@ def do_credentials(cs, _args):
     dest='private',
     action='store_true',
     default=False,
-    help='Optional flag to indicate whether to use private address '
-         'attached to a server. (Default=False)')
+    help='Optional flag to indicate whether to only use private address '
+         'attached to an instance. (Default=False). If no public address is '
+         'found try private address')
 @utils.arg('--ipv6',
     dest='ipv6',
     action='store_true',
@@ -3024,6 +3025,10 @@ def do_ssh(cs, args):
     addresses = _find_server(cs, args.server).addresses
     address_type = "private" if args.private else "public"
     version = 6 if args.ipv6 else 4
+
+    if (address_type == "public" and address_type not in addresses and
+            "private" in addresses):
+        address_type = "private"
 
     if address_type not in addresses:
         print("ERROR: No %s addresses found for '%s'." % (address_type,
