@@ -679,6 +679,10 @@ class ShellTest(utils.TestCase):
         self.run_command('list')
         self.assert_called('GET', '/servers/detail')
 
+    def test_list_minimal(self):
+        self.run_command('list --minimal')
+        self.assert_called('GET', '/servers')
+
     def test_list_with_images(self):
         self.run_command('list --image 1')
         self.assert_called('GET', '/servers/detail?image=1')

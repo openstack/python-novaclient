@@ -975,6 +975,11 @@ def do_image_delete(cs, args):
     metavar='<fields>',
     help='Comma-separated list of fields to display. '
          'Use the show command to see which fields are available.')
+@utils.arg('--minimal',
+    dest='minimal',
+    action="store_true",
+    default=False,
+    help='Get only uuid and name.')
 def do_list(cs, args):
     """List active servers."""
     imageid = None
@@ -1010,7 +1015,10 @@ def do_list(cs, args):
 
     id_col = 'ID'
 
-    servers = cs.servers.list(search_opts=search_opts)
+    detailed = not args.minimal
+
+    servers = cs.servers.list(detailed=detailed,
+                              search_opts=search_opts)
     convert = [('OS-EXT-SRV-ATTR:host', 'host'),
                ('OS-EXT-STS:task_state', 'task_state'),
                ('OS-EXT-SRV-ATTR:instance_name', 'instance_name'),
@@ -1018,7 +1026,11 @@ def do_list(cs, args):
                ('hostId', 'host_id')]
     _translate_keys(servers, convert)
     _translate_extended_states(servers)
-    if field_titles:
+    if args.minimal:
+        columns = [
+            id_col,
+            'Name']
+    elif field_titles:
         columns = [id_col] + field_titles
     else:
         columns = [
