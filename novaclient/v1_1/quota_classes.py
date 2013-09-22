@@ -58,7 +58,7 @@ class QuotaClassSetManager(base.Manager):
                 'security_groups': security_groups,
                 'security_group_rules': security_group_rules}}
 
-        for key in body['quota_class_set'].keys():
+        for key in list(body['quota_class_set']):
             if body['quota_class_set'][key] is None:
                 body['quota_class_set'].pop(key)
 
