@@ -488,7 +488,7 @@ class FakeHTTPClient(base_client.HTTPClient):
         _body = None
         resp = 202
         assert len(body.keys()) == 1
-        action = body.keys()[0]
+        action = list(body)[0]
         if action == 'reboot':
             assert body[action].keys() == ['type']
             assert body[action]['type'] in ['HARD', 'SOFT']

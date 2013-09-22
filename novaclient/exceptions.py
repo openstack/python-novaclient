@@ -206,7 +206,7 @@ def from_response(response, body, url, method=None):
         details = "n/a"
 
         if hasattr(body, 'keys'):
-            error = body[body.keys()[0]]
+            error = body[list(body)[0]]
             message = error.get('message', None)
             details = error.get('details', None)
 
