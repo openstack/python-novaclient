@@ -391,7 +391,7 @@ class FakeHTTPClient(base_client.HTTPClient):
         return (200, {}, r)
 
     def put_servers_1234(self, body, **kw):
-        assert body.keys() == ['server']
+        assert list(body) == ['server']
         fakes.assert_has_keys(body['server'], optional=['name', 'adminPass'])
         return (204, {}, body)
 
@@ -490,7 +490,7 @@ class FakeHTTPClient(base_client.HTTPClient):
         assert len(body.keys()) == 1
         action = body.keys()[0]
         if action == 'reboot':
-            assert body[action].keys() == ['type']
+            assert list(body[action]) == ['type']
             assert body[action]['type'] in ['HARD', 'SOFT']
         elif action == 'rebuild':
             keys = body[action].keys()
@@ -539,39 +539,39 @@ class FakeHTTPClient(base_client.HTTPClient):
         elif action == 'unlock':
             assert body[action] is None
         elif action == 'addFixedIp':
-            assert body[action].keys() == ['networkId']
+            assert list(body[action]) == ['networkId']
         elif action == 'removeFixedIp':
-            assert body[action].keys() == ['address']
+            assert list(body[action]) == ['address']
         elif action == 'addFloatingIp':
-            assert (body[action].keys() == ['address'] or
-                    body[action].keys() == ['fixed_address',
+            assert (list(body[action]) == ['address'] or
+                    list(body[action]) == ['fixed_address',
                                                 'address'])
         elif action == 'removeFloatingIp':
-            assert body[action].keys() == ['address']
+            assert list(body[action]) == ['address']
         elif action == 'createImage':
             assert set(body[action].keys()) == set(['name', 'metadata'])
             _headers = dict(location="http://blah/images/456")
         elif action == 'changePassword':
-            assert body[action].keys() == ['adminPass']
+            assert list(body[action]) == ['adminPass']
         elif action == 'os-getConsoleOutput':
-            assert body[action].keys() == ['length']
+            assert list(body[action]) == ['length']
             return (202, {}, {'output': 'foo'})
         elif action == 'os-getVNCConsole':
-            assert body[action].keys() == ['type']
+            assert list(body[action]) == ['type']
         elif action == 'os-getSPICEConsole':
-            assert body[action].keys() == ['type']
+            assert list(body[action]) == ['type']
         elif action == 'os-migrateLive':
             assert set(body[action].keys()) == set(['host',
                                                     'block_migration',
                                                     'disk_over_commit'])
         elif action == 'os-resetState':
-            assert body[action].keys() == ['state']
+            assert list(body[action]) == ['state']
         elif action == 'resetNetwork':
             assert body[action] is None
         elif action == 'addSecurityGroup':
-            assert body[action].keys() == ['name']
+            assert list(body[action]) == ['name']
         elif action == 'removeSecurityGroup':
-            assert body[action].keys() == ['name']
+            assert list(body[action]) == ['name']
         elif action == 'createBackup':
             assert set(body[action].keys()) == set(['name',
                                                     'backup_type',
@@ -728,7 +728,7 @@ class FakeHTTPClient(base_client.HTTPClient):
             {'extra_specs': {"k3": "v3"}})
 
     def post_flavors_1_os_extra_specs(self, body, **kw):
-        assert body.keys() == ['extra_specs']
+        assert list(body) == ['extra_specs']
         fakes.assert_has_keys(body['extra_specs'],
                               required=['k1'])
         return (200,
@@ -911,12 +911,12 @@ class FakeHTTPClient(base_client.HTTPClient):
         return (200, {}, {'image': self.get_images_detail()[2]['images'][1]})
 
     def post_images(self, body, **kw):
-        assert body.keys() == ['image']
+        assert list(body) == ['image']
         fakes.assert_has_keys(body['image'], required=['serverId', 'name'])
         return (202, {}, self.get_images_1()[2])
 
     def post_images_1_metadata(self, body, **kw):
-        assert body.keys() == ['metadata']
+        assert list(body) == ['metadata']
         fakes.assert_has_keys(body['metadata'],
                               required=['test_key'])
         return (200,
@@ -947,7 +947,7 @@ class FakeHTTPClient(base_client.HTTPClient):
         return (202, {}, None)
 
     def post_os_keypairs(self, body, **kw):
-        assert body.keys() == ['keypair']
+        assert list(body) == ['keypair']
         fakes.assert_has_keys(body['keypair'],
                               required=['name'])
         r = {'keypair': self.get_os_keypairs()[2]['keypairs'][0]}
@@ -1085,7 +1085,7 @@ class FakeHTTPClient(base_client.HTTPClient):
                       'security_group_rules': 1}})
 
     def put_os_quota_sets_97f4c221bff44578b0300df4ef119353(self, body, **kw):
-        assert body.keys() == ['quota_set']
+        assert list(body) == ['quota_set']
         fakes.assert_has_keys(body['quota_set'],
                               required=['tenant_id'])
         return (200, {}, {'quota_set': {
@@ -1132,7 +1132,7 @@ class FakeHTTPClient(base_client.HTTPClient):
                       'security_group_rules': 1}})
 
     def put_os_quota_class_sets_test(self, body, **kw):
-        assert body.keys() == ['quota_class_set']
+        assert list(body) == ['quota_class_set']
         fakes.assert_has_keys(body['quota_class_set'],
                               required=['class_name'])
         return (200, {}, {'quota_class_set': {
@@ -1153,7 +1153,7 @@ class FakeHTTPClient(base_client.HTTPClient):
 
     def put_os_quota_class_sets_97f4c221bff44578b0300df4ef119353(self,
                                                             body, **kw):
-        assert body.keys() == ['quota_class_set']
+        assert list(body) == ['quota_class_set']
         fakes.assert_has_keys(body['quota_class_set'],
                               required=['class_name'])
         return (200, {}, {'quota_class_set': {
@@ -1219,7 +1219,7 @@ class FakeHTTPClient(base_client.HTTPClient):
         return (202, {}, None)
 
     def post_os_security_groups(self, body, **kw):
-        assert body.keys() == ['security_group']
+        assert list(body) == ['security_group']
         fakes.assert_has_keys(body['security_group'],
                               required=['name', 'description'])
         r = {'security_group':
@@ -1227,7 +1227,7 @@ class FakeHTTPClient(base_client.HTTPClient):
         return (202, {}, r)
 
     def put_os_security_groups_1(self, body, **kw):
-        assert body.keys() == ['security_group']
+        assert list(body) == ['security_group']
         fakes.assert_has_keys(body['security_group'],
                               required=['name', 'description'])
         return (205, {}, body)
@@ -1252,7 +1252,7 @@ class FakeHTTPClient(base_client.HTTPClient):
         return (202, {}, None)
 
     def post_os_security_group_rules(self, body, **kw):
-        assert body.keys() == ['security_group_rule']
+        assert list(body) == ['security_group_rule']
         fakes.assert_has_keys(body['security_group_rule'],
             required=['parent_group_id'],
             optional=['group_id', 'ip_protocol', 'from_port',
