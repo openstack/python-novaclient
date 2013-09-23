@@ -30,11 +30,11 @@ Contents:
 Contributing
 ============
 
-Code is hosted `on GitHub`_. Submit bugs to the Nova project on 
+Code is hosted at `git.openstack.org`_. Submit bugs to the Nova project on
 `Launchpad`_. Submit code to the openstack/python-novaclient project using
 `Gerrit`_.
 
-.. _on GitHub: https://github.com/openstack/python-novaclient
+.. _git.openstack.org: https://git.openstack.org/cgit/openstack/python-novaclient
 .. _Launchpad: https://launchpad.net/nova
 .. _Gerrit: http://wiki.openstack.org/GerritWorkflow
 
