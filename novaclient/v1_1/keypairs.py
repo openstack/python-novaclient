@@ -32,7 +32,15 @@ class Keypair(base.Resource):
         dico = 'keypair' in info and \
             info['keypair'] or info
         for (k, v) in dico.items():
-            setattr(self, k, v)
+            # NOTE(rpodolyaka): keypair name allows us to uniquely identify
+            #                   a specific keypair, while its id attribute
+            #                   is nothing more than an implementation
+            #                   detail. We can safely omit the id attribute
+            #                   here to ensure setattr() won't raise
+            #                   AttributeError trying to set read-only
+            #                   property id
+            if k != 'id':
+                setattr(self, k, v)
 
     @property
     def id(self):
