@@ -16,9 +16,8 @@
 migration interface
 """
 
-import urllib
-
 from novaclient import base
+from novaclient.openstack.common.py3kcompat import urlutils
 from novaclient import utils
 
 
@@ -45,7 +44,7 @@ class MigrationManager(base.ManagerWithFind):
         if cell_name:
             opts['cell_name'] = cell_name
 
-        query_string = "?%s" % urllib.urlencode(opts) if opts else ""
+        query_string = "?%s" % urlutils.urlencode(opts) if opts else ""
 
         return self._list("/os-migrations%s" % query_string, "migrations")
 

@@ -493,7 +493,7 @@ class FakeHTTPClient(base_client.HTTPClient):
             assert list(body[action]) == ['type']
             assert body[action]['type'] in ['HARD', 'SOFT']
         elif action == 'rebuild':
-            keys = body[action].keys()
+            keys = list(body[action])
             if 'adminPass' in keys:
                 keys.remove('adminPass')
             assert 'imageRef' in keys
@@ -573,11 +573,11 @@ class FakeHTTPClient(base_client.HTTPClient):
         elif action == 'removeSecurityGroup':
             assert list(body[action]) == ['name']
         elif action == 'createBackup':
-            assert set(body[action].keys()) == set(['name',
-                                                    'backup_type',
-                                                    'rotation'])
+            assert set(body[action]) == set(['name',
+                                             'backup_type',
+                                             'rotation'])
         elif action == 'evacuate':
-            keys = body[action].keys()
+            keys = list(body[action])
             if 'adminPass' in keys:
                 keys.remove('adminPass')
             assert set(keys) == set(['host', 'onSharedStorage'])
