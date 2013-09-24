@@ -360,7 +360,7 @@ class BootingManagerWithFind(ManagerWithFind):
                     data = file_or_string
                 personality.append({
                     'path': filepath,
-                    'contents': data.encode('base64'),
+                    'contents': base64.b64encode(data.encode('utf-8')),
                 })
 
         if availability_zone:
