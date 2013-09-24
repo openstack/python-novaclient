@@ -613,7 +613,7 @@ class FakeHTTPClient(base_client.HTTPClient):
     def get_flavors(self, **kw):
         status, header, flavors = self.get_flavors_detail(**kw)
         for flavor in flavors['flavors']:
-            for k in flavor.keys():
+            for k in list(flavor):
                 if k not in ['id', 'name']:
                     del flavor[k]
 
