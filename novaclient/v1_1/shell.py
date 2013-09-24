@@ -206,7 +206,8 @@ def _boot(cs, args, reservation_id=None, min_count=None, max_count=None):
 
     block_device_mapping_v2 = _parse_block_device_mapping_v2(args, image)
 
-    n_boot_args = len(filter(None, (image, args.boot_volume, args.snapshot)))
+    n_boot_args = len(list(filter(
+        bool, (image, args.boot_volume, args.snapshot))))
     have_bdm = block_device_mapping_v2 or block_device_mapping
 
     # Fail if more than one boot devices are present
