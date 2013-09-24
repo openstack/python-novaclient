@@ -113,7 +113,7 @@ class FakeHTTPClient(fakes.FakeHTTPClient):
 
     def post_os_baremetal_nodes_1_action(self, **kw):
         body = kw['body']
-        action = body.keys()[0]
+        action = list(body)[0]
         if action == "add_interface":
             return (
                 200, {}, {
