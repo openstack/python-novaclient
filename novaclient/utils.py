@@ -167,9 +167,14 @@ def print_list(objs, fields, formatters={}, sortby_index=None):
         pt.add_row(row)
 
     if sortby is not None:
-        print(strutils.safe_encode(pt.get_string(sortby=sortby)))
+        result = strutils.safe_encode(pt.get_string(sortby=sortby))
     else:
-        print(strutils.safe_encode(pt.get_string()))
+        result = strutils.safe_encode(pt.get_string())
+
+    if six.PY3:
+        result = result.decode()
+
+    print(result)
 
 
 def print_dict(d, dict_property="Property", dict_value="Value", wrap=0):
