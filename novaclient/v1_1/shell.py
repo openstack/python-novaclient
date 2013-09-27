@@ -24,6 +24,7 @@ import datetime
 import getpass
 import locale
 import os
+import six
 import sys
 import time
 
@@ -2092,7 +2093,8 @@ def _get_secgroup(cs, secgroup):
         encoding = (locale.getpreferredencoding() or
             sys.stdin.encoding or
             'UTF-8')
-        s.name = s.name.encode(encoding)
+        if not six.PY3:
+            s.name = s.name.encode(encoding)
         if secgroup == s.name:
             if match_found != False:
                 msg = ("Multiple security group matches found for name"
