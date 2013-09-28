@@ -187,6 +187,24 @@ class Server(base.Resource):
         """
         self.manager.unrescue(self)
 
+    def shelve(self):
+        """
+        Shelve -- Shelve the server.
+        """
+        self.manager.shelve(self)
+
+    def shelve_offload(self):
+        """
+        Shelve_offload -- Remove a shelved server from the compute node.
+        """
+        self.manager.shelve_offload(self)
+
+    def unshelve(self):
+        """
+        Unshelve -- Unshelve the server.
+        """
+        self.manager.unshelve(self)
+
     def diagnostics(self):
         """Diagnostics -- Retrieve server diagnostics."""
         return self.manager.diagnostics(self)
@@ -573,6 +591,24 @@ class ServerManager(base.BootingManagerWithFind):
         Unrescue the server.
         """
         self._action('unrescue', server, None)
+
+    def shelve(self, server):
+        """
+        Shelve the server.
+        """
+        self._action('shelve', server, None)
+
+    def shelve_offload(self, server):
+        """
+        Remove a shelved instance from the compute node.
+        """
+        self._action('shelveOffload', server, None)
+
+    def unshelve(self, server):
+        """
+        Unshelve the server.
+        """
+        self._action('unshelve', server, None)
 
     def diagnostics(self, server):
         """Retrieve server diagnostics."""

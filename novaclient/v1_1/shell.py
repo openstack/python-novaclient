@@ -1337,6 +1337,24 @@ def do_unrescue(cs, args):
 
 
 @utils.arg('server', metavar='<server>', help='Name or ID of server.')
+def do_shelve(cs, args):
+    """Shelve a server."""
+    _find_server(cs, args.server).shelve()
+
+
+@utils.arg('server', metavar='<server>', help='Name or ID of server.')
+def do_shelve_offload(cs, args):
+    """Remove a shelved server from the compute node."""
+    _find_server(cs, args.server).shelve_offload()
+
+
+@utils.arg('server', metavar='<server>', help='Name or ID of server.')
+def do_unshelve(cs, args):
+    """Unshelve a server."""
+    _find_server(cs, args.server).unshelve()
+
+
+@utils.arg('server', metavar='<server>', help='Name or ID of server.')
 def do_diagnostics(cs, args):
     """Retrieve server diagnostics."""
     server = _find_server(cs, args.server)
