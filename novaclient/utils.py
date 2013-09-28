@@ -204,8 +204,11 @@ def find_resource(manager, name_or_id, **find_args):
 
     # now try to get entity as uuid
     try:
-        uuid.UUID(strutils.safe_encode(name_or_id))
-        return manager.get(name_or_id)
+        tmp_id = strutils.safe_encode(name_or_id)
+        if six.PY3:
+            tmp_id = tmp_id.decode()
+        uuid.UUID(tmp_id)
+        return manager.get(tmp_id)
     except (TypeError, ValueError, exceptions.NotFound):
         pass
 
