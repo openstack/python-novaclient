@@ -36,7 +36,7 @@ class MigrationsTest(utils.TestCase):
         ml = cs.migrations.list('host1', 'finished', 'child1')
 
         cs.assert_called('GET',
-                         '/os-migrations?status=finished&host=host1'
-                         '&cell_name=child1')
+                         '/os-migrations?cell_name=child1&host=host1'
+                         '&status=finished')
         for m in ml:
             self.assertTrue(isinstance(m, migrations.Migration))
