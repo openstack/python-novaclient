@@ -544,8 +544,8 @@ class FakeHTTPClient(base_client.HTTPClient):
             assert list(body[action]) == ['address']
         elif action == 'addFloatingIp':
             assert (list(body[action]) == ['address'] or
-                    list(body[action]) == ['fixed_address',
-                                                'address'])
+                    sorted(list(body[action])) == ['address',
+                                                   'fixed_address'])
         elif action == 'removeFloatingIp':
             assert list(body[action]) == ['address']
         elif action == 'createImage':
