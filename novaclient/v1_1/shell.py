@@ -1422,7 +1422,7 @@ def do_meta(cs, args):
     if args.action == 'set':
         cs.servers.set_meta(server, metadata)
     elif args.action == 'delete':
-        cs.servers.delete_meta(server, metadata.keys())
+        cs.servers.delete_meta(server, sorted(metadata.keys(), reverse=True))
 
 
 def _print_server(cs, args):
