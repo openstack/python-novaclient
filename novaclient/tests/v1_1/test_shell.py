@@ -16,6 +16,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import base64
 import datetime
 import os
 import mock
@@ -174,7 +175,8 @@ class ShellTest(utils.TestCase):
 
     def test_boot_user_data(self):
         testfile = os.path.join(os.path.dirname(__file__), 'testfile.txt')
-        expected_file_data = open(testfile).read().encode('base64').strip()
+        data = open(testfile).read()
+        expected_file_data = base64.b64encode(data.encode('utf-8'))
         self.run_command(
             'boot --flavor 1 --image 1 --user_data %s some-server' % testfile)
         self.assert_called_anytime(
@@ -514,7 +516,8 @@ class ShellTest(utils.TestCase):
 
     def test_boot_files(self):
         testfile = os.path.join(os.path.dirname(__file__), 'testfile.txt')
-        expected_file_data = open(testfile).read().encode('base64')
+        data = open(testfile).read()
+        expected_file_data = base64.b64encode(data.encode('utf-8'))
 
         cmd = ('boot some-server --flavor 1 --image 1'
                ' --file /tmp/foo=%s --file /tmp/bar=%s')
