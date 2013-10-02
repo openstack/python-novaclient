@@ -1,6 +1,6 @@
-import io
 import prettytable
 import re
+import six
 import sys
 
 from distutils.version import StrictVersion
@@ -43,8 +43,8 @@ class ShellTest(utils.TestCase):
         orig = sys.stdout
         orig_stderr = sys.stderr
         try:
-            sys.stdout = io.BytesIO()
-            sys.stderr = io.BytesIO()
+            sys.stdout = six.StringIO()
+            sys.stderr = six.StringIO()
             _shell = novaclient.shell.OpenStackComputeShell()
             _shell.main(argstr.split())
         except SystemExit:
