@@ -44,7 +44,11 @@ class MigrationManager(base.ManagerWithFind):
         if cell_name:
             opts['cell_name'] = cell_name
 
-        query_string = "?%s" % urlutils.urlencode(opts) if opts else ""
+        # Transform the dict to a sequence of two-element tuples in fixed
+        # order, then the encoded string will be consistent in Python 2&3.
+        new_opts = sorted(opts.items(), key=lambda x: x[0])
+
+        query_string = "?%s" % urlutils.urlencode(new_opts) if new_opts else ""
 
         return self._list("/os-migrations%s" % query_string, "migrations")
 
