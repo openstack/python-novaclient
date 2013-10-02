@@ -771,6 +771,19 @@ class ShellTest(utils.TestCase):
         self.run_command('unrescue sample-server')
         self.assert_called('POST', '/servers/1234/action', {'unrescue': None})
 
+    def test_shelve(self):
+        self.run_command('shelve sample-server')
+        self.assert_called('POST', '/servers/1234/action', {'shelve': None})
+
+    def test_shelve_offload(self):
+        self.run_command('shelve-offload sample-server')
+        self.assert_called('POST', '/servers/1234/action',
+                           {'shelveOffload': None})
+
+    def test_unshelve(self):
+        self.run_command('unshelve sample-server')
+        self.assert_called('POST', '/servers/1234/action', {'unshelve': None})
+
     def test_migrate(self):
         self.run_command('migrate sample-server')
         self.assert_called('POST', '/servers/1234/action', {'migrate': None})
