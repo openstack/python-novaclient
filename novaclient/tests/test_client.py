@@ -161,7 +161,7 @@ class ClientTest(utils.TestCase):
         self.assertEqual(["somevalue"], cs.get_timings())
 
         cs.reset_timings()
-        self.assertEquals(0, len(cs.get_timings()))
+        self.assertEqual(0, len(cs.get_timings()))
 
     def test_clent_extensions_v3(self):
         fake_attribute_name1 = "FakeAttribute1"
