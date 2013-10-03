@@ -24,6 +24,8 @@ import novaclient.v1_1.client
 import novaclient.v3.client
 from novaclient.tests import utils
 
+import json
+
 
 class ClientTest(utils.TestCase):
 
@@ -71,8 +73,16 @@ class ClientTest(utils.TestCase):
             reauth_headers = {'Content-Type': 'application/json',
                               'Accept': 'application/json',
                               'User-Agent': 'python-novaclient'}
-            data = ('{"auth": {"tenantName": "project", "passwordCredentials":'
-                    ' {"username": "user", "password": "password"}}}')
+            data = {
+                "auth": {
+                    "tenantName": "project",
+                    "passwordCredentials": {
+                        "username": "user",
+                        "password": "password"
+                        }
+                }
+            }
+
             expected = [mock.call('GET',
                                   'http://example.com/servers/detail',
                                   timeout=mock.ANY,
@@ -82,7 +92,7 @@ class ClientTest(utils.TestCase):
                                   timeout=mock.ANY,
                                   headers=reauth_headers,
                                   allow_redirects=mock.ANY,
-                                  data=data,
+                                  data=json.dumps(data),
                                   verify=mock.ANY)]
             self.assertEqual(mock_request.call_args_list, expected)
 
