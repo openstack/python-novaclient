@@ -353,7 +353,8 @@ class BootingManagerWithFind(ManagerWithFind):
         # either an open file *or* some contents as files here.
         if files:
             personality = body['server']['personality'] = []
-            for filepath, file_or_string in files.items():
+            for filepath, file_or_string in sorted(files.items(),
+                                                   key=lambda x: x[0]):
                 if hasattr(file_or_string, 'read'):
                     data = file_or_string.read()
                 else:
