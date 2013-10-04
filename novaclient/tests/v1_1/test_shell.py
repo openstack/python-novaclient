@@ -21,7 +21,6 @@ import datetime
 import os
 import mock
 import sys
-import tempfile
 
 import fixtures
 import six
@@ -646,7 +645,7 @@ class ShellTest(utils.TestCase):
         self.assert_called('DELETE', '/images/1/metadata/test_key')
 
     def test_image_meta_bad_action(self):
-        tmp = tempfile.TemporaryFile()
+        tmp = six.StringIO()
 
         # Suppress stdout and stderr
         (stdout, stderr) = (sys.stdout, sys.stderr)
