@@ -3410,7 +3410,8 @@ def _treeizeAvailabilityZone(zone):
     result.append(az)
 
     if zone.hosts is not None:
-        for (host, services) in zone.hosts.items():
+        zone_hosts = sorted(zone.hosts.items(), key=lambda x: x[0])
+        for (host, services) in zone_hosts:
             # Host tree view item
             az = AvailabilityZone(zone.manager,
                                   copy.deepcopy(zone._info), zone._loaded)
