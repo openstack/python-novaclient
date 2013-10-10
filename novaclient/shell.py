@@ -629,15 +629,9 @@ class OpenStackComputeShell(object):
                 self.cs.client.tenant_id = tenant_id
                 self.cs.client.auth_token = auth_token
                 self.cs.client.management_url = management_url
-                # Try to auth with the given info, if it fails
-                # go into password mode...
-                try:
-                    self.cs.authenticate()
-                    use_pw = False
-                except (exc.Unauthorized, exc.AuthorizationFailure):
-                    # Likely it expired or just didn't work...
-                    self.cs.client.auth_token = None
-                    self.cs.client.management_url = None
+                # authenticate just sets up some values in this case, no REST
+                # calls
+                self.cs.authenticate()
             if use_pw:
                 # Auth using token must have failed or not happened
                 # at all, so now switch to password mode and save
