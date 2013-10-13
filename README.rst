@@ -48,7 +48,7 @@ variables as well::
     export OS_AUTH_URL=http://example.com:8774/v1.1/
     export OS_COMPUTE_API_VERSION=1.1
 
-If you are using Keystone, you need to set the NOVA_URL to the keystone
+If you are using Keystone, you need to set the OS_AUTH_URL to the keystone
 endpoint::
 
     export OS_AUTH_URL=http://example.com:5000/v2.0/
