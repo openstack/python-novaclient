@@ -180,7 +180,7 @@ def print_list(objs, fields, formatters={}, sortby_index=None):
 def print_dict(d, dict_property="Property", dict_value="Value", wrap=0):
     pt = prettytable.PrettyTable([dict_property, dict_value], caching=False)
     pt.align = 'l'
-    for k, v in six.iteritems(d):
+    for k, v in sorted(d.items()):
         # convert dict to str to check length
         if isinstance(v, dict):
             v = str(v)
