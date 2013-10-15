@@ -9,14 +9,6 @@ from novaclient import exceptions
 from novaclient.tests import utils
 
 
-class MockKeyringSaver(object):
-    def __init__(self):
-        self.saved = []
-
-    def save(self, *args):
-        self.saved = args
-
-
 class AuthenticateAgainstKeystoneTests(utils.TestCase):
     def test_authenticate_success(self):
         cs = client.Client("username", "password", "project_id",
@@ -393,8 +385,7 @@ class AuthenticateAgainstKeystoneTests(utils.TestCase):
             self.assertEqual(cs.client.auth_token, token_id)
 
     def test_authenticate_with_token_failure(self):
-        cs = client.Client("username", None, "project_id", "auth_url/v2.0",
-                           service_type='compute')
+        cs = client.Client("username", None, "project_id", "auth_url/v2.0")
         cs.client.auth_token = "FAKE_ID"
         resp = {"unauthorized": {"message": "Unauthorized", "code": "401"}}
         auth_response = utils.TestResponse({
@@ -406,92 +397,6 @@ class AuthenticateAgainstKeystoneTests(utils.TestCase):
 
         with mock.patch.object(requests.Session, "request", mock_request):
             self.assertRaises(exceptions.Unauthorized, cs.client.authenticate)
-
-    def test_authenticate_with_os_cache_and_failure(self):
-        cs = client.Client("username", "password", "project_id",
-                           "auth_url/v2.0", service_type='compute')
-        cs.client.os_cache = True
-        cs.client.keyring_saver = MockKeyringSaver()
-        cs.client.auth_token = "FAKE_ID"
-
-        catalog_managment_url = u"http://localhost:8774/v1.1"
-
-        headers_get = {
-            'User-Agent': cs.client.USER_AGENT,
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-            'X-Auth-Token': "FAKE_ID"}
-        headers_post = {
-            'User-Agent': cs.client.USER_AGENT,
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'}
-        token_url_get = cs.client.auth_url + "/tokens/FAKE_ID"
-        token_url_post = cs.client.auth_url + "/tokens"
-        resp = {
-            "access": {
-                "token": {
-                    "expires": "12345",
-                    "id": "FAKE_ID_NEW",
-                    "tenant": {
-                        "id": "FAKE_TENANT_ID",
-                    }
-                },
-                "serviceCatalog": [
-                    {
-                        "type": "compute",
-                        "endpoints": [
-                            {
-                                "region": "RegionOne",
-                                "adminURL": catalog_managment_url,
-                                "internalURL": catalog_managment_url,
-                                "publicURL": catalog_managment_url,
-                            },
-                        ],
-                    },
-                ],
-            },
-        }
-
-        auth_resp_200 = utils.TestResponse({
-            "status_code": 200,
-            "text": json.dumps(resp),
-        })
-        auth_resp_401 = utils.TestResponse({
-            "status_code": 401,
-            "text": json.dumps({"unauthorized":
-                                    {"message": "Unauthorized",
-                                     "code": "401"}}),
-        })
-
-        expected_keyring = (u"FAKE_ID_NEW",
-                            catalog_managment_url,
-                            u"FAKE_TENANT_ID")
-
-        post_data = {"auth":
-                         {"passwordCredentials":
-                              {"username": "username",
-                               "password": "password"}}}
-
-        mock_request = mock.Mock()
-        mock_request.side_effect = [auth_resp_401, auth_resp_200]
-
-        with mock.patch.object(requests.Session, "request", mock_request):
-            expected = [mock.call("GET",
-                                  token_url_get,
-                                  headers=headers_get,
-                                  data="null",
-                                  allow_redirects=True,
-                                  **self.TEST_REQUEST_BASE),
-                        mock.call("POST",
-                                  token_url_post,
-                                  headers=headers_post,
-                                  data=json.dumps(post_data),
-                                  allow_redirects=True,
-                                  **self.TEST_REQUEST_BASE),
-                        ]
-            cs.client.authenticate()
-            self.assertEqual(expected, mock_request.call_args_list)
-            self.assertEqual(cs.client.keyring_saver.saved, expected_keyring)
 
 
 class AuthenticationTests(utils.TestCase):

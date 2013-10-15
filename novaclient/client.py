@@ -387,38 +387,20 @@ class HTTPClient(object):
 
     def _v2_auth(self, url):
         """Authenticate against a v2.0 auth service."""
-        body_pass = {"auth": {
-                     "passwordCredentials": {"username": self.user,
-                                             "password": self.password}}}
-        body_token = {"auth": {"token": {"id": self.auth_token}}}
-
         if self.auth_token:
-            body = body_token
+            body = {"auth": {
+                    "token": {"id": self.auth_token}}}
         else:
-            body = body_pass
+            body = {"auth": {
+                    "passwordCredentials": {"username": self.user,
+                                            "password": self.password}}}
 
         if self.tenant_id:
             body['auth']['tenantId'] = self.tenant_id
         elif self.projectid:
             body['auth']['tenantName'] = self.projectid
 
-        try:
-            return self._authenticate(url, body)
-        except exceptions.Unauthorized:
-            # NOTE(morganfainberg): there is no actual point in flushing
-            # the cache out because it would result in the same behavior
-            # in either case, a 401 being raised/returned.  The expected
-            # recourse in the case of a failure will be the same, reauth
-            # with username and password.
-
-            if (self.os_cache and self.user and self.password and
-                    self.keyring_saver is not None):
-                # If we are using a cache, and we failed, try again if we have
-                # the required information to do so.
-                self.auth_token = None
-                body = body_pass
-                return self._authenticate(url, body)
-            raise
+        return self._authenticate(url, body)
 
     def _authenticate(self, url, body, **kwargs):
         """Authenticate and extract the service catalog."""
