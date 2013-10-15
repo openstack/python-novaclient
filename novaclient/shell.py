@@ -243,21 +243,11 @@ class OpenStackComputeShell(object):
             action='store_true',
             help="Print debugging output")
 
-        parser.add_argument('--no-cache',
-            default=not utils.bool_from_str(
-                    utils.env('OS_NO_CACHE', default='true')),
-            action='store_false',
-            dest='os_cache',
-            help=argparse.SUPPRESS)
-        parser.add_argument('--no_cache',
-            action='store_false',
-            dest='os_cache',
-            help=argparse.SUPPRESS)
-
         parser.add_argument('--os-cache',
-            default=utils.env('OS_CACHE', default=False),
+            default=utils.bool_from_str(utils.env('OS_CACHE', default=False)),
             action='store_true',
-            help="Use the auth token cache.")
+            help="Use the auth token cache. Defaults to False if env[OS_CACHE]"
+                 " is not set.")
 
         parser.add_argument('--timings',
             default=False,
