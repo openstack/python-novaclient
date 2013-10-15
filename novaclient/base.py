@@ -25,6 +25,7 @@ import contextlib
 import hashlib
 import inspect
 import os
+import threading
 
 import six
 
@@ -50,6 +51,7 @@ class Manager(utils.HookableMixin):
     etc.) and provide CRUD operations for them.
     """
     resource_class = None
+    cache_lock = threading.RLock()
 
     def __init__(self, api):
         self.api = api
@@ -90,46 +92,50 @@ class Manager(utils.HookableMixin):
         Delete is not handled because listings are assumed to be performed
         often enough to keep the cache reasonably up-to-date.
         """
-        base_dir = utils.env('NOVACLIENT_UUID_CACHE_DIR',
-                             default="~/.novaclient")
+        # NOTE(wryan): This lock protects read and write access to the
+        # completion caches
+        with self.cache_lock:
+            base_dir = utils.env('NOVACLIENT_UUID_CACHE_DIR',
+                                 default="~/.novaclient")
 
-        # NOTE(sirp): Keep separate UUID caches for each username + endpoint
-        # pair
-        username = utils.env('OS_USERNAME', 'NOVA_USERNAME')
-        url = utils.env('OS_URL', 'NOVA_URL')
-        uniqifier = hashlib.md5(username.encode('utf-8') +
-                                url.encode('utf-8')).hexdigest()
+            # NOTE(sirp): Keep separate UUID caches for each username +
+            # endpoint pair
+            username = utils.env('OS_USERNAME', 'NOVA_USERNAME')
+            url = utils.env('OS_URL', 'NOVA_URL')
+            uniqifier = hashlib.md5(username.encode('utf-8') +
+                                    url.encode('utf-8')).hexdigest()
 
-        cache_dir = os.path.expanduser(os.path.join(base_dir, uniqifier))
+            cache_dir = os.path.expanduser(os.path.join(base_dir, uniqifier))
 
-        try:
-            os.makedirs(cache_dir, 0o755)
-        except OSError:
-            # NOTE(kiall): This is typicaly either permission denied while
-            #              attempting to create the directory, or the directory
-            #              already exists. Either way, don't fail.
-            pass
+            try:
+                os.makedirs(cache_dir, 0o755)
+            except OSError:
+                # NOTE(kiall): This is typicaly either permission denied while
+                #              attempting to create the directory, or the
+                #              directory already exists. Either way, don't
+                #              fail.
+                pass
 
-        resource = obj_class.__name__.lower()
-        filename = "%s-%s-cache" % (resource, cache_type.replace('_', '-'))
-        path = os.path.join(cache_dir, filename)
+            resource = obj_class.__name__.lower()
+            filename = "%s-%s-cache" % (resource, cache_type.replace('_', '-'))
+            path = os.path.join(cache_dir, filename)
 
-        cache_attr = "_%s_cache" % cache_type
+            cache_attr = "_%s_cache" % cache_type
 
-        try:
-            setattr(self, cache_attr, open(path, mode))
-        except IOError:
-            # NOTE(kiall): This is typicaly a permission denied while
-            #              attempting to write the cache file.
-            pass
+            try:
+                setattr(self, cache_attr, open(path, mode))
+            except IOError:
+                # NOTE(kiall): This is typicaly a permission denied while
+                #              attempting to write the cache file.
+                pass
 
-        try:
-            yield
-        finally:
-            cache = getattr(self, cache_attr, None)
-            if cache:
-                cache.close()
-                delattr(self, cache_attr)
+            try:
+                yield
+            finally:
+                cache = getattr(self, cache_attr, None)
+                if cache:
+                    cache.close()
+                    delattr(self, cache_attr)
 
     def write_to_completion_cache(self, cache_type, val):
         cache = getattr(self, "_%s_cache" % cache_type, None)
