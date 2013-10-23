@@ -163,3 +163,24 @@ class PrintResultTestCase(test_utils.TestCase):
                          '| k3   | 3     |\n'
                          '| k2   | 2     |\n'
                          '+------+-------+\n')
+
+
+class FlattenTestCase(test_utils.TestCase):
+    def test_flattening(self):
+        squashed = utils.flatten_dict(
+            {'a1': {'b1': 1234,
+                    'b2': 'string',
+                    'b3': set((1, 2, 3)),
+                    'b4': {'c1': ['l', 'l', ['l']],
+                           'c2': 'string'}},
+             'a2': ['l'],
+             'a3': ('t',)})
+
+        self.assertEqual({'a1_b1': 1234,
+                          'a1_b2': 'string',
+                          'a1_b3': set([1, 2, 3]),
+                          'a1_b4_c1': ['l', 'l', ['l']],
+                          'a1_b4_c2': 'string',
+                          'a2': ['l'],
+                          'a3': ('t',)},
+                         squashed)

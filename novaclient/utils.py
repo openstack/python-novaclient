@@ -1,3 +1,4 @@
+import json
 import os
 import pkg_resources
 import re
@@ -175,6 +176,47 @@ def print_list(objs, fields, formatters={}, sortby_index=None):
         result = result.decode()
 
     print(result)
+
+
+def _flatten(data, prefix=None):
+    """Flatten a dict, using name as a prefix for the keys of dict.
+
+    >>> _flatten('cpu_info', {'arch':'x86_64'})
+    [('cpu_info_arch': 'x86_64')]
+
+    """
+    if isinstance(data, dict):
+        for key, value in six.iteritems(data):
+            new_key = '%s_%s' % (prefix, key) if prefix else key
+            if isinstance(value, (dict, list)):
+                for item in _flatten(value, new_key):
+                    yield item
+            else:
+                yield new_key, value
+    else:
+        yield prefix, data
+
+
+def flatten_dict(data):
+    """Return a new dict whose sub-dicts have been merged into the
+    original.  Each of the parents keys are prepended to the child's
+    to prevent collisions.  Any string elements will be JSON parsed
+    before flattening.
+
+    >>> flatten_dict({'service': {'host':'cloud9@compute-068', 'id': 143}})
+    {'service_host': colud9@compute-068', 'service_id': 143}
+
+    """
+    data = data.copy()
+    # Try and decode any nested JSON structures.
+    for key, value in six.iteritems(data):
+        if isinstance(value, six.string_types):
+            try:
+                data[key] = json.loads(value)
+            except ValueError:
+                pass
+
+    return dict(_flatten(data))
 
 
 def print_dict(d, dict_property="Property", dict_value="Value", wrap=0):
