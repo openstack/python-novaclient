@@ -118,7 +118,7 @@ class HTTPClient(object):
     def reset_timings(self):
         self.times = []
 
-    def http_log_req(self, args, kwargs):
+    def http_log_req(self, method, url, kwargs):
         if not self.http_log_debug:
             return
 
@@ -127,11 +127,8 @@ class HTTPClient(object):
         if not kwargs.get('verify', True):
             string_parts.append(' --insecure')
 
-        for element in args:
-            if element in ('GET', 'POST', 'DELETE', 'PUT'):
-                string_parts.append(' -X %s' % element)
-            else:
-                string_parts.append(' %s' % element)
+        string_parts.append(" '%s'" % url)
+        string_parts.append(' -X %s' % method)
 
         for element in kwargs['headers']:
             header = ' -H "%s: %s"' % (element, kwargs['headers'][element])
@@ -162,7 +159,7 @@ class HTTPClient(object):
             kwargs.setdefault('timeout', self.timeout)
         kwargs['verify'] = self.verify_cert
 
-        self.http_log_req((url, method,), kwargs)
+        self.http_log_req(method, url, kwargs)
         resp = self.http.request(
             method,
             url,
