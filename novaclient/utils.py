@@ -143,11 +143,6 @@ def pretty_choice_list(l):
     return ', '.join("'%s'" % i for i in l)
 
 
-def pretty_choice_dict(d):
-    """Returns a formatted dict as 'key=value'."""
-    return pretty_choice_list(['%s=%s' % (k, d[k]) for k in sorted(d.keys())])
-
-
 def print_list(objs, fields, formatters={}, sortby_index=None):
     if sortby_index is None:
         sortby = None
