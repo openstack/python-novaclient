@@ -644,18 +644,11 @@ class ShellTest(utils.TestCase):
         self.run_command('image-meta 1 delete test_key=test_value')
         self.assert_called('DELETE', '/images/1/metadata/test_key')
 
+    @mock.patch('sys.stdout', six.StringIO())
+    @mock.patch('sys.stderr', six.StringIO())
     def test_image_meta_bad_action(self):
-        tmp = six.StringIO()
-
-        # Suppress stdout and stderr
-        (stdout, stderr) = (sys.stdout, sys.stderr)
-        (sys.stdout, sys.stderr) = (tmp, tmp)
-
         self.assertRaises(SystemExit, self.run_command,
                           'image-meta 1 BAD_ACTION test_key=test_value')
-
-        # Put stdout and stderr back
-        sys.stdout, sys.stderr = (stdout, stderr)
 
     def test_image_list(self):
         self.run_command('image-list')
