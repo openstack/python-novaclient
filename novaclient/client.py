@@ -123,6 +123,10 @@ class HTTPClient(object):
             return
 
         string_parts = ['curl -i']
+
+        if not kwargs.get('verify', True):
+            string_parts.append(' --insecure')
+
         for element in args:
             if element in ('GET', 'POST', 'DELETE', 'PUT'):
                 string_parts.append(' -X %s' % element)
@@ -156,12 +160,12 @@ class HTTPClient(object):
             del kwargs['body']
         if self.timeout is not None:
             kwargs.setdefault('timeout', self.timeout)
+        kwargs['verify'] = self.verify_cert
 
         self.http_log_req((url, method,), kwargs)
         resp = self.http.request(
             method,
             url,
-            verify=self.verify_cert,
             **kwargs)
         self.http_log_resp(resp)
 
