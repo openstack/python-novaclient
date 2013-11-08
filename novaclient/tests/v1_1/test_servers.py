@@ -40,7 +40,7 @@ class ServersTest(utils.TestCase):
     def test_get_server_promote_details(self):
         s1 = cs.servers.list(detailed=False)[0]
         s2 = cs.servers.list(detailed=True)[0]
-        self.assertNotEquals(s1._info, s2._info)
+        self.assertNotEqual(s1._info, s2._info)
         s1.get()
         self.assertEqual(s1._info, s2._info)
 
