@@ -2706,7 +2706,18 @@ def do_aggregate_details(cs, args):
 
 def _print_aggregate_details(aggregate):
     columns = ['Id', 'Name', 'Availability Zone', 'Hosts', 'Metadata']
-    utils.print_list([aggregate], columns)
+
+    def parser_metadata(fields):
+        return utils.pretty_choice_dict(getattr(fields, 'metadata', {}) or {})
+
+    def parser_hosts(fields):
+        return utils.pretty_choice_list(getattr(fields, 'hosts', []))
+
+    formatters = {
+        'Metadata': parser_metadata,
+        'Hosts': parser_hosts,
+    }
+    utils.print_list([aggregate], columns, formatters=formatters)
 
 
 @utils.arg('server', metavar='<server>', help='Name or ID of server.')
