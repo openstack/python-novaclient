@@ -1465,6 +1465,10 @@ def _print_server(cs, args):
         info['flavor'] = '%s (%s)' % (_find_flavor(cs, flavor_id).name,
                                       flavor_id)
 
+    if 'security_groups' in info:
+        info['security_groups'] = \
+            ', '.join(group['name'] for group in info['security_groups'])
+
     image = info.get('image', {})
     if image:
         image_id = image.get('id', '')

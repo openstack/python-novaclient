@@ -20,7 +20,6 @@ import base64
 import datetime
 import os
 import mock
-import sys
 
 import fixtures
 import six
@@ -71,13 +70,13 @@ class ShellTest(utils.TestCase):
             lambda *_: fakes.FakeClient))
         self.addCleanup(timeutils.clear_time_override)
 
-    @mock.patch('sys.stdout', six.StringIO())
-    def run_command(self, cmd):
+    @mock.patch('sys.stdout', new_callable=six.StringIO)
+    def run_command(self, cmd, mock_stdout):
         if isinstance(cmd, list):
             self.shell.main(cmd)
         else:
             self.shell.main(cmd.split())
-        return sys.stdout.getvalue()
+        return mock_stdout.getvalue()
 
     def assert_called(self, method, url, body=None, **kwargs):
         return self.shell.cs.assert_called(method, url, body, **kwargs)
@@ -829,6 +828,14 @@ class ShellTest(utils.TestCase):
     def test_show_bad_id(self):
         self.assertRaises(exceptions.CommandError,
                           self.run_command, 'show xxx')
+
+    @mock.patch('novaclient.v1_1.shell.utils.print_dict')
+    def test_print_server(self, mock_print_dict):
+        self.run_command('show 5678')
+        args, kwargs = mock_print_dict.call_args
+        parsed_server = args[0]
+        self.assertEqual('securitygroup1, securitygroup2',
+                         parsed_server['security_groups'])
 
     def test_delete(self):
         self.run_command('delete 1234')

@@ -320,6 +320,16 @@ class FakeHTTPClient(base_client.HTTPClient):
                     "Server Label": "DB 1"
                 },
                 "OS-EXT-SRV-ATTR:host": "computenode2",
+                "security_groups": [{
+                    'id': 1, 'name': 'securitygroup1',
+                    'description': 'FAKE_SECURITY_GROUP',
+                    'tenant_id': '4ffc664c198e435e9853f2538fbcd7a7'
+                },
+                {
+                    'id': 2, 'name': 'securitygroup2',
+                    'description': 'ANOTHER_FAKE_SECURITY_GROUP',
+                    'tenant_id': '4ffc664c198e435e9853f2538fbcd7a7'
+                }],
             },
             {
                 "id": 9012,
