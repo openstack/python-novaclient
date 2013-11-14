@@ -2939,14 +2939,7 @@ def do_hypervisor_servers(cs, args):
 def do_hypervisor_show(cs, args):
     """Display the details of the specified hypervisor."""
     hyper = _find_hypervisor(cs, args.hypervisor)
-
-    # Build up the dict
-    info = hyper._info.copy()
-    info['service_id'] = info['service']['id']
-    info['service_host'] = info['service']['host']
-    del info['service']
-
-    utils.print_dict(info)
+    utils.print_dict(utils.flatten_dict(hyper._info))
 
 
 @utils.arg('hypervisor',
