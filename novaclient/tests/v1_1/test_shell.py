@@ -1635,6 +1635,10 @@ class ShellTest(utils.TestCase):
         self.run_command('get-password sample-server /foo/id_rsa')
         self.assert_called('GET', '/servers/1234/os-server-password')
 
+    def test_get_password_without_key(self):
+        self.run_command('get-password sample-server')
+        self.assert_called('GET', '/servers/1234/os-server-password')
+
     def test_clear_password(self):
         self.run_command('clear-password sample-server')
         self.assert_called('DELETE', '/servers/1234/os-server-password')
