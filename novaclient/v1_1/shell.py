@@ -1378,6 +1378,11 @@ def do_root_password(cs, args):
 
 @utils.arg('server', metavar='<server>', help='Name or ID of server.')
 @utils.arg('name', metavar='<name>', help='Name of snapshot.')
+@utils.arg('--show',
+    dest='show',
+    action="store_true",
+    default=False,
+    help='Print image info.')
 @utils.arg('--poll',
     dest='poll',
     action="store_true",
@@ -1406,6 +1411,9 @@ def do_image_create(cs, args):
             _poll_for_status(cs.servers.get, server.id, 'image_snapshot',
                              [None], status_field=task_state_field,
                              show_progress=False, silent=True)
+
+    if args.show:
+        _print_image(cs.images.get(image_uuid))
 
 
 @utils.arg('server', metavar='<server>', help='Name or ID of server.')

@@ -660,6 +660,16 @@ class ShellTest(utils.TestCase):
             {'createImage': {'name': 'mysnapshot', 'metadata': {}}},
         )
 
+    def test_create_image_show(self):
+        output = self.run_command('image-create '
+                                    'sample-server mysnapshot --show')
+        self.assert_called_anytime(
+            'POST', '/servers/1234/action',
+            {'createImage': {'name': 'mysnapshot', 'metadata': {}}},
+        )
+        self.assertIn('My Server Backup', output)
+        self.assertIn('SAVING', output)
+
     def test_image_delete(self):
         self.run_command('image-delete 1')
         self.assert_called('DELETE', '/images/1')
