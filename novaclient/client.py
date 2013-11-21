@@ -180,7 +180,6 @@ class HTTPClient(object):
             try:
                 body = json.loads(resp.text)
             except ValueError:
-                pass
                 body = None
         else:
             body = None
