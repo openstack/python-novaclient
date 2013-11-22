@@ -458,7 +458,7 @@ class OpenStackComputeShell(object):
 
     def _find_actions(self, subparsers, actions_module):
         for attr in (a for a in dir(actions_module) if a.startswith('do_')):
-            # I prefer to be hypen-separated instead of underscores.
+            # I prefer to be hyphen-separated instead of underscores.
             command = attr[3:].replace('_', '-')
             callback = getattr(actions_module, attr)
             desc = callback.__doc__ or ''

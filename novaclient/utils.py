@@ -42,7 +42,7 @@ def add_arg(f, *args, **kwargs):
     # NOTE(sirp): avoid dups that can occur when the module is shared across
     # tests.
     if (args, kwargs) not in f.arguments:
-        # Because of the sematics of decorator composition if we just append
+        # Because of the semantics of decorator composition if we just append
         # to the options list positional options will appear to be backwards.
         f.arguments.insert(0, (args, kwargs))
 
