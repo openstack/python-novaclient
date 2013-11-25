@@ -37,14 +37,6 @@ all_errors = ValueError
 try:
     import keyring
     HAS_KEYRING = True
-    try:
-        if isinstance(keyring.get_keyring(), keyring.backend.GnomeKeyring):
-            import gnomekeyring
-            all_errors = (ValueError,
-                          gnomekeyring.IOError,
-                          gnomekeyring.NoKeyringDaemonError)
-    except Exception:
-        pass
 except ImportError:
     pass
 
