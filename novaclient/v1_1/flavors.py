@@ -123,7 +123,7 @@ class FlavorManager(base.ManagerWithFind):
     def create(self, name, ram, vcpus, disk, flavorid="auto",
                ephemeral=0, swap=0, rxtx_factor=1.0, is_public=True):
         """
-        Create (allocate) a  floating ip for a tenant
+        Create a flavor.
 
         :param name: Descriptive name of the flavor
         :param ram: Memory in MB for the flavor
