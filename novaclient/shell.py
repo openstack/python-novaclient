@@ -725,6 +725,9 @@ def main():
         print("ERROR: %s" % strutils.safe_encode(six.text_type(e)),
               file=sys.stderr)
         sys.exit(1)
+    except KeyboardInterrupt as e:
+        print("Shutting down novaclient", file=sys.stderr)
+        sys.exit(1)
 
 
 if __name__ == "__main__":
