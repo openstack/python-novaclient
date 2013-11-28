@@ -116,7 +116,6 @@ class FlavorManager(base.ManagerWithFind):
         Delete a specific flavor.
 
         :param flavor: The ID of the :class:`Flavor` to get.
-        :param purge: Whether to purge record from the database
         """
         self._delete("/flavors/%s" % base.getid(flavor))
 
@@ -127,7 +126,7 @@ class FlavorManager(base.ManagerWithFind):
 
         :param name: Descriptive name of the flavor
         :param ram: Memory in MB for the flavor
-        :param vcpu: Number of VCPUs for the flavor
+        :param vcpus: Number of VCPUs for the flavor
         :param disk: Size of local disk in GB
         :param flavorid: ID for the flavor (optional). You can use the reserved
                          value ``"auto"`` to have Nova generate a UUID for the
