@@ -241,14 +241,18 @@ class Server(base.Resource):
         """
         self.manager.reboot(self, reboot_type)
 
-    def rebuild(self, image, password=None, **kwargs):
+    def rebuild(self, image, password=None, preserve_ephemeral=False,
+            **kwargs):
         """
         Rebuild -- shut down and then re-image -- this server.
 
         :param image: the :class:`Image` (or its ID) to re-image with.
         :param password: string to set as password on the rebuilt server.
+        :param preserve_ephemeral: If True, request that any ephemeral device
+            be preserved when rebuilding the instance. Defaults to False.
         """
-        return self.manager.rebuild(self, image, password=password, **kwargs)
+        return self.manager.rebuild(self, image, password=password,
+            preserve_ephemeral=preserve_ephemeral, **kwargs)
 
     def resize(self, flavor, **kwargs):
         """
@@ -748,7 +752,7 @@ class ServerManager(base.BootingManagerWithFind):
         self._action('reboot', server, {'type': reboot_type})
 
     def rebuild(self, server, image, password=None, disk_config=None,
-                **kwargs):
+                preserve_ephemeral=False, **kwargs):
         """
         Rebuild -- shut down and then re-image -- a server.
 
@@ -757,12 +761,16 @@ class ServerManager(base.BootingManagerWithFind):
         :param password: string to set as password on the rebuilt server.
         :param disk_config: partitioning mode to use on the rebuilt server.
                             Valid values are 'AUTO' or 'MANUAL'
+        :param preserve_ephemeral: If True, request that any ephemeral device
+            be preserved when rebuilding the instance. Defaults to False.
         """
         body = {'imageRef': base.getid(image)}
         if password is not None:
             body['adminPass'] = password
         if disk_config is not None:
             body['OS-DCF:diskConfig'] = disk_config
+        if preserve_ephemeral is not False:
+            body['preserve_ephemeral'] = True
 
         _resp, body = self._action('rebuild', server, body, **kwargs)
         return Server(self, body['server'])

@@ -733,6 +733,27 @@ class ShellTest(utils.TestCase):
         self.assert_called('GET', '/flavors/1', pos=-2)
         self.assert_called('GET', '/images/2')
 
+    def test_rebuild_preserve_ephemeral(self):
+        self.run_command('rebuild sample-server 1 --preserve-ephemeral')
+        self.assert_called('GET', '/servers', pos=-8)
+        self.assert_called('GET', '/servers/1234', pos=-7)
+        self.assert_called('GET', '/images/1', pos=-6)
+        self.assert_called('POST', '/servers/1234/action',
+                           {'rebuild': {'imageRef': 1,
+                                        'preserve_ephemeral': True}}, pos=-5)
+        self.assert_called('GET', '/flavors/1', pos=-2)
+        self.assert_called('GET', '/images/2')
+
+        self.run_command('rebuild sample-server 1 --rebuild-password asdf')
+        self.assert_called('GET', '/servers', pos=-8)
+        self.assert_called('GET', '/servers/1234', pos=-7)
+        self.assert_called('GET', '/images/1', pos=-6)
+        self.assert_called('POST', '/servers/1234/action',
+                           {'rebuild': {'imageRef': 1, 'adminPass': 'asdf'}},
+                           pos=-5)
+        self.assert_called('GET', '/flavors/1', pos=-2)
+        self.assert_called('GET', '/images/2')
+
     def test_start(self):
         self.run_command('start sample-server')
         self.assert_called('POST', '/servers/1234/action', {'os-start': None})
