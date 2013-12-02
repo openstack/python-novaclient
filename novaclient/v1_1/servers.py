@@ -74,11 +74,15 @@ class Server(base.Resource):
         """
         return self.manager.get_spice_console(self, console_type)
 
-    def get_password(self, private_key):
+    def get_password(self, private_key=None):
         """
         Get password for a Server.
 
+        Returns the clear password of an instance if private_key is
+        provided, returns the ciphered password otherwise.
+
         :param private_key: Path to private key file for decryption
+                            (optional)
         """
         return self.manager.get_password(self, private_key)
 
@@ -497,24 +501,29 @@ class ServerManager(base.BootingManagerWithFind):
         return self._action('os-getSPICEConsole', server,
                             {'type': console_type})[1]
 
-    def get_password(self, server, private_key):
+    def get_password(self, server, private_key=None):
         """
         Get password for an instance
+
+        Returns the clear password of an instance if private_key is
+        provided, returns the ciphered password otherwise.
 
         Requires that openssl is installed and in the path
 
         :param server: The :class:`Server` (or its ID) to add an IP to.
         :param private_key: The private key to decrypt password
+                            (optional)
         """
 
         _resp, body = self.api.client.get("/servers/%s/os-server-password"
                                           % base.getid(server))
-        if body and body.get('password'):
+        ciphered_pw = body.get('password', '') if body else ''
+        if private_key and ciphered_pw:
             try:
-                return crypto.decrypt_password(private_key, body['password'])
+                return crypto.decrypt_password(private_key, ciphered_pw)
             except Exception as exc:
-                return '%sFailed to decrypt:\n%s' % (exc, body['password'])
-        return ''
+                return '%sFailed to decrypt:\n%s' % (exc, ciphered_pw)
+        return ciphered_pw
 
     def clear_password(self, server):
         """

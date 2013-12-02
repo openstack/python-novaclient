@@ -420,9 +420,35 @@ class ServersTest(utils.TestCase):
         self.assertEqual(cs.servers.get_console_output(s, length=50), success)
         cs.assert_called('POST', '/servers/1234/action')
 
+    # Testing password methods with the following password and key
+    #
+    # Clear password: FooBar123
+    #
+    # RSA Private Key: novaclient/tests/idfake.pem
+    #
+    # Encrypted password
+    # OIuEuQttO8Rk93BcKlwHQsziDAnkAm/V6V8VPToA8ZeUaUBWwS0gwo2K6Y61Z96r
+    # qG447iRz0uTEEYq3RAYJk1mh3mMIRVl27t8MtIecR5ggVVbz1S9AwXJQypDKl0ho
+    # QFvhCBcMWPohyGewDJOhDbtuN1IoFI9G55ZvFwCm5y7m7B2aVcoLeIsJZE4PLsIw
+    # /y5a6Z3/AoJZYGG7IH5WN88UROU3B9JZGFB2qtPLQTOvDMZLUhoPRIJeHiVSlo1N
+    # tI2/++UsXVg3ow6ItqCJGgdNuGG5JB+bslDHWPxROpesEIHdczk46HCpHQN8f1sk
+    # Hi/fmZZNQQqj1Ijq0caOIw==
+
     def test_get_password(self):
         s = cs.servers.get(1234)
-        self.assertEqual(s.get_password('/foo/id_rsa'), '')
+        self.assertEqual(s.get_password('novaclient/tests/idfake.pem'),
+                         b'FooBar123')
+        cs.assert_called('GET', '/servers/1234/os-server-password')
+
+    def test_get_password_without_key(self):
+        s = cs.servers.get(1234)
+        self.assertEqual(s.get_password(),
+            'OIuEuQttO8Rk93BcKlwHQsziDAnkAm/V6V8VPToA8ZeUaUBWwS0gwo2K6Y61Z96r'
+            'qG447iRz0uTEEYq3RAYJk1mh3mMIRVl27t8MtIecR5ggVVbz1S9AwXJQypDKl0ho'
+            'QFvhCBcMWPohyGewDJOhDbtuN1IoFI9G55ZvFwCm5y7m7B2aVcoLeIsJZE4PLsIw'
+            '/y5a6Z3/AoJZYGG7IH5WN88UROU3B9JZGFB2qtPLQTOvDMZLUhoPRIJeHiVSlo1N'
+            'tI2/++UsXVg3ow6ItqCJGgdNuGG5JB+bslDHWPxROpesEIHdczk46HCpHQN8f1sk'
+            'Hi/fmZZNQQqj1Ijq0caOIw==')
         cs.assert_called('GET', '/servers/1234/os-server-password')
 
     def test_clear_password(self):

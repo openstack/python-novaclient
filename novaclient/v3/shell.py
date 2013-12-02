@@ -1701,7 +1701,12 @@ def do_get_spice_console(cs, args):
 @utils.arg('server', metavar='<server>', help='Name or ID of server.')
 @utils.arg('private_key',
     metavar='<private-key>',
-    help='Private key (used locally to decrypt password).')
+    help='Private key (used locally to decrypt password) (Optional). '
+         'When specified, the command displays the clear (decrypted) VM '
+         'password. When not specified, the ciphered VM password is '
+         'displayed.',
+    nargs='?',
+    default=None)
 def do_get_password(cs, args):
     """Get password for a server."""
     server = _find_server(cs, args.server)
