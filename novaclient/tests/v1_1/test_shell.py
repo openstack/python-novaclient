@@ -30,6 +30,7 @@ from novaclient.openstack.common import timeutils
 import novaclient.shell
 from novaclient.tests.v1_1 import fakes
 from novaclient.tests import utils
+import novaclient.v1_1.shell
 
 
 class ShellFixture(fixtures.Fixture):
@@ -1820,3 +1821,35 @@ class ShellTest(utils.TestCase):
         self.assert_called('GET',
                            '/os-migrations?cell_name=child1&host=host1'
                            '&status=finished')
+
+
+class GetSecgroupTest(utils.TestCase):
+    def test_with_integer(self):
+        cs = mock.Mock(**{
+            'security_groups.get.return_value': 'sec_group',
+            'security_groups.list.return_value': [],
+        })
+        result = novaclient.v1_1.shell._get_secgroup(cs, '1')
+        self.assertEqual(result, 'sec_group')
+        cs.security_groups.get.assert_called_once_with('1')
+
+    def test_with_uuid(self):
+        cs = mock.Mock(**{
+            'security_groups.get.return_value': 'sec_group',
+            'security_groups.list.return_value': [],
+        })
+        result = novaclient.v1_1.shell._get_secgroup(
+            cs, 'c0c32459-dc5f-44dc-9a0a-473b28bac831')
+        self.assertEqual(result, 'sec_group')
+        cs.security_groups.get.assert_called_once_with(
+            'c0c32459-dc5f-44dc-9a0a-473b28bac831')
+
+    def test_with_an_nonexisting_name(self):
+        cs = mock.Mock(**{
+            'security_groups.get.return_value': 'sec_group',
+            'security_groups.list.return_value': [],
+        })
+        self.assertRaises(exceptions.CommandError,
+                          novaclient.v1_1.shell._get_secgroup,
+                          cs,
+                          'abc')
