@@ -132,6 +132,22 @@ class FlavorManager(base.ManagerWithFind):
         """
         self._delete("/flavors/%s" % base.getid(flavor))
 
+    def _build_body(self, name, ram, vcpus, disk, id, swap,
+                    ephemeral, rxtx_factor, is_public):
+        return {
+            "flavor": {
+                "name": name,
+                "ram": ram,
+                "vcpus": vcpus,
+                "disk": disk,
+                "id": id,
+                "swap": swap,
+                "OS-FLV-EXT-DATA:ephemeral": ephemeral,
+                "rxtx_factor": rxtx_factor,
+                "os-flavor-access:is_public": is_public,
+            }
+        }
+
     def create(self, name, ram, vcpus, disk, flavorid="auto",
                ephemeral=0, swap=0, rxtx_factor=1.0, is_public=True):
         """
@@ -183,18 +199,7 @@ class FlavorManager(base.ManagerWithFind):
         except Exception:
             raise exceptions.CommandError("is_public must be a boolean.")
 
-        body = {
-            "flavor": {
-                "name": name,
-                "ram": ram,
-                "vcpus": vcpus,
-                "disk": disk,
-                "id": flavorid,
-                "swap": swap,
-                "OS-FLV-EXT-DATA:ephemeral": ephemeral,
-                "rxtx_factor": rxtx_factor,
-                "os-flavor-access:is_public": is_public,
-            }
-        }
+        body = self._build_body(name, ram, vcpus, disk, flavorid, swap,
+                                ephemeral, rxtx_factor, is_public)
 
         return self._create("/flavors", body, "flavor")

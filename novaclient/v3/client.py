@@ -15,6 +15,7 @@
 #    under the License.
 
 from novaclient import client
+from novaclient.v3 import flavors
 from novaclient.v3 import hosts
 
 
@@ -51,6 +52,7 @@ class Client(object):
         self.os_cache = os_cache or not no_cache
         #TODO(bnemec): Add back in v3 extensions
         self.hosts = hosts.HostManager(self)
+        self.flavors = flavors.FlavorManager(self)
 
         # Add in any extensions...
         if extensions:

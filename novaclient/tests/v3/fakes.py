@@ -14,6 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from novaclient.openstack.common import strutils
 from novaclient.tests import fakes
 from novaclient.tests.v1_1 import fakes as fakes_v1_1
 from novaclient.v3 import client
@@ -56,3 +57,51 @@ class FakeHTTPClient(fakes_v1_1.FakeHTTPClient):
     def get_os_hosts_sample_host_shutdown(self, **kw):
         return (200, {}, {'host': {'host': 'sample_host',
                           'power_action': 'shutdown'}})
+
+    #
+    # Flavors
+    #
+    post_flavors_1_flavor_extra_specs = (
+        fakes_v1_1.FakeHTTPClient.post_flavors_1_os_extra_specs)
+
+    delete_flavors_1_flavor_extra_specs_k1 = (
+        fakes_v1_1.FakeHTTPClient.delete_flavors_1_os_extra_specs_k1)
+
+    def get_flavors_detail(self, **kw):
+        flavors = {'flavors': [
+            {'id': 1, 'name': '256 MB Server', 'ram': 256, 'disk': 10,
+             'ephemeral': 10,
+             'flavor-access:is_public': True,
+             'links': {}},
+            {'id': 2, 'name': '512 MB Server', 'ram': 512, 'disk': 20,
+             'ephemeral': 20,
+             'flavor-access:is_public': False,
+             'links': {}},
+            {'id': 'aa1', 'name': '128 MB Server', 'ram': 128, 'disk': 0,
+             'ephemeral': 0,
+             'flavor-access:is_public': True,
+             'links': {}}
+        ]}
+
+        if 'is_public' not in kw:
+            filter_is_public = True
+        else:
+            if kw['is_public'].lower() == 'none':
+                filter_is_public = None
+            else:
+                filter_is_public = strutils.bool_from_string(kw['is_public'],
+                                                             True)
+
+        if filter_is_public is not None:
+            if filter_is_public:
+                flavors['flavors'] = [
+                        v for v in flavors['flavors']
+                            if v['flavor-access:is_public']
+                        ]
+            else:
+                flavors['flavors'] = [
+                        v for v in flavors['flavors']
+                            if not v['flavor-access:is_public']
+                        ]
+
+        return (200, {}, flavors)
