@@ -105,3 +105,9 @@ class FakeHTTPClient(fakes_v1_1.FakeHTTPClient):
                         ]
 
         return (200, {}, flavors)
+
+    #
+    # Flavor access
+    #
+    get_flavors_2_flavor_access = (
+        fakes_v1_1.FakeHTTPClient.get_flavors_2_os_flavor_access)

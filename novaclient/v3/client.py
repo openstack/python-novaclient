@@ -15,6 +15,7 @@
 #    under the License.
 
 from novaclient import client
+from novaclient.v3 import flavor_access
 from novaclient.v3 import flavors
 from novaclient.v3 import hosts
 
@@ -53,6 +54,7 @@ class Client(object):
         #TODO(bnemec): Add back in v3 extensions
         self.hosts = hosts.HostManager(self)
         self.flavors = flavors.FlavorManager(self)
+        self.flavor_access = flavor_access.FlavorAccessManager(self)
 
         # Add in any extensions...
         if extensions:
