@@ -423,6 +423,9 @@ class FakeHTTPClient(base_client.HTTPClient):
     def post_servers_1234_metadata(self, **kw):
         return (204, {}, {'metadata': {'test_key': 'test_value'}})
 
+    def put_servers_1234_metadata_test_key(self, **kw):
+        return (200, {}, {'meta': {'test_key': 'test_value'}})
+
     def get_servers_1234_diagnostics(self, **kw):
         return (200, {}, {'data': 'Fake diagnostics'})
 

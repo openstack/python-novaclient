@@ -851,6 +851,17 @@ class ServerManager(base.BootingManagerWithFind):
         return self._create("/servers/%s/metadata" % base.getid(server),
                              body, "metadata")
 
+    def set_meta_item(self, server, key, value):
+        """
+        Updates an item of server metadata
+        :param server: The :class:`Server` to add metadata to
+        :param key: metadata key to update
+        :param value: string value
+        """
+        body = {'meta': {key: value}}
+        return self._update("/servers/%s/metadata/%s" %
+                            (base.getid(server), key), body)
+
     def get_console_output(self, server, length=None):
         """
         Get text console log output from Server.

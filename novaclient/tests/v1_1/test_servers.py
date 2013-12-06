@@ -196,6 +196,11 @@ class ServersTest(utils.TestCase):
         reval = cs.assert_called('POST', '/servers/1234/metadata',
                          {'metadata': {'test_key': 'test_value'}})
 
+    def test_set_server_meta_item(self):
+        s = cs.servers.set_meta_item(1234, 'test_key', 'test_value')
+        reval = cs.assert_called('PUT', '/servers/1234/metadata/test_key',
+                         {'meta': {'test_key': 'test_value'}})
+
     def test_find(self):
         server = cs.servers.find(name='sample-server')
         cs.assert_called('GET', '/servers', pos=-2)
