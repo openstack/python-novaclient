@@ -1557,7 +1557,7 @@ def do_volume_delete(cs, args):
 @utils.arg('volume',
     metavar='<volume>',
     help='ID of the volume to attach.')
-@utils.arg('device', metavar='<device>',
+@utils.arg('device', metavar='<device>', default=None, nargs='?',
     help='Name of the device e.g. /dev/vdb. '
          'Use "auto" for autoassign (if supported)')
 def do_volume_attach(cs, args):
