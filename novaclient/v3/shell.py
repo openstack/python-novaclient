@@ -600,9 +600,9 @@ def do_flavor_access_list(cs, args):
 
 @utils.arg('flavor',
      metavar='<flavor>',
-     help="Filter results by flavor name or ID.")
+     help="Flavor name or ID to add access for the given tenant.")
 @utils.arg('tenant', metavar='<tenant_id>',
-           help='Filter results by tenant ID.')
+           help='Tenant ID to add flavor access for.')
 def do_flavor_access_add(cs, args):
     """Add flavor access for the given tenant."""
     flavor = _find_flavor(cs, args.flavor)
@@ -613,9 +613,9 @@ def do_flavor_access_add(cs, args):
 
 @utils.arg('flavor',
      metavar='<flavor>',
-     help="Filter results by flavor name or ID.")
+     help="Flavor name or ID to remove access for the given tenant.")
 @utils.arg('tenant', metavar='<tenant_id>',
-           help='Filter results by tenant ID.')
+           help='Tenant ID to remove flavor access for.')
 def do_flavor_access_remove(cs, args):
     """Remove flavor access for the given tenant."""
     flavor = _find_flavor(cs, args.flavor)
