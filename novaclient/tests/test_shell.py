@@ -211,3 +211,33 @@ class ShellTest(utils.TestCase):
             self.assertEqual(required, message.args)
         else:
             self.fail('CommandError not raised')
+
+    def _test_service_type(self, version, service_type, mock_client):
+        if version is None:
+            cmd = 'list'
+        else:
+            cmd = '--os-compute-api-version %s list' % version
+        self.make_env()
+        self.shell(cmd)
+        _, client_kwargs = mock_client.call_args
+        self.assertEqual(service_type, client_kwargs['service_type'])
+
+    @mock.patch('novaclient.client.Client')
+    def test_default_service_type(self, mock_client):
+        self._test_service_type(None, 'compute', mock_client)
+
+    @mock.patch('novaclient.client.Client')
+    def test_v1_1_service_type(self, mock_client):
+        self._test_service_type('1.1', 'compute', mock_client)
+
+    @mock.patch('novaclient.client.Client')
+    def test_v2_service_type(self, mock_client):
+        self._test_service_type('2', 'compute', mock_client)
+
+    @mock.patch('novaclient.client.Client')
+    def test_v3_service_type(self, mock_client):
+        self._test_service_type('3', 'computev3', mock_client)
+
+    @mock.patch('novaclient.client.Client')
+    def test_v_unknown_service_type(self, mock_client):
+        self._test_service_type('unknown', 'compute', mock_client)

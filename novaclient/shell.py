@@ -60,7 +60,13 @@ from novaclient.v3 import shell as shell_v3
 
 DEFAULT_OS_COMPUTE_API_VERSION = "1.1"
 DEFAULT_NOVA_ENDPOINT_TYPE = 'publicURL'
-DEFAULT_NOVA_SERVICE_TYPE = 'compute'
+# NOTE(cyeoh): Having the service type dependent on the API version
+# is pretty ugly, but we have to do this because traditionally the
+# catalog entry for compute points directly to the V2 API rather than
+# the root, and then doing version discovery.
+DEFAULT_NOVA_SERVICE_TYPE_MAP = {'1.1': 'compute',
+                                 '2': 'compute',
+                                 '3': 'computev3'}
 
 logger = logging.getLogger(__name__)
 
@@ -557,7 +563,14 @@ class OpenStackComputeShell(object):
             endpoint_type = DEFAULT_NOVA_ENDPOINT_TYPE
 
         if not service_type:
-            service_type = DEFAULT_NOVA_SERVICE_TYPE
+            os_compute_api_version = (options.os_compute_api_version or
+                                      DEFAULT_OS_COMPUTE_API_VERSION)
+            try:
+                service_type = DEFAULT_NOVA_SERVICE_TYPE_MAP[
+                    os_compute_api_version]
+            except KeyError:
+                service_type = DEFAULT_NOVA_SERVICE_TYPE_MAP[
+                    DEFAULT_OS_COMPUTE_API_VERSION]
             service_type = utils.get_service_type(args.func) or service_type
 
         #FIXME(usrleon): Here should be restrict for project id same as

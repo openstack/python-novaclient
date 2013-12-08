@@ -40,7 +40,7 @@ class Client(object):
                   insecure=False, timeout=None, proxy_tenant_id=None,
                   proxy_token=None, region_name=None,
                   endpoint_type='publicURL', extensions=None,
-                  service_type='compute', service_name=None,
+                  service_type='computev3', service_name=None,
                   volume_service_name=None, timings=False,
                   bypass_url=None, os_cache=False, no_cache=True,
                   http_log_debug=False, auth_system='keystone',
