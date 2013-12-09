@@ -111,3 +111,19 @@ class FakeHTTPClient(fakes_v1_1.FakeHTTPClient):
     #
     get_flavors_2_flavor_access = (
         fakes_v1_1.FakeHTTPClient.get_flavors_2_os_flavor_access)
+
+    #
+    # Images
+    #
+    get_v1_images_detail = fakes_v1_1.FakeHTTPClient.get_images_detail
+    get_v1_images = fakes_v1_1.FakeHTTPClient.get_images
+
+    def head_v1_images_1(self, **kw):
+        headers = {
+            'x-image-meta-id': '1',
+            'x-image-meta-name': 'CentOS 5.2',
+            'x-image-meta-updated': '2010-10-10T12:00:00Z',
+            'x-image-meta-created': '2010-10-10T12:00:00Z',
+            'x-image-meta-status': 'ACTIVE',
+            'x-image-meta-property-test_key': 'test_value'}
+        return 200, headers, ''
