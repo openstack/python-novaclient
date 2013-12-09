@@ -332,26 +332,6 @@ def do_boot(cs, args):
         _poll_for_status(cs.servers.get, info['id'], 'building', ['active'])
 
 
-def do_cloudpipe_list(cs, _args):
-    """Print a list of all cloudpipe instances."""
-    cloudpipes = cs.cloudpipe.list()
-    columns = ['Project Id', "Public IP", "Public Port", "Internal IP"]
-    utils.print_list(cloudpipes, columns)
-
-
-@utils.arg('project', metavar='<project>', help='Name of the project.')
-def do_cloudpipe_create(cs, args):
-    """Create a cloudpipe instance for the given project."""
-    cs.cloudpipe.create(args.project)
-
-
-@utils.arg('address', metavar='<ip address>', help='New IP Address.')
-@utils.arg('port', metavar='<port>', help='New Port.')
-def do_cloudpipe_configure(cs, args):
-    """Update the VPN IP/port of a cloudpipe instance."""
-    cs.cloudpipe.update(args.address, args.port)
-
-
 def _poll_for_status(poll_fn, obj_id, action, final_ok_states,
                      poll_period=5, show_progress=True,
                      status_field="status", silent=False):
@@ -2682,49 +2662,6 @@ def do_host_action(cs, args):
     """Perform a power action on a host."""
     result = cs.hosts.host_action(args.host, args.action)
     utils.print_list([result], ['HOST', 'power_action'])
-
-
-@utils.arg('--combine',
-           dest='combine',
-           action="store_true",
-           default=False,
-           help='Generate a single report for all services.')
-def do_coverage_start(cs, args):
-    """Start Nova coverage reporting."""
-    cs.coverage.start(combine=args.combine)
-    print("Coverage collection started")
-
-
-def do_coverage_stop(cs, args):
-    """Stop Nova coverage reporting."""
-    out = cs.coverage.stop()
-    print("Coverage data file path: %s" % out[-1]['path'])
-
-
-@utils.arg('filename', metavar='<filename>', help='report filename')
-@utils.arg('--html',
-           dest='html',
-           action="store_true",
-           default=False,
-           help='Generate HTML reports instead of text ones.')
-@utils.arg('--xml',
-           dest='xml',
-           action="store_true",
-           default=False,
-           help='Generate XML reports instead of text ones.')
-def do_coverage_report(cs, args):
-    """Generate coverage report."""
-    if args.html is True and args.xml is True:
-        raise exceptions.CommandError("--html and --xml must not be "
-                                      "specified together.")
-    cov = cs.coverage.report(args.filename, xml=args.xml, html=args.html)
-    print("Report path: %s" % cov[-1]['path'])
-
-
-def do_coverage_reset(cs, args):
-    """Reset coverage data."""
-    cs.coverage.reset()
-    print("Coverage data reset")
 
 
 def _find_hypervisor(cs, hypervisor):
