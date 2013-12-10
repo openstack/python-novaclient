@@ -127,3 +127,104 @@ class FakeHTTPClient(fakes_v1_1.FakeHTTPClient):
             'x-image-meta-status': 'ACTIVE',
             'x-image-meta-property-test_key': 'test_value'}
         return 200, headers, ''
+
+    #
+    # Servers
+    #
+    get_servers_1234_os_server_diagnostics = (
+        fakes_v1_1.FakeHTTPClient.get_servers_1234_diagnostics)
+
+    delete_servers_1234_os_attach_interfaces_port_id = (
+        fakes_v1_1.FakeHTTPClient.delete_servers_1234_os_interface_port_id)
+
+    def get_servers_1234_os_attach_interfaces(self, **kw):
+        return (200, {}, {"interface_attachments": [
+                             {"port_state": "ACTIVE",
+                              "net_id": "net-id-1",
+                              "port_id": "port-id-1",
+                              "mac_address": "aa:bb:cc:dd:ee:ff",
+                              "fixed_ips": [{"ip_address": "1.2.3.4"}],
+                              },
+                             {"port_state": "ACTIVE",
+                              "net_id": "net-id-1",
+                              "port_id": "port-id-1",
+                              "mac_address": "aa:bb:cc:dd:ee:ff",
+                              "fixed_ips": [{"ip_address": "1.2.3.4"}],
+                              }]})
+
+    def post_servers_1234_os_attach_interfaces(self, **kw):
+        return (200, {}, {'interface_attachment': {}})
+
+    #
+    # Server Actions
+    #
+    def post_servers_1234_action(self, body, **kw):
+        _headers = None
+        resp = 202
+        body_is_none_list = [
+            'revert_resize', 'migrate', 'stop', 'start', 'force_delete',
+            'restore', 'pause', 'unpause', 'lock', 'unlock', 'unrescue',
+            'resume', 'suspend', 'lock', 'unlock', 'shelve', 'shelve_offload',
+            'unshelve', 'reset_network', 'rescue', 'confirm_resize']
+        body_return_map = {
+            'rescue': {'admin_password': 'RescuePassword'},
+            'get_console_output': {'output': 'foo'},
+            'rebuild': self.get_servers_1234()[2],
+            }
+        body_param_check_exists = {
+            'rebuild': 'image_ref',
+            'resize': 'flavor_ref'}
+        body_params_check_exact = {
+            'reboot': ['type'],
+            'add_fixed_ip': ['network_id'],
+            'evacuate': ['host', 'on_shared_storage'],
+            'remove_fixed_ip': ['address'],
+            'change_password': ['admin_password'],
+            'get_console_output': ['length'],
+            'get_vnc_console': ['type'],
+            'get_spice_console': ['type'],
+            'reset_state': ['state'],
+            'create_image': ['name', 'metadata'],
+            'migrate_live': ['host', 'block_migration', 'disk_over_commit'],
+            'create_backup': ['name', 'backup_type', 'rotation']}
+
+        assert len(body.keys()) == 1
+        action = list(body)[0]
+        _body = body_return_map.get(action)
+
+        if action in body_is_none_list:
+            assert body[action] is None
+
+        if action in body_param_check_exists:
+            assert body_param_check_exists[action] in body[action]
+
+        if action == 'evacuate':
+            body[action].pop('admin_password', None)
+
+        if action in body_params_check_exact:
+            assert set(body[action]) == set(body_params_check_exact[action])
+
+        if action == 'reboot':
+            assert body[action]['type'] in ['HARD', 'SOFT']
+        elif action == 'confirm_resize':
+            # This one method returns a different response code
+            resp = 204
+        elif action == 'create_image':
+            _headers = dict(location="http://blah/images/456")
+
+        if action not in set.union(set(body_is_none_list),
+                                     set(body_params_check_exact.keys()),
+                                     set(body_param_check_exists.keys())):
+            raise AssertionError("Unexpected server action: %s" % action)
+
+        return (resp, _headers, _body)
+
+    #
+    # Server password
+    #
+
+    def get_servers_1234_os_server_password(self, **kw):
+        return (200, {}, {'password': ''})
+
+    def delete_servers_1234_os_server_password(self, **kw):
+        return (202, {}, None)
