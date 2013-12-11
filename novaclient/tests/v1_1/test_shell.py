@@ -19,17 +19,17 @@
 import base64
 import datetime
 import os
-import mock
 
 import fixtures
+import mock
 import six
 
 import novaclient.client
 from novaclient import exceptions
 from novaclient.openstack.common import timeutils
 import novaclient.shell
-from novaclient.tests.v1_1 import fakes
 from novaclient.tests import utils
+from novaclient.tests.v1_1 import fakes
 import novaclient.v1_1.shell
 
 

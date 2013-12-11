@@ -13,9 +13,9 @@
 
 from novaclient import base
 from novaclient import exceptions
-from novaclient.v1_1 import flavors
 from novaclient.tests import utils
 from novaclient.tests.v1_1 import fakes
+from novaclient.v1_1 import flavors
 
 
 cs = fakes.FakeClient()

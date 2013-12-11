@@ -31,9 +31,9 @@ except ImportError:
     import simplejson as json
 
 from novaclient import exceptions
+from novaclient.openstack.common.py3kcompat import urlutils
 from novaclient import service_catalog
 from novaclient import utils
-from novaclient.openstack.common.py3kcompat import urlutils
 
 
 class HTTPClient(object):

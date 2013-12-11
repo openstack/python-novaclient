@@ -12,9 +12,9 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from novaclient.v3 import hosts
-from novaclient.tests.v3 import fakes
 from novaclient.tests import utils
+from novaclient.tests.v3 import fakes
+from novaclient.v3 import hosts
 
 
 cs = fakes.FakeClient()
