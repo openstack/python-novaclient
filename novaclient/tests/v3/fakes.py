@@ -14,6 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from datetime import datetime
+
 from novaclient.openstack.common import strutils
 from novaclient.tests import fakes
 from novaclient.tests.v1_1 import fakes as fakes_v1_1
@@ -228,3 +230,44 @@ class FakeHTTPClient(fakes_v1_1.FakeHTTPClient):
 
     def delete_servers_1234_os_server_password(self, **kw):
         return (202, {}, None)
+
+    #
+    # Availability Zones
+    #
+    def get_os_availability_zone(self, **kw):
+        return (200, {}, {"availability_zone_info": [
+                              {"zone_name": "zone-1",
+                               "zone_state": {"available": True},
+                               "hosts": None},
+                              {"zone_name": "zone-2",
+                               "zone_state": {"available": False},
+                               "hosts": None}]})
+
+    def get_os_availability_zone_detail(self, **kw):
+        return (200, {}, {"availability_zone_info": [
+                              {"zone_name": "zone-1",
+                               "zone_state": {"available": True},
+                               "hosts": {
+                                   "fake_host-1": {
+                                       "nova-compute": {"active": True,
+                                           "available": True,
+                                           "updated_at":
+                                   datetime(2012, 12, 26, 14, 45, 25, 0)}}}},
+                              {"zone_name": "internal",
+                               "zone_state": {"available": True},
+                               "hosts": {
+                                   "fake_host-1": {
+                                       "nova-sched": {
+                                           "active": True,
+                                           "available": True,
+                                           "updated_at":
+                                   datetime(2012, 12, 26, 14, 45, 25, 0)}},
+                                   "fake_host-2": {
+                                       "nova-network": {
+                                           "active": True,
+                                           "available": False,
+                                           "updated_at":
+                                   datetime(2012, 12, 26, 14, 45, 24, 0)}}}},
+                              {"zone_name": "zone-2",
+                               "zone_state": {"available": False},
+                               "hosts": None}]})

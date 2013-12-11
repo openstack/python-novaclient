@@ -32,8 +32,8 @@ from novaclient.openstack.common import strutils
 from novaclient.openstack.common import timeutils
 from novaclient.openstack.common import uuidutils
 from novaclient import utils
-from novaclient.v1_1 import availability_zones
 from novaclient.v1_1 import quotas
+from novaclient.v3 import availability_zones
 from novaclient.v3 import servers
 
 
@@ -1433,7 +1433,7 @@ def _translate_volume_snapshot_keys(collection):
 
 def _translate_availability_zone_keys(collection):
     _translate_keys(collection,
-                    [('zoneName', 'name'), ('zoneState', 'status')])
+                    [('zone_name', 'name'), ('zone_state', 'status')])
 
 
 @utils.arg('--all-tenants',
@@ -3161,40 +3161,40 @@ def _treeizeAvailabilityZone(zone):
     result = []
 
     # Zone tree view item
-    az.zoneName = zone.zoneName
-    az.zoneState = ('available'
-                    if zone.zoneState['available'] else 'not available')
-    az._info['zoneName'] = az.zoneName
-    az._info['zoneState'] = az.zoneState
+    az.zone_name = zone.zone_name
+    az.zone_state = ('available'
+                    if zone.zone_state['available'] else 'not available')
+    az._info['zone_name'] = az.zone_name
+    az._info['zone_state'] = az.zone_state
     result.append(az)
 
     if zone.hosts is not None:
-        for (host, services) in zone.hosts.items():
+        zone_hosts = sorted(zone.hosts.items(), key=lambda x: x[0])
+        for (host, services) in zone_hosts:
             # Host tree view item
             az = AvailabilityZone(zone.manager,
                                   copy.deepcopy(zone._info), zone._loaded)
-            az.zoneName = '|- %s' % host
-            az.zoneState = ''
-            az._info['zoneName'] = az.zoneName
-            az._info['zoneState'] = az.zoneState
+            az.zone_name = '|- %s' % host
+            az.zone_state = ''
+            az._info['zone_name'] = az.zone_name
+            az._info['zone_state'] = az.zone_state
             result.append(az)
 
             for (svc, state) in services.items():
                 # Service tree view item
                 az = AvailabilityZone(zone.manager,
                                       copy.deepcopy(zone._info), zone._loaded)
-                az.zoneName = '| |- %s' % svc
-                az.zoneState = '%s %s %s' % (
+                az.zone_name = '| |- %s' % svc
+                az.zone_state = '%s %s %s' % (
                                'enabled' if state['active'] else 'disabled',
                                ':-)' if state['available'] else 'XXX',
                                state['updated_at'])
-                az._info['zoneName'] = az.zoneName
-                az._info['zoneState'] = az.zoneState
+                az._info['zone_name'] = az.zone_name
+                az._info['zone_state'] = az.zone_state
                 result.append(az)
     return result
 
 
-@utils.service_type('compute')
 def do_availability_zone_list(cs, _args):
     """List all the availability zones."""
     try:
