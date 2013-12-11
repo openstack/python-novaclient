@@ -945,6 +945,9 @@ class FakeHTTPClient(base_client.HTTPClient):
     def get_images_2(self, **kw):
         return (200, {}, {'image': self.get_images_detail()[2]['images'][1]})
 
+    def get_images_456(self, **kw):
+        return (200, {}, {'image': self.get_images_detail()[2]['images'][1]})
+
     def post_images(self, body, **kw):
         assert list(body) == ['image']
         fakes.assert_has_keys(body['image'], required=['serverId', 'name'])
