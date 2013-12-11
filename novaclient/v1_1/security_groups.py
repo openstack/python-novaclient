@@ -52,7 +52,7 @@ class SecurityGroupManager(base.ManagerWithFind):
         """
         Update a security group
 
-        :param group: The security group to delete (group or ID)
+        :param group: The security group to update (group or ID)
         :param name: name for the security group to update
         :param description: description for the security group to update
         :rtype: the security group object

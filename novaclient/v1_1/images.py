@@ -92,7 +92,7 @@ class ImageManager(base.ManagerWithFind):
         """
         Delete metadata from an image
 
-        :param image: The :class:`Image` to add metadata to
+        :param image: The :class:`Image` to delete metadata
         :param keys: A list of metadata keys to delete from the image
         """
         for k in keys:

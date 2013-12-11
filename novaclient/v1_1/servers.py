@@ -43,10 +43,9 @@ class Server(base.Resource):
 
     def update(self, name=None):
         """
-        Update the name or the password for this server.
+        Update the name for this server.
 
         :param name: Update the server's name.
-        :param password: Update the root password.
         """
         self.manager.update(self, name=name)
 
