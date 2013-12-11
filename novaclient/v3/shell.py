@@ -1957,7 +1957,7 @@ def _get_secgroup(cs, secgroup):
             'UTF-8')
         s.name = s.name.encode(encoding)
         if secgroup == s.name:
-            if match_found != False:
+            if match_found is not False:
                 msg = ("Multiple security group matches found for name"
                        " '%s', use an ID to be more specific." % secgroup)
                 raise exceptions.NoUniqueMatch(msg)
@@ -2714,7 +2714,7 @@ def do_coverage_stop(cs, args):
            help='Generate XML reports instead of text ones.')
 def do_coverage_report(cs, args):
     """Generate coverage report."""
-    if args.html == True and args.xml == True:
+    if args.html is True and args.xml is True:
         raise exceptions.CommandError("--html and --xml must not be "
                                       "specified together.")
     cov = cs.coverage.report(args.filename, xml=args.xml, html=args.html)
