@@ -17,6 +17,7 @@ Flavor interface.
 """
 from novaclient import base
 from novaclient import exceptions
+from novaclient.openstack.common.gettextutils import _
 from novaclient.openstack.common.py3kcompat import urlutils
 from novaclient.openstack.common import strutils
 
@@ -168,15 +169,15 @@ class FlavorManager(base.ManagerWithFind):
         try:
             ram = int(ram)
         except (TypeError, ValueError):
-            raise exceptions.CommandError("Ram must be an integer.")
+            raise exceptions.CommandError(_("Ram must be an integer."))
         try:
             vcpus = int(vcpus)
         except (TypeError, ValueError):
-            raise exceptions.CommandError("VCPUs must be an integer.")
+            raise exceptions.CommandError(_("VCPUs must be an integer."))
         try:
             disk = int(disk)
         except (TypeError, ValueError):
-            raise exceptions.CommandError("Disk must be an integer.")
+            raise exceptions.CommandError(_("Disk must be an integer."))
 
         if flavorid == "auto":
             flavorid = None
@@ -184,20 +185,20 @@ class FlavorManager(base.ManagerWithFind):
         try:
             swap = int(swap)
         except (TypeError, ValueError):
-            raise exceptions.CommandError("Swap must be an integer.")
+            raise exceptions.CommandError(_("Swap must be an integer."))
         try:
             ephemeral = int(ephemeral)
         except (TypeError, ValueError):
-            raise exceptions.CommandError("Ephemeral must be an integer.")
+            raise exceptions.CommandError(_("Ephemeral must be an integer."))
         try:
             rxtx_factor = float(rxtx_factor)
         except (TypeError, ValueError):
-            raise exceptions.CommandError("rxtx_factor must be a float.")
+            raise exceptions.CommandError(_("rxtx_factor must be a float."))
 
         try:
             is_public = strutils.bool_from_string(is_public, True)
         except Exception:
-            raise exceptions.CommandError("is_public must be a boolean.")
+            raise exceptions.CommandError(_("is_public must be a boolean."))
 
         body = self._build_body(name, ram, vcpus, disk, flavorid, swap,
                                 ephemeral, rxtx_factor, is_public)
