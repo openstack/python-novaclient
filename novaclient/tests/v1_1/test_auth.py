@@ -13,13 +13,13 @@
 
 import copy
 import json
-import mock
 
+import mock
 import requests
 
-from novaclient.v1_1 import client
 from novaclient import exceptions
 from novaclient.tests import utils
+from novaclient.v1_1 import client
 
 
 class AuthenticateAgainstKeystoneTests(utils.TestCase):

@@ -14,9 +14,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from novaclient.v3 import client
 from novaclient.tests import fakes
 from novaclient.tests.v1_1 import fakes as fakes_v1_1
+from novaclient.v3 import client
 
 
 class FakeClient(fakes.FakeClient, client.Client):

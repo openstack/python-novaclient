@@ -17,8 +17,8 @@ Flavor interface.
 """
 from novaclient import base
 from novaclient import exceptions
-from novaclient import utils
 from novaclient.openstack.common.py3kcompat import urlutils
+from novaclient import utils
 
 
 class Flavor(base.Resource):

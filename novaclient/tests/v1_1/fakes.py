@@ -20,8 +20,8 @@ import six
 
 from novaclient import client as base_client
 from novaclient import exceptions
-from novaclient.openstack.common import strutils
 from novaclient.openstack.common.py3kcompat import urlutils
+from novaclient.openstack.common import strutils
 from novaclient.tests import fakes
 from novaclient.tests import utils
 from novaclient.v1_1 import client

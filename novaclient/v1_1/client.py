@@ -16,16 +16,18 @@
 
 from novaclient import client
 from novaclient.v1_1 import agents
-from novaclient.v1_1 import certs
-from novaclient.v1_1 import cloudpipe
 from novaclient.v1_1 import aggregates
 from novaclient.v1_1 import availability_zones
+from novaclient.v1_1 import certs
+from novaclient.v1_1 import cloudpipe
 from novaclient.v1_1 import coverage_ext
-from novaclient.v1_1 import flavors
+from novaclient.v1_1 import fixed_ips
 from novaclient.v1_1 import flavor_access
+from novaclient.v1_1 import flavors
 from novaclient.v1_1 import floating_ip_dns
-from novaclient.v1_1 import floating_ips
 from novaclient.v1_1 import floating_ip_pools
+from novaclient.v1_1 import floating_ips
+from novaclient.v1_1 import floating_ips_bulk
 from novaclient.v1_1 import fping
 from novaclient.v1_1 import hosts
 from novaclient.v1_1 import hypervisors
@@ -38,14 +40,12 @@ from novaclient.v1_1 import quotas
 from novaclient.v1_1 import security_group_rules
 from novaclient.v1_1 import security_groups
 from novaclient.v1_1 import servers
+from novaclient.v1_1 import services
 from novaclient.v1_1 import usage
 from novaclient.v1_1 import virtual_interfaces
-from novaclient.v1_1 import volumes
 from novaclient.v1_1 import volume_snapshots
 from novaclient.v1_1 import volume_types
-from novaclient.v1_1 import services
-from novaclient.v1_1 import fixed_ips
-from novaclient.v1_1 import floating_ips_bulk
+from novaclient.v1_1 import volumes
 
 
 class Client(object):

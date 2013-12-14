@@ -14,9 +14,9 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from novaclient.v1_1 import floating_ips
 from novaclient.tests import utils
 from novaclient.tests.v1_1 import fakes
+from novaclient.v1_1 import floating_ips
 
 
 cs = fakes.FakeClient()

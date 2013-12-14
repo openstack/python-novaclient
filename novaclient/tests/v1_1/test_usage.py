@@ -13,9 +13,9 @@
 
 import datetime
 
-from novaclient.v1_1 import usage
 from novaclient.tests import utils
 from novaclient.tests.v1_1 import fakes
+from novaclient.v1_1 import usage
 
 
 cs = fakes.FakeClient()

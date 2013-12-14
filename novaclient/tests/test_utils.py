@@ -16,10 +16,10 @@ import sys
 import mock
 import six
 
-from novaclient import exceptions
-from novaclient import utils
 from novaclient import base
+from novaclient import exceptions
 from novaclient.tests import utils as test_utils
+from novaclient import utils
 
 UUID = '8e8ec658-c7b0-4243-bdf8-6f7f2952c0d0'
 

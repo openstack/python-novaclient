@@ -20,9 +20,9 @@ import requests
 import novaclient.client
 import novaclient.extension
 import novaclient.tests.fakes as fakes
+from novaclient.tests import utils
 import novaclient.v1_1.client
 import novaclient.v3.client
-from novaclient.tests import utils
 
 import json
 

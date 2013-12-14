@@ -16,10 +16,10 @@
 
 import six
 
+from novaclient.tests import utils
+from novaclient.tests.v1_1 import fakes
 from novaclient.v1_1 import availability_zones
 from novaclient.v1_1 import shell
-from novaclient.tests.v1_1 import fakes
-from novaclient.tests import utils
 
 
 cs = fakes.FakeClient()
