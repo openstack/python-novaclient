@@ -19,7 +19,8 @@ Exception definitions.
 
 class UnsupportedVersion(Exception):
     """Indicates that the user is trying to use an unsupported
-    version of the API"""
+    version of the API.
+    """
     pass
 
 
@@ -46,7 +47,8 @@ class AuthSystemNotFound(Exception):
 
 class NoTokenLookupException(Exception):
     """This form of authentication does not support looking up
-       endpoints from an existing token."""
+       endpoints from an existing token.
+    """
     pass
 
 

@@ -254,7 +254,8 @@ class HTTPClient(object):
     def _extract_service_catalog(self, url, resp, body, extract_token=True):
         """See what the auth service told us and process the response.
         We may get redirected to another site, fail or actually get
-        back a service catalog with a token and our endpoints."""
+        back a service catalog with a token and our endpoints.
+        """
 
         # content must always present
         if resp.status_code == 200 or resp.status_code == 201:
