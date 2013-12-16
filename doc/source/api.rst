@@ -9,39 +9,14 @@ The :mod:`novaclient` Python API
 Usage
 -----
 
-First create an instance of :class:`OpenStack` with your credentials::
+First create a client instance with your credentials::
 
-    >>> from novaclient import OpenStack
-    >>> nova = OpenStack(USERNAME, PASSWORD, AUTH_URL)
+    >>> from novaclient.client import Client
+    >>> nova = Client(VERSION, USERNAME, PASSWORD, PROJECT_ID, AUTH_URL)
 
-Then call methods on the :class:`OpenStack` object:
+Here ``VERSION`` can be: ``1.1``, ``2`` and ``3``.
 
-.. class:: OpenStack
-
-    .. attribute:: backup_schedules
-
-        A :class:`BackupScheduleManager` -- manage automatic backup images.
-
-    .. attribute:: flavors
-
-        A :class:`FlavorManager` -- query available "flavors" (hardware
-        configurations).
-
-    .. attribute:: images
-
-        An :class:`ImageManager` -- query and create server disk images.
-
-    .. attribute:: ipgroups
-
-        A :class:`IPGroupManager` -- manage shared public IP addresses.
-
-    .. attribute:: servers
-
-        A :class:`ServerManager` -- start, stop, and manage virtual machines.
-
-    .. automethod:: authenticate
-
-For example::
+Then call methods on its managers::
 
     >>> nova.servers.list()
     [<Server: buildslave-ubuntu-9.10>]
@@ -58,6 +33,9 @@ For example::
     >>> fl = nova.flavors.find(ram=512)
     >>> nova.servers.create("my-server", flavor=fl)
     <Server: my-server>
+
+Reference
+---------
 
 For more information, see the reference:
 

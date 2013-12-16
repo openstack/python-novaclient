@@ -1,7 +1,7 @@
 Images
 ======
 
-.. currentmodule:: novaclient
+.. currentmodule:: novaclient.v1_1.images
 
 An "image" is a snapshot from which you can create new server instances.
 
@@ -18,7 +18,7 @@ Classes
 -------
 
 .. autoclass:: ImageManager
-   :members: get, list, find, findall, create, delete
+   :members: get, list, find, findall, delete
 
 .. autoclass:: Image
    :members: delete

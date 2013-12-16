@@ -1,12 +1,10 @@
-API Reference
-=============
+Version 1.1, Version 2 API Reference
+=======================================
 
 .. toctree::
    :maxdepth: 1
-   
-   backup_schedules
+
    exceptions
    flavors
    images
-   ipgroups
    servers

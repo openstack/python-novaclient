@@ -10,7 +10,7 @@ From Rackspace's API documentation:
 Classes
 -------
 
-.. currentmodule:: novaclient
+.. currentmodule:: novaclient.v1_1.flavors
 
 .. autoclass:: FlavorManager
    :members: get, list, find, findall
