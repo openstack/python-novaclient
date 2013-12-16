@@ -18,6 +18,7 @@ from novaclient import client
 from novaclient.v3 import agents
 from novaclient.v3 import aggregates
 from novaclient.v3 import availability_zones
+from novaclient.v3 import certs
 from novaclient.v3 import flavor_access
 from novaclient.v3 import flavors
 from novaclient.v3 import hosts
@@ -65,6 +66,7 @@ class Client(object):
         self.aggregates = aggregates.AggregateManager(self)
         self.availability_zones = \
             availability_zones.AvailabilityZoneManager(self)
+        self.certs = certs.CertificateManager(self)
         self.hosts = hosts.HostManager(self)
         self.flavors = flavors.FlavorManager(self)
         self.flavor_access = flavor_access.FlavorAccessManager(self)
