@@ -23,5 +23,20 @@ class QuotaSet(quotas.QuotaSet):
 class QuotaSetManager(quotas.QuotaSetManager):
     resource_class = QuotaSet
 
+    def get(self, tenant_id, user_id=None, detail=False):
+        if detail:
+            detail_string = '/detail'
+        else:
+            detail_string = ''
+
+        if hasattr(tenant_id, 'tenant_id'):
+            tenant_id = tenant_id.tenant_id
+        if user_id:
+            url = '/os-quota-sets/%s%s?user_id=%s' % (tenant_id, detail_string,
+                                                      user_id)
+        else:
+            url = '/os-quota-sets/%s%s' % (tenant_id, detail_string)
+        return self._get(url, "quota_set")
+
     def _update_body(self, tenant_id, **kwargs):
         return {'quota_set': kwargs}

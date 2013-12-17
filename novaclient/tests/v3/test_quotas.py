@@ -31,3 +31,15 @@ class QuotaSetsTest(test_quotas.QuotaSetsTest):
             'PUT', '/os-quota-sets/97f4c221bff44578b0300df4ef119353',
             {'quota_set': {'force': True,
                            'cores': 2}})
+
+    def test_tenant_quotas_get_detail(self):
+        tenant_id = 'test'
+        self.cs.quotas.get(tenant_id, detail=True)
+        self.cs.assert_called('GET', '/os-quota-sets/%s/detail' % tenant_id)
+
+    def test_user_quotas_get_detail(self):
+        tenant_id = 'test'
+        user_id = 'fake_user'
+        self.cs.quotas.get(tenant_id, user_id=user_id, detail=True)
+        url = '/os-quota-sets/%s/detail?user_id=%s' % (tenant_id, user_id)
+        self.cs.assert_called('GET', url)

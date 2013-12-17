@@ -293,6 +293,12 @@ class FakeHTTPClient(fakes_v1_1.FakeHTTPClient):
                       'security_groups': 1,
                       'security_group_rules': 1}})
 
+    def get_os_quota_sets_test_detail(self, **kw):
+        return (200, {}, {'quota_set': {
+            'cores': {'reserved': 0, 'in_use': 0, 'limit': 10},
+            'instances': {'reserved': 0, 'in_use': 4, 'limit': 50},
+            'ram': {'reserved': 0, 'in_use': 1024, 'limit': 51200}}})
+
     #
     # Hypervisors
     #
