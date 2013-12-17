@@ -42,13 +42,16 @@ class AgentsManager(base.ManagerWithFind):
             url = "/os-agents?hypervisor=%s" % hypervisor
         return self._list(url, "agents")
 
-    def update(self, id, version,
-               url, md5hash):
-        """Update an existing agent build."""
-        body = {'para': {
+    def _build_update_body(self, version, url, md5hash):
+        return {'para': {
                        'version': version,
                        'url': url,
                        'md5hash': md5hash}}
+
+    def update(self, id, version,
+               url, md5hash):
+        """Update an existing agent build."""
+        body = self._build_update_body(version, url, md5hash)
         return self._update('/os-agents/%s' % id, body, 'agent')
 
     def create(self, os, architecture, version,
