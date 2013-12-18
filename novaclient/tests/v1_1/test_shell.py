@@ -1832,6 +1832,25 @@ class ShellTest(utils.TestCase):
                            '/os-migrations?cell_name=child1&host=host1'
                            '&status=finished')
 
+    @mock.patch('novaclient.v1_1.shell._find_server')
+    @mock.patch('os.system')
+    def test_ssh(self, mock_system, mock_find_server):
+        class FakeResources(object):
+            addresses = {
+                "private": [{'version': 4, 'addr': "1.1.1.1"}],
+                "public": [{'version': 4, 'addr': "2.2.2.2"}]
+            }
+        mock_find_server.return_value = FakeResources()
+
+        self.run_command("ssh --login bob server")
+        mock_system.assert_any_call("ssh -4 -p22  bob@2.2.2.2 ")
+        self.run_command("ssh alice@server")
+        mock_system.assert_any_call("ssh -4 -p22  alice@2.2.2.2 ")
+        self.run_command("ssh --port 202 server")
+        mock_system.assert_any_call("ssh -4 -p202  root@2.2.2.2 ")
+        self.run_command("ssh --private server")
+        mock_system.assert_any_call("ssh -4 -p22  root@1.1.1.1 ")
+
 
 class GetSecgroupTest(utils.TestCase):
     def test_with_integer(self):

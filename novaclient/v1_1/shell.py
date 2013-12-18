@@ -3034,6 +3034,11 @@ def do_credentials(cs, _args):
     default='')
 def do_ssh(cs, args):
     """SSH into a server."""
+    if '@' in args.server:
+        user, server = args.server.split('@', 1)
+        args.login = user
+        args.server = server
+
     addresses = _find_server(cs, args.server).addresses
     address_type = "private" if args.private else "public"
     version = 6 if args.ipv6 else 4
