@@ -78,6 +78,10 @@ gen_ref("v1_1", "Version 1.1, Version 2 API Reference",
          "quota_classes", "quotas", "security_group_rules",
          "security_groups", "services", "virtual_interfaces",
          "volume_snapshots", "volumes", "volume_types"])
+gen_ref("v3", "Version 3 API Reference",
+        ["flavors", "hosts", "agents", "aggregates", "availability_zones",
+         "certs", "hypervisors", "images", "keypairs", "quotas",
+         "quotas_classes", "servers", "services"])
 
 # -- General configuration ----------------------------------------------------
 

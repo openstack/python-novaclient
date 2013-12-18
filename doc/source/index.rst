@@ -26,6 +26,7 @@ Contents:
    api
    ref/index
    ref/v1_1/index
+   ref/v3/index
    releases
 
 Contributing
