@@ -1811,45 +1811,65 @@ class FakeHTTPClient(base_client.HTTPClient):
 
     def get_volumes_detail(self, **kw):
         return (200, {}, {"volumes": [
-                            {"display_name": "Work",
-                             "display_description": "volume for work",
-                             "status": "ATTACHED",
-                             "id": "15e59938-07d5-11e1-90e3-e3dffe0c5983",
-                             "created_at": "2011-09-09T00:00:00Z",
-                             "attached": "2011-11-11T00:00:00Z",
-                             "size": 1024,
-                             "attachments": [
-                                {"id": "3333",
-                                 "links": ''}],
-                             "metadata": {}}]})
+            {
+                "display_name": "Work",
+                "display_description": "volume for work",
+                "status": "ATTACHED",
+                "id": "15e59938-07d5-11e1-90e3-e3dffe0c5983",
+                "created_at": "2011-09-09T00:00:00Z",
+                "attached": "2011-11-11T00:00:00Z",
+                "size": 1024,
+                "attachments": [
+                    {"id": "3333",
+                     "links": ''}],
+                "metadata": {}},
+            {
+                "display_name": "Work2",
+                "display_description": "volume for work2",
+                "status": "ATTACHED",
+                "id": "15e59938-07d5-11e1-90e3-ee32ba30feaa",
+                "created_at": "2011-09-09T00:00:00Z",
+                "attached": "2011-11-11T00:00:00Z",
+                "size": 1024,
+                "attachments": [
+                    {"id": "2222",
+                     "links": ''}],
+                "metadata": {}}]})
 
     def get_volumes(self, **kw):
         return (200, {}, {"volumes": [
-                            {"display_name": "Work",
-                             "display_description": "volume for work",
-                             "status": "ATTACHED",
-                             "id": "15e59938-07d5-11e1-90e3-e3dffe0c5983",
-                             "created_at": "2011-09-09T00:00:00Z",
-                             "attached": "2011-11-11T00:00:00Z",
-                             "size": 1024,
-                             "attachments": [
-                                {"id": "3333",
-                                 "links": ''}],
-                             "metadata": {}}]})
+            {
+                "display_name": "Work",
+                "display_description": "volume for work",
+                "status": "ATTACHED",
+                "id": "15e59938-07d5-11e1-90e3-e3dffe0c5983",
+                "created_at": "2011-09-09T00:00:00Z",
+                "attached": "2011-11-11T00:00:00Z",
+                "size": 1024,
+                "attachments": [
+                    {"id": "3333",
+                     "links": ''}],
+                "metadata": {}},
+            {
+                "display_name": "Work2",
+                "display_description": "volume for work2",
+                "status": "ATTACHED",
+                "id": "15e59938-07d5-11e1-90e3-ee32ba30feaa",
+                "created_at": "2011-09-09T00:00:00Z",
+                "attached": "2011-11-11T00:00:00Z",
+                "size": 1024,
+                "attachments": [
+                    {"id": "2222",
+                     "links": ''}],
+                "metadata": {}}]})
 
     def get_volumes_15e59938_07d5_11e1_90e3_e3dffe0c5983(self, **kw):
-        return (200, {}, {"volume":
-                            {"display_name": "Work",
-                             "display_description": "volume for work",
-                             "status": "ATTACHED",
-                             "id": "15e59938-07d5-11e1-90e3-e3dffe0c5983",
-                             "created_at": "2011-09-09T00:00:00Z",
-                             "attached": "2011-11-11T00:00:00Z",
-                             "size": 1024,
-                             "attachments": [
-                                {"id": "3333",
-                                 "links": ''}],
-                             "metadata": {}}})
+        return (200, {}, {
+                "volume": self.get_volumes_detail()[2]['volumes'][0]})
+
+    def get_volumes_15e59938_07d5_11e1_90e3_ee32ba30feaa(self, **kw):
+        return (200, {}, {
+                "volume": self.get_volumes_detail()[2]['volumes'][1]})
 
     def post_volumes(self, **kw):
         return (200, {}, {"volume":
@@ -1866,6 +1886,9 @@ class FakeHTTPClient(base_client.HTTPClient):
                  "size": 1}})
 
     def delete_volumes_15e59938_07d5_11e1_90e3_e3dffe0c5983(self, **kw):
+        return (200, {}, {})
+
+    def delete_volumes_15e59938_07d5_11e1_90e3_ee32ba30feaa(self, **kw):
         return (200, {}, {})
 
     def post_servers_1234_os_volume_attachments(self, **kw):

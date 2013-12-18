@@ -1783,6 +1783,15 @@ class ShellTest(utils.TestCase):
         self.assert_called('DELETE',
                            '/volumes/15e59938-07d5-11e1-90e3-e3dffe0c5983')
 
+    def test_volume_delete_multiple(self):
+        self.run_command('volume-delete Work Work2')
+        self.assert_called('DELETE',
+                           '/volumes/15e59938-07d5-11e1-90e3-e3dffe0c5983',
+                           pos=-5)
+        self.assert_called('DELETE',
+                           '/volumes/15e59938-07d5-11e1-90e3-ee32ba30feaa',
+                           pos=-1)
+
     def test_volume_attach(self):
         self.run_command('volume-attach sample-server Work /dev/vdb')
         self.assert_called('POST', '/servers/1234/os-volume_attachments',
