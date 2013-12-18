@@ -24,7 +24,6 @@ import datetime
 import getpass
 import locale
 import os
-import six
 import sys
 import time
 
