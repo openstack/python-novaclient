@@ -773,6 +773,7 @@ def do_network_create(cs, args):
      dest="limit",
      metavar="<limit>",
      help='number of images to return per request')
+@utils.service_type('image')
 def do_image_list(cs, _args):
     """Print a list of available images to boot from."""
     limit = _args.limit
@@ -831,9 +832,6 @@ def _extract_metadata(args):
 def _print_image(image):
     info = image._info.copy()
 
-    # ignore links, we don't need to present those
-    info.pop('links')
-
     # try to replace a server entity to just an id
     server = info.pop('server', None)
     try:
@@ -842,10 +840,10 @@ def _print_image(image):
         pass
 
     # break up metadata and display each on its own row
-    metadata = info.pop('metadata', {})
+    properties = info.pop('properties', {})
     try:
-        for key, value in metadata.items():
-            _key = 'metadata %s' % key
+        for key, value in properties.items():
+            _key = 'Property %s' % key
             info[_key] = value
     except AttributeError:
         pass
@@ -864,6 +862,7 @@ def _print_flavor(flavor):
 @utils.arg('image',
      metavar='<image>',
      help="Name or ID of image")
+@utils.service_type('image')
 def do_image_show(cs, args):
     """Show details about the given image."""
     image = _find_image(cs, args.image)
