@@ -82,6 +82,7 @@ class SecretsHelper(object):
         self.args = args
         self.client = client
         self.key = None
+        self._password = None
 
     def _validate_string(self, text):
         if text is None or len(text) == 0:
@@ -143,11 +144,21 @@ class SecretsHelper(object):
 
     @property
     def password(self):
-        if self._validate_string(self.args.os_password):
-            return self.args.os_password
-        verify_pass = strutils.bool_from_string(
-            utils.env("OS_VERIFY_PASSWORD", default=False), True)
-        return self._prompt_password(verify_pass)
+        # Cache password so we prompt user at most once
+        if self._password:
+            pass
+        elif self._validate_string(self.args.os_password):
+            self._password = self.args.os_password
+        else:
+            verify_pass = strutils.bool_from_string(
+                utils.env("OS_VERIFY_PASSWORD", default=False), True)
+            self._password = self._prompt_password(verify_pass)
+        if not self._password:
+            raise exc.CommandError(
+                'Expecting a password provided via either '
+                '--os-password, env[OS_PASSWORD], or '
+                'prompted response')
+        return self._password
 
     @property
     def management_url(self):
@@ -259,6 +270,10 @@ class OpenStackComputeShell(object):
             metavar='<seconds>',
             type=positive_non_zero_float,
             help="Set HTTP call timeout (in seconds)")
+
+        parser.add_argument('--os-auth-token',
+                default=utils.env('OS_AUTH_TOKEN'),
+                help='Defaults to env[OS_AUTH_TOKEN]')
 
         parser.add_argument('--os-username',
             metavar='<auth-user-name>',
@@ -491,7 +506,6 @@ class OpenStackComputeShell(object):
                             format=streamformat)
 
     def main(self, argv):
-
         # Parse args once to find version and debug settings
         parser = self.get_base_parser()
         (options, args) = parser.parse_known_args(argv)
@@ -532,26 +546,36 @@ class OpenStackComputeShell(object):
             self.do_bash_completion(args)
             return 0
 
-        (os_username, os_tenant_name, os_tenant_id, os_auth_url,
-                os_region_name, os_auth_system, endpoint_type, insecure,
-                service_type, service_name, volume_service_name,
-                bypass_url, os_cache, cacert, timeout) = (
-                        args.os_username,
-                        args.os_tenant_name, args.os_tenant_id,
-                        args.os_auth_url,
-                        args.os_region_name, args.os_auth_system,
-                        args.endpoint_type, args.insecure, args.service_type,
-                        args.service_name, args.volume_service_name,
-                        args.bypass_url, args.os_cache,
-                        args.os_cacert, args.timeout)
+        os_username = args.os_username
+        os_password = None  # Fetched and set later as needed
+        os_tenant_name = args.os_tenant_name
+        os_tenant_id = args.os_tenant_id
+        os_auth_url = args.os_auth_url
+        os_region_name = args.os_region_name
+        os_auth_system = args.os_auth_system
+        endpoint_type = args.endpoint_type
+        insecure = args.insecure
+        service_type = args.service_type
+        service_name = args.service_name
+        volume_service_name = args.volume_service_name
+        bypass_url = args.bypass_url
+        os_cache = args.os_cache
+        cacert = args.os_cacert
+        timeout = args.timeout
+
+        # We may have either, both or none of these.
+        # If we have both, we don't need USERNAME, PASSWORD etc.
+        # Fill in the blanks from the SecretsHelper if possible.
+        # Finally, authenticate unless we have both.
+        # Note if we don't auth we probably don't have a tenant ID so we can't
+        # cache the token.
+        auth_token = args.os_auth_token if args.os_auth_token else None
+        management_url = bypass_url if bypass_url else None
 
         if os_auth_system and os_auth_system != "keystone":
             auth_plugin = novaclient.auth_plugin.load_plugin(os_auth_system)
         else:
             auth_plugin = None
-
-        # Fetched and set later as needed
-        os_password = None
 
         if not endpoint_type:
             endpoint_type = DEFAULT_NOVA_ENDPOINT_TYPE
@@ -567,9 +591,14 @@ class OpenStackComputeShell(object):
                     DEFAULT_OS_COMPUTE_API_VERSION]
             service_type = utils.get_service_type(args.func) or service_type
 
+        # If we have an auth token but no management_url, we must auth anyway.
+        # Expired tokens are handled by client.py:_cs_request
+        must_auth = not (utils.isunauthenticated(args.func)
+                         or (auth_token and management_url))
+
         #FIXME(usrleon): Here should be restrict for project id same as
         # for os_username or os_password but for compatibility it is not.
-        if not utils.isunauthenticated(args.func):
+        if must_auth:
             if auth_plugin:
                 auth_plugin.parse_opts(args)
 
@@ -613,7 +642,7 @@ class OpenStackComputeShell(object):
                 region_name=os_region_name, endpoint_type=endpoint_type,
                 extensions=self.extensions, service_type=service_type,
                 service_name=service_name, auth_system=os_auth_system,
-                auth_plugin=auth_plugin,
+                auth_plugin=auth_plugin, auth_token=auth_token,
                 volume_service_name=volume_service_name,
                 timings=args.timings, bypass_url=bypass_url,
                 os_cache=os_cache, http_log_debug=options.debug,
@@ -621,7 +650,7 @@ class OpenStackComputeShell(object):
 
         # Now check for the password/token of which pieces of the
         # identifying keyring key can come from the underlying client
-        if not utils.isunauthenticated(args.func):
+        if must_auth:
             helper = SecretsHelper(args, self.cs.client)
             if (auth_plugin and auth_plugin.opts and
                     "os_password" not in auth_plugin.opts):
@@ -629,31 +658,26 @@ class OpenStackComputeShell(object):
             else:
                 use_pw = True
 
-            tenant_id, auth_token, management_url = (helper.tenant_id,
-                                                     helper.auth_token,
-                                                     helper.management_url)
+            tenant_id = helper.tenant_id
+            # Allow commandline to override cache
+            if not auth_token:
+                auth_token = helper.auth_token
+            if not management_url:
+                management_url = helper.management_url
             if tenant_id and auth_token and management_url:
                 self.cs.client.tenant_id = tenant_id
                 self.cs.client.auth_token = auth_token
                 self.cs.client.management_url = management_url
-                # authenticate just sets up some values in this case, no REST
-                # calls
-                self.cs.authenticate()
-            if use_pw:
-                # Auth using token must have failed or not happened
-                # at all, so now switch to password mode and save
-                # the token when its gotten... using our keyring
-                # saver
-                os_password = helper.password
-                if not os_password:
-                    raise exc.CommandError(
-                        'Expecting a password provided via either '
-                        '--os-password, env[OS_PASSWORD], or '
-                        'prompted response')
-                self.cs.client.password = os_password
+                self.cs.client.password_fun = lambda: helper.password
+            elif use_pw:
+                # We're missing something, so auth with user/pass and save
+                # the result in our helper.
+                self.cs.client.password = helper.password
                 self.cs.client.keyring_saver = helper
 
         try:
+            # This does a couple of bits which are useful even if we've
+            # got the token + service URL already. It exits fast in that case.
             if not utils.isunauthenticated(args.func):
                 self.cs.authenticate()
         except exc.Unauthorized:

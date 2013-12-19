@@ -196,3 +196,23 @@ class ClientTest(utils.TestCase):
                                            auth_url="foo/v2")
         cs.authenticate()
         self.assertTrue(mock_authenticate.called)
+
+    def test_get_password_simple(self):
+        cs = novaclient.client.HTTPClient("user", "password", "", "")
+        cs.password_func = mock.Mock()
+        self.assertEqual(cs._get_password(), "password")
+        self.assertFalse(cs.password_func.called)
+
+    def test_get_password_none(self):
+        cs = novaclient.client.HTTPClient("user", None, "", "")
+        self.assertEqual(cs._get_password(), None)
+
+    def test_get_password_func(self):
+        cs = novaclient.client.HTTPClient("user", None, "", "")
+        cs.password_func = mock.Mock(return_value="password")
+        self.assertEqual(cs._get_password(), "password")
+        cs.password_func.assert_called_once_with()
+
+        cs.password_func = mock.Mock()
+        self.assertEqual(cs._get_password(), "password")
+        self.assertFalse(cs.password_func.called)

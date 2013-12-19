@@ -379,15 +379,22 @@ class AuthenticateAgainstKeystoneTests(utils.TestCase):
                 'User-Agent': cs.client.USER_AGENT,
                 'Content-Type': 'application/json',
                 'Accept': 'application/json',
-                'X-Auth-Token': "FAKE_ID",
+            }
+            body = {
+                'auth': {
+                    'token': {
+                        'id': cs.client.auth_token,
+                    },
+                    'tenantName': cs.client.projectid,
+                },
             }
 
-            token_url = cs.client.auth_url + "/tokens/FAKE_ID"
+            token_url = cs.client.auth_url + "/tokens"
             mock_request.assert_called_with(
-                "GET",
+                "POST",
                 token_url,
                 headers=headers,
-                data="null",
+                data=json.dumps(body),
                 allow_redirects=True,
                 **self.TEST_REQUEST_BASE)
 

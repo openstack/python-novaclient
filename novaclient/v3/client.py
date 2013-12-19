@@ -57,7 +57,7 @@ class Client(object):
                   volume_service_name=None, timings=False,
                   bypass_url=None, os_cache=False, no_cache=True,
                   http_log_debug=False, auth_system='keystone',
-                  auth_plugin=None,
+                  auth_plugin=None, auth_token=None,
                   cacert=None, tenant_id=None):
         self.projectid = project_id
         self.tenant_id = tenant_id
@@ -96,6 +96,7 @@ class Client(object):
                                     timeout=timeout,
                                     auth_system=auth_system,
                                     auth_plugin=auth_plugin,
+                                    auth_token=auth_token,
                                     proxy_token=proxy_token,
                                     proxy_tenant_id=proxy_tenant_id,
                                     region_name=region_name,
