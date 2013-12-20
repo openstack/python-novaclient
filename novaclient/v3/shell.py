@@ -34,7 +34,7 @@ from novaclient.openstack.common import uuidutils
 from novaclient import utils
 from novaclient.v1_1 import availability_zones
 from novaclient.v1_1 import quotas
-from novaclient.v1_1 import servers
+from novaclient.v3 import servers
 
 
 def _key_value_pairing(text):
@@ -307,7 +307,7 @@ def do_boot(cs, args):
 
     server = cs.servers.create(*boot_args, **boot_kwargs)
 
-    # Keep any information (like adminPass) returned by create
+    # Keep any information (like admin_password) returned by create
     info = server._info
     server = cs.servers.get(info['id'])
     info.update(server._info)
@@ -998,11 +998,11 @@ def do_list(cs, args):
 
     servers = cs.servers.list(detailed=detailed,
                               search_opts=search_opts)
-    convert = [('OS-EXT-SRV-ATTR:host', 'host'),
-               ('OS-EXT-STS:task_state', 'task_state'),
-               ('OS-EXT-SRV-ATTR:instance_name', 'instance_name'),
-               ('OS-EXT-STS:power_state', 'power_state'),
-               ('hostId', 'host_id')]
+    convert = [('os-extended-server-attributes:hypervisor_hostname', 'host'),
+               ('os-extended-status:task_state', 'task_state'),
+               ('os-extended-server-attributes:instance_name',
+                'instance_name'),
+               ('os-extended-status:power_state', 'power_state')]
     _translate_keys(servers, convert)
     _translate_extended_states(servers)
     if args.minimal:

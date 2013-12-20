@@ -20,6 +20,7 @@ from novaclient.v3 import flavor_access
 from novaclient.v3 import flavors
 from novaclient.v3 import hosts
 from novaclient.v3 import images
+from novaclient.v3 import servers
 
 
 class Client(object):
@@ -59,6 +60,7 @@ class Client(object):
         self.flavors = flavors.FlavorManager(self)
         self.flavor_access = flavor_access.FlavorAccessManager(self)
         self.images = images.ImageManager(self)
+        self.servers = servers.ServerManager(self)
 
         # Add in any extensions...
         if extensions:
