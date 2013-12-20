@@ -41,31 +41,14 @@ class QuotaSetManager(base.Manager):
             url = '/os-quota-sets/%s' % tenant_id
         return self._get(url, "quota_set")
 
-    def update(self, tenant_id, metadata_items=None,
-               injected_file_content_bytes=None, injected_file_path_bytes=None,
-               volumes=None, gigabytes=None,
-               ram=None, floating_ips=None, fixed_ips=None, instances=None,
-               injected_files=None, cores=None, key_pairs=None,
-               security_groups=None, security_group_rules=None, force=None,
-               user_id=None):
+    def _update_body(self, tenant_id, **kwargs):
+        kwargs['tenant_id'] = tenant_id
+        return {'quota_set': kwargs}
 
-        body = {'quota_set': {
-                'tenant_id': tenant_id,
-                'metadata_items': metadata_items,
-                'key_pairs': key_pairs,
-                'injected_file_content_bytes': injected_file_content_bytes,
-                'injected_file_path_bytes': injected_file_path_bytes,
-                'volumes': volumes,
-                'gigabytes': gigabytes,
-                'ram': ram,
-                'floating_ips': floating_ips,
-                'fixed_ips': fixed_ips,
-                'instances': instances,
-                'injected_files': injected_files,
-                'cores': cores,
-                'security_groups': security_groups,
-                'security_group_rules': security_group_rules,
-                'force': force}}
+    def update(self, tenant_id, **kwargs):
+
+        user_id = kwargs.pop('user_id', None)
+        body = self._update_body(tenant_id, **kwargs)
 
         for key in list(body['quota_set']):
             if body['quota_set'][key] is None:

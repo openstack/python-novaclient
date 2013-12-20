@@ -271,3 +271,24 @@ class FakeHTTPClient(fakes_v1_1.FakeHTTPClient):
                               {"zone_name": "zone-2",
                                "zone_state": {"available": False},
                                "hosts": None}]})
+
+    #
+    # Quotas
+    #
+    def put_os_quota_sets_97f4c221bff44578b0300df4ef119353(self, body, **kw):
+        assert list(body) == ['quota_set']
+        return (200, {}, {'quota_set': {
+                      'tenant_id': '97f4c221bff44578b0300df4ef119353',
+                      'metadata_items': [],
+                      'injected_file_content_bytes': 1,
+                      'injected_file_path_bytes': 1,
+                      'volumes': 2,
+                      'gigabytes': 1,
+                      'ram': 1,
+                      'floating_ips': 1,
+                      'instances': 1,
+                      'injected_files': 1,
+                      'cores': 1,
+                      'keypairs': 1,
+                      'security_groups': 1,
+                      'security_group_rules': 1}})

@@ -32,7 +32,6 @@ from novaclient.openstack.common import strutils
 from novaclient.openstack.common import timeutils
 from novaclient.openstack.common import uuidutils
 from novaclient import utils
-from novaclient.v1_1 import quotas
 from novaclient.v3 import availability_zones
 from novaclient.v3 import servers
 
@@ -2834,10 +2833,7 @@ def do_ssh(cs, args):
 
 
 _quota_resources = ['instances', 'cores', 'ram', 'volumes', 'gigabytes',
-                    'floating_ips', 'fixed_ips', 'metadata_items',
-                    'injected_files', 'key_pairs',
-                    'injected_file_content_bytes', 'injected_file_path_bytes',
-                    'security_groups', 'security_group_rules']
+                    'fixed_ips', 'metadata_items', 'key_pairs']
 
 
 def _quota_show(quotas):
@@ -2860,11 +2856,7 @@ def _quota_update(manager, identifier, args):
     if updates:
         # default value of force is None to make sure this client
         # will be compatibile with old nova server
-        force_update = getattr(args, 'force', None)
-        if isinstance(manager, quotas.QuotaSetManager):
-            manager.update(identifier, force=force_update, **updates)
-        else:
-            manager.update(identifier, **updates)
+        manager.update(identifier, **updates)
 
 
 @utils.arg('--tenant',
@@ -2916,14 +2908,6 @@ def do_quota_defaults(cs, args):
            metavar='<gigabytes>',
            type=int, default=None,
            help='New value for the "gigabytes" quota.')
-@utils.arg('--floating-ips',
-    metavar='<floating-ips>',
-    type=int,
-    default=None,
-    help='New value for the "floating-ips" quota.')
-@utils.arg('--floating_ips',
-    type=int,
-    help=argparse.SUPPRESS)
 @utils.arg('--fixed-ips',
     metavar='<fixed-ips>',
     type=int,
@@ -2937,42 +2921,11 @@ def do_quota_defaults(cs, args):
 @utils.arg('--metadata_items',
     type=int,
     help=argparse.SUPPRESS)
-@utils.arg('--injected-files',
-    metavar='<injected-files>',
-    type=int,
-    default=None,
-    help='New value for the "injected-files" quota.')
-@utils.arg('--injected_files',
-    type=int,
-    help=argparse.SUPPRESS)
-@utils.arg('--injected-file-content-bytes',
-    metavar='<injected-file-content-bytes>',
-    type=int,
-    default=None,
-    help='New value for the "injected-file-content-bytes" quota.')
-@utils.arg('--injected_file_content_bytes',
-    type=int,
-    help=argparse.SUPPRESS)
-@utils.arg('--injected-file-path-bytes',
-    metavar='<injected-file-path-bytes>',
-    type=int,
-    default=None,
-    help='New value for the "injected-file-path-bytes" quota.')
 @utils.arg('--key-pairs',
     metavar='<key-pairs>',
     type=int,
     default=None,
     help='New value for the "key-pairs" quota.')
-@utils.arg('--security-groups',
-    metavar='<security-groups>',
-    type=int,
-    default=None,
-    help='New value for the "security-groups" quota.')
-@utils.arg('--security-group-rules',
-    metavar='<security-group-rules>',
-    type=int,
-    default=None,
-    help='New value for the "security-group-rules" quota.')
 @utils.arg('--force',
     dest='force',
     action="store_true",
