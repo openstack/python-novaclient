@@ -1837,19 +1837,43 @@ class ShellTest(utils.TestCase):
     def test_ssh(self, mock_system, mock_find_server):
         class FakeResources(object):
             addresses = {
-                "private": [{'version': 4, 'addr': "1.1.1.1"}],
-                "public": [{'version': 4, 'addr': "2.2.2.2"}]
+                "private": [{'version': 4, 'addr': "1.1.1.1"},
+                            {'version': 6, 'addr': "2607:f0d0:1002::4"}],
+                "public": [{'version': 4, 'addr': "2.2.2.2"},
+                           {'version': 6, 'addr': "7612:a1b2:2004::6"}]
             }
         mock_find_server.return_value = FakeResources()
 
         self.run_command("ssh --login bob server")
-        mock_system.assert_any_call("ssh -4 -p22  bob@2.2.2.2 ")
+        mock_system.assert_called_with("ssh -4 -p22  bob@2.2.2.2 ")
         self.run_command("ssh alice@server")
-        mock_system.assert_any_call("ssh -4 -p22  alice@2.2.2.2 ")
+        mock_system.assert_called_with("ssh -4 -p22  alice@2.2.2.2 ")
         self.run_command("ssh --port 202 server")
-        mock_system.assert_any_call("ssh -4 -p202  root@2.2.2.2 ")
+        mock_system.assert_called_with("ssh -4 -p202  root@2.2.2.2 ")
         self.run_command("ssh --private server")
-        mock_system.assert_any_call("ssh -4 -p22  root@1.1.1.1 ")
+        mock_system.assert_called_with("ssh -4 -p22  root@1.1.1.1 ")
+        self.run_command("ssh -i ~/my_rsa_key server --private")
+        mock_system.assert_called_with("ssh -4 -p22 -i ~/my_rsa_key "
+                                       "root@1.1.1.1 ")
+        self.run_command("ssh --extra-opts -1 server")
+        mock_system.assert_called_with("ssh -4 -p22  root@2.2.2.2 -1")
+
+        self.run_command("ssh --ipv6 --login carol server")
+        mock_system.assert_called_with("ssh -6 -p22  carol@7612:a1b2:2004::6 ")
+        self.run_command("ssh --ipv6 dan@server")
+        mock_system.assert_called_with("ssh -6 -p22  dan@7612:a1b2:2004::6 ")
+        self.run_command("ssh --ipv6 --port 2022 server")
+        mock_system.assert_called_with("ssh -6 -p2022  "
+                                       "root@7612:a1b2:2004::6 ")
+        self.run_command("ssh --ipv6 --private server")
+        mock_system.assert_called_with("ssh -6 -p22  root@2607:f0d0:1002::4 ")
+        self.run_command("ssh --ipv6 --identity /home/me/my_dsa_key "
+                         "--private server")
+        mock_system.assert_called_with("ssh -6 -p22 -i /home/me/my_dsa_key "
+                                       "root@2607:f0d0:1002::4 ")
+        self.run_command("ssh --ipv6 --private --extra-opts -1 server")
+        mock_system.assert_called_with("ssh -6 -p22  "
+                                       "root@2607:f0d0:1002::4 -1")
 
 
 class GetSecgroupTest(utils.TestCase):
