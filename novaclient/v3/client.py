@@ -16,6 +16,7 @@
 
 from novaclient import client
 from novaclient.v3 import agents
+from novaclient.v3 import aggregates
 from novaclient.v3 import availability_zones
 from novaclient.v3 import flavor_access
 from novaclient.v3 import flavors
@@ -61,6 +62,7 @@ class Client(object):
         self.os_cache = os_cache or not no_cache
         #TODO(bnemec): Add back in v3 extensions
         self.agents = agents.AgentsManager(self)
+        self.aggregates = aggregates.AggregateManager(self)
         self.availability_zones = \
             availability_zones.AvailabilityZoneManager(self)
         self.hosts = hosts.HostManager(self)
