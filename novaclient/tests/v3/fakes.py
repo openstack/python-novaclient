@@ -292,3 +292,22 @@ class FakeHTTPClient(fakes_v1_1.FakeHTTPClient):
                       'keypairs': 1,
                       'security_groups': 1,
                       'security_group_rules': 1}})
+
+    #
+    # Hypervisors
+    #
+    def get_os_hypervisors_search(self, **kw):
+        return (200, {}, {'hypervisors': [
+                    {'id': 1234, 'hypervisor_hostname': 'hyper1'},
+                    {'id': 5678, 'hypervisor_hostname': 'hyper2'}
+                    ]})
+
+    def get_os_hypervisors_1234_servers(self, **kw):
+        return (200, {}, {'hypervisor':
+                    {'id': 1234,
+                     'hypervisor_hostname': 'hyper1',
+                     'servers': [
+                            {'name': 'inst1', 'uuid': 'uuid1'},
+                            {'name': 'inst2', 'uuid': 'uuid2'}
+                            ]},
+                    })

@@ -20,6 +20,7 @@ from novaclient.v3 import availability_zones
 from novaclient.v3 import flavor_access
 from novaclient.v3 import flavors
 from novaclient.v3 import hosts
+from novaclient.v3 import hypervisors
 from novaclient.v3 import images
 from novaclient.v3 import quota_classes
 from novaclient.v3 import quotas
@@ -65,6 +66,7 @@ class Client(object):
         self.hosts = hosts.HostManager(self)
         self.flavors = flavors.FlavorManager(self)
         self.flavor_access = flavor_access.FlavorAccessManager(self)
+        self.hypervisors = hypervisors.HypervisorManager(self)
         self.images = images.ImageManager(self)
         self.quotas = quotas.QuotaSetManager(self)
         self.quota_classes = quota_classes.QuotaClassSetManager(self)

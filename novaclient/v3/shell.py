@@ -2684,27 +2684,32 @@ def do_hypervisor_list(cs, args):
            help='The hypervisor hostname (or pattern) to search for.')
 def do_hypervisor_servers(cs, args):
     """List servers belonging to specific hypervisors."""
-    hypers = cs.hypervisors.search(args.hostname, servers=True)
+    # Get a list of hypervisors first
+    hypers = cs.hypervisors.search(args.hostname)
 
     class InstanceOnHyper(object):
         def __init__(self, **kwargs):
             self.__dict__.update(kwargs)
 
     # Massage the result into a list to be displayed
-    instances = []
+    servers = []
     for hyper in hypers:
+        # Get a list of servers for each hypervisor
         hyper_host = hyper.hypervisor_hostname
         hyper_id = hyper.id
-        if hasattr(hyper, 'servers'):
-            instances.extend([InstanceOnHyper(id=serv['uuid'],
+
+        hyper_servers = cs.hypervisors.servers(hyper_id)
+        if hasattr(hyper_servers, 'servers'):
+            print(hyper_servers.servers)
+            servers.extend([InstanceOnHyper(id=serv['id'],
                                           name=serv['name'],
                                           hypervisor_hostname=hyper_host,
                                           hypervisor_id=hyper_id)
-                          for serv in hyper.servers])
+                          for serv in hyper_servers.servers])
 
     # Output the data
-    utils.print_list(instances, ['ID', 'Name', 'Hypervisor ID',
-                                 'Hypervisor Hostname'])
+    utils.print_list(servers, ['ID', 'Name', 'Hypervisor ID',
+                               'Hypervisor Hostname'])
 
 
 @utils.arg('hypervisor',
