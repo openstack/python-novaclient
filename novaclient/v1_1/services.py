@@ -50,17 +50,24 @@ class ServiceManager(base.ManagerWithFind):
             url = "%s?%s" % (url, "&".join(filters))
         return self._list(url, "services")
 
+    def _update_body(self, host, binary, disabled_reason=None):
+        body = {"host": host,
+                "binary": binary}
+        if disabled_reason is not None:
+            body["disabled_reason"] = disabled_reason
+        return body
+
     def enable(self, host, binary):
         """Enable the service specified by hostname and binary."""
-        body = {"host": host, "binary": binary}
+        body = self._update_body(host, binary)
         return self._update("/os-services/enable", body, "service")
 
     def disable(self, host, binary):
         """Disable the service specified by hostname and binary."""
-        body = {"host": host, "binary": binary}
+        body = self._update_body(host, binary)
         return self._update("/os-services/disable", body, "service")
 
     def disable_log_reason(self, host, binary, reason):
         """Disable the service with reason."""
-        body = {"host": host, "binary": binary, "disabled_reason": reason}
+        body = self._update_body(host, binary, reason)
         return self._update("/os-services/disable-log-reason", body, "service")

@@ -24,6 +24,7 @@ from novaclient.v3 import images
 from novaclient.v3 import quota_classes
 from novaclient.v3 import quotas
 from novaclient.v3 import servers
+from novaclient.v3 import services
 
 
 class Client(object):
@@ -68,6 +69,7 @@ class Client(object):
         self.quotas = quotas.QuotaSetManager(self)
         self.quota_classes = quota_classes.QuotaClassSetManager(self)
         self.servers = servers.ServerManager(self)
+        self.services = services.ServiceManager(self)
 
         # Add in any extensions...
         if extensions:
