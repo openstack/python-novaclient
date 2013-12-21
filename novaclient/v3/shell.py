@@ -2979,14 +2979,6 @@ def do_quota_class_show(cs, args):
            metavar='<gigabytes>',
            type=int, default=None,
            help='New value for the "gigabytes" quota.')
-@utils.arg('--floating-ips',
-    metavar='<floating-ips>',
-    type=int,
-    default=None,
-    help='New value for the "floating-ips" quota.')
-@utils.arg('--floating_ips',
-    type=int,
-    help=argparse.SUPPRESS)
 @utils.arg('--metadata-items',
     metavar='<metadata-items>',
     type=int,
@@ -2995,42 +2987,11 @@ def do_quota_class_show(cs, args):
 @utils.arg('--metadata_items',
     type=int,
     help=argparse.SUPPRESS)
-@utils.arg('--injected-files',
-    metavar='<injected-files>',
-    type=int,
-    default=None,
-    help='New value for the "injected-files" quota.')
-@utils.arg('--injected_files',
-    type=int,
-    help=argparse.SUPPRESS)
-@utils.arg('--injected-file-content-bytes',
-    metavar='<injected-file-content-bytes>',
-    type=int,
-    default=None,
-    help='New value for the "injected-file-content-bytes" quota.')
-@utils.arg('--injected_file_content_bytes',
-    type=int,
-    help=argparse.SUPPRESS)
-@utils.arg('--injected-file-path-bytes',
-    metavar='<injected-file-path-bytes>',
-    type=int,
-    default=None,
-    help='New value for the "injected-file-path-bytes" quota.')
 @utils.arg('--key-pairs',
     metavar='<key-pairs>',
     type=int,
     default=None,
     help='New value for the "key-pairs" quota.')
-@utils.arg('--security-groups',
-    metavar='<security-groups>',
-    type=int,
-    default=None,
-    help='New value for the "security-groups" quota.')
-@utils.arg('--security-group-rules',
-    metavar='<security-group-rules>',
-    type=int,
-    default=None,
-    help='New value for the "security-group-rules" quota.')
 def do_quota_class_update(cs, args):
     """Update the quotas for a quota class."""
 
