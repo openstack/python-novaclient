@@ -145,7 +145,8 @@ class SecretsHelper(object):
     def password(self):
         if self._validate_string(self.args.os_password):
             return self.args.os_password
-        verify_pass = utils.bool_from_str(utils.env("OS_VERIFY_PASSWORD"))
+        verify_pass = strutils.bool_from_string(
+            utils.env("OS_VERIFY_PASSWORD", default=False), True)
         return self._prompt_password(verify_pass)
 
     @property
@@ -242,7 +243,8 @@ class OpenStackComputeShell(object):
             help="Print debugging output")
 
         parser.add_argument('--os-cache',
-            default=utils.bool_from_str(utils.env('OS_CACHE', default=False)),
+            default=strutils.bool_from_string(
+                utils.env('OS_CACHE', default=False), True),
             action='store_true',
             help="Use the auth token cache. Defaults to False if env[OS_CACHE]"
                  " is not set.")

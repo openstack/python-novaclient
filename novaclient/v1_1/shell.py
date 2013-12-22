@@ -652,7 +652,7 @@ def do_flavor_show(cs, args):
 @utils.arg('--is-public',
      metavar='<is-public>',
      help="Make flavor accessible to the public (default true)",
-     type=utils.bool_from_str,
+     type=lambda v: strutils.bool_from_string(v, True),
      default=True)
 def do_flavor_create(cs, args):
     """Create a new flavor"""
@@ -1076,7 +1076,8 @@ def do_image_delete(cs, args):
     nargs='?',
     type=int,
     const=1,
-    default=int(utils.bool_from_str(os.environ.get("ALL_TENANTS", 'false'))),
+    default=int(strutils.bool_from_string(
+        os.environ.get("ALL_TENANTS", 'false'), True)),
     help='Display information from all tenants (Admin only).')
 @utils.arg('--all_tenants',
     nargs='?',
@@ -1612,7 +1613,8 @@ def _translate_availability_zone_keys(collection):
     nargs='?',
     type=int,
     const=1,
-    default=int(utils.bool_from_str(os.environ.get("ALL_TENANTS", 'false'))),
+    default=int(strutils.bool_from_string(
+        os.environ.get("ALL_TENANTS", 'false'), True)),
     help='Display information from all tenants (Admin only).')
 @utils.arg('--all_tenants',
     nargs='?',
@@ -2234,7 +2236,8 @@ def do_secgroup_delete(cs, args):
     nargs='?',
     type=int,
     const=1,
-    default=int(utils.bool_from_str(os.environ.get("ALL_TENANTS", 'false'))),
+    default=int(strutils.bool_from_string(
+        os.environ.get("ALL_TENANTS", 'false'), True)),
     help='Display information from all tenants (Admin only).')
 @utils.arg('--all_tenants',
     nargs='?',
