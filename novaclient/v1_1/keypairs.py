@@ -52,6 +52,7 @@ class Keypair(base.Resource):
 
 class KeypairManager(base.ManagerWithFind):
     resource_class = Keypair
+    keypair_prefix = "os-keypairs"
 
     def get(self, keypair):
         """
@@ -60,7 +61,8 @@ class KeypairManager(base.ManagerWithFind):
         :param keypair: The ID of the keypair to get.
         :rtype: :class:`Keypair`
         """
-        return self._get("/os-keypairs/%s" % base.getid(keypair), "keypair")
+        return self._get("/%s/%s" % (self.keypair_prefix, base.getid(keypair)),
+                         "keypair")
 
     def create(self, name, public_key=None):
         """
@@ -72,7 +74,7 @@ class KeypairManager(base.ManagerWithFind):
         body = {'keypair': {'name': name}}
         if public_key:
             body['keypair']['public_key'] = public_key
-        return self._create('/os-keypairs', body, 'keypair')
+        return self._create('/%s' % self.keypair_prefix, body, 'keypair')
 
     def delete(self, key):
         """
@@ -80,10 +82,10 @@ class KeypairManager(base.ManagerWithFind):
 
         :param key: The :class:`Keypair` (or its ID) to delete.
         """
-        self._delete('/os-keypairs/%s' % (base.getid(key)))
+        self._delete('/%s/%s' % (self.keypair_prefix, base.getid(key)))
 
     def list(self):
         """
         Get a list of keypairs.
         """
-        return self._list('/os-keypairs', 'keypairs')
+        return self._list('/%s' % self.keypair_prefix, 'keypairs')

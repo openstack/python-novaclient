@@ -16,37 +16,45 @@ from novaclient.tests.v1_1 import fakes
 from novaclient.v1_1 import keypairs
 
 
-cs = fakes.FakeClient()
-
-
 class KeypairsTest(utils.TestCase):
+    def setUp(self):
+        super(KeypairsTest, self).setUp()
+        self.cs = self._get_fake_client()
+        self.keypair_type = self._get_keypair_type()
+        self.keypair_prefix = keypairs.KeypairManager.keypair_prefix
+
+    def _get_fake_client(self):
+        return fakes.FakeClient()
+
+    def _get_keypair_type(self):
+        return keypairs.Keypair
 
     def test_get_keypair(self):
-        kp = cs.keypairs.get('test')
-        cs.assert_called('GET', '/os-keypairs/test')
+        kp = self.cs.keypairs.get('test')
+        self.cs.assert_called('GET', '/%s/test' % self.keypair_prefix)
         self.assertTrue(isinstance(kp, keypairs.Keypair))
         self.assertEqual(kp.name, 'test')
 
     def test_list_keypairs(self):
-        kps = cs.keypairs.list()
-        cs.assert_called('GET', '/os-keypairs')
+        kps = self.cs.keypairs.list()
+        self.cs.assert_called('GET', '/%s' % self.keypair_prefix)
         [self.assertTrue(isinstance(kp, keypairs.Keypair)) for kp in kps]
 
     def test_delete_keypair(self):
-        kp = cs.keypairs.list()[0]
+        kp = self.cs.keypairs.list()[0]
         kp.delete()
-        cs.assert_called('DELETE', '/os-keypairs/test')
-        cs.keypairs.delete('test')
-        cs.assert_called('DELETE', '/os-keypairs/test')
-        cs.keypairs.delete(kp)
-        cs.assert_called('DELETE', '/os-keypairs/test')
+        self.cs.assert_called('DELETE', '/%s/test' % self.keypair_prefix)
+        self.cs.keypairs.delete('test')
+        self.cs.assert_called('DELETE', '/%s/test' % self.keypair_prefix)
+        self.cs.keypairs.delete(kp)
+        self.cs.assert_called('DELETE', '/%s/test' % self.keypair_prefix)
 
     def test_create_keypair(self):
-        kp = cs.keypairs.create("foo")
-        cs.assert_called('POST', '/os-keypairs')
+        kp = self.cs.keypairs.create("foo")
+        self.cs.assert_called('POST', '/%s' % self.keypair_prefix)
         self.assertTrue(isinstance(kp, keypairs.Keypair))
 
     def test_import_keypair(self):
-        kp = cs.keypairs.create("foo", "fake-public-key")
-        cs.assert_called('POST', '/os-keypairs')
+        kp = self.cs.keypairs.create("foo", "fake-public-key")
+        self.cs.assert_called('POST', '/%s' % self.keypair_prefix)
         self.assertTrue(isinstance(kp, keypairs.Keypair))

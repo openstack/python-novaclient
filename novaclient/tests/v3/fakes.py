@@ -311,3 +311,11 @@ class FakeHTTPClient(fakes_v1_1.FakeHTTPClient):
                             {'name': 'inst2', 'uuid': 'uuid2'}
                             ]},
                     })
+
+    #
+    # Keypairs
+    #
+    get_keypairs_test = fakes_v1_1.FakeHTTPClient.get_os_keypairs_test
+    get_keypairs = fakes_v1_1.FakeHTTPClient.get_os_keypairs
+    delete_keypairs_test = fakes_v1_1.FakeHTTPClient.delete_os_keypairs_test
+    post_keypairs = fakes_v1_1.FakeHTTPClient.post_os_keypairs
