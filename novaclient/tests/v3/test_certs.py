@@ -11,12 +11,12 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from novaclient.tests import utils
 from novaclient.tests.v1_1 import fakes
-from novaclient.v1_1 import certs
+from novaclient.tests.v1_1 import test_certs
+from novaclient.v3 import certs
 
 
-class CertsTest(utils.TestCase):
+class CertsTest(test_certs.CertsTest):
     def setUp(self):
         super(CertsTest, self).setUp()
         self.cs = self._get_fake_client()
@@ -27,13 +27,3 @@ class CertsTest(utils.TestCase):
 
     def _get_cert_type(self):
         return certs.Certificate
-
-    def test_create_cert(self):
-        cert = self.cs.certs.create()
-        self.cs.assert_called('POST', '/os-certificates')
-        self.assertTrue(isinstance(cert, certs.Certificate))
-
-    def test_get_root_cert(self):
-        cert = self.cs.certs.get()
-        self.cs.assert_called('GET', '/os-certificates/root')
-        self.assertTrue(isinstance(cert, certs.Certificate))
