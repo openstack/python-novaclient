@@ -157,6 +157,14 @@ class FakeHTTPClient(fakes_v1_1.FakeHTTPClient):
     def post_servers_1234_os_attach_interfaces(self, **kw):
         return (200, {}, {'interface_attachment': {}})
 
+    def post_servers(self, body, **kw):
+        assert set(body.keys()) <= set(['server'])
+        fakes.assert_has_keys(body['server'],
+                        required=['name', 'image_ref', 'flavor_ref'],
+                        optional=['metadata', 'personality',
+                                  'os-scheduler-hints:scheduler_hints'])
+        return (202, {}, self.get_servers_1234()[2])
+
     #
     # Server Actions
     #

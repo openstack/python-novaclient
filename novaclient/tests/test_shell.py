@@ -222,7 +222,7 @@ class ShellTest(utils.TestCase):
             cmd = '--os-compute-api-version %s list' % version
         self.make_env()
         self.shell(cmd)
-        _, client_kwargs = mock_client.call_args
+        _, client_kwargs = mock_client.call_args_list[0]
         self.assertEqual(service_type, client_kwargs['service_type'])
 
     @mock.patch('novaclient.client.Client')

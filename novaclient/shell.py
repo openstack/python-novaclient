@@ -686,6 +686,25 @@ class OpenStackComputeShell(object):
         except exc.AuthorizationFailure:
             raise exc.CommandError("Unable to authorize user")
 
+        if os_compute_api_version == "3" and service_type != 'image':
+            # NOTE(cyeoh): create an image based client because the
+            # images api is no longer proxied by the V3 API and we
+            # sometimes need to be able to look up images information
+            # via glance when connected to the nova api.
+            image_service_type = 'image'
+            self.cs.image_cs = client.Client(
+                options.os_compute_api_version, os_username,
+                os_password, os_tenant_name, tenant_id=os_tenant_id,
+                auth_url=os_auth_url, insecure=insecure,
+                region_name=os_region_name, endpoint_type=endpoint_type,
+                extensions=self.extensions, service_type=image_service_type,
+                service_name=service_name, auth_system=os_auth_system,
+                auth_plugin=auth_plugin,
+                volume_service_name=volume_service_name,
+                timings=args.timings, bypass_url=bypass_url,
+                os_cache=os_cache, http_log_debug=options.debug,
+                cacert=cacert, timeout=timeout)
+
         args.func(self.cs, args)
 
         if args.timings:

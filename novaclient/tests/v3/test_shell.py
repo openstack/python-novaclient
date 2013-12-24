@@ -178,11 +178,11 @@ class ShellTest(utils.TestCase):
         self.assert_called_anytime(
             'POST', '/servers',
             {'server': {
-                'flavorRef': '1',
+                'flavor_ref': '1',
                 'name': 'some-server',
-                'imageRef': '1',
-                'min_count': 1,
-                'max_count': 1,
+                'image_ref': '1',
+                'os-multiple-create:min_count': 1,
+                'os-multiple-create:max_count': 1,
             }},
         )
 
@@ -192,11 +192,11 @@ class ShellTest(utils.TestCase):
         self.assert_called_anytime(
             'POST', '/servers',
             {'server': {
-                'flavorRef': '1',
+                'flavor_ref': '1',
                 'name': 'some-server',
-                'imageRef': '1',
-                'min_count': 1,
-                'max_count': 3,
+                'image_ref': '1',
+                'os-multiple-create:min_count': 1,
+                'os-multiple-create:max_count': 3,
             }},
         )
 
@@ -206,11 +206,11 @@ class ShellTest(utils.TestCase):
         self.assert_called_anytime(
             'POST', '/servers',
             {'server': {
-                'flavorRef': '1',
+                'flavor_ref': '1',
                 'name': 'some-server',
-                'imageRef': '1',
-                'min_count': 1,
-                'max_count': 1,
+                'image_ref': '1',
+                'os-multiple-create:min_count': 1,
+                'os-multiple-create:max_count': 1,
             }},
         )
 
@@ -219,12 +219,12 @@ class ShellTest(utils.TestCase):
         self.assert_called_anytime(
             'POST', '/servers',
             {'server': {
-                'flavorRef': '1',
+                'flavor_ref': '1',
                 'name': 'some-server',
-                'imageRef': '1',
+                'image_ref': '1',
                 'key_name': '1',
-                'min_count': 1,
-                'max_count': 1,
+                'os-multiple-create:min_count': 1,
+                'os-multiple-create:max_count': 1,
             }},
         )
 
@@ -243,12 +243,13 @@ class ShellTest(utils.TestCase):
         self.assert_called_anytime(
             'POST', '/servers',
             {'server': {
-                'flavorRef': '1',
+                'flavor_ref': '1',
                 'name': 'some-server',
-                'imageRef': '1',
-                'min_count': 1,
-                'max_count': 1,
-                'user_data': base64.b64encode(file_text.encode('utf-8'))
+                'image_ref': '1',
+                'os-multiple-create:min_count': 1,
+                'os-multiple-create:max_count': 1,
+                'os-user-data:user_data': base64.b64encode(
+                    file_text.encode('utf-8'))
             }},
         )
 
@@ -259,12 +260,12 @@ class ShellTest(utils.TestCase):
         self.assert_called_anytime(
             'POST', '/servers',
             {'server': {
-                'flavorRef': '1',
+                'flavor_ref': '1',
                 'name': 'some-server',
-                'imageRef': '1',
-                'availability_zone': 'avzone',
-                'min_count': 1,
-                'max_count': 1
+                'image_ref': '1',
+                'os-availability-zone:availability_zone': 'avzone',
+                'os-multiple-create:min_count': 1,
+                'os-multiple-create:max_count': 1
             }},
         )
 
@@ -275,13 +276,13 @@ class ShellTest(utils.TestCase):
         self.assert_called_anytime(
             'POST', '/servers',
             {'server': {
-                'security_groups': [{'name': 'secgroup1'},
-                                    {'name': 'secgroup2'}],
-                'flavorRef': '1',
+                'os-security-groups:security_groups': [{'name': 'secgroup1'},
+                                                       {'name': 'secgroup2'}],
+                'flavor_ref': '1',
                 'name': 'some-server',
-                'imageRef': '1',
-                'min_count': 1,
-                'max_count': 1,
+                'image_ref': '1',
+                'os-multiple-create:min_count': 1,
+                'os-multiple-create:max_count': 1,
             }},
         )
 
@@ -291,12 +292,12 @@ class ShellTest(utils.TestCase):
         self.assert_called_anytime(
             'POST', '/servers',
             {'server': {
-                'flavorRef': '1',
+                'flavor_ref': '1',
                 'name': 'some-server',
-                'imageRef': '1',
-                'min_count': 1,
-                'max_count': 1,
-                'config_drive': True
+                'image_ref': '1',
+                'os-multiple-create:min_count': 1,
+                'os-multiple-create:max_count': 1,
+                'os-config-drive:config_drive': True
             }},
         )
 
@@ -306,12 +307,12 @@ class ShellTest(utils.TestCase):
         self.assert_called_anytime(
             'POST', '/servers',
             {'server': {
-                'flavorRef': '1',
+                'flavor_ref': '1',
                 'name': 'some-server',
-                'imageRef': '1',
-                'min_count': 1,
-                'max_count': 1,
-                'config_drive': '/dev/hda'
+                'image_ref': '1',
+                'os-multiple-create:min_count': 1,
+                'os-multiple-create:max_count': 1,
+                'os-config-drive:config_drive': '/dev/hda'
             }},
         )
 
@@ -335,20 +336,20 @@ class ShellTest(utils.TestCase):
             'boot --flavor 1 --block_device_mapping vda=blah:::0 some-server'
         )
         self.assert_called_anytime(
-            'POST', '/os-volumes_boot',
+            'POST', '/servers',
             {'server': {
-                'flavorRef': '1',
+                'flavor_ref': '1',
                 'name': 'some-server',
-                'block_device_mapping': [
+                'os-block-device-mapping:block_device_mapping': [
                     {
                         'volume_id': 'blah',
                         'delete_on_termination': '0',
                         'device_name': 'vda'
                     }
                 ],
-                'imageRef': '',
-                'min_count': 1,
-                'max_count': 1,
+                'image_ref': '',
+                'os-multiple-create:min_count': 1,
+                'os-multiple-create:max_count': 1,
             }},
         )
 
@@ -359,17 +360,17 @@ class ShellTest(utils.TestCase):
             'type=disk,shutdown=preserve some-server'
         )
         self.assert_called_anytime(
-            'POST', '/os-volumes_boot',
+            'POST', '/servers',
             {'server': {
-                'flavorRef': '1',
+                'flavor_ref': '1',
                 'name': 'some-server',
-                'block_device_mapping': [
+                'os-block-device-mapping:block_device_mapping': [
                     {'device_name': 'id', 'volume_id':
                         'fake-id,source=volume,dest=volume,device=vda,size=1,'
                         'format=ext4,type=disk,shutdown=preserve'}],
-                'imageRef': '1',
-                'min_count': 1,
-                'max_count': 1,
+                'image_ref': '1',
+                'os-multiple-create:min_count': 1,
+                'os-multiple-create:max_count': 1,
             }},
         )
 
@@ -379,12 +380,12 @@ class ShellTest(utils.TestCase):
         self.assert_called_anytime(
             'POST', '/servers',
             {'server': {
-                'flavorRef': '1',
+                'flavor_ref': '1',
                 'name': 'some-server',
-                'imageRef': '1',
+                'image_ref': '1',
                 'metadata': {'foo': 'bar=pants', 'spam': 'eggs'},
-                'min_count': 1,
-                'max_count': 1,
+                'os-multiple-create:min_count': 1,
+                'os-multiple-create:max_count': 1,
             }},
         )
 
@@ -396,13 +397,14 @@ class ShellTest(utils.TestCase):
             'POST', '/servers',
             {
                 'server': {
-                    'flavorRef': '1',
+                    'flavor_ref': '1',
                     'name': 'some-server',
-                    'imageRef': '1',
-                    'min_count': 1,
-                    'max_count': 1,
+                    'image_ref': '1',
+                    'os-multiple-create:min_count': 1,
+                    'os-multiple-create:max_count': 1,
+                    'os-scheduler-hints:scheduler_hints': {
+                        'a': ['b1=c1', 'b0=c0'], 'a2': 'b2=c2'},
                 },
-                'os:scheduler_hints': {'a': ['b1=c1', 'b0=c0'], 'a2': 'b2=c2'},
             },
         )
 
@@ -414,11 +416,11 @@ class ShellTest(utils.TestCase):
             'POST', '/servers',
             {
                 'server': {
-                    'flavorRef': '1',
+                    'flavor_ref': '1',
                     'name': 'some-server',
-                    'imageRef': '1',
-                    'min_count': 1,
-                    'max_count': 1,
+                    'image_ref': '1',
+                    'os-multiple-create:min_count': 1,
+                    'os-multiple-create:max_count': 1,
                     'networks': [
                         {'uuid': 'a=c', 'fixed_ip': '10.0.0.1'},
                     ],
@@ -441,57 +443,17 @@ class ShellTest(utils.TestCase):
                '--nic v4-fixed-ip=10.0.0.1 some-server')
         self.assertRaises(exceptions.CommandError, self.run_command, cmd)
 
-    def test_boot_files(self):
-        file_text = 'text'
-
-        with mock.patch('novaclient.v3.shell.open', create=True) as mock_open:
-            mock_open.return_value = file_text
-            testfile = 'some_dir/some_file.txt'
-
-            self.run_command('boot --flavor 1 --image 1 --user_data %s '
-                             'some-server' % testfile)
-
-            cmd = ('boot some-server --flavor 1 --image 1'
-                   ' --file /tmp/foo=%s --file /tmp/bar=%s')
-            self.run_command(cmd % (testfile, testfile))
-
-            mock_open.assert_called_with(testfile)
-
-        self.assert_called_anytime(
-            'POST', '/servers',
-            {'server': {
-                'flavorRef': '1',
-                'name': 'some-server',
-                'imageRef': '1',
-                'min_count': 1,
-                'max_count': 1,
-                'personality': [
-                    {'path': '/tmp/bar',
-                     'contents': base64.b64encode(file_text.encode('utf-8'))},
-                    {'path': '/tmp/foo',
-                     'contents': base64.b64encode(file_text.encode('utf-8'))},
-                ]
-            }},
-        )
-
-    def test_boot_invalid_files(self):
-        invalid_file = os.path.join(os.path.dirname(__file__),
-                                    'asdfasdfasdfasdf')
-        cmd = ('boot some-server --flavor 1 --image 1'
-               ' --file /foo=%s' % invalid_file)
-        self.assertRaises(exceptions.CommandError, self.run_command, cmd)
-
     def test_boot_num_instances(self):
         self.run_command('boot --image 1 --flavor 1 --num-instances 3 server')
         self.assert_called_anytime(
             'POST', '/servers',
             {
                 'server': {
-                    'flavorRef': '1',
+                    'flavor_ref': '1',
                     'name': 'server',
-                    'imageRef': '1',
-                    'min_count': 1,
-                    'max_count': 3,
+                    'image_ref': '1',
+                    'os-multiple-create:min_count': 1,
+                    'os-multiple-create:max_count': 3,
                 }
             })
 

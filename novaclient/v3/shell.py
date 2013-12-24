@@ -74,12 +74,12 @@ def _boot(cs, args, reservation_id=None, min_count=None, max_count=None):
                                       "be 0")
 
     if args.image:
-        image = _find_image(cs, args.image)
+        image = _find_image(cs.image_cs, args.image)
     else:
         image = None
 
     if not image and args.image_with:
-        images = _match_image(cs, args.image_with)
+        images = _match_image(cs.image_cs, args.image_with)
         if images:
             # TODO(harlowja): log a warning that we
             # are selecting the first of many?
