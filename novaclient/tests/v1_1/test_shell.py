@@ -1790,6 +1790,13 @@ class ShellTest(utils.TestCase):
                                {'device': '/dev/vdb',
                                 'volumeId': 'Work'}})
 
+    def test_volume_attach_without_device(self):
+        self.run_command('volume-attach sample-server Work')
+        self.assert_called('POST', '/servers/1234/os-volume_attachments',
+                           {'volumeAttachment':
+                               {'device': None,
+                                'volumeId': 'Work'}})
+
     def test_volume_update(self):
         self.run_command('volume-update sample-server Work Work')
         self.assert_called('PUT', '/servers/1234/os-volume_attachments/Work',
