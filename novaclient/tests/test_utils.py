@@ -177,6 +177,39 @@ class PrintResultTestCase(test_utils.TestCase):
                          '| k2   | 2     |\n'
                          '+------+-------+\n')
 
+    @mock.patch('sys.stdout', six.StringIO())
+    def test_print_dict_dictionary(self):
+        dict = {'k': {'foo': 'bar'}}
+        utils.print_dict(dict)
+        self.assertEqual(sys.stdout.getvalue(),
+                         '+----------+----------------+\n'
+                         '| Property | Value          |\n'
+                         '+----------+----------------+\n'
+                         '| k        | {"foo": "bar"} |\n'
+                         '+----------+----------------+\n')
+
+    @mock.patch('sys.stdout', six.StringIO())
+    def test_print_dict_list_dictionary(self):
+        dict = {'k': [{'foo': 'bar'}]}
+        utils.print_dict(dict)
+        self.assertEqual(sys.stdout.getvalue(),
+                         '+----------+------------------+\n'
+                         '| Property | Value            |\n'
+                         '+----------+------------------+\n'
+                         '| k        | [{"foo": "bar"}] |\n'
+                         '+----------+------------------+\n')
+
+    @mock.patch('sys.stdout', six.StringIO())
+    def test_print_dict_list(self):
+        dict = {'k': ['foo', 'bar']}
+        utils.print_dict(dict)
+        self.assertEqual(sys.stdout.getvalue(),
+                         '+----------+----------------+\n'
+                         '| Property | Value          |\n'
+                         '+----------+----------------+\n'
+                         '| k        | ["foo", "bar"] |\n'
+                         '+----------+----------------+\n')
+
 
 class FlattenTestCase(test_utils.TestCase):
     def test_flattening(self):

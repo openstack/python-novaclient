@@ -1944,7 +1944,7 @@ class FakeHTTPClient(base_client.HTTPClient):
                     'username': 'cell1_user',
                     'name': 'cell1',
                     'rpc_host': '10.0.1.10',
-                    '_info': {
+                    'info': {
                         'username': 'cell1_user',
                         'rpc_host': '10.0.1.10',
                         'type': 'child',
@@ -1953,7 +1953,7 @@ class FakeHTTPClient(base_client.HTTPClient):
                         },
                     'type': 'child',
                     'rpc_port': 5673,
-                    '_loaded': True
+                    'loaded': True
                 }}
         return (200, {}, cell)
 

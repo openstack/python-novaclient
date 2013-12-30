@@ -23,6 +23,7 @@ import prettytable
 import six
 
 from novaclient import exceptions
+from novaclient.openstack.common import jsonutils
 from novaclient.openstack.common import strutils
 
 
@@ -237,8 +238,8 @@ def print_dict(d, dict_property="Property", dict_value="Value", wrap=0):
     pt.align = 'l'
     for k, v in sorted(d.items()):
         # convert dict to str to check length
-        if isinstance(v, dict):
-            v = str(v)
+        if isinstance(v, (dict, list)):
+            v = jsonutils.dumps(v)
         if wrap > 0:
             v = textwrap.fill(str(v), wrap)
         # if value has a newline, add in multiple rows
@@ -251,7 +252,11 @@ def print_dict(d, dict_property="Property", dict_value="Value", wrap=0):
                 col1 = ''
         else:
             pt.add_row([k, v])
-    print(strutils.safe_encode(pt.get_string()))
+
+    result = strutils.safe_encode(pt.get_string())
+    if six.PY3:
+        result = result.decode()
+    print(result)
 
 
 def find_resource(manager, name_or_id, **find_args):
