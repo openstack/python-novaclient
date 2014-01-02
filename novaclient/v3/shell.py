@@ -307,27 +307,7 @@ def do_boot(cs, args):
     boot_kwargs.update(extra_boot_kwargs)
 
     server = cs.servers.create(*boot_args, **boot_kwargs)
-
-    # Keep any information (like admin_password) returned by create
-    info = server._info
-    server = cs.servers.get(info['id'])
-    info.update(server._info)
-
-    flavor = info.get('flavor', {})
-    flavor_id = flavor.get('id', '')
-    info['flavor'] = _find_flavor(cs, flavor_id).name
-
-    image = info.get('image', {})
-    if image:
-        image_id = image.get('id', '')
-        info['image'] = _find_image(cs, image_id).name
-    else:  # Booting from volume
-        info['image'] = "Attempt to boot from volume - no image supplied"
-
-    info.pop('links', None)
-    info.pop('addresses', None)
-
-    utils.print_dict(info)
+    _print_server(cs, args, server)
 
     if args.poll:
         _poll_for_status(cs.servers.get, info['id'], 'building', ['active'])
@@ -1303,13 +1283,16 @@ def do_meta(cs, args):
         cs.servers.delete_meta(server, metadata.keys())
 
 
-def _print_server(cs, args):
+def _print_server(cs, args, server=None):
     # By default when searching via name we will do a
     # findall(name=blah) and due a REST /details which is not the same
     # as a .get() and doesn't get the information about flavors and
     # images. This fix it as we redo the call with the id which does a
     # .get() to get all informations.
-    server = _find_server(cs, args.server)
+    if not server:
+        server = _find_server(cs, args.server)
+
+    minimal = getattr(args, "minimal", False)
 
     networks = server.networks
     info = server._info.copy()
@@ -1318,7 +1301,7 @@ def _print_server(cs, args):
 
     flavor = info.get('flavor', {})
     flavor_id = flavor.get('id', '')
-    if args.minimal:
+    if minimal:
         info['flavor'] = flavor_id
     else:
         info['flavor'] = '%s (%s)' % (_find_flavor(cs, flavor_id).name,
@@ -1327,7 +1310,7 @@ def _print_server(cs, args):
     image = info.get('image', {})
     if image:
         image_id = image.get('id', '')
-        if args.minimal:
+        if minimal:
             info['image'] = image_id
         else:
             try:
