@@ -1206,6 +1206,10 @@ def do_reboot(cs, args):
     action="store_true",
     default=False,
     help='Skips flavor/image lookups when showing servers')
+@utils.arg('--preserve-ephemeral',
+    action="store_true",
+    default=False,
+    help='Preserve the default ephemeral storage partition on rebuild.')
 def do_rebuild(cs, args):
     """Shutdown, re-image, and re-boot a server."""
     server = _find_server(cs, args.server)
@@ -1217,6 +1221,7 @@ def do_rebuild(cs, args):
         _password = None
 
     kwargs = utils.get_resource_manager_extra_kwargs(do_rebuild, args)
+    kwargs['preserve_ephemeral'] = args.preserve_ephemeral
     server.rebuild(image, _password, **kwargs)
     _print_server(cs, args)
 

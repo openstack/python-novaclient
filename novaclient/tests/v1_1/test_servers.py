@@ -261,6 +261,15 @@ class ServersTest(utils.TestCase):
     def test_rebuild_server_disk_config_manual(self):
         self._rebuild_resize_disk_config('MANUAL')
 
+    def test_rebuild_server_preserve_ephemeral(self):
+        s = cs.servers.get(1234)
+        s.rebuild(image=1, preserve_ephemeral=True)
+        cs.assert_called('POST', '/servers/1234/action')
+        body = cs.client.callstack[-1][-1]
+        d = body['rebuild']
+        self.assertIn('preserve_ephemeral', d)
+        self.assertEqual(d['preserve_ephemeral'], True)
+
     def test_resize_server(self):
         s = cs.servers.get(1234)
         s.resize(flavor=1)
