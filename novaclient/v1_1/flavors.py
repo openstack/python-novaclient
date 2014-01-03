@@ -18,7 +18,7 @@ Flavor interface.
 from novaclient import base
 from novaclient import exceptions
 from novaclient.openstack.common.py3kcompat import urlutils
-from novaclient import utils
+from novaclient.openstack.common import strutils
 
 
 class Flavor(base.Resource):
@@ -195,7 +195,7 @@ class FlavorManager(base.ManagerWithFind):
             raise exceptions.CommandError("rxtx_factor must be a float.")
 
         try:
-            is_public = utils.bool_from_str(is_public)
+            is_public = strutils.bool_from_string(is_public, True)
         except Exception:
             raise exceptions.CommandError("is_public must be a boolean.")
 
