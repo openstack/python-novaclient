@@ -2781,7 +2781,7 @@ def do_service_list(cs, args):
     columns = ["Binary", "Host", "Zone", "Status", "State", "Updated_at"]
     # NOTE(sulo): we check if the response has disabled_reason
     # so as not to add the column when the extended ext is not enabled.
-    if hasattr(result[0], 'disabled_reason'):
+    if result and hasattr(result[0], 'disabled_reason'):
         columns.append("Disabled Reason")
     utils.print_list(result, columns)
 
