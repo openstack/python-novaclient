@@ -126,6 +126,31 @@ class _FakeResult(object):
 
 class PrintResultTestCase(test_utils.TestCase):
     @mock.patch('sys.stdout', six.StringIO())
+    def test_print_dict(self):
+        dict = {'key': 'value'}
+        utils.print_dict(dict)
+        self.assertEqual(sys.stdout.getvalue(),
+                         '+----------+-------+\n'
+                         '| Property | Value |\n'
+                         '+----------+-------+\n'
+                         '| key      | value |\n'
+                         '+----------+-------+\n')
+
+    @mock.patch('sys.stdout', six.StringIO())
+    def test_print_dict_wrap(self):
+        dict = {'key1': 'not wrapped',
+                'key2': 'this will be wrapped'}
+        utils.print_dict(dict, wrap=16)
+        self.assertEqual(sys.stdout.getvalue(),
+                         '+----------+--------------+\n'
+                         '| Property | Value        |\n'
+                         '+----------+--------------+\n'
+                         '| key1     | not wrapped  |\n'
+                         '| key2     | this will be |\n'
+                         '|          | wrapped      |\n'
+                         '+----------+--------------+\n')
+
+    @mock.patch('sys.stdout', six.StringIO())
     def test_print_list_sort_by_str(self):
         objs = [_FakeResult("k1", 1),
                 _FakeResult("k3", 2),

@@ -1201,7 +1201,7 @@ def do_unrescue(cs, args):
 def do_diagnostics(cs, args):
     """Retrieve server diagnostics."""
     server = _find_server(cs, args.server)
-    utils.print_dict(cs.servers.diagnostics(server)[1])
+    utils.print_dict(cs.servers.diagnostics(server)[1], wrap=80)
 
 
 @utils.arg('server', metavar='<server>', help='Name or ID of server.')
