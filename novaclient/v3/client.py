@@ -29,6 +29,7 @@ from novaclient.v3 import quota_classes
 from novaclient.v3 import quotas
 from novaclient.v3 import servers
 from novaclient.v3 import services
+from novaclient.v3 import usage
 
 
 class Client(object):
@@ -78,6 +79,7 @@ class Client(object):
         self.quota_classes = quota_classes.QuotaClassSetManager(self)
         self.servers = servers.ServerManager(self)
         self.services = services.ServiceManager(self)
+        self.usage = usage.UsageManager(self)
 
         # Add in any extensions...
         if extensions:
