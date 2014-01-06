@@ -40,7 +40,6 @@ class QuotaClassSetManager(base.Manager):
         return {'quota_class_set': kwargs}
 
     def update(self, class_name, **kwargs):
-        kwargs['class_name'] = class_name
         body = self._update_body(**kwargs)
 
         for key in list(body['quota_class_set']):

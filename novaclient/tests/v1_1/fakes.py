@@ -1171,8 +1171,6 @@ class FakeHTTPClient(base_client.HTTPClient):
 
     def put_os_quota_class_sets_test(self, body, **kw):
         assert list(body) == ['quota_class_set']
-        fakes.assert_has_keys(body['quota_class_set'],
-                              required=['class_name'])
         return (200, {}, {'quota_class_set': {
                       'class_name': 'test',
                       'metadata_items': [],
@@ -1192,8 +1190,6 @@ class FakeHTTPClient(base_client.HTTPClient):
     def put_os_quota_class_sets_97f4c221bff44578b0300df4ef119353(self,
                                                             body, **kw):
         assert list(body) == ['quota_class_set']
-        fakes.assert_has_keys(body['quota_class_set'],
-                              required=['class_name'])
         return (200, {}, {'quota_class_set': {
                       'class_name': '97f4c221bff44578b0300df4ef119353',
                       'metadata_items': [],
