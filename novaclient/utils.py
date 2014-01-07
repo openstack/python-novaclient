@@ -14,7 +14,6 @@
 import json
 import os
 import pkg_resources
-import re
 import sys
 import textwrap
 import uuid
@@ -380,27 +379,6 @@ def import_class(import_str):
     mod_str, _sep, class_str = import_str.rpartition('.')
     __import__(mod_str)
     return getattr(sys.modules[mod_str], class_str)
-
-_slugify_strip_re = re.compile(r'[^\w\s-]')
-_slugify_hyphenate_re = re.compile(r'[-\s]+')
-
-
-# http://code.activestate.com/recipes/
-#   577257-slugify-make-a-string-usable-in-a-url-or-filename/
-def slugify(value):
-    """
-    Normalizes string, converts to lowercase, removes non-alpha characters,
-    and converts spaces to hyphens.
-
-    From Django's "django/template/defaultfilters.py".
-    """
-    import unicodedata
-    if not isinstance(value, six.text_type):
-        value = six.text_type(value)
-    value = unicodedata.normalize('NFKD', value).encode('ascii',
-                    'ignore').decode("ascii")
-    value = six.text_type(_slugify_strip_re.sub('', value).strip().lower())
-    return _slugify_hyphenate_re.sub('-', value)
 
 
 def _load_entry_point(ep_name, name=None):
