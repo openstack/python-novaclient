@@ -166,6 +166,8 @@ def print_list(objs, fields, formatters={}, sortby_index=None):
                 else:
                     field_name = field.lower().replace(' ', '_')
                 data = getattr(o, field_name, '')
+                if data is None:
+                    data = '-'
                 row.append(data)
         pt.add_row(row)
 
@@ -239,6 +241,8 @@ def print_dict(d, dict_property="Property", dict_value="Value", wrap=0):
                 pt.add_row([col1, line])
                 col1 = ''
         else:
+            if v is None:
+                v = '-'
             pt.add_row([k, v])
     print(strutils.safe_encode(pt.get_string()))
 
