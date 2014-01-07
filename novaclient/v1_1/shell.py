@@ -1090,6 +1090,11 @@ def do_image_delete(cs, args):
     metavar='<tenant>',
     nargs='?',
     help='Display information from single tenant (Admin only).')
+@utils.arg('--deleted',
+    dest='deleted',
+    action="store_true",
+    default=False,
+    help='Only display deleted servers (Admin only).')
 @utils.arg('--fields',
     default=None,
     metavar='<fields>',
@@ -1119,6 +1124,7 @@ def do_list(cs, args):
             'status': args.status,
             'tenant_id': args.tenant,
             'host': args.host,
+            'deleted': args.deleted,
             'instance_name': args.instance_name}
 
     filters = {'flavor': lambda f: f['id'],

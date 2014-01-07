@@ -78,6 +78,10 @@ class ShellTest(utils.TestCase):
     def assert_called_anytime(self, method, url, body=None):
         return self.shell.cs.assert_called_anytime(method, url, body)
 
+    def test_list_deleted(self):
+        self.run_command('list --deleted')
+        self.assert_called('GET', '/servers/detail?deleted=True')
+
     def test_aggregate_list(self):
         self.run_command('aggregate-list')
         self.assert_called('GET', '/os-aggregates')
