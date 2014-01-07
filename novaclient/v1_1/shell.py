@@ -1925,7 +1925,22 @@ def do_console_log(cs, args):
            default=None,
            help='Fixed IP Address to associate with.')
 def do_add_floating_ip(cs, args):
-    """Add a floating IP address to a server."""
+    """DEPRECATED, use floating-ip-associate instead."""
+    _associate_floating_ip(cs, args)
+
+
+@utils.arg('server', metavar='<server>', help='Name or ID of server.')
+@utils.arg('address', metavar='<address>', help='IP Address.')
+@utils.arg('--fixed-address',
+           metavar='<fixed_address>',
+           default=None,
+           help='Fixed IP Address to associate with.')
+def do_floating_ip_associate(cs, args):
+    """Associate a floating IP address to a server."""
+    _associate_floating_ip(cs, args)
+
+
+def _associate_floating_ip(cs, args):
     server = _find_server(cs, args.server)
     server.add_floating_ip(args.address, args.fixed_address)
 
@@ -1933,7 +1948,18 @@ def do_add_floating_ip(cs, args):
 @utils.arg('server', metavar='<server>', help='Name or ID of server.')
 @utils.arg('address', metavar='<address>', help='IP Address.')
 def do_remove_floating_ip(cs, args):
-    """Remove a floating IP address from a server."""
+    """DEPRECATED, use floating-ip-disassociate instead."""
+    _disassociate_floating_ip(cs, args)
+
+
+@utils.arg('server', metavar='<server>', help='Name or ID of server.')
+@utils.arg('address', metavar='<address>', help='IP Address.')
+def do_floating_ip_disassociate(cs, args):
+    """Disassociate a floating IP address from a server."""
+    _disassociate_floating_ip(cs, args)
+
+
+def _disassociate_floating_ip(cs, args):
     server = _find_server(cs, args.server)
     server.remove_floating_ip(args.address)
 

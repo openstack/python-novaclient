@@ -1054,6 +1054,16 @@ class ShellTest(utils.TestCase):
         self.assert_called('POST', '/servers/1234/action',
                            {'removeFloatingIp': {'address': '11.0.0.1'}})
 
+    def test_server_floating_ip_associate(self):
+        self.run_command('floating-ip-associate sample-server 11.0.0.1')
+        self.assert_called('POST', '/servers/1234/action',
+                           {'addFloatingIp': {'address': '11.0.0.1'}})
+
+    def test_server_floating_ip_disassociate(self):
+        self.run_command('floating-ip-disassociate sample-server 11.0.0.1')
+        self.assert_called('POST', '/servers/1234/action',
+                           {'removeFloatingIp': {'address': '11.0.0.1'}})
+
     def test_usage_list(self):
         self.run_command('usage-list --start 2000-01-20 --end 2005-02-01')
         self.assert_called('GET',
