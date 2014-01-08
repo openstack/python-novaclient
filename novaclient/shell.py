@@ -45,6 +45,7 @@ import novaclient.auth_plugin
 from novaclient import client
 from novaclient import exceptions as exc
 import novaclient.extension
+from novaclient.openstack.common import cliutils
 from novaclient.openstack.common import strutils
 from novaclient import utils
 from novaclient.v1_1 import shell as shell_v1_1
@@ -593,7 +594,7 @@ class OpenStackComputeShell(object):
 
         # If we have an auth token but no management_url, we must auth anyway.
         # Expired tokens are handled by client.py:_cs_request
-        must_auth = not (utils.isunauthenticated(args.func)
+        must_auth = not (cliutils.isunauthenticated(args.func)
                          or (auth_token and management_url))
 
         #FIXME(usrleon): Here should be restrict for project id same as
@@ -678,7 +679,7 @@ class OpenStackComputeShell(object):
         try:
             # This does a couple of bits which are useful even if we've
             # got the token + service URL already. It exits fast in that case.
-            if not utils.isunauthenticated(args.func):
+            if not cliutils.isunauthenticated(args.func):
                 self.cs.authenticate()
         except exc.Unauthorized:
             raise exc.CommandError("Invalid OpenStack Nova credentials.")

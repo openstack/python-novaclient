@@ -49,7 +49,8 @@ class ShellTest(utils.TestCase):
         self.useFixture(fixtures.MonkeyPatch(
                         'novaclient.client.get_client_class',
                         mock.MagicMock))
-        self.nc_util = mock.patch('novaclient.utils.isunauthenticated').start()
+        self.nc_util = mock.patch(
+            'novaclient.openstack.common.cliutils.isunauthenticated').start()
         self.nc_util.return_value = False
 
     def shell(self, argstr, exitcodes=(0,)):

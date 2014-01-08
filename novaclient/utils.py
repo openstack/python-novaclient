@@ -12,7 +12,6 @@
 #    under the License.
 
 import json
-import os
 import pkg_resources
 import sys
 import textwrap
@@ -22,42 +21,13 @@ import prettytable
 import six
 
 from novaclient import exceptions
+from novaclient.openstack.common import cliutils
 from novaclient.openstack.common import jsonutils
 from novaclient.openstack.common import strutils
 
 
-def arg(*args, **kwargs):
-    """Decorator for CLI args."""
-    def _decorator(func):
-        add_arg(func, *args, **kwargs)
-        return func
-    return _decorator
-
-
-def env(*args, **kwargs):
-    """
-    returns the first environment variable set
-    if none are non-empty, defaults to '' or keyword arg default
-    """
-    for arg in args:
-        value = os.environ.get(arg, None)
-        if value:
-            return value
-    return kwargs.get('default', '')
-
-
-def add_arg(f, *args, **kwargs):
-    """Bind CLI arguments to a shell.py `do_foo` function."""
-
-    if not hasattr(f, 'arguments'):
-        f.arguments = []
-
-    # NOTE(sirp): avoid dups that can occur when the module is shared across
-    # tests.
-    if (args, kwargs) not in f.arguments:
-        # Because of the semantics of decorator composition if we just append
-        # to the options list positional options will appear to be backwards.
-        f.arguments.insert(0, (args, kwargs))
+arg = cliutils.arg
+env = cliutils.env
 
 
 def add_resource_manager_extra_kwargs_hook(f, hook):
@@ -94,27 +64,6 @@ def get_resource_manager_extra_kwargs(f, args, allow_conflicts=False):
         extra_kwargs.update(hook_kwargs)
 
     return extra_kwargs
-
-
-def unauthenticated(f):
-    """
-    Adds 'unauthenticated' attribute to decorated function.
-    Usage:
-        @unauthenticated
-        def mymethod(f):
-            ...
-    """
-    f.unauthenticated = True
-    return f
-
-
-def isunauthenticated(f):
-    """
-    Checks to see if the function is marked as not requiring authentication
-    with the @unauthenticated decorator. Returns True if decorator is
-    set to True, False otherwise.
-    """
-    return getattr(f, 'unauthenticated', False)
 
 
 def service_type(stype):
