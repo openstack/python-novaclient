@@ -26,7 +26,6 @@ import six
 
 import novaclient.client
 from novaclient import exceptions
-from novaclient.openstack.common import timeutils
 import novaclient.shell
 from novaclient.tests import utils
 from novaclient.tests.v1_1 import fakes
@@ -69,7 +68,6 @@ class ShellTest(utils.TestCase):
         self.useFixture(fixtures.MonkeyPatch(
             'novaclient.client.get_client_class',
             lambda *_: fakes.FakeClient))
-        self.addCleanup(timeutils.clear_time_override)
 
     @mock.patch('sys.stdout', new_callable=six.StringIO)
     def run_command(self, cmd, mock_stdout):
@@ -1076,8 +1074,9 @@ class ShellTest(utils.TestCase):
                            'end=2005-02-01T00:00:00&' +
                            'detailed=1')
 
-    def test_usage_list_no_args(self):
-        timeutils.set_time_override(datetime.datetime(2005, 2, 1, 0, 0))
+    @mock.patch('novaclient.openstack.common.timeutils.utcnow')
+    def test_usage_list_no_args(self, mock_utcnow):
+        mock_utcnow.return_value = datetime.datetime(2005, 2, 1, 0, 0)
         self.run_command('usage-list')
         self.assert_called('GET',
                            '/os-simple-tenant-usage?' +
