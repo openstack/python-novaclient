@@ -250,7 +250,14 @@ def print_dict(d, dict_property="Property", dict_value="Value", wrap=0):
 
 def find_resource(manager, name_or_id, **find_args):
     """Helper for the _find_* methods."""
-    # first try to get entity as integer id
+    # for str id which is not uuid (for Flavor search currently)
+    if getattr(manager, 'is_alphanum_id_allowed', False):
+        try:
+            return manager.get(name_or_id)
+        except exceptions.NotFound:
+            pass
+
+    # try to get entity as integer id
     try:
         return manager.get(int(name_or_id))
     except (TypeError, ValueError, exceptions.NotFound):
@@ -265,13 +272,6 @@ def find_resource(manager, name_or_id, **find_args):
         return manager.get(tmp_id)
     except (TypeError, ValueError, exceptions.NotFound):
         pass
-
-    # for str id which is not uuid (for Flavor search currently)
-    if getattr(manager, 'is_alphanum_id_allowed', False):
-        try:
-            return manager.get(name_or_id)
-        except exceptions.NotFound:
-            pass
 
     try:
         try:

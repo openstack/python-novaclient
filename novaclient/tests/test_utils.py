@@ -42,8 +42,14 @@ class FakeManager(base.ManagerWithFind):
     resources = [
         FakeResource('1234', {'name': 'entity_one'}),
         FakeResource(UUID, {'name': 'entity_two'}),
-        FakeResource('5678', {'name': '9876'})
+        FakeResource('5678', {'name': '9876'}),
+        FakeResource('01234', {'name': 'entity_three'})
     ]
+
+    is_alphanum_id_allowed = None
+
+    def __init__(self, alphanum_id_allowed=False):
+        self.is_alphanum_id_allowed = alphanum_id_allowed
 
     def get(self, resource_id):
         for resource in self.resources:
@@ -116,6 +122,11 @@ class FindResourceTestCase(test_utils.TestCase):
         display_manager = FakeDisplayManager(None)
         output = utils.find_resource(display_manager, 'entity_three')
         self.assertEqual(output, display_manager.get('4242'))
+
+    def test_find_in_alphanum_allowd_manager_by_str_id_(self):
+        alphanum_manager = FakeManager(True)
+        output = utils.find_resource(alphanum_manager, '01234')
+        self.assertEqual(output, alphanum_manager.get('01234'))
 
 
 class _FakeResult(object):
