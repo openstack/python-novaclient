@@ -19,7 +19,6 @@ from novaclient.v1_1 import aggregates
 from novaclient.v1_1 import availability_zones
 from novaclient.v1_1 import certs
 from novaclient.v1_1 import cloudpipe
-from novaclient.v1_1 import coverage_ext
 from novaclient.v1_1 import fixed_ips
 from novaclient.v1_1 import flavor_access
 from novaclient.v1_1 import flavors
@@ -115,7 +114,6 @@ class Client(object):
         self.fixed_ips = fixed_ips.FixedIPsManager(self)
         self.floating_ips_bulk = floating_ips_bulk.FloatingIPBulkManager(self)
         self.os_cache = os_cache or not no_cache
-        self.coverage = coverage_ext.CoverageManager(self)
         self.availability_zones = \
             availability_zones.AvailabilityZoneManager(self)
 

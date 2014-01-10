@@ -1712,14 +1712,6 @@ class FakeHTTPClient(base_client.HTTPClient):
             }
         )
 
-    def post_os_coverage_action(self, body, **kw):
-        if 'report' not in body:
-            return (200, {}, None)
-        else:
-            return (200, {}, {
-                'path': '/tmp/tmpdir/' + body['report']['file']
-            })
-
     def post_os_networks_1_action(self, **kw):
         return (202, {}, None)
 
@@ -1728,16 +1720,6 @@ class FakeHTTPClient(base_client.HTTPClient):
 
     def post_os_networks_2_action(self, **kw):
         return (202, {}, None)
-
-    def post_os_coverage_action(self, body, **kw):
-        if 'start' in body or 'reset' in body:
-            return (200, {}, None)
-        elif 'stop' in body:
-            return (200, {}, {'path': '/tmp/tmpdir/'})
-        else:
-            return (200, {}, {
-                'path': '/tmp/tmpdir/' + body['report']['file']
-            })
 
     def get_os_availability_zone(self, **kw):
         return (200, {}, {"availabilityZoneInfo": [
