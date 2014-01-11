@@ -954,6 +954,11 @@ def do_image_delete(cs, args):
     metavar='<fields>',
     help='Comma-separated list of fields to display. '
          'Use the show command to see which fields are available.')
+@utils.arg('--deleted',
+    dest='deleted',
+    action="store_true",
+    default=False,
+    help='Only display deleted servers (Admin only).')
 @utils.arg('--minimal',
     dest='minimal',
     action="store_true",
@@ -978,6 +983,7 @@ def do_list(cs, args):
             'status': args.status,
             'tenant_id': args.tenant,
             'host': args.host,
+            'deleted': args.deleted,
             'instance_name': args.instance_name}
 
     filters = {'flavor': lambda f: f['id'],
