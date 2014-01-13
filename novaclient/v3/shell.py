@@ -27,6 +27,8 @@ import os
 import sys
 import time
 
+import six
+
 from novaclient import exceptions
 from novaclient.openstack.common import strutils
 from novaclient.openstack.common import timeutils
@@ -2204,31 +2206,6 @@ def do_keypair_show(cs, args):
     _print_keypair(keypair)
 
 
-@utils.arg('--tenant',
-           #nova db searches by project_id
-           dest='tenant',
-           metavar='<tenant>',
-           nargs='?',
-           help='Display information from single tenant (Admin only).')
-@utils.arg('--reserved',
-           dest='reserved',
-           action='store_true',
-           default=False,
-           help='Include reservations count.')
-def do_absolute_limits(cs, args):
-    """Print a list of absolute limits for a user"""
-    limits = cs.limits.get(args.reserved, args.tenant).absolute
-    columns = ['Name', 'Value']
-    utils.print_list(limits, columns)
-
-
-def do_rate_limits(cs, args):
-    """Print a list of rate limits for a user"""
-    limits = cs.limits.get().rate
-    columns = ['Verb', 'URI', 'Value', 'Remain', 'Unit', 'Next_Available']
-    utils.print_list(limits, columns)
-
-
 @utils.arg('--start', metavar='<start>',
            help='Usage range start date ex 2012-01-20 (default: 4 weeks ago)',
            default=None)
@@ -2871,6 +2848,23 @@ def _quota_show(quotas):
     utils.print_dict(quota_dict)
 
 
+def _quota_usage(quotas):
+    class QuotaObj(object):
+        def __init__(self, resource, quota_dict):
+            setattr(self, 'resource', resource)
+            for (k, v) in six.iteritems(quota_dict):
+                setattr(self, k, v)
+
+    quota_list = []
+    for resource in _quota_resources:
+        try:
+            quota_list.append(QuotaObj(resource, getattr(quotas, resource)))
+        except AttributeError:
+            pass
+    utils.print_list(quota_list, ['resource', 'in use', 'limit'],
+                     sortby_index=0)
+
+
 def _quota_update(manager, identifier, args):
     updates = {}
     for resource in _quota_resources:
@@ -2895,6 +2889,21 @@ def do_quota_show(cs, args):
         _quota_show(cs.quotas.get(cs.client.tenant_id))
     else:
         _quota_show(cs.quotas.get(args.tenant))
+
+
+@utils.arg('--tenant',
+    metavar='<tenant-id>',
+    default=None,
+    help='ID of tenant to list the quotas for.')
+@utils.arg('--user',
+    metavar='<user-id>',
+    default=None,
+    help='ID of user to list the quotas for.')
+def do_quota_usage(cs, args):
+    """List the quotas for a tenant."""
+
+    tenant = args.tenant or cs.client.tenant_id
+    _quota_usage(cs.quotas.get(tenant, user_id=args.user, detail=True))
 
 
 @utils.arg('--tenant',
