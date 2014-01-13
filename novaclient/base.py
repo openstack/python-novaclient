@@ -327,7 +327,11 @@ class BootingManagerWithFind(ManagerWithFind):
             if hasattr(userdata, 'read'):
                 userdata = userdata.read()
 
-            userdata = strutils.safe_encode(userdata)
+            if six.PY3:
+                userdata = userdata.encode("utf-8")
+            else:
+                userdata = strutils.safe_encode(userdata)
+
             body["server"]["user_data"] = base64.b64encode(userdata)
         if meta:
             body["server"]["metadata"] = meta
