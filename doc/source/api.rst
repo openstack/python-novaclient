@@ -44,3 +44,4 @@ For more information, see the reference:
 
    ref/index
    ref/v1_1/index
+   ref/v3/index
