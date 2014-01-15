@@ -34,14 +34,14 @@ class AgentsTest(utils.TestCase):
         ags = self.cs.agents.list()
         self.cs.assert_called('GET', '/os-agents')
         for a in ags:
-            self.assertTrue(isinstance(a, self.agent_type))
+            self.assertIsInstance(a, self.agent_type)
             self.assertEqual(a.hypervisor, 'kvm')
 
     def test_list_agents_with_hypervisor(self):
         ags = self.cs.agents.list('xen')
         self.cs.assert_called('GET', '/os-agents?hypervisor=xen')
         for a in ags:
-            self.assertTrue(isinstance(a, self.agent_type))
+            self.assertIsInstance(a, self.agent_type)
             self.assertEqual(a.hypervisor, 'xen')
 
     def test_agents_create(self):

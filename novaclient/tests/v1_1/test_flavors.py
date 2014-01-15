@@ -35,36 +35,36 @@ class FlavorsTest(utils.TestCase):
         fl = self.cs.flavors.list()
         self.cs.assert_called('GET', '/flavors/detail')
         for flavor in fl:
-            self.assertTrue(isinstance(flavor, self.flavor_type))
+            self.assertIsInstance(flavor, self.flavor_type)
 
     def test_list_flavors_undetailed(self):
         fl = self.cs.flavors.list(detailed=False)
         self.cs.assert_called('GET', '/flavors')
         for flavor in fl:
-            self.assertTrue(isinstance(flavor, self.flavor_type))
+            self.assertIsInstance(flavor, self.flavor_type)
 
     def test_list_flavors_is_public_none(self):
         fl = self.cs.flavors.list(is_public=None)
         self.cs.assert_called('GET', '/flavors/detail?is_public=None')
         for flavor in fl:
-            self.assertTrue(isinstance(flavor, self.flavor_type))
+            self.assertIsInstance(flavor, self.flavor_type)
 
     def test_list_flavors_is_public_false(self):
         fl = self.cs.flavors.list(is_public=False)
         self.cs.assert_called('GET', '/flavors/detail?is_public=False')
         for flavor in fl:
-            self.assertTrue(isinstance(flavor, self.flavor_type))
+            self.assertIsInstance(flavor, self.flavor_type)
 
     def test_list_flavors_is_public_true(self):
         fl = self.cs.flavors.list(is_public=True)
         self.cs.assert_called('GET', '/flavors/detail')
         for flavor in fl:
-            self.assertTrue(isinstance(flavor, self.flavor_type))
+            self.assertIsInstance(flavor, self.flavor_type)
 
     def test_get_flavor_details(self):
         f = self.cs.flavors.get(1)
         self.cs.assert_called('GET', '/flavors/1')
-        self.assertTrue(isinstance(f, self.flavor_type))
+        self.assertIsInstance(f, self.flavor_type)
         self.assertEqual(f.ram, 256)
         self.assertEqual(f.disk, 10)
         self.assertEqual(f.ephemeral, 10)
@@ -73,7 +73,7 @@ class FlavorsTest(utils.TestCase):
     def test_get_flavor_details_alphanum_id(self):
         f = self.cs.flavors.get('aa1')
         self.cs.assert_called('GET', '/flavors/aa1')
-        self.assertTrue(isinstance(f, self.flavor_type))
+        self.assertIsInstance(f, self.flavor_type)
         self.assertEqual(f.ram, 128)
         self.assertEqual(f.disk, 0)
         self.assertEqual(f.ephemeral, 0)
@@ -82,7 +82,7 @@ class FlavorsTest(utils.TestCase):
     def test_get_flavor_details_diablo(self):
         f = self.cs.flavors.get(3)
         self.cs.assert_called('GET', '/flavors/3')
-        self.assertTrue(isinstance(f, self.flavor_type))
+        self.assertIsInstance(f, self.flavor_type)
         self.assertEqual(f.ram, 256)
         self.assertEqual(f.disk, 10)
         self.assertEqual(f.ephemeral, 'N/A')
@@ -123,7 +123,7 @@ class FlavorsTest(utils.TestCase):
                                  False)
 
         self.cs.assert_called('POST', '/flavors', body)
-        self.assertTrue(isinstance(f, self.flavor_type))
+        self.assertIsInstance(f, self.flavor_type)
 
     def test_create_with_id_as_string(self):
         flavor_id = 'foobar'
@@ -135,7 +135,7 @@ class FlavorsTest(utils.TestCase):
                                  1.0, False)
 
         self.cs.assert_called('POST', '/flavors', body)
-        self.assertTrue(isinstance(f, self.flavor_type))
+        self.assertIsInstance(f, self.flavor_type)
 
     def test_create_ephemeral_ispublic_defaults(self):
         f = self.cs.flavors.create("flavorcreate", 512, 1, 10, 1234)
@@ -144,7 +144,7 @@ class FlavorsTest(utils.TestCase):
                                  1.0, True)
 
         self.cs.assert_called('POST', '/flavors', body)
-        self.assertTrue(isinstance(f, self.flavor_type))
+        self.assertIsInstance(f, self.flavor_type)
 
     def test_invalid_parameters_create(self):
         self.assertRaises(exceptions.CommandError, self.cs.flavors.create,

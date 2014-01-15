@@ -28,8 +28,8 @@ class FloatingIPDNSDomainTest(utils.TestCase):
         self.assertEqual(len(domainlist), 2)
 
         for entry in domainlist:
-            self.assertTrue(isinstance(entry,
-                                       floating_ip_dns.FloatingIPDNSDomain))
+            self.assertIsInstance(entry,
+                                  floating_ip_dns.FloatingIPDNSDomain)
 
         self.assertEqual(domainlist[1].domain, 'example.com')
 
@@ -61,8 +61,8 @@ class FloatingIPDNSEntryTest(utils.TestCase):
         self.assertEqual(len(entries), 2)
 
         for entry in entries:
-            self.assertTrue(isinstance(entry,
-                                       floating_ip_dns.FloatingIPDNSEntry))
+            self.assertIsInstance(entry,
+                                  floating_ip_dns.FloatingIPDNSEntry)
 
         self.assertEqual(entries[1].dns_entry['name'], 'host2')
         self.assertEqual(entries[1].dns_entry['ip'], self.testip)
@@ -70,7 +70,7 @@ class FloatingIPDNSEntryTest(utils.TestCase):
     def test_get_dns_entry_by_name(self):
         entry = cs.dns_entries.get(self.testdomain,
                                    self.testname)
-        self.assertTrue(isinstance(entry, floating_ip_dns.FloatingIPDNSEntry))
+        self.assertIsInstance(entry, floating_ip_dns.FloatingIPDNSEntry)
         self.assertEqual(entry.name, self.testname)
 
     def test_create_entry(self):

@@ -27,7 +27,7 @@ class FloatingIPsTest(utils.TestCase):
     def test_list_floating_ips(self):
         fl = cs.floating_ips.list()
         cs.assert_called('GET', '/os-floating-ips')
-        [self.assertTrue(isinstance(f, floating_ips.FloatingIP)) for f in fl]
+        [self.assertIsInstance(f, floating_ips.FloatingIP) for f in fl]
 
     def test_delete_floating_ip(self):
         fl = cs.floating_ips.list()[0]
@@ -42,10 +42,10 @@ class FloatingIPsTest(utils.TestCase):
         fl = cs.floating_ips.create()
         cs.assert_called('POST', '/os-floating-ips')
         self.assertEqual(fl.pool, None)
-        self.assertTrue(isinstance(fl, floating_ips.FloatingIP))
+        self.assertIsInstance(fl, floating_ips.FloatingIP)
 
     def test_create_floating_ip_with_pool(self):
         fl = cs.floating_ips.create('foo')
         cs.assert_called('POST', '/os-floating-ips')
         self.assertEqual(fl.pool, 'nova')
-        self.assertTrue(isinstance(fl, floating_ips.FloatingIP))
+        self.assertIsInstance(fl, floating_ips.FloatingIP)

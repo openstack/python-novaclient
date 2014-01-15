@@ -31,9 +31,9 @@ class CertsTest(utils.TestCase):
     def test_create_cert(self):
         cert = self.cs.certs.create()
         self.cs.assert_called('POST', '/os-certificates')
-        self.assertTrue(isinstance(cert, certs.Certificate))
+        self.assertIsInstance(cert, certs.Certificate)
 
     def test_get_root_cert(self):
         cert = self.cs.certs.get()
         self.cs.assert_called('GET', '/os-certificates/root')
-        self.assertTrue(isinstance(cert, certs.Certificate))
+        self.assertIsInstance(cert, certs.Certificate)

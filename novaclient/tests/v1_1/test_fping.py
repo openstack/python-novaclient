@@ -31,31 +31,31 @@ class FpingTest(utils.TestCase):
         fl = cs.fping.list()
         cs.assert_called('GET', '/os-fping')
         for f in fl:
-            self.assertTrue(isinstance(f, fping.Fping))
+            self.assertIsInstance(f, fping.Fping)
             self.assertEqual(f.project_id, "fake-project")
             self.assertEqual(f.alive, True)
 
     def test_list_fpings_all_tenants(self):
         fl = cs.fping.list(all_tenants=True)
         for f in fl:
-            self.assertTrue(isinstance(f, fping.Fping))
+            self.assertIsInstance(f, fping.Fping)
         cs.assert_called('GET', '/os-fping?all_tenants=1')
 
     def test_list_fpings_exclude(self):
         fl = cs.fping.list(exclude=['1'])
         for f in fl:
-            self.assertTrue(isinstance(f, fping.Fping))
+            self.assertIsInstance(f, fping.Fping)
         cs.assert_called('GET', '/os-fping?exclude=1')
 
     def test_list_fpings_include(self):
         fl = cs.fping.list(include=['1'])
         for f in fl:
-            self.assertTrue(isinstance(f, fping.Fping))
+            self.assertIsInstance(f, fping.Fping)
         cs.assert_called('GET', '/os-fping?include=1')
 
     def test_get_fping(self):
         f = cs.fping.get(1)
         cs.assert_called('GET', '/os-fping/1')
-        self.assertTrue(isinstance(f, fping.Fping))
+        self.assertIsInstance(f, fping.Fping)
         self.assertEqual(f.project_id, "fake-project")
         self.assertEqual(f.alive, True)
