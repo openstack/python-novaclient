@@ -3,7 +3,7 @@ hacking>=0.8.0,<0.9
 coverage>=3.6
 discover
 fixtures>=0.3.14
-keyring>=1.6.1,<2.0
+keyring>=1.6.1,<2.0,>=2.1
 mock>=1.0
 sphinx>=1.1.2,<1.2
 testrepository>=0.0.17
