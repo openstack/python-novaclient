@@ -20,7 +20,6 @@ import fixtures
 import mock
 import six
 
-from novaclient.openstack.common import timeutils
 import novaclient.shell
 from novaclient.tests import utils
 from novaclient.tests.v3 import fakes
@@ -62,7 +61,6 @@ class ShellTest(utils.TestCase):
         self.useFixture(fixtures.MonkeyPatch(
             'novaclient.client.get_client_class',
             lambda *_: fakes.FakeClient))
-        self.addCleanup(timeutils.clear_time_override)
 
     @mock.patch('sys.stdout', new_callable=six.StringIO)
     def run_command(self, cmd, mock_stdout):
