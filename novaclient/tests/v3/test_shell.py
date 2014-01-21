@@ -16,10 +16,14 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import base64
+import os
+
 import fixtures
 import mock
 import six
 
+from novaclient import exceptions
 import novaclient.shell
 from novaclient.tests import utils
 from novaclient.tests.v3 import fakes
@@ -168,3 +172,331 @@ class ShellTest(utils.TestCase):
     def test_aggregate_details_by_name(self):
         self.run_command('aggregate-details test')
         self.assert_called('GET', '/os-aggregates')
+
+    def test_boot(self):
+        self.run_command('boot --flavor 1 --image 1 some-server')
+        self.assert_called_anytime(
+            'POST', '/servers',
+            {'server': {
+                'flavorRef': '1',
+                'name': 'some-server',
+                'imageRef': '1',
+                'min_count': 1,
+                'max_count': 1,
+            }},
+        )
+
+    def test_boot_multiple(self):
+        self.run_command('boot --flavor 1 --image 1'
+                         ' --num-instances 3 some-server')
+        self.assert_called_anytime(
+            'POST', '/servers',
+            {'server': {
+                'flavorRef': '1',
+                'name': 'some-server',
+                'imageRef': '1',
+                'min_count': 1,
+                'max_count': 3,
+            }},
+        )
+
+    def test_boot_image_with(self):
+        self.run_command("boot --flavor 1"
+                         " --image-with test_key=test_value some-server")
+        self.assert_called_anytime(
+            'POST', '/servers',
+            {'server': {
+                'flavorRef': '1',
+                'name': 'some-server',
+                'imageRef': '1',
+                'min_count': 1,
+                'max_count': 1,
+            }},
+        )
+
+    def test_boot_key(self):
+        self.run_command('boot --flavor 1 --image 1 --key_name 1 some-server')
+        self.assert_called_anytime(
+            'POST', '/servers',
+            {'server': {
+                'flavorRef': '1',
+                'name': 'some-server',
+                'imageRef': '1',
+                'key_name': '1',
+                'min_count': 1,
+                'max_count': 1,
+            }},
+        )
+
+    def test_boot_user_data(self):
+        file_text = 'text'
+
+        with mock.patch('novaclient.v3.shell.open', create=True) as mock_open:
+            mock_open.return_value = file_text
+            testfile = 'some_dir/some_file.txt'
+
+            self.run_command('boot --flavor 1 --image 1 --user_data %s '
+                             'some-server' % testfile)
+
+            mock_open.assert_called_once_with(testfile)
+
+        self.assert_called_anytime(
+            'POST', '/servers',
+            {'server': {
+                'flavorRef': '1',
+                'name': 'some-server',
+                'imageRef': '1',
+                'min_count': 1,
+                'max_count': 1,
+                'user_data': base64.b64encode(file_text.encode('utf-8'))
+            }},
+        )
+
+    def test_boot_avzone(self):
+        self.run_command(
+            'boot --flavor 1 --image 1 --availability-zone avzone  '
+            'some-server')
+        self.assert_called_anytime(
+            'POST', '/servers',
+            {'server': {
+                'flavorRef': '1',
+                'name': 'some-server',
+                'imageRef': '1',
+                'availability_zone': 'avzone',
+                'min_count': 1,
+                'max_count': 1
+            }},
+        )
+
+    def test_boot_secgroup(self):
+        self.run_command(
+            'boot --flavor 1 --image 1 --security-groups secgroup1,'
+            'secgroup2  some-server')
+        self.assert_called_anytime(
+            'POST', '/servers',
+            {'server': {
+                'security_groups': [{'name': 'secgroup1'},
+                                    {'name': 'secgroup2'}],
+                'flavorRef': '1',
+                'name': 'some-server',
+                'imageRef': '1',
+                'min_count': 1,
+                'max_count': 1,
+            }},
+        )
+
+    def test_boot_config_drive(self):
+        self.run_command(
+            'boot --flavor 1 --image 1 --config-drive 1 some-server')
+        self.assert_called_anytime(
+            'POST', '/servers',
+            {'server': {
+                'flavorRef': '1',
+                'name': 'some-server',
+                'imageRef': '1',
+                'min_count': 1,
+                'max_count': 1,
+                'config_drive': True
+            }},
+        )
+
+    def test_boot_config_drive_custom(self):
+        self.run_command(
+            'boot --flavor 1 --image 1 --config-drive /dev/hda some-server')
+        self.assert_called_anytime(
+            'POST', '/servers',
+            {'server': {
+                'flavorRef': '1',
+                'name': 'some-server',
+                'imageRef': '1',
+                'min_count': 1,
+                'max_count': 1,
+                'config_drive': '/dev/hda'
+            }},
+        )
+
+    def test_boot_invalid_user_data(self):
+        invalid_file = os.path.join(os.path.dirname(__file__),
+                                    'no_such_file')
+        cmd = ('boot some-server --flavor 1 --image 1'
+               ' --user_data %s' % invalid_file)
+        self.assertRaises(exceptions.CommandError, self.run_command, cmd)
+
+    def test_boot_no_image_no_bdms(self):
+        cmd = 'boot --flavor 1 some-server'
+        self.assertRaises(exceptions.CommandError, self.run_command, cmd)
+
+    def test_boot_no_flavor(self):
+        cmd = 'boot --image 1 some-server'
+        self.assertRaises(exceptions.CommandError, self.run_command, cmd)
+
+    def test_boot_no_image_bdms(self):
+        self.run_command(
+            'boot --flavor 1 --block_device_mapping vda=blah:::0 some-server'
+        )
+        self.assert_called_anytime(
+            'POST', '/os-volumes_boot',
+            {'server': {
+                'flavorRef': '1',
+                'name': 'some-server',
+                'block_device_mapping': [
+                    {
+                        'volume_id': 'blah',
+                        'delete_on_termination': '0',
+                        'device_name': 'vda'
+                    }
+                ],
+                'imageRef': '',
+                'min_count': 1,
+                'max_count': 1,
+            }},
+        )
+
+    def test_boot_image_bdms(self):
+        self.run_command(
+            'boot --flavor 1 --image 1 --block-device id=fake-id,'
+            'source=volume,dest=volume,device=vda,size=1,format=ext4,'
+            'type=disk,shutdown=preserve some-server'
+        )
+        self.assert_called_anytime(
+            'POST', '/os-volumes_boot',
+            {'server': {
+                'flavorRef': '1',
+                'name': 'some-server',
+                'block_device_mapping': [
+                    {'device_name': 'id', 'volume_id':
+                        'fake-id,source=volume,dest=volume,device=vda,size=1,'
+                        'format=ext4,type=disk,shutdown=preserve'}],
+                'imageRef': '1',
+                'min_count': 1,
+                'max_count': 1,
+            }},
+        )
+
+    def test_boot_metadata(self):
+        self.run_command('boot --image 1 --flavor 1 --meta foo=bar=pants'
+                         ' --meta spam=eggs some-server ')
+        self.assert_called_anytime(
+            'POST', '/servers',
+            {'server': {
+                'flavorRef': '1',
+                'name': 'some-server',
+                'imageRef': '1',
+                'metadata': {'foo': 'bar=pants', 'spam': 'eggs'},
+                'min_count': 1,
+                'max_count': 1,
+            }},
+        )
+
+    def test_boot_hints(self):
+        self.run_command('boot --image 1 --flavor 1 '
+                         '--hint a=b1=c1 --hint a2=b2=c2 --hint a=b0=c0 '
+                         'some-server')
+        self.assert_called_anytime(
+            'POST', '/servers',
+            {
+                'server': {
+                    'flavorRef': '1',
+                    'name': 'some-server',
+                    'imageRef': '1',
+                    'min_count': 1,
+                    'max_count': 1,
+                },
+                'os:scheduler_hints': {'a': ['b1=c1', 'b0=c0'], 'a2': 'b2=c2'},
+            },
+        )
+
+    def test_boot_nics(self):
+        cmd = ('boot --image 1 --flavor 1 '
+               '--nic net-id=a=c,v4-fixed-ip=10.0.0.1 some-server')
+        self.run_command(cmd)
+        self.assert_called_anytime(
+            'POST', '/servers',
+            {
+                'server': {
+                    'flavorRef': '1',
+                    'name': 'some-server',
+                    'imageRef': '1',
+                    'min_count': 1,
+                    'max_count': 1,
+                    'networks': [
+                        {'uuid': 'a=c', 'fixed_ip': '10.0.0.1'},
+                    ],
+                },
+            },
+        )
+
+    def tets_boot_nics_no_value(self):
+        cmd = ('boot --image 1 --flavor 1 '
+               '--nic net-id some-server')
+        self.assertRaises(exceptions.CommandError, self.run_command, cmd)
+
+    def test_boot_nics_random_key(self):
+        cmd = ('boot --image 1 --flavor 1 '
+               '--nic net-id=a=c,v4-fixed-ip=10.0.0.1,foo=bar some-server')
+        self.assertRaises(exceptions.CommandError, self.run_command, cmd)
+
+    def test_boot_nics_no_netid_or_portid(self):
+        cmd = ('boot --image 1 --flavor 1 '
+               '--nic v4-fixed-ip=10.0.0.1 some-server')
+        self.assertRaises(exceptions.CommandError, self.run_command, cmd)
+
+    def test_boot_files(self):
+        file_text = 'text'
+
+        with mock.patch('novaclient.v3.shell.open', create=True) as mock_open:
+            mock_open.return_value = file_text
+            testfile = 'some_dir/some_file.txt'
+
+            self.run_command('boot --flavor 1 --image 1 --user_data %s '
+                             'some-server' % testfile)
+
+            cmd = ('boot some-server --flavor 1 --image 1'
+                   ' --file /tmp/foo=%s --file /tmp/bar=%s')
+            self.run_command(cmd % (testfile, testfile))
+
+            mock_open.assert_called_with(testfile)
+
+        self.assert_called_anytime(
+            'POST', '/servers',
+            {'server': {
+                'flavorRef': '1',
+                'name': 'some-server',
+                'imageRef': '1',
+                'min_count': 1,
+                'max_count': 1,
+                'personality': [
+                    {'path': '/tmp/bar',
+                     'contents': base64.b64encode(file_text.encode('utf-8'))},
+                    {'path': '/tmp/foo',
+                     'contents': base64.b64encode(file_text.encode('utf-8'))},
+                ]
+            }},
+        )
+
+    def test_boot_invalid_files(self):
+        invalid_file = os.path.join(os.path.dirname(__file__),
+                                    'asdfasdfasdfasdf')
+        cmd = ('boot some-server --flavor 1 --image 1'
+               ' --file /foo=%s' % invalid_file)
+        self.assertRaises(exceptions.CommandError, self.run_command, cmd)
+
+    def test_boot_num_instances(self):
+        self.run_command('boot --image 1 --flavor 1 --num-instances 3 server')
+        self.assert_called_anytime(
+            'POST', '/servers',
+            {
+                'server': {
+                    'flavorRef': '1',
+                    'name': 'server',
+                    'imageRef': '1',
+                    'min_count': 1,
+                    'max_count': 3,
+                }
+            })
+
+    def test_boot_invalid_num_instances(self):
+        cmd = 'boot --image 1 --flavor 1 --num-instances 1  server'
+        self.assertRaises(exceptions.CommandError, self.run_command, cmd)
+        cmd = 'boot --image 1 --flavor 1 --num-instances 0  server'
+        self.assertRaises(exceptions.CommandError, self.run_command, cmd)
