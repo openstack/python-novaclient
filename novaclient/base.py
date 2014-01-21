@@ -442,7 +442,9 @@ class Resource(object):
         for bash completion.
         """
         if self.NAME_ATTR in self.__dict__ and self.HUMAN_ID:
-            return strutils.to_slug(getattr(self, self.NAME_ATTR))
+            name = getattr(self, self.NAME_ATTR)
+            if name is not None:
+                return strutils.to_slug(name)
         return None
 
     def _add_details(self, info):
