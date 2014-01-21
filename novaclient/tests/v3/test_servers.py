@@ -30,24 +30,24 @@ class ServersTest(utils.TestCase):
         sl = cs.servers.list()
         cs.assert_called('GET', '/servers/detail')
         for s in sl:
-            self.assertTrue(isinstance(s, servers.Server))
+            self.assertIsInstance(s, servers.Server)
 
     def test_list_servers_undetailed(self):
         sl = cs.servers.list(detailed=False)
         cs.assert_called('GET', '/servers')
         for s in sl:
-            self.assertTrue(isinstance(s, servers.Server))
+            self.assertIsInstance(s, servers.Server)
 
     def test_list_servers_with_marker_limit(self):
         sl = cs.servers.list(marker=1234, limit=2)
         cs.assert_called('GET', '/servers/detail?limit=2&marker=1234')
         for s in sl:
-            self.assertTrue(isinstance(s, servers.Server))
+            self.assertIsInstance(s, servers.Server)
 
     def test_get_server_details(self):
         s = cs.servers.get(1234)
         cs.assert_called('GET', '/servers/1234')
-        self.assertTrue(isinstance(s, servers.Server))
+        self.assertIsInstance(s, servers.Server)
         self.assertEqual(s.id, 1234)
         self.assertEqual(s.status, 'BUILD')
 
@@ -72,7 +72,7 @@ class ServersTest(utils.TestCase):
             }
         )
         cs.assert_called('POST', '/servers')
-        self.assertTrue(isinstance(s, servers.Server))
+        self.assertIsInstance(s, servers.Server)
 
     def test_create_server_userdata_file_object(self):
         s = cs.servers.create(
@@ -87,7 +87,7 @@ class ServersTest(utils.TestCase):
             },
         )
         cs.assert_called('POST', '/servers')
-        self.assertTrue(isinstance(s, servers.Server))
+        self.assertIsInstance(s, servers.Server)
 
     def test_create_server_userdata_unicode(self):
         s = cs.servers.create(
@@ -103,7 +103,7 @@ class ServersTest(utils.TestCase):
             },
         )
         cs.assert_called('POST', '/servers')
-        self.assertTrue(isinstance(s, servers.Server))
+        self.assertIsInstance(s, servers.Server)
 
     def test_create_server_userdata_utf8(self):
         s = cs.servers.create(
@@ -119,7 +119,7 @@ class ServersTest(utils.TestCase):
             },
         )
         cs.assert_called('POST', '/servers')
-        self.assertTrue(isinstance(s, servers.Server))
+        self.assertIsInstance(s, servers.Server)
 
     def test_update_server(self):
         s = cs.servers.get(1234)

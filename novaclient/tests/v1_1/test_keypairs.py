@@ -32,13 +32,13 @@ class KeypairsTest(utils.TestCase):
     def test_get_keypair(self):
         kp = self.cs.keypairs.get('test')
         self.cs.assert_called('GET', '/%s/test' % self.keypair_prefix)
-        self.assertTrue(isinstance(kp, keypairs.Keypair))
+        self.assertIsInstance(kp, keypairs.Keypair)
         self.assertEqual(kp.name, 'test')
 
     def test_list_keypairs(self):
         kps = self.cs.keypairs.list()
         self.cs.assert_called('GET', '/%s' % self.keypair_prefix)
-        [self.assertTrue(isinstance(kp, keypairs.Keypair)) for kp in kps]
+        [self.assertIsInstance(kp, keypairs.Keypair) for kp in kps]
 
     def test_delete_keypair(self):
         kp = self.cs.keypairs.list()[0]
@@ -52,9 +52,9 @@ class KeypairsTest(utils.TestCase):
     def test_create_keypair(self):
         kp = self.cs.keypairs.create("foo")
         self.cs.assert_called('POST', '/%s' % self.keypair_prefix)
-        self.assertTrue(isinstance(kp, keypairs.Keypair))
+        self.assertIsInstance(kp, keypairs.Keypair)
 
     def test_import_keypair(self):
         kp = self.cs.keypairs.create("foo", "fake-public-key")
         self.cs.assert_called('POST', '/%s' % self.keypair_prefix)
-        self.assertTrue(isinstance(kp, keypairs.Keypair))
+        self.assertIsInstance(kp, keypairs.Keypair)

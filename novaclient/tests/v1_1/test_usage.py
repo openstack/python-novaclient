@@ -39,7 +39,7 @@ class UsageTest(utils.TestCase):
                          ("start=%s&" % now.isoformat()) +
                          ("end=%s&" % now.isoformat()) +
                          ("detailed=%s" % int(bool(detailed))))
-        [self.assertTrue(isinstance(u, usage.Usage)) for u in usages]
+        [self.assertIsInstance(u, usage.Usage) for u in usages]
 
     def test_usage_list_detailed(self):
         self.test_usage_list(True)
@@ -52,4 +52,4 @@ class UsageTest(utils.TestCase):
                          "/os-simple-tenant-usage/tenantfoo?" +
                          ("start=%s&" % now.isoformat()) +
                          ("end=%s" % now.isoformat()))
-        self.assertTrue(isinstance(u, usage.Usage))
+        self.assertIsInstance(u, usage.Usage)

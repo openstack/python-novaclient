@@ -24,7 +24,7 @@ class SecurityGroupsTest(utils.TestCase):
         sgs = cs.security_groups.list(search_opts=search_opts)
         cs.assert_called('GET', path)
         for sg in sgs:
-            self.assertTrue(isinstance(sg, security_groups.SecurityGroup))
+            self.assertIsInstance(sg, security_groups.SecurityGroup)
 
     def test_list_security_groups_all_tenants_on(self):
         self._do_test_list_security_groups(
@@ -41,7 +41,7 @@ class SecurityGroupsTest(utils.TestCase):
     def test_get_security_groups(self):
         sg = cs.security_groups.get(1)
         cs.assert_called('GET', '/os-security-groups/1')
-        self.assertTrue(isinstance(sg, security_groups.SecurityGroup))
+        self.assertIsInstance(sg, security_groups.SecurityGroup)
         self.assertEqual('1', str(sg))
 
     def test_delete_security_group(self):
@@ -56,13 +56,13 @@ class SecurityGroupsTest(utils.TestCase):
     def test_create_security_group(self):
         sg = cs.security_groups.create("foo", "foo barr")
         cs.assert_called('POST', '/os-security-groups')
-        self.assertTrue(isinstance(sg, security_groups.SecurityGroup))
+        self.assertIsInstance(sg, security_groups.SecurityGroup)
 
     def test_update_security_group(self):
         sg = cs.security_groups.list()[0]
         secgroup = cs.security_groups.update(sg, "update", "update")
         cs.assert_called('PUT', '/os-security-groups/1')
-        self.assertTrue(isinstance(secgroup, security_groups.SecurityGroup))
+        self.assertIsInstance(secgroup, security_groups.SecurityGroup)
 
     def test_refresh_security_group(self):
         sg = cs.security_groups.get(1)

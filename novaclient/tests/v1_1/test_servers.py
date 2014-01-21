@@ -29,23 +29,23 @@ class ServersTest(utils.TestCase):
     def test_list_servers(self):
         sl = cs.servers.list()
         cs.assert_called('GET', '/servers/detail')
-        [self.assertTrue(isinstance(s, servers.Server)) for s in sl]
+        [self.assertIsInstance(s, servers.Server) for s in sl]
 
     def test_list_servers_undetailed(self):
         sl = cs.servers.list(detailed=False)
         cs.assert_called('GET', '/servers')
-        [self.assertTrue(isinstance(s, servers.Server)) for s in sl]
+        [self.assertIsInstance(s, servers.Server) for s in sl]
 
     def test_list_servers_with_marker_limit(self):
         sl = cs.servers.list(marker=1234, limit=2)
         cs.assert_called('GET', '/servers/detail?limit=2&marker=1234')
         for s in sl:
-            self.assertTrue(isinstance(s, servers.Server))
+            self.assertIsInstance(s, servers.Server)
 
     def test_get_server_details(self):
         s = cs.servers.get(1234)
         cs.assert_called('GET', '/servers/1234')
-        self.assertTrue(isinstance(s, servers.Server))
+        self.assertIsInstance(s, servers.Server)
         self.assertEqual(s.id, 1234)
         self.assertEqual(s.status, 'BUILD')
 
@@ -70,7 +70,7 @@ class ServersTest(utils.TestCase):
             }
         )
         cs.assert_called('POST', '/servers')
-        self.assertTrue(isinstance(s, servers.Server))
+        self.assertIsInstance(s, servers.Server)
 
     def test_create_server_boot_from_volume_with_nics(self):
         old_boot = cs.servers._boot
@@ -100,7 +100,7 @@ class ServersTest(utils.TestCase):
                 nics=nics
             )
             cs.assert_called('POST', '/os-volumes_boot')
-            self.assertTrue(isinstance(s, servers.Server))
+            self.assertIsInstance(s, servers.Server)
 
         test_create_server_from_volume()
 
@@ -117,7 +117,7 @@ class ServersTest(utils.TestCase):
             },
         )
         cs.assert_called('POST', '/servers')
-        self.assertTrue(isinstance(s, servers.Server))
+        self.assertIsInstance(s, servers.Server)
 
     def test_create_server_userdata_unicode(self):
         s = cs.servers.create(
@@ -133,7 +133,7 @@ class ServersTest(utils.TestCase):
             },
         )
         cs.assert_called('POST', '/servers')
-        self.assertTrue(isinstance(s, servers.Server))
+        self.assertIsInstance(s, servers.Server)
 
     def test_create_server_userdata_utf8(self):
         s = cs.servers.create(
@@ -149,7 +149,7 @@ class ServersTest(utils.TestCase):
             },
         )
         cs.assert_called('POST', '/servers')
-        self.assertTrue(isinstance(s, servers.Server))
+        self.assertIsInstance(s, servers.Server)
 
     def _create_disk_config(self, disk_config):
         s = cs.servers.create(
@@ -159,7 +159,7 @@ class ServersTest(utils.TestCase):
             disk_config=disk_config
         )
         cs.assert_called('POST', '/servers')
-        self.assertTrue(isinstance(s, servers.Server))
+        self.assertIsInstance(s, servers.Server)
 
         # verify disk config param was used in the request:
         last_request = cs.client.callstack[-1]

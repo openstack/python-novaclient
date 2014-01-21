@@ -29,8 +29,8 @@ class FlavorAccessTest(utils.TestCase):
         r = cs.flavor_access.list(**kwargs)
         cs.assert_called('GET', '/flavors/2/flavor-access')
         for access_list in r:
-            self.assertTrue(isinstance(access_list,
-                                       flavor_access.FlavorAccess))
+            self.assertIsInstance(access_list,
+                                  flavor_access.FlavorAccess)
 
     def test_add_tenant_access(self):
         flavor = cs.flavors.get(2)
@@ -45,7 +45,7 @@ class FlavorAccessTest(utils.TestCase):
 
         cs.assert_called('POST', '/flavors/2/action', body)
         for a in r:
-            self.assertTrue(isinstance(a, flavor_access.FlavorAccess))
+            self.assertIsInstance(a, flavor_access.FlavorAccess)
 
     def test_remove_tenant_access(self):
         flavor = cs.flavors.get(2)
@@ -60,4 +60,4 @@ class FlavorAccessTest(utils.TestCase):
 
         cs.assert_called('POST', '/flavors/2/action', body)
         for a in r:
-            self.assertTrue(isinstance(a, flavor_access.FlavorAccess))
+            self.assertIsInstance(a, flavor_access.FlavorAccess)

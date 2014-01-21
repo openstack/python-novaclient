@@ -186,8 +186,8 @@ class ClientTest(utils.TestCase):
         cs = novaclient.v3.client.Client("user", "password", "project_id",
                                            auth_url="foo/v2",
                                            extensions=extensions)
-        self.assertTrue(isinstance(getattr(cs, fake_attribute_name1, None),
-                                   fakes.FakeManager))
+        self.assertIsInstance(getattr(cs, fake_attribute_name1, None),
+                              fakes.FakeManager)
         self.assertFalse(hasattr(cs, fake_attribute_name2))
 
     @mock.patch.object(novaclient.client.HTTPClient, 'authenticate')

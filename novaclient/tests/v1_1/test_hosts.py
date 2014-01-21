@@ -24,18 +24,18 @@ class HostsTest(utils.TestCase):
     def test_describe_resource(self):
         hs = cs.hosts.get('host')
         cs.assert_called('GET', '/os-hosts/host')
-        [self.assertTrue(isinstance(h, hosts.Host)) for h in hs]
+        [self.assertIsInstance(h, hosts.Host) for h in hs]
 
     def test_list_host(self):
         hs = cs.hosts.list()
         cs.assert_called('GET', '/os-hosts')
-        [self.assertTrue(isinstance(h, hosts.Host)) for h in hs]
+        [self.assertIsInstance(h, hosts.Host) for h in hs]
         [self.assertEqual(h.zone, 'nova1') for h in hs]
 
     def test_list_host_with_zone(self):
         hs = cs.hosts.list('nova')
         cs.assert_called('GET', '/os-hosts?zone=nova')
-        [self.assertTrue(isinstance(h, hosts.Host)) for h in hs]
+        [self.assertIsInstance(h, hosts.Host) for h in hs]
         [self.assertEqual(h.zone, 'nova') for h in hs]
 
     def test_update_enable(self):
@@ -43,14 +43,14 @@ class HostsTest(utils.TestCase):
         values = {"status": "enabled"}
         result = host.update(values)
         cs.assert_called('PUT', '/os-hosts/sample_host', values)
-        self.assertTrue(isinstance(result, hosts.Host))
+        self.assertIsInstance(result, hosts.Host)
 
     def test_update_maintenance(self):
         host = cs.hosts.get('sample_host')[0]
         values = {"maintenance_mode": "enable"}
         result = host.update(values)
         cs.assert_called('PUT', '/os-hosts/sample_host', values)
-        self.assertTrue(isinstance(result, hosts.Host))
+        self.assertIsInstance(result, hosts.Host)
 
     def test_update_both(self):
         host = cs.hosts.get('sample_host')[0]
@@ -58,7 +58,7 @@ class HostsTest(utils.TestCase):
                   "maintenance_mode": "enable"}
         result = host.update(values)
         cs.assert_called('PUT', '/os-hosts/sample_host', values)
-        self.assertTrue(isinstance(result, hosts.Host))
+        self.assertIsInstance(result, hosts.Host)
 
     def test_host_startup(self):
         host = cs.hosts.get('sample_host')[0]

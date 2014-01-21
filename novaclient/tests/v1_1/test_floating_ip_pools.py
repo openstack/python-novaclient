@@ -27,5 +27,5 @@ class TestFloatingIPPools(utils.TestCase):
     def test_list_floating_ips(self):
         fl = cs.floating_ip_pools.list()
         cs.assert_called('GET', '/os-floating-ip-pools')
-        [self.assertTrue(isinstance(f, floating_ip_pools.FloatingIPPool))
+        [self.assertIsInstance(f, floating_ip_pools.FloatingIPPool)
                                                                    for f in fl]

@@ -24,12 +24,12 @@ class ImagesTest(utils.TestCase):
     def test_list_images(self):
         il = cs.images.list()
         cs.assert_called('GET', '/images/detail')
-        [self.assertTrue(isinstance(i, images.Image)) for i in il]
+        [self.assertIsInstance(i, images.Image) for i in il]
 
     def test_list_images_undetailed(self):
         il = cs.images.list(detailed=False)
         cs.assert_called('GET', '/images')
-        [self.assertTrue(isinstance(i, images.Image)) for i in il]
+        [self.assertIsInstance(i, images.Image) for i in il]
 
     def test_list_images_with_limit(self):
         il = cs.images.list(limit=4)
@@ -38,7 +38,7 @@ class ImagesTest(utils.TestCase):
     def test_get_image_details(self):
         i = cs.images.get(1)
         cs.assert_called('GET', '/images/1')
-        self.assertTrue(isinstance(i, images.Image))
+        self.assertIsInstance(i, images.Image)
         self.assertEqual(i.id, 1)
         self.assertEqual(i.name, 'CentOS 5.2')
 

@@ -24,12 +24,12 @@ class NetworksTest(utils.TestCase):
     def test_list_networks(self):
         fl = cs.networks.list()
         cs.assert_called('GET', '/os-networks')
-        [self.assertTrue(isinstance(f, networks.Network)) for f in fl]
+        [self.assertIsInstance(f, networks.Network) for f in fl]
 
     def test_get_network(self):
         f = cs.networks.get(1)
         cs.assert_called('GET', '/os-networks/1')
-        self.assertTrue(isinstance(f, networks.Network))
+        self.assertIsInstance(f, networks.Network)
 
     def test_delete(self):
         cs.networks.delete('networkdelete')
@@ -39,7 +39,7 @@ class NetworksTest(utils.TestCase):
         f = cs.networks.create(label='foo')
         cs.assert_called('POST', '/os-networks',
                          {'network': {'label': 'foo'}})
-        self.assertTrue(isinstance(f, networks.Network))
+        self.assertIsInstance(f, networks.Network)
 
     def test_create_allparams(self):
         params = {
@@ -62,7 +62,7 @@ class NetworksTest(utils.TestCase):
 
         f = cs.networks.create(**params)
         cs.assert_called('POST', '/os-networks', {'network': params})
-        self.assertTrue(isinstance(f, networks.Network))
+        self.assertIsInstance(f, networks.Network)
 
     def test_associate_project(self):
         cs.networks.associate_project('networktest')
