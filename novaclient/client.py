@@ -48,12 +48,18 @@ class HTTPClient(object):
                  timings=False, bypass_url=None,
                  os_cache=False, no_cache=True,
                  http_log_debug=False, auth_system='keystone',
-                 auth_plugin=None,
+                 auth_plugin=None, auth_token=None,
                  cacert=None, tenant_id=None):
         self.user = user
         self.password = password
         self.projectid = projectid
         self.tenant_id = tenant_id
+
+        # This will be called by #_get_password if self.password is None.
+        # EG if a password can only be obtained by prompting the user, but a
+        # token is available, you don't want to prompt until the token has
+        # been proven invalid
+        self.password_func = None
 
         if auth_system and auth_system != 'keystone' and not auth_plugin:
             raise exceptions.AuthSystemNotFound(auth_system)
@@ -80,8 +86,8 @@ class HTTPClient(object):
 
         self.times = []  # [("item", starttime, endtime), ...]
 
-        self.management_url = None
-        self.auth_token = None
+        self.management_url = self.bypass_url or None
+        self.auth_token = auth_token
         self.proxy_token = proxy_token
         self.proxy_tenant_id = proxy_tenant_id
         self.keyring_saver = None
@@ -239,6 +245,11 @@ class HTTPClient(object):
             except exceptions.Unauthorized:
                 raise e
 
+    def _get_password(self):
+        if not self.password and self.password_func:
+            self.password = self.password_func()
+        return self.password
+
     def get(self, url, **kwargs):
         return self._cs_request(url, 'GET', **kwargs)
 
@@ -324,6 +335,10 @@ class HTTPClient(object):
                 self.version = part
                 break
 
+        if self.auth_token and self.management_url:
+            self._save_keys()
+            return
+
         # TODO(sandy): Assume admin endpoint is 35357 for now.
         # Ideally this is going to have to be provided by the service catalog.
         new_netloc = netloc.replace(':%d' % port, ':%d' % (35357,))
@@ -367,8 +382,13 @@ class HTTPClient(object):
         elif not self.management_url:
             raise exceptions.Unauthorized('Nova Client')
 
+        self._save_keys()
+
+    def _save_keys(self):
         # Store the token/mgmt url in the keyring for later requests.
-        if self.keyring_saver and self.os_cache and not self.keyring_saved:
+        if (self.keyring_saver and self.os_cache and not self.keyring_saved
+                and self.auth_token and self.management_url
+                and self.tenant_id):
             self.keyring_saver.save(self.auth_token,
                                     self.management_url,
                                     self.tenant_id)
@@ -380,7 +400,7 @@ class HTTPClient(object):
             raise exceptions.NoTokenLookupException()
 
         headers = {'X-Auth-User': self.user,
-                   'X-Auth-Key': self.password}
+                   'X-Auth-Key': self._get_password()}
         if self.projectid:
             headers['X-Auth-Project-Id'] = self.projectid
 
@@ -409,7 +429,7 @@ class HTTPClient(object):
         else:
             body = {"auth": {
                     "passwordCredentials": {"username": self.user,
-                                            "password": self.password}}}
+                                            "password": self._get_password()}}}
 
         if self.tenant_id:
             body['auth']['tenantId'] = self.tenant_id
@@ -422,16 +442,6 @@ class HTTPClient(object):
         """Authenticate and extract the service catalog."""
         method = "POST"
         token_url = url + "/tokens"
-
-        # if we have a valid auth token, use it instead of generating a new one
-        if self.auth_token:
-            kwargs.setdefault('headers', {})['X-Auth-Token'] = self.auth_token
-            token_url += "/" + self.auth_token
-            method = "GET"
-            body = None
-
-        if self.auth_token and self.tenant_id and self.management_url:
-            return None
 
         # Make sure we follow redirects when trying to reach Keystone
         resp, respbody = self._time_request(
