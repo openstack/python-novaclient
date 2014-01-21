@@ -256,7 +256,7 @@ def _boot(cs, args, reservation_id=None, min_count=None, max_count=None):
             # NOTE(vish): multiple copies of the same hint will
             #             result in a list of values
             if key in hints:
-                if isinstance(hints[key], basestring):
+                if isinstance(hints[key], six.string_types):
                     hints[key] = [hints[key]]
                 hints[key] += [value]
             else:
