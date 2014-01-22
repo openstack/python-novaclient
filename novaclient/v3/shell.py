@@ -1513,13 +1513,16 @@ def do_volume_create(cs, args):
 
 
 @utils.arg('volume',
-    metavar='<volume>',
-    help='Name or ID of the volume to delete.')
+    metavar='<volume>', nargs='+',
+    help='Name or ID of the volume(s) to delete.')
 @utils.service_type('volume')
 def do_volume_delete(cs, args):
-    """Remove a volume."""
-    volume = _find_volume(cs, args.volume)
-    volume.delete()
+    """Remove volume(s)."""
+    for volume in args.volume:
+        try:
+            _find_volume(cs, volume).delete()
+        except Exception as e:
+            print("Delete for volume %s failed: %s" % (volume, e))
 
 
 @utils.arg('server',
