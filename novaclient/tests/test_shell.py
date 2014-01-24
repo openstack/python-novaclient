@@ -182,6 +182,8 @@ class ShellTest(utils.TestCase):
     @mock.patch('sys.stdin', side_effect=mock.MagicMock)
     @mock.patch('getpass.getpass', return_value='password')
     def test_password(self, mock_getpass, mock_stdin):
+        mock_stdin.encoding = "utf-8"
+
         # default output of empty tables differs depending between prettytable
         # versions
         if (hasattr(prettytable, '__version__') and

@@ -1,5 +1,3 @@
-# vim: tabstop=4 shiftwidth=4 softtabstop=4
-
 # Copyright 2011 OpenStack Foundation.
 # All Rights Reserved.
 #
@@ -25,7 +23,7 @@ import unicodedata
 
 import six
 
-from novaclient.openstack.common.gettextutils import _  # noqa
+from novaclient.openstack.common.gettextutils import _
 
 
 # Used for looking up extensions of text
@@ -60,12 +58,12 @@ def int_from_bool_as_string(subject):
     return bool_from_string(subject) and 1 or 0
 
 
-def bool_from_string(subject, strict=False):
+def bool_from_string(subject, strict=False, default=False):
     """Interpret a string as a boolean.
 
     A case-insensitive match is performed such that strings matching 't',
     'true', 'on', 'y', 'yes', or '1' are considered True and, when
-    `strict=False`, anything else is considered False.
+    `strict=False`, anything else returns the value specified by 'default'.
 
     Useful for JSON-decoded stuff and config file parsing.
 
@@ -90,7 +88,7 @@ def bool_from_string(subject, strict=False):
                                       'acceptable': acceptable}
         raise ValueError(msg)
     else:
-        return False
+        return default
 
 
 def safe_decode(text, incoming=None, errors='strict'):
@@ -101,7 +99,7 @@ def safe_decode(text, incoming=None, errors='strict'):
         values http://docs.python.org/2/library/codecs.html
     :returns: text or a unicode `incoming` encoded
                 representation of it.
-    :raises TypeError: If text is not an isntance of str
+    :raises TypeError: If text is not an instance of str
     """
     if not isinstance(text, six.string_types):
         raise TypeError("%s can't be decoded" % type(text))
@@ -144,7 +142,7 @@ def safe_encode(text, incoming=None,
         values http://docs.python.org/2/library/codecs.html
     :returns: text or a bytestring `encoding` encoded
                 representation of it.
-    :raises TypeError: If text is not an isntance of str
+    :raises TypeError: If text is not an instance of str
     """
     if not isinstance(text, six.string_types):
         raise TypeError("%s can't be encoded" % type(text))
@@ -154,11 +152,17 @@ def safe_encode(text, incoming=None,
                     sys.getdefaultencoding())
 
     if isinstance(text, six.text_type):
-        return text.encode(encoding, errors)
+        if six.PY3:
+            return text.encode(encoding, errors).decode(incoming)
+        else:
+            return text.encode(encoding, errors)
     elif text and encoding != incoming:
         # Decode text before encoding it with `encoding`
         text = safe_decode(text, incoming, errors)
-        return text.encode(encoding, errors)
+        if six.PY3:
+            return text.encode(encoding, errors).decode(incoming)
+        else:
+            return text.encode(encoding, errors)
 
     return text
 

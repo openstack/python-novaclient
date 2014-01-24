@@ -177,9 +177,6 @@ def print_list(objs, fields, formatters={}, sortby_index=None):
     else:
         result = strutils.safe_encode(pt.get_string())
 
-    if six.PY3:
-        result = result.decode()
-
     print(result)
 
 
@@ -247,8 +244,7 @@ def print_dict(d, dict_property="Property", dict_value="Value", wrap=0):
             pt.add_row([k, v])
 
     result = strutils.safe_encode(pt.get_string())
-    if six.PY3:
-        result = result.decode()
+
     print(result)
 
 
@@ -270,8 +266,6 @@ def find_resource(manager, name_or_id, **find_args):
     # now try to get entity as uuid
     try:
         tmp_id = strutils.safe_encode(name_or_id)
-        if six.PY3:
-            tmp_id = tmp_id.decode()
         uuid.UUID(tmp_id)
         return manager.get(tmp_id)
     except (TypeError, ValueError, exceptions.NotFound):
