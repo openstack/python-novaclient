@@ -461,7 +461,8 @@ class ShellTest(utils.TestCase):
         )
 
     def test_boot_hints(self):
-        self.run_command('boot --image 1 --flavor 1 --hint a=b=c some-server ')
+        self.run_command('boot --image 1 --flavor 1 '
+                         '--hint a=b0=c0 --hint a=b1=c1 some-server ')
         self.assert_called_anytime(
             'POST', '/servers',
             {
@@ -472,7 +473,7 @@ class ShellTest(utils.TestCase):
                     'min_count': 1,
                     'max_count': 1,
                 },
-                'os:scheduler_hints': {'a': 'b=c'},
+                'os:scheduler_hints': {'a': ['b0=c0', 'b1=c1']},
             },
         )
 
