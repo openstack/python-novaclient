@@ -29,6 +29,7 @@ from novaclient.v3 import quotas
 from novaclient.v3 import servers
 from novaclient.v3 import services
 from novaclient.v3 import usage
+from novaclient.v3 import volumes
 
 
 class Client(object):
@@ -79,6 +80,7 @@ class Client(object):
         self.servers = servers.ServerManager(self)
         self.services = services.ServiceManager(self)
         self.usage = usage.UsageManager(self)
+        self.volumes = volumes.VolumeManager(self)
 
         # Add in any extensions...
         if extensions:

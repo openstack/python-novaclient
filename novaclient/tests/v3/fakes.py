@@ -188,7 +188,10 @@ class FakeHTTPClient(fakes_v1_1.FakeHTTPClient):
             'reset_state': ['state'],
             'create_image': ['name', 'metadata'],
             'migrate_live': ['host', 'block_migration', 'disk_over_commit'],
-            'create_backup': ['name', 'backup_type', 'rotation']}
+            'create_backup': ['name', 'backup_type', 'rotation'],
+            'attach': ['volume_id', 'device'],
+            'detach': ['volume_id'],
+            'swap_volume_attachment': ['old_volume_id', 'new_volume_id']}
 
         assert len(body.keys()) == 1
         action = list(body)[0]

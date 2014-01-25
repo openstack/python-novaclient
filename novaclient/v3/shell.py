@@ -1539,10 +1539,25 @@ def do_volume_attach(cs, args):
     if args.device == 'auto':
         args.device = None
 
-    volume = cs.volumes.create_server_volume(_find_server(cs, args.server).id,
+    volume = cs.volumes.attach_server_volume(_find_server(cs, args.server).id,
                                              args.volume,
                                              args.device)
-    _print_volume(volume)
+
+
+@utils.arg('server',
+    metavar='<server>',
+    help='Name or ID of server.')
+@utils.arg('attachment_id',
+    metavar='<volume>',
+    help='Attachment ID of the volume.')
+@utils.arg('new_volume',
+    metavar='<volume>',
+    help='ID of the volume to attach.')
+def do_volume_update(cs, args):
+    """Update volume attachment."""
+    volume = cs.volumes.update_server_volume(_find_server(cs, args.server).id,
+                                             args.attachment_id,
+                                             args.new_volume)
 
 
 @utils.arg('server',
