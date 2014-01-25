@@ -18,15 +18,8 @@ from novaclient import base
 
 class QuotaClassSet(base.Resource):
 
-    @property
-    def id(self):
-        """QuotaClassSet does not have a 'id' attribute but base.Resource
-        needs it to self-refresh and QuotaSet is indexed by class_name.
-        """
-        return self.class_name
-
     def update(self, *args, **kwargs):
-        return self.manager.update(self.class_name, *args, **kwargs)
+        return self.manager.update(self.id, *args, **kwargs)
 
 
 class QuotaClassSetManager(base.Manager):
