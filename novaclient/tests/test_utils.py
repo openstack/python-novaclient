@@ -291,14 +291,13 @@ class FlattenTestCase(test_utils.TestCase):
 class ValidationsTestCase(test_utils.TestCase):
     def test_validate_flavor_metadata_keys_with_valid_keys(self):
         valid_keys = ['key1', 'month.price', 'I-Am:AK-ey.01-', 'spaces and _']
-        for key in valid_keys:
-            utils.validate_flavor_metadata_keys(valid_keys)
+        utils.validate_flavor_metadata_keys(valid_keys)
 
     def test_validate_flavor_metadata_keys_with_invalid_keys(self):
         invalid_keys = ['/1', '?1', '%1', '<', '>', '\1']
         for key in invalid_keys:
             try:
                 utils.validate_flavor_metadata_keys([key])
-                self.assertFail()
+                self.fail("Invalid key passed validation: %s" % key)
             except exceptions.CommandError as ce:
                 self.assertTrue(key in str(ce))
