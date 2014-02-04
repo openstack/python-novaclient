@@ -42,8 +42,8 @@ class TestResponse(requests.Response):
     """
 
     def __init__(self, data):
+        super(TestResponse, self).__init__()
         self._text = None
-        super(TestResponse, self)
         if isinstance(data, dict):
             self.status_code = data.get('status_code', None)
             self.headers = data.get('headers', None)
