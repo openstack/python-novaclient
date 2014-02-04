@@ -21,7 +21,7 @@ from novaclient import base
 
 class Service(base.Resource):
     def __repr__(self):
-        return "<Service: %s>" % self.service
+        return "<Service: %s>" % self.binary
 
     def _add_details(self, info):
         dico = 'resource' in info and info['resource'] or info
