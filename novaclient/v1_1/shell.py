@@ -427,7 +427,7 @@ def do_boot(cs, args):
     _print_server(cs, args, server)
 
     if args.poll:
-        _poll_for_status(cs.servers.get, info['id'], 'building', ['active'])
+        _poll_for_status(cs.servers.get, server.id, 'building', ['active'])
 
 
 def do_cloudpipe_list(cs, _args):
