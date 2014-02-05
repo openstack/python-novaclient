@@ -50,7 +50,6 @@ class FakeHTTPClient(fakes.FakeHTTPClient):
                     {
                         "id": 1,
                         "instance_uuid": None,
-                        "pm_address": "1.2.3.4",
                         "interfaces": [],
                         "cpus": 2,
                         "local_gb": 10,
