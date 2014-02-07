@@ -694,6 +694,12 @@ class OpenStackComputeShell(object):
             # sometimes need to be able to look up images information
             # via glance when connected to the nova api.
             image_service_type = 'image'
+            # NOTE(hdd): the password is needed again because creating a new
+            # Client without specifying bypass_url will force authentication.
+            # We can't reuse self.cs's bypass_url, because that's the URL for
+            # the nova service; we need to get glance's URL for this Client
+            if not os_password:
+                os_password = helper.password
             self.cs.image_cs = client.Client(
                 options.os_compute_api_version, os_username,
                 os_password, os_tenant_name, tenant_id=os_tenant_id,
