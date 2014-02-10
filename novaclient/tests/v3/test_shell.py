@@ -462,3 +462,21 @@ class ShellTest(utils.TestCase):
         self.assertRaises(exceptions.CommandError, self.run_command, cmd)
         cmd = 'boot --image 1 --flavor 1 --num-instances 0  server'
         self.assertRaises(exceptions.CommandError, self.run_command, cmd)
+
+    @mock.patch('novaclient.v3.shell._poll_for_status')
+    def test_boot_with_poll(self, poll_method):
+        self.run_command('boot --flavor 1 --image 1 some-server --poll')
+        self.assert_called_anytime(
+            'POST', '/servers',
+            {'server': {
+                'flavor_ref': '1',
+                'name': 'some-server',
+                'image_ref': '1',
+                'os-multiple-create:min_count': 1,
+                'os-multiple-create:max_count': 1,
+            }},
+        )
+        self.assertEqual(poll_method.call_count, 1)
+        poll_method.assert_has_calls(
+            [mock.call(self.shell.cs.servers.get, 1234, 'building',
+                       ['active'])])
