@@ -824,7 +824,7 @@ class FakeHTTPClient(base_client.HTTPClient):
         return (
             200,
             {},
-            {'floating_ip_pools': [{'name': 'foo', 'name': 'bar'}]}
+            {'floating_ip_pools': [{'name': 'foo'}, {'name': 'bar'}]}
         )
 
     def get_os_floating_ips(self, **kw):
