@@ -16,6 +16,7 @@
 """Flavor access interface."""
 
 from novaclient import base
+from novaclient.openstack.common.gettextutils import _
 
 
 class FlavorAccess(base.Resource):
@@ -35,7 +36,7 @@ class FlavorAccessManager(base.ManagerWithFind):
         elif kwargs.get('tenant', None):
             return self._list_by_tenant(kwargs['tenant'])
         else:
-            raise NotImplementedError('Unknown list options.')
+            raise NotImplementedError(_('Unknown list options.'))
 
     def _list_by_flavor(self, flavor):
         return self._list('/flavors/%s/os-flavor-access' % base.getid(flavor),
@@ -45,7 +46,7 @@ class FlavorAccessManager(base.ManagerWithFind):
         """Print flavor list shared with the given tenant."""
         # TODO(uni): need to figure out a proper URI for list_by_tenant
         # since current API already provided current tenant_id information
-        raise NotImplementedError('Sorry, query by tenant not supported.')
+        raise NotImplementedError(_('Sorry, query by tenant not supported.'))
 
     def add_tenant_access(self, flavor, tenant):
         """Add a tenant to the given flavor access list."""

@@ -60,8 +60,8 @@ def get_resource_manager_extra_kwargs(f, args, allow_conflicts=False):
 
         conflicting_keys = set(hook_kwargs.keys()) & set(extra_kwargs.keys())
         if conflicting_keys and not allow_conflicts:
-            raise Exception("Hook '%(hook_name)s' is attempting to redefine"
-                    " attributes '%(conflicting_keys)s'" %
+            raise Exception(_("Hook '%(hook_name)s' is attempting to redefine"
+                    " attributes '%(conflicting_keys)s'") %
                     {'hook_name': hook_name,
                         'conflicting_keys': conflicting_keys})
 
@@ -238,13 +238,15 @@ def find_resource(manager, name_or_id, **find_args):
             kwargs.update(find_args)
             return manager.find(**kwargs)
         except exceptions.NotFound:
-            msg = "No %s with a name or ID of '%s' exists." % \
-                (manager.resource_class.__name__.lower(), name_or_id)
+            msg = _("No %(class)s with a name or ID of '%(name)s' exists.") % \
+                  {'class': manager.resource_class.__name__.lower(),
+                   'name': name_or_id}
             raise exceptions.CommandError(msg)
     except exceptions.NoUniqueMatch:
-        msg = ("Multiple %s matches found for '%s', use an ID to be more"
-               " specific." % (manager.resource_class.__name__.lower(),
-                               name_or_id))
+        msg = (_("Multiple %(class)s matches found for '%(name)s', use an ID "
+                 "to be more specific.") %
+               {'class': manager.resource_class.__name__.lower(),
+                'name': name_or_id})
         raise exceptions.CommandError(msg)
 
 

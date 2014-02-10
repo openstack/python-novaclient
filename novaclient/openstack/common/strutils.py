@@ -102,7 +102,7 @@ def safe_decode(text, incoming=None, errors='strict'):
     :raises TypeError: If text is not an instance of str
     """
     if not isinstance(text, six.string_types):
-        raise TypeError("%s can't be decoded" % type(text))
+        raise TypeError(_("%s can't be decoded") % type(text))
 
     if isinstance(text, six.text_type):
         return text
@@ -145,7 +145,7 @@ def safe_encode(text, incoming=None,
     :raises TypeError: If text is not an instance of str
     """
     if not isinstance(text, six.string_types):
-        raise TypeError("%s can't be encoded" % type(text))
+        raise TypeError(_("%s can't be encoded") % type(text))
 
     if not incoming:
         incoming = (sys.stdin.encoding or

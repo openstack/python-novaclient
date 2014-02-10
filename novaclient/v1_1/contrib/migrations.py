@@ -15,6 +15,7 @@ migration interface
 """
 
 from novaclient import base
+from novaclient.openstack.common.gettextutils import _
 from novaclient.openstack.common.py3kcompat import urlutils
 from novaclient import utils
 
@@ -54,15 +55,15 @@ class MigrationManager(base.ManagerWithFind):
 @utils.arg('--host',
            dest='host',
            metavar='<host>',
-           help='Fetch migrations for the given host.')
+           help=_('Fetch migrations for the given host.'))
 @utils.arg('--status',
            dest='status',
            metavar='<status>',
-           help='Fetch migrations for the given status.')
+           help=_('Fetch migrations for the given status.'))
 @utils.arg('--cell_name',
            dest='cell_name',
            metavar='<cell_name>',
-           help='Fetch migrations for the given cell_name.')
+           help=_('Fetch migrations for the given cell_name.'))
 def do_migration_list(cs, args):
     """Print a list of migrations."""
     _print_migrations(cs.migrations.list(args.host, args.status,

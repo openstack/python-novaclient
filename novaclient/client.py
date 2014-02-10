@@ -31,6 +31,7 @@ except ImportError:
     import simplejson as json
 
 from novaclient import exceptions
+from novaclient.openstack.common.gettextutils import _
 from novaclient.openstack.common.py3kcompat import urlutils
 from novaclient import service_catalog
 from novaclient import utils
@@ -160,11 +161,10 @@ class HTTPClient(object):
     def http_log_resp(self, resp):
         if not self.http_log_debug:
             return
-        self._logger.debug(
-            "RESP: [%s] %s\nRESP BODY: %s\n",
-            resp.status_code,
-            resp.headers,
-            resp.text)
+        self._logger.debug(_("RESP: [%(status)s] %(headers)s\nRESP BODY: "
+                             "%(text)s\n"), {'status': resp.status_code,
+                                             'headers': resp.headers,
+                                             'text': resp.text})
 
     def request(self, url, method, **kwargs):
         kwargs.setdefault('headers', kwargs.get('headers', {}))
@@ -288,13 +288,14 @@ class HTTPClient(object):
                 self.management_url = management_url.rstrip('/')
                 return None
             except exceptions.AmbiguousEndpoints:
-                print("Found more than one valid endpoint. Use a more "
-                      "restrictive filter")
+                print(_("Found more than one valid endpoint. Use a more "
+                      "restrictive filter"))
                 raise
             except KeyError:
                 raise exceptions.AuthorizationFailure()
             except exceptions.EndpointNotFound:
-                print("Could not find any suitable endpoint. Correct region?")
+                print(_("Could not find any suitable endpoint. Correct "
+                        "region?"))
                 raise
 
         elif resp.status_code == 305:
@@ -317,7 +318,7 @@ class HTTPClient(object):
         # GET ...:5001/v2.0/tokens/#####/endpoints
         url = '/'.join([url, 'tokens', '%s?belongsTo=%s'
                         % (self.proxy_token, self.proxy_tenant_id)])
-        self._logger.debug("Using Endpoint URL: %s" % url)
+        self._logger.debug(_("Using Endpoint URL: %s") % url)
         resp, body = self._time_request(
             url, "GET", headers={'X-Auth-Token': self.auth_token})
         return self._extract_service_catalog(url, resp, body,
@@ -463,8 +464,9 @@ def get_client_class(version):
     try:
         client_path = version_map[str(version)]
     except (KeyError, ValueError):
-        msg = "Invalid client version '%s'. must be one of: %s" % (
-              (version, ', '.join(version_map.keys())))
+        msg = _("Invalid client version '%(version)s'. must be one of: "
+                "%(keys)s") % {'version': version,
+                               'keys': ''.join(version_map.keys())}
         raise exceptions.UnsupportedVersion(msg)
 
     return utils.import_class(client_path)
