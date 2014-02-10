@@ -37,6 +37,7 @@ class ServicesTest(utils.TestCase):
             self.assertIsInstance(s, self._get_service_type())
             self.assertEqual(s.binary, 'nova-compute')
             self.assertEqual(s.host, 'host1')
+            self.assertTrue(str(s).startswith('<Service: '))
 
     def test_list_services_with_hostname(self):
         svs = self.cs.services.list(host='host2')
