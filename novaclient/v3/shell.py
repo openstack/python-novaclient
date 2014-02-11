@@ -2618,7 +2618,7 @@ def do_ssh(cs, args):
         return
 
 
-_quota_resources = ['instances', 'cores', 'ram', 'volumes', 'gigabytes',
+_quota_resources = ['instances', 'cores', 'ram',
                     'fixed_ips', 'metadata_items', 'key_pairs']
 
 
@@ -2718,14 +2718,6 @@ def do_quota_defaults(cs, args):
            metavar='<ram>',
            type=int, default=None,
            help='New value for the "ram" quota.')
-@utils.arg('--volumes',
-           metavar='<volumes>',
-           type=int, default=None,
-           help='New value for the "volumes" quota.')
-@utils.arg('--gigabytes',
-           metavar='<gigabytes>',
-           type=int, default=None,
-           help='New value for the "gigabytes" quota.')
 @utils.arg('--fixed-ips',
     metavar='<fixed-ips>',
     type=int,
@@ -2789,14 +2781,6 @@ def do_quota_class_show(cs, args):
            metavar='<ram>',
            type=int, default=None,
            help='New value for the "ram" quota.')
-@utils.arg('--volumes',
-           metavar='<volumes>',
-           type=int, default=None,
-           help='New value for the "volumes" quota.')
-@utils.arg('--gigabytes',
-           metavar='<gigabytes>',
-           type=int, default=None,
-           help='New value for the "gigabytes" quota.')
 @utils.arg('--metadata-items',
     metavar='<metadata-items>',
     type=int,

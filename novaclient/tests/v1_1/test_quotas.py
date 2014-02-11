@@ -42,20 +42,6 @@ class QuotaSetsTest(utils.TestCase):
         self.cs.quotas.defaults(tenant_id)
         self.cs.assert_called('GET', '/os-quota-sets/%s/defaults' % tenant_id)
 
-    def test_update_quota(self):
-        q = self.cs.quotas.get('97f4c221bff44578b0300df4ef119353')
-        q.update(volumes=2)
-        self.cs.assert_called('PUT',
-                   '/os-quota-sets/97f4c221bff44578b0300df4ef119353')
-
-    def test_update_user_quota(self):
-        tenant_id = '97f4c221bff44578b0300df4ef119353'
-        user_id = 'fake_user'
-        q = self.cs.quotas.get(tenant_id)
-        q.update(volumes=2, user_id=user_id)
-        url = '/os-quota-sets/%s?user_id=%s' % (tenant_id, user_id)
-        self.cs.assert_called('PUT', url)
-
     def test_force_update_quota(self):
         q = self.cs.quotas.get('97f4c221bff44578b0300df4ef119353')
         q.update(cores=2, force=True)
@@ -64,15 +50,6 @@ class QuotaSetsTest(utils.TestCase):
             {'quota_set': {'force': True,
                            'cores': 2,
                            'tenant_id': '97f4c221bff44578b0300df4ef119353'}})
-
-    def test_refresh_quota(self):
-        q = self.cs.quotas.get('test')
-        q2 = self.cs.quotas.get('test')
-        self.assertEqual(q.volumes, q2.volumes)
-        q2.volumes = 0
-        self.assertNotEqual(q.volumes, q2.volumes)
-        q2.get()
-        self.assertEqual(q.volumes, q2.volumes)
 
     def test_quotas_delete(self):
         tenant_id = 'test'
