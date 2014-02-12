@@ -2698,7 +2698,8 @@ def do_aggregate_set_metadata(cs, args):
     aggregate = _find_aggregate(cs, args.aggregate)
     metadata = _extract_metadata(args)
     aggregate = cs.aggregates.set_metadata(aggregate.id, metadata)
-    print("Aggregate %s has been successfully updated." % aggregate.id)
+    print("Metadata has been successfully updated for aggregate %s." %
+          aggregate.id)
     _print_aggregate_details(aggregate)
 
 
@@ -2708,7 +2709,8 @@ def do_aggregate_add_host(cs, args):
     """Add the host to the specified aggregate."""
     aggregate = _find_aggregate(cs, args.aggregate)
     aggregate = cs.aggregates.add_host(aggregate.id, args.host)
-    print("Aggregate %s has been successfully updated." % aggregate.id)
+    print("Host %s has been successfully added for aggregate %s " %
+          (args.host, aggregate.id))
     _print_aggregate_details(aggregate)
 
 
@@ -2719,7 +2721,8 @@ def do_aggregate_remove_host(cs, args):
     """Remove the specified host from the specified aggregate."""
     aggregate = _find_aggregate(cs, args.aggregate)
     aggregate = cs.aggregates.remove_host(aggregate.id, args.host)
-    print("Aggregate %s has been successfully updated." % aggregate.id)
+    print("Host %s has been successfully removed from aggregate %s " %
+          (args.host, aggregate.id))
     _print_aggregate_details(aggregate)
 
 
