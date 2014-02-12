@@ -669,7 +669,7 @@ class OpenStackComputeShell(object):
                 self.cs.client.tenant_id = tenant_id
                 self.cs.client.auth_token = auth_token
                 self.cs.client.management_url = management_url
-                self.cs.client.password_fun = lambda: helper.password
+                self.cs.client.password_func = lambda: helper.password
             elif use_pw:
                 # We're missing something, so auth with user/pass and save
                 # the result in our helper.
