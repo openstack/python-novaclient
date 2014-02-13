@@ -3528,11 +3528,12 @@ def do_quota_class_update(cs, args):
 
 
 @utils.arg('server', metavar='<server>', help=_('Name or ID of server.'))
-@utils.arg('host', metavar='<host>', help=_('Name or ID of target host.'))
+@utils.arg('host', metavar='<host>', nargs='?',
+    help=_("Name or ID of the target host.  "
+           "If no host is specified, the scheduler will choose one."))
 @utils.arg('--password',
     dest='password',
     metavar='<password>',
-    default=None,
     help=_("Set the provided password on the evacuated server. Not applicable "
             "with on-shared-storage flag"))
 @utils.arg('--on-shared-storage',
@@ -3541,7 +3542,8 @@ def do_quota_class_update(cs, args):
     default=False,
     help=_('Specifies whether server files are located on shared storage'))
 def do_evacuate(cs, args):
-    """Evacuate server from failed host to specified one."""
+    """Evacuate server from failed host."""
+
     server = _find_server(cs, args.server)
 
     res = server.evacuate(args.host, args.on_shared_storage, args.password)[1]

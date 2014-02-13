@@ -364,7 +364,7 @@ class Server(base.Resource):
         """
         return self.manager.list_security_group(self)
 
-    def evacuate(self, host, on_shared_storage, password=None):
+    def evacuate(self, host=None, on_shared_storage=True, password=None):
         """
         Evacuate an instance from failed host to specified host.
 
@@ -1149,7 +1149,8 @@ class ServerManager(base.BootingManagerWithFind):
         return self._list('/servers/%s/os-security-groups' %
                           base.getid(server), 'security_groups', SecurityGroup)
 
-    def evacuate(self, server, host, on_shared_storage, password=None):
+    def evacuate(self, server, host=None, on_shared_storage=True,
+                 password=None):
         """
         Evacuate a server instance.
 
@@ -1159,10 +1160,10 @@ class ServerManager(base.BootingManagerWithFind):
                         on shared storage
         :param password: string to set as password on the evacuated server.
         """
-        body = {
-                'host': host,
-                'onSharedStorage': on_shared_storage,
-                }
+
+        body = {'onSharedStorage': on_shared_storage}
+        if host is not None:
+            body['host'] = host
 
         if password is not None:
             body['adminPass'] = password

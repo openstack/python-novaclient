@@ -1527,17 +1527,13 @@ class ShellTest(utils.TestCase):
         self.run_command('host-evacuate --on-shared-storage hyper')
         self.assert_called('GET', '/os-hypervisors/hyper/servers', pos=0)
         self.assert_called('POST', '/servers/uuid1/action',
-                           {'evacuate': {'host': None,
-                                         'onSharedStorage': True}}, pos=1)
+                           {'evacuate': {'onSharedStorage': True}}, pos=1)
         self.assert_called('POST', '/servers/uuid2/action',
-                           {'evacuate': {'host': None,
-                                         'onSharedStorage': True}}, pos=2)
+                           {'evacuate': {'onSharedStorage': True}}, pos=2)
         self.assert_called('POST', '/servers/uuid3/action',
-                           {'evacuate': {'host': None,
-                                         'onSharedStorage': True}}, pos=3)
+                           {'evacuate': {'onSharedStorage': True}}, pos=3)
         self.assert_called('POST', '/servers/uuid4/action',
-                           {'evacuate': {'host': None,
-                                         'onSharedStorage': True}}, pos=4)
+                           {'evacuate': {'onSharedStorage': True}}, pos=4)
 
     def test_host_servers_migrate(self):
         self.run_command('host-servers-migrate hyper')
@@ -1842,15 +1838,23 @@ class ShellTest(utils.TestCase):
                            {'evacuate': {'host': 'new_host',
                                          'onSharedStorage': False,
                                          'adminPass': 'NewAdminPass'}})
-        self.run_command('evacuate sample-server new_host')
-        self.assert_called('POST', '/servers/1234/action',
-                           {'evacuate': {'host': 'new_host',
-                                         'onSharedStorage': False}})
         self.run_command('evacuate sample-server new_host '
                          '--on-shared-storage')
         self.assert_called('POST', '/servers/1234/action',
                            {'evacuate': {'host': 'new_host',
                                          'onSharedStorage': True}})
+
+    def test_evacuate_with_no_target_host(self):
+        self.run_command('evacuate sample-server')
+        self.assert_called('POST', '/servers/1234/action',
+                           {'evacuate': {'onSharedStorage': False}})
+        self.run_command('evacuate sample-server --password NewAdminPass')
+        self.assert_called('POST', '/servers/1234/action',
+                           {'evacuate': {'onSharedStorage': False,
+                                         'adminPass': 'NewAdminPass'}})
+        self.run_command('evacuate sample-server --on-shared-storage')
+        self.assert_called('POST', '/servers/1234/action',
+                           {'evacuate': {'onSharedStorage': True}})
 
     def test_get_password(self):
         self.run_command('get-password sample-server /foo/id_rsa')
