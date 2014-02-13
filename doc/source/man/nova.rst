@@ -76,7 +76,7 @@ Terminate an instance::
 SEE ALSO
 ========
 
-OpenStack Nova CLI Guide: http://docs.openstack.org/cli/quick-start/content/nova-cli-reference.html
+OpenStack Nova CLI Guide: http://docs.openstack.org/cli-reference/content/novaclient_commands.html
 
 
 BUGS
