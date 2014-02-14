@@ -17,10 +17,10 @@
 from datetime import datetime
 
 import six
+from six.moves.urllib import parse
 
 from novaclient import client as base_client
 from novaclient import exceptions
-from novaclient.openstack.common.py3kcompat import urlutils
 from novaclient.openstack.common import strutils
 from novaclient.tests import fakes
 from novaclient.tests import utils
@@ -64,7 +64,7 @@ class FakeHTTPClient(base_client.HTTPClient):
             assert 'body' in kwargs
 
         # Call the method
-        args = urlutils.parse_qsl(urlutils.urlparse(url)[4])
+        args = parse.parse_qsl(parse.urlparse(url)[4])
         kwargs.update(args)
         munged_url = url.rsplit('?', 1)[0]
         munged_url = munged_url.strip('/').replace('/', '_').replace('.', '_')

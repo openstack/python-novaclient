@@ -22,10 +22,10 @@ Server interface.
 import base64
 
 import six
+from six.moves.urllib import parse
 
 from novaclient import base
 from novaclient import crypto
-from novaclient.openstack.common.py3kcompat import urlutils
 from novaclient.openstack.common import strutils
 
 REBOOT_SOFT, REBOOT_HARD = 'SOFT', 'HARD'
@@ -507,7 +507,7 @@ class ServerManager(base.BootingManagerWithFind):
         # order, then the encoded string will be consistent in Python 2&3.
         if qparams:
             new_qparams = sorted(qparams.items(), key=lambda x: x[0])
-            query_string = "?%s" % urlutils.urlencode(new_qparams)
+            query_string = "?%s" % parse.urlencode(new_qparams)
         else:
             query_string = ""
 

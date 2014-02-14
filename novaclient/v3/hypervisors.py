@@ -17,7 +17,8 @@
 Hypervisors interface
 """
 
-from novaclient.openstack.common.py3kcompat import urlutils
+from six.moves.urllib import parse
+
 from novaclient.v1_1 import hypervisors
 
 
@@ -35,7 +36,7 @@ class HypervisorManager(hypervisors.HypervisorManager):
         :param servers: If True, server information is also retrieved.
         """
         url = ('/os-hypervisors/search?query=%s' %
-               urlutils.quote(hypervisor_match, safe=''))
+               parse.quote(hypervisor_match, safe=''))
         return self._list(url, 'hypervisors')
 
     def servers(self, hypervisor):
