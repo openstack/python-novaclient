@@ -598,6 +598,8 @@ class FakeHTTPClient(base_client.HTTPClient):
             assert list(body[action]) == ['type']
         elif action == 'os-getSPICEConsole':
             assert list(body[action]) == ['type']
+        elif action == 'os-getRDPConsole':
+            assert list(body[action]) == ['type']
         elif action == 'os-migrateLive':
             assert set(body[action].keys()) == set(['host',
                                                     'block_migration',
