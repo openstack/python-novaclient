@@ -41,7 +41,7 @@ class FloatingIPsTest(utils.TestCase):
     def test_create_floating_ip(self):
         fl = cs.floating_ips.create()
         cs.assert_called('POST', '/os-floating-ips')
-        self.assertEqual(fl.pool, None)
+        self.assertIsNone(fl.pool)
         self.assertIsInstance(fl, floating_ips.FloatingIP)
 
     def test_create_floating_ip_with_pool(self):
