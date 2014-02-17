@@ -409,7 +409,7 @@ class ServerManager(base.BootingManagerWithFind):
             body["server"]["metadata"] = meta
         if reservation_id:
             body["server"][
-                "os-multiple-create:reservation_id"] = reservation_id
+                "os-multiple-create:return_reservation_id"] = reservation_id
         if key_name:
             body["server"]["key_name"] = key_name
         if scheduler_hints:

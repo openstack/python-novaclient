@@ -121,6 +121,26 @@ class ServersTest(utils.TestCase):
         cs.assert_called('POST', '/servers')
         self.assertIsInstance(s, servers.Server)
 
+    def test_create_server_return_reservation_id(self):
+        s = cs.servers.create(
+            name="My server",
+            image=1,
+            flavor=1,
+            reservation_id=True
+        )
+        expected_body = {
+            'server': {
+                'name': 'My server',
+                'image_ref': '1',
+                'flavor_ref': '1',
+                'os-multiple-create:min_count': 1,
+                'os-multiple-create:max_count': 1,
+                'os-multiple-create:return_reservation_id': True,
+            }
+        }
+        cs.assert_called('POST', '/servers', expected_body)
+        self.assertIsInstance(s, servers.Server)
+
     def test_update_server(self):
         s = cs.servers.get(1234)
 
