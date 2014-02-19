@@ -466,7 +466,7 @@ def get_client_class(version):
     except (KeyError, ValueError):
         msg = _("Invalid client version '%(version)s'. must be one of: "
                 "%(keys)s") % {'version': version,
-                               'keys': ''.join(version_map.keys())}
+                               'keys': ', '.join(version_map.keys())}
         raise exceptions.UnsupportedVersion(msg)
 
     return utils.import_class(client_path)
