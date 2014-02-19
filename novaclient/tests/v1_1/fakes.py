@@ -1991,3 +1991,8 @@ class FakeHTTPClient(base_client.HTTPClient):
                                "updated_at": "2012-10-29T13:42:02.000000"
                            }]}
         return (200, {}, migrations)
+
+    def post_os_server_external_events(self, **kw):
+        return (200, {}, {'events': [
+                    {'name': 'network-changed',
+                     'server_uuid': '1234'}]})

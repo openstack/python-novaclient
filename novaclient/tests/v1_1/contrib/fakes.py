@@ -134,3 +134,14 @@ class FakeHTTPClient(fakes.FakeHTTPClient):
 
     def delete_os_assisted_volume_snapshots_x(self, **kw):
         return (202, {}, {})
+
+    def post_os_server_external_events(self, **kw):
+        return (200, {}, {'events': [
+                    {'name': 'test-event',
+                     'status': 'completed',
+                     'tag': 'tag',
+                     'server_uuid': 'fake-uuid1'},
+                    {'name': 'test-event',
+                     'status': 'completed',
+                     'tag': 'tag',
+                     'server_uuid': 'fake-uuid2'}]})

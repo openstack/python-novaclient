@@ -1366,6 +1366,16 @@ def do_diagnostics(cs, args):
     utils.print_dict(cs.servers.diagnostics(server)[1], wrap=80)
 
 
+@utils.arg('server', metavar='<server>',
+           help=_('Name or ID of a server for which the network cache should '
+                  'be refreshed from neutron (Admin only).'))
+def do_refresh_network(cs, args):
+    """Refresh server network information."""
+    server = _find_server(cs, args.server)
+    cs.server_external_events.create([{'server_uuid': server.id,
+                                       'name': 'network-changed'}])
+
+
 @utils.arg('server', metavar='<server>', help=_('Name or ID of server.'))
 def do_root_password(cs, args):
     """
