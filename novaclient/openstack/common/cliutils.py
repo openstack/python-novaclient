@@ -84,7 +84,7 @@ def env(*args, **kwargs):
     If all are empty, defaults to '' or keyword arg `default`.
     """
     for arg in args:
-        value = os.environ.get(arg, None)
+        value = os.environ.get(arg)
         if value:
             return value
     return kwargs.get('default', '')

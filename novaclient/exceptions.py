@@ -222,8 +222,8 @@ def from_response(response, body, url, method=None):
 
         if hasattr(body, 'keys'):
             error = body[list(body)[0]]
-            message = error.get('message', None)
-            details = error.get('details', None)
+            message = error.get('message')
+            details = error.get('details')
 
         kwargs['message'] = message
         kwargs['details'] = details

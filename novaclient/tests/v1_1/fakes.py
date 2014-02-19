@@ -79,7 +79,7 @@ class FakeHTTPClient(base_client.HTTPClient):
                                  (method, url, callback))
 
         # Note the call
-        self.callstack.append((method, url, kwargs.get('body', None)))
+        self.callstack.append((method, url, kwargs.get('body')))
 
         status, headers, body = getattr(self, callback)(**kwargs)
         r = utils.TestResponse({

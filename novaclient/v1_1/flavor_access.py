@@ -31,9 +31,9 @@ class FlavorAccessManager(base.ManagerWithFind):
     resource_class = FlavorAccess
 
     def list(self, **kwargs):
-        if kwargs.get('flavor', None):
+        if kwargs.get('flavor'):
             return self._list_by_flavor(kwargs['flavor'])
-        elif kwargs.get('tenant', None):
+        elif kwargs.get('tenant'):
             return self._list_by_tenant(kwargs['tenant'])
         else:
             raise NotImplementedError(_('Unknown list options.'))
