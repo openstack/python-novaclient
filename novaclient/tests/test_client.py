@@ -205,7 +205,7 @@ class ClientTest(utils.TestCase):
 
     def test_get_password_none(self):
         cs = novaclient.client.HTTPClient("user", None, "", "")
-        self.assertEqual(cs._get_password(), None)
+        self.assertIsNone(cs._get_password())
 
     def test_get_password_func(self):
         cs = novaclient.client.HTTPClient("user", None, "", "")
