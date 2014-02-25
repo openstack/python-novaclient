@@ -116,7 +116,7 @@ class HTTPClient(object):
                 rql.addHandler(ch)
                 # Since we have already setup the root logger on debug, we
                 # have to set it up here on WARNING (its original level)
-                # otherwise we will get all the requests logging messanges
+                # otherwise we will get all the requests logging messages
                 rql.setLevel(logging.WARNING)
         # requests within the same session can reuse TCP connections from pool
         self.http = requests.Session()

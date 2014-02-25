@@ -316,7 +316,7 @@ def _boot(cs, args, reservation_id=None, min_count=None, max_count=None):
 @utils.arg('--snapshot',
     default=None,
     metavar="<snapshot_id>",
-    help=_("Sapshot ID to boot from (will create a volume)."))
+    help=_("Snapshot ID to boot from (will create a volume)."))
 @utils.arg('--num-instances',
      default=None,
      type=int,
