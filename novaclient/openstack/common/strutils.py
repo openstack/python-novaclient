@@ -17,6 +17,7 @@
 System-level utilities and helper functions.
 """
 
+import math
 import re
 import sys
 import unicodedata
@@ -26,16 +27,21 @@ import six
 from novaclient.openstack.common.gettextutils import _
 
 
-# Used for looking up extensions of text
-# to their 'multiplied' byte amount
-BYTE_MULTIPLIERS = {
-    '': 1,
-    't': 1024 ** 4,
-    'g': 1024 ** 3,
-    'm': 1024 ** 2,
-    'k': 1024,
+UNIT_PREFIX_EXPONENT = {
+    'k': 1,
+    'K': 1,
+    'Ki': 1,
+    'M': 2,
+    'Mi': 2,
+    'G': 3,
+    'Gi': 3,
+    'T': 4,
+    'Ti': 4,
 }
-BYTE_REGEX = re.compile(r'(^-?\d+)(\D*)')
+UNIT_SYSTEM_INFO = {
+    'IEC': (1024, re.compile(r'(^[-+]?\d*\.?\d+)([KMGT]i?)?(b|bit|B)$')),
+    'SI': (1000, re.compile(r'(^[-+]?\d*\.?\d+)([kMGT])?(b|bit|B)$')),
+}
 
 TRUE_STRINGS = ('1', 't', 'true', 'on', 'y', 'yes')
 FALSE_STRINGS = ('0', 'f', 'false', 'off', 'n', 'no')
@@ -102,7 +108,7 @@ def safe_decode(text, incoming=None, errors='strict'):
     :raises TypeError: If text is not an instance of str
     """
     if not isinstance(text, six.string_types):
-        raise TypeError(_("%s can't be decoded") % type(text))
+        raise TypeError("%s can't be decoded" % type(text))
 
     if isinstance(text, six.text_type):
         return text
@@ -145,7 +151,7 @@ def safe_encode(text, incoming=None,
     :raises TypeError: If text is not an instance of str
     """
     if not isinstance(text, six.string_types):
-        raise TypeError(_("%s can't be encoded") % type(text))
+        raise TypeError("%s can't be encoded" % type(text))
 
     if not incoming:
         incoming = (sys.stdin.encoding or
@@ -167,34 +173,50 @@ def safe_encode(text, incoming=None,
     return text
 
 
-def to_bytes(text, default=0):
-    """Converts a string into an integer of bytes.
+def string_to_bytes(text, unit_system='IEC', return_int=False):
+    """Converts a string into an float representation of bytes.
 
-    Looks at the last characters of the text to determine
-    what conversion is needed to turn the input text into a byte number.
-    Supports "B, K(B), M(B), G(B), and T(B)". (case insensitive)
+    The units supported for IEC ::
+
+        Kb(it), Kib(it), Mb(it), Mib(it), Gb(it), Gib(it), Tb(it), Tib(it)
+        KB, KiB, MB, MiB, GB, GiB, TB, TiB
+
+    The units supported for SI ::
+
+        kb(it), Mb(it), Gb(it), Tb(it)
+        kB, MB, GB, TB
+
+    Note that the SI unit system does not support capital letter 'K'
 
     :param text: String input for bytes size conversion.
-    :param default: Default return value when text is blank.
+    :param unit_system: Unit system for byte size conversion.
+    :param return_int: If True, returns integer representation of text
+                       in bytes. (default: decimal)
+    :returns: Numerical representation of text in bytes.
+    :raises ValueError: If text has an invalid value.
 
     """
-    match = BYTE_REGEX.search(text)
+    try:
+        base, reg_ex = UNIT_SYSTEM_INFO[unit_system]
+    except KeyError:
+        msg = _('Invalid unit system: "%s"') % unit_system
+        raise ValueError(msg)
+    match = reg_ex.match(text)
     if match:
-        magnitude = int(match.group(1))
-        mult_key_org = match.group(2)
-        if not mult_key_org:
-            return magnitude
-    elif text:
-        msg = _('Invalid string format: %s') % text
-        raise TypeError(msg)
+        magnitude = float(match.group(1))
+        unit_prefix = match.group(2)
+        if match.group(3) in ['b', 'bit']:
+            magnitude /= 8
     else:
-        return default
-    mult_key = mult_key_org.lower().replace('b', '', 1)
-    multiplier = BYTE_MULTIPLIERS.get(mult_key)
-    if multiplier is None:
-        msg = _('Unknown byte multiplier: %s') % mult_key_org
-        raise TypeError(msg)
-    return magnitude * multiplier
+        msg = _('Invalid string format: %s') % text
+        raise ValueError(msg)
+    if not unit_prefix:
+        res = magnitude
+    else:
+        res = magnitude * pow(base, UNIT_PREFIX_EXPONENT[unit_prefix])
+    if return_int:
+        return int(math.ceil(res))
+    return res
 
 
 def to_slug(value, incoming=None, errors="strict"):
