@@ -2390,6 +2390,12 @@ def do_service_disable(cs, args):
         utils.print_list([result], ['Host', 'Binary', 'Status'])
 
 
+@utils.arg('id', metavar='<id>', help='Id of service.')
+def do_service_delete(cs, args):
+    """Delete the service."""
+    cs.services.delete(args.id)
+
+
 @utils.arg('fixed_ip', metavar='<fixed_ip>', help='Fixed IP Address.')
 def do_fixed_ip_get(cs, args):
     """Retrieve info on a fixed ip."""
