@@ -14,9 +14,10 @@
 migration interface
 """
 
+from six.moves.urllib import parse
+
 from novaclient import base
 from novaclient.openstack.common.gettextutils import _
-from novaclient.openstack.common.py3kcompat import urlutils
 from novaclient import utils
 
 
@@ -47,7 +48,7 @@ class MigrationManager(base.ManagerWithFind):
         # order, then the encoded string will be consistent in Python 2&3.
         new_opts = sorted(opts.items(), key=lambda x: x[0])
 
-        query_string = "?%s" % urlutils.urlencode(new_opts) if new_opts else ""
+        query_string = "?%s" % parse.urlencode(new_opts) if new_opts else ""
 
         return self._list("/os-migrations%s" % query_string, "migrations")
 

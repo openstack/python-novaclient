@@ -30,9 +30,10 @@ try:
 except ImportError:
     import simplejson as json
 
+from six.moves.urllib import parse
+
 from novaclient import exceptions
 from novaclient.openstack.common.gettextutils import _
-from novaclient.openstack.common.py3kcompat import urlutils
 from novaclient import service_catalog
 from novaclient import utils
 
@@ -325,7 +326,7 @@ class HTTPClient(object):
                                              extract_token=False)
 
     def authenticate(self):
-        magic_tuple = urlutils.urlsplit(self.auth_url)
+        magic_tuple = parse.urlsplit(self.auth_url)
         scheme, netloc, path, query, frag = magic_tuple
         port = magic_tuple.port
         if port is None:
@@ -343,7 +344,7 @@ class HTTPClient(object):
         # TODO(sandy): Assume admin endpoint is 35357 for now.
         # Ideally this is going to have to be provided by the service catalog.
         new_netloc = netloc.replace(':%d' % port, ':%d' % (35357,))
-        admin_url = urlutils.urlunsplit(
+        admin_url = parse.urlunsplit(
             (scheme, new_netloc, path, query, frag))
 
         auth_url = self.auth_url

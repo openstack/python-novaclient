@@ -16,10 +16,11 @@
 Flavor interface.
 """
 
+from six.moves.urllib import parse
+
 from novaclient import base
 from novaclient import exceptions
 from novaclient.openstack.common.gettextutils import _
-from novaclient.openstack.common.py3kcompat import urlutils
 from novaclient.openstack.common import strutils
 from novaclient import utils
 
@@ -112,7 +113,7 @@ class FlavorManager(base.ManagerWithFind):
         # and flavors from their own projects only.
         if not is_public:
             qparams['is_public'] = is_public
-        query_string = "?%s" % urlutils.urlencode(qparams) if qparams else ""
+        query_string = "?%s" % parse.urlencode(qparams) if qparams else ""
 
         detail = ""
         if detailed:

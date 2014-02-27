@@ -15,8 +15,10 @@
 """
 Image interface.
 """
+
+from six.moves.urllib import parse
+
 from novaclient import base
-from novaclient.openstack.common.py3kcompat import urlutils
 
 
 class Image(base.Resource):
@@ -63,7 +65,7 @@ class ImageManager(base.ManagerWithFind):
             detail = '/detail'
         if limit:
             params['limit'] = int(limit)
-        query = '?%s' % urlutils.urlencode(params) if params else ''
+        query = '?%s' % parse.urlencode(params) if params else ''
         return self._list('/images%s%s' % (detail, query), 'images')
 
     def delete(self, image):
