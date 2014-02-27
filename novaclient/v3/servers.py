@@ -320,7 +320,7 @@ class Server(base.Resource):
         """
         self.manager.reset_network(self)
 
-    def evacuate(self, host, on_shared_storage, password=None):
+    def evacuate(self, host=None, on_shared_storage=True, password=None):
         """
         Evacuate an instance from failed host to specified host.
 
@@ -950,7 +950,8 @@ class ServerManager(base.BootingManagerWithFind):
         """
         self._action('reset_network', server)
 
-    def evacuate(self, server, host, on_shared_storage, password=None):
+    def evacuate(self, server, host=None,
+                 on_shared_storage=True, password=None):
         """
         Evacuate a server instance.
 
@@ -960,10 +961,9 @@ class ServerManager(base.BootingManagerWithFind):
                         on shared storage
         :param password: string to set as password on the evacuated server.
         """
-        body = {
-                'host': host,
-                'on_shared_storage': on_shared_storage,
-                }
+        body = {'on_shared_storage': on_shared_storage}
+        if host is not None:
+            body['host'] = host
 
         if password is not None:
             body['admin_password'] = password
