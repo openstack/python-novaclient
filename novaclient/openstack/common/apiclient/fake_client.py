@@ -28,10 +28,9 @@ import json
 
 import requests
 import six
+from six.moves.urllib import parse
 
 from novaclient.openstack.common.apiclient import client
-from novaclient.openstack.common.py3kcompat import urlutils
-from novaclient.openstack.common import strutils
 
 
 def assert_has_keys(dct, required=[], optional=[]):
@@ -64,7 +63,7 @@ class TestResponse(requests.Response):
                 self._content = text
                 default_headers = {}
             if six.PY3 and isinstance(self._content, six.string_types):
-                self._content = strutils.safe_encode(self._content)
+                self._content = self._content.encode('utf-8', 'strict')
             self.headers = data.get('headers') or default_headers
         else:
             self.status_code = data
@@ -148,7 +147,7 @@ class FakeHTTPClient(client.HTTPClient):
                                  "text": fixture[1]})
 
         # Call the method
-        args = urlutils.parse_qsl(urlutils.urlparse(url)[4])
+        args = parse.parse_qsl(parse.urlparse(url)[4])
         kwargs.update(args)
         munged_url = url.rsplit('?', 1)[0]
         munged_url = munged_url.strip('/').replace('/', '_').replace('.', '_')

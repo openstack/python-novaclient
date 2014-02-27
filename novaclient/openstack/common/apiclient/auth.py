@@ -19,16 +19,12 @@
 
 import abc
 import argparse
-import logging
 import os
 
 import six
 from stevedore import extension
 
 from novaclient.openstack.common.apiclient import exceptions
-
-
-logger = logging.getLogger(__name__)
 
 
 _discovered_plugins = {}
@@ -80,7 +76,7 @@ def load_plugin_from_args(args):
     alphabetical order.
 
     :type args: argparse.Namespace
-    :raises: AuthorizationFailure
+    :raises: AuthPluginOptionsMissing
     """
     auth_system = args.os_auth_system
     if auth_system:
