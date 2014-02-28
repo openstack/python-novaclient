@@ -16,6 +16,8 @@
 # W0621: Redefining name %s from outer scope
 # pylint: disable=W0603,W0621
 
+from __future__ import print_function
+
 import getpass
 import inspect
 import os
@@ -27,7 +29,9 @@ import six
 from six import moves
 
 from novaclient.openstack.common.apiclient import exceptions
+from novaclient.openstack.common.gettextutils import _
 from novaclient.openstack.common import strutils
+from novaclient.openstack.common import uuidutils
 
 
 def validate_args(fn, *args, **kwargs):
@@ -176,9 +180,9 @@ def print_dict(dct, dict_property="Property", wrap=0):
     for k, v in six.iteritems(dct):
         # convert dict to str to check length
         if isinstance(v, dict):
-            v = str(v)
+            v = six.text_type(v)
         if wrap > 0:
-            v = textwrap.fill(str(v), wrap)
+            v = textwrap.fill(six.text_type(v), wrap)
         # if value has a newline, add in multiple rows
         # e.g. fault with stacktrace
         if v and isinstance(v, six.string_types) and r'\n' in v:
@@ -199,7 +203,7 @@ def get_password(max_password_prompts=3):
     if hasattr(sys.stdin, "isatty") and sys.stdin.isatty():
         # Check for Ctrl-D
         try:
-            for _ in moves.range(max_password_prompts):
+            for __ in moves.range(max_password_prompts):
                 pw1 = getpass.getpass("OS Password: ")
                 if verify:
                     pw2 = getpass.getpass("Please verify: ")
@@ -211,3 +215,95 @@ def get_password(max_password_prompts=3):
         except EOFError:
             pass
     return pw
+
+
+def find_resource(manager, name_or_id, **find_args):
+    """Look for resource in a given manager.
+
+    Used as a helper for the _find_* methods.
+    Example:
+
+        def _find_hypervisor(cs, hypervisor):
+            #Get a hypervisor by name or ID.
+            return cliutils.find_resource(cs.hypervisors, hypervisor)
+    """
+    # first try to get entity as integer id
+    try:
+        return manager.get(int(name_or_id))
+    except (TypeError, ValueError, exceptions.NotFound):
+        pass
+
+    # now try to get entity as uuid
+    try:
+        tmp_id = strutils.safe_encode(name_or_id)
+
+        if uuidutils.is_uuid_like(tmp_id):
+            return manager.get(tmp_id)
+    except (TypeError, ValueError, exceptions.NotFound):
+        pass
+
+    # for str id which is not uuid
+    if getattr(manager, 'is_alphanum_id_allowed', False):
+        try:
+            return manager.get(name_or_id)
+        except exceptions.NotFound:
+            pass
+
+    try:
+        try:
+            return manager.find(human_id=name_or_id, **find_args)
+        except exceptions.NotFound:
+            pass
+
+        # finally try to find entity by name
+        try:
+            resource = getattr(manager, 'resource_class', None)
+            name_attr = resource.NAME_ATTR if resource else 'name'
+            kwargs = {name_attr: name_or_id}
+            kwargs.update(find_args)
+            return manager.find(**kwargs)
+        except exceptions.NotFound:
+            msg = _("No %(name)s with a name or "
+                    "ID of '%(name_or_id)s' exists.") % \
+                {
+                    "name": manager.resource_class.__name__.lower(),
+                    "name_or_id": name_or_id
+                }
+            raise exceptions.CommandError(msg)
+    except exceptions.NoUniqueMatch:
+        msg = _("Multiple %(name)s matches found for "
+                "'%(name_or_id)s', use an ID to be more specific.") % \
+            {
+                "name": manager.resource_class.__name__.lower(),
+                "name_or_id": name_or_id
+            }
+        raise exceptions.CommandError(msg)
+
+
+def service_type(stype):
+    """Adds 'service_type' attribute to decorated function.
+
+    Usage:
+        @service_type('volume')
+        def mymethod(f):
+            ...
+    """
+    def inner(f):
+        f.service_type = stype
+        return f
+    return inner
+
+
+def get_service_type(f):
+    """Retrieves service type from function."""
+    return getattr(f, 'service_type', None)
+
+
+def pretty_choice_list(l):
+    return ', '.join("'%s'" % i for i in l)
+
+
+def exit(msg=''):
+    if msg:
+        print (msg, file=sys.stderr)
+    sys.exit(1)

@@ -24,11 +24,12 @@ Base utilities to build API operation managers and objects on top of.
 # pylint: disable=E1102
 
 import abc
+import copy
 
 import six
+from six.moves.urllib import parse
 
 from novaclient.openstack.common.apiclient import exceptions
-from novaclient.openstack.common.py3kcompat import urlutils
 from novaclient.openstack.common import strutils
 
 
@@ -327,7 +328,7 @@ class CrudManager(BaseManager):
         return self._list(
             '%(base_url)s%(query)s' % {
                 'base_url': self.build_url(base_url=base_url, **kwargs),
-                'query': '?%s' % urlutils.urlencode(kwargs) if kwargs else '',
+                'query': '?%s' % parse.urlencode(kwargs) if kwargs else '',
             },
             self.collection_key)
 
@@ -366,7 +367,7 @@ class CrudManager(BaseManager):
         rl = self._list(
             '%(base_url)s%(query)s' % {
                 'base_url': self.build_url(base_url=base_url, **kwargs),
-                'query': '?%s' % urlutils.urlencode(kwargs) if kwargs else '',
+                'query': '?%s' % parse.urlencode(kwargs) if kwargs else '',
             },
             self.collection_key)
         num = len(rl)
@@ -465,6 +466,11 @@ class Resource(object):
             return self.__dict__[k]
 
     def get(self):
+        """Support for lazy loading details.
+
+        Some clients, such as novaclient have the option to lazy load the
+        details, details which can be loaded with this function.
+        """
         # set_loaded() first ... so if we have to bail, we know we tried.
         self.set_loaded(True)
         if not hasattr(self.manager, 'get'):
@@ -489,3 +495,6 @@ class Resource(object):
 
     def set_loaded(self, val):
         self._loaded = val
+
+    def to_dict(self):
+        return copy.deepcopy(self._info)
