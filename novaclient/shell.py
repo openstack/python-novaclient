@@ -285,6 +285,11 @@ class OpenStackComputeShell(object):
         parser.add_argument('--os_username',
             help=argparse.SUPPRESS)
 
+        parser.add_argument('--os-user-id',
+            metavar='<auth-user-id>',
+            default=utils.env('OS_USER_ID'),
+            help=_('Defaults to env[OS_USER_ID].'))
+
         parser.add_argument('--os-password',
             metavar='<auth-password>',
             default=utils.env('OS_PASSWORD', 'NOVA_PASSWORD'),
@@ -550,6 +555,7 @@ class OpenStackComputeShell(object):
             return 0
 
         os_username = args.os_username
+        os_user_id = args.os_user_id
         os_password = None  # Fetched and set later as needed
         os_tenant_name = args.os_tenant_name
         os_tenant_id = args.os_tenant_id
@@ -606,9 +612,10 @@ class OpenStackComputeShell(object):
                 auth_plugin.parse_opts(args)
 
             if not auth_plugin or not auth_plugin.opts:
-                if not os_username:
+                if not os_username and not os_user_id:
                     raise exc.CommandError(_("You must provide a username "
-                            "via either --os-username or env[OS_USERNAME]"))
+                            "or user id via --os-username, --os-user-id, "
+                            "env[OS_USERNAME] or env[OS_USER_ID]"))
 
             if not os_tenant_name and not os_tenant_id:
                 raise exc.CommandError(_("You must provide a tenant name "
@@ -639,8 +646,9 @@ class OpenStackComputeShell(object):
                 raise exc.CommandError(_("You must provide an auth url "
                         "via either --os-auth-url or env[OS_AUTH_URL]"))
 
-        self.cs = client.Client(options.os_compute_api_version, os_username,
-                os_password, os_tenant_name, tenant_id=os_tenant_id,
+        self.cs = client.Client(options.os_compute_api_version,
+                os_username, os_password, os_tenant_name,
+                tenant_id=os_tenant_id, user_id=os_user_id,
                 auth_url=os_auth_url, insecure=insecure,
                 region_name=os_region_name, endpoint_type=endpoint_type,
                 extensions=self.extensions, service_type=service_type,
