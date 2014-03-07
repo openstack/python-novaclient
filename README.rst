@@ -146,6 +146,7 @@ You'll find complete documentation on the shell by running
         rate-limits         Print a list of rate limits for a user
         reboot              Reboot a server.
         rebuild             Shutdown, re-image, and re-boot a server.
+        refresh-network     Refresh server network information.
         remove-fixed-ip     Remove an IP address from a server.
         remove-floating-ip  Remove a floating IP address from a server.
         rename              Rename a server.
