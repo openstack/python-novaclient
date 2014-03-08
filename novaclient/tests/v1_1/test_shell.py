@@ -497,7 +497,7 @@ class ShellTest(utils.TestCase):
             },
         )
 
-    def tets_boot_nics_no_value(self):
+    def test_boot_nics_no_value(self):
         cmd = ('boot --image 1 --flavor 1 '
                '--nic net-id some-server')
         self.assertRaises(exceptions.CommandError, self.run_command, cmd)
