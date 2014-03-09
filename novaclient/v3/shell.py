@@ -146,9 +146,10 @@ def _boot(cs, args, reservation_id=None, min_count=None, max_count=None):
     for nic_str in args.nics:
         err_msg = ("Invalid nic argument '%s'. Nic arguments must be of the "
                    "form --nic <net-id=net-uuid,v4-fixed-ip=ip-addr,"
-                   "port-id=port-uuid>, with at minimum net-id or port-id "
-                   "specified." % nic_str)
-        nic_info = {"net-id": "", "v4-fixed-ip": "", "port-id": ""}
+                   "v6-fixed-ip=ip-addr,port-id=port-uuid>, with at minimum "
+                   "net-id or port-id specified." % nic_str)
+        nic_info = {"net-id": "", "v4-fixed-ip": "", "v6-fixed-ip": "",
+                    "port-id": ""}
 
         for kv_str in nic_str.split(","):
             try:
@@ -278,7 +279,8 @@ def _boot(cs, args, reservation_id=None, min_count=None, max_count=None):
         metavar='<key=value>',
         help="Send arbitrary key/value pairs to the scheduler for custom use.")
 @utils.arg('--nic',
-     metavar="<net-id=net-uuid,v4-fixed-ip=ip-addr,port-id=port-uuid>",
+     metavar="<net-id=net-uuid,v4-fixed-ip=ip-addr,v6-fixed-ip=ip-addr,"
+             "port-id=port-uuid>",
      action='append',
      dest='nics',
      default=[],
@@ -287,6 +289,7 @@ def _boot(cs, args, reservation_id=None, min_count=None, max_count=None):
            "net-id: attach NIC to network with this UUID "
            "(required if no port-id), "
            "v4-fixed-ip: IPv4 fixed address for NIC (optional), "
+           "v6-fixed-ip: IPv6 fixed address for NIC (optional), "
            "port-id: attach NIC to port with this UUID "
            "(required if no net-id)")
 @utils.arg('--config-drive',
