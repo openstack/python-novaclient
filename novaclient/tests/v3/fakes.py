@@ -170,7 +170,10 @@ class FakeHTTPClient(fakes_v1_1.FakeHTTPClient):
                         required=['name', 'image_ref', 'flavor_ref'],
                         optional=['metadata', 'personality',
                                   'os-scheduler-hints:scheduler_hints'])
-        return (202, {}, self.get_servers_1234()[2])
+        if body['server']['name'] == 'some-bad-server':
+            return (202, {}, self.get_servers_1235()[2])
+        else:
+            return (202, {}, self.get_servers_1234()[2])
 
     #
     # Server Actions

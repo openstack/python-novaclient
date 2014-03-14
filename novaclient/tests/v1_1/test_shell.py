@@ -581,6 +581,10 @@ class ShellTest(utils.TestCase):
             [mock.call(self.shell.cs.servers.get, 1234, 'building',
                        ['active'])])
 
+    def test_boot_with_poll_to_check_VM_state_error(self):
+        self.assertRaises(exceptions.InstanceInErrorState, self.run_command,
+                          'boot --flavor 1 --image 1 some-bad-server --poll')
+
     def test_flavor_list(self):
         self.run_command('flavor-list')
         self.assert_called_anytime('GET', '/flavors/detail')
