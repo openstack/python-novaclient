@@ -75,6 +75,12 @@ class Client(object):
                   auth_plugin=None, auth_token=None,
                   cacert=None, tenant_id=None, user_id=None,
                   connection_pool=False, completion_cache=None):
+        # NOTE(cyeoh): In the novaclient context (unlike Nova) the
+        # project_id is not the same as the tenant_id. Here project_id
+        # is a name (what the Nova API often refers to as a project or
+        # tenant name) and tenant_id is a UUID (what the Nova API
+        # often refers to as a project_id or tenant_id).
+
         self.projectid = project_id
         self.tenant_id = tenant_id
         self.user_id = user_id

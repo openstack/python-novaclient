@@ -92,6 +92,13 @@ class Client(object):
                   connection_pool=False, completion_cache=None):
         # FIXME(comstud): Rename the api_key argument above when we
         # know it's not being used as keyword argument
+
+        # NOTE(cyeoh): In the novaclient context (unlike Nova) the
+        # project_id is not the same as the tenant_id. Here project_id
+        # is a name (what the Nova API often refers to as a project or
+        # tenant name) and tenant_id is a UUID (what the Nova API
+        # often refers to as a project_id or tenant_id).
+
         password = api_key
         self.projectid = project_id
         self.tenant_id = tenant_id
