@@ -216,3 +216,17 @@ class ClientTest(utils.TestCase):
         cs.password_func = mock.Mock()
         self.assertEqual(cs._get_password(), "password")
         self.assertFalse(cs.password_func.called)
+
+    def test_auth_url_rstrip_slash(self):
+        cs = novaclient.client.HTTPClient("user", "password", "project_id",
+                                          auth_url="foo/v2/")
+        self.assertEqual(cs.auth_url, "foo/v2")
+
+    def test_token_and_bypass_url(self):
+        cs = novaclient.client.HTTPClient(None, None, None,
+                                          auth_token="12345",
+                                          bypass_url="compute/v100/")
+        self.assertIsNone(cs.auth_url)
+        self.assertEqual(cs.auth_token, "12345")
+        self.assertEqual(cs.bypass_url, "compute/v100")
+        self.assertEqual(cs.management_url, "compute/v100")
