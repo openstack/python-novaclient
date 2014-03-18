@@ -1,6 +1,6 @@
 pbr>=0.6,<1.0
 argparse
-iso8601>=0.1.8
+iso8601>=0.1.9
 PrettyTable>=0.7,<0.8
 requests>=1.1
 simplejson>=2.0.9
