@@ -785,7 +785,8 @@ class OpenStackHelpFormatter(argparse.HelpFormatter):
 
 def main():
     try:
-        OpenStackComputeShell().main(map(strutils.safe_decode, sys.argv[1:]))
+        argv = [strutils.safe_decode(a) for a in sys.argv[1:]]
+        OpenStackComputeShell().main(argv)
 
     except Exception as e:
         logger.debug(e, exc_info=1)
