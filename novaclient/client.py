@@ -83,7 +83,7 @@ class HTTPClient(object):
             auth_url = auth_plugin.get_auth_url()
             if not auth_url:
                 raise exceptions.EndpointNotFound()
-        self.auth_url = auth_url.rstrip('/')
+        self.auth_url = auth_url.rstrip('/') if auth_url else auth_url
         self.version = 'v1.1'
         self.region_name = region_name
         self.endpoint_type = endpoint_type
@@ -91,7 +91,7 @@ class HTTPClient(object):
         self.service_name = service_name
         self.volume_service_name = volume_service_name
         self.timings = timings
-        self.bypass_url = bypass_url
+        self.bypass_url = bypass_url.rstrip('/') if bypass_url else bypass_url
         self.os_cache = os_cache or not no_cache
         self.http_log_debug = http_log_debug
         if timeout is not None:
