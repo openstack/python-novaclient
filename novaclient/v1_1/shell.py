@@ -1856,7 +1856,7 @@ def do_volume_type_create(cs, args):
      help=_("Unique ID of the volume type to delete"))
 @utils.service_type('volume')
 def do_volume_type_delete(cs, args):
-    """Delete a specific flavor"""
+    """Delete a specific volume type."""
     cs.volume_types.delete(args.id)
 
 
