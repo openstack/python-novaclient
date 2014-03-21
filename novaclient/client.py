@@ -64,8 +64,9 @@ class HTTPClient(object):
                  os_cache=False, no_cache=True,
                  http_log_debug=False, auth_system='keystone',
                  auth_plugin=None, auth_token=None,
-                 cacert=None, tenant_id=None):
+                 cacert=None, tenant_id=None, user_id=None):
         self.user = user
+        self.user_id = user_id
         self.password = password
         self.projectid = projectid
         self.tenant_id = tenant_id
@@ -456,6 +457,10 @@ class HTTPClient(object):
         if self.auth_token:
             body = {"auth": {
                     "token": {"id": self.auth_token}}}
+        elif self.user_id:
+            body = {"auth": {
+                    "passwordCredentials": {"userId": self.user_id,
+                                            "password": self._get_password()}}}
         else:
             body = {"auth": {
                     "passwordCredentials": {"username": self.user,
