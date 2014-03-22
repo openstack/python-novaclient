@@ -783,7 +783,9 @@ def main():
 
     except Exception as e:
         logger.debug(e, exc_info=1)
-        print("ERROR: %s" % strutils.safe_encode(six.text_type(e)),
+        details = {'name': strutils.safe_encode(e.__class__.__name__),
+                   'msg': strutils.safe_encode(six.text_type(e))}
+        print("ERROR (%(name)s): %(msg)s" % details,
               file=sys.stderr)
         sys.exit(1)
     except KeyboardInterrupt as e:
