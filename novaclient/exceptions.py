@@ -81,6 +81,8 @@ class ClientException(Exception):
     """
     The base exception class for all exceptions this library raises.
     """
+    message = 'Unknown Error'
+
     def __init__(self, code, message=None, details=None, request_id=None,
                  url=None, method=None):
         self.code = code

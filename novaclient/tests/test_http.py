@@ -13,6 +13,7 @@
 
 import mock
 import requests
+import six
 
 from novaclient import client
 from novaclient import exceptions
@@ -36,6 +37,12 @@ bad_req_response = utils.TestResponse({
     "text": '',
 })
 bad_req_mock_request = mock.Mock(return_value=(bad_req_response))
+
+unknown_error_response = utils.TestResponse({
+    "status_code": 503,
+    "text": '',
+})
+unknown_error_mock_request = mock.Mock(return_value=unknown_error_response)
 
 
 def get_client():
@@ -133,3 +140,16 @@ class ClientTest(utils.TestCase):
         cl2 = client.HTTPClient("username", "password", "project_id",
                                 "auth_test", http_log_debug=True)
         self.assertEqual(len(cl2._logger.handlers), 1)
+
+    @mock.patch.object(requests.Session, 'request', unknown_error_mock_request)
+    def test_unknown_server_error(self):
+        cl = get_client()
+        # This would be cleaner with the context manager version of
+        # assertRaises or assertRaisesRegexp, but both only appeared in
+        # Python 2.7 and testtools doesn't match that implementation yet
+        try:
+            cl.get('/hi')
+        except exceptions.ClientException as exc:
+            self.assertIn('Unknown Error', six.text_type(exc))
+        else:
+            self.fail('Expected exceptions.ClientException')
