@@ -36,7 +36,7 @@ class Server(base.Resource):
     HUMAN_ID = True
 
     def __repr__(self):
-        return "<Server: %s>" % self.name
+        return '<Server: %s>' % getattr(self, 'name', 'unknown-name')
 
     def delete(self):
         """

@@ -582,6 +582,32 @@ class ServersTest(utils.TestCase):
         s.interface_list()
         cs.assert_called('GET', '/servers/1234/os-interface')
 
+    def test_interface_list_result_string_representable(self):
+        """Test for bugs.launchpad.net/python-novaclient/+bug/1280453."""
+        # According to https://github.com/openstack/nova/blob/master/
+        # nova/api/openstack/compute/contrib/attach_interfaces.py#L33,
+        # the attach_interface extension get method will return a json
+        # object partly like this:
+        interface_list = [{
+            'net_id': 'd7745cf5-63f9-4883-b0ae-983f061e4f23',
+            'port_id': 'f35079da-36d5-4513-8ec1-0298d703f70e',
+            'mac_addr': 'fa:16:3e:4c:37:c8',
+            'port_state': 'ACTIVE',
+            'fixed_ips': [{
+                'subnet_id': 'f1ad93ad-2967-46ba-b403-e8cbbe65f7fa',
+                'ip_address': '10.2.0.96'
+                }]
+            }]
+        # If server is not string representable, it will raise an exception,
+        # because attribute named 'name' cannot be found.
+        # Parameter 'loaded' must be True or it will try to get attribute
+        # 'id' then fails (lazy load detail), this is exactly same as
+        # novaclient.base.Manager._list()
+        s = servers.Server(servers.ServerManager, interface_list[0],
+                           loaded=True)
+        # Trigger the __repr__ magic method
+        self.assertEqual('<Server: unknown-name>', '%r' % s)
+
     def test_interface_attach(self):
         s = cs.servers.get(1234)
         s.interface_attach(None, None, None)
