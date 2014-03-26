@@ -92,7 +92,7 @@ class DeprecatedAuthPluginTest(utils.TestCase):
 
         @mock.patch.object(pkg_resources, "iter_entry_points",
                            mock_iter_entry_points)
-        @mock.patch.object(requests.Session, "request", mock_request)
+        @mock.patch.object(requests, "request", mock_request)
         def test_auth_call():
             plugin = auth_plugin.DeprecatedAuthPlugin("fake")
             cs = client.Client("username", "password", "project_id",
@@ -121,7 +121,7 @@ class DeprecatedAuthPluginTest(utils.TestCase):
 
         @mock.patch.object(pkg_resources, "iter_entry_points",
                            mock_iter_entry_points)
-        @mock.patch.object(requests.Session, "request", mock_request)
+        @mock.patch.object(requests, "request", mock_request)
         def test_auth_call():
             auth_plugin.discover_auth_systems()
             plugin = auth_plugin.DeprecatedAuthPlugin("notexists")
@@ -164,7 +164,7 @@ class DeprecatedAuthPluginTest(utils.TestCase):
 
         @mock.patch.object(pkg_resources, "iter_entry_points",
                            mock_iter_entry_points)
-        @mock.patch.object(requests.Session, "request", mock_request)
+        @mock.patch.object(requests, "request", mock_request)
         def test_auth_call():
             plugin = auth_plugin.DeprecatedAuthPlugin("fakewithauthurl")
             cs = client.Client("username", "password", "project_id",
@@ -197,7 +197,7 @@ class DeprecatedAuthPluginTest(utils.TestCase):
 
 
 class AuthPluginTest(utils.TestCase):
-    @mock.patch.object(requests.Session, "request")
+    @mock.patch.object(requests, "request")
     @mock.patch.object(pkg_resources, "iter_entry_points")
     def test_auth_system_success(self, mock_iter_entry_points, mock_request):
         """Test that we can authenticate using the auth system."""

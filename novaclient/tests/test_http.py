@@ -64,7 +64,7 @@ class ClientTest(utils.TestCase):
     def test_get(self):
         cl = get_authed_client()
 
-        @mock.patch.object(requests.Session, "request", mock_request)
+        @mock.patch.object(requests, "request", mock_request)
         @mock.patch('time.time', mock.Mock(return_value=1234))
         def test_get_call():
             resp, body = cl.get("/hi")
@@ -86,7 +86,7 @@ class ClientTest(utils.TestCase):
     def test_post(self):
         cl = get_authed_client()
 
-        @mock.patch.object(requests.Session, "request", mock_request)
+        @mock.patch.object(requests, "request", mock_request)
         def test_post_call():
             cl.post("/hi", body=[1, 2, 3])
             headers = {
@@ -118,7 +118,7 @@ class ClientTest(utils.TestCase):
     def test_connection_refused(self):
         cl = get_client()
 
-        @mock.patch.object(requests.Session, "request", refused_mock_request)
+        @mock.patch.object(requests, "request", refused_mock_request)
         def test_refused_call():
             self.assertRaises(exceptions.ConnectionRefused, cl.get, "/hi")
 
@@ -127,7 +127,7 @@ class ClientTest(utils.TestCase):
     def test_bad_request(self):
         cl = get_client()
 
-        @mock.patch.object(requests.Session, "request", bad_req_mock_request)
+        @mock.patch.object(requests, "request", bad_req_mock_request)
         def test_refused_call():
             self.assertRaises(exceptions.BadRequest, cl.get, "/hi")
 
@@ -142,7 +142,7 @@ class ClientTest(utils.TestCase):
                                 "auth_test", http_log_debug=True)
         self.assertEqual(len(cl2._logger.handlers), 1)
 
-    @mock.patch.object(requests.Session, 'request', unknown_error_mock_request)
+    @mock.patch.object(requests, 'request', unknown_error_mock_request)
     def test_unknown_server_error(self):
         cl = get_client()
         # This would be cleaner with the context manager version of
