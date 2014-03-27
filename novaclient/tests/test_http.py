@@ -47,7 +47,8 @@ unknown_error_mock_request = mock.Mock(return_value=unknown_error_response)
 
 def get_client():
     cl = client.HTTPClient("username", "password",
-                           "project_id", "auth_test")
+                           "project_id",
+                           utils.AUTH_URL_V2)
     return cl
 
 

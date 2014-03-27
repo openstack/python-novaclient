@@ -96,7 +96,7 @@ class DeprecatedAuthPluginTest(utils.TestCase):
         def test_auth_call():
             plugin = auth_plugin.DeprecatedAuthPlugin("fake")
             cs = client.Client("username", "password", "project_id",
-                               "auth_url/v2.0", auth_system="fake",
+                               utils.AUTH_URL_V2, auth_system="fake",
                                auth_plugin=plugin)
             cs.client.authenticate()
 
@@ -126,7 +126,7 @@ class DeprecatedAuthPluginTest(utils.TestCase):
             auth_plugin.discover_auth_systems()
             plugin = auth_plugin.DeprecatedAuthPlugin("notexists")
             cs = client.Client("username", "password", "project_id",
-                               "auth_url/v2.0", auth_system="notexists",
+                               utils.AUTH_URL_V2, auth_system="notexists",
                                auth_plugin=plugin)
             self.assertRaises(exceptions.AuthSystemNotFound,
                               cs.client.authenticate)
@@ -217,7 +217,7 @@ class AuthPluginTest(utils.TestCase):
         auth_plugin.discover_auth_systems()
         plugin = auth_plugin.load_plugin("fake")
         cs = client.Client("username", "password", "project_id",
-                           "auth_url/v2.0", auth_system="fake",
+                           utils.AUTH_URL_V2, auth_system="fake",
                            auth_plugin=plugin)
         cs.client.authenticate()
 

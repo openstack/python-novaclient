@@ -17,6 +17,10 @@ import fixtures
 import requests
 import testtools
 
+AUTH_URL = "http://localhost:5002/auth_url"
+AUTH_URL_V1 = "http://localhost:5002/auth_url/v1.0"
+AUTH_URL_V2 = "http://localhost:5002/auth_url/v2.0"
+
 
 class TestCase(testtools.TestCase):
     TEST_REQUEST_BASE = {
