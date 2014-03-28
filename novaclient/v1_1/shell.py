@@ -2031,9 +2031,13 @@ def do_floating_ip_delete(cs, args):
                                   args.address)
 
 
-def do_floating_ip_list(cs, _args):
-    """List floating ips for this tenant."""
-    _print_floating_ip_list(cs.floating_ips.list())
+@utils.arg('--all-tenants',
+           action='store_true',
+           default=False,
+           help=_('Display floatingips from all tenants (Admin only).'))
+def do_floating_ip_list(cs, args):
+    """List floating ips."""
+    _print_floating_ip_list(cs.floating_ips.list(args.all_tenants))
 
 
 def do_floating_ip_pool_list(cs, _args):

@@ -1039,6 +1039,10 @@ class ShellTest(utils.TestCase):
         self.run_command('floating-ip-list')
         self.assert_called('GET', '/os-floating-ips')
 
+    def test_floating_ip_list_all_tenants(self):
+        self.run_command('floating-ip-list --all-tenants')
+        self.assert_called('GET', '/os-floating-ips?all_tenants=1')
+
     def test_floating_ip_create(self):
         self.run_command('floating-ip-create')
         self.assert_called('GET', '/os-floating-ips/1')
