@@ -257,3 +257,17 @@ class ShellTest(utils.TestCase):
     @mock.patch('novaclient.client.Client')
     def test_v_unknown_service_type(self, mock_client):
         self._test_service_type('unknown', 'compute', mock_client)
+
+    @mock.patch('sys.argv', ['nova'])
+    @mock.patch('sys.stdout', six.StringIO())
+    @mock.patch('sys.stderr', six.StringIO())
+    def test_main_noargs(self):
+        # Ensure that main works with no command-line arguments
+        try:
+            novaclient.shell.main()
+        except SystemExit as exc:
+            self.fail('Unexpected SystemExit')
+
+        # We expect the normal usage as a result
+        self.assertIn('Command-line interface to the OpenStack Nova API',
+                      sys.stdout.getvalue())
