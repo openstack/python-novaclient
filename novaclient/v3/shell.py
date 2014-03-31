@@ -60,19 +60,8 @@ def _match_image(cs, wanted_properties):
     return images_matched
 
 
-def _boot(cs, args, reservation_id=None, min_count=None, max_count=None):
+def _boot(cs, args):
     """Boot a new server."""
-    if min_count is None:
-        min_count = 1
-    if max_count is None:
-        max_count = min_count
-    if min_count > max_count:
-        raise exceptions.CommandError("min_instances should be <= "
-                                      "max_instances")
-    if not min_count or not max_count:
-        raise exceptions.CommandError("min_instances nor max_instances should"
-                                      "be 0")
-
     if args.image:
         image = _find_image(cs.image_cs, args.image)
     else:
@@ -93,6 +82,8 @@ def _boot(cs, args, reservation_id=None, min_count=None, max_count=None):
     if not args.flavor:
         raise exceptions.CommandError("you need to specify a Flavor ID ")
 
+    min_count = 1
+    max_count = 1
     if args.num_instances is not None:
         if args.num_instances <= 1:
             raise exceptions.CommandError("num_instances should be > 1")
@@ -191,7 +182,6 @@ def _boot(cs, args, reservation_id=None, min_count=None, max_count=None):
             meta=meta,
             files=files,
             key_name=key_name,
-            reservation_id=reservation_id,
             min_count=min_count,
             max_count=max_count,
             userdata=userdata,
