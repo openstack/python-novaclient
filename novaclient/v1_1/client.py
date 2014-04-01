@@ -33,7 +33,6 @@ from novaclient.v1_1 import images
 from novaclient.v1_1 import keypairs
 from novaclient.v1_1 import limits
 from novaclient.v1_1 import networks
-from novaclient.v1_1 import quota_classes
 from novaclient.v1_1 import quotas
 from novaclient.v1_1 import security_group_rules
 from novaclient.v1_1 import security_groups
@@ -101,7 +100,6 @@ class Client(object):
         self.volume_types = volume_types.VolumeTypeManager(self)
         self.keypairs = keypairs.KeypairManager(self)
         self.networks = networks.NetworkManager(self)
-        self.quota_classes = quota_classes.QuotaClassSetManager(self)
         self.quotas = quotas.QuotaSetManager(self)
         self.security_groups = security_groups.SecurityGroupManager(self)
         self.security_group_rules = \

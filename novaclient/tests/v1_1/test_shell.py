@@ -1513,17 +1513,6 @@ class ShellTest(utils.TestCase):
         self.assert_called('DELETE',
                 '/os-quota-sets/97f4c221bff44578b0300df4ef119353?user_id=u1')
 
-    def test_quota_class_show(self):
-        self.run_command('quota-class-show test')
-        self.assert_called('GET', '/os-quota-class-sets/test')
-
-    def test_quota_class_update(self):
-        self.run_command('quota-class-update 97f4c221bff44578b0300df4ef119353'
-                         ' --instances=5')
-        self.assert_called('PUT',
-                           '/os-quota-class-sets/97f4c221bff44578b0300'
-                           'df4ef119353')
-
     def test_network_list(self):
         self.run_command('network-list')
         self.assert_called('GET', '/os-networks')
