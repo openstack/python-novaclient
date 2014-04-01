@@ -2357,6 +2357,12 @@ def do_service_list(cs, args):
     # so as not to add the column when the extended ext is not enabled.
     if hasattr(result[0], 'disabled_reason'):
         columns.append("Disabled Reason")
+
+    # NOTE(gtt): After https://review.openstack.org/#/c/39998/ nova will
+    # show id in response.
+    if result and hasattr(result[0], 'id'):
+        columns.insert(0, "Id")
+
     utils.print_list(result, columns)
 
 
