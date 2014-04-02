@@ -2729,7 +2729,8 @@ def do_aggregate_update(cs, args):
            nargs='+',
            action='append',
            default=[],
-           help=_('Metadata to add/update to aggregate'))
+           help=_('Metadata to add/update to aggregate. '
+                  'Specify only the key to delete a metadata item.'))
 def do_aggregate_set_metadata(cs, args):
     """Update the metadata associated with the aggregate."""
     aggregate = _find_aggregate(cs, args.aggregate)
