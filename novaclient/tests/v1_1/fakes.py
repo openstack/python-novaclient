@@ -369,7 +369,10 @@ class FakeHTTPClient(base_client.HTTPClient):
         if 'personality' in body['server']:
             for pfile in body['server']['personality']:
                 fakes.assert_has_keys(pfile, required=['path', 'contents'])
-        return (202, {}, self.get_servers_1234()[2])
+        if body['server']['name'] == 'some-bad-server':
+            return (202, {}, self.get_servers_1235()[2])
+        else:
+            return (202, {}, self.get_servers_1234()[2])
 
     def post_os_volumes_boot(self, body, **kw):
         assert set(body.keys()) <= set(['server', 'os:scheduler_hints'])
@@ -390,6 +393,13 @@ class FakeHTTPClient(base_client.HTTPClient):
 
     def get_servers_1234(self, **kw):
         r = {'server': self.get_servers_detail()[2]['servers'][0]}
+        return (200, {}, r)
+
+    def get_servers_1235(self, **kw):
+        r = {'server': self.get_servers_detail()[2]['servers'][0]}
+        r['server']['id'] = 1235
+        r['server']['status'] = 'error'
+        r['server']['fault'] = {'message': 'something went wrong!'}
         return (200, {}, r)
 
     def get_servers_5678(self, **kw):

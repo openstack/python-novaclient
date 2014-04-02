@@ -77,6 +77,11 @@ class ConnectionRefused(Exception):
         return "ConnectionRefused: %s" % repr(self.response)
 
 
+class InstanceInErrorState(Exception):
+    """Instance is in the error state."""
+    pass
+
+
 class ClientException(Exception):
     """
     The base exception class for all exceptions this library raises.
