@@ -739,34 +739,37 @@ class ShellTest(utils.TestCase):
                            {'reboot': {'type': 'HARD'}})
 
     def test_rebuild(self):
-        self.run_command('rebuild sample-server 1')
-        self.assert_called('GET', '/servers', pos=-8)
-        self.assert_called('GET', '/servers/1234', pos=-7)
-        self.assert_called('GET', '/images/1', pos=-6)
+        output = self.run_command('rebuild sample-server 1')
+        self.assert_called('GET', '/servers', pos=-6)
+        self.assert_called('GET', '/servers/1234', pos=-5)
+        self.assert_called('GET', '/images/1', pos=-4)
         self.assert_called('POST', '/servers/1234/action',
-                           {'rebuild': {'imageRef': 1}}, pos=-5)
+                           {'rebuild': {'imageRef': 1}}, pos=-3)
         self.assert_called('GET', '/flavors/1', pos=-2)
         self.assert_called('GET', '/images/2')
+        self.assertIn('adminPass', output)
 
     def test_rebuild_password(self):
-        self.run_command('rebuild sample-server 1 --rebuild-password asdf')
-        self.assert_called('GET', '/servers', pos=-8)
-        self.assert_called('GET', '/servers/1234', pos=-7)
-        self.assert_called('GET', '/images/1', pos=-6)
+        output = self.run_command('rebuild sample-server 1'
+                                  ' --rebuild-password asdf')
+        self.assert_called('GET', '/servers', pos=-6)
+        self.assert_called('GET', '/servers/1234', pos=-5)
+        self.assert_called('GET', '/images/1', pos=-4)
         self.assert_called('POST', '/servers/1234/action',
                            {'rebuild': {'imageRef': 1, 'adminPass': 'asdf'}},
-                           pos=-5)
+                           pos=-3)
         self.assert_called('GET', '/flavors/1', pos=-2)
         self.assert_called('GET', '/images/2')
+        self.assertIn('adminPass', output)
 
     def test_rebuild_preserve_ephemeral(self):
         self.run_command('rebuild sample-server 1 --preserve-ephemeral')
-        self.assert_called('GET', '/servers', pos=-8)
-        self.assert_called('GET', '/servers/1234', pos=-7)
-        self.assert_called('GET', '/images/1', pos=-6)
+        self.assert_called('GET', '/servers', pos=-6)
+        self.assert_called('GET', '/servers/1234', pos=-5)
+        self.assert_called('GET', '/images/1', pos=-4)
         self.assert_called('POST', '/servers/1234/action',
                            {'rebuild': {'imageRef': 1,
-                                        'preserve_ephemeral': True}}, pos=-5)
+                                        'preserve_ephemeral': True}}, pos=-3)
         self.assert_called('GET', '/flavors/1', pos=-2)
         self.assert_called('GET', '/images/2')
 

@@ -535,11 +535,11 @@ class FakeHTTPClient(base_client.HTTPClient):
             assert list(body[action]) == ['type']
             assert body[action]['type'] in ['HARD', 'SOFT']
         elif action == 'rebuild':
-            keys = list(body[action])
-            if 'adminPass' in keys:
-                keys.remove('adminPass')
-            assert 'imageRef' in keys
+            body = body[action]
+            adminPass = body.get('adminPass', 'randompassword')
+            assert 'imageRef' in body
             _body = self.get_servers_1234()[2]
+            _body['server']['adminPass'] = adminPass
         elif action == 'resize':
             keys = body[action].keys()
             assert 'flavorRef' in keys
