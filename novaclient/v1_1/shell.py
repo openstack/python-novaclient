@@ -1210,8 +1210,8 @@ def do_rebuild(cs, args):
 
     kwargs = utils.get_resource_manager_extra_kwargs(do_rebuild, args)
     kwargs['preserve_ephemeral'] = args.preserve_ephemeral
-    server.rebuild(image, _password, **kwargs)
-    _print_server(cs, args)
+    server = server.rebuild(image, _password, **kwargs)
+    _print_server(cs, args, server)
 
     if args.poll:
         _poll_for_status(cs.servers.get, server.id, 'rebuilding', ['active'])
