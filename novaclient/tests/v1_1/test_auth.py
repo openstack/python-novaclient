@@ -57,7 +57,7 @@ class AuthenticateAgainstKeystoneTests(utils.TestCase):
 
         mock_request = mock.Mock(return_value=(auth_response))
 
-        @mock.patch.object(requests.Session, "request", mock_request)
+        @mock.patch.object(requests, "request", mock_request)
         def test_auth_call():
             cs.client.authenticate()
             headers = {
@@ -160,7 +160,7 @@ class AuthenticateAgainstKeystoneTests(utils.TestCase):
 
         mock_request = mock.Mock(side_effect=side_effect)
 
-        @mock.patch.object(requests.Session, "request", mock_request)
+        @mock.patch.object(requests, "request", mock_request)
         def test_auth_call():
             cs.client.authenticate()
             headers = {
@@ -248,7 +248,7 @@ class AuthenticateAgainstKeystoneTests(utils.TestCase):
 
         mock_request = mock.Mock(side_effect=side_effect)
 
-        @mock.patch.object(requests.Session, "request", mock_request)
+        @mock.patch.object(requests, "request", mock_request)
         def test_auth_call():
             cs.client.authenticate()
             headers = {
@@ -373,7 +373,7 @@ class AuthenticateAgainstKeystoneTests(utils.TestCase):
 
         mock_request = mock.Mock(return_value=(auth_response))
 
-        with mock.patch.object(requests.Session, "request", mock_request):
+        with mock.patch.object(requests, "request", mock_request):
             cs.client.authenticate()
             headers = {
                 'User-Agent': cs.client.USER_AGENT,
@@ -433,7 +433,7 @@ class AuthenticationTests(utils.TestCase):
         })
         mock_request = mock.Mock(return_value=(auth_response))
 
-        @mock.patch.object(requests.Session, "request", mock_request)
+        @mock.patch.object(requests, "request", mock_request)
         def test_auth_call():
             cs.client.authenticate()
             headers = {
@@ -462,7 +462,7 @@ class AuthenticationTests(utils.TestCase):
         auth_response = utils.TestResponse({'status_code': 401})
         mock_request = mock.Mock(return_value=(auth_response))
 
-        @mock.patch.object(requests.Session, "request", mock_request)
+        @mock.patch.object(requests, "request", mock_request)
         def test_auth_call():
             self.assertRaises(exceptions.Unauthorized, cs.client.authenticate)
 

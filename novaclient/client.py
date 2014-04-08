@@ -40,17 +40,19 @@ from novaclient import service_catalog
 from novaclient import utils
 
 
-_ADAPTERS = {}
+class _ClientConnectionPool(object):
 
+    def __init__(self):
+        self._adapters = {}
 
-def _adapter_pool(url):
-    """
-    Store and reuse HTTP adapters per Service URL.
-    """
-    if url not in _ADAPTERS:
-        _ADAPTERS[url] = adapters.HTTPAdapter()
+    def get(self, url):
+        """
+        Store and reuse HTTP adapters per Service URL.
+        """
+        if url not in self._adapters:
+            self._adapters[url] = adapters.HTTPAdapter()
 
-    return _ADAPTERS[url]
+        return self._adapters[url]
 
 
 class HTTPClient(object):
@@ -65,12 +67,16 @@ class HTTPClient(object):
                  os_cache=False, no_cache=True,
                  http_log_debug=False, auth_system='keystone',
                  auth_plugin=None, auth_token=None,
-                 cacert=None, tenant_id=None, user_id=None):
+                 cacert=None, tenant_id=None, user_id=None,
+                 connection_pool=False):
         self.user = user
         self.user_id = user_id
         self.password = password
         self.projectid = projectid
         self.tenant_id = tenant_id
+
+        self._connection_pool = (_ClientConnectionPool()
+                                if connection_pool else None)
 
         # This will be called by #_get_password if self.password is None.
         # EG if a password can only be obtained by prompting the user, but a
@@ -120,8 +126,8 @@ class HTTPClient(object):
 
         self.auth_system = auth_system
         self.auth_plugin = auth_plugin
+        self._session = None
         self._current_url = None
-        self._http = None
         self._logger = logging.getLogger(__name__)
 
         if self.http_log_debug and not self._logger.handlers:
@@ -182,19 +188,33 @@ class HTTPClient(object):
                                              'headers': resp.headers,
                                              'text': resp.text})
 
-    def http(self, url):
-        magic_tuple = parse.urlsplit(url)
-        scheme, netloc, path, query, frag = magic_tuple
-        service_url = '%s://%s' % (scheme, netloc)
-        if self._current_url != service_url:
-            # Invalidate Session object in case the url is somehow changed
-            if self._http:
-                self._http.close()
-            self._current_url = service_url
-            self._logger.debug("New session created for: (%s)" % service_url)
-            self._http = requests.Session()
-            self._http.mount(service_url, _adapter_pool(service_url))
-        return self._http
+    def open_session(self):
+        if not self._connection_pool:
+            self._session = requests.Session()
+
+    def close_session(self):
+        if self._session and not self._connection_pool:
+            self._session.close()
+            self._session = None
+
+    def _get_session(self, url):
+        if self._connection_pool:
+            magic_tuple = parse.urlsplit(url)
+            scheme, netloc, path, query, frag = magic_tuple
+            service_url = '%s://%s' % (scheme, netloc)
+            if self._current_url != service_url:
+                # Invalidate Session object in case the url is somehow changed
+                if self._session:
+                    self._session.close()
+                self._current_url = service_url
+                self._logger.debug(
+                        "New session created for: (%s)" % service_url)
+                self._session = requests.Session()
+                self._session.mount(service_url,
+                        self._connection_pool.get(service_url))
+            return self._session
+        elif self._session:
+            return self._session
 
     def request(self, url, method, **kwargs):
         kwargs.setdefault('headers', kwargs.get('headers', {}))
@@ -209,7 +229,13 @@ class HTTPClient(object):
         kwargs['verify'] = self.verify_cert
 
         self.http_log_req(method, url, kwargs)
-        resp = self.http(url).request(
+
+        request_func = requests.request
+        session = self._get_session(url)
+        if session:
+            request_func = session.request
+
+        resp = request_func(
             method,
             url,
             **kwargs)

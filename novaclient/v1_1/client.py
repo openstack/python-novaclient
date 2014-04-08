@@ -61,6 +61,20 @@ class Client(object):
         >>> client.flavors.list()
         ...
 
+    It is also possible to use an instance as a context manager in which
+    case there will be a session kept alive for the duration of the with
+    statement::
+
+        >>> with Client(USERNAME, PASSWORD, PROJECT_ID, AUTH_URL) as client:
+        ...     client.servers.list()
+        ...     client.flavors.list()
+        ...
+
+    It is also possible to have a permanent (process-long) connection pool,
+    by passing a connection_pool=True::
+
+        >>> client = Client(USERNAME, PASSWORD, PROJECT_ID,
+        ...     AUTH_URL, connection_pool=True)
     """
 
     # FIXME(jesse): project_id isn't required to authenticate
@@ -73,7 +87,8 @@ class Client(object):
                   bypass_url=None, os_cache=False, no_cache=True,
                   http_log_debug=False, auth_system='keystone',
                   auth_plugin=None, auth_token=None,
-                  cacert=None, tenant_id=None, user_id=None):
+                  cacert=None, tenant_id=None, user_id=None,
+                  connection_pool=False):
         # FIXME(comstud): Rename the api_key argument above when we
         # know it's not being used as keyword argument
         password = api_key
@@ -147,7 +162,15 @@ class Client(object):
                                     bypass_url=bypass_url,
                                     os_cache=self.os_cache,
                                     http_log_debug=http_log_debug,
-                                    cacert=cacert)
+                                    cacert=cacert,
+                                    connection_pool=connection_pool)
+
+    def __enter__(self):
+        self.client.open_session()
+        return self
+
+    def __exit__(self, t, v, tb):
+        self.client.close_session()
 
     def set_management_url(self, url):
         self.client.set_management_url(url)
