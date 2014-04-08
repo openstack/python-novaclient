@@ -21,8 +21,10 @@ from novaclient.v1_1 import cloudpipe
 
 class CloudpipeTest(utils.FixturedTestCase):
 
-    client_fixture_class = client.V1
     data_fixture_class = data.Fixture
+
+    scenarios = [('original', {'client_fixture_class': client.V1}),
+                 ('session', {'client_fixture_class': client.SessionV1})]
 
     def test_list_cloudpipes(self):
         cp = self.cs.cloudpipe.list()

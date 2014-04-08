@@ -17,4 +17,6 @@ from novaclient.tests.v1_1 import test_aggregates
 
 
 class AggregatesTest(test_aggregates.AggregatesTest):
-    client_fixture = client.V3
+
+    scenarios = [('original', {'client_fixture_class': client.V3}),
+                 ('session', {'client_fixture_class': client.SessionV3})]

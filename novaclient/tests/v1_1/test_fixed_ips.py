@@ -20,8 +20,10 @@ from novaclient.tests import utils
 
 class FixedIpsTest(utils.FixturedTestCase):
 
-    client_fixture_class = client.V1
     data_fixture_class = data.Fixture
+
+    scenarios = [('original', {'client_fixture_class': client.V1}),
+                 ('session', {'client_fixture_class': client.SessionV1})]
 
     def test_get_fixed_ip(self):
         info = self.cs.fixed_ips.get(fixed_ip='192.168.1.1')

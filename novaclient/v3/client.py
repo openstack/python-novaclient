@@ -63,18 +63,17 @@ class Client(object):
         ...     AUTH_URL, connection_pool=True)
     """
 
-    # FIXME(jesse): project_id isn't required to authenticate
-    def __init__(self, username, password, project_id, auth_url=None,
-                  insecure=False, timeout=None, proxy_tenant_id=None,
-                  proxy_token=None, region_name=None,
-                  endpoint_type='publicURL', extensions=None,
-                  service_type='computev3', service_name=None,
-                  volume_service_name=None, timings=False,
-                  bypass_url=None, os_cache=False, no_cache=True,
-                  http_log_debug=False, auth_system='keystone',
-                  auth_plugin=None, auth_token=None,
-                  cacert=None, tenant_id=None, user_id=None,
-                  connection_pool=False, completion_cache=None):
+    def __init__(self, username=None, password=None, project_id=None,
+                 auth_url=None, insecure=False, timeout=None,
+                 proxy_tenant_id=None, proxy_token=None, region_name=None,
+                 endpoint_type='publicURL', extensions=None,
+                 service_type='computev3', service_name=None,
+                 volume_service_name=None, timings=False, bypass_url=None,
+                 os_cache=False, no_cache=True, http_log_debug=False,
+                 auth_system='keystone', auth_plugin=None, auth_token=None,
+                 cacert=None, tenant_id=None, user_id=None,
+                 connection_pool=False, session=None, auth=None,
+                 completion_cache=None):
         # NOTE(cyeoh): In the novaclient context (unlike Nova) the
         # project_id is not the same as the tenant_id. Here project_id
         # is a name (what the Nova API often refers to as a project or
@@ -111,30 +110,33 @@ class Client(object):
                     setattr(self, extension.name,
                             extension.manager_class(self))
 
-        self.client = client.HTTPClient(username,
-                                    password,
-                                    user_id=user_id,
-                                    projectid=project_id,
-                                    tenant_id=tenant_id,
-                                    auth_url=auth_url,
-                                    insecure=insecure,
-                                    timeout=timeout,
-                                    auth_system=auth_system,
-                                    auth_plugin=auth_plugin,
-                                    auth_token=auth_token,
-                                    proxy_token=proxy_token,
-                                    proxy_tenant_id=proxy_tenant_id,
-                                    region_name=region_name,
-                                    endpoint_type=endpoint_type,
-                                    service_type=service_type,
-                                    service_name=service_name,
-                                    volume_service_name=volume_service_name,
-                                    timings=timings,
-                                    bypass_url=bypass_url,
-                                    os_cache=os_cache,
-                                    http_log_debug=http_log_debug,
-                                    cacert=cacert,
-                                    connection_pool=connection_pool)
+        self.client = client._construct_http_client(
+            username=username,
+            password=password,
+            user_id=user_id,
+            project_id=project_id,
+            tenant_id=tenant_id,
+            auth_url=auth_url,
+            auth_token=auth_token,
+            insecure=insecure,
+            timeout=timeout,
+            auth_system=auth_system,
+            auth_plugin=auth_plugin,
+            proxy_token=proxy_token,
+            proxy_tenant_id=proxy_tenant_id,
+            region_name=region_name,
+            endpoint_type=endpoint_type,
+            service_type=service_type,
+            service_name=service_name,
+            volume_service_name=volume_service_name,
+            timings=timings,
+            bypass_url=bypass_url,
+            os_cache=self.os_cache,
+            http_log_debug=http_log_debug,
+            cacert=cacert,
+            connection_pool=connection_pool,
+            session=session,
+            auth=auth)
 
         self.completion_cache = completion_cache
 
@@ -146,22 +148,28 @@ class Client(object):
         if self.completion_cache:
             self.completion_cache.clear_class(obj_class)
 
+    @client._original_only
     def __enter__(self):
         self.client.open_session()
         return self
 
+    @client._original_only
     def __exit__(self, t, v, tb):
         self.client.close_session()
 
+    @client._original_only
     def set_management_url(self, url):
         self.client.set_management_url(url)
 
+    @client._original_only
     def get_timings(self):
         return self.client.get_timings()
 
+    @client._original_only
     def reset_timings(self):
         self.client.reset_timings()
 
+    @client._original_only
     def authenticate(self):
         """
         Authenticate against the server.

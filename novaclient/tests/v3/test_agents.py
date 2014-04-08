@@ -19,7 +19,8 @@ from novaclient.tests.v1_1 import test_agents
 
 class AgentsTest(test_agents.AgentsTest):
 
-    client_fixture_class = client.V3
+    scenarios = [('original', {'client_fixture_class': client.V3}),
+                 ('session', {'client_fixture_class': client.SessionV3})]
 
     def _build_example_update_body(self):
         return {"agent": {

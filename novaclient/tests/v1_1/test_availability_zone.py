@@ -27,8 +27,10 @@ class AvailabilityZoneTest(utils.FixturedTestCase):
     # this class can inherit off the v3 version of shell
     from novaclient.v1_1 import shell  # noqa
 
-    client_fixture_class = client.V1
     data_fixture_class = data.V1
+
+    scenarios = [('original', {'client_fixture_class': client.V1}),
+                 ('session', {'client_fixture_class': client.SessionV1})]
 
     def setUp(self):
         super(AvailabilityZoneTest, self).setUp()

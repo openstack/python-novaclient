@@ -19,9 +19,11 @@ from novaclient.v1_1 import certs
 
 class CertsTest(utils.FixturedTestCase):
 
-    client_fixture_class = client.V1
     data_fixture_class = data.Fixture
     cert_type = certs.Certificate
+
+    scenarios = [('original', {'client_fixture_class': client.V1}),
+                 ('session', {'client_fixture_class': client.SessionV1})]
 
     def test_create_cert(self):
         cert = self.cs.certs.create()

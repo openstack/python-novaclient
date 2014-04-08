@@ -64,6 +64,16 @@ _code_map = dict(
 )
 
 
+class InvalidUsage(RuntimeError):
+    """This function call is invalid in the way you are using this client.
+
+    Due to the transition to using keystoneclient some function calls are no
+    longer available. You should make a similar call to the session object
+    instead.
+    """
+    pass
+
+
 def from_response(response, body, url, method=None):
     """
     Return an instance of an HttpError or subclass

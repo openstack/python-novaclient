@@ -17,4 +17,5 @@ from novaclient.tests.v1_1 import test_certs
 
 class CertsTest(test_certs.CertsTest):
 
-    client_fixture_data = client.V3
+    scenarios = [('original', {'client_fixture_class': client.V3}),
+                 ('session', {'client_fixture_class': client.SessionV3})]

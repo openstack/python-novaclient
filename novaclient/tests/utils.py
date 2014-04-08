@@ -17,6 +17,7 @@ import fixtures
 import httpretty
 import requests
 import six
+import testscenarios
 import testtools
 
 from novaclient.openstack.common import jsonutils
@@ -43,7 +44,7 @@ class TestCase(testtools.TestCase):
             self.useFixture(fixtures.MonkeyPatch('sys.stderr', stderr))
 
 
-class FixturedTestCase(TestCase):
+class FixturedTestCase(testscenarios.TestWithScenarios, TestCase):
 
     client_fixture_class = None
     data_fixture_class = None

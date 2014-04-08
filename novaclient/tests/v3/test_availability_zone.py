@@ -23,8 +23,10 @@ from novaclient.v3 import availability_zones
 class AvailabilityZoneTest(test_availability_zone.AvailabilityZoneTest):
     from novaclient.v3 import shell  # noqa
 
-    client_fixture_class = client.V3
     data_fixture_class = data.V3
+
+    scenarios = [('original', {'client_fixture_class': client.V3}),
+                 ('session', {'client_fixture_class': client.SessionV3})]
 
     def _assertZone(self, zone, name, status):
         self.assertEqual(zone.zone_name, name)

@@ -12,6 +12,8 @@
 
 import fixtures
 import httpretty
+from keystoneclient.auth.identity import v2
+from keystoneclient import session
 
 from novaclient.openstack.common import jsonutils
 from novaclient.v1_1 import client as v1_1client
@@ -107,3 +109,19 @@ class V3(V1):
                                password='xx',
                                project_id='xx',
                                auth_url=self.identity_url)
+
+
+class SessionV1(V1):
+
+    def new_client(self):
+        self.session = session.Session()
+        self.session.auth = v2.Password(self.identity_url, 'xx', 'xx')
+        return v1_1client.Client(session=self.session)
+
+
+class SessionV3(V1):
+
+    def new_client(self):
+        self.session = session.Session()
+        self.session.auth = v2.Password(self.identity_url, 'xx', 'xx')
+        return v3client.Client(session=self.session)
