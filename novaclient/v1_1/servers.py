@@ -26,6 +26,7 @@ from six.moves.urllib import parse
 
 from novaclient import base
 from novaclient import crypto
+from novaclient.openstack.common.gettextutils import _
 from novaclient.openstack.common import strutils
 from novaclient.v1_1.security_groups import SecurityGroup
 
@@ -520,8 +521,15 @@ class ServerManager(base.BootingManagerWithFind):
                 # if value is empty string, do not send value in body
                 if nic_info.get('net-id'):
                     net_data['uuid'] = nic_info['net-id']
-                if nic_info.get('v4-fixed-ip'):
+                if (nic_info.get('v4-fixed-ip') and
+                    nic_info.get('v6-fixed-ip')):
+                    raise base.exceptions.CommandError(_(
+                        "Only one of 'v4-fixed-ip' and 'v6-fixed-ip' may be"
+                        " provided."))
+                elif nic_info.get('v4-fixed-ip'):
                     net_data['fixed_ip'] = nic_info['v4-fixed-ip']
+                elif nic_info.get('v6-fixed-ip'):
+                    net_data['fixed_ip'] = nic_info['v6-fixed-ip']
                 if nic_info.get('port-id'):
                     net_data['port'] = nic_info['port-id']
                 all_net_data.append(net_data)

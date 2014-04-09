@@ -104,6 +104,28 @@ class ServersTest(utils.TestCase):
 
         test_create_server_from_volume()
 
+    def test_create_server_boot_with_nics_ipv6(self):
+        old_boot = cs.servers._boot
+        nics = [{'net-id': '11111111-1111-1111-1111-111111111111',
+                'v6-fixed-ip': '2001:db9:0:1::10'}]
+
+        def wrapped_boot(url, key, *boot_args, **boot_kwargs):
+            self.assertEqual(boot_kwargs['nics'], nics)
+            return old_boot(url, key, *boot_args, **boot_kwargs)
+
+        with mock.patch.object(cs.servers, '_boot', wrapped_boot):
+            s = cs.servers.create(
+                name="My server",
+                image=1,
+                flavor=1,
+                meta={'foo': 'bar'},
+                userdata="hello moto",
+                key_name="fakekey",
+                nics=nics
+            )
+            cs.assert_called('POST', '/servers')
+            self.assertIsInstance(s, servers.Server)
+
     def test_create_server_userdata_file_object(self):
         s = cs.servers.create(
             name="My server",

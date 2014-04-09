@@ -428,6 +428,32 @@ class ShellTest(utils.TestCase):
             },
         )
 
+    def test_boot_nics_ipv6(self):
+        cmd = ('boot --image 1 --flavor 1 '
+               '--nic net-id=a=c,v6-fixed-ip=2001:db9:0:1::10 some-server')
+        self.run_command(cmd)
+        self.assert_called_anytime(
+            'POST', '/servers',
+            {
+                'server': {
+                    'flavor_ref': '1',
+                    'name': 'some-server',
+                    'image_ref': '1',
+                    'os-multiple-create:min_count': 1,
+                    'os-multiple-create:max_count': 1,
+                    'networks': [
+                        {'uuid': 'a=c', 'fixed_ip': '2001:db9:0:1::10'},
+                    ],
+                },
+            },
+        )
+
+    def test_boot_nics_both_ipv4_and_ipv6(self):
+        cmd = ('boot --image 1 --flavor 1 '
+               '--nic net-id=a=c,v4-fixed-ip=10.0.0.1,'
+               'v6-fixed-ip=2001:db9:0:1::10 some-server')
+        self.assertRaises(exceptions.CommandError, self.run_command, cmd)
+
     def test_boot_nics_no_value(self):
         cmd = ('boot --image 1 --flavor 1 '
                '--nic net-id some-server')
