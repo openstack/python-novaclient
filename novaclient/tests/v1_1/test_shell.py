@@ -1290,6 +1290,10 @@ class ShellTest(utils.TestCase):
                 'disabled_reason': 'no_reason'}
         self.assert_called('PUT', '/os-services/disable-log-reason', body)
 
+    def test_services_delete(self):
+        self.run_command('service-delete 1')
+        self.assert_called('DELETE', '/os-services/1')
+
     def test_fixed_ips_get(self):
         self.run_command('fixed-ip-get 192.168.1.1')
         self.assert_called('GET', '/os-fixed-ips/192.168.1.1')

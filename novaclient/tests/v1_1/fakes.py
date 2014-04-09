@@ -1446,6 +1446,9 @@ class FakeHTTPClient(base_client.HTTPClient):
                           'status': 'disabled',
                           'disabled_reason': body['disabled_reason']}})
 
+    def delete_os_services_1(self, **kw):
+        return (204, {}, None)
+
     #
     # Fixed IPs
     #
