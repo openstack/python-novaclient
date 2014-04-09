@@ -1833,7 +1833,7 @@ def do_volume_type_list(cs, args):
 
 @utils.arg('name',
      metavar='<name>',
-     help=_("Name of the new flavor"))
+     help=_("Name of the new volume type"))
 @utils.service_type('volume')
 def do_volume_type_create(cs, args):
     """Create a new volume type."""
