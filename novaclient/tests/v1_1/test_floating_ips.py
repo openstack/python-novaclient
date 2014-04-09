@@ -25,9 +25,16 @@ cs = fakes.FakeClient()
 class FloatingIPsTest(utils.TestCase):
 
     def test_list_floating_ips(self):
-        fl = cs.floating_ips.list()
+        fips = cs.floating_ips.list()
         cs.assert_called('GET', '/os-floating-ips')
-        [self.assertIsInstance(f, floating_ips.FloatingIP) for f in fl]
+        for fip in fips:
+            self.assertIsInstance(fip, floating_ips.FloatingIP)
+
+    def test_list_floating_ips_all_tenants(self):
+        fips = cs.floating_ips.list(all_tenants=True)
+        cs.assert_called('GET', '/os-floating-ips?all_tenants=1')
+        for fip in fips:
+            self.assertIsInstance(fip, floating_ips.FloatingIP)
 
     def test_delete_floating_ip(self):
         fl = cs.floating_ips.list()[0]
