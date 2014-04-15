@@ -219,10 +219,22 @@ def _translate_baremetal_node_keys(collection):
 
 def _print_baremetal_nodes_list(nodes):
     """Print the list of baremetal nodes."""
+
+    def _parse_address(fields):
+        macs = []
+        for interface in fields.interfaces:
+            macs.append(interface['address'])
+        return ', '.join("%s" % i for i in macs)
+
+    formatters = {
+        'MAC Address': _parse_address
+    }
+
     _translate_baremetal_node_keys(nodes)
     utils.print_list(nodes, [
         'ID',
         'Host',
+        'Task State',
         'CPUs',
         'Memory_MB',
         'Disk_GB',
@@ -231,7 +243,7 @@ def _print_baremetal_nodes_list(nodes):
         'PM Username',
         'PM Password',
         'Terminal Port',
-        ])
+        ], formatters=formatters)
 
 
 def do_baremetal_node_list(cs, _args):
