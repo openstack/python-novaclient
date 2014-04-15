@@ -1169,13 +1169,15 @@ def do_resume(cs, args):
 
 @utils.arg('server', metavar='<server>', help='Name or ID of server.')
 def do_rescue(cs, args):
-    """Rescue a server."""
+    """Reboots a server into rescue mode, which starts the machine
+    from the initial image, attaching the current boot disk as secondary.
+    """
     utils.print_dict(_find_server(cs, args.server).rescue()[1])
 
 
 @utils.arg('server', metavar='<server>', help='Name or ID of server.')
 def do_unrescue(cs, args):
-    """Unrescue a server."""
+    """Restart the server from normal boot disk again."""
     _find_server(cs, args.server).unrescue()
 
 
