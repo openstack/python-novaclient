@@ -332,8 +332,8 @@ class FakeHTTPClient(fakes_v1_1.FakeHTTPClient):
                     {'id': 1234,
                      'hypervisor_hostname': 'hyper1',
                      'servers': [
-                            {'name': 'inst1', 'uuid': 'uuid1'},
-                            {'name': 'inst2', 'uuid': 'uuid2'}
+                            {'name': 'inst1', 'id': 'uuid1'},
+                            {'name': 'inst2', 'id': 'uuid2'}
                             ]},
                     })
 
