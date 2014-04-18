@@ -2432,7 +2432,7 @@ def do_keypair_add(cs, args):
 @utils.arg('name', metavar='<name>', help=_('Keypair name to delete.'))
 def do_keypair_delete(cs, args):
     """Delete keypair given by its name."""
-    name = args.name
+    name = _find_keypair(cs, args.name)
     cs.keypairs.delete(name)
 
 
@@ -2455,8 +2455,13 @@ def _print_keypair(keypair):
     help=_("Name or ID of keypair"))
 def do_keypair_show(cs, args):
     """Show details about the given keypair."""
-    keypair = cs.keypairs.get(args.keypair)
+    keypair = _find_keypair(cs, args.keypair)
     _print_keypair(keypair)
+
+
+def _find_keypair(cs, keypair):
+    """Get a keypair by name or ID."""
+    return utils.find_resource(cs.keypairs, keypair)
 
 
 @utils.arg('--tenant',

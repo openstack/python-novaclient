@@ -1013,12 +1013,24 @@ class FakeHTTPClient(base_client.HTTPClient):
     # Keypairs
     #
     def get_os_keypairs_test(self, *kw):
-        return (200, {}, {'keypair': self.get_os_keypairs()[2]['keypairs'][0]})
+        return (200, {}, {'keypair':
+                          self.get_os_keypairs()[2]['keypairs'][0]['keypair']})
 
     def get_os_keypairs(self, *kw):
         return (200, {}, {"keypairs": [
-            {'fingerprint': 'FAKE_KEYPAIR', 'name': 'test'}
-        ]})
+                              {"keypair": {
+                                  "public_key": "FAKE_SSH_RSA",
+                                  "private_key": "FAKE_PRIVATE_KEY",
+                                  "user_id":
+                                      "81e373b596d6466e99c4896826abaa46",
+                                  "name": "test",
+                                  "deleted": False,
+                                  "created_at": "2014-04-19T02:16:44.000000",
+                                  "updated_at": "2014-04-19T10:12:3.000000",
+                                  "figerprint": "FAKE_KEYPAIR",
+                                  "deleted_at": None,
+                                  "id": 4}
+                               }]})
 
     def delete_os_keypairs_test(self, **kw):
         return (202, {}, None)
@@ -1027,7 +1039,7 @@ class FakeHTTPClient(base_client.HTTPClient):
         assert list(body) == ['keypair']
         fakes.assert_has_keys(body['keypair'],
                               required=['name'])
-        r = {'keypair': self.get_os_keypairs()[2]['keypairs'][0]}
+        r = {'keypair': self.get_os_keypairs()[2]['keypairs'][0]['keypair']}
         return (202, {}, r)
 
     #
