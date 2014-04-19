@@ -23,6 +23,7 @@ import os
 import fixtures
 import mock
 import six
+from six.moves import builtins
 
 import novaclient.client
 from novaclient import exceptions
@@ -1938,6 +1939,33 @@ class ShellTest(utils.TestCase):
         self.run_command("ssh --ipv6 --private --extra-opts -1 server")
         mock_system.assert_called_with("ssh -6 -p22  "
                                        "root@2607:f0d0:1002::4 -1")
+
+    def test_keypair_add(self):
+        self.run_command('keypair-add test')
+        self.assert_called('POST', '/os-keypairs',
+                           {'keypair':
+                               {'name': 'test'}})
+
+    @mock.patch.object(builtins, 'open',
+             mock.mock_open(read_data='FAKE_PUBLIC_KEY'))
+    def test_keypair_import(self):
+        self.run_command('keypair-add --pub-key test.pub test')
+        self.assert_called('POST', '/os-keypairs',
+                           {'keypair':
+                              {'public_key': 'FAKE_PUBLIC_KEY',
+                               'name': 'test'}})
+
+    def test_keypair_list(self):
+        self.run_command('keypair-list')
+        self.assert_called('GET', '/os-keypairs')
+
+    def test_keypair_show(self):
+        self.run_command('keypair-show test')
+        self.assert_called('GET', '/os-keypairs/test')
+
+    def test_keypair_delete(self):
+        self.run_command('keypair-delete test')
+        self.assert_called('DELETE', '/os-keypairs/test')
 
 
 class GetSecgroupTest(utils.TestCase):
