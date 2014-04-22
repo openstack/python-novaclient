@@ -364,7 +364,8 @@ class ServersTest(utils.TestCase):
 
         cs.servers.get_console_output(s)
         self.assertEqual(cs.servers.get_console_output(s), success)
-        cs.assert_called('POST', '/servers/1234/action')
+        cs.assert_called('POST', '/servers/1234/action',
+                         {'get_console_output': {'length': -1}})
 
     def test_get_console_output_with_length(self):
         success = 'foo'
@@ -372,11 +373,13 @@ class ServersTest(utils.TestCase):
         s = cs.servers.get(1234)
         s.get_console_output(length=50)
         self.assertEqual(s.get_console_output(length=50), success)
-        cs.assert_called('POST', '/servers/1234/action')
+        cs.assert_called('POST', '/servers/1234/action',
+                         {'get_console_output': {'length': 50}})
 
         cs.servers.get_console_output(s, length=50)
         self.assertEqual(cs.servers.get_console_output(s, length=50), success)
-        cs.assert_called('POST', '/servers/1234/action')
+        cs.assert_called('POST', '/servers/1234/action',
+                         {'get_console_output': {'length': 50}})
 
     def test_get_password(self):
         s = cs.servers.get(1234)

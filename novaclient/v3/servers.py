@@ -902,6 +902,11 @@ class ServerManager(base.BootingManagerWithFind):
                         you would like to retrieve.
         :param length: The number of tail loglines you would like to retrieve.
         """
+        if length is None:
+            # NOTE: On v3 get_console_output API, -1 means an unlimited length.
+            # Here translates None, which means an unlimited in the internal
+            # implementation, to -1.
+            length = -1
         return self._action('get_console_output',
                             server, {'length': length})[1]['output']
 
