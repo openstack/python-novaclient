@@ -41,8 +41,8 @@ class HypervisorsTest(test_hypervisors.HypervisorsTest):
         expected = dict(id=1234,
                         hypervisor_hostname='hyper1',
                         servers=[
-                            dict(name='inst1', uuid='uuid1'),
-                            dict(name='inst2', uuid='uuid2')])
+                            dict(name='inst1', id='uuid1'),
+                            dict(name='inst2', id='uuid2')])
 
         result = self.cs.hypervisors.servers('1234')
         self.cs.assert_called('GET', '/os-hypervisors/1234/servers')
