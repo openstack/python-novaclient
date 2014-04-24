@@ -644,6 +644,47 @@ class ShellTest(utils.TestCase):
         self.assert_called('GET', '/flavors/2', pos=3)
         self.assert_called('GET', '/flavors/2/flavor-extra-specs', pos=4)
 
+    def test_host_evacuate_live_with_no_target_host(self):
+        self.run_command('host-evacuate-live hyper1')
+        self.assert_called('GET', '/os-hypervisors/search?query=hyper1', pos=0)
+        self.assert_called('GET', '/os-hypervisors/1234/servers', pos=1)
+        body = {'migrate_live': {'host': None,
+                                 'block_migration': False,
+                                 'disk_over_commit': False}}
+        self.assert_called('POST', '/servers/uuid1/action', body, pos=2)
+        self.assert_called('POST', '/servers/uuid2/action', body, pos=3)
+
+    def test_host_evacuate_live_with_target_host(self):
+        self.run_command('host-evacuate-live hyper1 '
+                         '--target-host hostname')
+        self.assert_called('GET', '/os-hypervisors/search?query=hyper1', pos=0)
+        self.assert_called('GET', '/os-hypervisors/1234/servers', pos=1)
+        body = {'migrate_live': {'host': 'hostname',
+                                 'block_migration': False,
+                                 'disk_over_commit': False}}
+        self.assert_called('POST', '/servers/uuid1/action', body, pos=2)
+        self.assert_called('POST', '/servers/uuid2/action', body, pos=3)
+
+    def test_host_evacuate_live_with_block_migration(self):
+        self.run_command('host-evacuate-live --block-migrate hyper1')
+        self.assert_called('GET', '/os-hypervisors/search?query=hyper1', pos=0)
+        self.assert_called('GET', '/os-hypervisors/1234/servers', pos=1)
+        body = {'migrate_live': {'host': None,
+                                 'block_migration': True,
+                                 'disk_over_commit': False}}
+        self.assert_called('POST', '/servers/uuid1/action', body, pos=2)
+        self.assert_called('POST', '/servers/uuid2/action', body, pos=3)
+
+    def test_host_evacuate_live_with_disk_over_commit(self):
+        self.run_command('host-evacuate-live --disk-over-commit hyper1')
+        self.assert_called('GET', '/os-hypervisors/search?query=hyper1', pos=0)
+        self.assert_called('GET', '/os-hypervisors/1234/servers', pos=1)
+        body = {'migrate_live': {'host': None,
+                                 'block_migration': False,
+                                 'disk_over_commit': True}}
+        self.assert_called('POST', '/servers/uuid1/action', body, pos=2)
+        self.assert_called('POST', '/servers/uuid2/action', body, pos=3)
+
     def test_delete(self):
         self.run_command('delete 1234')
         self.assert_called('DELETE', '/servers/1234')

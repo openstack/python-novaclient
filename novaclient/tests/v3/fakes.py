@@ -335,6 +335,10 @@ class FakeHTTPClient(fakes_v1_1.FakeHTTPClient):
     # Hypervisors
     #
     def get_os_hypervisors_search(self, **kw):
+        if kw['query'] == 'hyper1':
+            return (200, {}, {'hypervisors': [
+                        {'id': 1234, 'hypervisor_hostname': 'hyper1'},
+                        ]})
         return (200, {}, {'hypervisors': [
                     {'id': 1234, 'hypervisor_hostname': 'hyper1'},
                     {'id': 5678, 'hypervisor_hostname': 'hyper2'}

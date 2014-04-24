@@ -2392,6 +2392,53 @@ def do_live_migration(cs, args):
                                                args.disk_over_commit)
 
 
+def _server_live_migrate(cs, server, args):
+    class HostServersLiveMigrateResponse(object):
+        def __init__(self, server_uuid, live_migration_accepted,
+                     error_message):
+            self.server_uuid = server_uuid
+            self.live_migration_accepted = live_migration_accepted
+            self.error_message = error_message
+    success = True
+    error_message = ""
+    try:
+        cs.servers.live_migrate(server['id'], args.target_host,
+                                args.block_migrate, args.disk_over_commit)
+    except Exception as e:
+        success = False
+        error_message = "Error while live migrating instance: %s" % e
+    return HostServersLiveMigrateResponse(server['id'],
+                                          success,
+                                          error_message)
+
+
+@utils.arg('host', metavar='<host>', help='Name of host.')
+@utils.arg('--target-host',
+           metavar='<target_host>',
+           default=None,
+           help='Name of target host.')
+@utils.arg('--block-migrate',
+           action='store_true',
+           default=False,
+           help='Enable block migration.')
+@utils.arg('--disk-over-commit',
+           action='store_true',
+           default=False,
+           help='Enable disk overcommit.')
+def do_host_evacuate_live(cs, args):
+    """Live Migrate all instances of the specified host
+    to other available hosts.
+    """
+    hypervisors = cs.hypervisors.search(args.host)
+    response = []
+    for hyper in hypervisors:
+        servers = getattr(cs.hypervisors.servers(hyper.id), 'servers', [])
+        for server in servers:
+            response.append(_server_live_migrate(cs, server, args))
+    utils.print_list(response, ["Server UUID", "Live Migration Accepted",
+                                "Error Message"])
+
+
 @utils.arg('server', metavar='<server>', nargs='+',
            help='Name or ID of server(s).')
 @utils.arg('--active', action='store_const', dest='state',
