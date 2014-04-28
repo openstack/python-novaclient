@@ -84,10 +84,25 @@ def _boot(cs, args):
 
     min_count = 1
     max_count = 1
-    if args.num_instances is not None:
+    # Don't let user mix num_instances and max_count/min_count.
+    if (args.num_instances is not None and
+        args.min_count is None and args.max_count is None):
         if args.num_instances <= 1:
             raise exceptions.CommandError("num_instances should be > 1")
         max_count = args.num_instances
+    elif (args.num_instances is not None and
+          (args.min_count is not None or args.max_count is not None)):
+        raise exceptions.CommandError("Don't mix num-instances and "
+                                        "max/min-count")
+    if args.min_count is not None:
+        if args.min_count <= 1:
+            raise exceptions.CommandError("min_count should be > 1")
+        min_count = args.min_count
+        max_count = min_count
+    if args.max_count is not None:
+        if args.max_count <= 1:
+            raise exceptions.CommandError("max_count should be > 1")
+        max_count = args.max_count
 
     flavor = _find_flavor(cs, args.flavor)
 
@@ -214,7 +229,17 @@ def _boot(cs, args):
      default=None,
      type=int,
      metavar='<number>',
-     help="boot multiple servers at a time (limited by quota).")
+     help=argparse.SUPPRESS)
+@utils.arg('--min-count',
+     default=None,
+     type=int,
+     metavar='<number>',
+     help="Boot at least <number> servers (limited by quota).")
+@utils.arg('--max-count',
+     default=None,
+     type=int,
+     metavar='<number>',
+     help="Boot up to <number> servers (limited by quota).")
 @utils.arg('--meta',
      metavar="<key=value>",
      action='append',

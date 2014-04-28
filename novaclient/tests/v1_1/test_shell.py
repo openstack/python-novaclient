@@ -590,6 +590,51 @@ class ShellTest(utils.TestCase):
         cmd = 'boot --image 1 --flavor 1 --num-instances 0  server'
         self.assertRaises(exceptions.CommandError, self.run_command, cmd)
 
+    def test_boot_num_instances_and_count(self):
+        cmd = 'boot --image 1 --flavor 1 --num-instances 3 --min-count 3 serv'
+        self.assertRaises(exceptions.CommandError, self.run_command, cmd)
+        cmd = 'boot --image 1 --flavor 1 --num-instances 3 --max-count 3 serv'
+        self.assertRaises(exceptions.CommandError, self.run_command, cmd)
+
+    def test_boot_min_max_count(self):
+        self.run_command('boot --image 1 --flavor 1 --max-count 3 server')
+        self.assert_called_anytime(
+            'POST', '/servers',
+            {
+                'server': {
+                    'flavorRef': '1',
+                    'name': 'server',
+                    'imageRef': '1',
+                    'min_count': 1,
+                    'max_count': 3,
+                }
+            })
+        self.run_command('boot --image 1 --flavor 1 --min-count 3 server')
+        self.assert_called_anytime(
+            'POST', '/servers',
+            {
+                'server': {
+                    'flavorRef': '1',
+                    'name': 'server',
+                    'imageRef': '1',
+                    'min_count': 3,
+                    'max_count': 3,
+                }
+            })
+        self.run_command('boot --image 1 --flavor 1 '
+                         '--min-count 3 --max-count 5 server')
+        self.assert_called_anytime(
+            'POST', '/servers',
+            {
+                'server': {
+                    'flavorRef': '1',
+                    'name': 'server',
+                    'imageRef': '1',
+                    'min_count': 3,
+                    'max_count': 5,
+                }
+            })
+
     @mock.patch('novaclient.v1_1.shell._poll_for_status')
     def test_boot_with_poll(self, poll_method):
         self.run_command('boot --flavor 1 --image 1 some-server --poll')
