@@ -129,20 +129,6 @@ class ShellTest(utils.TestCase):
             }},
         )
 
-    def test_boot_multiple(self):
-        self.run_command('boot --flavor 1 --image 1'
-                         ' --num-instances 3 some-server')
-        self.assert_called_anytime(
-            'POST', '/servers',
-            {'server': {
-                'flavorRef': '1',
-                'name': 'some-server',
-                'imageRef': '1',
-                'min_count': 1,
-                'max_count': 3,
-            }},
-        )
-
     def test_boot_image_with(self):
         self.run_command("boot --flavor 1"
                          " --image-with test_key=test_value some-server")
