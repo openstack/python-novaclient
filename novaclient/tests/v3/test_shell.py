@@ -469,6 +469,11 @@ class ShellTest(utils.TestCase):
                '--nic v4-fixed-ip=10.0.0.1 some-server')
         self.assertRaises(exceptions.CommandError, self.run_command, cmd)
 
+    def test_boot_nics_netid_and_portid(self):
+        cmd = ('boot --image 1 --flavor 1 '
+               '--nic port-id=some=port,net-id=some=net some-server')
+        self.assertRaises(exceptions.CommandError, self.run_command, cmd)
+
     def test_boot_num_instances(self):
         self.run_command('boot --image 1 --flavor 1 --num-instances 3 server')
         self.assert_called_anytime(
