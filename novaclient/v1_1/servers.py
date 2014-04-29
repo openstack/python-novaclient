@@ -435,8 +435,8 @@ class ServerManager(base.BootingManagerWithFind):
                       connected networks, fixed ips, etc.
         :param scheduler_hints: (optional extension) arbitrary key-value pairs
                               specified by the client to help boot an instance.
-        :param config_drive: (optional extension) value for config drive
-                            either boolean, or volume-id
+        :param config_drive: (optional extension) If True, enable config drive
+                             on the server.
         :param admin_pass: admin password for the server.
         :param disk_config: (optional extension) control how the disk is
                             partitioned when the server is created.
