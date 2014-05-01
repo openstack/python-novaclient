@@ -87,22 +87,26 @@ def _boot(cs, args):
     # Don't let user mix num_instances and max_count/min_count.
     if (args.num_instances is not None and
         args.min_count is None and args.max_count is None):
-        if args.num_instances <= 1:
-            raise exceptions.CommandError("num_instances should be > 1")
+        if args.num_instances < 1:
+            raise exceptions.CommandError("num_instances should be >= 1")
         max_count = args.num_instances
     elif (args.num_instances is not None and
           (args.min_count is not None or args.max_count is not None)):
         raise exceptions.CommandError("Don't mix num-instances and "
                                         "max/min-count")
     if args.min_count is not None:
-        if args.min_count <= 1:
-            raise exceptions.CommandError("min_count should be > 1")
+        if args.min_count < 1:
+            raise exceptions.CommandError("min_count should be >= 1")
         min_count = args.min_count
         max_count = min_count
     if args.max_count is not None:
-        if args.max_count <= 1:
-            raise exceptions.CommandError("max_count should be > 1")
+        if args.max_count < 1:
+            raise exceptions.CommandError("max_count should be >= 1")
         max_count = args.max_count
+    if (args.min_count is not None and args.max_count is not None and
+        args.min_count > args.max_count):
+            raise exceptions.CommandError(
+                "min_count should be <= max_count")
 
     flavor = _find_flavor(cs, args.flavor)
 
