@@ -865,12 +865,12 @@ def do_image_delete(cs, args):
     dest='ip',
     metavar='<ip-regexp>',
     default=None,
-    help='Search with regular expression match by IP address (Admin only).')
+    help='Search with regular expression match by IP address.')
 @utils.arg('--ip6',
     dest='ip6',
     metavar='<ip6-regexp>',
     default=None,
-    help='Search with regular expression match by IPv6 address (Admin only).')
+    help='Search with regular expression match by IPv6 address.')
 @utils.arg('--name',
     dest='name',
     metavar='<name-regexp>',
@@ -880,7 +880,7 @@ def do_image_delete(cs, args):
     dest='instance_name',
     metavar='<name-regexp>',
     default=None,
-    help='Search with regular expression match by server name (Admin only).')
+    help='Search with regular expression match by server name.')
 @utils.arg('--instance_name',
     help=argparse.SUPPRESS)
 @utils.arg('--status',
