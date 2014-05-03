@@ -24,6 +24,7 @@ from novaclient.v3 import hosts
 from novaclient.v3 import hypervisors
 from novaclient.v3 import images
 from novaclient.v3 import keypairs
+from novaclient.v3 import list_extensions
 from novaclient.v3 import quotas
 from novaclient.v3 import servers
 from novaclient.v3 import services
@@ -84,6 +85,7 @@ class Client(object):
         self.availability_zones = \
             availability_zones.AvailabilityZoneManager(self)
         self.certs = certs.CertificateManager(self)
+        self.list_extensions = list_extensions.ListExtManager(self)
         self.hosts = hosts.HostManager(self)
         self.flavors = flavors.FlavorManager(self)
         self.flavor_access = flavor_access.FlavorAccessManager(self)
