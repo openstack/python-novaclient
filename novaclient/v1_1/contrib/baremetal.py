@@ -194,7 +194,7 @@ def do_baremetal_node_create(cs, args):
 
 @utils.arg('node',
     metavar='<node>',
-    help='ID of the node to delete.')
+    help=_('ID of the node to delete.'))
 def do_baremetal_node_delete(cs, args):
     """Remove a baremetal node and any associated interfaces."""
     node = _find_baremetal_node(cs, args.node)
@@ -275,7 +275,7 @@ def _print_baremetal_node_interfaces(interfaces):
 
 @utils.arg('node',
      metavar='<node>',
-     help="ID of node")
+     help=_("ID of node"))
 def do_baremetal_node_show(cs, args):
     """Show information about a baremetal node."""
     node = _find_baremetal_node(cs, args.node)
@@ -310,7 +310,7 @@ def do_baremetal_interface_remove(cs, args):
     cs.baremetal.remove_interface(args.node, args.address)
 
 
-@utils.arg('node', metavar='<node>', help="ID of node")
+@utils.arg('node', metavar='<node>', help=_("ID of node"))
 def do_baremetal_interface_list(cs, args):
     """List network interfaces associated with a baremetal node."""
     interfaces = cs.baremetal.list_interfaces(args.node)
