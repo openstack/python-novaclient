@@ -1340,6 +1340,7 @@ def do_delete(cs, args):
     for server in args.server:
         try:
             _find_server(cs, server).delete()
+            print("Request to delete server %s has been accepted." % server)
         except Exception as e:
             failure_count += 1
             print(e)
