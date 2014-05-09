@@ -11,29 +11,24 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from novaclient.tests.fixture_data import certs as data
+from novaclient.tests.fixture_data import client
 from novaclient.tests import utils
-from novaclient.tests.v1_1 import fakes
 from novaclient.v1_1 import certs
 
 
-class CertsTest(utils.TestCase):
-    def setUp(self):
-        super(CertsTest, self).setUp()
-        self.cs = self._get_fake_client()
-        self.cert_type = self._get_cert_type()
+class CertsTest(utils.FixturedTestCase):
 
-    def _get_fake_client(self):
-        return fakes.FakeClient()
-
-    def _get_cert_type(self):
-        return certs.Certificate
+    client_fixture_class = client.V1
+    data_fixture_class = data.Fixture
+    cert_type = certs.Certificate
 
     def test_create_cert(self):
         cert = self.cs.certs.create()
-        self.cs.assert_called('POST', '/os-certificates')
-        self.assertIsInstance(cert, certs.Certificate)
+        self.assert_called('POST', '/os-certificates')
+        self.assertIsInstance(cert, self.cert_type)
 
     def test_get_root_cert(self):
         cert = self.cs.certs.get()
-        self.cs.assert_called('GET', '/os-certificates/root')
-        self.assertIsInstance(cert, certs.Certificate)
+        self.assert_called('GET', '/os-certificates/root')
+        self.assertIsInstance(cert, self.cert_type)
