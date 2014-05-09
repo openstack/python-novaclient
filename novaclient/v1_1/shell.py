@@ -794,6 +794,15 @@ def do_network_show(cs, args):
     utils.print_dict(network._info)
 
 
+@utils.arg('network',
+     metavar='<network>',
+     help=_("uuid or label of network"))
+def do_network_delete(cs, args):
+    """Delete network by label or id."""
+    network = utils.find_resource(cs.networks, args.network)
+    network.delete()
+
+
 @utils.arg('--host-only',
            dest='host_only',
            metavar='<0|1>',
@@ -844,7 +853,8 @@ def _filter_network_create_options(args):
     valid_args = ['label', 'cidr', 'vlan_start', 'vpn_start', 'cidr_v6',
                   'gateway', 'gateway_v6', 'bridge', 'bridge_interface',
                   'multi_host', 'dns1', 'dns2', 'uuid', 'fixed_cidr',
-                  'project_id', 'priority', 'vlan']
+                  'project_id', 'priority', 'vlan', 'mtu', 'dhcp_server',
+                  'allowed_start', 'allowed_end']
     kwargs = {}
     for k, v in args.__dict__.items():
         if k in valid_args and v is not None:
@@ -865,15 +875,18 @@ def _filter_network_create_options(args):
      help=_('IPv6 subnet (ex: fe80::/64'))
 @utils.arg('--vlan',
      dest='vlan',
+     type=int,
      metavar='<vlan id>',
      help=_("vlan id to be assigned to project"))
 @utils.arg('--vlan-start',
      dest='vlan_start',
+     type=int,
      metavar='<vlan start>',
      help=_('First vlan ID to be assigned to project. Subsequent vlan'
             ' IDs will be assigned incrementally'))
 @utils.arg('--vpn',
      dest='vpn_start',
+     type=int,
      metavar='<vpn start>',
      help=_("vpn start"))
 @utils.arg('--gateway',
@@ -917,6 +930,27 @@ def _filter_network_create_options(args):
      dest="priority",
      metavar="<number>",
      help=_('Network interface priority'))
+@utils.arg('--mtu',
+     dest="mtu",
+     type=int,
+     help=_('MTU for network'))
+@utils.arg('--enable-dhcp',
+     dest="enable_dhcp",
+     metavar="<'T'|'F'>",
+     help=_('Enable dhcp'))
+@utils.arg('--dhcp-server',
+     dest="dhcp_server",
+     help=_('Dhcp-server (defaults to gateway address)'))
+@utils.arg('--share-address',
+     dest="share_address",
+     metavar="<'T'|'F'>",
+     help=_('Share address'))
+@utils.arg('--allowed-start',
+     dest="allowed_start",
+     help=_('Start of allowed addresses for instances'))
+@utils.arg('--allowed-end',
+     dest="allowed_end",
+     help=_('End of allowed addresses for instances'))
 def do_network_create(cs, args):
     """Create a network."""
 
@@ -927,6 +961,12 @@ def do_network_create(cs, args):
     if args.multi_host is not None:
         kwargs['multi_host'] = bool(args.multi_host == 'T' or
                                     strutils.bool_from_string(args.multi_host))
+    if args.enable_dhcp is not None:
+        kwargs['enable_dhcp'] = bool(args.enable_dhcp == 'T' or
+                strutils.bool_from_string(args.enable_dhcp))
+    if args.share_address is not None:
+        kwargs['share_address'] = bool(args.share_address == 'T' or
+                strutils.bool_from_string(args.share_address))
 
     cs.networks.create(**kwargs)
 

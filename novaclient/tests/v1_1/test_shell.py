@@ -1757,15 +1757,31 @@ class ShellTest(utils.TestCase):
         self.run_command('network-create --fixed-range-v4 192.168.0.0/24'
                          ' --vlan=200 new_network')
         body = {'network': {'cidr': '192.168.0.0/24', 'label': 'new_network',
-                            'vlan': '200'}}
+                            'vlan': 200}}
         self.assert_called('POST', '/os-networks', body)
 
     def test_network_create_vlan_start(self):
         self.run_command('network-create --fixed-range-v4 192.168.0.0/24'
                          ' --vlan-start=100 new_network')
         body = {'network': {'cidr': '192.168.0.0/24', 'label': 'new_network',
-                            'vlan_start': '100'}}
+                            'vlan_start': 100}}
         self.assert_called('POST', '/os-networks', body)
+
+    def test_network_create_extra_args(self):
+        self.run_command('network-create --fixed-range-v4 192.168.0.0/24'
+                         ' --enable-dhcp F --dhcp-server 192.168.0.2'
+                         ' --share-address T --allowed-start 192.168.0.10'
+                         ' --allowed-end 192.168.0.20 --mtu 9000 new_network')
+        body = {'network': {'cidr': '192.168.0.0/24', 'label': 'new_network',
+                            'enable_dhcp': False, 'dhcp_server': '192.168.0.2',
+                            'share_address': True, 'mtu': 9000,
+                            'allowed_start': '192.168.0.10',
+                            'allowed_end': '192.168.0.20'}}
+        self.assert_called('POST', '/os-networks', body)
+
+    def test_network_delete(self):
+        self.run_command('network-delete 1')
+        self.assert_called('DELETE', '/os-networks/1')
 
     def test_add_fixed_ip(self):
         self.run_command('add-fixed-ip sample-server 1')
