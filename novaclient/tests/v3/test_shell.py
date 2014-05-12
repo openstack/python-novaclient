@@ -470,8 +470,6 @@ class ShellTest(utils.TestCase):
             })
 
     def test_boot_invalid_num_instances(self):
-        cmd = 'boot --image 1 --flavor 1 --num-instances 1  server'
-        self.assertRaises(exceptions.CommandError, self.run_command, cmd)
         cmd = 'boot --image 1 --flavor 1 --num-instances 0  server'
         self.assertRaises(exceptions.CommandError, self.run_command, cmd)
 
@@ -507,6 +505,19 @@ class ShellTest(utils.TestCase):
                 }
             })
         self.run_command('boot --image 1 --flavor 1 '
+                         '--min-count 3 --max-count 3 server')
+        self.assert_called_anytime(
+            'POST', '/servers',
+            {
+                'server': {
+                    'flavor_ref': '1',
+                    'name': 'server',
+                    'image_ref': '1',
+                    'os-multiple-create:min_count': 3,
+                    'os-multiple-create:max_count': 3,
+                }
+            })
+        self.run_command('boot --image 1 --flavor 1 '
                          '--min-count 3 --max-count 5 server')
         self.assert_called_anytime(
             'POST', '/servers',
@@ -519,6 +530,8 @@ class ShellTest(utils.TestCase):
                     'os-multiple-create:max_count': 5,
                 }
             })
+        cmd = 'boot --image 1 --flavor 1 --min-count 3 --max-count 1 serv'
+        self.assertRaises(exceptions.CommandError, self.run_command, cmd)
 
     @mock.patch('novaclient.v3.shell._poll_for_status')
     def test_boot_with_poll(self, poll_method):
