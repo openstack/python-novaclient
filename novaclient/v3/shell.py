@@ -157,7 +157,7 @@ def _boot(cs, args):
         err_msg = ("Invalid nic argument '%s'. Nic arguments must be of the "
                    "form --nic <net-id=net-uuid,v4-fixed-ip=ip-addr,"
                    "v6-fixed-ip=ip-addr,port-id=port-uuid>, with at minimum "
-                   "net-id or port-id specified." % nic_str)
+                   "net-id or port-id (but not both) specified." % nic_str)
         nic_info = {"net-id": "", "v4-fixed-ip": "", "v6-fixed-ip": "",
                     "port-id": ""}
 
@@ -172,7 +172,7 @@ def _boot(cs, args):
             else:
                 raise exceptions.CommandError(err_msg)
 
-        if not nic_info['net-id'] and not nic_info['port-id']:
+        if bool(nic_info['net-id']) == bool(nic_info['port-id']):
             raise exceptions.CommandError(err_msg)
 
         nics.append(nic_info)
@@ -306,11 +306,11 @@ def _boot(cs, args):
      help="Create a NIC on the server. "
            "Specify option multiple times to create multiple NICs. "
            "net-id: attach NIC to network with this UUID "
-           "(required if no port-id), "
+           "(either port-id or net-id must be provided), "
            "v4-fixed-ip: IPv4 fixed address for NIC (optional), "
            "v6-fixed-ip: IPv6 fixed address for NIC (optional), "
            "port-id: attach NIC to port with this UUID "
-           "(required if no net-id)")
+           "(either port-id or net-id must be provided).")
 @utils.arg('--config-drive',
      metavar="<value>",
      dest='config_drive',
