@@ -344,3 +344,31 @@ class FakeHTTPClient(fakes_v1_1.FakeHTTPClient):
     get_keypairs = fakes_v1_1.FakeHTTPClient.get_os_keypairs
     delete_keypairs_test = fakes_v1_1.FakeHTTPClient.delete_os_keypairs_test
     post_keypairs = fakes_v1_1.FakeHTTPClient.post_os_keypairs
+
+    #
+    # List all extensions
+    #
+    def get_extensions(self, **kw):
+        exts = [
+            {
+                "alias": "os-multinic",
+                "description": "Multiple network support",
+                "name": "Multinic",
+                "version": 1,
+            },
+            {
+                "alias": "os-extended-server-attributes",
+                "description": "Extended Server Attributes support.",
+                "name": "ExtendedServerAttributes",
+                "version": 1,
+            },
+            {
+                "alias": "os-extended-status",
+                "description": "Extended Status support",
+                "name": "ExtendedStatus",
+                "version": 1,
+            },
+        ]
+        return (200, {}, {
+            "extensions": exts,
+        })

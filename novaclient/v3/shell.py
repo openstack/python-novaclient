@@ -2616,6 +2616,15 @@ def do_credentials(cs, _args):
     utils.print_dict(catalog['access']['token'], "Token", wrap=int(_args.wrap))
 
 
+def do_extension_list(cs, _args):
+    """
+    List all the os-api extensions that are available.
+    """
+    extensions = cs.list_extensions.show_all()
+    fields = ["Name", "Summary", "Alias", "Version"]
+    utils.print_list(extensions, fields)
+
+
 @utils.arg('server', metavar='<server>', help='Name or ID of server.')
 @utils.arg('--port',
     dest='port',
