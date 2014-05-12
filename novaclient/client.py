@@ -183,10 +183,10 @@ class HTTPClient(object):
     def http_log_resp(self, resp):
         if not self.http_log_debug:
             return
-        self._logger.debug(_("RESP: [%(status)s] %(headers)s\nRESP BODY: "
-                             "%(text)s\n"), {'status': resp.status_code,
-                                             'headers': resp.headers,
-                                             'text': resp.text})
+        self._logger.debug("RESP: [%(status)s] %(headers)s\nRESP BODY: "
+                           "%(text)s\n", {'status': resp.status_code,
+                                          'headers': resp.headers,
+                                          'text': resp.text})
 
     def open_session(self):
         if not self._connection_pool:
@@ -375,7 +375,7 @@ class HTTPClient(object):
         # GET ...:5001/v2.0/tokens/#####/endpoints
         url = '/'.join([url, 'tokens', '%s?belongsTo=%s'
                         % (self.proxy_token, self.proxy_tenant_id)])
-        self._logger.debug(_("Using Endpoint URL: %s") % url)
+        self._logger.debug("Using Endpoint URL: %s" % url)
         resp, body = self._time_request(
             url, "GET", headers={'X-Auth-Token': self.auth_token})
         return self._extract_service_catalog(url, resp, body,
