@@ -415,6 +415,12 @@ class FakeHTTPClient(base_client.HTTPClient):
         fakes.assert_has_keys(body['server'], optional=['name', 'adminPass'])
         return (204, {}, body)
 
+    def delete_os_server_groups_12345(self, **kw):
+        return (202, {}, None)
+
+    def delete_os_server_groups_56789(self, **kw):
+        return (202, {}, None)
+
     def delete_servers_1234(self, **kw):
         return (202, {}, None)
 

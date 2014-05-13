@@ -2016,6 +2016,11 @@ class ShellTest(utils.TestCase):
         self.run_command('keypair-delete test')
         self.assert_called('DELETE', '/os-keypairs/test')
 
+    def test_delete_multi_server_groups(self):
+        self.run_command('server-group-delete 12345 56789')
+        self.assert_called('DELETE', '/os-server-groups/56789')
+        self.assert_called('DELETE', '/os-server-groups/12345', pos=-2)
+
 
 class GetSecgroupTest(utils.TestCase):
     def test_with_integer(self):

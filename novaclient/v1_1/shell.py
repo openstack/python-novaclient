@@ -3500,12 +3500,23 @@ def do_server_group_create(cs, args):
     _print_server_group_details([server_group])
 
 
-@utils.arg('id', metavar='<id>',
-           help="Unique ID of the server group to delete")
+@utils.arg('id', metavar='<id>', nargs='+',
+           help="Unique ID(s) of the server group to delete")
 def do_server_group_delete(cs, args):
-    """Delete a specific server group."""
-    cs.server_groups.delete(args.id)
-    print("Instance group %s has been successfully deleted." % args.id)
+    """Delete specific server group(s)."""
+    failure_count = 0
+
+    for sg in args.id:
+        try:
+            cs.server_groups.delete(sg)
+            print(_("Server group %s has been successfully deleted.") % sg)
+        except Exception as e:
+            failure_count += 1
+            print(_("Delete for server group %(sg)s failed: %(e)s") %
+                  {'sg': sg, 'e': e})
+    if failure_count == len(args.id):
+        raise exceptions.CommandError(_("Unable to delete any of the "
+                                        "specified server groups."))
 
 
 @utils.arg('id', metavar='<id>',
