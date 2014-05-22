@@ -16,23 +16,23 @@
 
 import six
 
+from novaclient.tests.fixture_data import availability_zones as data
+from novaclient.tests.fixture_data import client
 from novaclient.tests import utils
-from novaclient.tests.v1_1 import fakes
 from novaclient.v1_1 import availability_zones
 
 
-class AvailabilityZoneTest(utils.TestCase):
+class AvailabilityZoneTest(utils.FixturedTestCase):
     # NOTE(cyeoh): import shell here so the V3 version of
     # this class can inherit off the v3 version of shell
     from novaclient.v1_1 import shell  # noqa
 
+    client_fixture_class = client.V1
+    data_fixture_class = data.V1
+
     def setUp(self):
         super(AvailabilityZoneTest, self).setUp()
-        self.cs = self._get_fake_client()
         self.availability_zone_type = self._get_availability_zone_type()
-
-    def _get_fake_client(self):
-        return fakes.FakeClient()
 
     def _get_availability_zone_type(self):
         return availability_zones.AvailabilityZone
@@ -43,7 +43,7 @@ class AvailabilityZoneTest(utils.TestCase):
 
     def test_list_availability_zone(self):
         zones = self.cs.availability_zones.list(detailed=False)
-        self.cs.assert_called('GET', '/os-availability-zone')
+        self.assert_called('GET', '/os-availability-zone')
 
         for zone in zones:
             self.assertIsInstance(zone, self.availability_zone_type)
@@ -63,7 +63,7 @@ class AvailabilityZoneTest(utils.TestCase):
 
     def test_detail_availability_zone(self):
         zones = self.cs.availability_zones.list(detailed=True)
-        self.cs.assert_called('GET', '/os-availability-zone/detail')
+        self.assert_called('GET', '/os-availability-zone/detail')
 
         for zone in zones:
             self.assertIsInstance(zone, self.availability_zone_type)
