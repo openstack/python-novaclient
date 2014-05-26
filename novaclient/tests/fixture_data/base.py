@@ -11,6 +11,7 @@
 # under the License.
 
 import fixtures
+from six.moves.urllib import parse
 
 COMPUTE_URL = 'http://compute.host'
 
@@ -23,10 +24,15 @@ class Fixture(fixtures.Fixture):
         super(Fixture, self).__init__()
         self.compute_url = compute_url
 
-    def url(self, *args):
+    def url(self, *args, **kwargs):
         url_args = [self.compute_url]
 
         if self.base_url:
             url_args.append(self.base_url)
 
-        return '/'.join(str(a).strip('/') for a in tuple(url_args) + args)
+        url = '/'.join(str(a).strip('/') for a in tuple(url_args) + args)
+
+        if kwargs:
+            url += '?%s' % parse.urlencode(kwargs, doseq=True)
+
+        return url
