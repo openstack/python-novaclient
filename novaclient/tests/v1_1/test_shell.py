@@ -159,8 +159,8 @@ class ShellTest(utils.TestCase):
 
     def test_boot_user_data(self):
         testfile = os.path.join(os.path.dirname(__file__), 'testfile.txt')
-        data = open(testfile).read()
-        expected_file_data = base64.b64encode(data.encode('utf-8'))
+        data = open(testfile).read().encode('utf-8')
+        expected_file_data = base64.b64encode(data).decode('utf-8')
         self.run_command(
             'boot --flavor 1 --image 1 --user_data %s some-server' % testfile)
         self.assert_called_anytime(
@@ -533,7 +533,7 @@ class ShellTest(utils.TestCase):
     def test_boot_files(self):
         testfile = os.path.join(os.path.dirname(__file__), 'testfile.txt')
         data = open(testfile).read()
-        expected_file_data = base64.b64encode(data.encode('utf-8'))
+        expected = base64.b64encode(data.encode('utf-8')).decode('utf-8')
 
         cmd = ('boot some-server --flavor 1 --image 1'
                ' --file /tmp/foo=%s --file /tmp/bar=%s')
@@ -548,8 +548,8 @@ class ShellTest(utils.TestCase):
                 'min_count': 1,
                 'max_count': 1,
                 'personality': [
-                    {'path': '/tmp/bar', 'contents': expected_file_data},
-                    {'path': '/tmp/foo', 'contents': expected_file_data},
+                    {'path': '/tmp/bar', 'contents': expected},
+                    {'path': '/tmp/foo', 'contents': expected},
                 ]
             }},
         )

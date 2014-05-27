@@ -404,8 +404,8 @@ class ServerManager(base.BootingManagerWithFind):
             else:
                 userdata = strutils.safe_encode(userdata)
 
-            body["server"][
-                "os-user-data:user_data"] = base64.b64encode(userdata)
+            data = base64.b64encode(userdata).decode('utf-8')
+            body["server"]["os-user-data:user_data"] = data
         if meta:
             body["server"]["metadata"] = meta
         if reservation_id:
