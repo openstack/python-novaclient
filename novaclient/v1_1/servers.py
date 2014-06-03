@@ -455,7 +455,8 @@ class ServerManager(base.BootingManagerWithFind):
             else:
                 userdata = strutils.safe_encode(userdata)
 
-            body["server"]["user_data"] = base64.b64encode(userdata)
+            userdata_b64 = base64.b64encode(userdata).decode('utf-8')
+            body["server"]["user_data"] = userdata_b64
         if meta:
             body["server"]["metadata"] = meta
         if reservation_id:
@@ -491,9 +492,11 @@ class ServerManager(base.BootingManagerWithFind):
                     data = file_or_string.read()
                 else:
                     data = file_or_string
+
+                cont = base64.b64encode(data.encode('utf-8')).decode('utf-8')
                 personality.append({
                     'path': filepath,
-                    'contents': base64.b64encode(data.encode('utf-8')),
+                    'contents': cont,
                 })
 
         if availability_zone:

@@ -226,6 +226,7 @@ class ShellTest(utils.TestCase):
 
             mock_open.assert_called_once_with(testfile)
 
+        user_data = base64.b64encode(file_text.encode('utf-8')).decode('utf-8')
         self.assert_called_anytime(
             'POST', '/servers',
             {'server': {
@@ -234,9 +235,7 @@ class ShellTest(utils.TestCase):
                 'image_ref': '1',
                 'os-multiple-create:min_count': 1,
                 'os-multiple-create:max_count': 1,
-                'os-user-data:user_data': base64.b64encode(
-                    file_text.encode('utf-8'))
-            }},
+                'os-user-data:user_data': user_data}},
         )
 
     def test_boot_avzone(self):
