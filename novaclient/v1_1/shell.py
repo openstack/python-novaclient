@@ -1776,10 +1776,9 @@ def do_volume_attach(cs, args):
     help=_('ID of the volume to attach.'))
 def do_volume_update(cs, args):
     """Update volume attachment."""
-    volume = cs.volumes.update_server_volume(_find_server(cs, args.server).id,
-                                             args.attachment_id,
-                                             args.new_volume)
-    _print_volume(volume)
+    cs.volumes.update_server_volume(_find_server(cs, args.server).id,
+                                    args.attachment_id,
+                                    args.new_volume)
 
 
 @utils.arg('server',
