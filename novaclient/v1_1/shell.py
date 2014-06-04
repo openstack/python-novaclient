@@ -577,7 +577,7 @@ def _print_flavor_list(flavors, show_extra_specs=False):
         'Memory_MB',
         'Disk',
         'Ephemeral',
-        'Swap',
+        'Swap_MB',
         'VCPUs',
         'RXTX_Factor',
         'Is_Public',
