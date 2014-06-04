@@ -2828,6 +2828,49 @@ def do_quota_delete(cs, args):
     cs.quotas.delete(args.tenant)
 
 
+@utils.arg('class_name',
+    metavar='<class>',
+    help='Name of quota class to list the quotas for.')
+def do_quota_class_show(cs, args):
+    """List the quotas for a quota class."""
+
+    _quota_show(cs.quota_classes.get(args.class_name))
+
+
+@utils.arg('class_name',
+    metavar='<class>',
+    help='Name of quota class to set the quotas for.')
+@utils.arg('--instances',
+           metavar='<instances>',
+           type=int, default=None,
+           help='New value for the "instances" quota.')
+@utils.arg('--cores',
+           metavar='<cores>',
+           type=int, default=None,
+           help='New value for the "cores" quota.')
+@utils.arg('--ram',
+           metavar='<ram>',
+           type=int, default=None,
+           help='New value for the "ram" quota.')
+@utils.arg('--metadata-items',
+    metavar='<metadata-items>',
+    type=int,
+    default=None,
+    help='New value for the "metadata-items" quota.')
+@utils.arg('--metadata_items',
+    type=int,
+    help=argparse.SUPPRESS)
+@utils.arg('--key-pairs',
+    metavar='<key-pairs>',
+    type=int,
+    default=None,
+    help='New value for the "key-pairs" quota.')
+def do_quota_class_update(cs, args):
+    """Update the quotas for a quota class."""
+
+    _quota_update(cs.quota_classes, args.class_name, args)
+
+
 @utils.arg('server', metavar='<server>', help='Name or ID of server.')
 @utils.arg('host', metavar='<host>', help='Name or ID of target host.')
 @utils.arg('--password',
