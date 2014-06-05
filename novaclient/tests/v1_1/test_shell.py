@@ -1256,17 +1256,29 @@ class ShellTest(utils.TestCase):
         self.assert_called('PUT', '/os-aggregates/1', body, pos=-2)
         self.assert_called('GET', '/os-aggregates/1', pos=-1)
 
-    def test_aggregate_set_metadata_by_id(self):
-        self.run_command('aggregate-set-metadata 1 foo=bar delete_key')
-        body = {"set_metadata": {"metadata": {"foo": "bar",
-                                              "delete_key": None}}}
-        self.assert_called('POST', '/os-aggregates/1/action', body, pos=-2)
-        self.assert_called('GET', '/os-aggregates/1', pos=-1)
+    def test_aggregate_set_metadata_add_by_id(self):
+        self.run_command('aggregate-set-metadata 3 foo=bar')
+        body = {"set_metadata": {"metadata": {"foo": "bar"}}}
+        self.assert_called('POST', '/os-aggregates/3/action', body, pos=-2)
+        self.assert_called('GET', '/os-aggregates/3', pos=-1)
+
+    def test_aggregate_set_metadata_add_duplicate_by_id(self):
+        cmd = 'aggregate-set-metadata 3 test=dup'
+        self.assertRaises(exceptions.CommandError, self.run_command, cmd)
+
+    def test_aggregate_set_metadata_delete_by_id(self):
+        self.run_command('aggregate-set-metadata 3 none_key')
+        body = {"set_metadata": {"metadata": {"none_key": None}}}
+        self.assert_called('POST', '/os-aggregates/3/action', body, pos=-2)
+        self.assert_called('GET', '/os-aggregates/3', pos=-1)
+
+    def test_aggregate_set_metadata_delete_missing_by_id(self):
+        cmd = 'aggregate-set-metadata 3 delete_key2'
+        self.assertRaises(exceptions.CommandError, self.run_command, cmd)
 
     def test_aggregate_set_metadata_by_name(self):
-        self.run_command('aggregate-set-metadata test foo=bar delete_key')
-        body = {"set_metadata": {"metadata": {"foo": "bar",
-                                              "delete_key": None}}}
+        self.run_command('aggregate-set-metadata test foo=bar')
+        body = {"set_metadata": {"metadata": {"foo": "bar"}}}
         self.assert_called('POST', '/os-aggregates/1/action', body, pos=-2)
         self.assert_called('GET', '/os-aggregates/1', pos=-1)
 
