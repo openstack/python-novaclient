@@ -390,7 +390,9 @@ class OpenStackComputeShell(object):
         parser.add_argument('--bypass-url',
             metavar='<bypass-url>',
             dest='bypass_url',
-            help="Use this API endpoint instead of the Service Catalog")
+            default=utils.env('NOVACLIENT_BYPASS_URL'),
+            help="Use this API endpoint instead of the Service Catalog. "
+                 "Defaults to env[NOVACLIENT_BYPASS_URL]")
         parser.add_argument('--bypass_url',
             help=argparse.SUPPRESS)
 
