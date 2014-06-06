@@ -356,6 +356,7 @@ def _boot(cs, args):
      help=_("Store arbitrary files from <src-path> locally to <dst-path> "
           "on the new server. You may store up to 5 files."))
 @utils.arg('--key-name',
+    default=os.environ.get('NOVACLIENT_DEFAULT_KEY_NAME'),
     metavar='<key-name>',
     help=_("Key name of keypair that should be created earlier with \
         the command keypair-add"))
