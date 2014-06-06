@@ -1395,7 +1395,7 @@ def _find_image(cs, image):
 def _find_flavor(cs, flavor):
     """Get a flavor by name, ID, or RAM size."""
     try:
-        return utils.find_resource(cs.flavors, flavor)
+        return utils.find_resource(cs.flavors, flavor, is_public=None)
     except exceptions.NotFound:
         return cs.flavors.find(ram=flavor)
 

@@ -558,3 +558,39 @@ class ShellTest(utils.TestCase):
     def test_boot_with_poll_to_check_VM_state_error(self):
         self.assertRaises(exceptions.InstanceInErrorState, self.run_command,
                           'boot --flavor 1 --image 1 some-bad-server --poll')
+
+    def test_boot_named_flavor(self):
+        self.run_command(["boot", "--image", "1",
+                          "--flavor", "512 MB Server",
+                          "--max-count", "3", "server"])
+        self.assert_called('GET', '/flavors/512 MB Server', pos=0)
+        self.assert_called('GET', '/flavors?is_public=None', pos=1)
+        self.assert_called('GET', '/flavors?is_public=None', pos=2)
+        self.assert_called('GET', '/flavors/2', pos=3)
+        self.assert_called(
+            'POST', '/servers',
+            {
+                'server': {
+                    'flavor_ref': '2',
+                    'name': 'server',
+                    'image_ref': '1',
+                    'os-multiple-create:min_count': 1,
+                    'os-multiple-create:max_count': 3,
+                }
+            }, pos=4)
+
+    def test_flavor_show_by_name(self):
+        self.run_command(['flavor-show', '128 MB Server'])
+        self.assert_called('GET', '/flavors/128 MB Server', pos=0)
+        self.assert_called('GET', '/flavors?is_public=None', pos=1)
+        self.assert_called('GET', '/flavors?is_public=None', pos=2)
+        self.assert_called('GET', '/flavors/aa1', pos=3)
+        self.assert_called('GET', '/flavors/aa1/flavor-extra-specs', pos=4)
+
+    def test_flavor_show_by_name_priv(self):
+        self.run_command(['flavor-show', '512 MB Server'])
+        self.assert_called('GET', '/flavors/512 MB Server', pos=0)
+        self.assert_called('GET', '/flavors?is_public=None', pos=1)
+        self.assert_called('GET', '/flavors?is_public=None', pos=2)
+        self.assert_called('GET', '/flavors/2', pos=3)
+        self.assert_called('GET', '/flavors/2/flavor-extra-specs', pos=4)

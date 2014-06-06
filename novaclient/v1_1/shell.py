@@ -733,7 +733,7 @@ def do_flavor_access_list(cs, args):
            help=_('Tenant ID to add flavor access for.'))
 def do_flavor_access_add(cs, args):
     """Add flavor access for the given tenant."""
-    flavor = _find_flavor_for_admin(cs, args.flavor)
+    flavor = _find_flavor(cs, args.flavor)
     access_list = cs.flavor_access.add_tenant_access(flavor, args.tenant)
     columns = ['Flavor_ID', 'Tenant_ID']
     utils.print_list(access_list, columns)
@@ -746,7 +746,7 @@ def do_flavor_access_add(cs, args):
            help=_('Tenant ID to remove flavor access for.'))
 def do_flavor_access_remove(cs, args):
     """Remove flavor access for the given tenant."""
-    flavor = _find_flavor_for_admin(cs, args.flavor)
+    flavor = _find_flavor(cs, args.flavor)
     access_list = cs.flavor_access.remove_tenant_access(flavor, args.tenant)
     columns = ['Flavor_ID', 'Tenant_ID']
     utils.print_list(access_list, columns)
@@ -1578,18 +1578,10 @@ def _find_image(cs, image):
     return utils.find_resource(cs.images, image)
 
 
-def _find_flavor_for_admin(cs, flavor):
-    """Get a flavor for administrator by name, ID, or RAM size."""
-    try:
-        return utils.find_resource(cs.flavors, flavor, is_public=None)
-    except exceptions.NotFound:
-        return cs.flavors.find(ram=flavor)
-
-
 def _find_flavor(cs, flavor):
     """Get a flavor by name, ID, or RAM size."""
     try:
-        return utils.find_resource(cs.flavors, flavor)
+        return utils.find_resource(cs.flavors, flavor, is_public=None)
     except exceptions.NotFound:
         return cs.flavors.find(ram=flavor)
 
