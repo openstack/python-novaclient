@@ -2271,7 +2271,7 @@ def do_dns_create_public_domain(cs, args):
                                  args.project)
 
 
-def _print_secgroup_rules(rules):
+def _print_secgroup_rules(rules, show_source_group=True):
     class FormattedRule:
         def __init__(self, obj):
             items = (obj if isinstance(obj, dict) else obj._info).items()
@@ -2287,8 +2287,10 @@ def _print_secgroup_rules(rules):
                 setattr(self, k, v)
 
     rules = [FormattedRule(rule) for rule in rules]
-    utils.print_list(rules, ['IP Protocol', 'From Port', 'To Port',
-                             'IP Range', 'Source Group'])
+    headers = ['IP Protocol', 'From Port', 'To Port', 'IP Range']
+    if show_source_group:
+        headers.append('Source Group')
+    utils.print_list(rules, headers)
 
 
 def _print_secgroups(secgroups):
@@ -3672,6 +3674,55 @@ def do_server_group_list(cs, args):
     """Print a list of all server groups."""
     server_groups = cs.server_groups.list()
     _print_server_group_details(server_groups)
+
+
+def do_secgroup_list_default_rules(cs, args):
+    """List rules for the default security group."""
+    _print_secgroup_rules(cs.security_group_default_rules.list(),
+                          show_source_group=False)
+
+
+@utils.arg('ip_proto',
+    metavar='<ip-proto>',
+    help=_('IP protocol (icmp, tcp, udp).'))
+@utils.arg('from_port',
+    metavar='<from-port>',
+    help=_('Port at start of range.'))
+@utils.arg('to_port',
+    metavar='<to-port>',
+    help=_('Port at end of range.'))
+@utils.arg('cidr', metavar='<cidr>', help=_('CIDR for address range.'))
+def do_secgroup_add_default_rule(cs, args):
+    """Add a rule to the default security group."""
+    rule = cs.security_group_default_rules.create(args.ip_proto,
+                                           args.from_port,
+                                           args.to_port,
+                                           args.cidr)
+    _print_secgroup_rules([rule], show_source_group=False)
+
+
+@utils.arg('ip_proto',
+    metavar='<ip-proto>',
+    help=_('IP protocol (icmp, tcp, udp).'))
+@utils.arg('from_port',
+    metavar='<from-port>',
+    help=_('Port at start of range.'))
+@utils.arg('to_port',
+    metavar='<to-port>',
+    help=_('Port at end of range.'))
+@utils.arg('cidr', metavar='<cidr>', help=_('CIDR for address range.'))
+def do_secgroup_delete_default_rule(cs, args):
+    """Delete a rule from the default security group."""
+    for rule in cs.security_group_default_rules.list():
+        if (rule.ip_protocol and
+            rule.ip_protocol.upper() == args.ip_proto.upper() and
+            rule.from_port == int(args.from_port) and
+            rule.to_port == int(args.to_port) and
+            rule.ip_range['cidr'] == args.cidr):
+            _print_secgroup_rules([rule], show_source_group=False)
+            return cs.security_group_default_rules.delete(rule.id)
+
+    raise exceptions.CommandError(_("Rule not found"))
 
 
 @utils.arg('name', metavar='<name>', help='Server group name.')
