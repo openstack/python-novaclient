@@ -20,6 +20,7 @@
 OpenStack Client interface. Handles the REST calls and responses.
 """
 
+import hashlib
 import logging
 import time
 
@@ -38,6 +39,8 @@ from novaclient.openstack.common.gettextutils import _
 from novaclient.openstack.common import network_utils
 from novaclient import service_catalog
 from novaclient import utils
+
+SENSITIVE_HEADERS = ('X-Auth-Token')
 
 
 class _ClientConnectionPool(object):
@@ -160,6 +163,16 @@ class HTTPClient(object):
     def reset_timings(self):
         self.times = []
 
+    def safe_header(self, name, value):
+        if name in SENSITIVE_HEADERS:
+            # because in python3 byte string handling is ... ug
+            v = value.encode('utf-8')
+            h = hashlib.sha1(v)
+            d = h.hexdigest()
+            return name, "SHA1(%s)" % d
+        else:
+            return name, value
+
     def http_log_req(self, method, url, kwargs):
         if not self.http_log_debug:
             return
@@ -172,13 +185,16 @@ class HTTPClient(object):
         string_parts.append(" '%s'" % url)
         string_parts.append(' -X %s' % method)
 
-        for element in kwargs['headers']:
-            header = ' -H "%s: %s"' % (element, kwargs['headers'][element])
+        # because dict ordering changes from 2 to 3
+        keys = sorted(kwargs['headers'].keys())
+        for name in keys:
+            value = kwargs['headers'][name]
+            header = ' -H "%s: %s"' % self.safe_header(name, value)
             string_parts.append(header)
 
         if 'data' in kwargs:
             string_parts.append(" -d '%s'" % (kwargs['data']))
-        self._logger.debug("\nREQ: %s\n" % "".join(string_parts))
+        self._logger.debug("REQ: %s" % "".join(string_parts))
 
     def http_log_resp(self, resp):
         if not self.http_log_debug:
