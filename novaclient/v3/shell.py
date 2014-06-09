@@ -30,6 +30,7 @@ import time
 import six
 
 from novaclient import exceptions
+from novaclient.openstack.common.gettextutils import _
 from novaclient.openstack.common import strutils
 from novaclient.openstack.common import timeutils
 from novaclient.openstack.common import uuidutils
@@ -2610,9 +2611,41 @@ def ensure_service_catalog_present(cs):
 def do_endpoints(cs, _args):
     """Discover endpoints that get returned from the authenticate services."""
     ensure_service_catalog_present(cs)
+
     catalog = cs.client.service_catalog.catalog
-    for e in catalog['access']['serviceCatalog']:
-        utils.print_dict(e['endpoints'][0], e['name'])
+    region = cs.client.region_name
+
+    for service in catalog['access']['serviceCatalog']:
+        name, endpoints = service["name"], service["endpoints"]
+
+        try:
+            endpoint = _get_first_endpoint(endpoints, region)
+            utils.print_dict(endpoint, name)
+        except LookupError:
+            print(_("WARNING: %(service)s has no endpoint in %(region)s! "
+                    "Available endpoints for this service:") %
+                  {'service': name, 'region': region})
+            for other_endpoint in endpoints:
+                utils.print_dict(other_endpoint, name)
+
+
+def _get_first_endpoint(endpoints, region):
+    """Find the first suitable endpoint in endpoints.
+
+    If there is only one endpoint, return it. If there is more than
+    one endpoint, return the first one with the given region. If there
+    are no endpoints, or there is more than one endpoint but none of
+    them match the given region, raise KeyError.
+
+    """
+    if len(endpoints) == 1:
+        return endpoints[0]
+    else:
+        for candidate_endpoint in endpoints:
+            if candidate_endpoint["region"] == region:
+                return candidate_endpoint
+
+    raise LookupError("No suitable endpoint found")
 
 
 @utils.arg('--wrap', dest='wrap', metavar='<integer>', default=64,
