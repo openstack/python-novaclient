@@ -779,6 +779,11 @@ class OpenStackComputeShell(object):
 
 # I'm picky about my shell help.
 class OpenStackHelpFormatter(argparse.HelpFormatter):
+    def __init__(self, prog, indent_increment=2, max_help_position=32,
+                 width=None):
+        super(OpenStackHelpFormatter, self).__init__(prog, indent_increment,
+              max_help_position, width)
+
     def start_section(self, heading):
         # Title-case the headings
         heading = '%s%s' % (heading[0].upper(), heading[1:])
