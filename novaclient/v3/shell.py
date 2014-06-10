@@ -320,7 +320,7 @@ def _boot(cs, args):
     dest='poll',
     action="store_true",
     default=False,
-    help='Blocks while server builds so progress can be reported.')
+    help='Report the new server boot progress until it completes.')
 def do_boot(cs, args):
     """Boot a new server."""
     boot_args, boot_kwargs = _boot(cs, args)
@@ -1046,7 +1046,7 @@ def do_list(cs, args):
     dest='poll',
     action="store_true",
     default=False,
-    help='Blocks while server is rebooting.')
+    help='Poll until reboot is complete.')
 def do_reboot(cs, args):
     """Reboot a server."""
     server = _find_server(cs, args.server)
@@ -1070,7 +1070,7 @@ def do_reboot(cs, args):
     dest='poll',
     action="store_true",
     default=False,
-    help='Blocks while server rebuilds so progress can be reported.')
+    help='Report the server rebuild progress until it completes.')
 @utils.arg('--minimal',
     dest='minimal',
     action="store_true",
@@ -1108,7 +1108,7 @@ def do_rename(cs, args):
     dest='poll',
     action="store_true",
     default=False,
-    help='Blocks while server resizes so progress can be reported.')
+    help='Report the server resize progress until it completes.')
 def do_resize(cs, args):
     """Resize a server."""
     server = _find_server(cs, args.server)
@@ -1137,7 +1137,7 @@ def do_resize_revert(cs, args):
     dest='poll',
     action="store_true",
     default=False,
-    help='Blocks while server migrates so progress can be reported.')
+    help='Report the server migration progress until it completes.')
 def do_migrate(cs, args):
     """Migrate a server. The new host will be selected by the scheduler."""
     server = _find_server(cs, args.server)
@@ -1241,7 +1241,8 @@ def do_root_password(cs, args):
     dest='poll',
     action="store_true",
     default=False,
-    help='Blocks while server snapshots so progress can be reported.')
+    help='Report the snapshot progress and poll until image creation is '
+           'complete.')
 def do_image_create(cs, args):
     """Create a new image by taking a snapshot of a running server."""
     server = _find_server(cs, args.server)
