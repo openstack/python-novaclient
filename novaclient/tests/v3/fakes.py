@@ -211,9 +211,10 @@ class FakeHTTPClient(fakes_v1_1.FakeHTTPClient):
             'create_image': ['name', 'metadata'],
             'migrate_live': ['host', 'block_migration', 'disk_over_commit'],
             'create_backup': ['name', 'backup_type', 'rotation'],
-            'attach': ['volume_id', 'device'],
             'detach': ['volume_id'],
             'swap_volume_attachment': ['old_volume_id', 'new_volume_id']}
+        body_params_check_superset = {
+            'attach': ['volume_id', 'device']}
 
         assert len(body.keys()) == 1
         action = list(body)[0]
@@ -231,6 +232,9 @@ class FakeHTTPClient(fakes_v1_1.FakeHTTPClient):
         if action in body_params_check_exact:
             assert set(body[action]) == set(body_params_check_exact[action])
 
+        if action in body_params_check_superset:
+            assert set(body[action]) >= set(body_params_check_superset[action])
+
         if action == 'reboot':
             assert body[action]['type'] in ['HARD', 'SOFT']
         elif action == 'confirm_resize':
@@ -241,7 +245,8 @@ class FakeHTTPClient(fakes_v1_1.FakeHTTPClient):
 
         if action not in set.union(set(body_is_none_list),
                                      set(body_params_check_exact.keys()),
-                                     set(body_param_check_exists.keys())):
+                                     set(body_param_check_exists.keys()),
+                                     set(body_params_check_superset.keys())):
             raise AssertionError("Unexpected server action: %s" % action)
 
         return (resp, _headers, _body)

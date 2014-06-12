@@ -1432,13 +1432,24 @@ def _translate_availability_zone_keys(collection):
 @utils.arg('device', metavar='<device>', default=None, nargs='?',
     help='Name of the device e.g. /dev/vdb. '
          'Use "auto" for autoassign (if supported)')
+@utils.arg('disk_bus',
+    metavar='<disk-bus>',
+    default=None,
+    nargs='?',
+    help='The disk bus e.g. ide of the volume (optional).')
+@utils.arg('device_type',
+    metavar='<device-type>',
+    default=None,
+    nargs='?',
+    help='The device type e.g. cdrom of the volume (optional).')
 def do_volume_attach(cs, args):
     """Attach a volume to a server."""
     if args.device == 'auto':
         args.device = None
 
     cs.volumes.attach_server_volume(_find_server(cs, args.server).id,
-                                    args.volume, args.device)
+                                    args.volume, args.device, args.disk_bus,
+                                    args.device_type)
 
 
 @utils.arg('server',
