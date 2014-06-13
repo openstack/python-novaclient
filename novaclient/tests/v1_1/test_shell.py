@@ -1743,7 +1743,14 @@ class ShellTest(utils.TestCase):
         self.run_command('network-create --fixed-range-v4 192.168.0.0/24'
                          ' --vlan=200 new_network')
         body = {'network': {'cidr': '192.168.0.0/24', 'label': 'new_network',
-                            'vlan_start': '200'}}
+                            'vlan': '200'}}
+        self.assert_called('POST', '/os-networks', body)
+
+    def test_network_create_vlan_start(self):
+        self.run_command('network-create --fixed-range-v4 192.168.0.0/24'
+                         ' --vlan-start=100 new_network')
+        body = {'network': {'cidr': '192.168.0.0/24', 'label': 'new_network',
+                            'vlan_start': '100'}}
         self.assert_called('POST', '/os-networks', body)
 
     def test_add_fixed_ip(self):

@@ -56,6 +56,7 @@ class NetworksTest(utils.TestCase):
             'multi_host': 'T',
             'priority': '1',
             'project_id': '1',
+            'vlan': 5,
             'vlan_start': 1,
             'vpn_start': 1
         }

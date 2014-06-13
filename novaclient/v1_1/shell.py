@@ -835,7 +835,7 @@ def _filter_network_create_options(args):
     valid_args = ['label', 'cidr', 'vlan_start', 'vpn_start', 'cidr_v6',
                   'gateway', 'gateway_v6', 'bridge', 'bridge_interface',
                   'multi_host', 'dns1', 'dns2', 'uuid', 'fixed_cidr',
-                  'project_id', 'priority']
+                  'project_id', 'priority', 'vlan']
     kwargs = {}
     for k, v in args.__dict__.items():
         if k in valid_args and v is not None:
@@ -855,9 +855,14 @@ def _filter_network_create_options(args):
      dest="cidr_v6",
      help=_('IPv6 subnet (ex: fe80::/64'))
 @utils.arg('--vlan',
-     dest='vlan_start',
+     dest='vlan',
      metavar='<vlan id>',
-     help=_("vlan id"))
+     help=_("vlan id to be assigned to project"))
+@utils.arg('--vlan-start',
+     dest='vlan_start',
+     metavar='<vlan start>',
+     help=_('First vlan ID to be assigned to project. Subsequent vlan'
+            ' IDs will be assigned incrementally'))
 @utils.arg('--vpn',
      dest='vpn_start',
      metavar='<vpn start>',
