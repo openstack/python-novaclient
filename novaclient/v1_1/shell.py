@@ -1770,7 +1770,7 @@ def do_volume_attach(cs, args):
     metavar='<server>',
     help=_('Name or ID of server.'))
 @utils.arg('attachment_id',
-    metavar='<volume>',
+    metavar='<attachment>',
     help=_('Attachment ID of the volume.'))
 @utils.arg('new_volume',
     metavar='<volume>',
