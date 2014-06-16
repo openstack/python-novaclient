@@ -147,3 +147,52 @@ class DNSFixture(base.Fixture):
 
         httpretty.register_uri(httpretty.PUT, self.url('testdomain'),
                                body=put_os_floating_ip_dns_testdomain)
+
+
+class BulkFixture(base.Fixture):
+
+    base_url = 'os-floating-ips-bulk'
+
+    def setUp(self):
+        super(BulkFixture, self).setUp()
+
+        get_os_floating_ips_bulk = {
+            'floating_ip_info': [
+                {'id': 1, 'fixed_ip': '10.0.0.1', 'ip': '11.0.0.1'},
+                {'id': 2, 'fixed_ip': '10.0.0.2', 'ip': '11.0.0.2'},
+            ]
+        }
+        httpretty.register_uri(httpretty.GET, self.url(),
+                               body=jsonutils.dumps(get_os_floating_ips_bulk),
+                               content_type='application/json')
+        httpretty.register_uri(httpretty.GET, self.url('testHost'),
+                               body=jsonutils.dumps(get_os_floating_ips_bulk),
+                               content_type='application/json')
+
+        def put_os_floating_ips_bulk_delete(request, url, headers):
+            body = jsonutils.loads(request.body.decode('utf-8'))
+            ip_range = body.get('ip_range')
+            data = {'floating_ips_bulk_delete': ip_range}
+            return 200, headers, jsonutils.dumps(data)
+
+        httpretty.register_uri(httpretty.PUT, self.url('delete'),
+                               body=put_os_floating_ips_bulk_delete,
+                               content_type='application/json')
+
+        def post_os_floating_ips_bulk(request, url, headers):
+            body = jsonutils.loads(request.body.decode('utf-8'))
+            params = body.get('floating_ips_bulk_create')
+            pool = params.get('pool', 'defaultPool')
+            interface = params.get('interface', 'defaultInterface')
+            data = {
+                'floating_ips_bulk_create': {
+                     'ip_range': '192.168.1.0/30',
+                     'pool': pool,
+                     'interface': interface
+                }
+            }
+            return 200, headers, jsonutils.dumps(data)
+
+        httpretty.register_uri(httpretty.POST, self.url(),
+                               body=post_os_floating_ips_bulk,
+                               content_type='application/json')
