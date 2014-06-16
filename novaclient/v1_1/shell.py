@@ -507,7 +507,7 @@ def _poll_for_status(poll_fn, obj_id, action, final_ok_states,
         sys.stdout.flush()
 
     if not silent:
-        print
+        print()
 
     while True:
         obj = poll_fn(obj_id)
