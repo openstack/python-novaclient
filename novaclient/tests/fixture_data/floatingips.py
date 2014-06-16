@@ -13,6 +13,7 @@
 import httpretty
 
 from novaclient.openstack.common import jsonutils
+from novaclient.tests import fakes
 from novaclient.tests.fixture_data import base
 
 
@@ -50,3 +51,99 @@ class FloatingFixture(base.Fixture):
         httpretty.register_uri(httpretty.POST, self.url(),
                                body=post_os_floating_ips,
                                content_type='application/json')
+
+
+class DNSFixture(base.Fixture):
+
+    base_url = 'os-floating-ip-dns'
+
+    def setUp(self):
+        super(DNSFixture, self).setUp()
+
+        get_os_floating_ip_dns = {
+            'domain_entries': [
+                {'domain': 'example.org'},
+                {'domain': 'example.com'}
+            ]
+        }
+        httpretty.register_uri(httpretty.GET, self.url(),
+                               body=jsonutils.dumps(get_os_floating_ip_dns),
+                               content_type='application/json',
+                               status=205)
+
+        get_dns_testdomain_entries_testname = {
+            'dns_entry': {
+                'ip': "10.10.10.10",
+                'name': 'testname',
+                'type': "A",
+                'domain': 'testdomain'
+            }
+        }
+        url = self.url('testdomain', 'entries', 'testname')
+        body = jsonutils.dumps(get_dns_testdomain_entries_testname)
+        httpretty.register_uri(httpretty.GET, url,
+                               body=body,
+                               content_type='application/json',
+                               status=205)
+
+        httpretty.register_uri(httpretty.DELETE, self.url('testdomain'),
+                               status=200)
+
+        url = self.url('testdomain', 'entries', 'testname')
+        httpretty.register_uri(httpretty.DELETE, url, status=200)
+
+        def put_dns_testdomain_entries_testname(request, url, headers):
+            body = jsonutils.loads(request.body.decode('utf-8'))
+            fakes.assert_has_keys(body['dns_entry'],
+                                  required=['ip', 'dns_type'])
+            return 205, headers, request.body
+        httpretty.register_uri(httpretty.PUT, url,
+                               body=put_dns_testdomain_entries_testname,
+                               content_type='application/json')
+
+        url = self.url('testdomain', 'entries')
+        httpretty.register_uri(httpretty.GET, url, status=404)
+
+        get_os_floating_ip_dns_testdomain_entries = {
+            'dns_entries': [
+                {
+                    'dns_entry': {
+                         'ip': '1.2.3.4',
+                         'name': "host1",
+                         'type': "A",
+                         'domain': 'testdomain'
+                     }
+                },
+                {
+                    'dns_entry': {
+                         'ip': '1.2.3.4',
+                         'name': "host2",
+                         'type': "A",
+                         'domain': 'testdomain'
+                    }
+                },
+            ]
+        }
+        body = jsonutils.dumps(get_os_floating_ip_dns_testdomain_entries)
+        httpretty.register_uri(httpretty.GET, url + '?ip=1.2.3.4',
+                               body=body,
+                               status=205,
+                               content_type='application/json')
+
+        def put_os_floating_ip_dns_testdomain(request, url, headers):
+            body = jsonutils.loads(request.body.decode('utf-8'))
+            if body['domain_entry']['scope'] == 'private':
+                fakes.assert_has_keys(body['domain_entry'],
+                                      required=['availability_zone', 'scope'])
+            elif body['domain_entry']['scope'] == 'public':
+                fakes.assert_has_keys(body['domain_entry'],
+                                      required=['project', 'scope'])
+            else:
+                fakes.assert_has_keys(body['domain_entry'],
+                                      required=['project', 'scope'])
+
+            headers['Content-Type'] = 'application/json'
+            return (205, headers, request.body)
+
+        httpretty.register_uri(httpretty.PUT, self.url('testdomain'),
+                               body=put_os_floating_ip_dns_testdomain)
