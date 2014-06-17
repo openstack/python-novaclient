@@ -3373,6 +3373,11 @@ def do_quota_class_show(cs, args):
 @utils.arg('--floating_ips',
     type=int,
     help=argparse.SUPPRESS)
+@utils.arg('--fixed-ips',
+    metavar='<fixed-ips>',
+    type=int,
+    default=None,
+    help=_('New value for the "fixed-ips" quota.'))
 @utils.arg('--metadata-items',
     metavar='<metadata-items>',
     type=int,

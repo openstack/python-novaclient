@@ -1600,11 +1600,22 @@ class ShellTest(utils.TestCase):
         self.assert_called('GET', '/os-quota-class-sets/test')
 
     def test_quota_class_update(self):
-        self.run_command('quota-class-update 97f4c221bff44578b0300df4ef119353'
-                         ' --instances=5')
-        self.assert_called('PUT',
-                           '/os-quota-class-sets/97f4c221bff44578b0300'
-                           'df4ef119353')
+        # The list of args we can update.
+        args = (
+            '--instances', '--cores', '--ram', '--floating-ips', '--fixed-ips',
+            '--metadata-items', '--injected-files',
+            '--injected-file-content-bytes', '--injected-file-path-bytes',
+            '--key-pairs', '--security-groups', '--security-group-rules'
+        )
+        for arg in args:
+            self.run_command('quota-class-update '
+                             '97f4c221bff44578b0300df4ef119353 '
+                             '%s=5' % arg)
+            request_param = arg[2:].replace('-', '_')
+            body = {'quota_class_set': {request_param: 5}}
+            self.assert_called(
+                'PUT', '/os-quota-class-sets/97f4c221bff44578b0300df4ef119353',
+                body)
 
     def test_network_list(self):
         self.run_command('network-list')
