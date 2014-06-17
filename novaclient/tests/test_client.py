@@ -349,10 +349,10 @@ class ClientTest(utils.TestCase):
         self.assertIn("REQ: curl -i '/foo' -X GET", output)
         self.assertIn(
             "REQ: curl -i '/foo' -X GET -H "
-            '"X-Auth-Token: SHA1(b42162b6ffdbd7c3c37b7c95b7ba9f51dda0236d)"',
+            '"X-Auth-Token: {SHA1}b42162b6ffdbd7c3c37b7c95b7ba9f51dda0236d"',
             output)
         self.assertIn(
             "REQ: curl -i '/foo' -X GET -H "
-            '"X-Auth-Token: SHA1(b42162b6ffdbd7c3c37b7c95b7ba9f51dda0236d)"'
+            '"X-Auth-Token: {SHA1}b42162b6ffdbd7c3c37b7c95b7ba9f51dda0236d"'
             ' -H "X-Foo: bar"',
             output)

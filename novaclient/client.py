@@ -40,7 +40,7 @@ from novaclient.openstack.common import network_utils
 from novaclient import service_catalog
 from novaclient import utils
 
-SENSITIVE_HEADERS = ('X-Auth-Token')
+SENSITIVE_HEADERS = ('X-Auth-Token',)
 
 
 class _ClientConnectionPool(object):
@@ -169,7 +169,7 @@ class HTTPClient(object):
             v = value.encode('utf-8')
             h = hashlib.sha1(v)
             d = h.hexdigest()
-            return name, "SHA1(%s)" % d
+            return name, "{SHA1}%s" % d
         else:
             return name, value
 
