@@ -1463,11 +1463,11 @@ def do_volume_update(cs, args):
     help='Name or ID of server.')
 @utils.arg('attachment_id',
     metavar='<volume>',
-    help='Attachment ID of the volume.')
+    help='ID of the volume to detach.')
 def do_volume_detach(cs, args):
     """Detach a volume from a server."""
     cs.volumes.delete_server_volume(_find_server(cs, args.server).id,
-                                        args.attachment_id)
+                                    args.attachment_id)
 
 
 @utils.arg('server', metavar='<server>', help='Name or ID of server.')
