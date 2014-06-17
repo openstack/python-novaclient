@@ -66,18 +66,18 @@ class HostsTest(utils.TestCase):
 
     def test_host_startup(self):
         host = cs.hosts.get('sample_host')[0]
-        result = host.startup()
+        host.startup()
         cs.assert_called(
             'GET', '/os-hosts/sample_host/startup')
 
     def test_host_reboot(self):
         host = cs.hosts.get('sample_host')[0]
-        result = host.reboot()
+        host.reboot()
         cs.assert_called(
             'GET', '/os-hosts/sample_host/reboot')
 
     def test_host_shutdown(self):
         host = cs.hosts.get('sample_host')[0]
-        result = host.shutdown()
+        host.shutdown()
         cs.assert_called(
             'GET', '/os-hosts/sample_host/shutdown')

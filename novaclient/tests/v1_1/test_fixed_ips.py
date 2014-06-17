@@ -33,10 +33,10 @@ class FixedIpsTest(utils.FixturedTestCase):
 
     def test_reserve_fixed_ip(self):
         body = {"reserve": None}
-        res = self.cs.fixed_ips.reserve(fixed_ip='192.168.1.1')
+        self.cs.fixed_ips.reserve(fixed_ip='192.168.1.1')
         self.assert_called('POST', '/os-fixed-ips/192.168.1.1/action', body)
 
     def test_unreserve_fixed_ip(self):
         body = {"unreserve": None}
-        res = self.cs.fixed_ips.unreserve(fixed_ip='192.168.1.1')
+        self.cs.fixed_ips.unreserve(fixed_ip='192.168.1.1')
         self.assert_called('POST', '/os-fixed-ips/192.168.1.1/action', body)

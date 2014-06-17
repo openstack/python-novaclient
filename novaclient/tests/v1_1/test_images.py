@@ -32,7 +32,7 @@ class ImagesTest(utils.TestCase):
         [self.assertIsInstance(i, images.Image) for i in il]
 
     def test_list_images_with_limit(self):
-        il = cs.images.list(limit=4)
+        cs.images.list(limit=4)
         cs.assert_called('GET', '/images/detail?limit=4')
 
     def test_get_image_details(self):
