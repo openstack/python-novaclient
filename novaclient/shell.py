@@ -648,6 +648,8 @@ class OpenStackComputeShell(object):
                 raise exc.CommandError(_("You must provide an auth url "
                         "via either --os-auth-url or env[OS_AUTH_URL]"))
 
+        completion_cache = client.CompletionCache(os_username, os_auth_url)
+
         self.cs = client.Client(options.os_compute_api_version,
                 os_username, os_password, os_tenant_name,
                 tenant_id=os_tenant_id, user_id=os_user_id,
@@ -659,7 +661,8 @@ class OpenStackComputeShell(object):
                 volume_service_name=volume_service_name,
                 timings=args.timings, bypass_url=bypass_url,
                 os_cache=os_cache, http_log_debug=options.debug,
-                cacert=cacert, timeout=timeout)
+                cacert=cacert, timeout=timeout,
+                completion_cache=completion_cache)
 
         # Now check for the password/token of which pieces of the
         # identifying keyring key can come from the underlying client
