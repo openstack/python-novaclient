@@ -2074,3 +2074,15 @@ class GetSecgroupTest(utils.TestCase):
                           novaclient.v1_1.shell._get_secgroup,
                           cs,
                           'abc')
+
+    def test_with_non_unique_name(self):
+        group_one = mock.MagicMock()
+        group_one.name = 'group_one'
+        cs = mock.Mock(**{
+            'security_groups.get.return_value': 'sec_group',
+            'security_groups.list.return_value': [group_one, group_one],
+        })
+        self.assertRaises(exceptions.NoUniqueMatch,
+                          novaclient.v1_1.shell._get_secgroup,
+                          cs,
+                          'group_one')
