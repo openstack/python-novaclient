@@ -79,7 +79,7 @@ class ServicesTest(utils.TestCase):
         self.assertEqual(service.status, 'enabled')
 
     def test_services_delete(self):
-        service = self.cs.services.delete('1')
+        self.cs.services.delete('1')
         self.cs.assert_called('DELETE', '/os-services/1')
 
     def test_services_disable(self):

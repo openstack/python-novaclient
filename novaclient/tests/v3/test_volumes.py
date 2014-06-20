@@ -26,7 +26,7 @@ class VolumesTest(utils.TestCase):
         return fakes.FakeClient()
 
     def test_attach_server_volume(self):
-        v = self.cs.volumes.attach_server_volume(
+        self.cs.volumes.attach_server_volume(
             server=1234,
             volume_id='15e59938-07d5-11e1-90e3-e3dffe0c5983',
             device='/dev/vdb'
@@ -35,7 +35,7 @@ class VolumesTest(utils.TestCase):
 
     def test_update_server_volume(self):
         vol_id = '15e59938-07d5-11e1-90e3-e3dffe0c5983'
-        v = self.cs.volumes.update_server_volume(
+        self.cs.volumes.update_server_volume(
             server=1234,
             old_volume_id='Work',
             new_volume_id=vol_id

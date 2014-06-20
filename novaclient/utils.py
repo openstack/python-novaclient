@@ -351,7 +351,7 @@ def _load_entry_point(ep_name, name=None):
 def is_integer_like(val):
     """Returns validation of a value as an integer."""
     try:
-        value = int(val)
+        int(val)
         return True
     except (TypeError, ValueError, AttributeError):
         return False

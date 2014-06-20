@@ -265,7 +265,7 @@ class ShellTest(utils.TestCase):
         # Ensure that main works with no command-line arguments
         try:
             novaclient.shell.main()
-        except SystemExit as exc:
+        except SystemExit:
             self.fail('Unexpected SystemExit')
 
         # We expect the normal usage as a result

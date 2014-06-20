@@ -215,7 +215,7 @@ class ClientTest(utils.TestCase):
         fake_client = mock.Mock()
         mock_http_client.return_value = fake_client
         with novaclient.v1_1.client.Client("user", "password", "project_id",
-                auth_url="foo/v2") as client:
+                auth_url="foo/v2"):
             pass
         self.assertTrue(fake_client.open_session.called)
         self.assertTrue(fake_client.close_session.called)
@@ -225,7 +225,7 @@ class ClientTest(utils.TestCase):
         fake_client = mock.Mock()
         mock_http_client.return_value = fake_client
         with novaclient.v3.client.Client("user", "password", "project_id",
-                auth_url="foo/v2") as client:
+                auth_url="foo/v2"):
             pass
         self.assertTrue(fake_client.open_session.called)
         self.assertTrue(fake_client.close_session.called)
