@@ -661,6 +661,27 @@ class ShellTest(utils.TestCase):
         self.assertRaises(exceptions.InstanceInErrorState, self.run_command,
                           'boot --flavor 1 --image 1 some-bad-server --poll')
 
+    def test_boot_named_flavor(self):
+        self.run_command(["boot", "--image", "1",
+                          "--flavor", "512 MB Server",
+                          "--max-count", "3", "server"])
+        self.assert_called('GET', '/images/1', pos=0)
+        self.assert_called('GET', '/flavors/512 MB Server', pos=1)
+        self.assert_called('GET', '/flavors?is_public=None', pos=2)
+        self.assert_called('GET', '/flavors?is_public=None', pos=3)
+        self.assert_called('GET', '/flavors/2', pos=4)
+        self.assert_called(
+            'POST', '/servers',
+            {
+                'server': {
+                    'flavorRef': '2',
+                    'name': 'server',
+                    'imageRef': '1',
+                    'min_count': 1,
+                    'max_count': 3,
+                }
+            }, pos=5)
+
     def test_flavor_list(self):
         self.run_command('flavor-list')
         self.assert_called_anytime('GET', '/flavors/detail')
@@ -681,6 +702,22 @@ class ShellTest(utils.TestCase):
     def test_flavor_show_with_alphanum_id(self):
         self.run_command('flavor-show aa1')
         self.assert_called_anytime('GET', '/flavors/aa1')
+
+    def test_flavor_show_by_name(self):
+        self.run_command(['flavor-show', '128 MB Server'])
+        self.assert_called('GET', '/flavors/128 MB Server', pos=0)
+        self.assert_called('GET', '/flavors?is_public=None', pos=1)
+        self.assert_called('GET', '/flavors?is_public=None', pos=2)
+        self.assert_called('GET', '/flavors/aa1', pos=3)
+        self.assert_called('GET', '/flavors/aa1/os-extra_specs', pos=4)
+
+    def test_flavor_show_by_name_priv(self):
+        self.run_command(['flavor-show', '512 MB Server'])
+        self.assert_called('GET', '/flavors/512 MB Server', pos=0)
+        self.assert_called('GET', '/flavors?is_public=None', pos=1)
+        self.assert_called('GET', '/flavors?is_public=None', pos=2)
+        self.assert_called('GET', '/flavors/2', pos=3)
+        self.assert_called('GET', '/flavors/2/os-extra_specs', pos=4)
 
     def test_flavor_key_set(self):
         self.run_command('flavor-key 1 set k1=v1')

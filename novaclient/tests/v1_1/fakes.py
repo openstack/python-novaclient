@@ -750,6 +750,9 @@ class FakeHTTPClient(base_client.HTTPClient):
     def get_flavors_512_MB_Server(self, **kw):
         raise exceptions.NotFound('404')
 
+    def get_flavors_128_MB_Server(self, **kw):
+        raise exceptions.NotFound('404')
+
     def get_flavors_aa1(self, **kw):
         # Alphanumeric flavor id are allowed.
         return (

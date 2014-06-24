@@ -120,6 +120,10 @@ class FakeHTTPClient(fakes_v1_1.FakeHTTPClient):
     #
     get_flavors_2_flavor_access = (
         fakes_v1_1.FakeHTTPClient.get_flavors_2_os_flavor_access)
+    get_flavors_2_flavor_extra_specs = (
+        fakes_v1_1.FakeHTTPClient.get_flavors_2_os_extra_specs)
+    get_flavors_aa1_flavor_extra_specs = (
+        fakes_v1_1.FakeHTTPClient.get_flavors_aa1_os_extra_specs)
 
     #
     # Images
