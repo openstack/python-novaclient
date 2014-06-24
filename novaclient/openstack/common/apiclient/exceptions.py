@@ -55,6 +55,11 @@ class CommandError(ClientException):
     pass
 
 
+class ResourceNotFound(ClientException):
+    """Error in getting the resource."""
+    pass
+
+
 class AuthorizationFailure(ClientException):
     """Cannot authorize API client."""
     pass
