@@ -2075,6 +2075,13 @@ class ShellTest(utils.TestCase):
         self.run_command('keypair-delete test')
         self.assert_called('DELETE', '/os-keypairs/test')
 
+    def test_create_server_group(self):
+        self.run_command('server-group-create wjsg affinity')
+        self.assert_called('POST', '/os-server-groups',
+                           {'server_group':
+                              {'name': 'wjsg',
+                               'policies': ['affinity']}})
+
     def test_delete_multi_server_groups(self):
         self.run_command('server-group-delete 12345 56789')
         self.assert_called('DELETE', '/os-server-groups/56789')
