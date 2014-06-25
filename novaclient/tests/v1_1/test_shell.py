@@ -886,6 +886,19 @@ class ShellTest(utils.TestCase):
         self.assert_called('GET', '/flavors/1', pos=-2)
         self.assert_called('GET', '/images/2')
 
+    def test_rebuild_name_meta(self):
+        self.run_command('rebuild sample-server 1 --name asdf --meta '
+                         'foo=bar')
+        self.assert_called('GET', '/servers', pos=-6)
+        self.assert_called('GET', '/servers/1234', pos=-5)
+        self.assert_called('GET', '/images/1', pos=-4)
+        self.assert_called('POST', '/servers/1234/action',
+                           {'rebuild': {'imageRef': 1,
+                                        'name': 'asdf',
+                                        'metadata': {'foo': 'bar'}}}, pos=-3)
+        self.assert_called('GET', '/flavors/1', pos=-2)
+        self.assert_called('GET', '/images/2')
+
     def test_start(self):
         self.run_command('start sample-server')
         self.assert_called('POST', '/servers/1234/action', {'os-start': None})

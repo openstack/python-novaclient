@@ -922,7 +922,8 @@ class ServerManager(base.BootingManagerWithFind):
         self._action('reboot', server, {'type': reboot_type})
 
     def rebuild(self, server, image, password=None, disk_config=None,
-                preserve_ephemeral=False, **kwargs):
+                preserve_ephemeral=False, name=None, meta=None, files=None,
+                **kwargs):
         """
         Rebuild -- shut down and then re-image -- a server.
 
@@ -933,6 +934,15 @@ class ServerManager(base.BootingManagerWithFind):
                             Valid values are 'AUTO' or 'MANUAL'
         :param preserve_ephemeral: If True, request that any ephemeral device
             be preserved when rebuilding the instance. Defaults to False.
+        :param name: Something to name the server.
+        :param meta: A dict of arbitrary key/value metadata to store for this
+                     server. A maximum of five entries is allowed, and both
+                     keys and values must be 255 characters or less.
+        :param files: A dict of files to overwrite on the server upon boot.
+                      Keys are file names (i.e. ``/etc/passwd``) and values
+                      are the file contents (either as a string or as a
+                      file-like object). A maximum of five entries is allowed,
+                      and each file must be 10k or less.
         """
         body = {'imageRef': base.getid(image)}
         if password is not None:
@@ -941,6 +951,24 @@ class ServerManager(base.BootingManagerWithFind):
             body['OS-DCF:diskConfig'] = disk_config
         if preserve_ephemeral is not False:
             body['preserve_ephemeral'] = True
+        if name is not None:
+            body['name'] = name
+        if meta:
+            body['metadata'] = meta
+        if files:
+            personality = body['personality'] = []
+            for filepath, file_or_string in sorted(files.items(),
+                                                   key=lambda x: x[0]):
+                if hasattr(file_or_string, 'read'):
+                    data = file_or_string.read()
+                else:
+                    data = file_or_string
+
+                cont = base64.b64encode(data.encode('utf-8')).decode('utf-8')
+                personality.append({
+                    'path': filepath,
+                    'contents': cont,
+                })
 
         _resp, body = self._action('rebuild', server, body, **kwargs)
         return Server(self, body['server'])

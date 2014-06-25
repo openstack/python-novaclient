@@ -301,6 +301,17 @@ class ServersTest(utils.FixturedTestCase):
         self.assertIn('preserve_ephemeral', d)
         self.assertEqual(d['preserve_ephemeral'], True)
 
+    def test_rebuild_server_name_meta_files(self):
+        files = {'/etc/passwd': 'some data'}
+        s = self.cs.servers.get(1234)
+        s.rebuild(image=1, name='new', meta={'foo': 'bar'}, files=files)
+        body = httpretty.last_request().parsed_body
+        d = body['rebuild']
+        self.assertEqual('new', d['name'])
+        self.assertEqual({'foo': 'bar'}, d['metadata'])
+        self.assertEqual('/etc/passwd',
+                         d['personality'][0]['path'])
+
     def test_resize_server(self):
         s = self.cs.servers.get(1234)
         s.resize(flavor=1)

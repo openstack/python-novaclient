@@ -1243,6 +1243,23 @@ def do_reboot(cs, args):
     action="store_true",
     default=False,
     help='Preserve the default ephemeral storage partition on rebuild.')
+@utils.arg('--name',
+    metavar='<name>',
+    default=None,
+    help=_('Name for the new server'))
+@utils.arg('--meta',
+    metavar="<key=value>",
+    action='append',
+    default=[],
+    help=_("Record arbitrary key/value metadata to /meta.js "
+         "on the new server. Can be specified multiple times."))
+@utils.arg('--file',
+    metavar="<dst-path=src-path>",
+    action='append',
+    dest='files',
+    default=[],
+    help=_("Store arbitrary files from <src-path> locally to <dst-path> "
+         "on the new server. You may store up to 5 files."))
 def do_rebuild(cs, args):
     """Shutdown, re-image, and re-boot a server."""
     server = _find_server(cs, args.server)
@@ -1255,6 +1272,25 @@ def do_rebuild(cs, args):
 
     kwargs = utils.get_resource_manager_extra_kwargs(do_rebuild, args)
     kwargs['preserve_ephemeral'] = args.preserve_ephemeral
+    kwargs['name'] = args.name
+    meta = dict(v.split('=', 1) for v in args.meta)
+    kwargs['meta'] = meta
+
+    files = {}
+    for f in args.files:
+        try:
+            dst, src = f.split('=', 1)
+            with open(src, 'r') as s:
+                files[dst] = s.read()
+        except IOError as e:
+            raise exceptions.CommandError(_("Can't open '%(src)s': %(exc)s") %
+                                          {'src': src, 'exc': e})
+        except ValueError as e:
+            raise exceptions.CommandError(_("Invalid file argument '%s'. "
+                                            "File arguments must be of the "
+                                            "form '--file "
+                                            "<dst-path=src-path>'") % f)
+    kwargs['files'] = files
     server = server.rebuild(image, _password, **kwargs)
     _print_server(cs, args, server)
 
