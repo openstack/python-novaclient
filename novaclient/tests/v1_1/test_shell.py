@@ -266,7 +266,10 @@ class ShellTest(utils.TestCase):
                     {
                         'volume_id': 'blah',
                         'delete_on_termination': '0',
-                        'device_name': 'vda'
+                        'device_name': 'vda',
+                        'uuid': 'blah',
+                        'boot_index': 0,
+                        'source_type': ''
                     }
                 ],
                 'imageRef': '',
