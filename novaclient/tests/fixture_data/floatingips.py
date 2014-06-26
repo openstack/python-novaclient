@@ -196,3 +196,21 @@ class BulkFixture(base.Fixture):
         httpretty.register_uri(httpretty.POST, self.url(),
                                body=post_os_floating_ips_bulk,
                                content_type='application/json')
+
+
+class PoolsFixture(base.Fixture):
+
+    base_url = 'os-floating-ip-pools'
+
+    def setUp(self):
+        super(PoolsFixture, self).setUp()
+
+        get_os_floating_ip_pools = {
+            'floating_ip_pools': [
+                {'name': 'foo'},
+                {'name': 'bar'}
+            ]
+        }
+        httpretty.register_uri(httpretty.GET, self.url(),
+                               body=jsonutils.dumps(get_os_floating_ip_pools),
+                               content_type='application/json')
