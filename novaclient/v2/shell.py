@@ -34,6 +34,7 @@ from oslo_utils import timeutils
 from oslo_utils import uuidutils
 import six
 
+from novaclient import api_versions
 from novaclient import client
 from novaclient import exceptions
 from novaclient.i18n import _
@@ -2874,6 +2875,16 @@ def do_secgroup_delete_group_rule(cs, args):
     raise exceptions.CommandError(_("Rule not found"))
 
 
+@api_versions.wraps("2.0", "2.1")
+def _keypair_create(cs, args, name, pub_key):
+    return cs.keypairs.create(name, pub_key)
+
+
+@api_versions.wraps("2.2")
+def _keypair_create(cs, args, name, pub_key):
+    return cs.keypairs.create(name, pub_key, key_type=args.key_type)
+
+
 @cliutils.arg('name', metavar='<name>', help=_('Name of key.'))
 @cliutils.arg(
     '--pub-key',
@@ -2883,11 +2894,16 @@ def do_secgroup_delete_group_rule(cs, args):
 @cliutils.arg(
     '--pub_key',
     help=argparse.SUPPRESS)
+@cliutils.arg(
+    '--key-type',
+    metavar='<key-type>',
+    default='ssh',
+    help=_('Keypair type. Can be ssh or x509.'),
+    start_version="2.2")
 def do_keypair_add(cs, args):
     """Create a new key pair for use with servers."""
     name = args.name
     pub_key = args.pub_key
-
     if pub_key:
         if pub_key == '-':
             pub_key = sys.stdin.read()
@@ -2901,7 +2917,7 @@ def do_keypair_add(cs, args):
                     % {'key': pub_key, 'exc': e}
                 )
 
-    keypair = cs.keypairs.create(name, pub_key)
+    keypair = _keypair_create(cs, args, name, pub_key)
 
     if not pub_key:
         private_key = keypair.private_key
@@ -2915,10 +2931,20 @@ def do_keypair_delete(cs, args):
     cs.keypairs.delete(name)
 
 
+@api_versions.wraps("2.0", "2.1")
+def _get_keypairs_list_columns(cs, args):
+    return ['Name', 'Fingerprint']
+
+
+@api_versions.wraps("2.2")
+def _get_keypairs_list_columns(cs, args):
+    return ['Name', 'Type', 'Fingerprint']
+
+
 def do_keypair_list(cs, args):
     """Print a list of keypairs for a user"""
     keypairs = cs.keypairs.list()
-    columns = ['Name', 'Fingerprint']
+    columns = _get_keypairs_list_columns(cs, args)
     utils.print_list(keypairs, columns)
 
 
