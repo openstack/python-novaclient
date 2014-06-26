@@ -2300,7 +2300,7 @@ def do_secgroup_delete_rule(cs, args):
 
 
 @utils.arg('name', metavar='<name>', help=_('Name of security group.'))
-@utils.arg('description', metavar='<description>',
+@utils.arg('description', metavar='<description>', nargs='?',
            help=_('Description of security group.'))
 def do_secgroup_create(cs, args):
     """Create a security group."""
