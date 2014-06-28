@@ -74,7 +74,7 @@ class Client(object):
                   http_log_debug=False, auth_system='keystone',
                   auth_plugin=None, auth_token=None,
                   cacert=None, tenant_id=None, user_id=None,
-                  connection_pool=False):
+                  connection_pool=False, completion_cache=None):
         self.projectid = project_id
         self.tenant_id = tenant_id
         self.user_id = user_id
@@ -129,6 +129,16 @@ class Client(object):
                                     http_log_debug=http_log_debug,
                                     cacert=cacert,
                                     connection_pool=connection_pool)
+
+        self.completion_cache = completion_cache
+
+    def write_object_to_completion_cache(self, obj):
+        if self.completion_cache:
+            self.completion_cache.write_object(obj)
+
+    def clear_completion_cache_for_class(self, obj_class):
+        if self.completion_cache:
+            self.completion_cache.clear_class(obj_class)
 
     def __enter__(self):
         self.client.open_session()

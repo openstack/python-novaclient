@@ -20,8 +20,11 @@
 OpenStack Client interface. Handles the REST calls and responses.
 """
 
+import errno
+import glob
 import hashlib
 import logging
+import os
 import time
 
 import requests
@@ -56,6 +59,77 @@ class _ClientConnectionPool(object):
             self._adapters[url] = adapters.HTTPAdapter()
 
         return self._adapters[url]
+
+
+class CompletionCache(object):
+    """The completion cache is how we support tab-completion with novaclient.
+
+    The `Manager` writes object IDs and Human-IDs to the completion-cache on
+    object-show, object-list, and object-create calls.
+
+    The `nova.bash_completion` script then uses these files to provide the
+    actual tab-completion.
+
+    The cache directory layout is:
+
+        ~/.novaclient/
+            <hash-of-endpoint-and-username>/
+                <resource>-id-cache
+                <resource>-human-id-cache
+    """
+    def __init__(self, username, auth_url, attributes=('id', 'human_id')):
+        self.directory = self._make_directory_name(username, auth_url)
+        self.attributes = attributes
+
+    def _make_directory_name(self, username, auth_url):
+        """Creates a unique directory name based on the auth_url and username
+        of the current user.
+        """
+        uniqifier = hashlib.md5(username.encode('utf-8') +
+                                auth_url.encode('utf-8')).hexdigest()
+        base_dir = utils.env('NOVACLIENT_UUID_CACHE_DIR',
+                             default="~/.novaclient")
+        return os.path.expanduser(os.path.join(base_dir, uniqifier))
+
+    def _prepare_directory(self):
+        try:
+            os.makedirs(self.directory, 0o755)
+        except OSError:
+            # NOTE(kiall): This is typically either permission denied while
+            #              attempting to create the directory, or the
+            #              directory already exists. Either way, don't
+            #              fail.
+            pass
+
+    def clear_class(self, obj_class):
+        self._prepare_directory()
+
+        resource = obj_class.__name__.lower()
+        resource_glob = os.path.join(self.directory, "%s-*-cache" % resource)
+
+        for filename in glob.iglob(resource_glob):
+            try:
+                os.unlink(filename)
+            except OSError as e:
+                if e.errno != errno.ENOENT:
+                    raise
+
+    def _write_attribute(self, resource, attribute, value):
+        self._prepare_directory()
+
+        filename = "%s-%s-cache" % (resource, attribute.replace('_', '-'))
+        path = os.path.join(self.directory, filename)
+
+        with open(path, 'a') as f:
+            f.write("%s\n" % value)
+
+    def write_object(self, obj):
+        resource = obj.__class__.__name__.lower()
+
+        for attribute in self.attributes:
+            value = getattr(obj, attribute, None)
+            if value:
+                self._write_attribute(resource, attribute, value)
 
 
 class HTTPClient(object):
