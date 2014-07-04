@@ -2856,14 +2856,27 @@ def do_live_migration(cs, args):
                                                args.disk_over_commit)
 
 
-@utils.arg('server', metavar='<server>', help=_('Name or ID of server.'))
+@utils.arg('server', metavar='<server>', nargs='+',
+           help=_('Name or ID of server(s).'))
 @utils.arg('--active', action='store_const', dest='state',
            default='error', const='active',
            help=_('Request the server be reset to "active" state instead '
            'of "error" state (the default).'))
 def do_reset_state(cs, args):
     """Reset the state of a server."""
-    _find_server(cs, args.server).reset_state(args.state)
+    failure_flag = False
+
+    for server in args.server:
+        try:
+            _find_server(cs, server).reset_state(args.state)
+        except Exception as e:
+            failure_flag = True
+            msg = "Reset state for server %s failed: %s" % (server, e)
+            print(msg)
+
+    if failure_flag:
+        msg = "Unable to reset the state for the specified server(s)."
+        raise exceptions.CommandError(msg)
 
 
 @utils.arg('server', metavar='<server>', help=_('Name or ID of server.'))

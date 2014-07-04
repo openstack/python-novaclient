@@ -1366,6 +1366,20 @@ class ShellTest(utils.TestCase):
         self.assert_called('POST', '/servers/1234/action',
                            {'os-resetState': {'state': 'active'}})
 
+    def test_reset_state_multiple(self):
+        self.run_command('reset-state sample-server sample-server2')
+        self.assert_called('POST', '/servers/1234/action',
+                           {'os-resetState': {'state': 'error'}}, pos=-4)
+        self.assert_called('POST', '/servers/5678/action',
+                           {'os-resetState': {'state': 'error'}}, pos=-1)
+
+    def test_reset_state_active_multiple(self):
+        self.run_command('reset-state --active sample-server sample-server2')
+        self.assert_called('POST', '/servers/1234/action',
+                           {'os-resetState': {'state': 'active'}}, pos=-4)
+        self.assert_called('POST', '/servers/5678/action',
+                           {'os-resetState': {'state': 'active'}}, pos=-1)
+
     def test_reset_network(self):
         self.run_command('reset-network sample-server')
         self.assert_called('POST', '/servers/1234/action',
