@@ -41,6 +41,7 @@ from novaclient.v1_1 import server_groups
 from novaclient.v1_1 import servers
 from novaclient.v1_1 import services
 from novaclient.v1_1 import usage
+from novaclient.v1_1 import versions
 from novaclient.v1_1 import virtual_interfaces
 from novaclient.v1_1 import volume_snapshots
 from novaclient.v1_1 import volume_types
@@ -107,6 +108,7 @@ class Client(object):
         self.images = images.ImageManager(self)
         self.limits = limits.LimitsManager(self)
         self.servers = servers.ServerManager(self)
+        self.versions = versions.VersionManager(self)
 
         # extensions
         self.agents = agents.AgentsManager(self)

@@ -26,6 +26,7 @@ import glob
 import hashlib
 import logging
 import os
+import re
 import time
 
 import requests
@@ -446,6 +447,15 @@ class HTTPClient(object):
     def _cs_request(self, url, method, **kwargs):
         if not self.management_url:
             self.authenticate()
+        if url is None:
+            # To get API version information, it is necessary to GET
+            # a nova endpoint directly without "v2/<tenant-id>".
+            magic_tuple = parse.urlsplit(self.management_url)
+            scheme, netloc, path, query, frag = magic_tuple
+            path = re.sub(r'v[1-9]/[a-z0-9]+$', '', path)
+            url = parse.urlunsplit((scheme, netloc, path, None, None))
+        else:
+            url = self.management_url + url
 
         # Perform the request once. If we get a 401 back then it
         # might be because the auth token expired, so try to
@@ -455,8 +465,7 @@ class HTTPClient(object):
             if self.projectid:
                 kwargs['headers']['X-Auth-Project-Id'] = self.projectid
 
-            resp, body = self._time_request(self.management_url + url, method,
-                                            **kwargs)
+            resp, body = self._time_request(url, method, **kwargs)
             return resp, body
         except exceptions.Unauthorized as e:
             try:
@@ -467,8 +476,7 @@ class HTTPClient(object):
                 self.keyring_saved = False
                 self.authenticate()
                 kwargs['headers']['X-Auth-Token'] = self.auth_token
-                resp, body = self._time_request(self.management_url + url,
-                                                method, **kwargs)
+                resp, body = self._time_request(url, method, **kwargs)
                 return resp, body
             except exceptions.Unauthorized:
                 raise e

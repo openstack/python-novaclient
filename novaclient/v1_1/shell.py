@@ -3654,3 +3654,10 @@ def do_server_group_get(cs, args):
     """Get a specific server group."""
     server_group = cs.server_groups.get(args.id)
     _print_server_group_details([server_group])
+
+
+def do_version_list(cs, args):
+    """List all API versions."""
+    result = cs.versions.list()
+    columns = ["Id", "Status", "Updated"]
+    utils.print_list(result, columns)

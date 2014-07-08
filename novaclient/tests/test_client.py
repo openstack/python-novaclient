@@ -109,6 +109,37 @@ class ClientTest(utils.TestCase):
                                   verify=mock.ANY)]
             self.assertEqual(mock_request.call_args_list, expected)
 
+    @mock.patch.object(novaclient.client.HTTPClient, 'request',
+                       return_value=(200, "{'versions':[]}"))
+    def _check_version_url(self, management_url, version_url, mock_request):
+        projectid = '25e469aa1848471b875e68cde6531bc5'
+        instance = novaclient.client.HTTPClient(user='user',
+                                                password='password',
+                                                projectid=projectid,
+                                                auth_url="http://www.blah.com")
+        instance.auth_token = 'foobar'
+        instance.management_url = management_url % projectid
+        instance.version = 'v2.0'
+
+        # If passing None as the part of url, a client accesses the url which
+        # doesn't include "v2/<projectid>" for getting API version info.
+        instance.get(None)
+        mock_request.assert_called_once_with(version_url, 'GET',
+                                             headers=mock.ANY)
+        mock_request.reset_mock()
+
+        # Otherwise, a client accesses the url which includes "v2/<projectid>".
+        instance.get('servers')
+        url = instance.management_url + 'servers'
+        mock_request.assert_called_once_with(url, 'GET', headers=mock.ANY)
+
+    def test_client_version_url(self):
+        self._check_version_url('http://foo.com/v2/%s', 'http://foo.com/')
+
+    def test_client_version_url_with_project_name(self):
+        self._check_version_url('http://foo.com/nova/v2/%s',
+                                'http://foo.com/nova/')
+
     def test_get_client_class_v3(self):
         output = novaclient.client.get_client_class('3')
         self.assertEqual(output, novaclient.v3.client.Client)
