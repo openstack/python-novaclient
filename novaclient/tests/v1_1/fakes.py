@@ -641,6 +641,9 @@ class FakeHTTPClient(base_client.HTTPClient):
             raise AssertionError("Unexpected server action: %s" % action)
         return (resp, _headers, _body)
 
+    def post_servers_5678_action(self, body, **kw):
+        return self.post_servers_1234_action(body, **kw)
+
     #
     # Cloudpipe
     #
