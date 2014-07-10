@@ -394,16 +394,25 @@ def _boot(cs, args):
     action='append',
     default=[],
     help=_("Block device mapping with the keys: "
-         "id=image_id, snapshot_id or volume_id, "
+         "id=UUID (image_id, snapshot_id or volume_id only if using source "
+         "image, snapshot or volume) "
          "source=source type (image, snapshot, volume or blank), "
          "dest=destination type of the block device (volume or local), "
-         "bus=device's bus, "
-         "device=name of the device (e.g. vda, xda, ...), "
-         "size=size of the block device in GB, "
-         "format=device will be formatted (e.g. swap, ext3, ntfs, ...), "
-         "bootindex=integer used for ordering the boot disks, "
-         "type=device type (e.g. disk, cdrom, ...) and "
-         "shutdown=shutdown behaviour (either preserve or remove)."))
+         "bus=device's bus (e.g. uml, lxc, virtio, ...; if omitted, "
+         "hypervisor driver chooses a suitable default, "
+         "honoured only if device type is supplied) "
+         "type=device type (e.g. disk, cdrom, ...; defaults to 'disk') "
+         "device=name of the device (e.g. vda, xda, ...; "
+         "if omitted, hypervisor driver chooses suitable device "
+         "depending on selected bus), "
+         "size=size of the block device in GB (if omitted, "
+         "hypervisor driver calculates size), "
+         "format=device will be formatted (e.g. swap, ntfs, ...; optional), "
+         "bootindex=integer used for ordering the boot disks "
+         "(for image backed instances it is equal to 0, "
+         "for others need to be specified) and "
+         "shutdown=shutdown behaviour (either preserve or remove, "
+         "for local destination set to remove)."))
 @utils.arg('--swap',
     metavar="<swap_size>",
     default=None,
