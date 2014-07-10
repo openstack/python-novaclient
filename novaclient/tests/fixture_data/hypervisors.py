@@ -10,9 +10,6 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-import httpretty
-
-from novaclient.openstack.common import jsonutils
 from novaclient.tests.fixture_data import base
 
 
@@ -30,9 +27,11 @@ class V1(base.Fixture):
             ]
         }
 
-        httpretty.register_uri(httpretty.GET, self.url(),
-                               body=jsonutils.dumps(get_os_hypervisors),
-                               content_type='application/json')
+        self.headers = {'Content-Type': 'application/json'}
+
+        self.requests.register_uri('GET', self.url(),
+                                   json=get_os_hypervisors,
+                                   headers=self.headers)
 
         get_os_hypervisors_detail = {
             'hypervisors': [
@@ -83,9 +82,9 @@ class V1(base.Fixture):
             ]
         }
 
-        httpretty.register_uri(httpretty.GET, self.url('detail'),
-                               body=jsonutils.dumps(get_os_hypervisors_detail),
-                               content_type='application/json')
+        self.requests.register_uri('GET', self.url('detail'),
+                                   json=get_os_hypervisors_detail,
+                                   headers=self.headers)
 
         get_os_hypervisors_stats = {
             'hypervisor_statistics': {
@@ -104,9 +103,9 @@ class V1(base.Fixture):
             }
         }
 
-        httpretty.register_uri(httpretty.GET, self.url('statistics'),
-                               body=jsonutils.dumps(get_os_hypervisors_stats),
-                               content_type='application/json')
+        self.requests.register_uri('GET', self.url('statistics'),
+                                   json=get_os_hypervisors_stats,
+                                   headers=self.headers)
 
         get_os_hypervisors_search = {
             'hypervisors': [
@@ -115,9 +114,9 @@ class V1(base.Fixture):
             ]
         }
 
-        httpretty.register_uri(httpretty.GET, self.url('hyper', 'search'),
-                               body=jsonutils.dumps(get_os_hypervisors_search),
-                               content_type='application/json')
+        self.requests.register_uri('GET', self.url('hyper', 'search'),
+                                   json=get_os_hypervisors_search,
+                                   headers=self.headers)
 
         get_hyper_server = {
             'hypervisors': [
@@ -140,9 +139,9 @@ class V1(base.Fixture):
             ]
         }
 
-        httpretty.register_uri(httpretty.GET, self.url('hyper', 'servers'),
-                               body=jsonutils.dumps(get_hyper_server),
-                               content_type='application/json')
+        self.requests.register_uri('GET', self.url('hyper', 'servers'),
+                                   json=get_hyper_server,
+                                   headers=self.headers)
 
         get_os_hypervisors_1234 = {
             'hypervisor': {
@@ -166,9 +165,9 @@ class V1(base.Fixture):
             }
         }
 
-        httpretty.register_uri(httpretty.GET, self.url(1234),
-                               body=jsonutils.dumps(get_os_hypervisors_1234),
-                               content_type='application/json')
+        self.requests.register_uri('GET', self.url(1234),
+                                   json=get_os_hypervisors_1234,
+                                   headers=self.headers)
 
         get_os_hypervisors_uptime = {
             'hypervisor': {
@@ -178,9 +177,9 @@ class V1(base.Fixture):
             }
         }
 
-        httpretty.register_uri(httpretty.GET, self.url(1234, 'uptime'),
-                               body=jsonutils.dumps(get_os_hypervisors_uptime),
-                               content_type='application/json')
+        self.requests.register_uri('GET', self.url(1234, 'uptime'),
+                                   json=get_os_hypervisors_uptime,
+                                   headers=self.headers)
 
 
 class V3(V1):
@@ -195,10 +194,10 @@ class V3(V1):
             ]
         }
 
-        httpretty.register_uri(httpretty.GET,
-                               self.url('search', query='hyper'),
-                               body=jsonutils.dumps(get_os_hypervisors_search),
-                               content_type='application/json')
+        self.requests.register_uri('GET',
+                                   self.url('search', query='hyper'),
+                                   json=get_os_hypervisors_search,
+                                   headers=self.headers)
 
         get_1234_servers = {
             'hypervisor': {
@@ -211,6 +210,6 @@ class V3(V1):
             },
         }
 
-        httpretty.register_uri(httpretty.GET, self.url(1234, 'servers'),
-                               body=jsonutils.dumps(get_1234_servers),
-                               content_type='application/json')
+        self.requests.register_uri('GET', self.url(1234, 'servers'),
+                                   json=get_1234_servers,
+                                   headers=self.headers)

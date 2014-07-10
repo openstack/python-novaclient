@@ -10,8 +10,6 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-import httpretty
-
 from novaclient.openstack.common import jsonutils
 from novaclient.tests import fakes
 from novaclient.tests.fixture_data import base
@@ -31,9 +29,9 @@ class Base(base.Fixture):
             ]
         }
 
-        httpretty.register_uri(httpretty.GET, self.url(),
-                               body=jsonutils.dumps(get_servers),
-                               content_type='application/json')
+        self.requests.register_uri('GET', self.url(),
+                                   json=get_servers,
+                                   headers=self.json_headers)
 
         self.server_1234 = {
             "id": 1234,
@@ -151,48 +149,47 @@ class Base(base.Fixture):
         servers = [self.server_1234, self.server_5678, self.server_9012]
         get_servers_detail = {"servers": servers}
 
-        httpretty.register_uri(httpretty.GET, self.url('detail'),
-                               body=jsonutils.dumps(get_servers_detail),
-                               content_type='application/json')
+        self.requests.register_uri('GET', self.url('detail'),
+                                   json=get_servers_detail,
+                                   headers=self.json_headers)
 
         self.server_1235 = self.server_1234.copy()
         self.server_1235['id'] = 1235
         self.server_1235['status'] = 'error'
         self.server_1235['fault'] = {'message': 'something went wrong!'}
-        servers.append(self.server_1235)
 
-        for s in servers:
-            httpretty.register_uri(httpretty.GET, self.url(s['id']),
-                                   body=jsonutils.dumps({'server': s}),
-                                   content_type='application/json')
+        for s in servers + [self.server_1235]:
+            self.requests.register_uri('GET', self.url(s['id']),
+                                       json={'server': s},
+                                       headers=self.json_headers)
 
         for s in (1234, 5678):
-            httpretty.register_uri(httpretty.DELETE, self.url(s), status=202)
+            self.requests.register_uri('DELETE', self.url(s), status_code=202)
 
         for k in ('test_key', 'key1', 'key2'):
-            httpretty.register_uri(httpretty.DELETE,
-                                   self.url(1234, 'metadata', k),
-                                   status=204)
+            self.requests.register_uri('DELETE',
+                                       self.url(1234, 'metadata', k),
+                                       status_code=204)
 
-        metadata1 = jsonutils.dumps({'metadata': {'test_key': 'test_value'}})
-        httpretty.register_uri(httpretty.POST, self.url(1234, 'metadata'),
-                               body=metadata1, status=200,
-                               content_type='application/json')
-        httpretty.register_uri(httpretty.PUT,
-                               self.url(1234, 'metadata', 'test_key'),
-                               body=metadata1, status=200,
-                               content_type='application/json')
+        metadata1 = {'metadata': {'test_key': 'test_value'}}
+        self.requests.register_uri('POST', self.url(1234, 'metadata'),
+                                   json=metadata1,
+                                   headers=self.json_headers)
+        self.requests.register_uri('PUT',
+                                   self.url(1234, 'metadata', 'test_key'),
+                                   json=metadata1,
+                                   headers=self.json_headers)
 
-        self.diagnostic = jsonutils.dumps({'data': 'Fake diagnostics'})
+        self.diagnostic = {'data': 'Fake diagnostics'}
 
-        metadata2 = jsonutils.dumps({'metadata': {'key1': 'val1'}})
+        metadata2 = {'metadata': {'key1': 'val1'}}
         for u in ('uuid1', 'uuid2', 'uuid3', 'uuid4'):
-            httpretty.register_uri(httpretty.POST, self.url(u, 'metadata'),
-                                   body=metadata2, status=204)
-            httpretty.register_uri(httpretty.DELETE,
-                                   self.url(u, 'metadata', 'key1'),
-                                   body=self.diagnostic,
-                                   content_type='application/json')
+            self.requests.register_uri('POST', self.url(u, 'metadata'),
+                                       json=metadata2, status_code=204)
+            self.requests.register_uri('DELETE',
+                                       self.url(u, 'metadata', 'key1'),
+                                       json=self.diagnostic,
+                                       headers=self.json_headers)
 
         get_security_groups = {
             "security_groups": [{
@@ -203,18 +200,17 @@ class Base(base.Fixture):
                 'rules': []}]
         }
 
-        httpretty.register_uri(httpretty.GET,
-                               self.url('1234', 'os-security-groups'),
-                               body=jsonutils.dumps(get_security_groups),
-                               status=200)
+        self.requests.register_uri('GET',
+                                   self.url('1234', 'os-security-groups'),
+                                   json=get_security_groups)
 
-        httpretty.register_uri(httpretty.POST, self.url(),
-                               body=self.post_servers,
-                               content_type='application/json')
+        self.requests.register_uri('POST', self.url(),
+                                   json=self.post_servers,
+                                   headers=self.json_headers)
 
-        httpretty.register_uri(httpretty.POST, self.url('1234', 'action'),
-                               body=self.post_servers_1234_action,
-                               content_type='application/json')
+        self.requests.register_uri('POST', self.url('1234', 'action'),
+                                   json=self.post_servers_1234_action,
+                                   headers=self.json_headers)
 
         get_os_interface = {
             "interfaceAttachments": [
@@ -235,30 +231,31 @@ class Base(base.Fixture):
             ]
         }
 
-        httpretty.register_uri(httpretty.GET,
-                               self.url('1234', 'os-interface'),
-                               body=jsonutils.dumps(get_os_interface),
-                               content_type='application/json')
+        self.requests.register_uri('GET',
+                                   self.url('1234', 'os-interface'),
+                                   json=get_os_interface,
+                                   headers=self.json_headers)
 
         interface_data = {'interfaceAttachment': {}}
-        httpretty.register_uri(httpretty.POST,
-                               self.url('1234', 'os-interface'),
-                               body=jsonutils.dumps(interface_data),
-                               content_type='application/json')
+        self.requests.register_uri('POST',
+                                   self.url('1234', 'os-interface'),
+                                   json=interface_data,
+                                   headers=self.json_headers)
 
-        def put_servers_1234(request, url, headers):
-            body = jsonutils.loads(request.body.decode('utf-8'))
+        def put_servers_1234(request, context):
+            body = jsonutils.loads(request.body)
             assert list(body) == ['server']
             fakes.assert_has_keys(body['server'],
                                   optional=['name', 'adminPass'])
-            return 204, headers, request.body
+            return request.body
 
-        httpretty.register_uri(httpretty.PUT, self.url(1234),
-                               body=put_servers_1234,
-                               content_type='application/json')
+        self.requests.register_uri('PUT', self.url(1234),
+                                   body=put_servers_1234,
+                                   status_code=204,
+                                   headers=self.json_headers)
 
-        def post_os_volumes_boot(request, url, headers):
-            body = jsonutils.loads(request.body.decode('utf-8'))
+        def post_os_volumes_boot(request, context):
+            body = jsonutils.loads(request.body)
             assert (set(body.keys()) <=
                     set(['server', 'os:scheduler_hints']))
 
@@ -277,23 +274,24 @@ class Base(base.Fixture):
                 msg = "found extra keys: 'block_device_mapping'"
                 raise AssertionError(msg)
 
-            return 202, headers, jsonutils.dumps({'server': self.server_9012})
+            return {'server': self.server_9012}
 
         # NOTE(jamielennox): hack to make os_volumes mock go to the right place
         base_url = self.base_url
         self.base_url = None
-        httpretty.register_uri(httpretty.POST, self.url('os-volumes_boot'),
-                               body=post_os_volumes_boot,
-                               content_type='application/json')
+        self.requests.register_uri('POST', self.url('os-volumes_boot'),
+                                   json=post_os_volumes_boot,
+                                   status_code=202,
+                                   headers=self.json_headers)
         self.base_url = base_url
 
         #
         # Server password
         #
 
-        httpretty.register_uri(httpretty.DELETE,
-                               self.url(1234, 'os-server-password'),
-                               status=202)
+        self.requests.register_uri('DELETE',
+                                   self.url(1234, 'os-server-password'),
+                                   status_code=202)
 
 
 class V1(Base):
@@ -306,29 +304,28 @@ class V1(Base):
         #
 
         add = self.server_1234['addresses']
-        httpretty.register_uri(httpretty.GET, self.url(1234, 'ips'),
-                               jsonutils.dumps({'addresses': add}),
-                               content_type='application/json')
+        self.requests.register_uri('GET', self.url(1234, 'ips'),
+                                   json={'addresses': add},
+                                   headers=self.json_headers)
 
-        httpretty.register_uri(httpretty.GET, self.url(1234, 'ips', 'public'),
-                               jsonutils.dumps({'public': add['public']}),
-                               content_type='application/json')
+        self.requests.register_uri('GET', self.url(1234, 'ips', 'public'),
+                                   json={'public': add['public']},
+                                   headers=self.json_headers)
 
-        httpretty.register_uri(httpretty.GET, self.url(1234, 'ips', 'private'),
-                               jsonutils.dumps({'private': add['private']}),
-                               content_type='application/json')
+        self.requests.register_uri('GET', self.url(1234, 'ips', 'private'),
+                                   json={'private': add['private']},
+                                   headers=self.json_headers)
 
-        httpretty.register_uri(httpretty.DELETE,
-                               self.url(1234, 'ips', 'public', '1.2.3.4'),
-                               status=202)
+        self.requests.register_uri('DELETE',
+                                   self.url(1234, 'ips', 'public', '1.2.3.4'),
+                                   status_code=202)
 
-        httpretty.register_uri(httpretty.GET,
-                               self.url('1234', 'diagnostics'),
-                               body=self.diagnostic,
-                               status=200)
+        self.requests.register_uri('GET',
+                                   self.url('1234', 'diagnostics'),
+                                   json=self.diagnostic)
 
-        httpretty.register_uri(httpretty.DELETE,
-                               self.url('1234', 'os-interface', 'port-id'))
+        self.requests.register_uri('DELETE',
+                                   self.url('1234', 'os-interface', 'port-id'))
 
         # Testing with the following password and key
         #
@@ -351,12 +348,13 @@ class V1(Base):
             '/y5a6Z3/AoJZYGG7IH5WN88UROU3B9JZGFB2qtPLQTOvDMZLUhoPRIJeHiVSlo1N'
             'tI2/++UsXVg3ow6ItqCJGgdNuGG5JB+bslDHWPxROpesEIHdczk46HCpHQN8f1sk'
             'Hi/fmZZNQQqj1Ijq0caOIw=='}
-        httpretty.register_uri(httpretty.GET,
-                               self.url(1234, 'os-server-password'),
-                               jsonutils.dumps(get_server_password))
+        self.requests.register_uri('GET',
+                                   self.url(1234, 'os-server-password'),
+                                   json=get_server_password)
 
-    def post_servers(self, request, url, headers):
-        body = jsonutils.loads(request.body.decode('utf-8'))
+    def post_servers(self, request, context):
+        body = jsonutils.loads(request.body)
+        context.status_code = 202
         assert (set(body.keys()) <=
                 set(['server', 'os:scheduler_hints']))
         fakes.assert_has_keys(body['server'],
@@ -370,12 +368,12 @@ class V1(Base):
         else:
             body = self.server_1234
 
-        return 202, headers, jsonutils.dumps({'server': body})
+        return {'server': body}
 
-    def post_servers_1234_action(self, request, url, headers):
+    def post_servers_1234_action(self, request, context):
         _body = ''
-        body = jsonutils.loads(request.body.decode('utf-8'))
-        resp = 202
+        body = jsonutils.loads(request.body)
+        context.status_code = 202
         assert len(body.keys()) == 1
         action = list(body)[0]
         if action == 'reboot':
@@ -393,7 +391,8 @@ class V1(Base):
         elif action == 'confirmResize':
             assert body[action] is None
             # This one method returns a different response code
-            return 204, headers, ''
+            context.status_code = 204
+            return None
         elif action == 'revertResize':
             assert body[action] is None
         elif action == 'migrate':
@@ -445,12 +444,13 @@ class V1(Base):
             assert list(body[action]) == ['address']
         elif action == 'createImage':
             assert set(body[action].keys()) == set(['name', 'metadata'])
-            headers['location'] = "http://blah/images/456"
+            context.headers['location'] = "http://blah/images/456"
         elif action == 'changePassword':
             assert list(body[action]) == ['adminPass']
         elif action == 'os-getConsoleOutput':
             assert list(body[action]) == ['length']
-            return 202, headers, jsonutils.dumps({'output': 'foo'})
+            context.status_code = 202
+            return {'output': 'foo'}
         elif action == 'os-getVNCConsole':
             assert list(body[action]) == ['type']
         elif action == 'os-getSPICEConsole':
@@ -480,7 +480,7 @@ class V1(Base):
             assert set(keys) == set(['host', 'onSharedStorage'])
         else:
             raise AssertionError("Unexpected server action: %s" % action)
-        return resp, headers, jsonutils.dumps({'server': _body})
+        return {'server': _body}
 
 
 class V3(Base):
@@ -507,32 +507,30 @@ class V3(Base):
             ]
         }
 
-        httpretty.register_uri(httpretty.GET,
-                               self.url('1234', 'os-attach-interfaces'),
-                               body=jsonutils.dumps(get_interfaces),
-                               content_type='application/json')
+        self.requests.register_uri('GET',
+                                   self.url('1234', 'os-attach-interfaces'),
+                                   json=get_interfaces,
+                                   headers=self.json_headers)
 
         attach_body = {'interface_attachment': {}}
-        httpretty.register_uri(httpretty.POST,
-                               self.url('1234', 'os-attach-interfaces'),
-                               body=jsonutils.dumps(attach_body),
-                               content_type='application/json')
+        self.requests.register_uri('POST',
+                                   self.url('1234', 'os-attach-interfaces'),
+                                   json=attach_body,
+                                   headers=self.json_headers)
 
-        httpretty.register_uri(httpretty.GET,
-                               self.url('1234', 'os-server-diagnostics'),
-                               body=self.diagnostic,
-                               status=200)
+        self.requests.register_uri('GET',
+                                   self.url('1234', 'os-server-diagnostics'),
+                                   json=self.diagnostic)
 
-        httpretty.register_uri(httpretty.DELETE,
-                               self.url('1234', 'os-attach-interfaces',
-                                        'port-id'))
+        url = self.url('1234', 'os-attach-interfaces', 'port-id')
+        self.requests.register_uri('DELETE', url)
 
-        httpretty.register_uri(httpretty.GET,
-                               self.url(1234, 'os-server-password'),
-                               jsonutils.dumps({'password': ''}))
+        self.requests.register_uri('GET',
+                                   self.url(1234, 'os-server-password'),
+                                   json={'password': ''})
 
-    def post_servers(self, request, url, headers):
-        body = jsonutils.loads(request.body.decode('utf-8'))
+    def post_servers(self, request, context):
+        body = jsonutils.loads(request.body)
         assert set(body.keys()) <= set(['server'])
         fakes.assert_has_keys(body['server'],
                         required=['name', 'image_ref', 'flavor_ref'],
@@ -543,10 +541,11 @@ class V3(Base):
         else:
             body = self.server_1234
 
-        return 202, headers, jsonutils.dumps({'server': body})
+        context.status_code = 202
+        return {'server': body}
 
-    def post_servers_1234_action(self, request, url, headers):
-        resp = 202
+    def post_servers_1234_action(self, request, context):
+        context.status_code = 202
         body_is_none_list = [
             'revert_resize', 'migrate', 'stop', 'start', 'force_delete',
             'restore', 'pause', 'unpause', 'lock', 'unlock', 'unrescue',
@@ -577,7 +576,7 @@ class V3(Base):
             'detach': ['volume_id'],
             'swap_volume_attachment': ['old_volume_id', 'new_volume_id']}
 
-        body = jsonutils.loads(request.body.decode('utf-8'))
+        body = jsonutils.loads(request.body)
         assert len(body.keys()) == 1
         action = list(body)[0]
         _body = body_return_map.get(action, '')
@@ -598,13 +597,13 @@ class V3(Base):
             assert body[action]['type'] in ['HARD', 'SOFT']
         elif action == 'confirm_resize':
             # This one method returns a different response code
-            resp = 204
+            context.status_code = 204
         elif action == 'create_image':
-            headers['location'] = "http://blah/images/456"
+            context.headers['location'] = "http://blah/images/456"
 
         if action not in set.union(set(body_is_none_list),
                                      set(body_params_check_exact.keys()),
                                      set(body_param_check_exists.keys())):
             raise AssertionError("Unexpected server action: %s" % action)
 
-        return resp, headers, jsonutils.dumps(_body)
+        return _body
