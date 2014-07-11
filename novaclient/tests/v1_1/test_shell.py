@@ -990,7 +990,7 @@ class ShellTest(utils.TestCase):
         self.assert_called('GET', '/flavors/1', pos=-1)
 
     def test_show_bad_id(self):
-        self.assertRaises(exceptions.ResourceNotFound,
+        self.assertRaises(exceptions.CommandError,
                           self.run_command, 'show xxx')
 
     @mock.patch('novaclient.v1_1.shell.utils.print_dict')

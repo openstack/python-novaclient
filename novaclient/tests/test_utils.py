@@ -89,15 +89,15 @@ class FindResourceTestCase(test_utils.TestCase):
 
     def test_find_none(self):
         """Test a few non-valid inputs."""
-        self.assertRaises(exceptions.ResourceNotFound,
+        self.assertRaises(exceptions.CommandError,
                           utils.find_resource,
                           self.manager,
                           'asdf')
-        self.assertRaises(exceptions.ResourceNotFound,
+        self.assertRaises(exceptions.CommandError,
                           utils.find_resource,
                           self.manager,
                           None)
-        self.assertRaises(exceptions.ResourceNotFound,
+        self.assertRaises(exceptions.CommandError,
                           utils.find_resource,
                           self.manager,
                           {})
