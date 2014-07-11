@@ -1050,9 +1050,11 @@ class ShellTest(utils.TestCase):
         self.assert_called('DELETE', '/servers/5678', pos=-1)
 
     def test_delete_two_with_one_nonexistent(self):
-        self.run_command('delete 1234 123456789')
+        cmd = 'delete 1234 123456789'
+        self.assertRaises(exceptions.CommandError, self.run_command, cmd)
         self.assert_called_anytime('DELETE', '/servers/1234')
-        self.run_command('delete sample-server nonexistentserver')
+        cmd = 'delete sample-server nonexistentserver'
+        self.assertRaises(exceptions.CommandError, self.run_command, cmd)
         self.assert_called_anytime('DELETE', '/servers/1234')
 
     def test_delete_one_with_one_nonexistent(self):
