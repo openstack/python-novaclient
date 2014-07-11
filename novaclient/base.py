@@ -139,7 +139,7 @@ class ManagerWithFind(Manager):
         num_matches = len(matches)
         if num_matches == 0:
             msg = "No %s matching %s." % (self.resource_class.__name__, kwargs)
-            raise exceptions.NotFound(msg)
+            raise exceptions.NotFound(404, msg)
         elif num_matches > 1:
             raise exceptions.NoUniqueMatch
         else:

@@ -28,15 +28,6 @@ from novaclient.openstack.common.apiclient.exceptions import *  # noqa
 OverLimit = RequestEntityTooLarge
 
 
-def _deprecate_code_attribute(slf):
-    import warnings
-    warnings.warn("'code' attribute is deprecated since v.2.17.0. Use "
-                  "'http_status' instead of this one.", UserWarning)
-    return slf.http_status
-
-HttpError.code = property(_deprecate_code_attribute)
-
-
 class NoTokenLookupException(ClientException):
     """This form of authentication does not support looking up
        endpoints from an existing token.
@@ -76,7 +67,7 @@ class InvalidUsage(RuntimeError):
 
 def from_response(response, body, url, method=None):
     """
-    Return an instance of an HttpError or subclass
+    Return an instance of an ClientException or subclass
     based on an requests response.
 
     Usage::
@@ -110,6 +101,5 @@ def from_response(response, body, url, method=None):
         kwargs['message'] = message
         kwargs['details'] = details
 
-    cls = _code_map.get(response.status_code, HttpError)
-
+    cls = _code_map.get(response.status_code, ClientException)
     return cls(**kwargs)
