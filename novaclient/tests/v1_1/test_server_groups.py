@@ -13,19 +13,20 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from novaclient.tests.fixture_data import client
+from novaclient.tests.fixture_data import server_groups as data
 from novaclient.tests import utils
-from novaclient.tests.v1_1 import fakes
 from novaclient.v1_1 import server_groups
 
 
-cs = fakes.FakeClient()
+class ServerGroupsTest(utils.FixturedTestCase):
 
-
-class ServerGroupsTest(utils.TestCase):
+    client_fixture_class = client.V1
+    data_fixture_class = data.Fixture
 
     def test_list_server_groups(self):
-        result = cs.server_groups.list()
-        cs.assert_called('GET', '/os-server-groups')
+        result = self.cs.server_groups.list()
+        self.assert_called('GET', '/os-server-groups')
         for server_group in result:
             self.assertTrue(isinstance(server_group,
                                        server_groups.ServerGroup))
@@ -33,20 +34,20 @@ class ServerGroupsTest(utils.TestCase):
     def test_create_server_group(self):
         kwargs = {'name': 'ig1',
                   'policies': ['anti-affinity']}
-        server_group = cs.server_groups.create(**kwargs)
+        server_group = self.cs.server_groups.create(**kwargs)
         body = {'server_group': kwargs}
-        cs.assert_called('POST', '/os-server-groups', body)
+        self.assert_called('POST', '/os-server-groups', body)
         self.assertTrue(isinstance(server_group,
                                    server_groups.ServerGroup))
 
     def test_get_server_group(self):
         id = '2cbd51f4-fafe-4cdb-801b-cf913a6f288b'
-        server_group = cs.server_groups.get(id)
-        cs.assert_called('GET', '/os-server-groups/%s' % id)
+        server_group = self.cs.server_groups.get(id)
+        self.assert_called('GET', '/os-server-groups/%s' % id)
         self.assertTrue(isinstance(server_group,
                                    server_groups.ServerGroup))
 
     def test_delete_server_group(self):
         id = '2cbd51f4-fafe-4cdb-801b-cf913a6f288b'
-        cs.server_groups.delete(id)
-        cs.assert_called('DELETE', '/os-server-groups/%s' % id)
+        self.cs.server_groups.delete(id)
+        self.assert_called('DELETE', '/os-server-groups/%s' % id)
