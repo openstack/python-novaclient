@@ -150,7 +150,7 @@ class ClientTest(utils.TestCase):
         # Python 2.7 and testtools doesn't match that implementation yet
         try:
             cl.get('/hi')
-        except exceptions.ServiceUnavailable as exc:
-            self.assertIn('Service Unavailable (HTTP 503)', six.text_type(exc))
+        except exceptions.ClientException as exc:
+            self.assertIn('Unknown Error', six.text_type(exc))
         else:
-            self.fail('Expected exceptions.ServiceUnavailable')
+            self.fail('Expected exceptions.ClientException')
