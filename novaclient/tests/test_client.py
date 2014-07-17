@@ -14,11 +14,12 @@
 #    under the License.
 
 
+import json
 import logging
-import mock
-import requests
 
 import fixtures
+import mock
+import requests
 
 import novaclient.client
 import novaclient.extension
@@ -26,8 +27,6 @@ import novaclient.tests.fakes as fakes
 from novaclient.tests import utils
 import novaclient.v1_1.client
 import novaclient.v3.client
-
-import json
 
 
 class ClientConnectionPoolTest(utils.TestCase):
