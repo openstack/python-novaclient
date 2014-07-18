@@ -16,6 +16,23 @@ First create a client instance with your credentials::
 
 Here ``VERSION`` can be: ``1.1``, ``2`` and ``3``.
 
+Alternatively, you can create a client instance using the keystoneclient
+session API::
+
+    >>> from keystoneclient.auth.identity import v2
+    >>> from keystoneclient import session
+    >>> from novaclient.client import Client
+    >>> auth = v2.Password(auth_url=AUTH_URL,
+                           username=USERNAME,
+                           password=PASSWORD,
+                           tenant_name=PROJECT_ID)
+    >>> sess = session.Session(auth=auth)
+    >>> nova = client.Client(VERSION, session=sess)
+
+For more information on this keystoneclient API, see `Using Sessions`_.
+
+.. _Using Sessions: http://docs.openstack.org/developer/python-keystoneclient/using-sessions.html
+
 Then call methods on its managers::
 
     >>> nova.servers.list()

@@ -40,6 +40,19 @@ class Client(object):
 
         >>> client = Client(USERNAME, PASSWORD, PROJECT_ID, AUTH_URL)
 
+    Or, alternatively, you can create a client instance using the
+    keystoneclient.session API::
+
+        >>> from keystoneclient.auth.identity import v2
+        >>> from keystoneclient import session
+        >>> from novaclient.client import Client
+        >>> auth = v2.Password(auth_url=AUTH_URL,
+                               username=USERNAME,
+                               password=PASSWORD,
+                               tenant_name=PROJECT_ID)
+        >>> sess = session.Session(auth=auth)
+        >>> nova = client.Client(VERSION, session=sess)
+
     Then call methods on its managers::
 
         >>> client.servers.list()
