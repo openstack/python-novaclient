@@ -763,7 +763,7 @@ def do_network_create(cs, args):
 
     if not (args.cidr or args.cidr_v6):
         raise exceptions.CommandError(
-            "Must specify eith fixed_range_v4 or fixed_range_v6")
+            "Must specify either fixed_range_v4 or fixed_range_v6")
     kwargs = _filter_network_create_options(args)
     if args.multi_host is not None:
         kwargs['multi_host'] = bool(args.multi_host == 'T' or
