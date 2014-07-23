@@ -1683,7 +1683,8 @@ class ShellTest(utils.TestCase):
             '--instances', '--cores', '--ram', '--floating-ips', '--fixed-ips',
             '--metadata-items', '--injected-files',
             '--injected-file-content-bytes', '--injected-file-path-bytes',
-            '--key-pairs', '--security-groups', '--security-group-rules'
+            '--key-pairs', '--security-groups', '--security-group-rules',
+            '--server-groups', '--server-group-members'
         )
         for arg in args:
             self.run_command('quota-class-update '

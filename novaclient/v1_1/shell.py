@@ -3360,7 +3360,8 @@ _quota_resources = ['instances', 'cores', 'ram',
                     'floating_ips', 'fixed_ips', 'metadata_items',
                     'injected_files', 'injected_file_content_bytes',
                     'injected_file_path_bytes', 'key_pairs',
-                    'security_groups', 'security_group_rules']
+                    'security_groups', 'security_group_rules',
+                    'server_groups', 'server_group_members']
 
 
 def _quota_show(quotas):
@@ -3505,6 +3506,16 @@ def do_quota_defaults(cs, args):
     type=int,
     default=None,
     help=_('New value for the "security-group-rules" quota.'))
+@utils.arg('--server-groups',
+    metavar='<server-groups>',
+    type=int,
+    default=None,
+    help=_('New value for the "server-groups" quota.'))
+@utils.arg('--server-group-members',
+    metavar='<server-group-members>',
+    type=int,
+    default=None,
+    help=_('New value for the "server-group-members" quota.'))
 @utils.arg('--force',
     dest='force',
     action="store_true",
@@ -3612,6 +3623,16 @@ def do_quota_class_show(cs, args):
     type=int,
     default=None,
     help=_('New value for the "security-group-rules" quota.'))
+@utils.arg('--server-groups',
+    metavar='<server-groups>',
+    type=int,
+    default=None,
+    help=_('New value for the "server-groups" quota.'))
+@utils.arg('--server-group-members',
+    metavar='<server-group-members>',
+    type=int,
+    default=None,
+    help=_('New value for the "server-group-members" quota.'))
 def do_quota_class_update(cs, args):
     """Update the quotas for a quota class."""
 
