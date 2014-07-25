@@ -329,7 +329,10 @@ class ShellTest(utils.TestCase):
                     {
                         'volume_id': 'blah',
                         'delete_on_termination': '0',
-                        'device_name': 'vda'
+                        'device_name': 'vda',
+                        'boot_index': 0,
+                        'uuid': 'blah',
+                        'source_type': ''
                     }
                 ],
                 'image_ref': '',
@@ -344,15 +347,16 @@ class ShellTest(utils.TestCase):
             'source=volume,dest=volume,device=vda,size=1,format=ext4,'
             'type=disk,shutdown=preserve some-server'
         )
+        id = ('fake-id,source=volume,dest=volume,device=vda,size=1,'
+              'format=ext4,type=disk,shutdown=preserve')
         self.assert_called_anytime(
             'POST', '/servers',
             {'server': {
                 'flavor_ref': '1',
                 'name': 'some-server',
                 'os-block-device-mapping:block_device_mapping': [
-                    {'device_name': 'id', 'volume_id':
-                        'fake-id,source=volume,dest=volume,device=vda,size=1,'
-                        'format=ext4,type=disk,shutdown=preserve'}],
+                    {'device_name': 'id', 'volume_id': id,
+                     'source_type': 'volume', 'boot_index': 0, 'uuid': id}],
                 'image_ref': '1',
                 'os-multiple-create:min_count': 1,
                 'os-multiple-create:max_count': 1,
