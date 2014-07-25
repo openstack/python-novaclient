@@ -173,9 +173,9 @@ class AuthenticateAgainstKeystoneTests(utils.TestCase):
                     'passwordCredentials': {
                         'username': cs.client.user,
                         'password': cs.client.password,
-                     },
-                     'tenantName': cs.client.projectid,
-                 },
+                    },
+                    'tenantName': cs.client.projectid,
+                },
             }
 
             token_url = cs.client.auth_url + "/tokens"
@@ -261,9 +261,9 @@ class AuthenticateAgainstKeystoneTests(utils.TestCase):
                     'passwordCredentials': {
                         'username': cs.client.user,
                         'password': cs.client.password,
-                     },
-                     'tenantName': cs.client.projectid,
-                 },
+                    },
+                    'tenantName': cs.client.projectid,
+                },
             }
 
             token_url = cs.client.auth_url + "/tokens"

@@ -710,14 +710,14 @@ class FakeHTTPClient(base_client.HTTPClient):
         if filter_is_public is not None:
             if filter_is_public:
                 flavors['flavors'] = [
-                        v for v in flavors['flavors']
-                            if v['os-flavor-access:is_public']
-                        ]
+                    v for v in flavors['flavors']
+                    if v['os-flavor-access:is_public']
+                ]
             else:
                 flavors['flavors'] = [
-                        v for v in flavors['flavors']
-                            if not v['os-flavor-access:is_public']
-                        ]
+                    v for v in flavors['flavors']
+                    if not v['os-flavor-access:is_public']
+                ]
 
         return (200, {}, flavors)
 
@@ -1344,7 +1344,7 @@ class FakeHTTPClient(base_client.HTTPClient):
                     six.u('total_vcpus_usage'): 49.71047423333333,
                     six.u('total_hours'): 49.71047423333333,
                     six.u('tenant_id'):
-                         six.u('7b0a1d73f8fb41718f3343c207597869'),
+                        six.u('7b0a1d73f8fb41718f3343c207597869'),
                     six.u('stop'): six.u('2012-01-22 19:48:41.750722'),
                     six.u('server_usages'): [{
                         six.u('hours'): 49.71047423333333,
@@ -1353,7 +1353,7 @@ class FakeHTTPClient(base_client.HTTPClient):
                         six.u('ended_at'): None,
                         six.u('name'): six.u('f15image1'),
                         six.u('tenant_id'):
-                             six.u('7b0a1d73f8fb41718f3343c207597869'),
+                            six.u('7b0a1d73f8fb41718f3343c207597869'),
                         six.u('vcpus'): 1,
                         six.u('memory_mb'): 512,
                         six.u('state'): six.u('active'),
@@ -1370,7 +1370,7 @@ class FakeHTTPClient(base_client.HTTPClient):
                     six.u('total_vcpus_usage'): 49.71047423333333,
                     six.u('total_hours'): 49.71047423333333,
                     six.u('tenant_id'):
-                         six.u('7b0a1d73f8fb41718f3343c207597869'),
+                        six.u('7b0a1d73f8fb41718f3343c207597869'),
                     six.u('stop'): six.u('2012-01-22 19:48:41.750722'),
                     six.u('server_usages'): [{
                         six.u('hours'): 49.71047423333333,
