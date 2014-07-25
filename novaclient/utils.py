@@ -12,12 +12,12 @@
 #    under the License.
 
 import json
-import pkg_resources
 import re
 import sys
 import textwrap
 import uuid
 
+import pkg_resources
 import prettytable
 import six
 

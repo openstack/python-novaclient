@@ -11,15 +11,14 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import prettytable
-import re
-import six
-import sys
-
 from distutils.version import StrictVersion
+import re
+import sys
 
 import fixtures
 import mock
+import prettytable
+import six
 from testtools import matchers
 
 import novaclient.client
