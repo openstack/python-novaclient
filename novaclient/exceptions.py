@@ -247,3 +247,8 @@ def from_response(response, body, url, method=None):
 
     cls = _code_map.get(response.status_code, ClientException)
     return cls(**kwargs)
+
+
+class ResourceNotFound(Exception):
+    """Error in getting the resource."""
+    pass
