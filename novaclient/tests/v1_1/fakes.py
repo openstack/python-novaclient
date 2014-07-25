@@ -1710,11 +1710,15 @@ class FakeHTTPClient(base_client.HTTPClient):
                 'project_id': '4ffc664c198e435e9853f2538fbcd7a7',
                 'id': '1'}]})
 
+    def delete_os_networks_1(self, **kw):
+        return (202, {}, None)
+
     def post_os_networks(self, **kw):
         return (202, {}, {'network': kw})
 
     def get_os_networks_1(self, **kw):
-        return (200, {}, {'network': {"label": "1", "cidr": "10.0.0.0/24"}})
+        return (200, {}, {'network': {"label": "1", "cidr": "10.0.0.0/24",
+                                      "id": "1"}})
 
     def delete_os_networks_networkdelete(self, **kw):
         return (202, {}, None)
