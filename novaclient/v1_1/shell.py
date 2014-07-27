@@ -878,13 +878,13 @@ def _filter_network_create_options(args):
      dest='vlan',
      type=int,
      metavar='<vlan id>',
-     help=_("vlan id to be assigned to project"))
+     help=_("The vlan ID to be assigned to the project."))
 @utils.arg('--vlan-start',
      dest='vlan_start',
      type=int,
      metavar='<vlan start>',
-     help=_('First vlan ID to be assigned to project. Subsequent vlan'
-            ' IDs will be assigned incrementally'))
+     help=_('First vlan ID to be assigned to the project. Subsequent vlan '
+            'IDs will be assigned incrementally.'))
 @utils.arg('--vpn',
      dest='vpn_start',
      type=int,
@@ -895,15 +895,15 @@ def _filter_network_create_options(args):
      help=_('gateway'))
 @utils.arg('--gateway-v6',
      dest="gateway_v6",
-     help=_('ipv6 gateway'))
+     help=_('IPv6 gateway'))
 @utils.arg('--bridge',
      dest="bridge",
      metavar='<bridge>',
-     help=_('VIFs on this network are connected to this bridge'))
+     help=_('VIFs on this network are connected to this bridge.'))
 @utils.arg('--bridge-interface',
      dest="bridge_interface",
      metavar='<bridge interface>',
-     help=_('the bridge is connected to this interface'))
+     help=_('The bridge is connected to this interface.'))
 @utils.arg('--multi-host',
      dest="multi_host",
      metavar="<'T'|'F'>",
@@ -922,11 +922,11 @@ def _filter_network_create_options(args):
 @utils.arg('--fixed-cidr',
      dest="fixed_cidr",
      metavar='<x.x.x.x/yy>',
-     help=_('IPv4 subnet for fixed IPS (ex: 10.20.0.0/16)'))
+     help=_('IPv4 subnet for fixed IPs (ex: 10.20.0.0/16)'))
 @utils.arg('--project-id',
      dest="project_id",
      metavar="<project id>",
-     help=_('Project id'))
+     help=_('Project ID'))
 @utils.arg('--priority',
      dest="priority",
      metavar="<number>",
@@ -975,7 +975,7 @@ def do_network_create(cs, args):
 @utils.arg('--limit',
      dest="limit",
      metavar="<limit>",
-     help=_('number of images to return per request'))
+     help=_('Number of images to return per request.'))
 def do_image_list(cs, _args):
     """Print a list of available images to boot from."""
     limit = _args.limit

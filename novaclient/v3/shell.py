@@ -723,15 +723,15 @@ def _filter_network_create_options(args):
      help='gateway')
 @utils.arg('--gateway-v6',
      dest="gateway_v6",
-     help='ipv6 gateway')
+     help='IPv6 gateway')
 @utils.arg('--bridge',
      dest="bridge",
      metavar='<bridge>',
-     help='VIFs on this network are connected to this bridge')
+     help='VIFs on this network are connected to this bridge.')
 @utils.arg('--bridge-interface',
      dest="bridge_interface",
      metavar='<bridge interface>',
-     help='the bridge is connected to this interface')
+     help='The bridge is connected to this interface.')
 @utils.arg('--multi-host',
      dest="multi_host",
      metavar="<'T'|'F'>",
@@ -750,11 +750,11 @@ def _filter_network_create_options(args):
 @utils.arg('--fixed-cidr',
      dest="fixed_cidr",
      metavar='<x.x.x.x/yy>',
-     help='IPv4 subnet for fixed IPS (ex: 10.20.0.0/16)')
+     help='IPv4 subnet for fixed IPs (ex: 10.20.0.0/16)')
 @utils.arg('--project-id',
      dest="project_id",
      metavar="<project id>",
-     help='Project id')
+     help='Project ID')
 @utils.arg('--priority',
      dest="priority",
      metavar="<number>",
@@ -776,7 +776,7 @@ def do_network_create(cs, args):
 @utils.arg('--limit',
      dest="limit",
      metavar="<limit>",
-     help='number of images to return per request')
+     help='Number of images to return per request.')
 @utils.service_type('image')
 def do_image_list(cs, _args):
     """Print a list of available images to boot from."""
