@@ -373,6 +373,9 @@ class ClientTest(utils.TestCase):
                                         {'X-Foo': 'bar',
                                          'X-Auth-Token': 'totally_bogus'}
                                     })
+        cs.http_log_req('GET', '/foo', {'headers': {},
+                            'data': '{"auth": {"passwordCredentials": '
+                            '{"password": "zhaoqin"}}}'})
 
         output = self.logger.output.split('\n')
 
@@ -386,3 +389,32 @@ class ClientTest(utils.TestCase):
             '"X-Auth-Token: {SHA1}b42162b6ffdbd7c3c37b7c95b7ba9f51dda0236d"'
             ' -H "X-Foo: bar"',
             output)
+        self.assertIn(
+            "REQ: curl -i '/foo' -X GET -d "
+            '\'{"auth": {"passwordCredentials": {"password":'
+            ' "{SHA1}4fc49c6a671ce889078ff6b250f7066cf6d2ada2"}}}\'',
+            output)
+
+    def test_log_resp(self):
+        self.logger = self.useFixture(
+            fixtures.FakeLogger(
+                format="%(message)s",
+                level=logging.DEBUG,
+                nuke_handlers=True
+            )
+        )
+
+        cs = novaclient.client.HTTPClient("user", None, "",
+                                          connection_pool=True)
+        cs.http_log_debug = True
+        text = ('{"access": {"token": {"id": "zhaoqin"}}}')
+        resp = utils.TestResponse({'status_code': 200, 'headers': {},
+                                   'text': text})
+
+        cs.http_log_resp(resp)
+        output = self.logger.output.split('\n')
+
+        self.assertIn('RESP: [200] {}', output)
+        self.assertIn('RESP BODY: {"access": {"token": {"id":'
+                      ' "{SHA1}4fc49c6a671ce889078ff6b250f7066cf6d2ada2"}}}',
+                      output)
