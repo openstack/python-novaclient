@@ -598,3 +598,44 @@ class ShellTest(utils.TestCase):
         self.assert_called('GET', '/flavors?is_public=None', pos=2)
         self.assert_called('GET', '/flavors/2', pos=3)
         self.assert_called('GET', '/flavors/2/flavor-extra-specs', pos=4)
+
+
+class GetFirstEndpointTest(utils.TestCase):
+    def test_only_one_endpoint(self):
+        """If there is only one endpoint, it is returned."""
+        endpoint = {"url": "test"}
+        result = novaclient.v3.shell._get_first_endpoint([endpoint], "XYZ")
+        self.assertEqual(endpoint, result)
+
+    def test_multiple_endpoints(self):
+        """If there are multiple endpoints, the first one of the appropriate
+        region is returned.
+
+        """
+        endpoints = [
+            {"region": "XYZ"},
+            {"region": "ORD", "number": 1},
+            {"region": "ORD", "number": 2}
+        ]
+        result = novaclient.v3.shell._get_first_endpoint(endpoints, "ORD")
+        self.assertEqual(endpoints[1], result)
+
+    def test_multiple_endpoints_but_none_suitable(self):
+        """If there are multiple endpoints but none of them are suitable, an
+        exception is raised.
+
+        """
+        endpoints = [
+            {"region": "XYZ"},
+            {"region": "PQR"},
+            {"region": "STU"}
+        ]
+        self.assertRaises(LookupError,
+                          novaclient.v3.shell._get_first_endpoint,
+                          endpoints, "ORD")
+
+    def test_no_endpoints(self):
+        """If there are no endpoints available, an exception is raised."""
+        self.assertRaises(LookupError,
+                          novaclient.v3.shell._get_first_endpoint,
+                          [], "ORD")
