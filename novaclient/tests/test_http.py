@@ -79,7 +79,7 @@ class ClientTest(utils.TestCase):
                 headers=headers,
                 **self.TEST_REQUEST_BASE)
             # Automatic JSON parsing
-            self.assertEqual(body, {"hi": "there"})
+            self.assertEqual({"hi": "there"}, body)
 
         test_get_call()
 
@@ -136,11 +136,11 @@ class ClientTest(utils.TestCase):
     def test_client_logger(self):
         cl1 = client.HTTPClient("username", "password", "project_id",
                                 "auth_test", http_log_debug=True)
-        self.assertEqual(len(cl1._logger.handlers), 1)
+        self.assertEqual(1, len(cl1._logger.handlers))
 
         cl2 = client.HTTPClient("username", "password", "project_id",
                                 "auth_test", http_log_debug=True)
-        self.assertEqual(len(cl2._logger.handlers), 1)
+        self.assertEqual(1, len(cl2._logger.handlers))
 
     @mock.patch.object(requests, 'request', unknown_error_mock_request)
     def test_unknown_server_error(self):

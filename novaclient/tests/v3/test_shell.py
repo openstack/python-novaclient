@@ -554,7 +554,7 @@ class ShellTest(utils.TestCase):
                 'os-multiple-create:max_count': 1,
             }},
         )
-        self.assertEqual(poll_method.call_count, 1)
+        self.assertEqual(1, poll_method.call_count)
         poll_method.assert_has_calls(
             [mock.call(self.shell.cs.servers.get, 1234, 'building',
                        ['active'])])

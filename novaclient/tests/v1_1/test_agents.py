@@ -63,7 +63,7 @@ class AgentsTest(utils.FixturedTestCase):
         self.assert_called('GET', '/os-agents')
         for a in ags:
             self.assertIsInstance(a, agents.Agent)
-            self.assertEqual(a.hypervisor, 'kvm')
+            self.assertEqual('kvm', a.hypervisor)
 
     def test_list_agents_with_hypervisor(self):
         self.stub_hypervisors('xen')
@@ -71,7 +71,7 @@ class AgentsTest(utils.FixturedTestCase):
         self.assert_called('GET', '/os-agents?hypervisor=xen')
         for a in ags:
             self.assertIsInstance(a, agents.Agent)
-            self.assertEqual(a.hypervisor, 'xen')
+            self.assertEqual('xen', a.hypervisor)
 
     def test_agents_create(self):
         ag = self.cs.agents.create('win', 'x86', '7.0',
