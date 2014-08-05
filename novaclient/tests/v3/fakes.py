@@ -104,14 +104,14 @@ class FakeHTTPClient(fakes_v1_1.FakeHTTPClient):
         if filter_is_public is not None:
             if filter_is_public:
                 flavors['flavors'] = [
-                        v for v in flavors['flavors']
-                            if v['flavor-access:is_public']
-                        ]
+                    v for v in flavors['flavors']
+                    if v['flavor-access:is_public']
+                ]
             else:
                 flavors['flavors'] = [
-                        v for v in flavors['flavors']
-                            if not v['flavor-access:is_public']
-                        ]
+                    v for v in flavors['flavors']
+                    if not v['flavor-access:is_public']
+                ]
 
         return (200, {}, flavors)
 
