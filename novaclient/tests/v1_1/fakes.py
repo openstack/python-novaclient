@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from datetime import datetime
+import datetime
 
 import six
 from six.moves.urllib import parse
@@ -1495,13 +1495,17 @@ class FakeHTTPClient(base_client.HTTPClient):
                        'zone': 'nova',
                        'status': 'enabled',
                        'state': 'up',
-                       'updated_at': datetime(2012, 10, 29, 13, 42, 2)},
+                       'updated_at': datetime.datetime(
+                           2012, 10, 29, 13, 42, 2
+                       )},
                       {'binary': binary,
                        'host': host,
                        'zone': 'nova',
                        'status': 'disabled',
                        'state': 'down',
-                       'updated_at': datetime(2012, 9, 18, 8, 3, 38)},
+                       'updated_at': datetime.datetime(
+                           2012, 9, 18, 8, 3, 38
+                       )},
                       ]})
 
     def put_os_services_enable(self, body, **kw):
@@ -1785,7 +1789,9 @@ class FakeHTTPClient(base_client.HTTPClient):
                                        "nova-compute": {"active": True,
                                            "available": True,
                                            "updated_at":
-                                   datetime(2012, 12, 26, 14, 45, 25, 0)}}}},
+                                   datetime.datetime(
+                                       2012, 12, 26, 14, 45, 25, 0
+                                   )}}}},
                               {"zoneName": "internal",
                                "zoneState": {"available": True},
                                "hosts": {
@@ -1794,13 +1800,17 @@ class FakeHTTPClient(base_client.HTTPClient):
                                            "active": True,
                                            "available": True,
                                            "updated_at":
-                                   datetime(2012, 12, 26, 14, 45, 25, 0)}},
+                                   datetime.datetime(
+                                       2012, 12, 26, 14, 45, 25, 0
+                                   )}},
                                    "fake_host-2": {
                                        "nova-network": {
                                            "active": True,
                                            "available": False,
                                            "updated_at":
-                                   datetime(2012, 12, 26, 14, 45, 24, 0)}}}},
+                                   datetime.datetime(
+                                       2012, 12, 26, 14, 45, 24, 0
+                                   )}}}},
                               {"zoneName": "zone-2",
                                "zoneState": {"available": False},
                                "hosts": None}]})

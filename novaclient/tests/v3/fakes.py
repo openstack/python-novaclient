@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from datetime import datetime
+import datetime
 
 from novaclient.openstack.common import strutils
 from novaclient.tests import fakes
@@ -282,7 +282,9 @@ class FakeHTTPClient(fakes_v1_1.FakeHTTPClient):
                                        "nova-compute": {"active": True,
                                            "available": True,
                                            "updated_at":
-                                   datetime(2012, 12, 26, 14, 45, 25, 0)}}}},
+                                   datetime.datetime(
+                                       2012, 12, 26, 14, 45, 25, 0
+                                   )}}}},
                               {"zone_name": "internal",
                                "zone_state": {"available": True},
                                "hosts": {
@@ -291,13 +293,17 @@ class FakeHTTPClient(fakes_v1_1.FakeHTTPClient):
                                            "active": True,
                                            "available": True,
                                            "updated_at":
-                                   datetime(2012, 12, 26, 14, 45, 25, 0)}},
+                                   datetime.datetime(
+                                       2012, 12, 26, 14, 45, 25, 0
+                                   )}},
                                    "fake_host-2": {
                                        "nova-network": {
                                            "active": True,
                                            "available": False,
                                            "updated_at":
-                                   datetime(2012, 12, 26, 14, 45, 24, 0)}}}},
+                                   datetime.datetime(
+                                       2012, 12, 26, 14, 45, 24, 0
+                                   )}}}},
                               {"zone_name": "zone-2",
                                "zone_state": {"available": False},
                                "hosts": None}]})

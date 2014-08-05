@@ -11,7 +11,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from distutils.version import StrictVersion
+import distutils.version as dist_version
 import re
 import sys
 
@@ -200,7 +200,8 @@ class ShellTest(utils.TestCase):
         # default output of empty tables differs depending between prettytable
         # versions
         if (hasattr(prettytable, '__version__') and
-            StrictVersion(prettytable.__version__) < StrictVersion('0.7.2')):
+            dist_version.StrictVersion(prettytable.__version__) <
+            dist_version.StrictVersion('0.7.2')):
             ex = '\n'
         else:
             ex = (

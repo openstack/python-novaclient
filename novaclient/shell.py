@@ -219,7 +219,7 @@ class NovaClientArgumentParser(argparse.ArgumentParser):
         exits.
         """
         self.print_usage(sys.stderr)
-        #FIXME(lzyeval): if changes occur in argparse.ArgParser._check_value
+        # FIXME(lzyeval): if changes occur in argparse.ArgParser._check_value
         choose_from = ' (choose from'
         progparts = self.prog.partition(' ')
         self.exit(2, _("error: %(errmsg)s\nTry '%(mainp)s help %(subp)s'"
@@ -360,8 +360,8 @@ class OpenStackComputeShell(object):
         #                thinking usage-list --end is ambiguous; but it
         #                works fine with only --endpoint-type present
         #                Go figure.  I'm leaving this here for doc purposes.
-        #parser.add_argument('--endpoint_type',
-        #    help=argparse.SUPPRESS)
+        # parser.add_argument('--endpoint_type',
+        #     help=argparse.SUPPRESS)
 
         parser.add_argument('--os-compute-api-version',
             metavar='<compute-api-ver>',
@@ -607,7 +607,7 @@ class OpenStackComputeShell(object):
         must_auth = not (cliutils.isunauthenticated(args.func)
                          or (auth_token and management_url))
 
-        #FIXME(usrleon): Here should be restrict for project id same as
+        # FIXME(usrleon): Here should be restrict for project id same as
         # for os_username or os_password but for compatibility it is not.
         if must_auth:
             if auth_plugin:

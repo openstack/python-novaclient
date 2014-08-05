@@ -1151,7 +1151,7 @@ def do_image_delete(cs, args):
     const=1,
     help=argparse.SUPPRESS)
 @utils.arg('--tenant',
-    #nova db searches by project_id
+    # nova db searches by project_id
     dest='tenant',
     metavar='<tenant>',
     nargs='?',
@@ -2581,7 +2581,7 @@ def _find_keypair(cs, keypair):
 
 
 @utils.arg('--tenant',
-           #nova db searches by project_id
+           # nova db searches by project_id
            dest='tenant',
            metavar='<tenant>',
            nargs='?',

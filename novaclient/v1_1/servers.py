@@ -28,7 +28,8 @@ from novaclient import base
 from novaclient import crypto
 from novaclient.openstack.common.gettextutils import _
 from novaclient.openstack.common import strutils
-from novaclient.v1_1.security_groups import SecurityGroup
+from novaclient.v1_1 import security_groups
+
 
 REBOOT_SOFT, REBOOT_HARD = 'SOFT', 'HARD'
 
@@ -1147,7 +1148,8 @@ class ServerManager(base.BootingManagerWithFind):
 
         """
         return self._list('/servers/%s/os-security-groups' %
-                          base.getid(server), 'security_groups', SecurityGroup)
+                          base.getid(server), 'security_groups',
+                          security_groups.SecurityGroup)
 
     def evacuate(self, server, host, on_shared_storage, password=None):
         """
