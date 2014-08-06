@@ -231,7 +231,8 @@ class ShellTest(utils.TestCase):
         if version is None:
             cmd = 'list'
         else:
-            cmd = '--os-compute-api-version %s list' % version
+            cmd = ('--service_type %s --os-compute-api-version %s list' %
+                   (service_type, version))
         self.make_env()
         self.shell(cmd)
         _, client_kwargs = mock_client.call_args_list[0]

@@ -701,7 +701,7 @@ class OpenStackComputeShell(object):
         except exc.AuthorizationFailure:
             raise exc.CommandError(_("Unable to authorize user"))
 
-        if os_compute_api_version == "3" and service_type != 'image':
+        if options.os_compute_api_version == "3" and service_type != 'image':
             # NOTE(cyeoh): create an image based client because the
             # images api is no longer proxied by the V3 API and we
             # sometimes need to be able to look up images information
