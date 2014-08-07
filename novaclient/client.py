@@ -30,6 +30,7 @@ import os
 import re
 import time
 
+from keystoneclient import adapter
 import requests
 from requests import adapters
 
@@ -133,64 +134,21 @@ class CompletionCache(object):
                 self._write_attribute(resource, attribute, value)
 
 
-class SessionClient(object):
-
-    def __init__(self, session, auth, interface, service_type, region_name):
-        self.session = session
-        self.auth = auth
-
-        self.interface = interface
-        self.service_type = service_type
-        self.region_name = region_name
+class SessionClient(adapter.LegacyJsonAdapter):
 
     def request(self, url, method, **kwargs):
-        kwargs.setdefault('user_agent', 'python-novaclient')
-        kwargs.setdefault('auth', self.auth)
-        kwargs.setdefault('authenticated', False)
+        # NOTE(jamielennox): The standard call raises errors from
+        # keystoneclient, where we need to raise the novaclient errors.
+        raise_exc = kwargs.pop('raise_exc', True)
+        resp, body = super(SessionClient, self).request(url,
+                                                        method,
+                                                        raise_exc=False,
+                                                        **kwargs)
 
-        try:
-            kwargs['json'] = kwargs.pop('body')
-        except KeyError:
-            pass
-
-        headers = kwargs.setdefault('headers', {})
-        headers.setdefault('Accept', 'application/json')
-
-        endpoint_filter = kwargs.setdefault('endpoint_filter', {})
-        endpoint_filter.setdefault('interface', self.interface)
-        endpoint_filter.setdefault('service_type', self.service_type)
-        endpoint_filter.setdefault('region_name', self.region_name)
-
-        resp = self.session.request(url, method, raise_exc=False, **kwargs)
-
-        body = None
-        if resp.text:
-            try:
-                body = resp.json()
-            except ValueError:
-                pass
-
-        if resp.status_code >= 400:
+        if raise_exc and resp.status_code >= 400:
             raise exceptions.from_response(resp, body, url, method)
 
         return resp, body
-
-    def _cs_request(self, url, method, **kwargs):
-        # this function is mostly redundant but makes compatibility easier
-        kwargs.setdefault('authenticated', True)
-        return self.request(url, method, **kwargs)
-
-    def get(self, url, **kwargs):
-        return self._cs_request(url, 'GET', **kwargs)
-
-    def post(self, url, **kwargs):
-        return self._cs_request(url, 'POST', **kwargs)
-
-    def put(self, url, **kwargs):
-        return self._cs_request(url, 'PUT', **kwargs)
-
-    def delete(self, url, **kwargs):
-        return self._cs_request(url, 'DELETE', **kwargs)
 
 
 def _original_only(f):
@@ -745,13 +703,17 @@ def _construct_http_client(username=None, password=None, project_id=None,
                            auth_system='keystone', auth_plugin=None,
                            auth_token=None, cacert=None, tenant_id=None,
                            user_id=None, connection_pool=False, session=None,
-                           auth=None):
+                           auth=None, user_agent='python-novaclient',
+                           **kwargs):
     if session:
         return SessionClient(session=session,
                              auth=auth,
                              interface=endpoint_type,
                              service_type=service_type,
-                             region_name=region_name)
+                             region_name=region_name,
+                             service_name=service_name,
+                             user_agent=user_agent,
+                             **kwargs)
     else:
         # FIXME(jamielennox): username and password are now optional. Need
         # to test that they were provided in this mode.
