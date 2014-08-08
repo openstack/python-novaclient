@@ -11,11 +11,9 @@
 # under the License.
 
 import fixtures
-import httpretty
 from keystoneclient.auth.identity import v2
 from keystoneclient import session
 
-from novaclient.openstack.common import jsonutils
 from novaclient.v1_1 import client as v1_1client
 from novaclient.v3 import client as v3client
 
@@ -25,11 +23,13 @@ COMPUTE_URL = 'http://compute.host'
 
 class V1(fixtures.Fixture):
 
-    def __init__(self, compute_url=COMPUTE_URL, identity_url=IDENTITY_URL):
+    def __init__(self, requests,
+                 compute_url=COMPUTE_URL, identity_url=IDENTITY_URL):
         super(V1, self).__init__()
         self.identity_url = identity_url
         self.compute_url = compute_url
         self.client = None
+        self.requests = requests
 
         self.token = {
             'access': {
@@ -86,13 +86,12 @@ class V1(fixtures.Fixture):
 
     def setUp(self):
         super(V1, self).setUp()
-        httpretty.enable()
-        self.addCleanup(httpretty.disable)
 
         auth_url = '%s/tokens' % self.identity_url
-        httpretty.register_uri(httpretty.POST, auth_url,
-                               body=jsonutils.dumps(self.token),
-                               content_type='application/json')
+        headers = {'X-Content-Type': 'application/json'}
+        self.requests.register_uri('POST', auth_url,
+                               json=self.token,
+                               headers=headers)
         self.client = self.new_client()
 
     def new_client(self):

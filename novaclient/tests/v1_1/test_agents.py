@@ -13,9 +13,6 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import httpretty
-
-from novaclient.openstack.common import jsonutils
 from novaclient.tests.fixture_data import agents as data
 from novaclient.tests.fixture_data import client
 from novaclient.tests import utils
@@ -53,9 +50,10 @@ class AgentsTest(utils.FixturedTestCase):
             ]
         }
 
-        httpretty.register_uri(httpretty.GET, self.data_fixture.url(),
-                               body=jsonutils.dumps(get_os_agents),
-                               content_type='application/json')
+        headers = {'Content-Type': 'application/json'}
+        self.requests.register_uri('GET', self.data_fixture.url(),
+                                   json=get_os_agents,
+                                   headers=headers)
 
     def test_list_agents(self):
         self.stub_hypervisors()

@@ -12,11 +12,11 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import httpretty
 import mock
 import six
 
 from novaclient import exceptions
+from novaclient.openstack.common import jsonutils
 from novaclient.tests.fixture_data import client
 from novaclient.tests.fixture_data import floatingips
 from novaclient.tests.fixture_data import servers as data
@@ -31,7 +31,7 @@ class ServersTest(utils.FixturedTestCase):
 
     def setUp(self):
         super(ServersTest, self).setUp()
-        self.useFixture(floatingips.FloatingFixture())
+        self.useFixture(floatingips.FloatingFixture(self.requests))
 
     def test_list_servers(self):
         sl = self.cs.servers.list()
@@ -191,7 +191,7 @@ class ServersTest(utils.FixturedTestCase):
         self.assertIsInstance(s, servers.Server)
 
         # verify disk config param was used in the request:
-        body = httpretty.last_request().parsed_body
+        body = jsonutils.loads(self.requests.last_request.body)
         server = body['server']
         self.assertTrue('OS-DCF:diskConfig' in server)
         self.assertEqual(disk_config, server['OS-DCF:diskConfig'])
@@ -280,7 +280,7 @@ class ServersTest(utils.FixturedTestCase):
         self.assert_called('POST', '/servers/1234/action')
 
         # verify disk config param was used in the request:
-        body = httpretty.last_request().parsed_body
+        body = jsonutils.loads(self.requests.last_request.body)
 
         d = body[operation]
         self.assertTrue('OS-DCF:diskConfig' in d)
@@ -296,7 +296,7 @@ class ServersTest(utils.FixturedTestCase):
         s = self.cs.servers.get(1234)
         s.rebuild(image=1, preserve_ephemeral=True)
         self.assert_called('POST', '/servers/1234/action')
-        body = httpretty.last_request().parsed_body
+        body = jsonutils.loads(self.requests.last_request.body)
         d = body['rebuild']
         self.assertIn('preserve_ephemeral', d)
         self.assertEqual(d['preserve_ephemeral'], True)
@@ -305,7 +305,7 @@ class ServersTest(utils.FixturedTestCase):
         files = {'/etc/passwd': 'some data'}
         s = self.cs.servers.get(1234)
         s.rebuild(image=1, name='new', meta={'foo': 'bar'}, files=files)
-        body = httpretty.last_request().parsed_body
+        body = jsonutils.loads(self.requests.last_request.body)
         d = body['rebuild']
         self.assertEqual('new', d['name'])
         self.assertEqual({'foo': 'bar'}, d['metadata'])
