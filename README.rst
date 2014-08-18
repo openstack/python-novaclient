@@ -66,7 +66,7 @@ Python API
 There's also a complete Python API, but it has not yet been documented.
 
 
-Quick-start using keystone::
+To use with nova, with keystone as the authentication system::
 
     # use v2.0 auth with http://example.com:5000/v2.0/")
     >>> from novaclient.v1_1 import client
