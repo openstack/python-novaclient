@@ -97,7 +97,7 @@ class Client(object):
         self.tenant_id = tenant_id
         self.user_id = user_id
         self.os_cache = os_cache or not no_cache
-        #TODO(bnemec): Add back in v3 extensions
+        # TODO(bnemec): Add back in v3 extensions
         self.agents = agents.AgentsManager(self)
         self.aggregates = aggregates.AggregateManager(self)
         self.availability_zones = \
