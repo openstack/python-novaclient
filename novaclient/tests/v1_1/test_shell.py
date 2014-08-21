@@ -2072,10 +2072,15 @@ class ShellTest(utils.TestCase):
     def test_ssh(self, mock_system, mock_find_server):
         class FakeResources(object):
             addresses = {
-                "private": [{'version': 4, 'addr': "1.1.1.1"},
-                            {'version': 6, 'addr': "2607:f0d0:1002::4"}],
-                "public": [{'version': 4, 'addr': "2.2.2.2"},
-                           {'version': 6, 'addr': "7612:a1b2:2004::6"}]
+                "skynet": [
+                    {'version': 4, 'addr': "1.1.1.1",
+                    "OS-EXT-IPS:type": 'fixed'},
+                    {'version': 4, 'addr': "2.2.2.2",
+                    "OS-EXT-IPS:type": 'floating'},
+                    {'version': 6, 'addr': "2607:f0d0:1002::4",
+                    "OS-EXT-IPS:type": 'fixed'},
+                    {'version': 6, 'addr': "7612:a1b2:2004::6"}
+                ]
             }
         mock_find_server.return_value = FakeResources()
 
@@ -2109,6 +2114,33 @@ class ShellTest(utils.TestCase):
         self.run_command("ssh --ipv6 --private --extra-opts -1 server")
         mock_system.assert_called_with("ssh -6 -p22  "
                                        "root@2607:f0d0:1002::4 -1")
+
+    @mock.patch('novaclient.v1_1.shell._find_server')
+    @mock.patch('os.system')
+    def test_ssh_multinet(self, mock_system, mock_find_server):
+        class FakeResources(object):
+            addresses = {
+                "skynet": [
+                    {'version': 4, 'addr': "1.1.1.1",
+                    "OS-EXT-IPS:type": 'fixed'},
+                    {'version': 4, 'addr': "2.2.2.2"},
+                    {'version': 6, 'addr': "2607:f0d0:1002::4",
+                    "OS-EXT-IPS:type": 'fixed'}
+                ],
+                "other": [
+                    {'version': 4, 'addr': "2.3.4.5"},
+                    {'version': 6, 'addr': "7612:a1b2:2004::6"}
+                ]
+            }
+        mock_find_server.return_value = FakeResources()
+
+        self.run_command("ssh --network other server")
+        mock_system.assert_called_with("ssh -4 -p22  root@2.3.4.5 ")
+        self.run_command("ssh --ipv6 --network other server")
+        mock_system.assert_called_with("ssh -6 -p22  root@7612:a1b2:2004::6 ")
+        self.assertRaises(exceptions.ResourceNotFound,
+                          self.run_command,
+                          "ssh --ipv6 --network nonexistent server")
 
     def test_keypair_add(self):
         self.run_command('keypair-add test')

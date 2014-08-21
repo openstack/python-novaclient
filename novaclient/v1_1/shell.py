@@ -23,6 +23,7 @@ import copy
 import datetime
 import getpass
 import locale
+import logging
 import os
 import sys
 import time
@@ -38,6 +39,9 @@ from novaclient import utils
 from novaclient.v1_1 import availability_zones
 from novaclient.v1_1 import quotas
 from novaclient.v1_1 import servers
+
+
+logger = logging.getLogger(__name__)
 
 
 CLIENT_BDM2_KEYS = {
@@ -3239,9 +3243,16 @@ def do_credentials(cs, _args):
     dest='private',
     action='store_true',
     default=False,
-    help=_('Optional flag to indicate whether to only use private address '
-         'attached to an instance. (Default=False). If no public address is '
-         'found try private address'))
+    help=argparse.SUPPRESS)
+@utils.arg('--address-type',
+    dest='address_type',
+    action='store',
+    type=str,
+    default='floating',
+    help=_('Optional flag to indicate which IP type to use. Possible values  '
+         'includes fixed and floating (the Default).'))
+@utils.arg('--network', metavar='<network>',
+           help=_('Network to use for the ssh.'), default=None)
 @utils.arg('--ipv6',
     dest='ipv6',
     action='store_true',
@@ -3266,35 +3277,57 @@ def do_ssh(cs, args):
         args.server = server
 
     addresses = _find_server(cs, args.server).addresses
-    address_type = "private" if args.private else "public"
+    address_type = "fixed" if args.private else args.address_type
     version = 6 if args.ipv6 else 4
+    pretty_version = 'IPv%d' % version
 
-    if (address_type == "public" and address_type not in addresses and
-            "private" in addresses):
-        address_type = "private"
+    # Select the network to use.
+    if args.network:
+        network_addresses = addresses.get(args.network)
+        if not network_addresses:
+            msg = _("Server '%(server)s' is not attached to network "
+                    "'%(network)s'")
+            raise exceptions.ResourceNotFound(
+                msg % {'server': args.server, 'network': args.network})
+    else:
+        if len(addresses) > 1:
+            msg = _("Server '%(server)s' is attached to more than one network."
+                    " Please pick the network to use.")
+            raise exceptions.CommandError(msg % {'server': args.server})
+        elif not addresses:
+            msg = _("Server '%(server)s' is not attached to any network.")
+            raise exceptions.CommandError(msg % {'server': args.server})
+        else:
+            network_addresses = list(six.itervalues(addresses))[0]
 
-    if address_type not in addresses:
-        print(_("ERROR: No %(addr_type)s addresses found for '%(server)s'.") %
-              {'addr_type': address_type, 'server': args.server})
-        return
-
-    ip_address = None
-    for address in addresses[address_type]:
-        if address['version'] == version:
-            ip_address = address['addr']
-            break
+    # Select the address in the selected network.
+    # If the extension is not present, we assume the address to be floating.
+    match = lambda addr: all((
+        addr.get('version') == version,
+        addr.get('OS-EXT-IPS:type', 'floating') == address_type))
+    matching_addresses = [address.get('addr') for address in network_addresses
+                            if match(address)]
+    if not any(matching_addresses):
+        msg = _("No address that would match network '%(network)s'"
+                " and type '%(address_type)s' of version %(pretty_version)s "
+                "has been found for server '%(server)s'.")
+        raise exceptions.ResourceNotFound(msg % {
+            'network': args.network, 'address_type': address_type,
+            'pretty_version': pretty_version, 'server': args.server})
+    elif len(matching_addresses) > 1:
+        msg = _("More than one %(pretty_version)s %(address_type)s address"
+                "found.")
+        raise exceptions.CommandError(msg % {'pretty_version': pretty_version,
+                                             'address_type': address_type})
+    else:
+        ip_address = matching_addresses[0]
 
     identity = '-i %s' % args.identity if len(args.identity) else ''
 
-    if ip_address:
-        os.system("ssh -%d -p%d %s %s@%s %s" % (version, args.port, identity,
-                                                args.login, ip_address,
-                                                args.extra))
-    else:
-        pretty_version = "IPv%d" % version
-        print(_("ERROR: No %(addr_type)s %(pretty_version)s address found.") %
-              {'addr_type': address_type, 'pretty_version': pretty_version})
-        return
+    cmd = "ssh -%d -p%d %s %s@%s %s" % (version, args.port, identity,
+                                        args.login, ip_address, args.extra)
+    logger.debug("Executing cmd '%s'", cmd)
+    os.system(cmd)
 
 
 _quota_resources = ['instances', 'cores', 'ram',
