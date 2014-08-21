@@ -563,6 +563,39 @@ class ShellTest(utils.TestCase):
         self.assertRaises(exceptions.InstanceInErrorState, self.run_command,
                           'boot --flavor 1 --image 1 some-bad-server --poll')
 
+    def test_evacuate(self):
+        self.run_command('evacuate sample-server new_host')
+        self.assert_called('POST', '/servers/1234/action',
+                           {'evacuate': {'host': 'new_host',
+                                         'on_shared_storage': False}})
+        self.run_command('evacuate sample-server new_host '
+                         '--password NewAdminPass')
+        self.assert_called('POST', '/servers/1234/action',
+                           {'evacuate': {'host': 'new_host',
+                                         'on_shared_storage': False,
+                                         'admin_password': 'NewAdminPass'}})
+        self.run_command('evacuate sample-server new_host')
+        self.assert_called('POST', '/servers/1234/action',
+                           {'evacuate': {'host': 'new_host',
+                                         'on_shared_storage': False}})
+        self.run_command('evacuate sample-server new_host '
+                         '--on-shared-storage')
+        self.assert_called('POST', '/servers/1234/action',
+                           {'evacuate': {'host': 'new_host',
+                                         'on_shared_storage': True}})
+
+    def test_evacuate_with_no_target_host(self):
+        self.run_command('evacuate sample-server')
+        self.assert_called('POST', '/servers/1234/action',
+                           {'evacuate': {'on_shared_storage': False}})
+        self.run_command('evacuate sample-server --password NewAdminPass')
+        self.assert_called('POST', '/servers/1234/action',
+                           {'evacuate': {'on_shared_storage': False,
+                                         'admin_password': 'NewAdminPass'}})
+        self.run_command('evacuate sample-server --on-shared-storage')
+        self.assert_called('POST', '/servers/1234/action',
+                           {'evacuate': {'on_shared_storage': True}})
+
     def test_boot_named_flavor(self):
         self.run_command(["boot", "--image", "1",
                           "--flavor", "512 MB Server",

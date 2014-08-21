@@ -197,11 +197,11 @@ class FakeHTTPClient(fakes_v1_1.FakeHTTPClient):
             }
         body_param_check_exists = {
             'rebuild': 'image_ref',
-            'resize': 'flavor_ref'}
+            'resize': 'flavor_ref',
+            'evacuate': 'on_shared_storage'}
         body_params_check_exact = {
             'reboot': ['type'],
             'add_fixed_ip': ['network_id'],
-            'evacuate': ['host', 'on_shared_storage'],
             'remove_fixed_ip': ['address'],
             'change_password': ['admin_password'],
             'get_console_output': ['length'],
@@ -225,9 +225,6 @@ class FakeHTTPClient(fakes_v1_1.FakeHTTPClient):
 
         if action in body_param_check_exists:
             assert body_param_check_exists[action] in body[action]
-
-        if action == 'evacuate':
-            body[action].pop('admin_password', None)
 
         if action in body_params_check_exact:
             assert set(body[action]) == set(body_params_check_exact[action])

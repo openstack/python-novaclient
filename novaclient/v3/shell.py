@@ -2923,11 +2923,12 @@ def do_quota_delete(cs, args):
 
 
 @utils.arg('server', metavar='<server>', help='Name or ID of server.')
-@utils.arg('host', metavar='<host>', help='Name or ID of target host.')
+@utils.arg('host', metavar='<host>', nargs='?',
+    help="Name or ID of the target host.  "
+         "If no host is specified, the scheduler will choose one.")
 @utils.arg('--password',
     dest='password',
     metavar='<password>',
-    default=None,
     help="Set the provided password on the evacuated server. Not applicable "
             "with on-shared-storage flag")
 @utils.arg('--on-shared-storage',
