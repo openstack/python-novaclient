@@ -45,6 +45,7 @@ class BaseFixture(base.Fixture):
         def get_os_hosts(request, context):
             host, query = parse.splitquery(request.url)
             zone = 'nova1'
+            service = None
 
             if query:
                 qs = parse.parse_qs(query)
@@ -53,16 +54,21 @@ class BaseFixture(base.Fixture):
                 except Exception:
                     pass
 
+                try:
+                    service = qs['service'][0]
+                except Exception:
+                    pass
+
             return {
                 'hosts': [
                     {
                         'host': 'host1',
-                        'service': 'nova-compute',
+                        'service': service or 'nova-compute',
                         'zone': zone
                     },
                     {
                         'host': 'host1',
-                        'service': 'nova-cert',
+                        'service': service or 'nova-cert',
                         'zone': zone
                     }
                 ]

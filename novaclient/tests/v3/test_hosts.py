@@ -43,6 +43,21 @@ class HostsTest(utils.FixturedTestCase):
             self.assertIsInstance(h, hosts.Host)
             self.assertEqual(h.zone, 'nova')
 
+    def test_list_host_with_service(self):
+        hs = self.cs.hosts.list(service='nova-compute')
+        self.assert_called('GET', '/os-hosts?service=nova-compute')
+        for h in hs:
+            self.assertIsInstance(h, hosts.Host)
+            self.assertEqual(h.service, 'nova-compute')
+
+    def test_list_host_with_zone_and_service(self):
+        hs = self.cs.hosts.list(service='nova-compute', zone='nova')
+        self.assert_called('GET', '/os-hosts?zone=nova&service=nova-compute')
+        for h in hs:
+            self.assertIsInstance(h, hosts.Host)
+            self.assertEqual(h.zone, 'nova')
+            self.assertEqual(h.service, 'nova-compute')
+
     def test_update_enable(self):
         host = self.cs.hosts.get('sample_host')[0]
         values = {"status": "enabled"}
