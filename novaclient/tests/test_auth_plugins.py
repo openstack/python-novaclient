@@ -15,6 +15,7 @@
 
 import argparse
 
+from keystoneclient import fixture
 import mock
 import pkg_resources
 import requests
@@ -33,30 +34,10 @@ from novaclient.v1_1 import client
 def mock_http_request(resp=None):
     """Mock an HTTP Request."""
     if not resp:
-        resp = {
-            "access": {
-                "token": {
-                    "expires": "12345",
-                    "id": "FAKE_ID",
-                    "tenant": {
-                        "id": "FAKE_TENANT_ID",
-                    }
-                },
-                "serviceCatalog": [
-                    {
-                        "type": "compute",
-                        "endpoints": [
-                            {
-                                "region": "RegionOne",
-                                "adminURL": "http://localhost:8774/v1.1",
-                                "internalURL": "http://localhost:8774/v1.1",
-                                "publicURL": "http://localhost:8774/v1.1/",
-                            },
-                        ],
-                    },
-                ],
-            },
-        }
+        resp = fixture.V2Token()
+        resp.set_scope()
+        s = resp.add_service('compute')
+        s.add_endpoint("http://localhost:8774/v1.1", region='RegionOne')
 
     auth_response = utils.TestResponse({
         "status_code": 200,

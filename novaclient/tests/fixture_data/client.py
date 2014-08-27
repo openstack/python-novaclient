@@ -12,6 +12,7 @@
 
 import fixtures
 from keystoneclient.auth.identity import v2
+from keystoneclient import fixture
 from keystoneclient import session
 
 from novaclient.v1_1 import client as v1_1client
@@ -31,58 +32,14 @@ class V1(fixtures.Fixture):
         self.client = None
         self.requests = requests
 
-        self.token = {
-            'access': {
-                "token": {
-                    "id": "ab48a9efdfedb23ty3494",
-                    "expires": "2010-11-01T03:32:15-05:00",
-                    "tenant": {
-                        "id": "345",
-                        "name": "My Project"
-                    }
-                },
-                "user": {
-                    "id": "123",
-                    "name": "jqsmith",
-                    "roles": [
-                        {
-                            "id": "234",
-                            "name": "compute:admin",
-                        },
-                        {
-                            "id": "235",
-                            "name": "object-store:admin",
-                            "tenantId": "1",
-                        }
-                    ],
-                    "roles_links": [],
-                },
-                "serviceCatalog": [
-                    {
-                        "name": "Cloud Servers",
-                        "type": "compute",
-                        "endpoints": [
-                            {
-                                "publicURL": self.compute_url,
-                                "internalURL": "https://compute1.host/v1/1",
-                            },
-                        ],
-                        "endpoints_links": [],
-                    },
-                    {
-                        "name": "Cloud Servers",
-                        "type": "computev3",
-                        "endpoints": [
-                            {
-                                "publicURL": self.compute_url,
-                                "internalURL": "https://compute1.host/v1/1",
-                            },
-                        ],
-                        "endpoints_links": [],
-                    },
-                ],
-            }
-        }
+        self.token = fixture.V2Token()
+        self.token.set_scope()
+
+        s = self.token.add_service('compute')
+        s.add_endpoint(self.compute_url)
+
+        s = self.token.add_service('computev3')
+        s.add_endpoint(self.compute_url)
 
     def setUp(self):
         super(V1, self).setUp()
