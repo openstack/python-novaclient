@@ -31,6 +31,7 @@ import re
 import time
 
 from keystoneclient import adapter
+from oslo.utils import netutils
 import requests
 from requests import adapters
 
@@ -43,7 +44,6 @@ from six.moves.urllib import parse
 
 from novaclient import exceptions
 from novaclient.openstack.common.gettextutils import _
-from novaclient.openstack.common import network_utils
 from novaclient import service_catalog
 from novaclient import utils
 
@@ -558,7 +558,7 @@ class HTTPClient(object):
                                              extract_token=False)
 
     def authenticate(self):
-        magic_tuple = network_utils.urlsplit(self.auth_url)
+        magic_tuple = netutils.urlsplit(self.auth_url)
         scheme, netloc, path, query, frag = magic_tuple
         port = magic_tuple.port
         if port is None:

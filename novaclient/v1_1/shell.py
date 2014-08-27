@@ -28,12 +28,13 @@ import os
 import sys
 import time
 
+from oslo.utils import encodeutils
+from oslo.utils import strutils
+from oslo.utils import timeutils
 import six
 
 from novaclient import exceptions
 from novaclient.openstack.common.gettextutils import _
-from novaclient.openstack.common import strutils
-from novaclient.openstack.common import timeutils
 from novaclient.openstack.common import uuidutils
 from novaclient import utils
 from novaclient.v1_1 import availability_zones
@@ -2301,7 +2302,7 @@ def _print_secgroups(secgroups):
 
 def _get_secgroup(cs, secgroup):
     # Check secgroup is an ID (nova-network) or UUID (neutron)
-    if (utils.is_integer_like(strutils.safe_encode(secgroup))
+    if (utils.is_integer_like(encodeutils.safe_encode(secgroup))
                or uuidutils.is_uuid_like(secgroup)):
         try:
             return cs.security_groups.get(secgroup)

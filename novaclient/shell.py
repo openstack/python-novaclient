@@ -29,6 +29,8 @@ import os
 import pkgutil
 import sys
 
+from oslo.utils import encodeutils
+from oslo.utils import strutils
 import pkg_resources
 import six
 
@@ -47,7 +49,6 @@ from novaclient import exceptions as exc
 import novaclient.extension
 from novaclient.openstack.common import cliutils
 from novaclient.openstack.common.gettextutils import _
-from novaclient.openstack.common import strutils
 from novaclient import utils
 from novaclient.v1_1 import shell as shell_v1_1
 from novaclient.v3 import shell as shell_v3
@@ -795,13 +796,13 @@ class OpenStackHelpFormatter(argparse.HelpFormatter):
 
 def main():
     try:
-        argv = [strutils.safe_decode(a) for a in sys.argv[1:]]
+        argv = [encodeutils.safe_decode(a) for a in sys.argv[1:]]
         OpenStackComputeShell().main(argv)
 
     except Exception as e:
         logger.debug(e, exc_info=1)
-        details = {'name': strutils.safe_encode(e.__class__.__name__),
-                   'msg': strutils.safe_encode(six.text_type(e))}
+        details = {'name': encodeutils.safe_encode(e.__class__.__name__),
+                   'msg': encodeutils.safe_encode(six.text_type(e))}
         print("ERROR (%(name)s): %(msg)s" % details,
               file=sys.stderr)
         sys.exit(1)

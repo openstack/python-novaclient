@@ -16,7 +16,8 @@
 
 import datetime
 
-from novaclient.openstack.common import strutils
+from oslo.utils import strutils
+
 from novaclient.tests import fakes
 from novaclient.tests.v1_1 import fakes as fakes_v1_1
 from novaclient.v3 import client

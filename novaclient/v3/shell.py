@@ -27,12 +27,12 @@ import os
 import sys
 import time
 
+from oslo.utils import strutils
+from oslo.utils import timeutils
 import six
 
 from novaclient import exceptions
 from novaclient.openstack.common.gettextutils import _
-from novaclient.openstack.common import strutils
-from novaclient.openstack.common import timeutils
 from novaclient.openstack.common import uuidutils
 from novaclient import utils
 from novaclient.v3 import availability_zones
