@@ -14,13 +14,12 @@
 import os
 
 import fixtures
+from oslo.serialization import jsonutils
 import requests
 from requests_mock.contrib import fixture as requests_mock_fixture
 import six
 import testscenarios
 import testtools
-
-from novaclient.openstack.common import jsonutils
 
 AUTH_URL = "http://localhost:5002/auth_url"
 AUTH_URL_V1 = "http://localhost:5002/auth_url/v1.0"
