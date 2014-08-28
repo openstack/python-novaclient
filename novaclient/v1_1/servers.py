@@ -566,7 +566,8 @@ class ServerManager(base.BootingManagerWithFind):
         """
         return self._get("/servers/%s" % base.getid(server), "server")
 
-    def list(self, detailed=True, search_opts=None, marker=None, limit=None):
+    def list(self, detailed=True, search_opts=None, marker=None, limit=None,
+             sort_keys=None, sort_dirs=None):
         """
         Get a list of servers.
 
@@ -575,6 +576,8 @@ class ServerManager(base.BootingManagerWithFind):
         :param marker: Begin returning servers that appear later in the server
                        list than that represented by this server id (optional).
         :param limit: Maximum number of servers to return (optional).
+        :param sort_keys: List of sort keys
+        :param sort_dirs: List of sort directions
 
         :rtype: list of :class:`Server`
         """
@@ -595,8 +598,16 @@ class ServerManager(base.BootingManagerWithFind):
 
         # Transform the dict to a sequence of two-element tuples in fixed
         # order, then the encoded string will be consistent in Python 2&3.
-        if qparams:
-            new_qparams = sorted(qparams.items(), key=lambda x: x[0])
+        if qparams or sort_keys or sort_dirs:
+            # sort keys and directions are unique since the same parameter
+            # key is repeated for each associated value
+            # (ie, &sort_key=key1&sort_key=key2&sort_key=key3)
+            items = list(qparams.items())
+            if sort_keys:
+                items.extend(('sort_key', sort_key) for sort_key in sort_keys)
+            if sort_dirs:
+                items.extend(('sort_dir', sort_dir) for sort_dir in sort_dirs)
+            new_qparams = sorted(items, key=lambda x: x[0])
             query_string = "?%s" % parse.urlencode(new_qparams)
         else:
             query_string = ""

@@ -1308,6 +1308,13 @@ def do_image_delete(cs, args):
     action="store_true",
     default=False,
     help=_('Get only uuid and name.'))
+@cliutils.arg(
+    '--sort',
+    dest='sort',
+    metavar='<key>[:<direction>]',
+    help=('Comma-separated list of sort keys and directions in the form'
+          ' of <key>[:<asc|desc>]. The direction defaults to descending if'
+          ' not specified.'))
 def do_list(cs, args):
     """List active servers."""
     imageid = None
@@ -1350,8 +1357,23 @@ def do_list(cs, args):
 
     detailed = not args.minimal
 
+    sort_keys = []
+    sort_dirs = []
+    if args.sort:
+        for sort in args.sort.split(','):
+            sort_key, _sep, sort_dir = sort.partition(':')
+            if not sort_dir:
+                sort_dir = 'desc'
+            elif sort_dir not in ('asc', 'desc'):
+                raise exceptions.CommandError(_(
+                    'Unknown sort direction: %s') % sort_dir)
+            sort_keys.append(sort_key)
+            sort_dirs.append(sort_dir)
+
     servers = cs.servers.list(detailed=detailed,
-                              search_opts=search_opts)
+                              search_opts=search_opts,
+                              sort_keys=sort_keys,
+                              sort_dirs=sort_dirs)
     convert = [('OS-EXT-SRV-ATTR:host', 'host'),
                ('OS-EXT-STS:task_state', 'task_state'),
                ('OS-EXT-SRV-ATTR:instance_name', 'instance_name'),
@@ -1375,8 +1397,11 @@ def do_list(cs, args):
             'Networks'
         ]
     formatters['Networks'] = utils._format_servers_list_networks
+    sortby_index = 1
+    if args.sort:
+        sortby_index = None
     utils.print_list(servers, columns,
-                     formatters, sortby_index=1)
+                     formatters, sortby_index=sortby_index)
 
 
 @cliutils.arg(

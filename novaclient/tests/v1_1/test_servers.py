@@ -49,6 +49,25 @@ class ServersTest(utils.FixturedTestCase):
         for s in sl:
             self.assertIsInstance(s, servers.Server)
 
+    def test_list_servers_sort_single(self):
+        sl = self.cs.servers.list(sort_keys=['display_name'],
+                                  sort_dirs=['asc'])
+        self.assert_called(
+            'GET',
+            '/servers/detail?sort_dir=asc&sort_key=display_name')
+        for s in sl:
+            self.assertIsInstance(s, servers.Server)
+
+    def test_list_servers_sort_multiple(self):
+        sl = self.cs.servers.list(sort_keys=['display_name', 'id'],
+                                  sort_dirs=['asc', 'desc'])
+        self.assert_called(
+            'GET',
+            ('/servers/detail?sort_dir=asc&sort_dir=desc&'
+             'sort_key=display_name&sort_key=id'))
+        for s in sl:
+            self.assertIsInstance(s, servers.Server)
+
     def test_get_server_details(self):
         s = self.cs.servers.get(1234)
         self.assert_called('GET', '/servers/1234')
