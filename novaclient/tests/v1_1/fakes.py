@@ -1458,14 +1458,24 @@ class FakeHTTPClient(base_client.HTTPClient):
             {'id': '2',
              'name': 'test2',
              'availability_zone': 'nova1'},
+            {'id': '3',
+             'name': 'test3',
+             'metadata': {'test': "dup", "none_key": "Nine"}},
         ]})
 
     def _return_aggregate(self):
         r = {'aggregate': self.get_os_aggregates()[2]['aggregates'][0]}
         return (200, {}, r)
 
+    def _return_aggregate_3(self):
+        r = {'aggregate': self.get_os_aggregates()[2]['aggregates'][2]}
+        return (200, {}, r)
+
     def get_os_aggregates_1(self, **kw):
         return self._return_aggregate()
+
+    def get_os_aggregates_3(self, **kw):
+        return self._return_aggregate_3()
 
     def post_os_aggregates(self, body, **kw):
         return self._return_aggregate()
@@ -1476,11 +1486,17 @@ class FakeHTTPClient(base_client.HTTPClient):
     def put_os_aggregates_2(self, body, **kw):
         return self._return_aggregate()
 
+    def put_os_aggregates_3(self, body, **kw):
+        return self._return_aggregate_3()
+
     def post_os_aggregates_1_action(self, body, **kw):
         return self._return_aggregate()
 
     def post_os_aggregates_2_action(self, body, **kw):
         return self._return_aggregate()
+
+    def post_os_aggregates_3_action(self, body, **kw):
+        return self._return_aggregate_3()
 
     def delete_os_aggregates_1(self, **kw):
         return (202, {}, None)
