@@ -35,6 +35,7 @@ from novaclient.v1_1 import limits
 from novaclient.v1_1 import networks
 from novaclient.v1_1 import quota_classes
 from novaclient.v1_1 import quotas
+from novaclient.v1_1 import security_group_default_rules
 from novaclient.v1_1 import security_group_rules
 from novaclient.v1_1 import security_groups
 from novaclient.v1_1 import server_groups
@@ -142,6 +143,8 @@ class Client(object):
         self.security_groups = security_groups.SecurityGroupManager(self)
         self.security_group_rules = \
             security_group_rules.SecurityGroupRuleManager(self)
+        self.security_group_default_rules = \
+            security_group_default_rules.SecurityGroupDefaultRuleManager(self)
         self.usage = usage.UsageManager(self)
         self.virtual_interfaces = \
             virtual_interfaces.VirtualInterfaceManager(self)

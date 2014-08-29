@@ -1313,7 +1313,7 @@ class FakeHTTPClient(base_client.HTTPClient):
     def get_os_security_group_rules(self, **kw):
         return (200, {}, {"security_group_rules": [
                 {'id': 1, 'parent_group_id': 1, 'group_id': 2,
-                 'ip_protocol': 'TCP', 'from_port': '22', 'to_port': 22,
+                 'ip_protocol': 'TCP', 'from_port': 22, 'to_port': 22,
                  'cidr': '10.0.0.0/8'}
         ]})
 
@@ -1334,6 +1334,34 @@ class FakeHTTPClient(base_client.HTTPClient):
                       'to_port', 'cidr'])
         r = {'security_group_rule':
             self.get_os_security_group_rules()[2]['security_group_rules'][0]}
+        return (202, {}, r)
+
+    #
+    # Security Group Default Rules
+    #
+    def get_os_security_group_default_rules(self, **kw):
+        return (200, {}, {"security_group_default_rules": [
+                {'id': 1, 'ip_protocol': 'TCP', 'from_port': 22,
+                 'to_port': 22, 'cidr': '10.0.0.0/8'}
+        ]})
+
+    def delete_os_security_group_default_rules_1(self, **kw):
+        return (202, {}, None)
+
+    def delete_os_security_group_default_rules_11(self, **kw):
+        return (202, {}, None)
+
+    def delete_os_security_group_default_rules_12(self, **kw):
+        return (202, {}, None)
+
+    def post_os_security_group_default_rules(self, body, **kw):
+        assert list(body) == ['security_group_default_rule']
+        fakes.assert_has_keys(body['security_group_default_rule'],
+            optional=['ip_protocol', 'from_port',
+                      'to_port', 'cidr'])
+        rules = self.get_os_security_group_default_rules()
+        r = {'security_group_default_rule':
+            rules[2]['security_group_default_rules'][0]}
         return (202, {}, r)
 
     #
