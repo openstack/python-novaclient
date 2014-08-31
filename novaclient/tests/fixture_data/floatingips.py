@@ -94,7 +94,7 @@ class DNSFixture(base.Fixture):
             context.status_code = 205
             return request.body
         self.requests.register_uri('PUT', url,
-                                   body=put_dns_testdomain_entries_testname,
+                                   text=put_dns_testdomain_entries_testname,
                                    headers=self.json_headers)
 
         url = self.url('testdomain', 'entries')
@@ -140,7 +140,7 @@ class DNSFixture(base.Fixture):
             return request.body
 
         self.requests.register_uri('PUT', self.url('testdomain'),
-                                   body=put_os_floating_ip_dns_testdomain,
+                                   text=put_os_floating_ip_dns_testdomain,
                                    status_code=205,
                                    headers=self.json_headers)
 

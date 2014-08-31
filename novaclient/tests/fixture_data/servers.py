@@ -250,7 +250,7 @@ class Base(base.Fixture):
             return request.body
 
         self.requests.register_uri('PUT', self.url(1234),
-                                   body=put_servers_1234,
+                                   text=put_servers_1234,
                                    status_code=204,
                                    headers=self.json_headers)
 
