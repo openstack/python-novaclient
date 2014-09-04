@@ -655,10 +655,10 @@ class ShellTest(utils.TestCase):
         self.assert_called('DELETE', '/servers/1234', pos=-3)
         self.assert_called('DELETE', '/servers/5678', pos=-1)
         self.run_command('delete sample-server sample-server2')
-        self.assert_called('GET', '/servers', pos=-6)
+        self.assert_called('GET', '/servers?name=sample-server', pos=-6)
         self.assert_called('GET', '/servers/1234', pos=-5)
         self.assert_called('DELETE', '/servers/1234', pos=-4)
-        self.assert_called('GET', '/servers', pos=-3)
+        self.assert_called('GET', '/servers?name=sample-server2', pos=-3)
         self.assert_called('GET', '/servers/5678', pos=-2)
         self.assert_called('DELETE', '/servers/5678', pos=-1)
 
