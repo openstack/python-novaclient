@@ -16,12 +16,12 @@
 
 import datetime
 
+from oslo.utils import strutils
 import six
 from six.moves.urllib import parse
 
 from novaclient import client as base_client
 from novaclient import exceptions
-from novaclient.openstack.common import strutils
 from novaclient.tests import fakes
 from novaclient.tests import utils
 from novaclient.v1_1 import client

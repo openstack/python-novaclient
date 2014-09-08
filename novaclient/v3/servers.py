@@ -21,13 +21,13 @@ Server interface.
 
 import base64
 
+from oslo.utils import encodeutils
 import six
 from six.moves.urllib import parse
 
 from novaclient import base
 from novaclient import crypto
 from novaclient.openstack.common.gettextutils import _
-from novaclient.openstack.common import strutils
 
 REBOOT_SOFT, REBOOT_HARD = 'SOFT', 'HARD'
 
@@ -402,7 +402,7 @@ class ServerManager(base.BootingManagerWithFind):
             if six.PY3:
                 userdata = userdata.encode("utf-8")
             else:
-                userdata = strutils.safe_encode(userdata)
+                userdata = encodeutils.safe_encode(userdata)
 
             data = base64.b64encode(userdata).decode('utf-8')
             body["server"]["os-user-data:user_data"] = data

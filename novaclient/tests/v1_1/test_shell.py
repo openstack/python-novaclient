@@ -22,6 +22,7 @@ import os
 
 import fixtures
 import mock
+from oslo.utils import timeutils
 import six
 from six.moves import builtins
 
@@ -1232,9 +1233,9 @@ class ShellTest(utils.TestCase):
                            'end=2005-02-01T00:00:00&' +
                            'detailed=1')
 
-    @mock.patch('novaclient.openstack.common.timeutils.utcnow')
-    def test_usage_list_no_args(self, mock_utcnow):
-        mock_utcnow.return_value = datetime.datetime(2005, 2, 1, 0, 0)
+    def test_usage_list_no_args(self):
+        timeutils.set_time_override(datetime.datetime(2005, 2, 1, 0, 0))
+        self.addCleanup(timeutils.clear_time_override)
         self.run_command('usage-list')
         self.assert_called('GET',
                            '/os-simple-tenant-usage?' +
