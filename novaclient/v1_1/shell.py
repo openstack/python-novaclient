@@ -2022,6 +2022,27 @@ def do_get_rdp_console(cs, args):
     utils.print_list([RDPConsole(data['console'])], ['Type', 'Url'])
 
 
+@utils.arg('server', metavar='<server>', help=_('Name or ID of server.'))
+@utils.arg('--console_type', default='serial',
+    help=_('Type of serial console, default="serial".'))
+def do_get_serial_console(cs, args):
+    """Get a serial console to a server."""
+    if args.console_type not in ('serial',):
+        raise exceptions.CommandError(
+            _("Invalid parameter value for 'console_type', "
+              "currently supported 'serial'."))
+
+    server = _find_server(cs, args.server)
+    data = server.get_serial_console(args.console_type)
+
+    class SerialConsole:
+        def __init__(self, console_dict):
+            self.type = console_dict['type']
+            self.url = console_dict['url']
+
+    utils.print_list([SerialConsole(data['console'])], ['Type', 'Url'])
+
+
 @utils.arg('server', metavar='<server>', help='Name or ID of server.')
 @utils.arg('private_key',
     metavar='<private-key>',

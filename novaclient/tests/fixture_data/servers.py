@@ -457,6 +457,8 @@ class V1(Base):
             assert list(body[action]) == ['type']
         elif action == 'os-getRDPConsole':
             assert list(body[action]) == ['type']
+        elif action == 'os-getSerialConsole':
+            assert list(body[action]) == ['type']
         elif action == 'os-migrateLive':
             assert set(body[action].keys()) == set(['host',
                                                     'block_migration',
@@ -568,6 +570,7 @@ class V3(Base):
             'get_console_output': ['length'],
             'get_vnc_console': ['type'],
             'get_spice_console': ['type'],
+            'get_serial_console': ['type'],
             'reset_state': ['state'],
             'create_image': ['name', 'metadata'],
             'migrate_live': ['host', 'block_migration', 'disk_over_commit'],
