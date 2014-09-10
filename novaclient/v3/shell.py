@@ -3066,3 +3066,85 @@ def do_availability_zone_list(cs, _args):
     _translate_availability_zone_keys(result)
     utils.print_list(result, ['Name', 'Status'],
                      sortby_index=None)
+
+
+@utils.arg('--tenant',
+           # nova db searches by project_id
+           dest='tenant',
+           metavar='<tenant>',
+           nargs='?',
+           help=_('Display information from single tenant (Admin only).'))
+@utils.arg('--reserved',
+           dest='reserved',
+           action='store_true',
+           default=False,
+           help=_('Include reservations count.'))
+def do_absolute_limits(cs, args):
+    """Print a list of absolute limits for a user"""
+    limits = cs.limits.get(args.reserved, args.tenant).absolute
+
+    class Limit(object):
+        def __init__(self, name, used, max, other):
+            self.name = name
+            self.used = used
+            self.max = max
+            self.other = other
+
+    limit_map = {
+        'maxServerMeta': {'name': 'Server Meta', 'type': 'max'},
+        'maxPersonality': {'name': 'Personality', 'type': 'max'},
+        'maxPersonalitySize': {'name': 'Personality Size', 'type': 'max'},
+        'maxImageMeta': {'name': 'ImageMeta', 'type': 'max'},
+        'maxTotalKeypairs': {'name': 'Keypairs', 'type': 'max'},
+        'totalCoresUsed': {'name': 'Cores', 'type': 'used'},
+        'maxTotalCores': {'name': 'Cores', 'type': 'max'},
+        'totalRAMUsed': {'name': 'RAM', 'type': 'used'},
+        'maxTotalRAMSize': {'name': 'RAM', 'type': 'max'},
+        'totalInstancesUsed': {'name': 'Instances', 'type': 'used'},
+        'maxTotalInstances': {'name': 'Instances', 'type': 'max'},
+        'totalFloatingIpsUsed': {'name': 'FloatingIps', 'type': 'used'},
+        'maxTotalFloatingIps': {'name': 'FloatingIps', 'type': 'max'},
+        'totalSecurityGroupsUsed': {'name': 'SecurityGroups', 'type': 'used'},
+        'maxSecurityGroups': {'name': 'SecurityGroups', 'type': 'max'},
+        'maxSecurityGroupRules': {'name': 'SecurityGroupRules', 'type': 'max'},
+        'maxServerGroups': {'name': 'ServerGroups', 'type': 'max'},
+        'totalServerGroupsUsed': {'name': 'ServerGroups', 'type': 'used'},
+        'maxServerGroupMembers': {'name': 'ServerGroupMembers', 'type': 'max'},
+    }
+
+    max = {}
+    used = {}
+    other = {}
+    limit_names = []
+    columns = ['Name', 'Used', 'Max']
+    for l in limits:
+        map = limit_map.get(l.name, {'name': l.name, 'type': 'other'})
+        name = map['name']
+        if map['type'] == 'max':
+            max[name] = l.value
+        elif map['type'] == 'used':
+            used[name] = l.value
+        else:
+            other[name] = l.value
+            columns.append('Other')
+        if name not in limit_names:
+            limit_names.append(name)
+
+    limit_names.sort()
+
+    limit_list = []
+    for name in limit_names:
+        l = Limit(name,
+                  used.get(name, "-"),
+                  max.get(name, "-"),
+                  other.get(name, "-"))
+        limit_list.append(l)
+
+    utils.print_list(limit_list, columns)
+
+
+def do_rate_limits(cs, args):
+    """Print a list of rate limits for a user"""
+    limits = cs.limits.get().rate
+    columns = ['Verb', 'URI', 'Value', 'Remain', 'Unit', 'Next_Available']
+    utils.print_list(limits, columns)
