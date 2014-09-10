@@ -784,10 +784,25 @@ def do_scrub(cs, args):
         cs.security_groups.delete(group)
 
 
-def do_network_list(cs, _args):
+@utils.arg('--fields',
+    default=None,
+    metavar='<fields>',
+    help='Comma-separated list of fields to display. '
+         'Use the show command to see which fields are available.')
+def do_network_list(cs, args):
     """Print a list of available networks."""
     network_list = cs.networks.list()
     columns = ['ID', 'Label', 'Cidr']
+
+    formatters = {}
+    field_titles = []
+    if args.fields:
+        for field in args.fields.split(','):
+            field_title, formatter = utils._make_field_formatter(field, {})
+            field_titles.append(field_title)
+            formatters[field_title] = formatter
+
+    columns = columns + field_titles
     utils.print_list(network_list, columns)
 
 

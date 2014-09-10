@@ -1699,6 +1699,13 @@ class ShellTest(utils.TestCase):
         self.run_command('network-list')
         self.assert_called('GET', '/os-networks')
 
+    def test_network_list_fields(self):
+        output = self.run_command('network-list --fields '
+                         'vlan,project_id')
+        self.assert_called('GET', '/os-networks')
+        self.assertIn('1234', output)
+        self.assertIn('4ffc664c198e435e9853f2538fbcd7a7', output)
+
     def test_network_show(self):
         self.run_command('network-show 1')
         self.assert_called('GET', '/os-networks/1')
