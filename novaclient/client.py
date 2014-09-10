@@ -28,6 +28,7 @@ import hashlib
 import logging
 import os
 import re
+import socket
 import time
 
 from keystoneclient import adapter
@@ -48,6 +49,17 @@ from novaclient import service_catalog
 from novaclient import utils
 
 
+class TCPKeepAliveAdapter(adapters.HTTPAdapter):
+    """The custom adapter used to set TCP Keep-Alive on all connections."""
+    def init_poolmanager(self, *args, **kwargs):
+        if requests.__version__ >= '2.4.1':
+            kwargs.setdefault('socket_options', [
+                (socket.IPROTO_TCP, socket.TCP_NODELAY, 1),
+                (socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1),
+            ])
+        super(TCPKeepAliveAdapter, self).init_poolmanager(*args, **kwargs)
+
+
 class _ClientConnectionPool(object):
 
     def __init__(self):
@@ -58,7 +70,7 @@ class _ClientConnectionPool(object):
         Store and reuse HTTP adapters per Service URL.
         """
         if url not in self._adapters:
-            self._adapters[url] = adapters.HTTPAdapter()
+            self._adapters[url] = TCPKeepAliveAdapter()
 
         return self._adapters[url]
 
