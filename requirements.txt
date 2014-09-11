@@ -1,9 +1,12 @@
+# The order of packages is significant, because pip processes them in the order
+# of appearance. Changing the order has an impact on the overall integration
+# process, which may cause wedges in the gate later.
 pbr>=0.6,!=0.7,<1.0
 argparse
 iso8601>=0.1.9
-oslo.utils>=0.2.0       # Apache-2.0
+oslo.utils>=0.3.0                       # Apache-2.0
 PrettyTable>=0.7,<0.8
-requests>=1.2.1
+requests>=1.2.1,!=2.4.0
 simplejson>=2.2.0
 six>=1.7.0
 Babel>=1.3
