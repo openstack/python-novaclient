@@ -3519,6 +3519,7 @@ def do_quota_update(cs, args):
 
 @utils.arg('--tenant',
            metavar='<tenant-id>',
+           required=True,
            help=_('ID of tenant to delete quota for.'))
 @utils.arg('--user',
            metavar='<user-id>',
