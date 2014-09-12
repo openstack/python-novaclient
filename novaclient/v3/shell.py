@@ -1334,6 +1334,13 @@ def _print_server(cs, args, server=None):
         info['flavor'] = '%s (%s)' % (_find_flavor(cs, flavor_id).name,
                                       flavor_id)
 
+    if 'security_groups' in info:
+        # when we have multiple nics the info will include the
+        # security groups N times where N == number of nics. Be nice
+        # and only display it once.
+        info['security_groups'] = ', '.join(
+            sorted(set(group['name'] for group in info['security_groups'])))
+
     image = info.get('image', {})
     if image:
         image_id = image.get('id', '')
