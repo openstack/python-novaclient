@@ -2926,6 +2926,7 @@ def do_quota_update(cs, args):
 
 @utils.arg('--tenant',
            metavar='<tenant-id>',
+           required=True,
            help='ID of tenant to delete quota for.')
 def do_quota_delete(cs, args):
     """Delete quota for a tenant so their quota will revert back to default."""
