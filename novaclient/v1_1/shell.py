@@ -1626,8 +1626,11 @@ def _print_server(cs, args, server=None):
                                       flavor_id)
 
     if 'security_groups' in info:
-        info['security_groups'] = \
-            ', '.join(group['name'] for group in info['security_groups'])
+        # when we have multiple nics the info will include the
+        # security groups N times where N == number of nics. Be nice
+        # and only display it once.
+        info['security_groups'] = ', '.join(
+            sorted(set(group['name'] for group in info['security_groups'])))
 
     image = info.get('image', {})
     if image:
