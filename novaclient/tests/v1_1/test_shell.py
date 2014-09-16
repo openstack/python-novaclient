@@ -1901,13 +1901,6 @@ class ShellTest(utils.TestCase):
                                {'name': 'test',
                                 'description': 'FAKE_SECURITY_GROUP'}})
 
-    def test_security_group_create_without_description(self):
-        self.run_command('secgroup-create test')
-        self.assert_called('POST', '/os-security-groups',
-                           {'security_group':
-                               {'name': 'test',
-                                'description': None}})
-
     def test_security_group_update(self):
         self.run_command('secgroup-update test te FAKE_SECURITY_GROUP')
         self.assert_called('PUT', '/os-security-groups/1',
