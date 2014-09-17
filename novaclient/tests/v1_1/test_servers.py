@@ -548,6 +548,14 @@ class ServersTest(utils.FixturedTestCase):
         self.cs.servers.get_spice_console(s, 'fake')
         self.assert_called('POST', '/servers/1234/action')
 
+    def test_get_serial_console(self):
+        s = self.cs.servers.get(1234)
+        s.get_serial_console('fake')
+        self.assert_called('POST', '/servers/1234/action')
+
+        self.cs.servers.get_serial_console(s, 'fake')
+        self.assert_called('POST', '/servers/1234/action')
+
     def test_get_rdp_console(self):
         s = self.cs.servers.get(1234)
         s.get_rdp_console('fake')
