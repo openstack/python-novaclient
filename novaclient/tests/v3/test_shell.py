@@ -247,7 +247,7 @@ class ShellTest(utils.TestCase):
                 'image_ref': '1',
                 'os-multiple-create:min_count': 1,
                 'os-multiple-create:max_count': 1,
-                'os-user-data:user_data': user_data}},
+                'user_data': user_data}},
         )
 
     def test_boot_avzone(self):
