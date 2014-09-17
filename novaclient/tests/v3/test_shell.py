@@ -273,8 +273,8 @@ class ShellTest(utils.TestCase):
         self.assert_called_anytime(
             'POST', '/servers',
             {'server': {
-                'os-security-groups:security_groups': [{'name': 'secgroup1'},
-                                                       {'name': 'secgroup2'}],
+                'security_groups': [{'name': 'secgroup1'},
+                                    {'name': 'secgroup2'}],
                 'flavor_ref': '1',
                 'name': 'some-server',
                 'image_ref': '1',
