@@ -437,11 +437,12 @@ class ServerManager(base.BootingManagerWithFind):
 
         # Block device mappings are passed as a list of dictionaries
         if block_device_mapping:
-            bdm_param = 'os-block-device-mapping:block_device_mapping'
+            bdm_param = 'block_device_mapping'
             body['server'][bdm_param] = \
               self._parse_block_device_mapping(block_device_mapping)
         elif block_device_mapping_v2:
             # Append the image to the list only if we have new style BDMs
+            bdm_param = 'block_device_mapping_v2'
             if image:
                 bdm_dict = {'uuid': image.id, 'source_type': 'image',
                             'destination_type': 'local', 'boot_index': 0,

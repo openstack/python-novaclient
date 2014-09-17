@@ -337,7 +337,7 @@ class ShellTest(utils.TestCase):
             {'server': {
                 'flavor_ref': '1',
                 'name': 'some-server',
-                'os-block-device-mapping:block_device_mapping': [
+                'block_device_mapping': [
                     {
                         'volume_id': 'blah',
                         'delete_on_termination': '0',
@@ -366,7 +366,7 @@ class ShellTest(utils.TestCase):
             {'server': {
                 'flavor_ref': '1',
                 'name': 'some-server',
-                'os-block-device-mapping:block_device_mapping': [
+                'block_device_mapping': [
                     {'device_name': 'id', 'volume_id': id,
                      'source_type': 'volume', 'boot_index': 0, 'uuid': id}],
                 'image_ref': '1',
