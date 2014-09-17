@@ -323,7 +323,9 @@ class FakeHTTPClient(fakes_v1_1.FakeHTTPClient):
                       'cores': 1,
                       'keypairs': 1,
                       'security_groups': 1,
-                      'security_group_rules': 1}})
+                      'security_group_rules': 1,
+                      'server_groups': 1,
+                      'server_group_members': 1}})
 
     def get_os_quota_sets_test_detail(self, **kw):
         return (200, {}, {'quota_set': {

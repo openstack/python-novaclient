@@ -2802,7 +2802,8 @@ def do_ssh(cs, args):
 
 
 _quota_resources = ['instances', 'cores', 'ram',
-                    'fixed_ips', 'metadata_items', 'key_pairs']
+                    'fixed_ips', 'metadata_items', 'key_pairs',
+                    'server_groups', 'server_group_members']
 
 
 def _quota_show(quotas):
@@ -2919,6 +2920,16 @@ def do_quota_defaults(cs, args):
     type=int,
     default=None,
     help='New value for the "key-pairs" quota.')
+@utils.arg('--server-groups',
+    metavar='<server-groups>',
+    type=int,
+    default=None,
+    help='New value for the "server-groups" quota.')
+@utils.arg('--server-group-members',
+    metavar='<server-group-members>',
+    type=int,
+    default=None,
+    help='New value for the "server-group-members" quota.')
 @utils.arg('--force',
     dest='force',
     action="store_true",
