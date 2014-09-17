@@ -656,7 +656,7 @@ class ShellTest(utils.TestCase):
                 'max_count': 1,
             }},
         )
-        self.assertEqual(poll_method.call_count, 1)
+        self.assertEqual(1, poll_method.call_count)
         poll_method.assert_has_calls(
             [mock.call(self.shell.cs.servers.get, 1234, 'building',
                        ['active'])])
@@ -2213,7 +2213,7 @@ class GetSecgroupTest(utils.TestCase):
             'security_groups.list.return_value': [],
         })
         result = novaclient.v1_1.shell._get_secgroup(cs, '1')
-        self.assertEqual(result, 'sec_group')
+        self.assertEqual('sec_group', result)
         cs.security_groups.get.assert_called_once_with('1')
 
     def test_with_uuid(self):
@@ -2223,7 +2223,7 @@ class GetSecgroupTest(utils.TestCase):
         })
         result = novaclient.v1_1.shell._get_secgroup(
             cs, 'c0c32459-dc5f-44dc-9a0a-473b28bac831')
-        self.assertEqual(result, 'sec_group')
+        self.assertEqual('sec_group', result)
         cs.security_groups.get.assert_called_once_with(
             'c0c32459-dc5f-44dc-9a0a-473b28bac831')
 

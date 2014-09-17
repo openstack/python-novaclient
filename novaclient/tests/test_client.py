@@ -47,7 +47,7 @@ class ClientTest(utils.TestCase):
                                                 projectid='project',
                                                 timeout=2,
                                                 auth_url="http://www.blah.com")
-        self.assertEqual(instance.timeout, 2)
+        self.assertEqual(2, instance.timeout)
         mock_request = mock.Mock()
         mock_request.return_value = requests.Response()
         mock_request.return_value.status_code = 200
@@ -106,7 +106,7 @@ class ClientTest(utils.TestCase):
                                   allow_redirects=mock.ANY,
                                   data=json.dumps(data),
                                   verify=mock.ANY)]
-            self.assertEqual(mock_request.call_args_list, expected)
+            self.assertEqual(expected, mock_request.call_args_list)
 
     @mock.patch.object(novaclient.client.HTTPClient, 'request',
                        return_value=(200, "{'versions':[]}"))
@@ -263,7 +263,7 @@ class ClientTest(utils.TestCase):
     def test_get_password_simple(self):
         cs = novaclient.client.HTTPClient("user", "password", "", "")
         cs.password_func = mock.Mock()
-        self.assertEqual(cs._get_password(), "password")
+        self.assertEqual("password", cs._get_password())
         self.assertFalse(cs.password_func.called)
 
     def test_get_password_none(self):
@@ -273,26 +273,26 @@ class ClientTest(utils.TestCase):
     def test_get_password_func(self):
         cs = novaclient.client.HTTPClient("user", None, "", "")
         cs.password_func = mock.Mock(return_value="password")
-        self.assertEqual(cs._get_password(), "password")
+        self.assertEqual("password", cs._get_password())
         cs.password_func.assert_called_once_with()
 
         cs.password_func = mock.Mock()
-        self.assertEqual(cs._get_password(), "password")
+        self.assertEqual("password", cs._get_password())
         self.assertFalse(cs.password_func.called)
 
     def test_auth_url_rstrip_slash(self):
         cs = novaclient.client.HTTPClient("user", "password", "project_id",
                                           auth_url="foo/v2/")
-        self.assertEqual(cs.auth_url, "foo/v2")
+        self.assertEqual("foo/v2", cs.auth_url)
 
     def test_token_and_bypass_url(self):
         cs = novaclient.client.HTTPClient(None, None, None,
                                           auth_token="12345",
                                           bypass_url="compute/v100/")
         self.assertIsNone(cs.auth_url)
-        self.assertEqual(cs.auth_token, "12345")
-        self.assertEqual(cs.bypass_url, "compute/v100")
-        self.assertEqual(cs.management_url, "compute/v100")
+        self.assertEqual("12345", cs.auth_token)
+        self.assertEqual("compute/v100", cs.bypass_url)
+        self.assertEqual("compute/v100", cs.management_url)
 
     @mock.patch("novaclient.client.requests.Session")
     def test_session(self, mock_session):

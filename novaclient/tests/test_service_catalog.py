@@ -45,10 +45,10 @@ class ServiceCatalogTest(utils.TestCase):
 
         self.assertRaises(exceptions.AmbiguousEndpoints, sc.url_for,
                           service_type='compute')
-        self.assertEqual(sc.url_for('tenantId', '1', service_type='compute'),
-                            "https://compute1.host/v2/1")
-        self.assertEqual(sc.url_for('tenantId', '2', service_type='compute'),
-                            "https://compute1.host/v1.1/2")
+        self.assertEqual("https://compute1.host/v2/1",
+                         sc.url_for('tenantId', '1', service_type='compute'))
+        self.assertEqual("https://compute1.host/v1.1/2",
+                         sc.url_for('tenantId', '2', service_type='compute'))
 
         self.assertRaises(exceptions.EndpointNotFound, sc.url_for,
                           "region", "South", service_type='compute')
@@ -64,10 +64,10 @@ class ServiceCatalogTest(utils.TestCase):
 
         self.assertRaises(exceptions.AmbiguousEndpoints, sc.url_for,
                           service_type='volume')
-        self.assertEqual(sc.url_for('tenantId', '1', service_type='volume'),
-                            "https://volume1.host/v1/1")
-        self.assertEqual(sc.url_for('tenantId', '2', service_type='volume'),
-                            "https://volume1.host/v1.1/2")
+        self.assertEqual("https://volume1.host/v1/1",
+                         sc.url_for('tenantId', '1', service_type='volume'))
+        self.assertEqual("https://volume1.host/v1.1/2",
+                         sc.url_for('tenantId', '2', service_type='volume'))
 
         self.assertRaises(exceptions.EndpointNotFound, sc.url_for,
                           "region", "North", service_type='volume')

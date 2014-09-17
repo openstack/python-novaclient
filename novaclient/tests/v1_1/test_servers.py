@@ -53,8 +53,8 @@ class ServersTest(utils.FixturedTestCase):
         s = self.cs.servers.get(1234)
         self.assert_called('GET', '/servers/1234')
         self.assertIsInstance(s, servers.Server)
-        self.assertEqual(s.id, 1234)
-        self.assertEqual(s.status, 'BUILD')
+        self.assertEqual(1234, s.id)
+        self.assertEqual('BUILD', s.status)
 
     def test_get_server_promote_details(self):
         s1 = self.cs.servers.list(detailed=False)[0]
@@ -244,13 +244,13 @@ class ServersTest(utils.FixturedTestCase):
     def test_find(self):
         server = self.cs.servers.find(name='sample-server')
         self.assert_called('GET', '/servers/1234')
-        self.assertEqual(server.name, 'sample-server')
+        self.assertEqual('sample-server', server.name)
 
         self.assertRaises(exceptions.NoUniqueMatch, self.cs.servers.find,
                           flavor={"id": 1, "name": "256 MB Server"})
 
         sl = self.cs.servers.findall(flavor={"id": 1, "name": "256 MB Server"})
-        self.assertEqual([s.id for s in sl], [1234, 5678, 9012])
+        self.assertEqual([1234, 5678, 9012], [s.id for s in sl])
 
     def test_reboot_server(self):
         s = self.cs.servers.get(1234)
@@ -299,7 +299,7 @@ class ServersTest(utils.FixturedTestCase):
         body = jsonutils.loads(self.requests.last_request.body)
         d = body['rebuild']
         self.assertIn('preserve_ephemeral', d)
-        self.assertEqual(d['preserve_ephemeral'], True)
+        self.assertEqual(True, d['preserve_ephemeral'])
 
     def test_rebuild_server_name_meta_files(self):
         files = {'/etc/passwd': 'some data'}
@@ -464,11 +464,11 @@ class ServersTest(utils.FixturedTestCase):
         success = 'foo'
         s = self.cs.servers.get(1234)
         s.get_console_output()
-        self.assertEqual(s.get_console_output(), success)
+        self.assertEqual(success, s.get_console_output())
         self.assert_called('POST', '/servers/1234/action')
 
         self.cs.servers.get_console_output(s)
-        self.assertEqual(self.cs.servers.get_console_output(s), success)
+        self.assertEqual(success, self.cs.servers.get_console_output(s))
         self.assert_called('POST', '/servers/1234/action')
 
     def test_get_console_output_with_length(self):
@@ -476,12 +476,12 @@ class ServersTest(utils.FixturedTestCase):
 
         s = self.cs.servers.get(1234)
         s.get_console_output(length=50)
-        self.assertEqual(s.get_console_output(length=50), success)
+        self.assertEqual(success, s.get_console_output(length=50))
         self.assert_called('POST', '/servers/1234/action')
 
         self.cs.servers.get_console_output(s, length=50)
-        self.assertEqual(self.cs.servers.get_console_output(s, length=50),
-                         success)
+        self.assertEqual(success,
+                         self.cs.servers.get_console_output(s, length=50))
         self.assert_called('POST', '/servers/1234/action')
 
     # Testing password methods with the following password and key
@@ -500,19 +500,19 @@ class ServersTest(utils.FixturedTestCase):
 
     def test_get_password(self):
         s = self.cs.servers.get(1234)
-        self.assertEqual(s.get_password('novaclient/tests/idfake.pem'),
-                         b'FooBar123')
+        self.assertEqual(b'FooBar123',
+                         s.get_password('novaclient/tests/idfake.pem'))
         self.assert_called('GET', '/servers/1234/os-server-password')
 
     def test_get_password_without_key(self):
         s = self.cs.servers.get(1234)
-        self.assertEqual(s.get_password(),
+        self.assertEqual(
             'OIuEuQttO8Rk93BcKlwHQsziDAnkAm/V6V8VPToA8ZeUaUBWwS0gwo2K6Y61Z96r'
             'qG447iRz0uTEEYq3RAYJk1mh3mMIRVl27t8MtIecR5ggVVbz1S9AwXJQypDKl0ho'
             'QFvhCBcMWPohyGewDJOhDbtuN1IoFI9G55ZvFwCm5y7m7B2aVcoLeIsJZE4PLsIw'
             '/y5a6Z3/AoJZYGG7IH5WN88UROU3B9JZGFB2qtPLQTOvDMZLUhoPRIJeHiVSlo1N'
             'tI2/++UsXVg3ow6ItqCJGgdNuGG5JB+bslDHWPxROpesEIHdczk46HCpHQN8f1sk'
-            'Hi/fmZZNQQqj1Ijq0caOIw==')
+            'Hi/fmZZNQQqj1Ijq0caOIw==', s.get_password())
         self.assert_called('GET', '/servers/1234/os-server-password')
 
     def test_clear_password(self):

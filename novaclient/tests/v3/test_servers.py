@@ -50,8 +50,8 @@ class ServersTest(utils.FixturedTestCase):
         s = self.cs.servers.get(1234)
         self.assert_called('GET', '/servers/1234')
         self.assertIsInstance(s, servers.Server)
-        self.assertEqual(s.id, 1234)
-        self.assertEqual(s.status, 'BUILD')
+        self.assertEqual(1234, s.id)
+        self.assertEqual('BUILD', s.status)
 
     def test_get_server_promote_details(self):
         s1 = self.cs.servers.list(detailed=False)[0]
@@ -104,7 +104,7 @@ class ServersTest(utils.FixturedTestCase):
                 'v6-fixed-ip': '2001:db9:0:1::10'}]
 
         def wrapped_boot(url, key, *boot_args, **boot_kwargs):
-            self.assertEqual(boot_kwargs['nics'], nics)
+            self.assertEqual(nics, boot_kwargs['nics'])
             return old_boot(url, key, *boot_args, **boot_kwargs)
 
         with mock.patch.object(self.cs.servers, '_boot', wrapped_boot):
@@ -224,13 +224,13 @@ class ServersTest(utils.FixturedTestCase):
     def test_find(self):
         server = self.cs.servers.find(name='sample-server')
         self.assert_called('GET', '/servers/1234')
-        self.assertEqual(server.name, 'sample-server')
+        self.assertEqual('sample-server', server.name)
 
         self.assertRaises(exceptions.NoUniqueMatch, self.cs.servers.find,
                           flavor={"id": 1, "name": "256 MB Server"})
 
         sl = self.cs.servers.findall(flavor={"id": 1, "name": "256 MB Server"})
-        self.assertEqual([s.id for s in sl], [1234, 5678, 9012])
+        self.assertEqual([1234, 5678, 9012], [s.id for s in sl])
 
     def test_reboot_server(self):
         s = self.cs.servers.get(1234)
@@ -359,11 +359,11 @@ class ServersTest(utils.FixturedTestCase):
         success = 'foo'
         s = self.cs.servers.get(1234)
         s.get_console_output()
-        self.assertEqual(s.get_console_output(), success)
+        self.assertEqual(success, s.get_console_output())
         self.assert_called('POST', '/servers/1234/action')
 
         self.cs.servers.get_console_output(s)
-        self.assertEqual(self.cs.servers.get_console_output(s), success)
+        self.assertEqual(success, self.cs.servers.get_console_output(s))
         self.assert_called('POST', '/servers/1234/action',
                            {'get_console_output': {'length': -1}})
 
@@ -372,19 +372,19 @@ class ServersTest(utils.FixturedTestCase):
 
         s = self.cs.servers.get(1234)
         s.get_console_output(length=50)
-        self.assertEqual(s.get_console_output(length=50), success)
+        self.assertEqual(success, s.get_console_output(length=50))
         self.assert_called('POST', '/servers/1234/action',
                            {'get_console_output': {'length': 50}})
 
         self.cs.servers.get_console_output(s, length=50)
-        self.assertEqual(self.cs.servers.get_console_output(s, length=50),
-                         success)
+        self.assertEqual(success,
+                         self.cs.servers.get_console_output(s, length=50))
         self.assert_called('POST', '/servers/1234/action',
                            {'get_console_output': {'length': 50}})
 
     def test_get_password(self):
         s = self.cs.servers.get(1234)
-        self.assertEqual(s.get_password('/foo/id_rsa'), '')
+        self.assertEqual('', s.get_password('/foo/id_rsa'))
         self.assert_called('GET', '/servers/1234/os-server-password')
 
     def test_clear_password(self):
@@ -402,7 +402,7 @@ class ServersTest(utils.FixturedTestCase):
         self.assertTrue(diagnostics_from_manager is not None)
         self.assert_called('GET', '/servers/1234/os-server-diagnostics')
 
-        self.assertEqual(diagnostics[1], diagnostics_from_manager[1])
+        self.assertEqual(diagnostics_from_manager[1], diagnostics[1])
 
     def test_get_vnc_console(self):
         s = self.cs.servers.get(1234)
