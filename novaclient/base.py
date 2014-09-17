@@ -131,9 +131,6 @@ class ManagerWithFind(Manager):
     def find(self, **kwargs):
         """
         Find a single item with attributes matching ``**kwargs``.
-
-        This isn't very efficient: it loads the entire list then filters on
-        the Python side.
         """
         matches = self.findall(**kwargs)
         num_matches = len(matches)
@@ -148,9 +145,6 @@ class ManagerWithFind(Manager):
     def findall(self, **kwargs):
         """
         Find all items with attributes matching ``**kwargs``.
-
-        This isn't very efficient: it loads the entire list then filters on
-        the Python side.
         """
         found = []
         searches = kwargs.items()
@@ -172,6 +166,20 @@ class ManagerWithFind(Manager):
                 tmp_kwargs = kwargs.copy()
                 del tmp_kwargs['is_public']
                 searches = tmp_kwargs.items()
+
+        if 'search_opts' in list_argspec.args:
+            # pass search_opts in to do server side based filtering.
+            # TODO(jogo) not all search_opts support regex, find way to
+            # identify when to use regex and when to use string matching.
+            # volumes does not support regex while servers does. So when
+            # doing findall on servers some client side filtering is still
+            # needed.
+            if "human_id" in kwargs:
+                list_kwargs['search_opts'] = {"name": kwargs["human_id"]}
+            elif "name" in kwargs:
+                list_kwargs['search_opts'] = {"name": kwargs["name"]}
+            elif "display_name" in kwargs:
+                list_kwargs['search_opts'] = {"name": kwargs["display_name"]}
 
         listing = self.list(**list_kwargs)
 
