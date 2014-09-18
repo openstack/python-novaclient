@@ -838,6 +838,16 @@ class ShellTest(utils.TestCase):
         self.run_command('list --flavor 1')
         self.assert_called('GET', '/servers/detail?flavor=1')
 
+    def test_list_by_tenant(self):
+        self.run_command('list --tenant fake_tenant')
+        self.assert_called('GET',
+            '/servers/detail?all_tenants=1&tenant_id=fake_tenant')
+
+    def test_list_by_user(self):
+        self.run_command('list --user fake_user')
+        self.assert_called('GET',
+            '/servers/detail?all_tenants=1&user_id=fake_user')
+
     def test_list_fields(self):
         output = self.run_command('list --fields '
                          'host,security_groups,OS-EXT-MOD:some_thing')

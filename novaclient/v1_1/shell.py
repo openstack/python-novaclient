@@ -1176,6 +1176,11 @@ def do_image_delete(cs, args):
     metavar='<tenant>',
     nargs='?',
     help=_('Display information from single tenant (Admin only).'))
+@utils.arg('--user',
+    dest='user',
+    metavar='<user>',
+    nargs='?',
+    help=_('Display information from single user (Admin only).'))
 @utils.arg('--deleted',
     dest='deleted',
     action="store_true",
@@ -1199,6 +1204,9 @@ def do_list(cs, args):
         imageid = _find_image(cs, args.image).id
     if args.flavor:
         flavorid = _find_flavor(cs, args.flavor).id
+    # search by tenant or user only works with all_tenants
+    if args.tenant or args.user:
+        args.all_tenants = 1
     search_opts = {
             'all_tenants': args.all_tenants,
             'reservation_id': args.reservation_id,
@@ -1209,6 +1217,7 @@ def do_list(cs, args):
             'flavor': flavorid,
             'status': args.status,
             'tenant_id': args.tenant,
+            'user_id': args.user,
             'host': args.host,
             'deleted': args.deleted,
             'instance_name': args.instance_name}
