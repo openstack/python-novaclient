@@ -428,7 +428,7 @@ class ServerManager(base.BootingManagerWithFind):
                       file-like object). A maximum of five entries is allowed,
                       and each file must be 10k or less.
         :param reservation_id: a UUID for the set of servers being requested.
-        :param return_raw: If True, don't try to coearse the result into
+        :param return_raw: If True, don't try to coerce the result into
                            a Resource object.
         :param security_groups: list of security group names
         :param key_name: (optional extension) name of keypair to inject into
