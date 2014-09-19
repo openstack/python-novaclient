@@ -44,6 +44,32 @@ unknown_error_response = utils.TestResponse({
 })
 unknown_error_mock_request = mock.Mock(return_value=unknown_error_response)
 
+retry_after_response = utils.TestResponse({
+    "status_code": 413,
+    "text": '',
+    "headers": {
+        "retry-after": "5"
+    },
+})
+retry_after_mock_request = mock.Mock(return_value=retry_after_response)
+
+retry_after_no_headers_response = utils.TestResponse({
+    "status_code": 413,
+    "text": '',
+})
+retry_after_no_headers_mock_request = mock.Mock(
+    return_value=retry_after_no_headers_response)
+
+retry_after_non_supporting_response = utils.TestResponse({
+    "status_code": 403,
+    "text": '',
+    "headers": {
+        "retry-after": "5"
+    },
+})
+retry_after_non_supporting_mock_request = mock.Mock(
+    return_value=retry_after_non_supporting_response)
+
 
 def get_client():
     cl = client.HTTPClient("username", "password",
@@ -154,3 +180,33 @@ class ClientTest(utils.TestCase):
             self.assertIn('Unknown Error', six.text_type(exc))
         else:
             self.fail('Expected exceptions.ClientException')
+
+    @mock.patch.object(requests, "request", retry_after_mock_request)
+    def test_retry_after_request(self):
+        cl = get_client()
+
+        try:
+            cl.get("/hi")
+        except exceptions.OverLimit as exc:
+            self.assertEqual(5, exc.retry_after)
+        else:
+            self.fail('Expected exceptions.OverLimit')
+
+    @mock.patch.object(requests, "request",
+                       retry_after_no_headers_mock_request)
+    def test_retry_after_request_no_headers(self):
+        cl = get_client()
+
+        try:
+            cl.get("/hi")
+        except exceptions.OverLimit as exc:
+            self.assertEqual(0, exc.retry_after)
+        else:
+            self.fail('Expected exceptions.OverLimit')
+
+    @mock.patch.object(requests, "request",
+                       retry_after_non_supporting_mock_request)
+    def test_retry_after_request_non_supporting_exc(self):
+        cl = get_client()
+
+        self.assertRaises(exceptions.Forbidden, cl.get, "/hi")
