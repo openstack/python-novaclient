@@ -267,15 +267,6 @@ class FlattenTestCase(test_utils.TestCase):
                           'a3': ('t',)},
                          squashed)
 
-    def test_pretty_choice_list(self):
-        l = []
-        r = utils.pretty_choice_list(l)
-        self.assertEqual("", r)
-
-        l = ["v1", "v2", "v3"]
-        r = utils.pretty_choice_list(l)
-        self.assertEqual("'v1', 'v2', 'v3'", r)
-
     def test_pretty_choice_dict(self):
         d = {}
         r = utils.pretty_choice_dict(d)

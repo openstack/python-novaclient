@@ -13,7 +13,6 @@
 
 import json
 import re
-import sys
 import textwrap
 import uuid
 
@@ -71,34 +70,10 @@ def get_resource_manager_extra_kwargs(f, args, allow_conflicts=False):
     return extra_kwargs
 
 
-def service_type(stype):
-    """
-    Adds 'service_type' attribute to decorated function.
-    Usage:
-        @service_type('volume')
-        def mymethod(f):
-            ...
-    """
-    def inner(f):
-        f.service_type = stype
-        return f
-    return inner
-
-
-def get_service_type(f):
-    """
-    Retrieves service type from function
-    """
-    return getattr(f, 'service_type', None)
-
-
-def pretty_choice_list(l):
-    return ', '.join("'%s'" % i for i in l)
-
-
 def pretty_choice_dict(d):
     """Returns a formatted dict as 'key=value'."""
-    return pretty_choice_list(['%s=%s' % (k, d[k]) for k in sorted(d.keys())])
+    return cliutils.pretty_choice_list(
+        ['%s=%s' % (k, d[k]) for k in sorted(d.keys())])
 
 
 def print_list(objs, fields, formatters={}, sortby_index=None):
@@ -313,24 +288,6 @@ def _make_field_formatter(attr, filters=None):
     return name, formatter
 
 
-class HookableMixin(object):
-    """Mixin so classes can register and run hooks."""
-    _hooks_map = {}
-
-    @classmethod
-    def add_hook(cls, hook_type, hook_func):
-        if hook_type not in cls._hooks_map:
-            cls._hooks_map[hook_type] = []
-
-        cls._hooks_map[hook_type].append(hook_func)
-
-    @classmethod
-    def run_hooks(cls, hook_type, *args, **kwargs):
-        hook_funcs = cls._hooks_map.get(hook_type) or []
-        for hook_func in hook_funcs:
-            hook_func(*args, **kwargs)
-
-
 def safe_issubclass(*args):
     """Like issubclass, but will just return False if not a class."""
 
@@ -341,13 +298,6 @@ def safe_issubclass(*args):
         pass
 
     return False
-
-
-def import_class(import_str):
-    """Returns a class from a string including module and class."""
-    mod_str, _sep, class_str = import_str.rpartition('.')
-    __import__(mod_str)
-    return getattr(sys.modules[mod_str], class_str)
 
 
 def _load_entry_point(ep_name, name=None):
