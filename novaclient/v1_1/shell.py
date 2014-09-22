@@ -34,6 +34,7 @@ from oslo.utils import timeutils
 import six
 
 from novaclient import exceptions
+from novaclient.openstack.common import cliutils
 from novaclient.openstack.common.gettextutils import _
 from novaclient.openstack.common import uuidutils
 from novaclient import utils
@@ -1767,7 +1768,7 @@ def _translate_availability_zone_keys(collection):
     type=int,
     const=1,
     help=argparse.SUPPRESS)
-@utils.service_type('volume')
+@cliutils.service_type('volume')
 def do_volume_list(cs, args):
     """List all the volumes."""
     search_opts = {'all_tenants': args.all_tenants}
@@ -1783,7 +1784,7 @@ def do_volume_list(cs, args):
 
 
 @utils.arg('volume', metavar='<volume>', help=_('Name or ID of the volume.'))
-@utils.service_type('volume')
+@cliutils.service_type('volume')
 def do_volume_show(cs, args):
     """Show details about a volume."""
     volume = _find_volume(cs, args.volume)
@@ -1825,7 +1826,7 @@ def do_volume_show(cs, args):
 @utils.arg('--availability-zone', metavar='<availability-zone>',
     help=_('Optional Availability Zone for volume. (Default=None)'),
     default=None)
-@utils.service_type('volume')
+@cliutils.service_type('volume')
 def do_volume_create(cs, args):
     """Add a new volume."""
     volume = cs.volumes.create(args.size,
@@ -1841,7 +1842,7 @@ def do_volume_create(cs, args):
 @utils.arg('volume',
     metavar='<volume>', nargs='+',
     help=_('Name or ID of the volume(s) to delete.'))
-@utils.service_type('volume')
+@cliutils.service_type('volume')
 def do_volume_delete(cs, args):
     """Remove volume(s)."""
     for volume in args.volume:
@@ -1900,7 +1901,7 @@ def do_volume_detach(cs, args):
                                     args.attachment_id)
 
 
-@utils.service_type('volume')
+@cliutils.service_type('volume')
 def do_volume_snapshot_list(cs, _args):
     """List all the snapshots."""
     snapshots = cs.volume_snapshots.list()
@@ -1912,7 +1913,7 @@ def do_volume_snapshot_list(cs, _args):
 @utils.arg('snapshot',
     metavar='<snapshot>',
     help=_('Name or ID of the snapshot.'))
-@utils.service_type('volume')
+@cliutils.service_type('volume')
 def do_volume_snapshot_show(cs, args):
     """Show details about a snapshot."""
     snapshot = _find_volume_snapshot(cs, args.snapshot)
@@ -1939,7 +1940,7 @@ def do_volume_snapshot_show(cs, args):
     help=_('Optional snapshot description. (Default=None)'))
 @utils.arg('--display_description',
     help=argparse.SUPPRESS)
-@utils.service_type('volume')
+@cliutils.service_type('volume')
 def do_volume_snapshot_create(cs, args):
     """Add a new snapshot."""
     snapshot = cs.volume_snapshots.create(args.volume_id,
@@ -1952,7 +1953,7 @@ def do_volume_snapshot_create(cs, args):
 @utils.arg('snapshot',
     metavar='<snapshot>',
     help=_('Name or ID of the snapshot to delete.'))
-@utils.service_type('volume')
+@cliutils.service_type('volume')
 def do_volume_snapshot_delete(cs, args):
     """Remove a snapshot."""
     snapshot = _find_volume_snapshot(cs, args.snapshot)
@@ -1963,7 +1964,7 @@ def _print_volume_type_list(vtypes):
     utils.print_list(vtypes, ['ID', 'Name'])
 
 
-@utils.service_type('volume')
+@cliutils.service_type('volume')
 def do_volume_type_list(cs, args):
     """Print a list of available 'volume types'."""
     vtypes = cs.volume_types.list()
@@ -1973,7 +1974,7 @@ def do_volume_type_list(cs, args):
 @utils.arg('name',
      metavar='<name>',
      help=_("Name of the new volume type"))
-@utils.service_type('volume')
+@cliutils.service_type('volume')
 def do_volume_type_create(cs, args):
     """Create a new volume type."""
     vtype = cs.volume_types.create(args.name)
@@ -1983,7 +1984,7 @@ def do_volume_type_create(cs, args):
 @utils.arg('id',
      metavar='<id>',
      help=_("Unique ID of the volume type to delete"))
-@utils.service_type('volume')
+@cliutils.service_type('volume')
 def do_volume_type_delete(cs, args):
     """Delete a specific volume type."""
     cs.volume_types.delete(args.id)
@@ -2966,7 +2967,7 @@ def _print_aggregate_details(aggregate):
         return utils.pretty_choice_dict(getattr(fields, 'metadata', {}) or {})
 
     def parser_hosts(fields):
-        return utils.pretty_choice_list(getattr(fields, 'hosts', []))
+        return cliutils.pretty_choice_list(getattr(fields, 'hosts', []))
 
     formatters = {
         'Metadata': parser_metadata,
@@ -3783,7 +3784,7 @@ def _treeizeAvailabilityZone(zone):
     return result
 
 
-@utils.service_type('compute')
+@cliutils.service_type('compute')
 def do_availability_zone_list(cs, _args):
     """List all the availability zones."""
     try:

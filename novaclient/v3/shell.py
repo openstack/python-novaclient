@@ -32,6 +32,7 @@ from oslo.utils import timeutils
 import six
 
 from novaclient import exceptions
+from novaclient.openstack.common import cliutils
 from novaclient.openstack.common.gettextutils import _
 from novaclient.openstack.common import uuidutils
 from novaclient import utils
@@ -778,7 +779,7 @@ def do_network_create(cs, args):
      dest="limit",
      metavar="<limit>",
      help='Number of images to return per request.')
-@utils.service_type('image')
+@cliutils.service_type('image')
 def do_image_list(cs, _args):
     """Print a list of available images to boot from."""
     limit = _args.limit
@@ -867,7 +868,7 @@ def _print_flavor(flavor):
 @utils.arg('image',
      metavar='<image>',
      help="Name or ID of image")
-@utils.service_type('image')
+@cliutils.service_type('image')
 def do_image_show(cs, args):
     """Show details about the given image."""
     image = _find_image(cs, args.image)
@@ -2363,7 +2364,7 @@ def _print_aggregate_details(aggregate):
         return utils.pretty_choice_dict(getattr(fields, 'metadata', {}) or {})
 
     def parser_hosts(fields):
-        return utils.pretty_choice_list(getattr(fields, 'hosts', []))
+        return cliutils.pretty_choice_list(getattr(fields, 'hosts', []))
 
     formatters = {
         'Metadata': parser_metadata,

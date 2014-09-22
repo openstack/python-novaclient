@@ -601,7 +601,7 @@ class OpenStackComputeShell(object):
             except KeyError:
                 service_type = DEFAULT_NOVA_SERVICE_TYPE_MAP[
                     DEFAULT_OS_COMPUTE_API_VERSION]
-            service_type = utils.get_service_type(args.func) or service_type
+            service_type = cliutils.get_service_type(args.func) or service_type
 
         # If we have an auth token but no management_url, we must auth anyway.
         # Expired tokens are handled by client.py:_cs_request

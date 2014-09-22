@@ -31,6 +31,7 @@ import re
 import time
 
 from keystoneclient import adapter
+from oslo.utils import importutils
 from oslo.utils import netutils
 import requests
 from requests import adapters
@@ -757,7 +758,7 @@ def get_client_class(version):
                                'keys': ', '.join(version_map.keys())}
         raise exceptions.UnsupportedVersion(msg)
 
-    return utils.import_class(client_path)
+    return importutils.import_class(client_path)
 
 
 def Client(version, *args, **kwargs):
