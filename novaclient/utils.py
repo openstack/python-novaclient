@@ -16,6 +16,7 @@ import re
 import textwrap
 import uuid
 
+from oslo.serialization import jsonutils
 from oslo.utils import encodeutils
 import pkg_resources
 import prettytable
@@ -24,7 +25,6 @@ import six
 from novaclient import exceptions
 from novaclient.openstack.common import cliutils
 from novaclient.openstack.common.gettextutils import _
-from novaclient.openstack.common import jsonutils
 
 
 arg = cliutils.arg

@@ -13,10 +13,10 @@
 #    under the License.
 
 import mock
+from oslo.serialization import jsonutils
 import six
 
 from novaclient import exceptions
-from novaclient.openstack.common import jsonutils
 from novaclient.tests.fixture_data import client
 from novaclient.tests.fixture_data import floatingips
 from novaclient.tests.fixture_data import servers as data
