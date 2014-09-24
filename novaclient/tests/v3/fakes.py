@@ -272,39 +272,36 @@ class FakeHTTPClient(fakes_v1_1.FakeHTTPClient):
                                "hosts": None}]})
 
     def get_os_availability_zone_detail(self, **kw):
-        return (200, {}, {"availability_zone_info": [
-                              {"zone_name": "zone-1",
-                               "zone_state": {"available": True},
-                               "hosts": {
-                                   "fake_host-1": {
-                                       "nova-compute": {"active": True,
-                                           "available": True,
-                                           "updated_at":
-                                   datetime.datetime(
-                                       2012, 12, 26, 14, 45, 25, 0
-                                   )}}}},
-                              {"zone_name": "internal",
-                               "zone_state": {"available": True},
-                               "hosts": {
-                                   "fake_host-1": {
-                                       "nova-sched": {
-                                           "active": True,
-                                           "available": True,
-                                           "updated_at":
-                                   datetime.datetime(
-                                       2012, 12, 26, 14, 45, 25, 0
-                                   )}},
-                                   "fake_host-2": {
-                                       "nova-network": {
-                                           "active": True,
-                                           "available": False,
-                                           "updated_at":
-                                   datetime.datetime(
-                                       2012, 12, 26, 14, 45, 24, 0
-                                   )}}}},
-                              {"zone_name": "zone-2",
-                               "zone_state": {"available": False},
-                               "hosts": None}]})
+        return (200, {}, {
+            "availability_zone_info": [
+                {"zone_name": "zone-1",
+                 "zone_state": {"available": True},
+                 "hosts": {
+                     "fake_host-1": {
+                         "nova-compute": {
+                             "active": True,
+                             "available": True,
+                             "updated_at": datetime.datetime(
+                                 2012, 12, 26, 14, 45, 25, 0)}}}},
+                {"zone_name": "internal",
+                 "zone_state": {
+                     "available": True},
+                 "hosts": {
+                     "fake_host-1": {
+                         "nova-sched": {
+                             "active": True,
+                             "available": True,
+                             "updated_at": datetime.datetime(
+                                 2012, 12, 26, 14, 45, 25, 0)}},
+                     "fake_host-2": {
+                         "nova-network": {
+                             "active": True,
+                             "available": False,
+                             "updated_at": datetime.datetime(
+                                 2012, 12, 26, 14, 45, 24, 0)}}}},
+                {"zone_name": "zone-2",
+                 "zone_state": {"available": False},
+                 "hosts": None}]})
 
     #
     # Quotas

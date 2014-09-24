@@ -73,8 +73,7 @@ class Flavor(base.Resource):
         """
         for k in keys:
             self.manager._delete(
-                    "/flavors/%s/flavor-extra-specs/%s" % (
-                    base.getid(self), k))
+                "/flavors/%s/flavor-extra-specs/%s" % (base.getid(self), k))
 
     def delete(self):
         """

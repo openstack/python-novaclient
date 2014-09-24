@@ -234,8 +234,7 @@ class FakeHTTPClient(base_client.HTTPClient):
                 "maxPersonality": 5,
                 "maxPersonalitySize": 10240
             },
-        },
-    })
+        }})
 
     #
     # Servers
@@ -264,14 +263,15 @@ class FakeHTTPClient(base_client.HTTPClient):
                 "status": "BUILD",
                 "progress": 60,
                 "addresses": {
-                    "public": [{
-                        "version": 4,
-                        "addr": "1.2.3.4",
-                    },
-                    {
-                        "version": 4,
-                        "addr": "5.6.7.8",
-                    }],
+                    "public": [
+                        {
+                            "version": 4,
+                            "addr": "1.2.3.4",
+                        },
+                        {
+                            "version": 4,
+                            "addr": "5.6.7.8",
+                        }],
                     "private": [{
                         "version": 4,
                         "addr": "10.11.12.13",
@@ -303,14 +303,15 @@ class FakeHTTPClient(base_client.HTTPClient):
                 "hostId": "9e107d9d372bb6826bd81d3542a419d6",
                 "status": "ACTIVE",
                 "addresses": {
-                    "public": [{
-                        "version": 4,
-                        "addr": "4.5.6.7",
-                    },
-                    {
-                        "version": 4,
-                        "addr": "5.6.9.8",
-                    }],
+                    "public": [
+                        {
+                            "version": 4,
+                            "addr": "4.5.6.7",
+                        },
+                        {
+                            "version": 4,
+                            "addr": "5.6.9.8",
+                        }],
                     "private": [{
                         "version": 4,
                         "addr": "10.13.12.13",
@@ -320,16 +321,17 @@ class FakeHTTPClient(base_client.HTTPClient):
                     "Server Label": "DB 1"
                 },
                 "OS-EXT-SRV-ATTR:host": "computenode2",
-                "security_groups": [{
-                    'id': 1, 'name': 'securitygroup1',
-                    'description': 'FAKE_SECURITY_GROUP',
-                    'tenant_id': '4ffc664c198e435e9853f2538fbcd7a7'
-                },
-                {
-                    'id': 2, 'name': 'securitygroup2',
-                    'description': 'ANOTHER_FAKE_SECURITY_GROUP',
-                    'tenant_id': '4ffc664c198e435e9853f2538fbcd7a7'
-                }],
+                "security_groups": [
+                    {
+                        'id': 1, 'name': 'securitygroup1',
+                        'description': 'FAKE_SECURITY_GROUP',
+                        'tenant_id': '4ffc664c198e435e9853f2538fbcd7a7'
+                    },
+                    {
+                        'id': 2, 'name': 'securitygroup2',
+                        'description': 'ANOTHER_FAKE_SECURITY_GROUP',
+                        'tenant_id': '4ffc664c198e435e9853f2538fbcd7a7'
+                    }],
             },
             {
                 "id": 9012,
@@ -342,14 +344,15 @@ class FakeHTTPClient(base_client.HTTPClient):
                 "hostId": "9e107d9d372bb6826bd81d3542a419d6",
                 "status": "ACTIVE",
                 "addresses": {
-                    "public": [{
-                        "version": 4,
-                        "addr": "4.5.6.7",
-                    },
-                    {
-                        "version": 4,
-                        "addr": "5.6.9.8",
-                    }],
+                    "public": [
+                        {
+                            "version": 4,
+                            "addr": "4.5.6.7",
+                        },
+                        {
+                            "version": 4,
+                            "addr": "5.6.9.8",
+                        }],
                     "private": [{
                         "version": 4,
                         "addr": "10.13.12.13",
@@ -1827,39 +1830,35 @@ class FakeHTTPClient(base_client.HTTPClient):
                                "hosts": None}]})
 
     def get_os_availability_zone_detail(self, **kw):
-        return (200, {}, {"availabilityZoneInfo": [
-                              {"zoneName": "zone-1",
-                               "zoneState": {"available": True},
-                               "hosts": {
-                                   "fake_host-1": {
-                                       "nova-compute": {"active": True,
-                                           "available": True,
-                                           "updated_at":
-                                   datetime.datetime(
-                                       2012, 12, 26, 14, 45, 25, 0
-                                   )}}}},
-                              {"zoneName": "internal",
-                               "zoneState": {"available": True},
-                               "hosts": {
-                                   "fake_host-1": {
-                                       "nova-sched": {
-                                           "active": True,
-                                           "available": True,
-                                           "updated_at":
-                                   datetime.datetime(
-                                       2012, 12, 26, 14, 45, 25, 0
-                                   )}},
-                                   "fake_host-2": {
-                                       "nova-network": {
-                                           "active": True,
-                                           "available": False,
-                                           "updated_at":
-                                   datetime.datetime(
-                                       2012, 12, 26, 14, 45, 24, 0
-                                   )}}}},
-                              {"zoneName": "zone-2",
-                               "zoneState": {"available": False},
-                               "hosts": None}]})
+        return (200, {}, {
+            "availabilityZoneInfo": [
+                {"zoneName": "zone-1",
+                 "zoneState": {"available": True},
+                 "hosts": {
+                     "fake_host-1": {
+                         "nova-compute": {
+                             "active": True,
+                             "available": True,
+                             "updated_at": datetime.datetime(
+                                 2012, 12, 26, 14, 45, 25, 0)}}}},
+                {"zoneName": "internal",
+                 "zoneState": {"available": True},
+                 "hosts": {
+                     "fake_host-1": {
+                         "nova-sched": {
+                             "active": True,
+                             "available": True,
+                             "updated_at": datetime.datetime(
+                                 2012, 12, 26, 14, 45, 25, 0)}},
+                     "fake_host-2": {
+                         "nova-network": {
+                             "active": True,
+                             "available": False,
+                             "updated_at": datetime.datetime(
+                                 2012, 12, 26, 14, 45, 24, 0)}}}},
+                {"zoneName": "zone-2",
+                 "zoneState": {"available": False},
+                 "hosts": None}]})
 
     def get_servers_1234_os_interface(self, **kw):
         return (200, {}, {"interfaceAttachments": [

@@ -49,14 +49,15 @@ class Base(base.Fixture):
             "status": "BUILD",
             "progress": 60,
             "addresses": {
-                "public": [{
-                    "version": 4,
-                    "addr": "1.2.3.4",
-                },
-                {
-                    "version": 4,
-                    "addr": "5.6.7.8",
-                }],
+                "public": [
+                    {
+                        "version": 4,
+                        "addr": "1.2.3.4",
+                    },
+                    {
+                        "version": 4,
+                        "addr": "5.6.7.8",
+                    }],
                 "private": [{
                     "version": 4,
                     "addr": "10.11.12.13",
@@ -89,14 +90,15 @@ class Base(base.Fixture):
             "hostId": "9e107d9d372bb6826bd81d3542a419d6",
             "status": "ACTIVE",
             "addresses": {
-                "public": [{
-                    "version": 4,
-                    "addr": "4.5.6.7",
-                },
-                {
-                    "version": 4,
-                    "addr": "5.6.9.8",
-                }],
+                "public": [
+                    {
+                        "version": 4,
+                        "addr": "4.5.6.7",
+                    },
+                    {
+                        "version": 4,
+                        "addr": "5.6.9.8",
+                    }],
                 "private": [{
                     "version": 4,
                     "addr": "10.13.12.13",
@@ -106,16 +108,17 @@ class Base(base.Fixture):
                 "Server Label": "DB 1"
             },
             "OS-EXT-SRV-ATTR:host": "computenode2",
-            "security_groups": [{
-                'id': 1, 'name': 'securitygroup1',
-                'description': 'FAKE_SECURITY_GROUP',
-                'tenant_id': '4ffc664c198e435e9853f2538fbcd7a7'
-            },
-            {
-                'id': 2, 'name': 'securitygroup2',
-                'description': 'ANOTHER_FAKE_SECURITY_GROUP',
-                'tenant_id': '4ffc664c198e435e9853f2538fbcd7a7'
-            }],
+            "security_groups": [
+                {
+                    'id': 1, 'name': 'securitygroup1',
+                    'description': 'FAKE_SECURITY_GROUP',
+                    'tenant_id': '4ffc664c198e435e9853f2538fbcd7a7'
+                },
+                {
+                    'id': 2, 'name': 'securitygroup2',
+                    'description': 'ANOTHER_FAKE_SECURITY_GROUP',
+                    'tenant_id': '4ffc664c198e435e9853f2538fbcd7a7'
+                }],
         }
 
         self.server_9012 = {
@@ -129,14 +132,15 @@ class Base(base.Fixture):
             "hostId": "9e107d9d372bb6826bd81d3542a419d6",
             "status": "ACTIVE",
             "addresses": {
-                "public": [{
-                    "version": 4,
-                    "addr": "4.5.6.7",
-                },
-                {
-                    "version": 4,
-                    "addr": "5.6.9.8",
-                }],
+                "public": [
+                    {
+                        "version": 4,
+                        "addr": "4.5.6.7",
+                    },
+                    {
+                        "version": 4,
+                        "addr": "5.6.9.8",
+                    }],
                 "private": [{
                     "version": 4,
                     "addr": "10.13.12.13",
