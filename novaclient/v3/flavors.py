@@ -45,8 +45,7 @@ class Flavor(base.Resource):
         :param flavor: The :class:`Flavor` to get extra specs from
         """
         _resp, body = self.manager.api.client.get(
-                            "/flavors/%s/flavor-extra-specs" %
-                            base.getid(self))
+            "/flavors/%s/flavor-extra-specs" % base.getid(self))
         return body["extra_specs"]
 
     def set_keys(self, metadata):
@@ -60,9 +59,8 @@ class Flavor(base.Resource):
 
         body = {'extra_specs': metadata}
         return self.manager._create(
-                            "/flavors/%s/flavor-extra-specs" %
-                            base.getid(self), body, "extra_specs",
-                            return_raw=True)
+            "/flavors/%s/flavor-extra-specs" % base.getid(self), body,
+            "extra_specs", return_raw=True)
 
     def unset_keys(self, keys):
         """

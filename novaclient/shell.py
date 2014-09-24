@@ -355,8 +355,8 @@ class OpenStackComputeShell(object):
             metavar='<endpoint-type>',
             default=utils.env('NOVA_ENDPOINT_TYPE',
                         default=DEFAULT_NOVA_ENDPOINT_TYPE),
-            help=_('Defaults to env[NOVA_ENDPOINT_TYPE] or ')
-                    + DEFAULT_NOVA_ENDPOINT_TYPE + '.')
+            help=(_('Defaults to env[NOVA_ENDPOINT_TYPE] or ')
+                  + DEFAULT_NOVA_ENDPOINT_TYPE + '.'))
         # NOTE(dtroyer): We can't add --endpoint_type here due to argparse
         #                thinking usage-list --end is ambiguous; but it
         #                works fine with only --endpoint-type present
@@ -527,7 +527,7 @@ class OpenStackComputeShell(object):
 
         # build available subcommands based on version
         self.extensions = self._discover_extensions(
-                options.os_compute_api_version)
+            options.os_compute_api_version)
         self._run_extension_hooks('__pre_parse_args__')
 
         # NOTE(dtroyer): Hackery to handle --endpoint_type due to argparse
@@ -539,7 +539,7 @@ class OpenStackComputeShell(object):
             argv[spot] = '--endpoint-type'
 
         subcommand_parser = self.get_subcommand_parser(
-                options.os_compute_api_version)
+            options.os_compute_api_version)
         self.parser = subcommand_parser
 
         if options.help or not argv:

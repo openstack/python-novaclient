@@ -24,9 +24,9 @@ from novaclient import base
 
 class Certificate(base.Resource):
     def __repr__(self):
-        return "<Certificate: private_key=[%s bytes] data=[%s bytes]>" % \
-                        (len(self.private_key) if self.private_key else 0,
-                         len(self.data))
+        return ("<Certificate: private_key=[%s bytes] data=[%s bytes]>" %
+                (len(self.private_key) if self.private_key else 0,
+                 len(self.data)))
 
 
 class CertificateManager(base.Manager):

@@ -152,19 +152,20 @@ class FakeHTTPClient(fakes_v1_1.FakeHTTPClient):
         fakes_v1_1.FakeHTTPClient.delete_servers_1234_os_interface_port_id)
 
     def get_servers_1234_os_attach_interfaces(self, **kw):
-        return (200, {}, {"interface_attachments": [
-                             {"port_state": "ACTIVE",
-                              "net_id": "net-id-1",
-                              "port_id": "port-id-1",
-                              "mac_address": "aa:bb:cc:dd:ee:ff",
-                              "fixed_ips": [{"ip_address": "1.2.3.4"}],
-                              },
-                             {"port_state": "ACTIVE",
-                              "net_id": "net-id-1",
-                              "port_id": "port-id-1",
-                              "mac_address": "aa:bb:cc:dd:ee:ff",
-                              "fixed_ips": [{"ip_address": "1.2.3.4"}],
-                              }]})
+        return (200, {}, {
+            "interface_attachments": [
+                {"port_state": "ACTIVE",
+                 "net_id": "net-id-1",
+                 "port_id": "port-id-1",
+                 "mac_address": "aa:bb:cc:dd:ee:ff",
+                 "fixed_ips": [{"ip_address": "1.2.3.4"}],
+                 },
+                {"port_state": "ACTIVE",
+                 "net_id": "net-id-1",
+                 "port_id": "port-id-1",
+                 "mac_address": "aa:bb:cc:dd:ee:ff",
+                 "fixed_ips": [{"ip_address": "1.2.3.4"}]}]
+        })
 
     def post_servers_1234_os_attach_interfaces(self, **kw):
         return (200, {}, {'interface_attachment': {}})
@@ -263,13 +264,12 @@ class FakeHTTPClient(fakes_v1_1.FakeHTTPClient):
     # Availability Zones
     #
     def get_os_availability_zone(self, **kw):
-        return (200, {}, {"availability_zone_info": [
-                              {"zone_name": "zone-1",
-                               "zone_state": {"available": True},
-                               "hosts": None},
-                              {"zone_name": "zone-2",
-                               "zone_state": {"available": False},
-                               "hosts": None}]})
+        return (200, {}, {
+            "availability_zone_info": [
+                {"zone_name": "zone-1", "zone_state": {"available": True},
+                 "hosts": None},
+                {"zone_name": "zone-2", "zone_state": {"available": False},
+                 "hosts": None}]})
 
     def get_os_availability_zone_detail(self, **kw):
         return (200, {}, {
@@ -308,21 +308,22 @@ class FakeHTTPClient(fakes_v1_1.FakeHTTPClient):
     #
     def put_os_quota_sets_97f4c221bff44578b0300df4ef119353(self, body, **kw):
         assert list(body) == ['quota_set']
-        return (200, {}, {'quota_set': {
-                      'tenant_id': '97f4c221bff44578b0300df4ef119353',
-                      'metadata_items': [],
-                      'injected_file_content_bytes': 1,
-                      'injected_file_path_bytes': 1,
-                      'ram': 1,
-                      'floating_ips': 1,
-                      'instances': 1,
-                      'injected_files': 1,
-                      'cores': 1,
-                      'keypairs': 1,
-                      'security_groups': 1,
-                      'security_group_rules': 1,
-                      'server_groups': 1,
-                      'server_group_members': 1}})
+        return (200, {}, {
+            'quota_set': {
+                'tenant_id': '97f4c221bff44578b0300df4ef119353',
+                'metadata_items': [],
+                'injected_file_content_bytes': 1,
+                'injected_file_path_bytes': 1,
+                'ram': 1,
+                'floating_ips': 1,
+                'instances': 1,
+                'injected_files': 1,
+                'cores': 1,
+                'keypairs': 1,
+                'security_groups': 1,
+                'security_group_rules': 1,
+                'server_groups': 1,
+                'server_group_members': 1}})
 
     def get_os_quota_sets_test_detail(self, **kw):
         return (200, {}, {'quota_set': {
@@ -337,17 +338,18 @@ class FakeHTTPClient(fakes_v1_1.FakeHTTPClient):
         if kw['query'] == 'hyper1':
             return (200, {}, {'hypervisors': [
                 {'id': 1234, 'hypervisor_hostname': 'hyper1'}]})
-        return (200, {}, {'hypervisors': [
-                    {'id': 1234, 'hypervisor_hostname': 'hyper1'},
-                    {'id': 5678, 'hypervisor_hostname': 'hyper2'}]})
+        return (200, {}, {
+            'hypervisors': [
+                {'id': 1234, 'hypervisor_hostname': 'hyper1'},
+                {'id': 5678, 'hypervisor_hostname': 'hyper2'}]})
 
     def get_os_hypervisors_1234_servers(self, **kw):
-        return (200, {}, {'hypervisor':
-                    {'id': 1234,
-                     'hypervisor_hostname': 'hyper1',
-                     'servers': [
-                            {'name': 'inst1', 'id': 'uuid1'},
-                            {'name': 'inst2', 'id': 'uuid2'}]}})
+        return (200, {}, {
+            'hypervisor':
+                {'id': 1234, 'hypervisor_hostname': 'hyper1',
+                 'servers': [
+                     {'name': 'inst1', 'id': 'uuid1'},
+                     {'name': 'inst2', 'id': 'uuid2'}]}})
 
     #
     # Keypairs

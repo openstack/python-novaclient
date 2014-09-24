@@ -201,18 +201,18 @@ def _boot(cs, args):
         config_drive = args.config_drive
 
     boot_kwargs = dict(
-            meta=meta,
-            files=files,
-            key_name=key_name,
-            min_count=min_count,
-            max_count=max_count,
-            userdata=userdata,
-            availability_zone=availability_zone,
-            security_groups=security_groups,
-            block_device_mapping=block_device_mapping,
-            nics=nics,
-            scheduler_hints=hints,
-            config_drive=config_drive)
+        meta=meta,
+        files=files,
+        key_name=key_name,
+        min_count=min_count,
+        max_count=max_count,
+        userdata=userdata,
+        availability_zone=availability_zone,
+        security_groups=security_groups,
+        block_device_mapping=block_device_mapping,
+        nics=nics,
+        scheduler_hints=hints,
+        config_drive=config_drive)
 
     return boot_args, boot_kwargs
 
@@ -980,18 +980,18 @@ def do_list(cs, args):
     if args.flavor:
         flavorid = _find_flavor(cs, args.flavor).id
     search_opts = {
-            'all_tenants': args.all_tenants,
-            'reservation_id': args.reservation_id,
-            'ip': args.ip,
-            'ip6': args.ip6,
-            'name': args.name,
-            'image': imageid,
-            'flavor': flavorid,
-            'status': args.status,
-            'tenant_id': args.tenant,
-            'host': args.host,
-            'deleted': args.deleted,
-            'instance_name': args.instance_name}
+        'all_tenants': args.all_tenants,
+        'reservation_id': args.reservation_id,
+        'ip': args.ip,
+        'ip6': args.ip6,
+        'name': args.name,
+        'image': imageid,
+        'flavor': flavorid,
+        'status': args.status,
+        'tenant_id': args.tenant,
+        'host': args.host,
+        'deleted': args.deleted,
+        'instance_name': args.instance_name}
 
     filters = {'flavor': lambda f: f['id'],
                'security_groups': utils._format_security_groups}
@@ -1696,8 +1696,7 @@ def do_dns_domains(cs, args):
 def do_dns_list(cs, args):
     """List current DNS entries for domain and ip or domain and name."""
     if not (args.ip or args.name):
-        raise exceptions.CommandError(
-              "You must specify either --ip or --name")
+        raise exceptions.CommandError("You must specify either --ip or --name")
     if args.name:
         entry = cs.dns_entries.get(args.domain, args.name)
         _print_dns_list([entry])
@@ -1988,11 +1987,10 @@ def do_secgroup_delete_group_rule(cs, args):
 
     for rule in secgroup.rules:
         if (rule.get('ip_protocol').upper() == params.get(
-                                               'ip_protocol').upper() and
-            rule.get('from_port') == params.get('from_port') and
-            rule.get('to_port') == params.get('to_port') and
-            rule.get('group', {}).get('name') ==
-                     params.get('group_name')):
+                'ip_protocol').upper() and
+                rule.get('from_port') == params.get('from_port') and
+                rule.get('to_port') == params.get('to_port') and
+                rule.get('group', {}).get('name') == params.get('group_name')):
             return cs.security_group_rules.delete(rule['id'])
 
     raise exceptions.CommandError("Rule not found")
@@ -3108,9 +3106,9 @@ def _treeizeAvailabilityZone(zone):
                                       copy.deepcopy(zone._info), zone._loaded)
                 az.zone_name = '| |- %s' % svc
                 az.zone_state = '%s %s %s' % (
-                               'enabled' if state['active'] else 'disabled',
-                               ':-)' if state['available'] else 'XXX',
-                               state['updated_at'])
+                    'enabled' if state['active'] else 'disabled',
+                    ':-)' if state['available'] else 'XXX',
+                    state['updated_at'])
                 az._info['zone_name'] = az.zone_name
                 az._info['zone_state'] = az.zone_state
                 result.append(az)

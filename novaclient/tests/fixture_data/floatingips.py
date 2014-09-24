@@ -105,18 +105,18 @@ class DNSFixture(base.Fixture):
             'dns_entries': [
                 {
                     'dns_entry': {
-                         'ip': '1.2.3.4',
-                         'name': "host1",
-                         'type': "A",
-                         'domain': 'testdomain'
+                        'ip': '1.2.3.4',
+                        'name': "host1",
+                        'type': "A",
+                        'domain': 'testdomain'
                     }
                 },
                 {
                     'dns_entry': {
-                         'ip': '1.2.3.4',
-                         'name': "host2",
-                         'type': "A",
-                         'domain': 'testdomain'
+                        'ip': '1.2.3.4',
+                        'name': "host2",
+                        'type': "A",
+                        'domain': 'testdomain'
                     }
                 },
             ]
@@ -182,9 +182,9 @@ class BulkFixture(base.Fixture):
             interface = params.get('interface', 'defaultInterface')
             return {
                 'floating_ips_bulk_create': {
-                     'ip_range': '192.168.1.0/30',
-                     'pool': pool,
-                     'interface': interface
+                    'ip_range': '192.168.1.0/30',
+                    'pool': pool,
+                    'interface': interface
                 }
             }
 

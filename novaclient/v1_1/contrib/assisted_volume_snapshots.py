@@ -42,7 +42,7 @@ class AssistedSnapshotManager(base.Manager):
 
     def delete(self, snapshot, delete_info):
         self._delete("/os-assisted-volume-snapshots/%s?delete_info=%s" % (
-                base.getid(snapshot), json.dumps(delete_info)))
+            base.getid(snapshot), json.dumps(delete_info)))
 
 manager_class = AssistedSnapshotManager
 name = 'assisted_volume_snapshots'

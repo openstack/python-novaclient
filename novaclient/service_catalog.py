@@ -72,11 +72,11 @@ class ServiceCatalog(object):
             endpoints = service['endpoints']
             for endpoint in endpoints:
                 # Ignore 1.0 compute endpoints
-                if service.get("type") == 'compute' and \
-                            endpoint.get('versionId', '2') not in ('1.1', '2'):
+                if (service.get("type") == 'compute' and
+                        endpoint.get('versionId', '2') not in ('1.1', '2')):
                     continue
-                if not filter_value or \
-                        endpoint.get(attr).lower() == filter_value.lower():
+                if (not filter_value or
+                        endpoint.get(attr).lower() == filter_value.lower()):
                     endpoint["serviceName"] = service.get("name")
                     matching_endpoints.append(endpoint)
 
@@ -84,6 +84,6 @@ class ServiceCatalog(object):
             raise novaclient.exceptions.EndpointNotFound()
         elif len(matching_endpoints) > 1:
             raise novaclient.exceptions.AmbiguousEndpoints(
-                    endpoints=matching_endpoints)
+                endpoints=matching_endpoints)
         else:
             return matching_endpoints[0][endpoint_type]

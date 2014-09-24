@@ -378,7 +378,7 @@ class HTTPClient(object):
                     self._session.close()
                 self._current_url = service_url
                 self._logger.debug(
-                        "New session created for: (%s)" % service_url)
+                    "New session created for: (%s)" % service_url)
                 self._session = requests.Session()
                 self._session.mount(service_url,
                         self._connection_pool.get(service_url))

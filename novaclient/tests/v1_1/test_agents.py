@@ -77,12 +77,12 @@ class AgentsTest(utils.FixturedTestCase):
                               'add6bb58e139be103324d04d82d8f546',
                               'xen')
         body = {'agent': {
-                        'url': '/xxx/xxx/xxx',
-                        'hypervisor': 'xen',
-                        'md5hash': 'add6bb58e139be103324d04d82d8f546',
-                        'version': '7.0',
-                        'architecture': 'x86',
-                        'os': 'win'}}
+            'url': '/xxx/xxx/xxx',
+            'hypervisor': 'xen',
+            'md5hash': 'add6bb58e139be103324d04d82d8f546',
+            'version': '7.0',
+            'architecture': 'x86',
+            'os': 'win'}}
         self.assert_called('POST', '/os-agents', body)
         self.assertEqual(1, ag._info.copy()['id'])
 

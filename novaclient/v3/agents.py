@@ -29,6 +29,6 @@ class AgentsManager(agents.AgentsManager):
 
     def _build_update_body(self, version, url, md5hash):
         return {'agent': {
-                       'version': version,
-                       'url': url,
-                       'md5hash': md5hash}}
+            'version': version,
+            'url': url,
+            'md5hash': md5hash}}

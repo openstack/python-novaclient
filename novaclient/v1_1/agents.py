@@ -41,10 +41,9 @@ class AgentsManager(base.ManagerWithFind):
         return self._list(url, "agents")
 
     def _build_update_body(self, version, url, md5hash):
-        return {'para': {
-                       'version': version,
-                       'url': url,
-                       'md5hash': md5hash}}
+        return {'para': {'version': version,
+                         'url': url,
+                         'md5hash': md5hash}}
 
     def update(self, id, version,
                url, md5hash):
@@ -55,13 +54,12 @@ class AgentsManager(base.ManagerWithFind):
     def create(self, os, architecture, version,
                url, md5hash, hypervisor):
         """Create a new agent build."""
-        body = {'agent': {
-                        'hypervisor': hypervisor,
-                        'os': os,
-                        'architecture': architecture,
-                        'version': version,
-                        'url': url,
-                        'md5hash': md5hash}}
+        body = {'agent': {'hypervisor': hypervisor,
+                          'os': os,
+                          'architecture': architecture,
+                          'version': version,
+                          'url': url,
+                          'md5hash': md5hash}}
         return self._create('/os-agents', body, 'agent')
 
     def delete(self, id):

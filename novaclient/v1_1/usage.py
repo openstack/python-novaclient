@@ -43,9 +43,9 @@ class UsageManager(base.ManagerWithFind):
         :rtype: list of :class:`Usage`.
         """
         return self._list(
-                    "/os-simple-tenant-usage?start=%s&end=%s&detailed=%s" %
-                    (start.isoformat(), end.isoformat(), int(bool(detailed))),
-                    "tenant_usages")
+            "/os-simple-tenant-usage?start=%s&end=%s&detailed=%s" %
+            (start.isoformat(), end.isoformat(), int(bool(detailed))),
+            "tenant_usages")
 
     def get(self, tenant_id, start, end):
         """

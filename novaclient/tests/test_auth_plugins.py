@@ -167,9 +167,9 @@ class DeprecatedAuthPluginTest(utils.TestCase):
                 return None
 
         mock_iter_entry_points.side_effect = lambda _t, name: [
-                MockAuthUrlEntrypoint("fakewithauthurl",
-                                      "fakewithauthurl",
-                                      ["auth_url"])]
+            MockAuthUrlEntrypoint("fakewithauthurl",
+                                  "fakewithauthurl",
+                                  ["auth_url"])]
 
         plugin = auth_plugin.DeprecatedAuthPlugin("fakewithauthurl")
         self.assertRaises(
@@ -192,7 +192,7 @@ class AuthPluginTest(utils.TestCase):
                 cls._authenticate(auth_url, {"fake": "me"})
 
         mock_iter_entry_points.side_effect = lambda _t: [
-                MockEntrypoint("fake", "fake", ["FakePlugin"])]
+            MockEntrypoint("fake", "fake", ["FakePlugin"])]
 
         mock_request.side_effect = mock_http_request()
 
@@ -207,12 +207,12 @@ class AuthPluginTest(utils.TestCase):
         token_url = cs.client.auth_url + "/tokens"
 
         mock_request.assert_called_with(
-                "POST",
-                token_url,
-                headers=headers,
-                data='{"fake": "me"}',
-                allow_redirects=True,
-                **self.TEST_REQUEST_BASE)
+            "POST",
+            token_url,
+            headers=headers,
+            data='{"fake": "me"}',
+            allow_redirects=True,
+            **self.TEST_REQUEST_BASE)
 
     @mock.patch.object(pkg_resources, "iter_entry_points")
     def test_discover_auth_system_options(self, mock_iter_entry_points):
@@ -231,7 +231,7 @@ class AuthPluginTest(utils.TestCase):
                 return FakePlugin
 
         mock_iter_entry_points.side_effect = lambda _t: [
-                MockEntrypoint("fake", "fake", ["FakePlugin"])]
+            MockEntrypoint("fake", "fake", ["FakePlugin"])]
 
         parser = argparse.ArgumentParser()
         auth_plugin.discover_auth_systems()
@@ -255,7 +255,7 @@ class AuthPluginTest(utils.TestCase):
                 return self.opts
 
         mock_iter_entry_points.side_effect = lambda _t: [
-                MockEntrypoint("fake", "fake", ["FakePlugin"])]
+            MockEntrypoint("fake", "fake", ["FakePlugin"])]
 
         auth_plugin.discover_auth_systems()
         plugin = auth_plugin.load_plugin("fake")
@@ -275,7 +275,7 @@ class AuthPluginTest(utils.TestCase):
                 return "http://faked/v2.0"
 
         mock_iter_entry_points.side_effect = lambda _t: [
-                MockEntrypoint("fake", "fake", ["FakePlugin"])]
+            MockEntrypoint("fake", "fake", ["FakePlugin"])]
 
         auth_plugin.discover_auth_systems()
         plugin = auth_plugin.load_plugin("fake")
@@ -296,15 +296,15 @@ class AuthPluginTest(utils.TestCase):
             pass
 
         mock_iter_entry_points.side_effect = lambda _t: [
-                MockEntrypoint("fake", "fake", ["FakePlugin"])]
+            MockEntrypoint("fake", "fake", ["FakePlugin"])]
 
         auth_plugin.discover_auth_systems()
         plugin = auth_plugin.load_plugin("fake")
 
         self.assertRaises(
-                exceptions.EndpointNotFound,
-                client.Client, "username", "password", "project_id",
-                auth_system="fake", auth_plugin=plugin)
+            exceptions.EndpointNotFound,
+            client.Client, "username", "password", "project_id",
+            auth_system="fake", auth_plugin=plugin)
 
     @mock.patch.object(pkg_resources, "iter_entry_points")
     def test_exception_if_no_url(self, mock_iter_entry_points):
@@ -317,12 +317,12 @@ class AuthPluginTest(utils.TestCase):
             pass
 
         mock_iter_entry_points.side_effect = lambda _t: [
-                MockEntrypoint("fake", "fake", ["FakePlugin"])]
+            MockEntrypoint("fake", "fake", ["FakePlugin"])]
 
         auth_plugin.discover_auth_systems()
         plugin = auth_plugin.load_plugin("fake")
 
         self.assertRaises(
-                exceptions.EndpointNotFound,
-                client.Client, "username", "password", "project_id",
-                auth_system="fake", auth_plugin=plugin)
+            exceptions.EndpointNotFound,
+            client.Client, "username", "password", "project_id",
+            auth_system="fake", auth_plugin=plugin)

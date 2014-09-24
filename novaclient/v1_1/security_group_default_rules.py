@@ -54,10 +54,10 @@ class SecurityGroupDefaultRuleManager(base.Manager):
                                             ", or 'icmp'."))
 
         body = {"security_group_default_rule": {
-                    "ip_protocol": ip_protocol,
-                    "from_port": from_port,
-                    "to_port": to_port,
-                    "cidr": cidr}}
+            "ip_protocol": ip_protocol,
+            "from_port": from_port,
+            "to_port": to_port,
+            "cidr": cidr}}
 
         return self._create('/os-security-group-default-rules', body,
                             'security_group_default_rule')

@@ -294,19 +294,19 @@ def _boot(cs, args):
         config_drive = args.config_drive
 
     boot_kwargs = dict(
-            meta=meta,
-            files=files,
-            key_name=key_name,
-            min_count=min_count,
-            max_count=max_count,
-            userdata=userdata,
-            availability_zone=availability_zone,
-            security_groups=security_groups,
-            block_device_mapping=block_device_mapping,
-            block_device_mapping_v2=block_device_mapping_v2,
-            nics=nics,
-            scheduler_hints=hints,
-            config_drive=config_drive)
+        meta=meta,
+        files=files,
+        key_name=key_name,
+        min_count=min_count,
+        max_count=max_count,
+        userdata=userdata,
+        availability_zone=availability_zone,
+        security_groups=security_groups,
+        block_device_mapping=block_device_mapping,
+        block_device_mapping_v2=block_device_mapping_v2,
+        nics=nics,
+        scheduler_hints=hints,
+        config_drive=config_drive)
 
     return boot_args, boot_kwargs
 
@@ -1209,19 +1209,19 @@ def do_list(cs, args):
     if args.tenant or args.user:
         args.all_tenants = 1
     search_opts = {
-            'all_tenants': args.all_tenants,
-            'reservation_id': args.reservation_id,
-            'ip': args.ip,
-            'ip6': args.ip6,
-            'name': args.name,
-            'image': imageid,
-            'flavor': flavorid,
-            'status': args.status,
-            'tenant_id': args.tenant,
-            'user_id': args.user,
-            'host': args.host,
-            'deleted': args.deleted,
-            'instance_name': args.instance_name}
+        'all_tenants': args.all_tenants,
+        'reservation_id': args.reservation_id,
+        'ip': args.ip,
+        'ip6': args.ip6,
+        'name': args.name,
+        'image': imageid,
+        'flavor': flavorid,
+        'status': args.status,
+        'tenant_id': args.tenant,
+        'user_id': args.user,
+        'host': args.host,
+        'deleted': args.deleted,
+        'instance_name': args.instance_name}
 
     filters = {'flavor': lambda f: f['id'],
                'security_groups': utils._format_security_groups}
@@ -2281,7 +2281,7 @@ def do_dns_list(cs, args):
     """List current DNS entries for domain and ip or domain and name."""
     if not (args.ip or args.name):
         raise exceptions.CommandError(
-              _("You must specify either --ip or --name"))
+            _("You must specify either --ip or --name"))
     if args.name:
         entry = cs.dns_entries.get(args.domain, args.name)
         _print_dns_list([entry])
@@ -2576,12 +2576,12 @@ def do_secgroup_delete_group_rule(cs, args):
         params['to_port'] = int(args.to_port)
 
     for rule in secgroup.rules:
-        if (rule.get('ip_protocol') and rule['ip_protocol'].upper() ==
-                           params.get('ip_protocol').upper() and
-            rule.get('from_port') == params.get('from_port') and
-            rule.get('to_port') == params.get('to_port') and
-            rule.get('group', {}).get('name') ==
-                     params.get('group_name')):
+        if (rule.get('ip_protocol') and
+                rule['ip_protocol'].upper() == params.get(
+                    'ip_protocol').upper() and
+                rule.get('from_port') == params.get('from_port') and
+                rule.get('to_port') == params.get('to_port') and
+                rule.get('group', {}).get('name') == params.get('group_name')):
             return cs.security_group_rules.delete(rule['id'])
 
     raise exceptions.CommandError(_("Rule not found"))
