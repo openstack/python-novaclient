@@ -1086,7 +1086,7 @@ class ServerManager(base.BootingManagerWithFind):
         """
         body = {'metadata': metadata}
         return self._create("/servers/%s/metadata" % base.getid(server),
-                             body, "metadata")
+                            body, "metadata")
 
     def set_meta_item(self, server, key, value):
         """

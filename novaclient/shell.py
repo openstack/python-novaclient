@@ -765,8 +765,11 @@ class OpenStackComputeShell(object):
         commands.remove('bash_completion')
         print(' '.join(commands | options))
 
-    @utils.arg('command', metavar='<subcommand>', nargs='?',
-                    help='Display help for <subcommand>')
+    @utils.arg(
+        'command',
+        metavar='<subcommand>',
+        nargs='?',
+        help='Display help for <subcommand>')
     def do_help(self, args):
         """
         Display help about this program or one of its subcommands.

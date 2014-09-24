@@ -45,10 +45,9 @@ class VolumeManager(base.ManagerWithFind):
     """
     resource_class = Volume
 
-    def create(self, size, snapshot_id=None,
-                    display_name=None, display_description=None,
-                    volume_type=None, availability_zone=None,
-                    imageRef=None):
+    def create(self, size, snapshot_id=None, display_name=None,
+               display_description=None, volume_type=None,
+               availability_zone=None, imageRef=None):
         """
         Create a volume.
 
@@ -62,12 +61,12 @@ class VolumeManager(base.ManagerWithFind):
         :param imageRef: reference to an image stored in glance
         """
         body = {'volume': {'size': size,
-                            'snapshot_id': snapshot_id,
-                            'display_name': display_name,
-                            'display_description': display_description,
-                            'volume_type': volume_type,
-                            'availability_zone': availability_zone,
-                            'imageRef': imageRef}}
+                           'snapshot_id': snapshot_id,
+                           'display_name': display_name,
+                           'display_description': display_description,
+                           'volume_type': volume_type,
+                           'availability_zone': availability_zone,
+                           'imageRef': imageRef}}
         return self._create('/volumes', body, 'volume')
 
     def get(self, volume_id):
@@ -162,4 +161,4 @@ class VolumeManager(base.ManagerWithFind):
         :param attachment_id: The ID of the attachment
         """
         self._delete("/servers/%s/os-volume_attachments/%s" %
-                                        (server_id, attachment_id,))
+                     (server_id, attachment_id,))

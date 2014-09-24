@@ -94,8 +94,8 @@ def _boot(cs, args):
         max_count = args.num_instances
     elif (args.num_instances is not None and
           (args.min_count is not None or args.max_count is not None)):
-        raise exceptions.CommandError("Don't mix num-instances and "
-                                        "max/min-count")
+        raise exceptions.CommandError(
+            "Don't mix num-instances and max/min-count")
     if args.min_count is not None:
         if args.min_count < 1:
             raise exceptions.CommandError("min_count should be >= 1")
@@ -1945,8 +1945,8 @@ def do_secgroup_add_group_rule(cs, args):
 
     if args.ip_proto or args.from_port or args.to_port:
         if not (args.ip_proto and args.from_port and args.to_port):
-            raise exceptions.CommandError("ip_proto, from_port, and to_port"
-                                           " must be specified together")
+            raise exceptions.CommandError(
+                "ip_proto, from_port, and to_port must be specified together")
         params['ip_protocol'] = args.ip_proto.upper()
         params['from_port'] = args.from_port
         params['to_port'] = args.to_port
@@ -1979,8 +1979,8 @@ def do_secgroup_delete_group_rule(cs, args):
 
     if args.ip_proto or args.from_port or args.to_port:
         if not (args.ip_proto and args.from_port and args.to_port):
-            raise exceptions.CommandError("ip_proto, from_port, and to_port"
-                                           " must be specified together")
+            raise exceptions.CommandError(
+                "ip_proto, from_port, and to_port must be specified together")
         params['ip_protocol'] = args.ip_proto.upper()
         params['from_port'] = int(args.from_port)
         params['to_port'] = int(args.to_port)
@@ -2013,8 +2013,8 @@ def do_keypair_add(cs, args):
             with open(os.path.expanduser(pub_key)) as f:
                 pub_key = f.read()
         except IOError as e:
-            raise exceptions.CommandError("Can't open or read '%s': %s" %
-                                                          (pub_key, e))
+            raise exceptions.CommandError(
+                "Can't open or read '%s': %s" % (pub_key, e))
 
     keypair = cs.keypairs.create(name, pub_key)
 
@@ -2822,8 +2822,8 @@ def do_ssh(cs, args):
     match = lambda addr: all((
         addr.get('version') == version,
         addr.get('OS-EXT-IPS:type', 'floating') == address_type))
-    matching_addresses = [address.get('addr') for address in network_addresses
-                            if match(address)]
+    matching_addresses = [address.get('addr')
+                          for address in network_addresses if match(address)]
     if not any(matching_addresses):
         msg = _("No address that would match network '%(network)s'"
                 " and type '%(address_type)s' of version %(pretty_version)s "
@@ -2980,8 +2980,8 @@ def do_quota_defaults(cs, args):
     dest='force',
     action="store_true",
     default=None,
-    help='Whether force update the quota even if the already used'
-            ' and reserved exceeds the new quota')
+    help='Whether force update the quota even if the already used and '
+         'reserved exceeds the new quota')
 def do_quota_update(cs, args):
     """Update the quotas for a tenant."""
 

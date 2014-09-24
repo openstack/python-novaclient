@@ -46,9 +46,9 @@ class FloatingIPsBulkTest(utils.FixturedTestCase):
     def test_create_floating_ips_bulk_with_pool_and_host(self):
         fl = self.cs.floating_ips_bulk.create('192.168.1.0/30', 'poolTest',
                                               'interfaceTest')
-        body = {'floating_ips_bulk_create':
-                    {'ip_range': '192.168.1.0/30', 'pool': 'poolTest',
-                     'interface': 'interfaceTest'}}
+        body = {'floating_ips_bulk_create': {
+            'ip_range': '192.168.1.0/30', 'pool': 'poolTest',
+            'interface': 'interfaceTest'}}
         self.assert_called('POST', '/os-floating-ips-bulk', body)
         self.assertEqual(fl.ip_range,
                          body['floating_ips_bulk_create']['ip_range'])

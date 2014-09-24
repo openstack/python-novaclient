@@ -87,8 +87,8 @@ class ImageManager(base.ManagerWithFind):
         :param metadata: A dict of metadata to add to the image
         """
         body = {'metadata': metadata}
-        return self._create("/images/%s/metadata" % base.getid(image), body,
-                             "metadata")
+        return self._create("/images/%s/metadata" % base.getid(image),
+                            body, "metadata")
 
     def delete_meta(self, image, keys):
         """

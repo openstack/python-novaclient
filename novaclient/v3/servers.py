@@ -440,7 +440,7 @@ class ServerManager(base.BootingManagerWithFind):
         if block_device_mapping:
             bdm_param = 'block_device_mapping'
             body['server'][bdm_param] = \
-              self._parse_block_device_mapping(block_device_mapping)
+                self._parse_block_device_mapping(block_device_mapping)
         elif block_device_mapping_v2:
             # Append the image to the list only if we have new style BDMs
             bdm_param = 'block_device_mapping_v2'
@@ -893,8 +893,8 @@ class ServerManager(base.BootingManagerWithFind):
         :param metadata: A dict of metadata to add to the server
         """
         body = {'metadata': metadata}
-        return self._create("/servers/%s/metadata" % base.getid(server),
-                             body, "metadata")
+        return self._create(
+            "/servers/%s/metadata" % base.getid(server), body, "metadata")
 
     def get_console_output(self, server, length=None):
         """

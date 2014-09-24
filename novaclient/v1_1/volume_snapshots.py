@@ -42,8 +42,8 @@ class SnapshotManager(base.ManagerWithFind):
     """
     resource_class = Snapshot
 
-    def create(self, volume_id, force=False,
-                    display_name=None, display_description=None):
+    def create(self, volume_id, force=False, display_name=None,
+               display_description=None):
 
         """
         Create a snapshot of the given volume.

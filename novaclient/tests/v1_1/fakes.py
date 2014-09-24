@@ -879,11 +879,11 @@ class FakeHTTPClient(base_client.HTTPClient):
         if body.get('pool'):
             return (200, {}, {'floating_ip':
                 {'id': 1, 'fixed_ip': '10.0.0.1', 'ip': '11.0.0.1',
-                                                            'pool': 'nova'}})
+                 'pool': 'nova'}})
         else:
             return (200, {}, {'floating_ip':
                 {'id': 1, 'fixed_ip': '10.0.0.1', 'ip': '11.0.0.1',
-                                                            'pool': None}})
+                 'pool': None}})
 
     def delete_os_floating_ips_1(self, **kw):
         return (204, {}, None)
@@ -895,43 +895,42 @@ class FakeHTTPClient(base_client.HTTPClient):
 
     def get_os_floating_ip_dns_testdomain_entries(self, **kw):
         if kw.get('ip'):
-            return (205, {}, {'dns_entries':
-                          [{'dns_entry':
-                             {'ip': kw.get('ip'),
-                              'name': "host1",
-                              'type': "A",
-                              'domain': 'testdomain'}},
-                           {'dns_entry':
-                             {'ip': kw.get('ip'),
-                              'name': "host2",
-                              'type': "A",
-                              'domain': 'testdomain'}}]})
+            return (205, {}, {
+                'dns_entries': [
+                    {'dns_entry': {'ip': kw.get('ip'),
+                                   'name': "host1",
+                                   'type': "A",
+                                   'domain': 'testdomain'}},
+                    {'dns_entry': {'ip': kw.get('ip'),
+                                   'name': "host2",
+                                   'type': "A",
+                                   'domain': 'testdomain'}}]})
         else:
             return (404, {}, None)
 
     def get_os_floating_ip_dns_testdomain_entries_testname(self, **kw):
-        return (205, {}, {'dns_entry':
-                        {'ip': "10.10.10.10",
-                         'name': 'testname',
-                         'type': "A",
-                         'domain': 'testdomain'}})
+        return (205, {}, {
+            'dns_entry': {'ip': "10.10.10.10",
+                          'name': 'testname',
+                          'type': "A",
+                          'domain': 'testdomain'}})
 
     def put_os_floating_ip_dns_testdomain(self, body, **kw):
         if body['domain_entry']['scope'] == 'private':
             fakes.assert_has_keys(body['domain_entry'],
-                            required=['availability_zone', 'scope'])
+                                  required=['availability_zone', 'scope'])
         elif body['domain_entry']['scope'] == 'public':
             fakes.assert_has_keys(body['domain_entry'],
-                            required=['project', 'scope'])
+                                  required=['project', 'scope'])
 
         else:
             fakes.assert_has_keys(body['domain_entry'],
-                            required=['project', 'scope'])
+                                  required=['project', 'scope'])
         return (205, {}, body)
 
     def put_os_floating_ip_dns_testdomain_entries_testname(self, body, **kw):
         fakes.assert_has_keys(body['dns_entry'],
-                        required=['ip', 'dns_type'])
+                              required=['ip', 'dns_type'])
         return (205, {}, body)
 
     def delete_os_floating_ip_dns_testdomain(self, **kw):
@@ -1271,8 +1270,7 @@ class FakeHTTPClient(base_client.HTTPClient):
         return (200, {}, {"security_groups": [
             {"name": "test",
              "description": "FAKE_SECURITY_GROUP",
-             "tenant_id":
-                 "4ffc664c198e435e9853f2538fbcd7a7",
+             "tenant_id": "4ffc664c198e435e9853f2538fbcd7a7",
              "id": 1,
              "rules": [
                  {"id": 11,
@@ -1330,7 +1328,7 @@ class FakeHTTPClient(base_client.HTTPClient):
         fakes.assert_has_keys(body['security_group'],
                               required=['name', 'description'])
         r = {'security_group':
-                self.get_os_security_groups()[2]['security_groups'][0]}
+             self.get_os_security_groups()[2]['security_groups'][0]}
         return (202, {}, r)
 
     def put_os_security_groups_1(self, body, **kw):
@@ -1363,12 +1361,13 @@ class FakeHTTPClient(base_client.HTTPClient):
 
     def post_os_security_group_rules(self, body, **kw):
         assert list(body) == ['security_group_rule']
-        fakes.assert_has_keys(body['security_group_rule'],
+        fakes.assert_has_keys(
+            body['security_group_rule'],
             required=['parent_group_id'],
             optional=['group_id', 'ip_protocol', 'from_port',
                       'to_port', 'cidr'])
         r = {'security_group_rule':
-            self.get_os_security_group_rules()[2]['security_group_rules'][0]}
+             self.get_os_security_group_rules()[2]['security_group_rules'][0]}
         return (202, {}, r)
 
     #
@@ -2160,12 +2159,10 @@ class FakeHTTPClient(base_client.HTTPClient):
     def post_os_server_groups(self, body, **kw):
         return self._return_server_group()
 
-    def get_os_server_groups_2cbd51f4_fafe_4cdb_801b_cf913a6f288b(self,
-                                                                    **kw):
+    def get_os_server_groups_2cbd51f4_fafe_4cdb_801b_cf913a6f288b(self, **kw):
         return self._return_server_group()
 
-    def put_os_server_groups_2cbd51f4_fafe_4cdb_801b_cf913a6f288b(self,
-                                                                    **kw):
+    def put_os_server_groups_2cbd51f4_fafe_4cdb_801b_cf913a6f288b(self, **kw):
         return self._return_server_group()
 
     def post_os_server_groups_2cbd51f4_fafe_4cdb_801b_cf913a6f288b_action(

@@ -57,10 +57,9 @@ class ClientTest(utils.TestCase):
         }
         with mock.patch('requests.request', mock_request):
             instance.authenticate()
-            requests.request.assert_called_with(mock.ANY, mock.ANY,
-                                                        timeout=2,
-                                                        headers=mock.ANY,
-                                                        verify=mock.ANY)
+            requests.request.assert_called_with(
+                mock.ANY, mock.ANY, timeout=2, headers=mock.ANY,
+                verify=mock.ANY)
 
     def test_client_reauth(self):
         instance = novaclient.client.HTTPClient(user='user',
@@ -208,7 +207,7 @@ class ClientTest(utils.TestCase):
 
     def test_client_get_reset_timings_v3(self):
         cs = novaclient.v3.client.Client("user", "password", "project_id",
-                                           auth_url="foo/v2")
+                                         auth_url="foo/v2")
         self.assertEqual(0, len(cs.get_timings()))
         cs.client.times.append("somevalue")
         self.assertEqual(["somevalue"], cs.get_timings())
@@ -220,15 +219,13 @@ class ClientTest(utils.TestCase):
         fake_attribute_name1 = "FakeAttribute1"
         fake_attribute_name2 = "FakeAttribute2"
         extensions = [
-            novaclient.extension.Extension(fake_attribute_name1,
-                                fakes),
-            novaclient.extension.Extension(fake_attribute_name2,
-                                utils),
+            novaclient.extension.Extension(fake_attribute_name1, fakes),
+            novaclient.extension.Extension(fake_attribute_name2, utils),
         ]
 
         cs = novaclient.v3.client.Client("user", "password", "project_id",
-                                           auth_url="foo/v2",
-                                           extensions=extensions)
+                                         auth_url="foo/v2",
+                                         extensions=extensions)
         self.assertIsInstance(getattr(cs, fake_attribute_name1, None),
                               fakes.FakeManager)
         self.assertFalse(hasattr(cs, fake_attribute_name2))
@@ -236,7 +233,7 @@ class ClientTest(utils.TestCase):
     @mock.patch.object(novaclient.client.HTTPClient, 'authenticate')
     def test_authenticate_call_v3(self, mock_authenticate):
         cs = novaclient.v3.client.Client("user", "password", "project_id",
-                                           auth_url="foo/v2")
+                                         auth_url="foo/v2")
         cs.authenticate()
         self.assertTrue(mock_authenticate.called)
 
@@ -245,7 +242,7 @@ class ClientTest(utils.TestCase):
         fake_client = mock.Mock()
         mock_http_client.return_value = fake_client
         with novaclient.v1_1.client.Client("user", "password", "project_id",
-                auth_url="foo/v2"):
+                                           auth_url="foo/v2"):
             pass
         self.assertTrue(fake_client.open_session.called)
         self.assertTrue(fake_client.close_session.called)
@@ -255,7 +252,7 @@ class ClientTest(utils.TestCase):
         fake_client = mock.Mock()
         mock_http_client.return_value = fake_client
         with novaclient.v3.client.Client("user", "password", "project_id",
-                auth_url="foo/v2"):
+                                         auth_url="foo/v2"):
             pass
         self.assertTrue(fake_client.open_session.called)
         self.assertTrue(fake_client.close_session.called)

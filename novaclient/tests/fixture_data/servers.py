@@ -614,8 +614,8 @@ class V3(Base):
             context.headers['location'] = "http://blah/images/456"
 
         if action not in set.union(set(body_is_none_list),
-                                     set(body_params_check_exact.keys()),
-                                     set(body_param_check_exists.keys())):
+                                   set(body_params_check_exact.keys()),
+                                   set(body_param_check_exists.keys())):
             raise AssertionError("Unexpected server action: %s" % action)
 
         return _body

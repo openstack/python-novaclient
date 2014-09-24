@@ -56,22 +56,18 @@ class FloatingIPDNSDomainManager(base.Manager):
 
     def create_private(self, fqdomain, availability_zone):
         """Add or modify a private DNS domain."""
-        body = {'domain_entry':
-                 {'scope': 'private',
-                  'availability_zone': availability_zone}}
+        body = {'domain_entry': {'scope': 'private',
+                                 'availability_zone': availability_zone}}
         return self._update('/os-floating-ip-dns/%s' % _quote_domain(fqdomain),
                             body,
                             'domain_entry')
 
     def create_public(self, fqdomain, project):
         """Add or modify a public DNS domain."""
-        body = {'domain_entry':
-                 {'scope': 'public',
-                  'project': project}}
+        body = {'domain_entry': {'scope': 'public', 'project': project}}
 
         return self._update('/os-floating-ip-dns/%s' % _quote_domain(fqdomain),
-                            body,
-                            'domain_entry')
+                            body, 'domain_entry')
 
     def delete(self, fqdomain):
         """Delete the specified domain."""
@@ -83,8 +79,7 @@ class FloatingIPDNSEntry(base.Resource):
         self.manager.delete(self.name, self.domain)
 
     def create(self):
-        self.manager.create(self.domain, self.name,
-                                  self.ip, self.dns_type)
+        self.manager.create(self.domain, self.name, self.ip, self.dns_type)
 
     def get(self):
         return self.manager.get(self.domain, self.name)
@@ -96,8 +91,7 @@ class FloatingIPDNSEntryManager(base.Manager):
     def get(self, domain, name):
         """Return a list of entries for the given domain and ip or name."""
         return self._get("/os-floating-ip-dns/%s/entries/%s" %
-                              (_quote_domain(domain), name),
-                          "dns_entry")
+                         (_quote_domain(domain), name), "dns_entry")
 
     def get_for_ip(self, domain, ip):
         """Return a list of entries for the given domain and ip or name."""
@@ -105,32 +99,23 @@ class FloatingIPDNSEntryManager(base.Manager):
         params = "?%s" % parse.urlencode(qparams)
 
         return self._list("/os-floating-ip-dns/%s/entries%s" %
-                              (_quote_domain(domain), params),
-                          "dns_entries")
+                          (_quote_domain(domain), params), "dns_entries")
 
     def create(self, domain, name, ip, dns_type):
         """Add a new DNS entry."""
-        body = {'dns_entry':
-                 {'ip': ip,
-                  'dns_type': dns_type}}
+        body = {'dns_entry': {'ip': ip, 'dns_type': dns_type}}
 
         return self._update("/os-floating-ip-dns/%s/entries/%s" %
-                            (_quote_domain(domain), name),
-                            body,
-                            "dns_entry")
+                            (_quote_domain(domain), name), body, "dns_entry")
 
     def modify_ip(self, domain, name, ip):
         """Add a new DNS entry."""
-        body = {'dns_entry':
-                 {'ip': ip,
-                  'dns_type': 'A'}}
+        body = {'dns_entry': {'ip': ip, 'dns_type': 'A'}}
 
         return self._update("/os-floating-ip-dns/%s/entries/%s" %
-                            (_quote_domain(domain), name),
-                            body,
-                            "dns_entry")
+                            (_quote_domain(domain), name), body, "dns_entry")
 
     def delete(self, domain, name):
         """Delete entry specified by name and domain."""
         self._delete("/os-floating-ip-dns/%s/entries/%s" %
-                                (_quote_domain(domain), name))
+                     (_quote_domain(domain), name))

@@ -243,9 +243,9 @@ class FakeHTTPClient(fakes_v1_1.FakeHTTPClient):
             _headers = dict(location="http://blah/images/456")
 
         if action not in set.union(set(body_is_none_list),
-                                     set(body_params_check_exact.keys()),
-                                     set(body_param_check_exists.keys()),
-                                     set(body_params_check_superset.keys())):
+                                   set(body_params_check_exact.keys()),
+                                   set(body_param_check_exists.keys()),
+                                   set(body_params_check_superset.keys())):
             raise AssertionError("Unexpected server action: %s" % action)
 
         return (resp, _headers, _body)

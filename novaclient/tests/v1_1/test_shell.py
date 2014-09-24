@@ -800,8 +800,8 @@ class ShellTest(utils.TestCase):
         )
 
     def test_create_image_show(self):
-        output = self.run_command('image-create '
-                                    'sample-server mysnapshot --show')
+        output = self.run_command(
+            'image-create sample-server mysnapshot --show')
         self.assert_called_anytime(
             'POST', '/servers/1234/action',
             {'createImage': {'name': 'mysnapshot', 'metadata': {}}},
@@ -2243,10 +2243,8 @@ class ShellTest(utils.TestCase):
              mock.mock_open(read_data='FAKE_PUBLIC_KEY'))
     def test_keypair_import(self):
         self.run_command('keypair-add --pub-key test.pub test')
-        self.assert_called('POST', '/os-keypairs',
-                           {'keypair':
-                              {'public_key': 'FAKE_PUBLIC_KEY',
-                               'name': 'test'}})
+        self.assert_called('POST', '/os-keypairs', {
+            'keypair': {'public_key': 'FAKE_PUBLIC_KEY', 'name': 'test'}})
 
     def test_keypair_list(self):
         self.run_command('keypair-list')
@@ -2263,9 +2261,8 @@ class ShellTest(utils.TestCase):
     def test_create_server_group(self):
         self.run_command('server-group-create wjsg affinity')
         self.assert_called('POST', '/os-server-groups',
-                           {'server_group':
-                              {'name': 'wjsg',
-                               'policies': ['affinity']}})
+                           {'server_group': {'name': 'wjsg',
+                                             'policies': ['affinity']}})
 
     def test_delete_multi_server_groups(self):
         self.run_command('server-group-delete 12345 56789')

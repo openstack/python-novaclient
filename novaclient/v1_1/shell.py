@@ -2367,8 +2367,8 @@ def _print_secgroups(secgroups):
 
 def _get_secgroup(cs, secgroup):
     # Check secgroup is an ID (nova-network) or UUID (neutron)
-    if (utils.is_integer_like(encodeutils.safe_encode(secgroup))
-               or uuidutils.is_uuid_like(secgroup)):
+    if (utils.is_integer_like(encodeutils.safe_encode(secgroup)) or
+            uuidutils.is_uuid_like(secgroup)):
         try:
             return cs.security_groups.get(secgroup)
         except exceptions.NotFound:
@@ -2377,9 +2377,8 @@ def _get_secgroup(cs, secgroup):
     # Check secgroup as a name
     match_found = False
     for s in cs.security_groups.list():
-        encoding = (locale.getpreferredencoding() or
-            sys.stdin.encoding or
-            'UTF-8')
+        encoding = (
+            locale.getpreferredencoding() or sys.stdin.encoding or 'UTF-8')
         if not six.PY3:
             s.name = s.name.encode(encoding)
         if secgroup == s.name:
@@ -3379,8 +3378,8 @@ def do_ssh(cs, args):
     match = lambda addr: all((
         addr.get('version') == version,
         addr.get('OS-EXT-IPS:type', 'floating') == address_type))
-    matching_addresses = [address.get('addr') for address in network_addresses
-                            if match(address)]
+    matching_addresses = [address.get('addr')
+                          for address in network_addresses if match(address)]
     if not any(matching_addresses):
         msg = _("No address that would match network '%(network)s'"
                 " and type '%(address_type)s' of version %(pretty_version)s "
@@ -3568,8 +3567,8 @@ def do_quota_defaults(cs, args):
     dest='force',
     action="store_true",
     default=None,
-    help=_('Whether force update the quota even if the already used'
-            ' and reserved exceeds the new quota'))
+    help=_('Whether force update the quota even if the already used and '
+           'reserved exceeds the new quota'))
 def do_quota_update(cs, args):
     """Update the quotas for a tenant/user."""
 
@@ -3902,7 +3901,7 @@ def do_secgroup_delete_default_rule(cs, args):
            default=argparse.SUPPRESS,
            nargs='*',
            help='Policies for the server groups '
-            '("affinity" or "anti-affinity")')
+                '("affinity" or "anti-affinity")')
 @utils.arg('--policy',
            default=[],
            action='append',
