@@ -640,11 +640,12 @@ class ServersTest(utils.FixturedTestCase):
             'port_id': 'f35079da-36d5-4513-8ec1-0298d703f70e',
             'mac_addr': 'fa:16:3e:4c:37:c8',
             'port_state': 'ACTIVE',
-            'fixed_ips': [{
-                'subnet_id': 'f1ad93ad-2967-46ba-b403-e8cbbe65f7fa',
-                'ip_address': '10.2.0.96'
+            'fixed_ips': [
+                {
+                    'subnet_id': 'f1ad93ad-2967-46ba-b403-e8cbbe65f7fa',
+                    'ip_address': '10.2.0.96'
                 }]
-            }]
+        }]
         # If server is not string representable, it will raise an exception,
         # because attribute named 'name' cannot be found.
         # Parameter 'loaded' must be True or it will try to get attribute

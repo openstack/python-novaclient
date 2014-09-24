@@ -195,7 +195,7 @@ class FakeHTTPClient(fakes_v1_1.FakeHTTPClient):
             'rescue': {'admin_password': 'RescuePassword'},
             'get_console_output': {'output': 'foo'},
             'rebuild': self.get_servers_1234()[2],
-            }
+        }
         body_param_check_exists = {
             'rebuild': 'image_ref',
             'resize': 'flavor_ref',
@@ -336,12 +336,10 @@ class FakeHTTPClient(fakes_v1_1.FakeHTTPClient):
     def get_os_hypervisors_search(self, **kw):
         if kw['query'] == 'hyper1':
             return (200, {}, {'hypervisors': [
-                        {'id': 1234, 'hypervisor_hostname': 'hyper1'},
-                        ]})
+                {'id': 1234, 'hypervisor_hostname': 'hyper1'}]})
         return (200, {}, {'hypervisors': [
                     {'id': 1234, 'hypervisor_hostname': 'hyper1'},
-                    {'id': 5678, 'hypervisor_hostname': 'hyper2'}
-                    ]})
+                    {'id': 5678, 'hypervisor_hostname': 'hyper2'}]})
 
     def get_os_hypervisors_1234_servers(self, **kw):
         return (200, {}, {'hypervisor':
@@ -349,9 +347,7 @@ class FakeHTTPClient(fakes_v1_1.FakeHTTPClient):
                      'hypervisor_hostname': 'hyper1',
                      'servers': [
                             {'name': 'inst1', 'id': 'uuid1'},
-                            {'name': 'inst2', 'id': 'uuid2'}
-                            ]},
-                    })
+                            {'name': 'inst2', 'id': 'uuid2'}]}})
 
     #
     # Keypairs

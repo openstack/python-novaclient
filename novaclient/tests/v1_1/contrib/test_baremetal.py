@@ -22,7 +22,7 @@ from novaclient.v1_1.contrib import baremetal
 
 extensions = [
     extension.Extension(baremetal.__name__.split(".")[-1], baremetal),
-    ]
+]
 cs = fakes.FakeClient(extensions=extensions)
 
 

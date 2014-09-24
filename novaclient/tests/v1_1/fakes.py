@@ -1285,8 +1285,7 @@ class FakeHTTPClient(base_client.HTTPClient):
              "tenant_id": "272bee4c1e624cd4a72a6b0ea55b4582",
              "id": 2,
              "rules": []}
-            ]}
-        )
+        ]})
 
     def get_os_security_groups_1(self, **kw):
         return (200, {}, {"security_group":
@@ -1649,8 +1648,7 @@ class FakeHTTPClient(base_client.HTTPClient):
     def get_os_hypervisors(self, **kw):
         return (200, {}, {"hypervisors": [
                     {'id': 1234, 'hypervisor_hostname': 'hyper1'},
-                    {'id': 5678, 'hypervisor_hostname': 'hyper2'},
-                    ]})
+                    {'id': 5678, 'hypervisor_hostname': 'hyper2'}]})
 
     def get_os_hypervisors_detail(self, **kw):
         return (200, {}, {"hypervisors": [
@@ -1688,7 +1686,7 @@ class FakeHTTPClient(base_client.HTTPClient):
                      'running_vms': 2,
                      'cpu_info': 'cpu_info',
                      'disk_available_least': 100}
-                    ]})
+        ]})
 
     def get_os_hypervisors_statistics(self, **kw):
         return (200, {}, {"hypervisor_statistics": {
@@ -1704,13 +1702,12 @@ class FakeHTTPClient(base_client.HTTPClient):
                     'current_workload': 4,
                     'running_vms': 4,
                     'disk_available_least': 200,
-                    }})
+        }})
 
     def get_os_hypervisors_hyper_search(self, **kw):
         return (200, {}, {'hypervisors': [
                     {'id': 1234, 'hypervisor_hostname': 'hyper1'},
-                    {'id': 5678, 'hypervisor_hostname': 'hyper2'}
-                    ]})
+                    {'id': 5678, 'hypervisor_hostname': 'hyper2'}]})
 
     def get_os_hypervisors_hyper_servers(self, **kw):
         return (200, {}, {'hypervisors': [
@@ -1718,15 +1715,13 @@ class FakeHTTPClient(base_client.HTTPClient):
                      'hypervisor_hostname': 'hyper1',
                      'servers': [
                             {'name': 'inst1', 'uuid': 'uuid1'},
-                            {'name': 'inst2', 'uuid': 'uuid2'}
-                            ]},
+                            {'name': 'inst2', 'uuid': 'uuid2'}]},
                     {'id': 5678,
                      'hypervisor_hostname': 'hyper2',
                      'servers': [
                             {'name': 'inst3', 'uuid': 'uuid3'},
-                            {'name': 'inst4', 'uuid': 'uuid4'}
-                            ]}
-                    ]})
+                            {'name': 'inst4', 'uuid': 'uuid4'}]}
+        ]})
 
     def get_os_hypervisors_hyper_no_servers_servers(self, **kw):
         return (200, {}, {'hypervisors':
@@ -2051,12 +2046,11 @@ class FakeHTTPClient(base_client.HTTPClient):
                         'rpc_host': '10.0.1.10',
                         'type': 'child',
                         'name': 'cell1',
-                        'rpc_port': 5673
-                        },
+                        'rpc_port': 5673},
                     'type': 'child',
                     'rpc_port': 5673,
                     'loaded': True
-                }}
+        }}
         return (200, {}, cell)
 
     def get_os_cells_capacities(self, **kw):

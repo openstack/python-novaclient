@@ -91,7 +91,7 @@ class ClientTest(utils.TestCase):
                     "passwordCredentials": {
                         "username": "user",
                         "password": "password"
-                        }
+                    }
                 }
             }
 

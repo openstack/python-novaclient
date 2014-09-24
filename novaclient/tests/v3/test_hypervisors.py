@@ -26,8 +26,7 @@ class HypervisorsTest(test_hypervisors.HypervisorsTest):
     def test_hypervisor_search(self):
         expected = [
             dict(id=1234, hypervisor_hostname='hyper1'),
-            dict(id=5678, hypervisor_hostname='hyper2'),
-            ]
+            dict(id=5678, hypervisor_hostname='hyper2')]
 
         result = self.cs.hypervisors.search('hyper')
         self.assert_called('GET', '/os-hypervisors/search?query=hyper')

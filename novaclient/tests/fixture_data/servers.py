@@ -562,7 +562,7 @@ class V3(Base):
             'rescue': {'admin_password': 'RescuePassword'},
             'get_console_output': {'output': 'foo'},
             'rebuild': {'server': self.server_1234},
-            }
+        }
         body_param_check_exists = {
             'rebuild': 'image_ref',
             'resize': 'flavor_ref'}

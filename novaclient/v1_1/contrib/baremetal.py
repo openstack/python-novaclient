@@ -243,7 +243,7 @@ def _print_baremetal_nodes_list(nodes):
         'PM Username',
         'PM Password',
         'Terminal Port',
-        ], formatters=formatters)
+    ], formatters=formatters)
 
 
 def do_baremetal_node_list(cs, _args):
@@ -270,7 +270,7 @@ def _print_baremetal_node_interfaces(interfaces):
         'Datapath_ID',
         'Port_No',
         'Address',
-        ])
+    ])
 
 
 @utils.arg('node',
