@@ -204,12 +204,13 @@ class ShellTest(utils.TestCase):
             dist_version.StrictVersion('0.7.2')):
             ex = '\n'
         else:
-            ex = (
-              '+----+------+--------+------------+-------------+----------+\n'
-              '| ID | Name | Status | Task State | Power State | Networks |\n'
-              '+----+------+--------+------------+-------------+----------+\n'
-              '+----+------+--------+------------+-------------+----------+\n'
-            )
+            ex = '\n'.join([
+                '+----+------+--------+------------+-------------+----------+',
+                '| ID | Name | Status | Task State | Power State | Networks |',
+                '+----+------+--------+------------+-------------+----------+',
+                '+----+------+--------+------------+-------------+----------+',
+                ''
+            ])
         self.make_env(exclude='OS_PASSWORD')
         stdout, stderr = self.shell('list')
         self.assertEqual((stdout + stderr), ex)

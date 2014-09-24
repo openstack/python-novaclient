@@ -109,7 +109,7 @@ class DNSFixture(base.Fixture):
                          'name': "host1",
                          'type': "A",
                          'domain': 'testdomain'
-                     }
+                    }
                 },
                 {
                     'dns_entry': {

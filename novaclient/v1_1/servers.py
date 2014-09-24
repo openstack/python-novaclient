@@ -486,8 +486,8 @@ class ServerManager(base.BootingManagerWithFind):
         body["server"]["max_count"] = max_count
 
         if security_groups:
-            body["server"]["security_groups"] =\
-             [{'name': sg} for sg in security_groups]
+            body["server"]["security_groups"] = [{'name': sg}
+                                                 for sg in security_groups]
 
         # Files are a slight bit tricky. They're passed in a "personality"
         # list to the POST. Each item is a dict giving a file name and the

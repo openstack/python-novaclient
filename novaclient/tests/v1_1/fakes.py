@@ -1989,8 +1989,8 @@ class FakeHTTPClient(base_client.HTTPClient):
                              "attached": "2011-11-11T00:00:00Z",
                              "size": 1024,
                              "attachments": [
-                                {"id": "3333",
-                                 "links": ''}],
+                                 {"id": "3333",
+                                  "links": ''}],
                              "metadata": {}}]})
 
     def get_servers_1234_os_volume_attachments_Work(self, **kw):
@@ -2003,8 +2003,8 @@ class FakeHTTPClient(base_client.HTTPClient):
                              "attached": "2011-11-11T00:00:00Z",
                              "size": 1024,
                              "attachments": [
-                                {"id": "3333",
-                                 "links": ''}],
+                                 {"id": "3333",
+                                  "links": ''}],
                              "metadata": {}}})
 
     def delete_servers_1234_os_volume_attachments_Work(self, **kw):
@@ -2072,21 +2072,21 @@ class FakeHTTPClient(base_client.HTTPClient):
         return self.get_os_cells_capacities()
 
     def get_os_migrations(self, **kw):
-        migrations = {'migrations':
-                          [{
-                               "created_at": "2012-10-29T13:42:02.000000",
-                               "dest_compute": "compute2",
-                               "dest_host": "1.2.3.4",
-                               "dest_node": "node2",
-                               "id": 1234,
-                               "instance_uuid": "instance_id_123",
-                               "new_instance_type_id": 2,
-                               "old_instance_type_id": 1,
-                               "source_compute": "compute1",
-                               "source_node": "node1",
-                               "status": "Done",
-                               "updated_at": "2012-10-29T13:42:02.000000"
-                           }]}
+        migrations = {'migrations': [
+            {
+                "created_at": "2012-10-29T13:42:02.000000",
+                "dest_compute": "compute2",
+                "dest_host": "1.2.3.4",
+                "dest_node": "node2",
+                "id": 1234,
+                "instance_uuid": "instance_id_123",
+                "new_instance_type_id": 2,
+                "old_instance_type_id": 1,
+                "source_compute": "compute1",
+                "source_node": "node1",
+                "status": "Done",
+                "updated_at": "2012-10-29T13:42:02.000000"
+            }]}
         return (200, {}, migrations)
 
     def post_os_server_external_events(self, **kw):

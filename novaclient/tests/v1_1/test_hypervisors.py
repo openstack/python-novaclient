@@ -99,13 +99,13 @@ class HypervisorsTest(utils.FixturedTestCase):
             dict(id=1234,
                  hypervisor_hostname='hyper1',
                  servers=[
-                    dict(name='inst1', uuid='uuid1'),
-                    dict(name='inst2', uuid='uuid2')]),
+                     dict(name='inst1', uuid='uuid1'),
+                     dict(name='inst2', uuid='uuid2')]),
             dict(id=5678,
                  hypervisor_hostname='hyper2',
                  servers=[
-                    dict(name='inst3', uuid='uuid3'),
-                    dict(name='inst4', uuid='uuid4')]),
+                     dict(name='inst3', uuid='uuid3'),
+                     dict(name='inst4', uuid='uuid4')]),
             ]
 
         result = self.cs.hypervisors.search('hyper', True)

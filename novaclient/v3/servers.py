@@ -428,8 +428,8 @@ class ServerManager(base.BootingManagerWithFind):
         body["server"]["os-multiple-create:max_count"] = max_count
 
         if security_groups:
-            body["server"]["security_groups"] = \
-              [{'name': sg} for sg in security_groups]
+            body["server"]["security_groups"] = [{'name': sg}
+                                                 for sg in security_groups]
 
         if availability_zone:
             body["server"][

@@ -48,7 +48,7 @@ class Fixture(base.Fixture):
             'certificate': {
                 'private_key': 'foo',
                 'data': 'bar'
-             }
+            }
         }
         self.requests.register_uri('POST', self.url(),
                                    json=post_os_certificates,
