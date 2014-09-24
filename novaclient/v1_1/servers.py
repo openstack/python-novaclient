@@ -537,7 +537,7 @@ class ServerManager(base.BootingManagerWithFind):
                 if nic_info.get('net-id'):
                     net_data['uuid'] = nic_info['net-id']
                 if (nic_info.get('v4-fixed-ip') and
-                    nic_info.get('v6-fixed-ip')):
+                        nic_info.get('v6-fixed-ip')):
                     raise base.exceptions.CommandError(_(
                         "Only one of 'v4-fixed-ip' and 'v6-fixed-ip' may be"
                         " provided."))

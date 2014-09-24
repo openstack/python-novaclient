@@ -421,7 +421,7 @@ class HTTPClient(object):
             # or 'actively refused' in the body, so that's what we'll do.
             if resp.status_code == 400:
                 if ('Connection refused' in resp.text or
-                    'actively refused' in resp.text):
+                        'actively refused' in resp.text):
                     raise exceptions.ConnectionRefused(resp.text)
             try:
                 body = json.loads(resp.text)

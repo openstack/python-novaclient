@@ -88,7 +88,8 @@ def _boot(cs, args):
     max_count = 1
     # Don't let user mix num_instances and max_count/min_count.
     if (args.num_instances is not None and
-        args.min_count is None and args.max_count is None):
+            args.min_count is None and
+            args.max_count is None):
         if args.num_instances < 1:
             raise exceptions.CommandError("num_instances should be >= 1")
         max_count = args.num_instances
@@ -105,10 +106,10 @@ def _boot(cs, args):
         if args.max_count < 1:
             raise exceptions.CommandError("max_count should be >= 1")
         max_count = args.max_count
-    if (args.min_count is not None and args.max_count is not None and
-        args.min_count > args.max_count):
-            raise exceptions.CommandError(
-                "min_count should be <= max_count")
+    if (args.min_count is not None and
+            args.max_count is not None and
+            args.min_count > args.max_count):
+        raise exceptions.CommandError("min_count should be <= max_count")
 
     flavor = _find_flavor(cs, args.flavor)
 
@@ -1846,10 +1847,10 @@ def do_secgroup_delete_rule(cs, args):
     secgroup = _get_secgroup(cs, args.secgroup)
     for rule in secgroup.rules:
         if (rule['ip_protocol'] and
-            rule['ip_protocol'].upper() == args.ip_proto.upper() and
-            rule['from_port'] == int(args.from_port) and
-            rule['to_port'] == int(args.to_port) and
-            rule['ip_range']['cidr'] == args.cidr):
+                rule['ip_protocol'].upper() == args.ip_proto.upper() and
+                rule['from_port'] == int(args.from_port) and
+                rule['to_port'] == int(args.to_port) and
+                rule['ip_range']['cidr'] == args.cidr):
             _print_secgroup_rules([rule])
             return cs.security_group_rules.delete(rule['id'])
 

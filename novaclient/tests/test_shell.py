@@ -200,8 +200,8 @@ class ShellTest(utils.TestCase):
         # default output of empty tables differs depending between prettytable
         # versions
         if (hasattr(prettytable, '__version__') and
-            dist_version.StrictVersion(prettytable.__version__) <
-            dist_version.StrictVersion('0.7.2')):
+                dist_version.StrictVersion(prettytable.__version__) <
+                dist_version.StrictVersion('0.7.2')):
             ex = '\n'
         else:
             ex = '\n'.join([

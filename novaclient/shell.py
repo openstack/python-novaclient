@@ -135,7 +135,7 @@ class SecretsHelper(object):
         if not HAS_KEYRING or not self.args.os_cache:
             return
         if (auth_token == self.auth_token and
-            management_url == self.management_url):
+                management_url == self.management_url):
             # Nothing changed....
             return
         if not all([management_url, auth_token, tenant_id]):
