@@ -130,8 +130,8 @@ class FlavorsTest(utils.TestCase):
     def test_create_with_id_as_string(self):
         flavor_id = 'foobar'
         f = self.cs.flavors.create("flavorcreate", 512,
-                              1, 10, flavor_id, ephemeral=10,
-                              is_public=False)
+                                   1, 10, flavor_id, ephemeral=10,
+                                   is_public=False)
 
         body = self._create_body("flavorcreate", 512, 1, 10, 10, flavor_id, 0,
                                  1.0, False)
@@ -189,7 +189,7 @@ class FlavorsTest(utils.TestCase):
         f = self.cs.flavors.get(1)
         f.set_keys({'k1': 'v1'})
         self.cs.assert_called('POST', '/flavors/1/os-extra_specs',
-                         {"extra_specs": {'k1': 'v1'}})
+                              {"extra_specs": {'k1': 'v1'}})
 
     def test_set_with_valid_keys(self):
         valid_keys = ['key4', 'month.price', 'I-Am:AK-ey.44-',

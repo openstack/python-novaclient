@@ -346,7 +346,8 @@ class V1(Base):
         # tI2/++UsXVg3ow6ItqCJGgdNuGG5JB+bslDHWPxROpesEIHdczk46HCpHQN8f1sk
         # Hi/fmZZNQQqj1Ijq0caOIw==
 
-        get_server_password = {'password':
+        get_server_password = {
+            'password':
             'OIuEuQttO8Rk93BcKlwHQsziDAnkAm/V6V8VPToA8ZeUaUBWwS0gwo2K6Y61Z96r'
             'qG447iRz0uTEEYq3RAYJk1mh3mMIRVl27t8MtIecR5ggVVbz1S9AwXJQypDKl0ho'
             'QFvhCBcMWPohyGewDJOhDbtuN1IoFI9G55ZvFwCm5y7m7B2aVcoLeIsJZE4PLsIw'
@@ -543,10 +544,11 @@ class V3(Base):
     def post_servers(self, request, context):
         body = jsonutils.loads(request.body)
         assert set(body.keys()) <= set(['server'])
-        fakes.assert_has_keys(body['server'],
-                        required=['name', 'image_ref', 'flavor_ref'],
-                        optional=['metadata', 'personality',
-                                  'os-scheduler-hints:scheduler_hints'])
+        fakes.assert_has_keys(
+            body['server'],
+            required=['name', 'image_ref', 'flavor_ref'],
+            optional=['metadata', 'personality',
+                      'os-scheduler-hints:scheduler_hints'])
         if body['server']['name'] == 'some-bad-server':
             body = self.server_1235
         else:

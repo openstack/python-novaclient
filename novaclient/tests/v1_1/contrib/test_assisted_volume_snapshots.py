@@ -37,5 +37,6 @@ class AssistedVolumeSnapshotsTestCase(utils.TestCase):
 
     def test_delete_snap(self):
         cs.assisted_volume_snapshots.delete('x', {})
-        cs.assert_called('DELETE',
-                '/os-assisted-volume-snapshots/x?delete_info={}')
+        cs.assert_called(
+            'DELETE',
+            '/os-assisted-volume-snapshots/x?delete_info={}')

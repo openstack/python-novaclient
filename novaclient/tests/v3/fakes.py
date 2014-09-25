@@ -38,16 +38,16 @@ class FakeHTTPClient(fakes_v1_1.FakeHTTPClient):
     #
     def put_os_hosts_sample_host_1(self, body, **kw):
         return (200, {}, {'host': {'host': 'sample-host_1',
-                      'status': 'enabled'}})
+                          'status': 'enabled'}})
 
     def put_os_hosts_sample_host_2(self, body, **kw):
         return (200, {}, {'host': {'host': 'sample-host_2',
-                      'maintenance_mode': 'on_maintenance'}})
+                          'maintenance_mode': 'on_maintenance'}})
 
     def put_os_hosts_sample_host_3(self, body, **kw):
         return (200, {}, {'host': {'host': 'sample-host_3',
-                      'status': 'enabled',
-                      'maintenance_mode': 'on_maintenance'}})
+                                   'status': 'enabled',
+                                   'maintenance_mode': 'on_maintenance'}})
 
     def get_os_hosts_sample_host_reboot(self, **kw):
         return (200, {}, {'host': {'host': 'sample_host',
@@ -173,9 +173,9 @@ class FakeHTTPClient(fakes_v1_1.FakeHTTPClient):
     def post_servers(self, body, **kw):
         assert set(body.keys()) <= set(['server'])
         fakes.assert_has_keys(body['server'],
-                        required=['name', 'image_ref', 'flavor_ref'],
-                        optional=['metadata', 'personality',
-                                  'os-scheduler-hints:scheduler_hints'])
+                              required=['name', 'image_ref', 'flavor_ref'],
+                              optional=['metadata', 'personality',
+                                        'os-scheduler-hints:scheduler_hints'])
         if body['server']['name'] == 'some-bad-server':
             return (202, {}, self.get_servers_1235()[2])
         else:

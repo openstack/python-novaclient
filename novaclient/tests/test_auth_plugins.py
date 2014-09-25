@@ -133,8 +133,8 @@ class DeprecatedAuthPluginTest(utils.TestCase):
         def mock_iter_entry_points(_type, name):
             if _type == 'openstack.client.auth_url':
                 return [MockAuthUrlEntrypoint("fakewithauthurl",
-                                           "fakewithauthurl",
-                                           ["auth_url"])]
+                                              "fakewithauthurl",
+                                              ["auth_url"])]
             elif _type == 'openstack.client.authenticate':
                 return [MockAuthenticateEntrypoint("fakewithauthurl",
                                                    "fakewithauthurl",
@@ -221,9 +221,9 @@ class AuthPluginTest(utils.TestCase):
             @staticmethod
             def add_opts(parser):
                 parser.add_argument('--auth_system_opt',
-                        default=False,
-                        action='store_true',
-                        help="Fake option")
+                                    default=False,
+                                    action='store_true',
+                                    help="Fake option")
                 return parser
 
         class MockEntrypoint(pkg_resources.EntryPoint):
@@ -281,8 +281,8 @@ class AuthPluginTest(utils.TestCase):
         plugin = auth_plugin.load_plugin("fake")
 
         cs = client.Client("username", "password", "project_id",
-                    auth_system="fakewithauthurl",
-                    auth_plugin=plugin)
+                           auth_system="fakewithauthurl",
+                           auth_plugin=plugin)
         self.assertEqual("http://faked/v2.0", cs.client.auth_url)
 
     @mock.patch.object(pkg_resources, "iter_entry_points")

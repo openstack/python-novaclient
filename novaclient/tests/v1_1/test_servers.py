@@ -377,7 +377,7 @@ class ServersTest(utils.FixturedTestCase):
         s.add_floating_ip('11.0.0.1', fixed_address='12.0.0.1')
         self.assert_called('POST', '/servers/1234/action')
         self.cs.servers.add_floating_ip(s, '11.0.0.1',
-                                   fixed_address='12.0.0.1')
+                                        fixed_address='12.0.0.1')
         self.assert_called('POST', '/servers/1234/action')
         f = self.cs.floating_ips.list()[0]
         self.cs.servers.add_floating_ip(s, f)
@@ -598,7 +598,7 @@ class ServersTest(utils.FixturedTestCase):
                        disk_over_commit=False)
         self.assert_called('POST', '/servers/1234/action')
         self.cs.servers.live_migrate(s, host='hostname', block_migration=False,
-                                disk_over_commit=False)
+                                     disk_over_commit=False)
         self.assert_called('POST', '/servers/1234/action')
 
     def test_reset_state(self):
