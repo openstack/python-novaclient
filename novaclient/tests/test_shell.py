@@ -273,3 +273,12 @@ class ShellTest(utils.TestCase):
         # We expect the normal usage as a result
         self.assertIn('Command-line interface to the OpenStack Nova API',
                       sys.stdout.getvalue())
+
+    @mock.patch.object(novaclient.shell.OpenStackComputeShell, 'main')
+    def test_main_keyboard_interrupt(self, mock_compute_shell):
+        # Ensure that exit code is 130 for KeyboardInterrupt
+        mock_compute_shell.side_effect = KeyboardInterrupt()
+        try:
+            novaclient.shell.main()
+        except SystemExit as ex:
+            self.assertEqual(ex.code, 130)

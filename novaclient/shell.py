@@ -807,8 +807,8 @@ def main():
               file=sys.stderr)
         sys.exit(1)
     except KeyboardInterrupt as e:
-        print("Shutting down novaclient", file=sys.stderr)
-        sys.exit(1)
+        print("... terminating nova client", file=sys.stderr)
+        sys.exit(130)
 
 
 if __name__ == "__main__":
