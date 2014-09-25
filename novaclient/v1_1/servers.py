@@ -266,7 +266,7 @@ class Server(base.Resource):
         self.manager.reboot(self, reboot_type)
 
     def rebuild(self, image, password=None, preserve_ephemeral=False,
-            **kwargs):
+                **kwargs):
         """
         Rebuild -- shut down and then re-image -- this server.
 
@@ -276,7 +276,8 @@ class Server(base.Resource):
             be preserved when rebuilding the instance. Defaults to False.
         """
         return self.manager.rebuild(self, image, password=password,
-            preserve_ephemeral=preserve_ephemeral, **kwargs)
+                                    preserve_ephemeral=preserve_ephemeral,
+                                    **kwargs)
 
     def resize(self, flavor, **kwargs):
         """
@@ -911,7 +912,7 @@ class ServerManager(base.BootingManagerWithFind):
 
         response_key = "server"
         return self._boot(resource_url, response_key, *boot_args,
-                **boot_kwargs)
+                          **boot_kwargs)
 
     def update(self, server, name=None):
         """

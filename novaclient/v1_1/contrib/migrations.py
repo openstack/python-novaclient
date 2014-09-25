@@ -73,8 +73,8 @@ def do_migration_list(cs, args):
 
 def _print_migrations(migrations):
     fields = ['Source Node', 'Dest Node', 'Source Compute', 'Dest Compute',
-            'Dest Host', 'Status', 'Instance UUID', 'Old Flavor',
-            'New Flavor', 'Created At', 'Updated At']
+              'Dest Host', 'Status', 'Instance UUID', 'Old Flavor',
+              'New Flavor', 'Created At', 'Updated At']
 
     def old_flavor(migration):
         return migration.old_instance_type_id
