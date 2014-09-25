@@ -94,7 +94,8 @@ class ShellTest(utils.TestCase):
     def register_keystone_discovery_fixture(self, mreq):
         v2_url = "http://no.where/v2.0"
         v2_version = fixture.V2Discovery(v2_url)
-        mreq.register_uri('GET', v2_url, json=_create_ver_list([v2_version]),
+        mreq.register_uri(
+            'GET', v2_url, json=_create_ver_list([v2_version]),
             status_code=200)
 
     def test_help_unknown_command(self):
@@ -342,5 +343,6 @@ class ShellTestKeystoneV3(ShellTest):
     def register_keystone_discovery_fixture(self, mreq):
         v3_url = "http://no.where/v3"
         v3_version = fixture.V3Discovery(v3_url)
-        mreq.register_uri('GET', v3_url, json=_create_ver_list([v3_version]),
+        mreq.register_uri(
+            'GET', v3_url, json=_create_ver_list([v3_version]),
             status_code=200)

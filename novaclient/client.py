@@ -208,7 +208,7 @@ class HTTPClient(object):
         self.tenant_id = tenant_id
 
         self._connection_pool = (_ClientConnectionPool()
-                                if connection_pool else None)
+                                 if connection_pool else None)
 
         # This will be called by #_get_password if self.password is None.
         # EG if a password can only be obtained by prompting the user, but a
@@ -396,7 +396,7 @@ class HTTPClient(object):
                     "New session created for: (%s)" % service_url)
                 self._session = requests.Session()
                 self._session.mount(service_url,
-                        self._connection_pool.get(service_url))
+                                    self._connection_pool.get(service_url))
             return self._session
         elif self._session:
             return self._session
