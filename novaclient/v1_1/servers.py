@@ -1043,7 +1043,7 @@ class ServerManager(base.BootingManagerWithFind):
 
         :param server: The :class:`Server` (or its ID) to share onto.
         :param image_name: Name to give the snapshot image
-        :param meta: Metadata to give newly-created image entity
+        :param metadata: Metadata to give newly-created image entity
         """
         body = {'name': image_name, 'metadata': metadata or {}}
         resp = self._action('createImage', server, body)[0]
