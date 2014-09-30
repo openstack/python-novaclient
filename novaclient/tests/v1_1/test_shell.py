@@ -1998,13 +1998,21 @@ class ShellTest(utils.TestCase):
                                 'cidr': None,
                                 'group_id': 2}})
 
-    def test_security_group_delete_group_rule(self):
+    def test_security_group_delete_valid_group_rule(self):
         self.run_command('secgroup-delete-group-rule test test2 TCP 222 222')
         self.assert_called('DELETE', '/os-security-group-rules/12')
 
-    def test_security_group_delete_group_rule_protocol_case(self):
+    def test_security_group_delete_valid_group_rule_protocol_case(self):
         self.run_command('secgroup-delete-group-rule test test2 tcp 222 222')
         self.assert_called('DELETE', '/os-security-group-rules/12')
+
+    def test_security_group_delete_invalid_group_rule(self):
+        self.run_command('secgroup-delete-group-rule test test4 TCP -1 -1')
+        self.assert_called('DELETE', '/os-security-group-rules/14')
+
+    def test_security_group_delete_invalid_group_rule_protocol_case(self):
+        self.run_command('secgroup-delete-group-rule test test4 tcp -1 -1')
+        self.assert_called('DELETE', '/os-security-group-rules/14')
 
     def test_security_group_list_rules(self):
         self.run_command('secgroup-list-rules test')

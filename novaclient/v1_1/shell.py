@@ -2562,8 +2562,8 @@ def do_secgroup_delete_group_rule(cs, args):
         params['to_port'] = int(args.to_port)
 
     for rule in secgroup.rules:
-        if (rule.get('ip_protocol').upper() == params.get(
-                                               'ip_protocol').upper() and
+        if (rule.get('ip_protocol') and rule['ip_protocol'].upper() ==
+                           params.get('ip_protocol').upper() and
             rule.get('from_port') == params.get('from_port') and
             rule.get('to_port') == params.get('to_port') and
             rule.get('group', {}).get('name') ==
