@@ -3169,7 +3169,7 @@ def _find_hypervisor(cs, hypervisor):
            help=_('List hypervisors matching the given <hostname>.'))
 def do_hypervisor_list(cs, args):
     """List hypervisors."""
-    columns = ['ID', 'Hypervisor hostname']
+    columns = ['ID', 'Hypervisor hostname', 'State', 'Status']
     if args.matching:
         utils.print_list(cs.hypervisors.search(args.matching), columns)
     else:
