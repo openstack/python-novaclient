@@ -771,7 +771,7 @@ def do_flavor_access_remove(cs, args):
 @utils.arg('project_id', metavar='<project_id>',
            help=_('The ID of the project.'))
 def do_scrub(cs, args):
-    """Delete data associated with the project."""
+    """Delete networks and security groups associated with a project."""
     networks_list = cs.networks.list()
     networks_list = [network for network in networks_list
                  if getattr(network, 'project_id', '') == args.project_id]
