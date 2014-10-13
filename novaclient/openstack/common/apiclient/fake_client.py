@@ -33,7 +33,9 @@ from six.moves.urllib import parse
 from novaclient.openstack.common.apiclient import client
 
 
-def assert_has_keys(dct, required=[], optional=[]):
+def assert_has_keys(dct, required=None, optional=None):
+    required = required or []
+    optional = optional or []
     for k in required:
         try:
             assert k in dct
