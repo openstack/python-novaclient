@@ -37,6 +37,31 @@ FAKE_ENV2 = {'OS_USER_ID': 'user_id',
              'OS_AUTH_URL': 'http://no.where'}
 
 
+class ParserTest(utils.TestCase):
+
+    def setUp(self):
+        super(ParserTest, self).setUp()
+        self.parser = novaclient.shell.NovaClientArgumentParser()
+
+    def test_ambiguous_option(self):
+        self.parser.add_argument('--tic')
+        self.parser.add_argument('--tac')
+
+        try:
+            self.parser.parse_args(['--t'])
+        except SystemExit as err:
+            self.assertEqual(2, err.code)
+        else:
+            self.fail('SystemExit not raised')
+
+    def test_not_really_ambiguous_option(self):
+        # current/deprecated forms of the same option
+        self.parser.add_argument('--tic-tac', action="store_true")
+        self.parser.add_argument('--tic_tac', action="store_true")
+        args = self.parser.parse_args(['--tic'])
+        self.assertTrue(args.tic_tac)
+
+
 class ShellTest(utils.TestCase):
 
     def make_env(self, exclude=None, fake_env=FAKE_ENV):
