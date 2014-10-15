@@ -21,7 +21,7 @@ from six.moves.urllib import parse
 
 from novaclient import base
 from novaclient import exceptions
-from novaclient.openstack.common.gettextutils import _
+from novaclient.i18n import _
 from novaclient import utils
 
 

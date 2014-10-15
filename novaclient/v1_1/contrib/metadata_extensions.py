@@ -13,7 +13,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from novaclient.openstack.common.gettextutils import _
+from novaclient.i18n import _
 from novaclient import utils
 from novaclient.v1_1 import shell
 

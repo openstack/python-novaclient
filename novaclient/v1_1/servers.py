@@ -27,7 +27,7 @@ from six.moves.urllib import parse
 
 from novaclient import base
 from novaclient import crypto
-from novaclient.openstack.common.gettextutils import _
+from novaclient.i18n import _
 from novaclient.v1_1 import security_groups
 
 

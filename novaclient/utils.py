@@ -23,8 +23,8 @@ import prettytable
 import six
 
 from novaclient import exceptions
+from novaclient.i18n import _
 from novaclient.openstack.common import cliutils
-from novaclient.openstack.common.gettextutils import _
 
 
 arg = cliutils.arg

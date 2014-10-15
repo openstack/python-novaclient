@@ -16,7 +16,7 @@ Security group default rules interface.
 
 from novaclient import base
 from novaclient import exceptions
-from novaclient.openstack.common.gettextutils import _
+from novaclient.i18n import _
 
 
 class SecurityGroupDefaultRule(base.Resource):

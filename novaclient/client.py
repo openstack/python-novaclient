@@ -44,7 +44,7 @@ except ImportError:
 from six.moves.urllib import parse
 
 from novaclient import exceptions
-from novaclient.openstack.common.gettextutils import _
+from novaclient.i18n import _
 from novaclient import service_catalog
 from novaclient import utils
 

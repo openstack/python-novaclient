@@ -19,7 +19,7 @@ Network interface.
 
 from novaclient import base
 from novaclient import exceptions
-from novaclient.openstack.common.gettextutils import _
+from novaclient.i18n import _
 
 
 class Network(base.Resource):

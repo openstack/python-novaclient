@@ -34,8 +34,8 @@ from oslo.utils import timeutils
 import six
 
 from novaclient import exceptions
+from novaclient.i18n import _
 from novaclient.openstack.common import cliutils
-from novaclient.openstack.common.gettextutils import _
 from novaclient.openstack.common import uuidutils
 from novaclient import utils
 from novaclient.v1_1 import availability_zones

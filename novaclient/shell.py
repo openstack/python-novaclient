@@ -47,8 +47,8 @@ import novaclient.auth_plugin
 from novaclient import client
 from novaclient import exceptions as exc
 import novaclient.extension
+from novaclient.i18n import _
 from novaclient.openstack.common import cliutils
-from novaclient.openstack.common.gettextutils import _
 from novaclient import utils
 from novaclient.v1_1 import shell as shell_v1_1
 from novaclient.v3 import shell as shell_v3

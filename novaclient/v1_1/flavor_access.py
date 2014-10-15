@@ -16,7 +16,7 @@
 """Flavor access interface."""
 
 from novaclient import base
-from novaclient.openstack.common.gettextutils import _
+from novaclient.i18n import _
 
 
 class FlavorAccess(base.Resource):
