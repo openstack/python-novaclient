@@ -351,12 +351,18 @@ class OpenStackComputeShell(object):
         parser.add_argument('--volume_service_name',
             help=argparse.SUPPRESS)
 
-        parser.add_argument('--endpoint-type',
+        parser.add_argument('--os-endpoint-type',
             metavar='<endpoint-type>',
+            dest='endpoint_type',
             default=utils.env('NOVA_ENDPOINT_TYPE',
-                        default=DEFAULT_NOVA_ENDPOINT_TYPE),
-            help=(_('Defaults to env[NOVA_ENDPOINT_TYPE] or ')
-                  + DEFAULT_NOVA_ENDPOINT_TYPE + '.'))
+                default=utils.env('OS_ENDPOINT_TYPE',
+                    default=DEFAULT_NOVA_ENDPOINT_TYPE)),
+            help=_('Defaults to env[NOVA_ENDPOINT_TYPE], '
+                   'env[OS_ENDPOINT_TYPE] or ')
+                 + DEFAULT_NOVA_ENDPOINT_TYPE + '.')
+
+        parser.add_argument('--endpoint-type',
+            help=argparse.SUPPRESS)
         # NOTE(dtroyer): We can't add --endpoint_type here due to argparse
         #                thinking usage-list --end is ambiguous; but it
         #                works fine with only --endpoint-type present

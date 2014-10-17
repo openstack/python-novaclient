@@ -36,6 +36,13 @@ FAKE_ENV2 = {'OS_USER_ID': 'user_id',
              'OS_TENANT_ID': 'tenant_id',
              'OS_AUTH_URL': 'http://no.where'}
 
+FAKE_ENV3 = {'OS_USER_ID': 'user_id',
+             'OS_PASSWORD': 'password',
+             'OS_TENANT_ID': 'tenant_id',
+             'OS_AUTH_URL': 'http://no.where',
+             'NOVA_ENDPOINT_TYPE': 'novaURL',
+             'OS_ENDPOINT_TYPE': 'osURL'}
+
 
 class ShellTest(utils.TestCase):
 
@@ -191,6 +198,27 @@ class ShellTest(utils.TestCase):
             self.assertEqual(required, message.args)
         else:
             self.fail('CommandError not raised')
+
+    @mock.patch('novaclient.client.Client')
+    def test_nova_endpoint_type(self, mock_client):
+        self.make_env(fake_env=FAKE_ENV3)
+        self.shell('list')
+        client_kwargs = mock_client.call_args_list[0][1]
+        self.assertEqual(client_kwargs['endpoint_type'], 'novaURL')
+
+    @mock.patch('novaclient.client.Client')
+    def test_os_endpoint_type(self, mock_client):
+        self.make_env(exclude='NOVA_ENDPOINT_TYPE', fake_env=FAKE_ENV3)
+        self.shell('list')
+        client_kwargs = mock_client.call_args_list[0][1]
+        self.assertEqual(client_kwargs['endpoint_type'], 'osURL')
+
+    @mock.patch('novaclient.client.Client')
+    def test_default_endpoint_type(self, mock_client):
+        self.make_env()
+        self.shell('list')
+        client_kwargs = mock_client.call_args_list[0][1]
+        self.assertEqual(client_kwargs['endpoint_type'], 'publicURL')
 
     @mock.patch('sys.stdin', side_effect=mock.MagicMock)
     @mock.patch('getpass.getpass', return_value='password')
