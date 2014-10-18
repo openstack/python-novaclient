@@ -1471,11 +1471,25 @@ def do_resume(cs, args):
 
 
 @utils.arg('server', metavar='<server>', help=_('Name or ID of server.'))
+@utils.arg('--password',
+    metavar='<password>',
+    dest='password',
+    help=_('The admin password to be set in the rescue environment.'))
+@utils.arg('--image',
+    metavar='<image>',
+    dest='image',
+    help=_('The image to rescue with.'))
 def do_rescue(cs, args):
     """Reboots a server into rescue mode, which starts the machine
-    from the initial image, attaching the current boot disk as secondary.
+    from either the initial image or a specified image, attaching the current
+    boot disk as secondary.
     """
-    utils.print_dict(_find_server(cs, args.server).rescue()[1])
+    kwargs = {}
+    if args.image:
+        kwargs['image'] = _find_image(cs, args.image)
+    if args.password:
+        kwargs['password'] = args.password
+    utils.print_dict(_find_server(cs, args.server).rescue(**kwargs)[1])
 
 
 @utils.arg('server', metavar='<server>', help=_('Name or ID of server.'))

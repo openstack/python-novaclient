@@ -432,6 +432,24 @@ class ServersTest(utils.FixturedTestCase):
         self.cs.servers.rescue(s)
         self.assert_called('POST', '/servers/1234/action')
 
+    def test_rescue_password(self):
+        s = self.cs.servers.get(1234)
+        s.rescue(password='asdf')
+        self.assert_called('POST', '/servers/1234/action',
+                           {'rescue': {'adminPass': 'asdf'}})
+        self.cs.servers.rescue(s, password='asdf')
+        self.assert_called('POST', '/servers/1234/action',
+                           {'rescue': {'adminPass': 'asdf'}})
+
+    def test_rescue_image(self):
+        s = self.cs.servers.get(1234)
+        s.rescue(image=1)
+        self.assert_called('POST', '/servers/1234/action',
+                           {'rescue': {'rescue_image_ref': 1}})
+        self.cs.servers.rescue(s, image=1)
+        self.assert_called('POST', '/servers/1234/action',
+                           {'rescue': {'rescue_image_ref': 1}})
+
     def test_unrescue(self):
         s = self.cs.servers.get(1234)
         s.unrescue()

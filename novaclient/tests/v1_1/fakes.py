@@ -577,8 +577,12 @@ class FakeHTTPClient(base_client.HTTPClient):
         elif action == 'unlock':
             assert body[action] is None
         elif action == 'rescue':
-            assert body[action] is None
-            _body = {'Password': 'RescuePassword'}
+            if body[action]:
+                keys = set(body[action].keys())
+                assert not (keys - set(['adminPass', 'rescue_image_ref']))
+            else:
+                assert body[action] is None
+            _body = {'adminPass': 'RescuePassword'}
         elif action == 'unrescue':
             assert body[action] is None
         elif action == 'resume':
