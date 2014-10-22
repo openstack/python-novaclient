@@ -1434,16 +1434,26 @@ def do_unpause(cs, args):
     _find_server(cs, args.server).unpause()
 
 
-@utils.arg('server', metavar='<server>', help=_('Name or ID of server.'))
+@utils.arg('server', metavar='<server>', nargs='+',
+           help=_('Name or ID of server(s).'))
 def do_stop(cs, args):
-    """Stop a server."""
-    _find_server(cs, args.server).stop()
+    """Stop the server(s)."""
+    utils.do_action_on_many(
+        lambda s: _find_server(cs, s).stop(),
+        args.server,
+        _("Request to stop server %s has been accepted."),
+        _("Unable to stop the specified server(s)."))
 
 
-@utils.arg('server', metavar='<server>', help=_('Name or ID of server.'))
+@utils.arg('server', metavar='<server>', nargs='+',
+           help=_('Name or ID of server(s).'))
 def do_start(cs, args):
-    """Start a server."""
-    _find_server(cs, args.server).start()
+    """Start the server(s)."""
+    utils.do_action_on_many(
+        lambda s: _find_server(cs, s).start(),
+        args.server,
+        _("Request to start server %s has been accepted."),
+        _("Unable to start the specified server(s)."))
 
 
 @utils.arg('server', metavar='<server>', help=_('Name or ID of server.'))
