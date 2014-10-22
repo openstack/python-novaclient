@@ -29,6 +29,7 @@ import os
 import pkgutil
 import sys
 
+from keystoneclient import session as ksession
 from oslo.utils import encodeutils
 from oslo.utils import strutils
 import pkg_resources
@@ -232,6 +233,13 @@ class NovaClientArgumentParser(argparse.ArgumentParser):
 
 class OpenStackComputeShell(object):
 
+    def _append_global_identity_args(self, parser):
+        # Register the CLI arguments that have moved to the session object.
+        ksession.Session.register_cli_options(parser)
+
+        parser.set_defaults(insecure=utils.env('NOVACLIENT_INSECURE',
+                            default=False))
+
     def get_base_parser(self):
         parser = NovaClientArgumentParser(
             prog='nova',
@@ -268,12 +276,6 @@ class OpenStackComputeShell(object):
             default=False,
             action='store_true',
             help=_("Print call timing info"))
-
-        parser.add_argument('--timeout',
-            default=600,
-            metavar='<seconds>',
-            type=positive_non_zero_float,
-            help=_("Set HTTP call timeout (in seconds)"))
 
         parser.add_argument('--os-auth-token',
                 default=utils.env('OS_AUTH_TOKEN'),
@@ -373,21 +375,6 @@ class OpenStackComputeShell(object):
         parser.add_argument('--os_compute_api_version',
             help=argparse.SUPPRESS)
 
-        parser.add_argument('--os-cacert',
-            metavar='<ca-certificate>',
-            default=utils.env('OS_CACERT', default=None),
-            help='Specify a CA bundle file to use in '
-                 'verifying a TLS (https) server certificate. '
-                 'Defaults to env[OS_CACERT]')
-
-        parser.add_argument('--insecure',
-            default=utils.env('NOVACLIENT_INSECURE', default=False),
-            action='store_true',
-            help=_("Explicitly allow novaclient to perform \"insecure\" "
-                 "SSL (https) requests. The server's certificate will "
-                 "not be verified against any certificate authorities. "
-                 "This option should be used with caution."))
-
         parser.add_argument('--bypass-url',
             metavar='<bypass-url>',
             dest='bypass_url',
@@ -399,6 +386,8 @@ class OpenStackComputeShell(object):
 
         # The auth-system-plugins might require some extra options
         novaclient.auth_plugin.load_auth_system_opts(parser)
+
+        self._append_global_identity_args(parser)
 
         return parser
 
