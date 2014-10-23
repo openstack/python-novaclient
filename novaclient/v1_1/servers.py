@@ -199,11 +199,14 @@ class Server(base.Resource):
         """
         self.manager.resume(self)
 
-    def rescue(self):
+    def rescue(self, password=None, image=None):
         """
         Rescue -- Rescue the problematic server.
+
+        :param password: The admin password to be set in the rescue instance.
+        :param image: The :class:`Image` to rescue with.
         """
-        return self.manager.rescue(self)
+        return self.manager.rescue(self, password, image)
 
     def unrescue(self):
         """
@@ -788,11 +791,20 @@ class ServerManager(base.BootingManagerWithFind):
         """
         self._action('resume', server, None)
 
-    def rescue(self, server):
+    def rescue(self, server, password=None, image=None):
         """
         Rescue the server.
+
+        :param server: The :class:`Server` to rescue.
+        :param password: The admin password to be set in the rescue instance.
+        :param image: The :class:`Image` to rescue with.
         """
-        return self._action('rescue', server, None)
+        info = {}
+        if password:
+            info['adminPass'] = password
+        if image:
+            info['rescue_image_ref'] = base.getid(image)
+        return self._action('rescue', server, info or None)
 
     def unrescue(self, server):
         """

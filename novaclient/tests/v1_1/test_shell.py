@@ -949,6 +949,16 @@ class ShellTest(utils.TestCase):
         self.run_command('rescue sample-server')
         self.assert_called('POST', '/servers/1234/action', {'rescue': None})
 
+    def test_rescue_password(self):
+        self.run_command('rescue sample-server --password asdf')
+        self.assert_called('POST', '/servers/1234/action',
+                           {'rescue': {'adminPass': 'asdf'}})
+
+    def test_rescue_image(self):
+        self.run_command('rescue sample-server --image 1')
+        self.assert_called('POST', '/servers/1234/action',
+                           {'rescue': {'rescue_image_ref': 1}})
+
     def test_unrescue(self):
         self.run_command('unrescue sample-server')
         self.assert_called('POST', '/servers/1234/action', {'unrescue': None})
