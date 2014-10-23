@@ -33,6 +33,7 @@ from oslo.utils import strutils
 from oslo.utils import timeutils
 import six
 
+from novaclient import client
 from novaclient import exceptions
 from novaclient.i18n import _
 from novaclient.openstack.common import cliutils
@@ -2759,7 +2760,12 @@ def do_usage(cs, args):
     if args.tenant:
         usage = cs.usage.get(args.tenant, start, end)
     else:
-        usage = cs.usage.get(cs.client.tenant_id, start, end)
+        if isinstance(cs.client, client.SessionClient):
+            auth = cs.client.auth
+            project_id = auth.get_auth_ref(cs.client.session).project_id
+            usage = cs.usage.get(project_id, start, end)
+        else:
+            usage = cs.usage.get(cs.client.tenant_id, start, end)
 
     print(_("Usage from %(start)s to %(end)s:") %
           {'start': start.strftime(dateformat),
@@ -3256,23 +3262,32 @@ def ensure_service_catalog_present(cs):
 
 def do_endpoints(cs, _args):
     """Discover endpoints that get returned from the authenticate services."""
-    ensure_service_catalog_present(cs)
+    if isinstance(cs.client, client.SessionClient):
+        auth = cs.client.auth
+        sc = auth.get_access(cs.client.session).service_catalog
+        for service in sc.get_data():
+            _print_endpoints(service, cs.client.region_name)
+    else:
+        ensure_service_catalog_present(cs)
 
-    catalog = cs.client.service_catalog.catalog
-    region = cs.client.region_name
+        catalog = cs.client.service_catalog.catalog
+        region = cs.client.region_name
+        for service in catalog['access']['serviceCatalog']:
+            _print_endpoints(service, region)
 
-    for service in catalog['access']['serviceCatalog']:
-        name, endpoints = service["name"], service["endpoints"]
 
-        try:
-            endpoint = _get_first_endpoint(endpoints, region)
-            utils.print_dict(endpoint, name)
-        except LookupError:
-            print(_("WARNING: %(service)s has no endpoint in %(region)s! "
-                    "Available endpoints for this service:") %
-                  {'service': name, 'region': region})
-            for other_endpoint in endpoints:
-                utils.print_dict(other_endpoint, name)
+def _print_endpoints(service, region):
+    name, endpoints = service["name"], service["endpoints"]
+
+    try:
+        endpoint = _get_first_endpoint(endpoints, region)
+        utils.print_dict(endpoint, name)
+    except LookupError:
+        print(_("WARNING: %(service)s has no endpoint in %(region)s! "
+                "Available endpoints for this service:") %
+              {'service': name, 'region': region})
+        for other_endpoint in endpoints:
+            utils.print_dict(other_endpoint, name)
 
 
 def _get_first_endpoint(endpoints, region):
@@ -3298,11 +3313,19 @@ def _get_first_endpoint(endpoints, region):
            help=_('wrap PKI tokens to a specified length, or 0 to disable'))
 def do_credentials(cs, _args):
     """Show user credentials returned from auth."""
-    ensure_service_catalog_present(cs)
-    catalog = cs.client.service_catalog.catalog
-    utils.print_dict(catalog['access']['user'], "User Credentials",
-                     wrap=int(_args.wrap))
-    utils.print_dict(catalog['access']['token'], "Token", wrap=int(_args.wrap))
+    if isinstance(cs.client, client.SessionClient):
+        auth = cs.client.auth
+        sc = auth.get_access(cs.client.session).service_catalog
+        utils.print_dict(sc.catalog['user'], 'User Credentials',
+                         wrap=int(_args.wrap))
+        utils.print_dict(sc.get_token(), 'Token', wrap=int(_args.wrap))
+    else:
+        ensure_service_catalog_present(cs)
+        catalog = cs.client.service_catalog.catalog
+        utils.print_dict(catalog['access']['user'], "User Credentials",
+                         wrap=int(_args.wrap))
+        utils.print_dict(catalog['access']['token'], "Token",
+                         wrap=int(_args.wrap))
 
 
 @utils.arg('server', metavar='<server>', help=_('Name or ID of server.'))

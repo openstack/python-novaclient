@@ -51,6 +51,7 @@ class ShellTest(utils.TestCase):
         'NOVA_PROJECT_ID': 'project_id',
         'OS_COMPUTE_API_VERSION': '3',
         'NOVA_URL': 'http://no.where',
+        'OS_AUTH_URL': 'http://no.where/v2.0',
     }
 
     def setUp(self):
