@@ -27,9 +27,6 @@ from novaclient.i18n import _
 from novaclient.openstack.common import cliutils
 
 
-arg = cliutils.arg
-env = cliutils.env
-
 VALID_KEY_REGEX = re.compile(r"[\w\.\- :]+$", re.UNICODE)
 
 

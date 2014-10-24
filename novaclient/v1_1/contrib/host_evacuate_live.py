@@ -14,6 +14,7 @@
 #    under the License.
 
 from novaclient.i18n import _
+from novaclient.openstack.common import cliutils
 from novaclient import utils
 
 
@@ -37,19 +38,22 @@ def _server_live_migrate(cs, server, args):
                                     error_message)
 
 
-@utils.arg('host', metavar='<host>', help='Name of host.')
-@utils.arg('--target-host',
-           metavar='<target_host>',
-           default=None,
-           help=_('Name of target host.'))
-@utils.arg('--block-migrate',
-           action='store_true',
-           default=False,
-           help=_('Enable block migration.'))
-@utils.arg('--disk-over-commit',
-           action='store_true',
-           default=False,
-           help=_('Enable disk overcommit.'))
+@cliutils.arg('host', metavar='<host>', help='Name of host.')
+@cliutils.arg(
+    '--target-host',
+    metavar='<target_host>',
+    default=None,
+    help=_('Name of target host.'))
+@cliutils.arg(
+    '--block-migrate',
+    action='store_true',
+    default=False,
+    help=_('Enable block migration.'))
+@cliutils.arg(
+    '--disk-over-commit',
+    action='store_true',
+    default=False,
+    help=_('Enable disk overcommit.'))
 def do_host_evacuate_live(cs, args):
     """Live migrate all instances of the specified host
     to other available hosts.

@@ -17,6 +17,7 @@ import pprint
 
 from novaclient import base
 from novaclient.i18n import _
+from novaclient.openstack.common import cliutils
 from novaclient import utils
 
 
@@ -40,11 +41,11 @@ class InstanceActionManager(base.ManagerWithFind):
                           base.getid(server), 'instanceActions')
 
 
-@utils.arg(
+@cliutils.arg(
     'server',
     metavar='<server>',
     help=_('Name or UUID of the server to show an action for.'))
-@utils.arg(
+@cliutils.arg(
     'request_id',
     metavar='<request_id>',
     help=_('Request ID of the action to get.'))
@@ -58,7 +59,7 @@ def do_instance_action(cs, args):
     utils.print_dict(action)
 
 
-@utils.arg(
+@cliutils.arg(
     'server',
     metavar='<server>',
     help=_('Name or UUID of the server to list actions for.'))

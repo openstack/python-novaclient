@@ -14,24 +14,26 @@
 #    under the License.
 
 from novaclient.i18n import _
-from novaclient import utils
+from novaclient.openstack.common import cliutils
 from novaclient.v1_1 import shell
 
 
-@utils.arg('host',
-           metavar='<host>',
-           help=_('Name of host.'))
-@utils.arg('action',
-           metavar='<action>',
-           choices=['set', 'delete'],
-           help=_("Actions: 'set' or 'delete'"))
-@utils.arg('metadata',
-           metavar='<key=value>',
-           nargs='+',
-           action='append',
-           default=[],
-           help=_('Metadata to set or delete (only key is necessary on '
-                  'delete)'))
+@cliutils.arg(
+    'host',
+    metavar='<host>',
+    help=_('Name of host.'))
+@cliutils.arg(
+    'action',
+    metavar='<action>',
+    choices=['set', 'delete'],
+    help=_("Actions: 'set' or 'delete'"))
+@cliutils.arg(
+    'metadata',
+    metavar='<key=value>',
+    nargs='+',
+    action='append',
+    default=[],
+    help=_('Metadata to set or delete (only key is necessary on delete)'))
 def do_host_meta(cs, args):
     """Set or Delete metadata on all instances of a host."""
     hypervisors = cs.hypervisors.search(args.host, servers=True)

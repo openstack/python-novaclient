@@ -12,16 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from novaclient.openstack.common import cliutils
 from novaclient import utils
 
 
-@utils.arg('server', metavar='<server>', help='Name or ID of server.')
+@cliutils.arg('server', metavar='<server>', help='Name or ID of server.')
 def do_force_delete(cs, args):
     """Force delete a server."""
     utils.find_resource(cs.servers, args.server).force_delete()
 
 
-@utils.arg('server', metavar='<server>', help='Name or ID of server.')
+@cliutils.arg('server', metavar='<server>', help='Name or ID of server.')
 def do_restore(cs, args):
     """Restore a soft-deleted server."""
     utils.find_resource(cs.servers, args.server).restore()

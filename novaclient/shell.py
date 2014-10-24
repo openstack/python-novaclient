@@ -159,7 +159,7 @@ class SecretsHelper(object):
             self._password = self.args.os_password
         else:
             verify_pass = strutils.bool_from_string(
-                utils.env("OS_VERIFY_PASSWORD", default=False), True)
+                cliutils.env("OS_VERIFY_PASSWORD", default=False), True)
             self._password = self._prompt_password(verify_pass)
         if not self._password:
             raise exc.CommandError(
@@ -241,16 +241,17 @@ class OpenStackComputeShell(object):
         # Register the CLI arguments that have moved to the session object.
         ksession.Session.register_cli_options(parser)
 
-        parser.set_defaults(insecure=utils.env('NOVACLIENT_INSECURE',
+        parser.set_defaults(insecure=cliutils.env('NOVACLIENT_INSECURE',
                             default=False))
 
         identity.Password.register_argparse_arguments(parser)
 
-        parser.set_defaults(os_username=utils.env('OS_USERNAME',
-                            'NOVA_USERNAME'))
-        parser.set_defaults(os_password=utils.env('OS_PASSWORD',
-                            'NOVA_PASSWORD'))
-        parser.set_defaults(os_auth_url=utils.env('OS_AUTH_URL', 'NOVA_URL'))
+        parser.set_defaults(os_username=cliutils.env('OS_USERNAME',
+                                                     'NOVA_USERNAME'))
+        parser.set_defaults(os_password=cliutils.env('OS_PASSWORD',
+                                                     'NOVA_PASSWORD'))
+        parser.set_defaults(os_auth_url=cliutils.env('OS_AUTH_URL',
+                                                     'NOVA_URL'))
 
     def get_base_parser(self):
         parser = NovaClientArgumentParser(
@@ -282,7 +283,7 @@ class OpenStackComputeShell(object):
         parser.add_argument(
             '--os-cache',
             default=strutils.bool_from_string(
-                utils.env('OS_CACHE', default=False), True),
+                cliutils.env('OS_CACHE', default=False), True),
             action='store_true',
             help=_("Use the auth token cache. Defaults to False if "
                    "env[OS_CACHE] is not set."))
@@ -295,7 +296,7 @@ class OpenStackComputeShell(object):
 
         parser.add_argument(
             '--os-auth-token',
-            default=utils.env('OS_AUTH_TOKEN'),
+            default=cliutils.env('OS_AUTH_TOKEN'),
             help='Defaults to env[OS_AUTH_TOKEN]')
 
         parser.add_argument(
@@ -309,7 +310,7 @@ class OpenStackComputeShell(object):
         parser.add_argument(
             '--os-tenant-name',
             metavar='<auth-tenant-name>',
-            default=utils.env('OS_TENANT_NAME', 'NOVA_PROJECT_ID'),
+            default=cliutils.env('OS_TENANT_NAME', 'NOVA_PROJECT_ID'),
             help=_('Defaults to env[OS_TENANT_NAME].'))
         parser.add_argument(
             '--os_tenant_name',
@@ -318,7 +319,7 @@ class OpenStackComputeShell(object):
         parser.add_argument(
             '--os-tenant-id',
             metavar='<auth-tenant-id>',
-            default=utils.env('OS_TENANT_ID'),
+            default=cliutils.env('OS_TENANT_ID'),
             help=_('Defaults to env[OS_TENANT_ID].'))
 
         parser.add_argument(
@@ -328,7 +329,7 @@ class OpenStackComputeShell(object):
         parser.add_argument(
             '--os-region-name',
             metavar='<region-name>',
-            default=utils.env('OS_REGION_NAME', 'NOVA_REGION_NAME'),
+            default=cliutils.env('OS_REGION_NAME', 'NOVA_REGION_NAME'),
             help=_('Defaults to env[OS_REGION_NAME].'))
         parser.add_argument(
             '--os_region_name',
@@ -337,7 +338,7 @@ class OpenStackComputeShell(object):
         parser.add_argument(
             '--os-auth-system',
             metavar='<auth-system>',
-            default=utils.env('OS_AUTH_SYSTEM'),
+            default=cliutils.env('OS_AUTH_SYSTEM'),
             help='Defaults to env[OS_AUTH_SYSTEM].')
         parser.add_argument(
             '--os_auth_system',
@@ -354,7 +355,7 @@ class OpenStackComputeShell(object):
         parser.add_argument(
             '--service-name',
             metavar='<service-name>',
-            default=utils.env('NOVA_SERVICE_NAME'),
+            default=cliutils.env('NOVA_SERVICE_NAME'),
             help=_('Defaults to env[NOVA_SERVICE_NAME]'))
         parser.add_argument(
             '--service_name',
@@ -363,7 +364,7 @@ class OpenStackComputeShell(object):
         parser.add_argument(
             '--volume-service-name',
             metavar='<volume-service-name>',
-            default=utils.env('NOVA_VOLUME_SERVICE_NAME'),
+            default=cliutils.env('NOVA_VOLUME_SERVICE_NAME'),
             help=_('Defaults to env[NOVA_VOLUME_SERVICE_NAME]'))
         parser.add_argument(
             '--volume_service_name',
@@ -373,9 +374,9 @@ class OpenStackComputeShell(object):
             '--os-endpoint-type',
             metavar='<endpoint-type>',
             dest='endpoint_type',
-            default=utils.env(
+            default=cliutils.env(
                 'NOVA_ENDPOINT_TYPE',
-                default=utils.env(
+                default=cliutils.env(
                     'OS_ENDPOINT_TYPE',
                     default=DEFAULT_NOVA_ENDPOINT_TYPE)),
             help=_('Defaults to env[NOVA_ENDPOINT_TYPE], '
@@ -395,8 +396,8 @@ class OpenStackComputeShell(object):
         parser.add_argument(
             '--os-compute-api-version',
             metavar='<compute-api-ver>',
-            default=utils.env('OS_COMPUTE_API_VERSION',
-                              default=DEFAULT_OS_COMPUTE_API_VERSION),
+            default=cliutils.env('OS_COMPUTE_API_VERSION',
+                                 default=DEFAULT_OS_COMPUTE_API_VERSION),
             help=_('Accepts 1.1 or 3, '
                    'defaults to env[OS_COMPUTE_API_VERSION].'))
         parser.add_argument(
@@ -407,7 +408,7 @@ class OpenStackComputeShell(object):
             '--bypass-url',
             metavar='<bypass-url>',
             dest='bypass_url',
-            default=utils.env('NOVACLIENT_BYPASS_URL'),
+            default=cliutils.env('NOVACLIENT_BYPASS_URL'),
             help="Use this API endpoint instead of the Service Catalog. "
                  "Defaults to env[NOVACLIENT_BYPASS_URL]")
         parser.add_argument('--bypass_url',
@@ -849,7 +850,7 @@ class OpenStackComputeShell(object):
         commands.remove('bash_completion')
         print(' '.join(commands | options))
 
-    @utils.arg(
+    @cliutils.arg(
         'command',
         metavar='<subcommand>',
         nargs='?',

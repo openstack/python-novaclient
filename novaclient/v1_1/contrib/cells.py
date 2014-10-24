@@ -15,6 +15,7 @@
 
 from novaclient import base
 from novaclient.i18n import _
+from novaclient.openstack.common import cliutils
 from novaclient import utils
 
 
@@ -46,7 +47,7 @@ class CellsManager(base.Manager):
         return self._get("/os-cells/%s" % path, "cell")
 
 
-@utils.arg(
+@cliutils.arg(
     'cell',
     metavar='<cell-name>',
     help=_('Name of the cell.'))
@@ -56,7 +57,7 @@ def do_cell_show(cs, args):
     utils.print_dict(cell._info)
 
 
-@utils.arg(
+@cliutils.arg(
     '--cell',
     metavar='<cell-name>',
     help=_("Name of the cell to get the capacities."),

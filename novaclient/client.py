@@ -45,8 +45,8 @@ from six.moves.urllib import parse
 
 from novaclient import exceptions
 from novaclient.i18n import _
+from novaclient.openstack.common import cliutils
 from novaclient import service_catalog
-from novaclient import utils
 
 
 class _ClientConnectionPool(object):
@@ -90,8 +90,8 @@ class CompletionCache(object):
         """
         uniqifier = hashlib.md5(username.encode('utf-8') +
                                 auth_url.encode('utf-8')).hexdigest()
-        base_dir = utils.env('NOVACLIENT_UUID_CACHE_DIR',
-                             default="~/.novaclient")
+        base_dir = cliutils.env('NOVACLIENT_UUID_CACHE_DIR',
+                                default="~/.novaclient")
         return os.path.expanduser(os.path.join(base_dir, uniqifier))
 
     def _prepare_directory(self):
