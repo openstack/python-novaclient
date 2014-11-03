@@ -353,8 +353,8 @@ def _boot(cs, args):
      metavar="<key=value>",
      action='append',
      default=[],
-     help=_("Record arbitrary key/value metadata to /meta.js "
-          "on the new server. Can be specified multiple times."))
+     help=_("Record arbitrary key/value metadata to /meta_data.json "
+          "on the metadata server. Can be specified multiple times."))
 @utils.arg('--file',
      metavar="<dst-path=src-path>",
      action='append',
@@ -1322,8 +1322,8 @@ def do_reboot(cs, args):
     metavar="<key=value>",
     action='append',
     default=[],
-    help=_("Record arbitrary key/value metadata to /meta.js "
-         "on the new server. Can be specified multiple times."))
+    help=_("Record arbitrary key/value metadata to /meta_data.json "
+         "on the metadata server. Can be specified multiple times."))
 @utils.arg('--file',
     metavar="<dst-path=src-path>",
     action='append',
