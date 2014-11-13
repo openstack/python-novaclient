@@ -300,6 +300,22 @@ def safe_issubclass(*args):
     return False
 
 
+def do_action_on_many(action, resources, success_msg, error_msg):
+    """Helper to run an action on many resources."""
+    failure_flag = False
+
+    for resource in resources:
+        try:
+            action(resource)
+            print(success_msg % resource)
+        except Exception as e:
+            failure_flag = True
+            print(e)
+
+    if failure_flag:
+        raise exceptions.CommandError(error_msg)
+
+
 def _load_entry_point(ep_name, name=None):
     """Try to load the entry point ep_name that matches name."""
     for ep in pkg_resources.iter_entry_points(ep_name, name=name):

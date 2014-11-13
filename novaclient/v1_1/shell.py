@@ -1692,19 +1692,11 @@ def do_show(cs, args):
            help=_('Name or ID of server(s).'))
 def do_delete(cs, args):
     """Immediately shut down and delete specified server(s)."""
-    failure_flag = False
-
-    for server in args.server:
-        try:
-            _find_server(cs, server).delete()
-            print(_("Request to delete server %s has been accepted.") % server)
-        except Exception as e:
-            failure_flag = True
-            print(e)
-
-    if failure_flag:
-        raise exceptions.CommandError(_("Unable to delete the "
-                                        "specified server(s)."))
+    utils.do_action_on_many(
+        lambda s: _find_server(cs, s).delete(),
+        args.server,
+        _("Request to delete server %s has been accepted."),
+        _("Unable to delete the specified server(s)."))
 
 
 def _find_server(cs, server):
