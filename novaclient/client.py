@@ -317,7 +317,7 @@ class HTTPClient(object):
         if not self.http_log_debug:
             return
 
-        string_parts = ['curl -i']
+        string_parts = ['curl -g -i']
 
         if not kwargs.get('verify', True):
             string_parts.append(' --insecure')

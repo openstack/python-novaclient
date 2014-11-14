@@ -104,7 +104,7 @@ class HTTPClient(object):
             return
 
         string_parts = [
-            "curl -i",
+            "curl -g -i",
             "-X '%s'" % method,
             "'%s'" % url,
         ]
