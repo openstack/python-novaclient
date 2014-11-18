@@ -16,8 +16,10 @@ import re
 import sys
 
 import fixtures
+from keystoneclient import fixture
 import mock
 import prettytable
+import requests_mock
 import six
 from testtools import matchers
 
@@ -29,22 +31,32 @@ from novaclient.tests import utils
 FAKE_ENV = {'OS_USERNAME': 'username',
             'OS_PASSWORD': 'password',
             'OS_TENANT_NAME': 'tenant_name',
-            'OS_AUTH_URL': 'http://no.where'}
+            'OS_AUTH_URL': 'http://no.where/v2.0'}
 
 FAKE_ENV2 = {'OS_USER_ID': 'user_id',
              'OS_PASSWORD': 'password',
              'OS_TENANT_ID': 'tenant_id',
-             'OS_AUTH_URL': 'http://no.where'}
+             'OS_AUTH_URL': 'http://no.where/v2.0'}
 
 FAKE_ENV3 = {'OS_USER_ID': 'user_id',
              'OS_PASSWORD': 'password',
              'OS_TENANT_ID': 'tenant_id',
-             'OS_AUTH_URL': 'http://no.where',
+             'OS_AUTH_URL': 'http://no.where/v2.0',
              'NOVA_ENDPOINT_TYPE': 'novaURL',
              'OS_ENDPOINT_TYPE': 'osURL'}
 
 
+def _create_ver_list(versions):
+    return {'versions': {'values': versions}}
+
+
 class ShellTest(utils.TestCase):
+
+    _msg_no_tenant_project = ("You must provide a project name or project"
+                              " id via --os-project-name, --os-project-id,"
+                              " env[OS_PROJECT_ID] or env[OS_PROJECT_NAME]."
+                              " You may use os-project and os-tenant"
+                              " interchangeably.")
 
     def make_env(self, exclude=None, fake_env=FAKE_ENV):
         env = dict((k, v) for k, v in fake_env.items() if k != exclude)
@@ -78,6 +90,12 @@ class ShellTest(utils.TestCase):
             sys.stderr.close()
             sys.stderr = orig_stderr
         return (stdout, stderr)
+
+    def register_keystone_discovery_fixture(self, mreq):
+        v2_url = "http://no.where/v2.0"
+        v2_version = fixture.V2Discovery(v2_url)
+        mreq.register_uri('GET', v2_url, json=_create_ver_list([v2_version]),
+            status_code=200)
 
     def test_help_unknown_command(self):
         self.assertRaises(exceptions.CommandError, self.shell, 'help foofoo')
@@ -163,9 +181,7 @@ class ShellTest(utils.TestCase):
             self.fail('CommandError not raised')
 
     def test_no_tenant_name(self):
-        required = ('You must provide a tenant name or tenant id'
-                    ' via --os-tenant-name, --os-tenant-id,'
-                    ' env[OS_TENANT_NAME] or env[OS_TENANT_ID]')
+        required = self._msg_no_tenant_project
         self.make_env(exclude='OS_TENANT_NAME')
         try:
             self.shell('list')
@@ -175,14 +191,12 @@ class ShellTest(utils.TestCase):
             self.fail('CommandError not raised')
 
     def test_no_tenant_id(self):
-        required = ('You must provide a tenant name or tenant id'
-                    ' via --os-tenant-name, --os-tenant-id,'
-                    ' env[OS_TENANT_NAME] or env[OS_TENANT_ID]',)
+        required = self._msg_no_tenant_project
         self.make_env(exclude='OS_TENANT_ID', fake_env=FAKE_ENV2)
         try:
             self.shell('list')
         except exceptions.CommandError as message:
-            self.assertEqual(required, message.args)
+            self.assertEqual(required, message.args[0])
         else:
             self.fail('CommandError not raised')
 
@@ -200,15 +214,19 @@ class ShellTest(utils.TestCase):
             self.fail('CommandError not raised')
 
     @mock.patch('novaclient.client.Client')
-    def test_nova_endpoint_type(self, mock_client):
+    @requests_mock.Mocker()
+    def test_nova_endpoint_type(self, mock_client, m_requests):
         self.make_env(fake_env=FAKE_ENV3)
+        self.register_keystone_discovery_fixture(m_requests)
         self.shell('list')
         client_kwargs = mock_client.call_args_list[0][1]
         self.assertEqual(client_kwargs['endpoint_type'], 'novaURL')
 
     @mock.patch('novaclient.client.Client')
-    def test_os_endpoint_type(self, mock_client):
+    @requests_mock.Mocker()
+    def test_os_endpoint_type(self, mock_client, m_requests):
         self.make_env(exclude='NOVA_ENDPOINT_TYPE', fake_env=FAKE_ENV3)
+        self.register_keystone_discovery_fixture(m_requests)
         self.shell('list')
         client_kwargs = mock_client.call_args_list[0][1]
         self.assertEqual(client_kwargs['endpoint_type'], 'osURL')
@@ -222,7 +240,8 @@ class ShellTest(utils.TestCase):
 
     @mock.patch('sys.stdin', side_effect=mock.MagicMock)
     @mock.patch('getpass.getpass', return_value='password')
-    def test_password(self, mock_getpass, mock_stdin):
+    @requests_mock.Mocker()
+    def test_password(self, mock_getpass, mock_stdin, m_requests):
         mock_stdin.encoding = "utf-8"
 
         # default output of empty tables differs depending between prettytable
@@ -240,6 +259,7 @@ class ShellTest(utils.TestCase):
                 ''
             ])
         self.make_env(exclude='OS_PASSWORD')
+        self.register_keystone_discovery_fixture(m_requests)
         stdout, stderr = self.shell('list')
         self.assertEqual((stdout + stderr), ex)
 
@@ -310,3 +330,17 @@ class ShellTest(utils.TestCase):
             novaclient.shell.main()
         except SystemExit as ex:
             self.assertEqual(ex.code, 130)
+
+
+class ShellTestKeystoneV3(ShellTest):
+    def make_env(self, exclude=None, fake_env=FAKE_ENV):
+        if 'OS_AUTH_URL' in fake_env:
+            fake_env.update({'OS_AUTH_URL': 'http://no.where/v3'})
+        env = dict((k, v) for k, v in fake_env.items() if k != exclude)
+        self.useFixture(fixtures.MonkeyPatch('os.environ', env))
+
+    def register_keystone_discovery_fixture(self, mreq):
+        v3_url = "http://no.where/v3"
+        v3_version = fixture.V3Discovery(v3_url)
+        mreq.register_uri('GET', v3_url, json=_create_ver_list([v3_version]),
+            status_code=200)

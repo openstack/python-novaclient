@@ -28,7 +28,11 @@ import logging
 import os
 import pkgutil
 import sys
+import time
 
+from keystoneclient.auth.identity.generic import password
+from keystoneclient.auth.identity.generic import token
+from keystoneclient.auth.identity import v3 as identity
 from keystoneclient import session as ksession
 from oslo.utils import encodeutils
 from oslo.utils import strutils
@@ -232,6 +236,7 @@ class NovaClientArgumentParser(argparse.ArgumentParser):
 
 
 class OpenStackComputeShell(object):
+    times = []
 
     def _append_global_identity_args(self, parser):
         # Register the CLI arguments that have moved to the session object.
@@ -239,6 +244,14 @@ class OpenStackComputeShell(object):
 
         parser.set_defaults(insecure=utils.env('NOVACLIENT_INSECURE',
                             default=False))
+
+        identity.Password.register_argparse_arguments(parser)
+
+        parser.set_defaults(os_username=utils.env('OS_USERNAME',
+                            'NOVA_USERNAME'))
+        parser.set_defaults(os_password=utils.env('OS_PASSWORD',
+                            'NOVA_PASSWORD'))
+        parser.set_defaults(os_auth_url=utils.env('OS_AUTH_URL', 'NOVA_URL'))
 
     def get_base_parser(self):
         parser = NovaClientArgumentParser(
@@ -281,22 +294,9 @@ class OpenStackComputeShell(object):
                 default=utils.env('OS_AUTH_TOKEN'),
                 help='Defaults to env[OS_AUTH_TOKEN]')
 
-        parser.add_argument('--os-username',
-            metavar='<auth-user-name>',
-            default=utils.env('OS_USERNAME', 'NOVA_USERNAME'),
-            help=_('Defaults to env[OS_USERNAME].'))
         parser.add_argument('--os_username',
             help=argparse.SUPPRESS)
 
-        parser.add_argument('--os-user-id',
-            metavar='<auth-user-id>',
-            default=utils.env('OS_USER_ID'),
-            help=_('Defaults to env[OS_USER_ID].'))
-
-        parser.add_argument('--os-password',
-            metavar='<auth-password>',
-            default=utils.env('OS_PASSWORD', 'NOVA_PASSWORD'),
-            help=_('Defaults to env[OS_PASSWORD].'))
         parser.add_argument('--os_password',
             help=argparse.SUPPRESS)
 
@@ -312,10 +312,6 @@ class OpenStackComputeShell(object):
             default=utils.env('OS_TENANT_ID'),
             help=_('Defaults to env[OS_TENANT_ID].'))
 
-        parser.add_argument('--os-auth-url',
-            metavar='<auth-url>',
-            default=utils.env('OS_AUTH_URL', 'NOVA_URL'),
-            help=_('Defaults to env[OS_AUTH_URL].'))
         parser.add_argument('--os_auth_url',
             help=argparse.SUPPRESS)
 
@@ -511,6 +507,19 @@ class OpenStackComputeShell(object):
         logging.basicConfig(level=logging.DEBUG,
                             format=streamformat)
 
+    def _get_keystone_auth(self, session, auth_url, **kwargs):
+        auth_token = kwargs.pop('auth_token', None)
+        if auth_token:
+            return token.Token(auth_url, auth_token, **kwargs)
+        else:
+            return password.Password(auth_url,
+                username=kwargs.pop('username'),
+                user_id=kwargs.pop('user_id'),
+                password=kwargs.pop('password'),
+                user_domain_id=kwargs.pop('user_domain_id'),
+                user_domain_name=kwargs.pop('user_domain_name'),
+                **kwargs)
+
     def main(self, argv):
         # Parse args once to find version and debug settings
         parser = self.get_base_parser()
@@ -570,6 +579,9 @@ class OpenStackComputeShell(object):
         cacert = args.os_cacert
         timeout = args.timeout
 
+        keystone_session = None
+        keystone_auth = None
+
         # We may have either, both or none of these.
         # If we have both, we don't need USERNAME, PASSWORD etc.
         # Fill in the blanks from the SecretsHelper if possible.
@@ -603,6 +615,13 @@ class OpenStackComputeShell(object):
         must_auth = not (cliutils.isunauthenticated(args.func)
                          or (auth_token and management_url))
 
+        # Do not use Keystone session for cases with no session support. The
+        # presence of auth_plugin means os_auth_system is present and is not
+        # keystone.
+        use_session = True
+        if auth_plugin or bypass_url or os_cache or volume_service_name:
+            use_session = False
+
         # FIXME(usrleon): Here should be restrict for project id same as
         # for os_username or os_password but for compatibility it is not.
         if must_auth:
@@ -615,11 +634,14 @@ class OpenStackComputeShell(object):
                             "or user id via --os-username, --os-user-id, "
                             "env[OS_USERNAME] or env[OS_USER_ID]"))
 
-            if not os_tenant_name and not os_tenant_id:
-                raise exc.CommandError(_("You must provide a tenant name "
-                        "or tenant id via --os-tenant-name, "
-                        "--os-tenant-id, env[OS_TENANT_NAME] "
-                        "or env[OS_TENANT_ID]"))
+            if not any([args.os_tenant_name, args.os_tenant_id,
+                        args.os_project_id, args.os_project_name]):
+                raise exc.CommandError(_("You must provide a project name or"
+                                         " project id via --os-project-name,"
+                                         " --os-project-id, env[OS_PROJECT_ID]"
+                                         " or env[OS_PROJECT_NAME]. You may"
+                                         " use os-project and os-tenant"
+                                         " interchangeably."))
 
             if not os_auth_url:
                 if os_auth_system and os_auth_system != 'keystone':
@@ -632,13 +654,39 @@ class OpenStackComputeShell(object):
                             "default url with --os-auth-system "
                             "or env[OS_AUTH_SYSTEM]"))
 
+            project_id = args.os_project_id or args.os_tenant_id
+            project_name = args.os_project_name or args.os_tenant_name
+            if use_session:
+                # Not using Nova auth plugin, so use keystone
+                start_time = time.time()
+                keystone_session = ksession.Session.load_from_cli_options(args)
+                keystone_auth = self._get_keystone_auth(
+                    keystone_session,
+                    args.os_auth_url,
+                    username=args.os_username,
+                    user_id=args.os_user_id,
+                    user_domain_id=args.os_user_domain_id,
+                    user_domain_name=args.os_user_domain_name,
+                    password=args.os_password,
+                    auth_token=args.os_auth_token,
+                    project_id=project_id,
+                    project_name=project_name,
+                    project_domain_id=args.os_project_domain_id,
+                    project_domain_name=args.os_project_domain_name)
+                end_time = time.time()
+                self.times.append(('%s %s' % ('auth_url', args.os_auth_url),
+                    start_time, end_time))
+
         if (options.os_compute_api_version and
                 options.os_compute_api_version != '1.0'):
-            if not os_tenant_name and not os_tenant_id:
-                raise exc.CommandError(_("You must provide a tenant name "
-                        "or tenant id via --os-tenant-name, "
-                        "--os-tenant-id, env[OS_TENANT_NAME] "
-                        "or env[OS_TENANT_ID]"))
+            if not any([args.os_tenant_id, args.os_tenant_name,
+                        args.os_project_id, args.os_project_name]):
+                raise exc.CommandError(_("You must provide a project name or"
+                                         " project id via --os-project-name,"
+                                         " --os-project-id, env[OS_PROJECT_ID]"
+                                         " or env[OS_PROJECT_NAME]. You may"
+                                         " use os-project and os-tenant"
+                                         " interchangeably."))
 
             if not os_auth_url:
                 raise exc.CommandError(_("You must provide an auth url "
@@ -658,6 +706,7 @@ class OpenStackComputeShell(object):
                 timings=args.timings, bypass_url=bypass_url,
                 os_cache=os_cache, http_log_debug=options.debug,
                 cacert=cacert, timeout=timeout,
+                session=keystone_session, auth=keystone_auth,
                 completion_cache=completion_cache)
 
         # Now check for the password/token of which pieces of the
@@ -691,7 +740,11 @@ class OpenStackComputeShell(object):
             # This does a couple of bits which are useful even if we've
             # got the token + service URL already. It exits fast in that case.
             if not cliutils.isunauthenticated(args.func):
-                self.cs.authenticate()
+                if not use_session:
+                    # Only call authenticate() if Nova auth plugin is used.
+                    # If keystone is used, authentication is handled as part
+                    # of session.
+                    self.cs.authenticate()
         except exc.Unauthorized:
             raise exc.CommandError(_("Invalid OpenStack Nova credentials."))
         except exc.AuthorizationFailure:
@@ -720,12 +773,13 @@ class OpenStackComputeShell(object):
                 volume_service_name=volume_service_name,
                 timings=args.timings, bypass_url=bypass_url,
                 os_cache=os_cache, http_log_debug=options.debug,
+                session=keystone_session, auth=keystone_auth,
                 cacert=cacert, timeout=timeout)
 
         args.func(self.cs, args)
 
         if args.timings:
-            self._dump_timings(self.cs.get_timings())
+            self._dump_timings(self.times + self.cs.get_timings())
 
     def _dump_timings(self, timings):
         class Tyme(object):

@@ -176,11 +176,9 @@ class Client(object):
     def set_management_url(self, url):
         self.client.set_management_url(url)
 
-    @client._original_only
     def get_timings(self):
         return self.client.get_timings()
 
-    @client._original_only
     def reset_timings(self):
         self.client.reset_timings()
 

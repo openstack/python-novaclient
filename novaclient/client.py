@@ -137,19 +137,34 @@ class CompletionCache(object):
 
 class SessionClient(adapter.LegacyJsonAdapter):
 
+    def __init__(self, *args, **kwargs):
+        self.times = []
+        super(SessionClient, self).__init__(*args, **kwargs)
+
     def request(self, url, method, **kwargs):
         # NOTE(jamielennox): The standard call raises errors from
         # keystoneclient, where we need to raise the novaclient errors.
         raise_exc = kwargs.pop('raise_exc', True)
+        start_time = time.time()
         resp, body = super(SessionClient, self).request(url,
                                                         method,
                                                         raise_exc=False,
                                                         **kwargs)
 
+        end_time = time.time()
+        self.times.append(('%s %s' % (method, url),
+                          start_time, end_time))
+
         if raise_exc and resp.status_code >= 400:
             raise exceptions.from_response(resp, body, url, method)
 
         return resp, body
+
+    def get_timings(self):
+        return self.times
+
+    def reset_timings(self):
+        self.times = []
 
 
 def _original_only(f):
