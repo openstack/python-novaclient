@@ -113,9 +113,9 @@ class VolumeManager(base.ManagerWithFind):
         :rtype: :class:`Volume`
         """
         body = {'volumeAttachment': {'volumeId': volume_id,
-                            'device': device}}
+                                     'device': device}}
         return self._create("/servers/%s/os-volume_attachments" % server_id,
-            body, "volumeAttachment")
+                            body, "volumeAttachment")
 
     def update_server_volume(self, server_id, attachment_id, new_volume_id):
         """
@@ -129,7 +129,8 @@ class VolumeManager(base.ManagerWithFind):
         """
         body = {'volumeAttachment': {'volumeId': new_volume_id}}
         return self._update("/servers/%s/os-volume_attachments/%s" %
-            (server_id, attachment_id,), body, "volumeAttachment")
+                            (server_id, attachment_id,),
+                            body, "volumeAttachment")
 
     def get_server_volume(self, server_id, attachment_id):
         """
@@ -141,7 +142,7 @@ class VolumeManager(base.ManagerWithFind):
         :rtype: :class:`Volume`
         """
         return self._get("/servers/%s/os-volume_attachments/%s" % (server_id,
-            attachment_id,), "volumeAttachment")
+                         attachment_id,), "volumeAttachment")
 
     def get_server_volumes(self, server_id):
         """
@@ -151,7 +152,7 @@ class VolumeManager(base.ManagerWithFind):
         :rtype: list of :class:`Volume`
         """
         return self._list("/servers/%s/os-volume_attachments" % server_id,
-            "volumeAttachments")
+                          "volumeAttachments")
 
     def delete_server_volume(self, server_id, attachment_id):
         """

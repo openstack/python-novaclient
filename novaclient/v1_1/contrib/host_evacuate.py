@@ -33,8 +33,8 @@ def _server_evacuate(cs, server, args):
         error_message = _("Error while evacuating instance: %s") % e
     return EvacuateHostResponse(base.Manager,
                                 {"server_uuid": server['uuid'],
-                                "evacuate_accepted": success,
-                                "error_message": error_message})
+                                 "evacuate_accepted": success,
+                                 "error_message": error_message})
 
 
 @utils.arg('host', metavar='<host>', help='Name of host.')

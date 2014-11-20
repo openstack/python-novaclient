@@ -30,22 +30,24 @@ class InstanceActionManager(base.ManagerWithFind):
         :param request_id: The request_id of the action to get.
         """
         return self._get("/servers/%s/os-instance-actions/%s" %
-                (base.getid(server), request_id), 'instanceAction')
+                         (base.getid(server), request_id), 'instanceAction')
 
     def list(self, server):
         """
         Get a list of actions performed on an server.
         """
         return self._list('/servers/%s/os-instance-actions' %
-                base.getid(server), 'instanceActions')
+                          base.getid(server), 'instanceActions')
 
 
-@utils.arg('server',
-        metavar='<server>',
-        help=_('Name or UUID of the server to show an action for.'))
-@utils.arg('request_id',
-        metavar='<request_id>',
-        help=_('Request ID of the action to get.'))
+@utils.arg(
+    'server',
+    metavar='<server>',
+    help=_('Name or UUID of the server to show an action for.'))
+@utils.arg(
+    'request_id',
+    metavar='<request_id>',
+    help=_('Request ID of the action to get.'))
 def do_instance_action(cs, args):
     """Show an action."""
     server = utils.find_resource(cs.servers, args.server)
@@ -56,12 +58,14 @@ def do_instance_action(cs, args):
     utils.print_dict(action)
 
 
-@utils.arg('server',
-        metavar='<server>',
-        help=_('Name or UUID of the server to list actions for.'))
+@utils.arg(
+    'server',
+    metavar='<server>',
+    help=_('Name or UUID of the server to list actions for.'))
 def do_instance_action_list(cs, args):
     """List actions on a server."""
     server = utils.find_resource(cs.servers, args.server)
     actions = cs.instance_action.list(server)
     utils.print_list(actions,
-        ['Action', 'Request_ID', 'Message', 'Start_Time'], sortby_index=3)
+                     ['Action', 'Request_ID', 'Message', 'Start_Time'],
+                     sortby_index=3)

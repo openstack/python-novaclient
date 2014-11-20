@@ -39,7 +39,7 @@ class CloudpipeManager(base.ManagerWithFind):
         """
         body = {'cloudpipe': {'project_id': project}}
         return self._create('/os-cloudpipe', body, 'instance_id',
-                return_raw=True)
+                            return_raw=True)
 
     def list(self):
         """
