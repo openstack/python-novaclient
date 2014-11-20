@@ -65,14 +65,17 @@ class SecurityGroupRulesTest(utils.FixturedTestCase):
 
     def test_invalid_parameters_create(self):
         self.assertRaises(exceptions.CommandError,
-            self.cs.security_group_rules.create,
-            1, "invalid_ip_protocol", 1, 65535, "10.0.0.0/16", 101)
+                          self.cs.security_group_rules.create,
+                          1, "invalid_ip_protocol", 1, 65535,
+                          "10.0.0.0/16", 101)
         self.assertRaises(exceptions.CommandError,
-            self.cs.security_group_rules.create,
-            1, "tcp", "invalid_from_port", 65535, "10.0.0.0/16", 101)
+                          self.cs.security_group_rules.create,
+                          1, "tcp", "invalid_from_port", 65535,
+                          "10.0.0.0/16", 101)
         self.assertRaises(exceptions.CommandError,
-            self.cs.security_group_rules.create,
-            1, "tcp", 1, "invalid_to_port", "10.0.0.0/16", 101)
+                          self.cs.security_group_rules.create,
+                          1, "tcp", 1, "invalid_to_port",
+                          "10.0.0.0/16", 101)
 
     def test_security_group_rule_str(self):
         sg = self.cs.security_group_rules.create(1, "tcp", 1, 65535,

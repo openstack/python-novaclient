@@ -47,7 +47,7 @@ class FlavorsTest(test_flavors.FlavorsTest):
         f = self.cs.flavors.get(1)
         f.set_keys({'k1': 'v1'})
         self.cs.assert_called('POST', '/flavors/1/flavor-extra-specs',
-                         {"extra_specs": {'k1': 'v1'}})
+                              {"extra_specs": {'k1': 'v1'}})
 
     def test_set_with_valid_keys(self):
         valid_keys = ['key4', 'month.price', 'I-Am:AK-ey.44-',

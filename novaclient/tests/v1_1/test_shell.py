@@ -841,17 +841,20 @@ class ShellTest(utils.TestCase):
 
     def test_list_by_tenant(self):
         self.run_command('list --tenant fake_tenant')
-        self.assert_called('GET',
+        self.assert_called(
+            'GET',
             '/servers/detail?all_tenants=1&tenant_id=fake_tenant')
 
     def test_list_by_user(self):
         self.run_command('list --user fake_user')
-        self.assert_called('GET',
+        self.assert_called(
+            'GET',
             '/servers/detail?all_tenants=1&user_id=fake_user')
 
     def test_list_fields(self):
-        output = self.run_command('list --fields '
-                         'host,security_groups,OS-EXT-MOD:some_thing')
+        output = self.run_command(
+            'list --fields '
+            'host,security_groups,OS-EXT-MOD:some_thing')
         self.assert_called('GET', '/servers/detail')
         self.assertIn('computenode1', output)
         self.assertIn('securitygroup1', output)
@@ -1661,26 +1664,32 @@ class ShellTest(utils.TestCase):
         self.assert_called('GET', '/os-hypervisors/statistics')
 
     def test_quota_show(self):
-        self.run_command('quota-show --tenant '
-                '97f4c221bff44578b0300df4ef119353')
-        self.assert_called('GET',
-                '/os-quota-sets/97f4c221bff44578b0300df4ef119353')
+        self.run_command(
+            'quota-show --tenant '
+            '97f4c221bff44578b0300df4ef119353')
+        self.assert_called(
+            'GET',
+            '/os-quota-sets/97f4c221bff44578b0300df4ef119353')
 
     def test_user_quota_show(self):
-        self.run_command('quota-show --tenant '
-                '97f4c221bff44578b0300df4ef119353 --user u1')
-        self.assert_called('GET',
-                '/os-quota-sets/97f4c221bff44578b0300df4ef119353?user_id=u1')
+        self.run_command(
+            'quota-show --tenant '
+            '97f4c221bff44578b0300df4ef119353 --user u1')
+        self.assert_called(
+            'GET',
+            '/os-quota-sets/97f4c221bff44578b0300df4ef119353?user_id=u1')
 
     def test_quota_show_no_tenant(self):
         self.run_command('quota-show')
         self.assert_called('GET', '/os-quota-sets/tenant_id')
 
     def test_quota_defaults(self):
-        self.run_command('quota-defaults --tenant '
-                '97f4c221bff44578b0300df4ef119353')
-        self.assert_called('GET',
-                '/os-quota-sets/97f4c221bff44578b0300df4ef119353/defaults')
+        self.run_command(
+            'quota-defaults --tenant '
+            '97f4c221bff44578b0300df4ef119353')
+        self.assert_called(
+            'GET',
+            '/os-quota-sets/97f4c221bff44578b0300df4ef119353/defaults')
 
     def test_quota_defaults_no_tenant(self):
         self.run_command('quota-defaults')
@@ -1736,8 +1745,9 @@ class ShellTest(utils.TestCase):
         self.run_command('quota-delete --tenant '
                          '97f4c221bff44578b0300df4ef119353 '
                          '--user u1')
-        self.assert_called('DELETE',
-                '/os-quota-sets/97f4c221bff44578b0300df4ef119353?user_id=u1')
+        self.assert_called(
+            'DELETE',
+            '/os-quota-sets/97f4c221bff44578b0300df4ef119353?user_id=u1')
 
     def test_quota_class_show(self):
         self.run_command('quota-class-show test')
@@ -1767,8 +1777,9 @@ class ShellTest(utils.TestCase):
         self.assert_called('GET', '/os-networks')
 
     def test_network_list_fields(self):
-        output = self.run_command('network-list --fields '
-                         'vlan,project_id')
+        output = self.run_command(
+            'network-list --fields '
+            'vlan,project_id')
         self.assert_called('GET', '/os-networks')
         self.assertIn('1234', output)
         self.assertIn('4ffc664c198e435e9853f2538fbcd7a7', output)
@@ -2133,8 +2144,9 @@ class ShellTest(utils.TestCase):
 
     def test_instance_action_get(self):
         self.run_command('instance-action sample-server req-abcde12345')
-        self.assert_called('GET',
-                '/servers/1234/os-instance-actions/req-abcde12345')
+        self.assert_called(
+            'GET',
+            '/servers/1234/os-instance-actions/req-abcde12345')
 
     def test_cell_show(self):
         self.run_command('cell-show child_cell')
@@ -2166,11 +2178,11 @@ class ShellTest(utils.TestCase):
             addresses = {
                 "skynet": [
                     {'version': 4, 'addr': "1.1.1.1",
-                    "OS-EXT-IPS:type": 'fixed'},
+                     "OS-EXT-IPS:type": 'fixed'},
                     {'version': 4, 'addr': "2.2.2.2",
-                    "OS-EXT-IPS:type": 'floating'},
+                     "OS-EXT-IPS:type": 'floating'},
                     {'version': 6, 'addr': "2607:f0d0:1002::4",
-                    "OS-EXT-IPS:type": 'fixed'},
+                     "OS-EXT-IPS:type": 'fixed'},
                     {'version': 6, 'addr': "7612:a1b2:2004::6"}
                 ]
             }
@@ -2214,10 +2226,10 @@ class ShellTest(utils.TestCase):
             addresses = {
                 "skynet": [
                     {'version': 4, 'addr': "1.1.1.1",
-                    "OS-EXT-IPS:type": 'fixed'},
+                     "OS-EXT-IPS:type": 'fixed'},
                     {'version': 4, 'addr': "2.2.2.2"},
                     {'version': 6, 'addr': "2607:f0d0:1002::4",
-                    "OS-EXT-IPS:type": 'fixed'}
+                     "OS-EXT-IPS:type": 'fixed'}
                 ],
                 "other": [
                     {'version': 4, 'addr': "2.3.4.5"},
@@ -2241,11 +2253,12 @@ class ShellTest(utils.TestCase):
                                {'name': 'test'}})
 
     @mock.patch.object(builtins, 'open',
-             mock.mock_open(read_data='FAKE_PUBLIC_KEY'))
+                       mock.mock_open(read_data='FAKE_PUBLIC_KEY'))
     def test_keypair_import(self):
         self.run_command('keypair-add --pub-key test.pub test')
-        self.assert_called('POST', '/os-keypairs', {
-            'keypair': {'public_key': 'FAKE_PUBLIC_KEY', 'name': 'test'}})
+        self.assert_called(
+            'POST', '/os-keypairs', {
+                'keypair': {'public_key': 'FAKE_PUBLIC_KEY', 'name': 'test'}})
 
     def test_keypair_list(self):
         self.run_command('keypair-list')

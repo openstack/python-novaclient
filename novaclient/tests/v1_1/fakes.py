@@ -95,22 +95,22 @@ class FakeHTTPClient(base_client.HTTPClient):
 
     def get_os_agents(self, **kw):
         hypervisor = kw.get('hypervisor', 'kvm')
-        return (200, {}, {'agents':
-                    [{'hypervisor': hypervisor,
-                      'os': 'win',
-                     'architecture': 'x86',
-                     'version': '7.0',
-                     'url': 'xxx://xxxx/xxx/xxx',
-                     'md5hash': 'add6bb58e139be103324d04d82d8f545',
-                     'id': 1},
-                    {'hypervisor': hypervisor,
-                     'os': 'linux',
-                     'architecture': 'x86',
-                     'version': '16.0',
-                     'url': 'xxx://xxxx/xxx/xxx1',
-                     'md5hash': 'add6bb58e139be103324d04d82d8f546',
-                     'id': 2},
-                    ]})
+        return (200, {}, {
+            'agents':
+                [{'hypervisor': hypervisor,
+                  'os': 'win',
+                  'architecture': 'x86',
+                  'version': '7.0',
+                  'url': 'xxx://xxxx/xxx/xxx',
+                  'md5hash': 'add6bb58e139be103324d04d82d8f545',
+                  'id': 1},
+                 {'hypervisor': hypervisor,
+                  'os': 'linux',
+                  'architecture': 'x86',
+                  'version': '16.0',
+                  'url': 'xxx://xxxx/xxx/xxx1',
+                  'md5hash': 'add6bb58e139be103324d04d82d8f546',
+                  'id': 2}]})
 
     def post_os_agents(self, body):
         return (200, {}, {'agent': {
@@ -366,9 +366,10 @@ class FakeHTTPClient(base_client.HTTPClient):
 
     def post_servers(self, body, **kw):
         assert set(body.keys()) <= set(['server', 'os:scheduler_hints'])
-        fakes.assert_has_keys(body['server'],
-                        required=['name', 'imageRef', 'flavorRef'],
-                        optional=['metadata', 'personality'])
+        fakes.assert_has_keys(
+            body['server'],
+            required=['name', 'imageRef', 'flavorRef'],
+            optional=['metadata', 'personality'])
         if 'personality' in body['server']:
             for pfile in body['server']['personality']:
                 fakes.assert_has_keys(pfile, required=['path', 'contents'])
@@ -379,9 +380,10 @@ class FakeHTTPClient(base_client.HTTPClient):
 
     def post_os_volumes_boot(self, body, **kw):
         assert set(body.keys()) <= set(['server', 'os:scheduler_hints'])
-        fakes.assert_has_keys(body['server'],
-                        required=['name', 'flavorRef'],
-                        optional=['imageRef'])
+        fakes.assert_has_keys(
+            body['server'],
+            required=['name', 'flavorRef'],
+            optional=['imageRef'])
 
         # Require one, and only one, of the keys for bdm
         if 'block_device_mapping' not in body['server']:
@@ -487,16 +489,20 @@ class FakeHTTPClient(base_client.HTTPClient):
     #
 
     def get_servers_1234_ips(self, **kw):
-        return (200, {}, {'addresses':
-                      self.get_servers_1234()[1]['server']['addresses']})
+        return (200, {}, {
+            'addresses':
+            self.get_servers_1234()[1]['server']['addresses']})
 
     def get_servers_1234_ips_public(self, **kw):
-        return (200, {}, {'public':
-                      self.get_servers_1234_ips()[1]['addresses']['public']})
+        return (200, {}, {
+            'public':
+            self.get_servers_1234_ips()[1]['addresses']['public']})
 
     def get_servers_1234_ips_private(self, **kw):
-        return (200, {}, {'private':
-                      self.get_servers_1234_ips()[1]['addresses']['private']})
+        return (
+            200, {},
+            {'private':
+                self.get_servers_1234_ips()[1]['addresses']['private']})
 
     def delete_servers_1234_ips_public_1_2_3_4(self, **kw):
         return (202, {}, None)
@@ -519,7 +525,8 @@ class FakeHTTPClient(base_client.HTTPClient):
     # tI2/++UsXVg3ow6ItqCJGgdNuGG5JB+bslDHWPxROpesEIHdczk46HCpHQN8f1sk
     # Hi/fmZZNQQqj1Ijq0caOIw==
     def get_servers_1234_os_server_password(self, **kw):
-        return (200, {}, {'password':
+        return (200, {}, {
+            'password':
             'OIuEuQttO8Rk93BcKlwHQsziDAnkAm/V6V8VPToA8ZeUaUBWwS0gwo2K6Y61Z96r'
             'qG447iRz0uTEEYq3RAYJk1mh3mMIRVl27t8MtIecR5ggVVbz1S9AwXJQypDKl0ho'
             'QFvhCBcMWPohyGewDJOhDbtuN1IoFI9G55ZvFwCm5y7m7B2aVcoLeIsJZE4PLsIw'
@@ -797,21 +804,25 @@ class FakeHTTPClient(base_client.HTTPClient):
         )
 
     def get_flavors_1_os_extra_specs(self, **kw):
-        return (200,
+        return (
+            200,
             {},
             {'extra_specs': {"k1": "v1"}})
 
     def get_flavors_2_os_extra_specs(self, **kw):
-        return (200,
+        return (
+            200,
             {},
             {'extra_specs': {"k2": "v2"}})
 
     def get_flavors_aa1_os_extra_specs(self, **kw):
-        return (200, {},
+        return (
+            200, {},
             {'extra_specs': {"k3": "v3"}})
 
     def get_flavors_4_os_extra_specs(self, **kw):
-        return (200,
+        return (
+            200,
             {},
             {'extra_specs': {"k4": "v4"}})
 
@@ -819,14 +830,16 @@ class FakeHTTPClient(base_client.HTTPClient):
         assert list(body) == ['extra_specs']
         fakes.assert_has_keys(body['extra_specs'],
                               required=['k1'])
-        return (200,
+        return (
+            200,
             {},
             {'extra_specs': {"k1": "v1"}})
 
     def post_flavors_4_os_extra_specs(self, body, **kw):
         assert list(body) == ['extra_specs']
 
-        return (200,
+        return (
+            200,
             {},
             body)
 
@@ -841,10 +854,10 @@ class FakeHTTPClient(base_client.HTTPClient):
         return (404, {}, None)
 
     def get_flavors_2_os_flavor_access(self, **kw):
-        return (200, {}, {'flavor_access': [
-            {'flavor_id': '2', 'tenant_id': 'proj1'},
-            {'flavor_id': '2', 'tenant_id': 'proj2'}
-        ]})
+        return (
+            200, {},
+            {'flavor_access': [{'flavor_id': '2', 'tenant_id': 'proj1'},
+                               {'flavor_id': '2', 'tenant_id': 'proj2'}]})
 
     def post_flavors_2_action(self, body, **kw):
         return (202, {}, self.get_flavors_2_os_flavor_access()[2])
@@ -871,19 +884,21 @@ class FakeHTTPClient(base_client.HTTPClient):
         )
 
     def get_os_floating_ips_1(self, **kw):
-        return (200, {}, {'floating_ip':
-            {'id': 1, 'fixed_ip': '10.0.0.1', 'ip': '11.0.0.1'}
-        })
+        return (
+            200, {}, {'floating_ip': {'id': 1, 'fixed_ip': '10.0.0.1',
+                                      'ip': '11.0.0.1'}})
 
     def post_os_floating_ips(self, body):
         if body.get('pool'):
-            return (200, {}, {'floating_ip':
-                {'id': 1, 'fixed_ip': '10.0.0.1', 'ip': '11.0.0.1',
-                 'pool': 'nova'}})
+            return (
+                200, {}, {'floating_ip': {'id': 1, 'fixed_ip': '10.0.0.1',
+                                          'ip': '11.0.0.1',
+                                          'pool': 'nova'}})
         else:
-            return (200, {}, {'floating_ip':
-                {'id': 1, 'fixed_ip': '10.0.0.1', 'ip': '11.0.0.1',
-                 'pool': None}})
+            return (
+                200, {}, {'floating_ip': {'id': 1, 'fixed_ip': '10.0.0.1',
+                                          'ip': '11.0.0.1',
+                                          'pool': None}})
 
     def delete_os_floating_ips_1(self, **kw):
         return (204, {}, None)
@@ -1016,7 +1031,8 @@ class FakeHTTPClient(base_client.HTTPClient):
         assert list(body) == ['metadata']
         fakes.assert_has_keys(body['metadata'],
                               required=['test_key'])
-        return (200,
+        return (
+            200,
             {},
             {'metadata': self.get_images_1()[2]['image']['metadata']})
 
@@ -1247,7 +1263,7 @@ class FakeHTTPClient(base_client.HTTPClient):
                 'security_group_rules': 1}})
 
     def put_os_quota_class_sets_97f4c221bff44578b0300df4ef119353(self,
-                                                            body, **kw):
+                                                                 body, **kw):
         assert list(body) == ['quota_class_set']
         return (200, {}, {
             'quota_class_set': {
@@ -1391,11 +1407,11 @@ class FakeHTTPClient(base_client.HTTPClient):
     def post_os_security_group_default_rules(self, body, **kw):
         assert list(body) == ['security_group_default_rule']
         fakes.assert_has_keys(body['security_group_default_rule'],
-            optional=['ip_protocol', 'from_port',
-                      'to_port', 'cidr'])
+                              optional=['ip_protocol', 'from_port',
+                                        'to_port', 'cidr'])
         rules = self.get_os_security_group_default_rules()
         r = {'security_group_default_rule':
-            rules[2]['security_group_default_rules'][0]}
+             rules[2]['security_group_default_rules'][0]}
         return (202, {}, r)
 
     #
@@ -1569,24 +1585,21 @@ class FakeHTTPClient(base_client.HTTPClient):
     def get_os_services(self, **kw):
         host = kw.get('host', 'host1')
         binary = kw.get('binary', 'nova-compute')
-        return (200, {}, {'services':
-                     [{'binary': binary,
-                       'host': host,
-                       'zone': 'nova',
-                       'status': 'enabled',
-                       'state': 'up',
-                       'updated_at': datetime.datetime(
-                           2012, 10, 29, 13, 42, 2
-                       )},
-                      {'binary': binary,
-                       'host': host,
-                       'zone': 'nova',
-                       'status': 'disabled',
-                       'state': 'down',
-                       'updated_at': datetime.datetime(
-                           2012, 9, 18, 8, 3, 38
-                       )},
-                      ]})
+        return (200, {}, {'services': [{'binary': binary,
+                                        'host': host,
+                                        'zone': 'nova',
+                                        'status': 'enabled',
+                                        'state': 'up',
+                                        'updated_at': datetime.datetime(
+                                            2012, 10, 29, 13, 42, 2)},
+                                       {'binary': binary,
+                                        'host': host,
+                                        'zone': 'nova',
+                                        'status': 'disabled',
+                                        'state': 'down',
+                                        'updated_at': datetime.datetime(
+                                            2012, 9, 18, 8, 3, 38)},
+                                       ]})
 
     def put_os_services_enable(self, body, **kw):
         return (200, {}, {'service': {'host': body['host'],
@@ -1599,10 +1612,11 @@ class FakeHTTPClient(base_client.HTTPClient):
                                       'status': 'disabled'}})
 
     def put_os_services_disable_log_reason(self, body, **kw):
-        return (200, {}, {'service': {'host': body['host'],
-                          'binary': body['binary'],
-                          'status': 'disabled',
-                          'disabled_reason': body['disabled_reason']}})
+        return (200, {}, {'service': {
+            'host': body['host'],
+            'binary': body['binary'],
+            'status': 'disabled',
+            'disabled_reason': body['disabled_reason']}})
 
     def delete_os_services_1(self, **kw):
         return (204, {}, None)
@@ -1611,11 +1625,10 @@ class FakeHTTPClient(base_client.HTTPClient):
     # Fixed IPs
     #
     def get_os_fixed_ips_192_168_1_1(self, *kw):
-        return (200, {}, {"fixed_ip":
-                      {'cidr': '192.168.1.0/24',
-                       'address': '192.168.1.1',
-                       'hostname': 'foo',
-                       'host': 'bar'}})
+        return (200, {}, {"fixed_ip": {'cidr': '192.168.1.0/24',
+                                       'address': '192.168.1.1',
+                                       'hostname': 'foo',
+                                       'host': 'bar'}})
 
     def post_os_fixed_ips_192_168_1_1_action(self, body, **kw):
         return (202, {}, None)
@@ -1636,29 +1649,28 @@ class FakeHTTPClient(base_client.HTTPClient):
 
     def get_os_hosts(self, **kw):
         zone = kw.get('zone', 'nova1')
-        return (200, {}, {'hosts':
-                    [{'host': 'host1',
-                      'service': 'nova-compute',
-                      'zone': zone},
-                     {'host': 'host1',
-                      'service': 'nova-cert',
-                      'zone': zone}]})
+        return (200, {}, {'hosts': [{'host': 'host1',
+                                     'service': 'nova-compute',
+                                     'zone': zone},
+                                    {'host': 'host1',
+                                     'service': 'nova-cert',
+                                     'zone': zone}]})
 
     def get_os_hosts_sample_host(self, *kw):
         return (200, {}, {'host': [{'resource': {'host': 'sample_host'}}], })
 
     def put_os_hosts_sample_host_1(self, body, **kw):
         return (200, {}, {'host': 'sample-host_1',
-                      'status': 'enabled'})
+                          'status': 'enabled'})
 
     def put_os_hosts_sample_host_2(self, body, **kw):
         return (200, {}, {'host': 'sample-host_2',
-                      'maintenance_mode': 'on_maintenance'})
+                          'maintenance_mode': 'on_maintenance'})
 
     def put_os_hosts_sample_host_3(self, body, **kw):
         return (200, {}, {'host': 'sample-host_3',
-                      'status': 'enabled',
-                      'maintenance_mode': 'on_maintenance'})
+                          'status': 'enabled',
+                          'maintenance_mode': 'on_maintenance'})
 
     def get_os_hosts_sample_host_reboot(self, **kw):
         return (200, {}, {'host': 'sample_host',
@@ -1793,8 +1805,9 @@ class FakeHTTPClient(base_client.HTTPClient):
 
     def get_os_networks(self, **kw):
         return (200, {}, {'networks': [{"label": "1", "cidr": "10.0.0.0/24",
-                'project_id': '4ffc664c198e435e9853f2538fbcd7a7',
-                'id': '1', 'vlan': '1234'}]})
+                                        'project_id':
+                                            '4ffc664c198e435e9853f2538fbcd7a7',
+                                        'id': '1', 'vlan': '1234'}]})
 
     def delete_os_networks_1(self, **kw):
         return (202, {}, None)

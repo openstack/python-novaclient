@@ -371,8 +371,9 @@ class ClientTest(utils.TestCase):
                                          'X-Auth-Token': 'totally_bogus'}
                                     })
         cs.http_log_req('GET', '/foo', {'headers': {},
-                            'data': '{"auth": {"passwordCredentials": '
-                            '{"password": "zhaoqin"}}}'})
+                                        'data':
+                                            '{"auth": {"passwordCredentials": '
+                                            '{"password": "zhaoqin"}}}'})
 
         output = self.logger.output.split('\n')
 

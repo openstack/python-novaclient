@@ -27,8 +27,8 @@ class AgentsTest(utils.FixturedTestCase):
                  ('session', {'client_fixture_class': client.SessionV1})]
 
     def stub_hypervisors(self, hypervisor='kvm'):
-        get_os_agents = {'agents':
-            [
+        get_os_agents = {
+            'agents': [
                 {
                     'hypervisor': hypervisor,
                     'os': 'win',
@@ -73,16 +73,15 @@ class AgentsTest(utils.FixturedTestCase):
 
     def test_agents_create(self):
         ag = self.cs.agents.create('win', 'x86', '7.0',
-                              '/xxx/xxx/xxx',
-                              'add6bb58e139be103324d04d82d8f546',
-                              'xen')
-        body = {'agent': {
-            'url': '/xxx/xxx/xxx',
-            'hypervisor': 'xen',
-            'md5hash': 'add6bb58e139be103324d04d82d8f546',
-            'version': '7.0',
-            'architecture': 'x86',
-            'os': 'win'}}
+                                   '/xxx/xxx/xxx',
+                                   'add6bb58e139be103324d04d82d8f546',
+                                   'xen')
+        body = {'agent': {'url': '/xxx/xxx/xxx',
+                          'hypervisor': 'xen',
+                          'md5hash': 'add6bb58e139be103324d04d82d8f546',
+                          'version': '7.0',
+                          'architecture': 'x86',
+                          'os': 'win'}}
         self.assert_called('POST', '/os-agents', body)
         self.assertEqual(1, ag._info.copy()['id'])
 
@@ -98,8 +97,8 @@ class AgentsTest(utils.FixturedTestCase):
 
     def test_agents_modify(self):
         ag = self.cs.agents.update('1', '8.0',
-                              '/yyy/yyyy/yyyy',
-                              'add6bb58e139be103324d04d82d8f546')
+                                   '/yyy/yyyy/yyyy',
+                                   'add6bb58e139be103324d04d82d8f546')
         body = self._build_example_update_body()
         self.assert_called('PUT', '/os-agents/1', body)
         self.assertEqual(1, ag.id)

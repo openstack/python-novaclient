@@ -30,12 +30,14 @@ class InstanceActionExtensionTests(utils.TestCase):
     def test_list_instance_actions(self):
         server_uuid = '1234'
         cs.instance_action.list(server_uuid)
-        cs.assert_called('GET', '/servers/%s/os-instance-actions' %
-                server_uuid)
+        cs.assert_called(
+            'GET', '/servers/%s/os-instance-actions' %
+            server_uuid)
 
     def test_get_instance_action(self):
         server_uuid = '1234'
         request_id = 'req-abcde12345'
         cs.instance_action.get(server_uuid, request_id)
-        cs.assert_called('GET', '/servers/%s/os-instance-actions/%s' %
-                (server_uuid, request_id))
+        cs.assert_called(
+            'GET', '/servers/%s/os-instance-actions/%s'
+            % (server_uuid, request_id))

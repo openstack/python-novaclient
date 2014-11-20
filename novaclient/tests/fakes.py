@@ -30,7 +30,7 @@ def assert_has_keys(dict, required=[], optional=[]):
         except AssertionError:
             extra_keys = set(keys).difference(set(required + optional))
             raise AssertionError("found unexpected keys: %s" %
-                    list(extra_keys))
+                                 list(extra_keys))
 
 
 class FakeClient(object):

@@ -47,8 +47,8 @@ class V1(fixtures.Fixture):
         auth_url = '%s/tokens' % self.identity_url
         headers = {'X-Content-Type': 'application/json'}
         self.requests.register_uri('POST', auth_url,
-                               json=self.token,
-                               headers=headers)
+                                   json=self.token,
+                                   headers=headers)
         self.client = self.new_client()
 
     def new_client(self):

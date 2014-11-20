@@ -54,7 +54,7 @@ class ImagesTest(utils.FixturedTestCase):
     def test_set_meta(self):
         self.cs.images.set_meta(1, {'test_key': 'test_value'})
         self.assert_called('POST', '/images/1/metadata',
-                         {"metadata": {'test_key': 'test_value'}})
+                           {"metadata": {'test_key': 'test_value'}})
 
     def test_find(self):
         i = self.cs.images.find(name="CentOS 5.2")

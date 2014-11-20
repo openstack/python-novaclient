@@ -75,14 +75,14 @@ class AvailabilityZoneTest(utils.FixturedTestCase):
         l0 = [six.u('zone-1'), six.u('available')]
         l1 = [six.u('|- fake_host-1'), six.u('')]
         l2 = [six.u('| |- nova-compute'),
-             six.u('enabled :-) 2012-12-26 14:45:25')]
+              six.u('enabled :-) 2012-12-26 14:45:25')]
         l3 = [six.u('internal'), six.u('available')]
         l4 = [six.u('|- fake_host-1'), six.u('')]
         l5 = [six.u('| |- nova-sched'),
-             six.u('enabled :-) 2012-12-26 14:45:25')]
+              six.u('enabled :-) 2012-12-26 14:45:25')]
         l6 = [six.u('|- fake_host-2'), six.u('')]
         l7 = [six.u('| |- nova-network'),
-             six.u('enabled XXX 2012-12-26 14:45:24')]
+              six.u('enabled XXX 2012-12-26 14:45:24')]
         l8 = [six.u('zone-2'), six.u('not available')]
 
         z0 = self.shell._treeizeAvailabilityZone(zones[0])

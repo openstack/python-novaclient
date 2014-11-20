@@ -26,19 +26,22 @@ class FakeClient(fakes.FakeClient):
 
 class FakeHTTPClient(fakes.FakeHTTPClient):
     def get_os_tenant_networks(self):
-        return (200, {}, {'networks': [{"label": "1", "cidr": "10.0.0.0/24",
-                'project_id': '4ffc664c198e435e9853f2538fbcd7a7',
-                'id': '1'}]})
+        return (200, {}, {
+            'networks': [{"label": "1", "cidr": "10.0.0.0/24",
+                          'project_id': '4ffc664c198e435e9853f2538fbcd7a7',
+                          'id': '1'}]})
 
     def get_os_tenant_networks_1(self, **kw):
-        return (200, {}, {'network': {"label": "1", "cidr": "10.0.0.0/24",
-                'project_id': '4ffc664c198e435e9853f2538fbcd7a7',
-                'id': '1'}})
+        return (200, {}, {
+            'network': {"label": "1", "cidr": "10.0.0.0/24",
+                        'project_id': '4ffc664c198e435e9853f2538fbcd7a7',
+                        'id': '1'}})
 
     def post_os_tenant_networks(self, **kw):
-        return (201, {}, {'network': {"label": "1", "cidr": "10.0.0.0/24",
-                'project_id': '4ffc664c198e435e9853f2538fbcd7a7',
-                'id': '1'}})
+        return (201, {}, {
+            'network': {"label": "1", "cidr": "10.0.0.0/24",
+                        'project_id': '4ffc664c198e435e9853f2538fbcd7a7',
+                        'id': '1'}})
 
     def delete_os_tenant_networks_1(self, **kw):
         return (204, {}, None)

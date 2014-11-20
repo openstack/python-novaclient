@@ -34,11 +34,12 @@ class UsageTest(utils.TestCase):
         now = datetime.datetime.now()
         usages = self.cs.usage.list(now, now, detailed)
 
-        self.cs.assert_called('GET',
-                         "/os-simple-tenant-usage?" +
-                         ("start=%s&" % now.isoformat()) +
-                         ("end=%s&" % now.isoformat()) +
-                         ("detailed=%s" % int(bool(detailed))))
+        self.cs.assert_called(
+            'GET',
+            "/os-simple-tenant-usage?" +
+            ("start=%s&" % now.isoformat()) +
+            ("end=%s&" % now.isoformat()) +
+            ("detailed=%s" % int(bool(detailed))))
         [self.assertIsInstance(u, usage.Usage) for u in usages]
 
     def test_usage_list_detailed(self):
@@ -48,8 +49,9 @@ class UsageTest(utils.TestCase):
         now = datetime.datetime.now()
         u = self.cs.usage.get("tenantfoo", now, now)
 
-        self.cs.assert_called('GET',
-                         "/os-simple-tenant-usage/tenantfoo?" +
-                         ("start=%s&" % now.isoformat()) +
-                         ("end=%s" % now.isoformat()))
+        self.cs.assert_called(
+            'GET',
+            "/os-simple-tenant-usage/tenantfoo?" +
+            ("start=%s&" % now.isoformat()) +
+            ("end=%s" % now.isoformat()))
         self.assertIsInstance(u, usage.Usage)

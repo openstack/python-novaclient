@@ -47,8 +47,8 @@ class FloatingFixture(base.Fixture):
             ip['pool'] = body.get('pool')
             return {'floating_ip': ip}
         self.requests.register_uri('POST', self.url(),
-                                  json=post_os_floating_ips,
-                                  headers=self.json_headers)
+                                   json=post_os_floating_ips,
+                                   headers=self.json_headers)
 
 
 class DNSFixture(base.Fixture):
