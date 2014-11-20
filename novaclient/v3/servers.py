@@ -760,7 +760,7 @@ class ServerManager(base.BootingManagerWithFind):
 
         response_key = "server"
         return self._boot(resource_url, response_key, *boot_args,
-                **boot_kwargs)
+                          **boot_kwargs)
 
     def update(self, server, name=None):
         """
