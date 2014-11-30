@@ -2304,6 +2304,14 @@ class ShellTest(utils.TestCase):
             'POST', '/os-keypairs', {
                 'keypair': {'public_key': 'FAKE_PUBLIC_KEY', 'name': 'test'}})
 
+    def test_keypair_stdin(self):
+        with mock.patch('sys.stdin', six.StringIO('FAKE_PUBLIC_KEY')):
+            self.run_command('keypair-add --pub-key - test')
+            self.assert_called(
+                'POST', '/os-keypairs', {
+                    'keypair':
+                        {'public_key': 'FAKE_PUBLIC_KEY', 'name': 'test'}})
+
     def test_keypair_list(self):
         self.run_command('keypair-list')
         self.assert_called('GET', '/os-keypairs')

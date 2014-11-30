@@ -2865,13 +2865,17 @@ def do_keypair_add(cs, args):
     pub_key = args.pub_key
 
     if pub_key:
-        try:
-            with open(os.path.expanduser(pub_key)) as f:
-                pub_key = f.read()
-        except IOError as e:
-            raise exceptions.CommandError(_("Can't open or read '%(key)s': "
-                                            "%(exc)s") % {'key': pub_key,
-                                                          'exc': e})
+        if pub_key == '-':
+            pub_key = sys.stdin.read()
+        else:
+            try:
+                with open(os.path.expanduser(pub_key)) as f:
+                    pub_key = f.read()
+            except IOError as e:
+                raise exceptions.CommandError(
+                    _("Can't open or read '%(key)s': %(exc)s")
+                    % {'key': pub_key, 'exc': e}
+                )
 
     keypair = cs.keypairs.create(name, pub_key)
 
