@@ -64,21 +64,3 @@ class V1(base.Fixture):
             'security_groups': 1,
             'security_group_rules': 1
         }
-
-
-class V3(V1):
-
-    def setUp(self):
-        super(V3, self).setUp()
-
-        get_detail = {
-            'quota_set': {
-                'cores': {'reserved': 0, 'in_use': 0, 'limit': 10},
-                'instances': {'reserved': 0, 'in_use': 4, 'limit': 50},
-                'ram': {'reserved': 0, 'in_use': 1024, 'limit': 51200}
-            }
-        }
-
-        self.requests.register_uri('GET', self.url('test', 'detail'),
-                                   json=get_detail,
-                                   headers=self.headers)

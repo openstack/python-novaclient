@@ -45,8 +45,3 @@ class V1(base.Fixture):
         self.requests.register_uri('POST', self.url(),
                                    json=post_os_keypairs,
                                    headers=headers)
-
-
-class V3(V1):
-
-    base_url = 'keypairs'

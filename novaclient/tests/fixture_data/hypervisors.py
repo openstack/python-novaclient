@@ -180,36 +180,3 @@ class V1(base.Fixture):
         self.requests.register_uri('GET', self.url(1234, 'uptime'),
                                    json=get_os_hypervisors_uptime,
                                    headers=self.headers)
-
-
-class V3(V1):
-
-    def setUp(self):
-        super(V3, self).setUp()
-
-        get_os_hypervisors_search = {
-            'hypervisors': [
-                {'id': 1234, 'hypervisor_hostname': 'hyper1'},
-                {'id': 5678, 'hypervisor_hostname': 'hyper2'}
-            ]
-        }
-
-        self.requests.register_uri('GET',
-                                   self.url('search', query='hyper'),
-                                   json=get_os_hypervisors_search,
-                                   headers=self.headers)
-
-        get_1234_servers = {
-            'hypervisor': {
-                'id': 1234,
-                'hypervisor_hostname': 'hyper1',
-                'servers': [
-                    {'name': 'inst1', 'id': 'uuid1'},
-                    {'name': 'inst2', 'id': 'uuid2'}
-                ]
-            },
-        }
-
-        self.requests.register_uri('GET', self.url(1234, 'servers'),
-                                   json=get_1234_servers,
-                                   headers=self.headers)

@@ -56,7 +56,6 @@ from novaclient.i18n import _
 from novaclient.openstack.common import cliutils
 from novaclient import utils
 from novaclient.v1_1 import shell as shell_v1_1
-from novaclient.v3 import shell as shell_v3
 
 DEFAULT_OS_COMPUTE_API_VERSION = "1.1"
 DEFAULT_NOVA_ENDPOINT_TYPE = 'publicURL'
@@ -431,7 +430,7 @@ class OpenStackComputeShell(object):
             actions_module = {
                 '1.1': shell_v1_1,
                 '2': shell_v1_1,
-                '3': shell_v3,
+                '3': shell_v1_1,
             }[version]
         except KeyError:
             actions_module = shell_v1_1

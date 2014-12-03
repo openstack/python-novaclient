@@ -89,9 +89,3 @@ class V1(base.Fixture):
         self.requests.register_uri('GET', self.url('detail'),
                                    json=get_os_zone_detail,
                                    headers=self.json_headers)
-
-
-class V3(V1):
-    zone_info_key = 'availability_zone_info'
-    zone_name_key = 'zone_name'
-    zone_state_key = 'zone_state'

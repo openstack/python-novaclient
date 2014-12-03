@@ -763,7 +763,7 @@ def get_client_class(version):
     version_map = {
         '1.1': 'novaclient.v1_1.client.Client',
         '2': 'novaclient.v1_1.client.Client',
-        '3': 'novaclient.v3.client.Client',
+        '3': 'novaclient.v1_1.client.Client',
     }
     try:
         client_path = version_map[str(version)]
