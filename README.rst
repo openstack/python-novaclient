@@ -18,7 +18,7 @@ pull requests.
 
 .. _Github: https://github.com/openstack/python-novaclient
 .. _Launchpad: https://launchpad.net/python-novaclient
-.. _Gerrit: http://wiki.openstack.org/GerritWorkflow
+.. _Gerrit: http://docs.openstack.org/infra/manual/developers.html#development-workflow
 
 python-novaclient is licensed under the Apache License like the rest of
 OpenStack.
