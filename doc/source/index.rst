@@ -38,7 +38,7 @@ Code is hosted at `git.openstack.org`_. Submit bugs to the Nova project on
 
 .. _git.openstack.org: https://git.openstack.org/cgit/openstack/python-novaclient
 .. _Launchpad: https://launchpad.net/nova
-.. _Gerrit: http://wiki.openstack.org/GerritWorkflow
+.. _Gerrit: http://docs.openstack.org/infra/manual/developers.html#development-workflow
 
 Testing
 -------
