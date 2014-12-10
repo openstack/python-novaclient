@@ -51,3 +51,9 @@ class ServerGroupsTest(utils.FixturedTestCase):
         id = '2cbd51f4-fafe-4cdb-801b-cf913a6f288b'
         self.cs.server_groups.delete(id)
         self.assert_called('DELETE', '/os-server-groups/%s' % id)
+
+    def test_delete_server_group_object(self):
+        id = '2cbd51f4-fafe-4cdb-801b-cf913a6f288b'
+        server_group = self.cs.server_groups.get(id)
+        server_group.delete()
+        self.assert_called('DELETE', '/os-server-groups/%s' % id)
