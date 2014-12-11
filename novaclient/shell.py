@@ -233,6 +233,23 @@ class NovaClientArgumentParser(argparse.ArgumentParser):
                    'mainp': progparts[0],
                    'subp': progparts[2]})
 
+    def _get_option_tuples(self, option_string):
+        """returns (action, option, value) candidates for an option prefix
+
+        Returns [first candidate] if all candidates refers to current and
+        deprecated forms of the same options: "nova boot ... --key KEY"
+        parsing succeed because --key could only match --key-name,
+        --key_name which are current/deprecated forms of the same option.
+        """
+        option_tuples = (super(NovaClientArgumentParser, self)
+                         ._get_option_tuples(option_string))
+        if len(option_tuples) > 1:
+            normalizeds = [option.replace('_', '-')
+                           for action, option, value in option_tuples]
+            if len(set(normalizeds)) == 1:
+                return option_tuples[:1]
+        return option_tuples
+
 
 class OpenStackComputeShell(object):
     times = []
