@@ -369,8 +369,8 @@ class AuthenticationTests(utils.TestCase):
         @mock.patch.object(http_client, 'authenticate')
         def test_auth_call(m):
             http_client.get('/')
-            m.assert_called()
-            mock_request.assert_called()
+            self.assertTrue(m.called)
+            self.assertTrue(mock_request.called)
 
         test_auth_call()
 
@@ -381,6 +381,6 @@ class AuthenticationTests(utils.TestCase):
         @mock.patch.object(cs.client, 'authenticate')
         def test_auth_call(m):
             cs.authenticate()
-            m.assert_called()
+            self.assertTrue(m.called)
 
         test_auth_call()
