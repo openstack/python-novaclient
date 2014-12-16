@@ -851,6 +851,60 @@ class ShellTest(utils.TestCase):
             'GET',
             '/servers/detail?all_tenants=1&user_id=fake_user')
 
+    def test_list_with_single_sort_key_no_dir(self):
+        self.run_command('list --sort 1')
+        self.assert_called(
+            'GET', ('/servers/detail?sort_dir=desc&sort_key=1'))
+
+    def test_list_with_single_sort_key_and_dir(self):
+        self.run_command('list --sort 1:asc')
+        self.assert_called(
+            'GET', ('/servers/detail?sort_dir=asc&sort_key=1'))
+
+    def test_list_with_sort_keys_no_dir(self):
+        self.run_command('list --sort 1,2')
+        self.assert_called(
+            'GET', ('/servers/detail?sort_dir=desc&sort_dir=desc&'
+                    'sort_key=1&sort_key=2'))
+
+    def test_list_with_sort_keys_and_dirs(self):
+        self.run_command('list --sort 1:asc,2:desc')
+        self.assert_called(
+            'GET', ('/servers/detail?sort_dir=asc&sort_dir=desc&'
+                    'sort_key=1&sort_key=2'))
+
+    def test_list_with_sort_keys_and_some_dirs(self):
+        self.run_command('list --sort 1,2:asc')
+        self.assert_called(
+            'GET', ('/servers/detail?sort_dir=desc&sort_dir=asc&'
+                    'sort_key=1&sort_key=2'))
+
+    def test_list_with_invalid_sort_dir_one(self):
+        cmd = 'list --sort 1:foo'
+        self.assertRaises(exceptions.CommandError, self.run_command, cmd)
+
+    def test_list_with_invalid_sort_dir_two(self):
+        cmd = 'list --sort 1:asc,2:foo'
+        self.assertRaises(exceptions.CommandError, self.run_command, cmd)
+
+    def test_list_sortby_index_with_sort(self):
+        # sortby_index is None if there is sort information
+        for cmd in ['list --sort key',
+                    'list --sort key:desc',
+                    'list --sort key1,key2:asc']:
+            with mock.patch('novaclient.utils.print_list') as mock_print_list:
+                self.run_command(cmd)
+                mock_print_list.assert_called_once_with(
+                    mock.ANY, mock.ANY, mock.ANY, sortby_index=None)
+
+    def test_list_sortby_index_without_sort(self):
+        # sortby_index is 1 without sort information
+        for cmd in ['list', 'list --minimal', 'list --deleted']:
+            with mock.patch('novaclient.utils.print_list') as mock_print_list:
+                self.run_command(cmd)
+                mock_print_list.assert_called_once_with(
+                    mock.ANY, mock.ANY, mock.ANY, sortby_index=1)
+
     def test_list_fields(self):
         output = self.run_command(
             'list --fields '
