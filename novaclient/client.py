@@ -720,11 +720,11 @@ def _construct_http_client(username=None, password=None, project_id=None,
                            auth_token=None, cacert=None, tenant_id=None,
                            user_id=None, connection_pool=False, session=None,
                            auth=None, user_agent='python-novaclient',
-                           **kwargs):
+                           interface=None, **kwargs):
     if session:
         return SessionClient(session=session,
                              auth=auth,
-                             interface=endpoint_type,
+                             interface=interface or endpoint_type,
                              service_type=service_type,
                              region_name=region_name,
                              service_name=service_name,
