@@ -2323,7 +2323,8 @@ def _print_floating_ip_list(floating_ips):
     convert = [('instance_id', 'server_id')]
     _translate_keys(floating_ips, convert)
 
-    utils.print_list(floating_ips, ['Ip', 'Server Id', 'Fixed Ip', 'Pool'])
+    utils.print_list(floating_ips,
+                     ['Id', 'Ip', 'Server Id', 'Fixed Ip', 'Pool'])
 
 
 @cliutils.arg('server', metavar='<server>', help=_('Name or ID of server.'))
