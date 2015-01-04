@@ -3876,10 +3876,15 @@ def _quota_update(manager, identifier, args):
 def do_quota_show(cs, args):
     """List the quotas for a tenant/user."""
 
-    if not args.tenant:
-        _quota_show(cs.quotas.get(cs.client.tenant_id, user_id=args.user))
+    if args.tenant:
+        project_id = args.tenant
+    elif isinstance(cs.client, client.SessionClient):
+        auth = cs.client.auth
+        project_id = auth.get_auth_ref(cs.client.session).project_id
     else:
-        _quota_show(cs.quotas.get(args.tenant, user_id=args.user))
+        project_id = cs.client.tenant_id
+
+    _quota_show(cs.quotas.get(project_id, user_id=args.user))
 
 
 @cliutils.arg(
@@ -3890,10 +3895,15 @@ def do_quota_show(cs, args):
 def do_quota_defaults(cs, args):
     """List the default quotas for a tenant."""
 
-    if not args.tenant:
-        _quota_show(cs.quotas.defaults(cs.client.tenant_id))
+    if args.tenant:
+        project_id = args.tenant
+    elif isinstance(cs.client, client.SessionClient):
+        auth = cs.client.auth
+        project_id = auth.get_auth_ref(cs.client.session).project_id
     else:
-        _quota_show(cs.quotas.defaults(args.tenant))
+        project_id = cs.client.tenant_id
+
+    _quota_show(cs.quotas.defaults(project_id))
 
 
 @cliutils.arg(

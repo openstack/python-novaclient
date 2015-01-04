@@ -2338,6 +2338,16 @@ class ShellTest(utils.TestCase):
         self.assert_called('DELETE', '/os-server-groups/12345', pos=-2)
 
 
+class ShellWithSessionClientTest(ShellTest):
+
+    def setUp(self):
+        """Run before each test."""
+        super(ShellWithSessionClientTest, self).setUp()
+        self.useFixture(fixtures.MonkeyPatch(
+            'novaclient.client.get_client_class',
+            lambda *_: fakes.FakeSessionClient))
+
+
 class GetSecgroupTest(utils.TestCase):
     def test_with_integer(self):
         cs = mock.Mock(**{

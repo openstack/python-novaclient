@@ -16,6 +16,7 @@
 
 import datetime
 
+import mock
 from oslo.utils import strutils
 import six
 from six.moves.urllib import parse
@@ -2185,3 +2186,26 @@ class FakeHTTPClient(base_client.HTTPClient):
     def delete_os_server_groups_2cbd51f4_fafe_4cdb_801b_cf913a6f288b(
             self, **kw):
         return (202, {}, None)
+
+
+class FakeSessionClient(fakes.FakeClient, client.Client):
+
+    def __init__(self, *args, **kwargs):
+        client.Client.__init__(self, 'username', 'password',
+                               'project_id', 'auth_url',
+                               extensions=kwargs.get('extensions'))
+        self.client = FakeSessionMockClient(**kwargs)
+
+
+class FakeSessionMockClient(base_client.SessionClient, FakeHTTPClient):
+
+    def __init__(self, *args, **kwargs):
+
+        self.callstack = []
+        self.auth = mock.Mock()
+        self.session = mock.Mock()
+
+        self.auth.get_auth_ref.return_value.project_id = 'tenant_id'
+
+    def request(self, url, method, **kwargs):
+        return self._cs_request(url, method, **kwargs)
