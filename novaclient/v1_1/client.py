@@ -103,7 +103,7 @@ class Client(object):
                  auth_system='keystone', auth_plugin=None, auth_token=None,
                  cacert=None, tenant_id=None, user_id=None,
                  connection_pool=False, session=None, auth=None,
-                 completion_cache=None):
+                 completion_cache=None, **kwargs):
         # FIXME(comstud): Rename the api_key argument above when we
         # know it's not being used as keyword argument
 
@@ -192,7 +192,8 @@ class Client(object):
             cacert=cacert,
             connection_pool=connection_pool,
             session=session,
-            auth=auth)
+            auth=auth,
+            **kwargs)
 
         self.completion_cache = completion_cache
 
