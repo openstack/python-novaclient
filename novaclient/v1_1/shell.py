@@ -1396,6 +1396,10 @@ def do_list(cs, args):
             'Power State',
             'Networks'
         ]
+        # If getting the data for all tenants, print
+        # Tenant ID as well
+        if search_opts['all_tenants']:
+            columns.insert(2, 'Tenant ID')
     formatters['Networks'] = utils._format_servers_list_networks
     sortby_index = 1
     if args.sort:
