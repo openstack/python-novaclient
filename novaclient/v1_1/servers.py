@@ -505,7 +505,9 @@ class ServerManager(base.BootingManagerWithFind):
                 else:
                     data = file_or_string
 
-                cont = base64.b64encode(data.encode('utf-8')).decode('utf-8')
+                if six.PY3 and isinstance(data, str):
+                    data = data.encode('utf-8')
+                cont = base64.b64encode(data).decode('utf-8')
                 personality.append({
                     'path': filepath,
                     'contents': cont,
