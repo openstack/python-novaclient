@@ -2234,7 +2234,7 @@ def do_get_vnc_console(cs, args):
     server = _find_server(cs, args.server)
     data = server.get_vnc_console(args.console_type)
 
-    class VNCConsole:
+    class VNCConsole(object):
         def __init__(self, console_dict):
             self.type = console_dict['type']
             self.url = console_dict['url']
@@ -2252,7 +2252,7 @@ def do_get_spice_console(cs, args):
     server = _find_server(cs, args.server)
     data = server.get_spice_console(args.console_type)
 
-    class SPICEConsole:
+    class SPICEConsole(object):
         def __init__(self, console_dict):
             self.type = console_dict['type']
             self.url = console_dict['url']
@@ -2270,7 +2270,7 @@ def do_get_rdp_console(cs, args):
     server = _find_server(cs, args.server)
     data = server.get_rdp_console(args.console_type)
 
-    class RDPConsole:
+    class RDPConsole(object):
         def __init__(self, console_dict):
             self.type = console_dict['type']
             self.url = console_dict['url']
@@ -2292,7 +2292,7 @@ def do_get_serial_console(cs, args):
     server = _find_server(cs, args.server)
     data = server.get_serial_console(args.console_type)
 
-    class SerialConsole:
+    class SerialConsole(object):
         def __init__(self, console_dict):
             self.type = console_dict['type']
             self.url = console_dict['url']
@@ -2577,7 +2577,7 @@ def do_dns_create_public_domain(cs, args):
 
 
 def _print_secgroup_rules(rules, show_source_group=True):
-    class FormattedRule:
+    class FormattedRule(object):
         def __init__(self, obj):
             items = (obj if isinstance(obj, dict) else obj._info).items()
             for k, v in items:
