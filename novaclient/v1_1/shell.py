@@ -1619,7 +1619,9 @@ def do_start(cs, args):
 
 @cliutils.arg('server', metavar='<server>', help=_('Name or ID of server.'))
 def do_lock(cs, args):
-    """Lock a server."""
+    """Lock a server. A normal (non-admin) user will not be able to execute
+    actions on a locked server.
+    """
     _find_server(cs, args.server).lock()
 
 
