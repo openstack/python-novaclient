@@ -89,12 +89,12 @@ class FloatingIPDNSEntryManager(base.Manager):
     resource_class = FloatingIPDNSEntry
 
     def get(self, domain, name):
-        """Return a list of entries for the given domain and ip or name."""
+        """Return a list of entries for the given domain and IP or name."""
         return self._get("/os-floating-ip-dns/%s/entries/%s" %
                          (_quote_domain(domain), name), "dns_entry")
 
     def get_for_ip(self, domain, ip):
-        """Return a list of entries for the given domain and ip or name."""
+        """Return a list of entries for the given domain and IP or name."""
         qparams = {'ip': ip}
         params = "?%s" % parse.urlencode(qparams)
 
