@@ -1942,6 +1942,23 @@ class ShellTest(utils.TestCase):
         self.run_command('network-delete 1')
         self.assert_called('DELETE', '/os-networks/1')
 
+    def test_tenant_network_list(self):
+        self.run_command('tenant-network-list')
+        self.assert_called('GET', '/os-tenant-networks')
+
+    def test_tenant_network_show(self):
+        self.run_command('tenant-network-show 1')
+        self.assert_called('GET', '/os-tenant-networks/1')
+
+    def test_tenant_network_create(self):
+        self.run_command('tenant-network-create new_network 10.0.1.0/24')
+        body = {'network': {'cidr': '10.0.1.0/24', 'label': 'new_network'}}
+        self.assert_called('POST', '/os-tenant-networks', body)
+
+    def test_tenant_network_delete(self):
+        self.run_command('tenant-network-delete 1')
+        self.assert_called('DELETE', '/os-tenant-networks/1')
+
     def test_add_fixed_ip(self):
         self.run_command('add-fixed-ip sample-server 1')
         self.assert_called('POST', '/servers/1234/action',
