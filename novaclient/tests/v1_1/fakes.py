@@ -863,7 +863,7 @@ class FakeHTTPClient(base_client.HTTPClient):
         return (202, {}, self.get_flavors_2_os_flavor_access()[2])
 
     #
-    # Floating ips
+    # Floating IPs
     #
 
     def get_os_floating_ip_pools(self):

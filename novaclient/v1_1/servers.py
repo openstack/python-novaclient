@@ -125,7 +125,7 @@ class Server(base.Resource):
         """
         Add floating IP to an instance
 
-        :param address: The ip address or FloatingIP to add to the instance
+        :param address: The IP address or FloatingIP to add to the instance
         :param fixed_address: The fixedIP address the FloatingIP is to be
                associated with (optional)
         """
@@ -135,7 +135,7 @@ class Server(base.Resource):
         """
         Remove floating IP from an instance
 
-        :param address: The ip address or FloatingIP to remove
+        :param address: The IP address or FloatingIP to remove
         """
         self.manager.remove_floating_ip(self, address)
 
@@ -445,7 +445,7 @@ class ServerManager(base.BootingManagerWithFind):
                                         this server.
         :param nics:  (optional extension) an ordered list of nics to be
                       added to this server, with information about
-                      connected networks, fixed ips, etc.
+                      connected networks, fixed IPs, etc.
         :param scheduler_hints: (optional extension) arbitrary key-value pairs
                               specified by the client to help boot an instance.
         :param config_drive: (optional extension) If True, enable config drive
@@ -639,7 +639,7 @@ class ServerManager(base.BootingManagerWithFind):
 
     def add_floating_ip(self, server, address, fixed_address=None):
         """
-        Add a floating ip to an instance
+        Add a floating IP to an instance
 
         :param server: The :class:`Server` (or its ID) to add an IP to.
         :param address: The FloatingIP or string floating address to add.
@@ -886,7 +886,7 @@ class ServerManager(base.BootingManagerWithFind):
                       device mappings for this server.
         :param nics:  (optional extension) an ordered list of nics to be
                       added to this server, with information about
-                      connected networks, fixed ips, port etc.
+                      connected networks, fixed IPs, port etc.
         :param scheduler_hints: (optional extension) arbitrary key-value pairs
                             specified by the client to help boot an instance
         :param config_drive: (optional extension) value for config drive

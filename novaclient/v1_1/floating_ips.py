@@ -20,7 +20,7 @@ from novaclient import base
 class FloatingIP(base.Resource):
     def delete(self):
         """
-        Delete this floating ip
+        Delete this floating IP
         """
         self.manager.delete(self)
 
@@ -30,7 +30,7 @@ class FloatingIPManager(base.ManagerWithFind):
 
     def list(self, all_tenants=False):
         """
-        List floating ips
+        List floating IPs
         """
         url = '/os-floating-ips'
         if all_tenants:
@@ -39,21 +39,21 @@ class FloatingIPManager(base.ManagerWithFind):
 
     def create(self, pool=None):
         """
-        Create (allocate) a  floating ip for a tenant
+        Create (allocate) a  floating IP for a tenant
         """
         return self._create("/os-floating-ips", {'pool': pool}, "floating_ip")
 
     def delete(self, floating_ip):
         """
-        Delete (deallocate) a  floating ip for a tenant
+        Delete (deallocate) a  floating IP for a tenant
 
-        :param floating_ip: The floating ip address to delete.
+        :param floating_ip: The floating IP address to delete.
         """
         self._delete("/os-floating-ips/%s" % base.getid(floating_ip))
 
     def get(self, floating_ip):
         """
-        Retrieve a floating ip
+        Retrieve a floating IP
         """
         return self._get("/os-floating-ips/%s" % base.getid(floating_ip),
                          "floating_ip")

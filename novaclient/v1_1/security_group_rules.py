@@ -55,7 +55,7 @@ class SecurityGroupRuleManager(base.Manager):
         except (TypeError, ValueError):
             raise exceptions.CommandError(_("To port must be an integer."))
         if ip_protocol.upper() not in ['TCP', 'UDP', 'ICMP']:
-            raise exceptions.CommandError(_("Ip protocol must be 'tcp', 'udp'"
+            raise exceptions.CommandError(_("IP protocol must be 'tcp', 'udp'"
                                             ", or 'icmp'."))
 
         body = {"security_group_rule": {

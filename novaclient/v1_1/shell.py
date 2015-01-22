@@ -2331,7 +2331,7 @@ def _print_floating_ip_list(floating_ips):
     _translate_keys(floating_ips, convert)
 
     utils.print_list(floating_ips,
-                     ['Id', 'Ip', 'Server Id', 'Fixed Ip', 'Pool'])
+                     ['Id', 'IP', 'Server Id', 'Fixed IP', 'Pool'])
 
 
 @cliutils.arg('server', metavar='<server>', help=_('Name or ID of server.'))
@@ -2436,14 +2436,14 @@ def do_floating_ip_create(cs, args):
     _print_floating_ip_list([cs.floating_ips.create(pool=args.pool)])
 
 
-@cliutils.arg('address', metavar='<address>', help=_('IP of Floating Ip.'))
+@cliutils.arg('address', metavar='<address>', help=_('IP of Floating IP.'))
 def do_floating_ip_delete(cs, args):
     """De-allocate a floating IP."""
     floating_ips = cs.floating_ips.list()
     for floating_ip in floating_ips:
         if floating_ip.ip == args.address:
             return cs.floating_ips.delete(floating_ip.id)
-    raise exceptions.CommandError(_("Floating ip %s not found.") %
+    raise exceptions.CommandError(_("Floating IP %s not found.") %
                                   args.address)
 
 
@@ -2453,12 +2453,12 @@ def do_floating_ip_delete(cs, args):
     default=False,
     help=_('Display floatingips from all tenants (Admin only).'))
 def do_floating_ip_list(cs, args):
-    """List floating ips."""
+    """List floating IPs."""
     _print_floating_ip_list(cs.floating_ips.list(args.all_tenants))
 
 
 def do_floating_ip_pool_list(cs, _args):
-    """List all floating ip pools."""
+    """List all floating IP pools."""
     utils.print_list(cs.floating_ip_pools.list(), ['name'])
 
 
@@ -2466,7 +2466,7 @@ def do_floating_ip_pool_list(cs, _args):
     '--host', dest='host', metavar='<host>', default=None,
     help=_('Filter by host'))
 def do_floating_ip_bulk_list(cs, args):
-    """List all floating ips."""
+    """List all floating IPs."""
     utils.print_list(cs.floating_ips_bulk.list(args.host), ['project_id',
                                                             'address',
                                                             'instance_uuid',
@@ -2482,13 +2482,13 @@ def do_floating_ip_bulk_list(cs, args):
     '--interface', metavar='<interface>', default=None,
     help=_('Interface for new Floating IPs'))
 def do_floating_ip_bulk_create(cs, args):
-    """Bulk create floating ips by range."""
+    """Bulk create floating IPs by range."""
     cs.floating_ips_bulk.create(args.ip_range, args.pool, args.interface)
 
 
 @cliutils.arg('ip_range', metavar='<range>', help=_('Address range to delete'))
 def do_floating_ip_bulk_delete(cs, args):
-    """Bulk delete floating ips by range."""
+    """Bulk delete floating IPs by range."""
     cs.floating_ips_bulk.delete(args.ip_range)
 
 
@@ -2508,10 +2508,10 @@ def do_dns_domains(cs, args):
 
 
 @cliutils.arg('domain', metavar='<domain>', help=_('DNS domain'))
-@cliutils.arg('--ip', metavar='<ip>', help=_('ip address'), default=None)
+@cliutils.arg('--ip', metavar='<ip>', help=_('IP address'), default=None)
 @cliutils.arg('--name', metavar='<name>', help=_('DNS name'), default=None)
 def do_dns_list(cs, args):
-    """List current DNS entries for domain and ip or domain and name."""
+    """List current DNS entries for domain and IP or domain and name."""
     if not (args.ip or args.name):
         raise exceptions.CommandError(
             _("You must specify either --ip or --name"))
@@ -2524,7 +2524,7 @@ def do_dns_list(cs, args):
         _print_dns_list(entries)
 
 
-@cliutils.arg('ip', metavar='<ip>', help=_('ip address'))
+@cliutils.arg('ip', metavar='<ip>', help=_('IP address'))
 @cliutils.arg('name', metavar='<name>', help=_('DNS name'))
 @cliutils.arg('domain', metavar='<domain>', help=_('DNS domain'))
 @cliutils.arg(
@@ -2533,7 +2533,7 @@ def do_dns_list(cs, args):
     help=_('dns type (e.g. "A")'),
     default='A')
 def do_dns_create(cs, args):
-    """Create a DNS entry for domain, name and ip."""
+    """Create a DNS entry for domain, name and IP."""
     cs.dns_entries.create(args.domain, args.name, args.ip, args.type)
 
 
@@ -3483,7 +3483,7 @@ def do_service_delete(cs, args):
 
 @cliutils.arg('fixed_ip', metavar='<fixed_ip>', help=_('Fixed IP Address.'))
 def do_fixed_ip_get(cs, args):
-    """Retrieve info on a fixed ip."""
+    """Retrieve info on a fixed IP."""
     result = cs.fixed_ips.get(args.fixed_ip)
     utils.print_list([result], ['address', 'cidr', 'hostname', 'host'])
 
