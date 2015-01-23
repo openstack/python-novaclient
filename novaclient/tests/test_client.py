@@ -29,7 +29,7 @@ import novaclient.v1_1.client
 
 class ClientConnectionPoolTest(utils.TestCase):
 
-    @mock.patch("novaclient.client.adapters.HTTPAdapter")
+    @mock.patch("novaclient.client.TCPKeepAliveAdapter")
     def test_get(self, mock_http_adapter):
         mock_http_adapter.side_effect = lambda: mock.Mock()
         pool = novaclient.client._ClientConnectionPool()
