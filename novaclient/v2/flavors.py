@@ -16,7 +16,7 @@
 Flavor interface.
 """
 
-from oslo.utils import strutils
+from oslo_utils import strutils
 from six.moves.urllib import parse
 
 from novaclient import base

@@ -33,8 +33,8 @@ from keystoneclient.auth.identity.generic import password
 from keystoneclient.auth.identity.generic import token
 from keystoneclient.auth.identity import v3 as identity
 from keystoneclient import session as ksession
-from oslo.utils import encodeutils
-from oslo.utils import strutils
+from oslo_utils import encodeutils
+from oslo_utils import strutils
 import pkg_resources
 import six
 
