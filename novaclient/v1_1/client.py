@@ -151,6 +151,7 @@ class Client(object):
         self.aggregates = aggregates.AggregateManager(self)
         self.hosts = hosts.HostManager(self)
         self.hypervisors = hypervisors.HypervisorManager(self)
+        self.hypervisor_stats = hypervisors.HypervisorStatsManager(self)
         self.services = services.ServiceManager(self)
         self.fixed_ips = fixed_ips.FixedIPsManager(self)
         self.floating_ips_bulk = floating_ips_bulk.FloatingIPBulkManager(self)

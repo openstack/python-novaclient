@@ -3631,7 +3631,7 @@ def do_hypervisor_uptime(cs, args):
 
 def do_hypervisor_stats(cs, args):
     """Get hypervisor statistics over all compute nodes."""
-    stats = cs.hypervisors.statistics()
+    stats = cs.hypervisor_stats.statistics()
     utils.print_dict(stats._info.copy())
 
 

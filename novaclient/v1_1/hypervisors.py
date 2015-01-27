@@ -69,5 +69,24 @@ class HypervisorManager(base.ManagerWithFind):
     def statistics(self):
         """
         Get hypervisor statistics over all compute nodes.
+
+        Kept for backwards compatibility, new code should call
+        hypervisor_stats.statistics() instead of hypervisors.statistics()
+        """
+        return self.api.hypervisor_stats.statistics()
+
+
+class HypervisorStats(base.Resource):
+    def __repr__(self):
+        return ("<HypervisorStats: %d Hypervisor%s>" %
+                (self.count, "s" if self.count != 1 else ""))
+
+
+class HypervisorStatsManager(base.Manager):
+    resource_class = HypervisorStats
+
+    def statistics(self):
+        """
+        Get hypervisor statistics over all compute nodes.
         """
         return self._get("/os-hypervisors/statistics", "hypervisor_statistics")

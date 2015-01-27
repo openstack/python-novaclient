@@ -168,3 +168,11 @@ class HypervisorsTest(utils.FixturedTestCase):
         self.assert_called('GET', '/os-hypervisors/statistics')
 
         self.compare_to_expected(expected, result)
+
+    def test_hypervisor_statistics_data_model(self):
+        result = self.cs.hypervisor_stats.statistics()
+        self.assert_called('GET', '/os-hypervisors/statistics')
+
+        # Test for Bug #1370415, the line below used to raise AttributeError
+        self.assertEqual("<HypervisorStats: 2 Hypervisors>",
+                         result.__repr__())
