@@ -1440,7 +1440,7 @@ def do_reboot(cs, args):
     dest='rebuild_password',
     metavar='<rebuild-password>',
     default=False,
-    help=_("Set the provided password on the rebuild server."))
+    help=_("Set the provided admin password on the rebuilt server."))
 @cliutils.arg(
     '--rebuild_password',
     help=argparse.SUPPRESS)
@@ -1712,7 +1712,7 @@ def do_refresh_network(cs, args):
 @cliutils.arg('server', metavar='<server>', help=_('Name or ID of server.'))
 def do_root_password(cs, args):
     """
-    Change the root password for a server.
+    Change the admin password for a server.
     """
     server = _find_server(cs, args.server)
     p1 = getpass.getpass('New password: ')
@@ -2313,7 +2313,7 @@ def do_get_serial_console(cs, args):
     nargs='?',
     default=None)
 def do_get_password(cs, args):
-    """Get password for a server."""
+    """Get the admin password for a server."""
     server = _find_server(cs, args.server)
     data = server.get_password(args.private_key)
     print(data)
@@ -2321,7 +2321,7 @@ def do_get_password(cs, args):
 
 @cliutils.arg('server', metavar='<server>', help=_('Name or ID of server.'))
 def do_clear_password(cs, args):
-    """Clear password for a server."""
+    """Clear the admin password for a server."""
     server = _find_server(cs, args.server)
     server.clear_password()
 
@@ -4158,8 +4158,8 @@ def do_quota_class_update(cs, args):
     '--password',
     dest='password',
     metavar='<password>',
-    help=_("Set the provided password on the evacuated server. Not applicable "
-            "with on-shared-storage flag"))
+    help=_("Set the provided admin password on the evacuated server. Not"
+            " applicable with on-shared-storage flag"))
 @cliutils.arg(
     '--on-shared-storage',
     dest='on_shared_storage',

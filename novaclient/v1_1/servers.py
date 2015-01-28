@@ -252,7 +252,9 @@ class Server(base.Resource):
 
     def change_password(self, password):
         """
-        Update the password for a server.
+        Update the admin password for a server.
+
+        :param password: string to set as the admin password on the server
         """
         self.manager.change_password(self, password)
 
@@ -271,7 +273,8 @@ class Server(base.Resource):
         Rebuild -- shut down and then re-image -- this server.
 
         :param image: the :class:`Image` (or its ID) to re-image with.
-        :param password: string to set as password on the rebuilt server.
+        :param password: string to set as the admin password on the rebuilt
+                         server.
         :param preserve_ephemeral: If True, request that any ephemeral device
             be preserved when rebuilding the instance. Defaults to False.
         """
@@ -384,7 +387,8 @@ class Server(base.Resource):
         :param host: Name of the target host
         :param on_shared_storage: Specifies whether instance files located
                         on shared storage
-        :param password: string to set as password on the evacuated server.
+        :param password: string to set as admin password on the evacuated
+                         server.
         """
         return self.manager.evacuate(self, host, on_shared_storage, password)
 
@@ -713,14 +717,15 @@ class ServerManager(base.BootingManagerWithFind):
 
     def get_password(self, server, private_key=None):
         """
-        Get password for an instance
+        Get admin password of an instance
 
-        Returns the clear password of an instance if private_key is
-        provided, returns the ciphered password otherwise.
+        Returns the admin password of an instance in the clear if private_key
+        is provided, returns the ciphered password otherwise.
 
         Requires that openssl is installed and in the path
 
-        :param server: The :class:`Server` (or its ID) to add an IP to.
+        :param server: The :class:`Server` (or its ID) for which the admin
+                       password is to be returned
         :param private_key: The private key to decrypt password
                             (optional)
         """
@@ -737,9 +742,12 @@ class ServerManager(base.BootingManagerWithFind):
 
     def clear_password(self, server):
         """
-        Clear password for an instance
+        Clear the admin password of an instance
 
-        :param server: The :class:`Server` (or its ID) to add an IP to.
+        Remove the admin password for an instance from the metadata server.
+
+        :param server: The :class:`Server` (or its ID) for which the admin
+                       password is to be cleared
         """
 
         return self._delete("/servers/%s/os-server-password"
