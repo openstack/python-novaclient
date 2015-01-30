@@ -73,7 +73,7 @@ class VolumeManager(base.ManagerWithFind):
         """
         Get a volume.
 
-        :param volume_id: The ID of the volume to delete.
+        :param volume_id: The ID of the volume to get.
         :rtype: :class:`Volume`
         """
         return self._get("/volumes/%s" % volume_id, "volume")
