@@ -11,8 +11,8 @@ Usage
 
 First create a client instance with your credentials::
 
-    >>> from novaclient.client import Client
-    >>> nova = Client(VERSION, USERNAME, PASSWORD, PROJECT_ID, AUTH_URL)
+    >>> from novaclient import client
+    >>> nova = client.Client(VERSION, USERNAME, PASSWORD, PROJECT_ID, AUTH_URL)
 
 Here ``VERSION`` can be: ``1.1``, ``2`` and ``3``.
 
@@ -21,7 +21,7 @@ session API::
 
     >>> from keystoneclient.auth.identity import v2
     >>> from keystoneclient import session
-    >>> from novaclient.client import Client
+    >>> from novaclient import client
     >>> auth = v2.Password(auth_url=AUTH_URL,
                            username=USERNAME,
                            password=PASSWORD,
