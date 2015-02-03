@@ -60,5 +60,4 @@ For more information, see the reference:
    :maxdepth: 2
 
    ref/index
-   ref/v1_1/index
-   ref/v3/index
+   ref/v2/index

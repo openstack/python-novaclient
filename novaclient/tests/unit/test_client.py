@@ -24,7 +24,7 @@ import requests
 import novaclient.client
 import novaclient.extension
 from novaclient.tests.unit import utils
-import novaclient.v1_1.client
+import novaclient.v2.client
 
 
 class ClientConnectionPoolTest(utils.TestCase):
@@ -138,57 +138,57 @@ class ClientTest(utils.TestCase):
 
     def test_get_client_class_v3(self):
         output = novaclient.client.get_client_class('3')
-        self.assertEqual(output, novaclient.v1_1.client.Client)
+        self.assertEqual(output, novaclient.v2.client.Client)
 
     def test_get_client_class_v2(self):
         output = novaclient.client.get_client_class('2')
-        self.assertEqual(output, novaclient.v1_1.client.Client)
+        self.assertEqual(output, novaclient.v2.client.Client)
 
     def test_get_client_class_v2_int(self):
         output = novaclient.client.get_client_class(2)
-        self.assertEqual(output, novaclient.v1_1.client.Client)
+        self.assertEqual(output, novaclient.v2.client.Client)
 
     def test_get_client_class_v1_1(self):
         output = novaclient.client.get_client_class('1.1')
-        self.assertEqual(output, novaclient.v1_1.client.Client)
+        self.assertEqual(output, novaclient.v2.client.Client)
 
     def test_get_client_class_unknown(self):
         self.assertRaises(novaclient.exceptions.UnsupportedVersion,
                           novaclient.client.get_client_class, '0')
 
     def test_client_with_os_cache_enabled(self):
-        cs = novaclient.v1_1.client.Client("user", "password", "project_id",
-                                           auth_url="foo/v2", os_cache=True)
+        cs = novaclient.v2.client.Client("user", "password", "project_id",
+                                         auth_url="foo/v2", os_cache=True)
         self.assertEqual(True, cs.os_cache)
         self.assertEqual(True, cs.client.os_cache)
 
     def test_client_with_os_cache_disabled(self):
-        cs = novaclient.v1_1.client.Client("user", "password", "project_id",
-                                           auth_url="foo/v2", os_cache=False)
+        cs = novaclient.v2.client.Client("user", "password", "project_id",
+                                         auth_url="foo/v2", os_cache=False)
         self.assertEqual(False, cs.os_cache)
         self.assertEqual(False, cs.client.os_cache)
 
     def test_client_with_no_cache_enabled(self):
-        cs = novaclient.v1_1.client.Client("user", "password", "project_id",
-                                           auth_url="foo/v2", no_cache=True)
+        cs = novaclient.v2.client.Client("user", "password", "project_id",
+                                         auth_url="foo/v2", no_cache=True)
         self.assertEqual(False, cs.os_cache)
         self.assertEqual(False, cs.client.os_cache)
 
     def test_client_with_no_cache_disabled(self):
-        cs = novaclient.v1_1.client.Client("user", "password", "project_id",
-                                           auth_url="foo/v2", no_cache=False)
+        cs = novaclient.v2.client.Client("user", "password", "project_id",
+                                         auth_url="foo/v2", no_cache=False)
         self.assertEqual(True, cs.os_cache)
         self.assertEqual(True, cs.client.os_cache)
 
     def test_client_set_management_url_v1_1(self):
-        cs = novaclient.v1_1.client.Client("user", "password", "project_id",
-                                           auth_url="foo/v2")
+        cs = novaclient.v2.client.Client("user", "password", "project_id",
+                                         auth_url="foo/v2")
         cs.set_management_url("blabla")
         self.assertEqual("blabla", cs.client.management_url)
 
     def test_client_get_reset_timings_v1_1(self):
-        cs = novaclient.v1_1.client.Client("user", "password", "project_id",
-                                           auth_url="foo/v2")
+        cs = novaclient.v2.client.Client("user", "password", "project_id",
+                                         auth_url="foo/v2")
         self.assertEqual(0, len(cs.get_timings()))
         cs.client.times.append("somevalue")
         self.assertEqual(1, len(cs.get_timings()))
@@ -201,8 +201,8 @@ class ClientTest(utils.TestCase):
     def test_contextmanager_v1_1(self, mock_http_client):
         fake_client = mock.Mock()
         mock_http_client.return_value = fake_client
-        with novaclient.v1_1.client.Client("user", "password", "project_id",
-                                           auth_url="foo/v2"):
+        with novaclient.v2.client.Client("user", "password", "project_id",
+                                         auth_url="foo/v2"):
             pass
         self.assertTrue(fake_client.open_session.called)
         self.assertTrue(fake_client.close_session.called)

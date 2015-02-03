@@ -46,7 +46,7 @@ and the version of the API with ``--os-compute-api-version``.  Or set them as
 an environment variables as well::
 
     export OS_AUTH_URL=http://example.com:8774/v1.1/
-    export OS_COMPUTE_API_VERSION=1.1
+    export OS_COMPUTE_API_VERSION=2
 
 If you are using Keystone, you need to set the OS_AUTH_URL to the keystone
 endpoint::
@@ -69,7 +69,7 @@ There's also a complete Python API, but it has not yet been documented.
 To use with nova, with keystone as the authentication system::
 
     # use v2.0 auth with http://example.com:5000/v2.0/")
-    >>> from novaclient.v1_1 import client
+    >>> from novaclient.v2 import client
     >>> nt = client.Client(USER, PASS, TENANT, AUTH_URL, service_type="compute")
     >>> nt.flavors.list()
     [...]

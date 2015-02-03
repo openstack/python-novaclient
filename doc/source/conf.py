@@ -71,17 +71,13 @@ def gen_ref(ver, title, names):
                              "pkg": pkg, "name": name})
 
 gen_ref(None, "Exceptions", ["exceptions"])
-gen_ref("v1_1", "Version 1.1, Version 2 API Reference",
+gen_ref("v2", "Version 1.1, Version 2 API Reference, Version 3 API Reference",
         ["flavors", "images", "servers", "hosts", "agents", "aggregates",
          "availability_zones", "certs", "fixed_ips", "floating_ip_pools",
          "floating_ips", "hypervisors", "keypairs", "limits", "networks",
          "quota_classes", "quotas", "security_group_rules",
          "security_groups", "services", "virtual_interfaces",
          "volume_snapshots", "volumes", "volume_types"])
-gen_ref("v3", "Version 3 API Reference",
-        ["flavors", "hosts", "agents", "aggregates", "availability_zones",
-         "certs", "hypervisors", "images", "keypairs", "quotas",
-         "quotas_classes", "servers", "services"])
 
 # -- General configuration ----------------------------------------------------
 

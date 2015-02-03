@@ -25,8 +25,7 @@ Contents:
    shell
    api
    ref/index
-   ref/v1_1/index
-   ref/v3/index
+   ref/v2/index
    releases
 
 Contributing

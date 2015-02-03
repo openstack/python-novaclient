@@ -773,9 +773,9 @@ def _construct_http_client(username=None, password=None, project_id=None,
 
 def get_client_class(version):
     version_map = {
-        '1.1': 'novaclient.v1_1.client.Client',
-        '2': 'novaclient.v1_1.client.Client',
-        '3': 'novaclient.v1_1.client.Client',
+        '1.1': 'novaclient.v2.client.Client',
+        '2': 'novaclient.v2.client.Client',
+        '3': 'novaclient.v2.client.Client',
     }
     try:
         client_path = version_map[str(version)]

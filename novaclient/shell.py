@@ -55,9 +55,9 @@ import novaclient.extension
 from novaclient.i18n import _
 from novaclient.openstack.common import cliutils
 from novaclient import utils
-from novaclient.v1_1 import shell as shell_v1_1
+from novaclient.v2 import shell as shell_v2
 
-DEFAULT_OS_COMPUTE_API_VERSION = "1.1"
+DEFAULT_OS_COMPUTE_API_VERSION = "2"
 DEFAULT_NOVA_ENDPOINT_TYPE = 'publicURL'
 # NOTE(cyeoh): Having the service type dependent on the API version
 # is pretty ugly, but we have to do this because traditionally the
@@ -446,12 +446,12 @@ class OpenStackComputeShell(object):
 
         try:
             actions_module = {
-                '1.1': shell_v1_1,
-                '2': shell_v1_1,
-                '3': shell_v1_1,
+                '1.1': shell_v2,
+                '2': shell_v2,
+                '3': shell_v2,
             }[version]
         except KeyError:
-            actions_module = shell_v1_1
+            actions_module = shell_v2
 
         self._find_actions(subparsers, actions_module)
         self._find_actions(subparsers, self)
@@ -491,6 +491,10 @@ class OpenStackComputeShell(object):
     def _discover_via_contrib_path(self, version):
         module_path = os.path.dirname(os.path.abspath(__file__))
         version_str = "v%s" % version.replace('.', '_')
+        # NOTE(akurilin): v1.1, v2 and v3 have one implementation, so
+        # we should discover contrib modules in one place.
+        if version_str in ["v1_1", "v3"]:
+            version_str = "v2"
         ext_path = os.path.join(module_path, version_str, 'contrib')
         ext_glob = os.path.join(ext_path, "*.py")
 

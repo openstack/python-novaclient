@@ -41,7 +41,7 @@ For example, in Bash you'd use::
     export OS_PASSWORD=yadayadayada
     export OS_TENANT_NAME=myproject
     export OS_AUTH_URL=http://...
-    export OS_COMPUTE_API_VERSION=1.1
+    export OS_COMPUTE_API_VERSION=2
     
 From there, all shell commands take the form::
     
