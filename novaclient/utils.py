@@ -209,17 +209,17 @@ def find_resource(manager, name_or_id, **find_args):
 
     try:
         try:
-            return manager.find(human_id=name_or_id, **find_args)
-        except exceptions.NotFound:
-            pass
-
-        # finally try to find entity by name
-        try:
             resource = getattr(manager, 'resource_class', None)
             name_attr = resource.NAME_ATTR if resource else 'name'
             kwargs = {name_attr: name_or_id}
             kwargs.update(find_args)
             return manager.find(**kwargs)
+        except exceptions.NotFound:
+            pass
+
+        # finally try to find entity by human_id
+        try:
+            return manager.find(human_id=name_or_id, **find_args)
         except exceptions.NotFound:
             msg = (_("No %(class)s with a name or ID of '%(name)s' exists.") %
                    {'class': manager.resource_class.__name__.lower(),
