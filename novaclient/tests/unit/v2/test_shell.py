@@ -293,13 +293,6 @@ class ShellTest(utils.TestCase):
                 'name': 'some-server',
                 'block_device_mapping_v2': [
                     {
-                        'uuid': 1,
-                        'source_type': 'image',
-                        'destination_type': 'local',
-                        'boot_index': 0,
-                        'delete_on_termination': True,
-                    },
-                    {
                         'uuid': 'fake-id',
                         'source_type': 'volume',
                         'destination_type': 'volume',
