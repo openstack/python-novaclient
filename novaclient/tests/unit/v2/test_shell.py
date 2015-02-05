@@ -673,8 +673,7 @@ class ShellTest(utils.TestCase):
         self.assert_called('GET', '/images/1', pos=0)
         self.assert_called('GET', '/flavors/512 MB Server', pos=1)
         self.assert_called('GET', '/flavors?is_public=None', pos=2)
-        self.assert_called('GET', '/flavors?is_public=None', pos=3)
-        self.assert_called('GET', '/flavors/2', pos=4)
+        self.assert_called('GET', '/flavors/2', pos=3)
         self.assert_called(
             'POST', '/servers',
             {
@@ -685,7 +684,7 @@ class ShellTest(utils.TestCase):
                     'min_count': 1,
                     'max_count': 3,
                 }
-            }, pos=5)
+            }, pos=4)
 
     def test_flavor_list(self):
         self.run_command('flavor-list')
@@ -712,17 +711,15 @@ class ShellTest(utils.TestCase):
         self.run_command(['flavor-show', '128 MB Server'])
         self.assert_called('GET', '/flavors/128 MB Server', pos=0)
         self.assert_called('GET', '/flavors?is_public=None', pos=1)
-        self.assert_called('GET', '/flavors?is_public=None', pos=2)
-        self.assert_called('GET', '/flavors/aa1', pos=3)
-        self.assert_called('GET', '/flavors/aa1/os-extra_specs', pos=4)
+        self.assert_called('GET', '/flavors/aa1', pos=2)
+        self.assert_called('GET', '/flavors/aa1/os-extra_specs', pos=3)
 
     def test_flavor_show_by_name_priv(self):
         self.run_command(['flavor-show', '512 MB Server'])
         self.assert_called('GET', '/flavors/512 MB Server', pos=0)
         self.assert_called('GET', '/flavors?is_public=None', pos=1)
-        self.assert_called('GET', '/flavors?is_public=None', pos=2)
-        self.assert_called('GET', '/flavors/2', pos=3)
-        self.assert_called('GET', '/flavors/2/os-extra_specs', pos=4)
+        self.assert_called('GET', '/flavors/2', pos=2)
+        self.assert_called('GET', '/flavors/2/os-extra_specs', pos=3)
 
     def test_flavor_key_set(self):
         self.run_command('flavor-key 1 set k1=v1')
@@ -2163,7 +2160,7 @@ class ShellTest(utils.TestCase):
         self.run_command('volume-delete Work Work2')
         self.assert_called('DELETE',
                            '/volumes/15e59938-07d5-11e1-90e3-e3dffe0c5983',
-                           pos=-5)
+                           pos=-4)
         self.assert_called('DELETE',
                            '/volumes/15e59938-07d5-11e1-90e3-ee32ba30feaa',
                            pos=-1)

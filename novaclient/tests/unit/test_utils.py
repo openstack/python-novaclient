@@ -41,6 +41,10 @@ class FakeManager(base.ManagerWithFind):
 
     resources = [
         FakeResource('1234', {'name': 'entity_one'}),
+        FakeResource('12345', {'name': 'UPPER'}),
+        FakeResource('123456', {'name': 'lower'}),
+        FakeResource('1234567', {'name': 'Mixed'}),
+        FakeResource('12345678', {'name': 'mixed'}),
         FakeResource(UUID, {'name': 'entity_two'}),
         FakeResource('5678', {'name': '9876'}),
         FakeResource('01234', {'name': 'entity_three'})
@@ -117,6 +121,22 @@ class FindResourceTestCase(test_utils.TestCase):
     def test_find_by_str_name(self):
         output = utils.find_resource(self.manager, 'entity_one')
         self.assertEqual(output, self.manager.get('1234'))
+
+    def test_find_by_str_upper_name(self):
+        output = utils.find_resource(self.manager, 'UPPER')
+        self.assertEqual(output, self.manager.get('12345'))
+
+    def test_find_by_str_name(self):
+        output = utils.find_resource(self.manager, 'lower')
+        self.assertEqual(output, self.manager.get('123456'))
+
+    def test_find_by_str_mix_name(self):
+        output = utils.find_resource(self.manager, 'Mixed')
+        self.assertEqual(output, self.manager.get('1234567'))
+
+    def test_find_by_str_lower_name(self):
+        output = utils.find_resource(self.manager, 'mixed')
+        self.assertEqual(output, self.manager.get('12345678'))
 
     def test_find_by_str_displayname(self):
         display_manager = FakeDisplayManager(None)
