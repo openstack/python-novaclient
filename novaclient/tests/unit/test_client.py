@@ -101,9 +101,11 @@ class ClientTest(utils.TestCase):
                                   timeout=mock.ANY,
                                   headers=reauth_headers,
                                   allow_redirects=mock.ANY,
-                                  data=json.dumps(data),
+                                  data=mock.ANY,
                                   verify=mock.ANY)]
             self.assertEqual(expected, mock_request.call_args_list)
+            token_post_call = mock_request.call_args_list[1]
+            self.assertEqual(data, json.loads(token_post_call[1]['data']))
 
     @mock.patch.object(novaclient.client.HTTPClient, 'request',
                        return_value=(200, "{'versions':[]}"))
