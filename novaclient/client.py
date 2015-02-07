@@ -90,9 +90,9 @@ class CompletionCache(object):
         ~/.novaclient/
             <hash-of-endpoint-and-username>/
                 <resource>-id-cache
-                <resource>-human-id-cache
+                <resource>-name-cache
     """
-    def __init__(self, username, auth_url, attributes=('id', 'human_id')):
+    def __init__(self, username, auth_url, attributes=('id', 'name')):
         self.directory = self._make_directory_name(username, auth_url)
         self.attributes = attributes
 
