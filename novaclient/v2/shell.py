@@ -3062,7 +3062,7 @@ def do_usage_list(cs, args):
     '--tenant',
     metavar='<tenant-id>',
     default=None,
-    help=_('UUID or name of tenant to get usage for.'))
+    help=_('UUID of tenant to get usage for.'))
 def do_usage(cs, args):
     """Show usage data for a single tenant."""
     dateformat = "%Y-%m-%d"
