@@ -1876,16 +1876,17 @@ def do_show(cs, args):
     help=_('Name or ID of server(s).'))
 def do_delete(cs, args):
     """Immediately shut down and delete specified server(s)."""
+    find_args = {'all_tenants': '1'}
     utils.do_action_on_many(
-        lambda s: _find_server(cs, s).delete(),
+        lambda s: _find_server(cs, s, **find_args).delete(),
         args.server,
         _("Request to delete server %s has been accepted."),
         _("Unable to delete the specified server(s)."))
 
 
-def _find_server(cs, server):
+def _find_server(cs, server, **find_args):
     """Get a server by name or ID."""
-    return utils.find_resource(cs.servers, server)
+    return utils.find_resource(cs.servers, server, **find_args)
 
 
 def _find_image(cs, image):

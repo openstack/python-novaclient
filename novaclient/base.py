@@ -179,6 +179,10 @@ class ManagerWithFind(Manager):
                 list_kwargs['search_opts'] = {"name": kwargs["name"]}
             elif "display_name" in kwargs:
                 list_kwargs['search_opts'] = {"name": kwargs["display_name"]}
+            if "all_tenants" in kwargs:
+                all_tenants = kwargs['all_tenants']
+                list_kwargs['search_opts']['all_tenants'] = all_tenants
+                searches = [(k, v) for k, v in searches if k != 'all_tenants']
 
         listing = self.list(**list_kwargs)
 
