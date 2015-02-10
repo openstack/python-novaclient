@@ -141,6 +141,11 @@ class ClientTest(utils.TestCase):
 
         test_auth_call()
 
+    def test_auth_failure_due_to_miss_of_auth_url(self):
+        cl = client.HTTPClient("username", "password")
+
+        self.assertRaises(exceptions.AuthorizationFailure, cl.authenticate)
+
     def test_connection_refused(self):
         cl = get_client()
 

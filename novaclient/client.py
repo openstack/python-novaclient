@@ -586,6 +586,10 @@ class HTTPClient(object):
                                              extract_token=False)
 
     def authenticate(self):
+        if not self.auth_url:
+            msg = _("Authentication requires 'auth_url', which should be "
+                    "specified in '%s'") % self.__class__.__name__
+            raise exceptions.AuthorizationFailure(msg)
         magic_tuple = netutils.urlsplit(self.auth_url)
         scheme, netloc, path, query, frag = magic_tuple
         port = magic_tuple.port
