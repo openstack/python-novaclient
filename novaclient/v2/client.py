@@ -103,7 +103,7 @@ class Client(object):
                  auth_system='keystone', auth_plugin=None, auth_token=None,
                  cacert=None, tenant_id=None, user_id=None,
                  connection_pool=False, session=None, auth=None,
-                 completion_cache=None, **kwargs):
+                 **kwargs):
         # FIXME(comstud): Rename the api_key argument above when we
         # know it's not being used as keyword argument
 
@@ -195,16 +195,6 @@ class Client(object):
             session=session,
             auth=auth,
             **kwargs)
-
-        self.completion_cache = completion_cache
-
-    def write_object_to_completion_cache(self, obj):
-        if self.completion_cache:
-            self.completion_cache.write_object(obj)
-
-    def clear_completion_cache_for_class(self, obj_class):
-        if self.completion_cache:
-            self.completion_cache.clear_class(obj_class)
 
     @client._original_only
     def __enter__(self):

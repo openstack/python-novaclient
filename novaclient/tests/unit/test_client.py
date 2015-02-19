@@ -16,7 +16,6 @@
 
 import json
 import logging
-import os
 
 import fixtures
 import mock
@@ -369,31 +368,3 @@ class ClientTest(utils.TestCase):
         self.assertIn('RESP BODY: {"access": {"token": {"id":'
                       ' "{SHA1}4fc49c6a671ce889078ff6b250f7066cf6d2ada2"}}}',
                       output)
-
-    @mock.patch('novaclient.client.HTTPClient')
-    def test_completion_cache(self, instance):
-        cp_cache = novaclient.client.CompletionCache('user',
-                                                     "server/v2")
-
-        client = novaclient.v2.client.Client("user",
-                                             "password", "project_id",
-                                             auth_url="server/v2",
-                                             completion_cache=cp_cache)
-
-        instance.id = "v1c49c6a671ce889078ff6b250f7066cf6d2ada2"
-        instance.name = "foo.bar.baz v1_1"
-        client.write_object_to_completion_cache(instance)
-        self.assertTrue(os.path.isdir(cp_cache.directory))
-
-        for file_name in os.listdir(cp_cache.directory):
-            file_path = os.path.join(cp_cache.directory, file_name)
-            f = open(file_path, 'r')
-            for line in f:
-                line = line.rstrip()
-                if '-id-' in file_name:
-                    self.assertEqual(instance.id, line)
-                elif '-name-' in file_name:
-                    self.assertEqual(instance.name, line)
-            f.close()
-            os.remove(file_path)
-        os.rmdir(cp_cache.directory)
