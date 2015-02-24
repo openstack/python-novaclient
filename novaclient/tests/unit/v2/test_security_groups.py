@@ -32,7 +32,7 @@ class SecurityGroupsTest(utils.FixturedTestCase):
         self._do_test_list_security_groups(
             None, '/os-security-groups')
 
-    def test_list_security_groups_all_tenants_on(self):
+    def test_list_security_groups_all_tenants_on_with_search_opts(self):
         self._do_test_list_security_groups(
             {'all_tenants': 1}, '/os-security-groups?all_tenants=1')
 

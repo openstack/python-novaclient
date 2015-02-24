@@ -126,7 +126,7 @@ class FindResourceTestCase(test_utils.TestCase):
         output = utils.find_resource(self.manager, 'UPPER')
         self.assertEqual(output, self.manager.get('12345'))
 
-    def test_find_by_str_name(self):
+    def test_find_by_str_lower_name(self):
         output = utils.find_resource(self.manager, 'lower')
         self.assertEqual(output, self.manager.get('123456'))
 
@@ -134,16 +134,16 @@ class FindResourceTestCase(test_utils.TestCase):
         output = utils.find_resource(self.manager, 'Mixed')
         self.assertEqual(output, self.manager.get('1234567'))
 
-    def test_find_by_str_lower_name(self):
+    def test_find_by_str_lower_name_mixed(self):
         output = utils.find_resource(self.manager, 'mixed')
         self.assertEqual(output, self.manager.get('12345678'))
 
-    def test_find_by_str_displayname(self):
+    def test_find_by_str_display_name(self):
         display_manager = FakeDisplayManager(None)
         output = utils.find_resource(display_manager, 'entity_three')
         self.assertEqual(output, display_manager.get('4242'))
 
-    def test_find_in_alphanum_allowd_manager_by_str_id_(self):
+    def test_find_in_alphanum_allowed_manager_by_str_id_(self):
         alphanum_manager = FakeManager(True)
         output = utils.find_resource(alphanum_manager, '01234')
         self.assertEqual(output, alphanum_manager.get('01234'))
