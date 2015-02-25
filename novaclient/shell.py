@@ -912,7 +912,7 @@ def main():
         print("ERROR (%(name)s): %(msg)s" % details,
               file=sys.stderr)
         sys.exit(1)
-    except KeyboardInterrupt as e:
+    except KeyboardInterrupt:
         print("... terminating nova client", file=sys.stderr)
         sys.exit(130)
 

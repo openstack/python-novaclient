@@ -192,7 +192,7 @@ def _boot(cs, args):
         except IOError as e:
             raise exceptions.CommandError(_("Can't open '%(src)s': %(exc)s") %
                                           {'src': src, 'exc': e})
-        except ValueError as e:
+        except ValueError:
             raise exceptions.CommandError(_("Invalid file argument '%s'. "
                                             "File arguments must be of the "
                                             "form '--file "
@@ -261,7 +261,7 @@ def _boot(cs, args):
         for kv_str in nic_str.split(","):
             try:
                 k, v = kv_str.split("=", 1)
-            except ValueError as e:
+            except ValueError:
                 raise exceptions.CommandError(err_msg)
 
             if k in nic_info:
@@ -1506,7 +1506,7 @@ def do_rebuild(cs, args):
         except IOError as e:
             raise exceptions.CommandError(_("Can't open '%(src)s': %(exc)s") %
                                           {'src': src, 'exc': e})
-        except ValueError as e:
+        except ValueError:
             raise exceptions.CommandError(_("Invalid file argument '%s'. "
                                             "File arguments must be of the "
                                             "form '--file "
