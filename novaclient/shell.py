@@ -651,6 +651,11 @@ class OpenStackComputeShell(object):
         if not endpoint_type:
             endpoint_type = DEFAULT_NOVA_ENDPOINT_TYPE
 
+        # This allow users to use endpoint_type as (internal, public or admin)
+        # just like other openstack clients (glance, cinder etc)
+        if endpoint_type in ['internal', 'public', 'admin']:
+            endpoint_type += 'URL'
+
         if not service_type:
             os_compute_api_version = (options.os_compute_api_version or
                                       DEFAULT_OS_COMPUTE_API_VERSION)

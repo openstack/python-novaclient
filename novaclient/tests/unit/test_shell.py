@@ -45,6 +45,13 @@ FAKE_ENV3 = {'OS_USER_ID': 'user_id',
              'NOVA_ENDPOINT_TYPE': 'novaURL',
              'OS_ENDPOINT_TYPE': 'osURL'}
 
+FAKE_ENV4 = {'OS_USER_ID': 'user_id',
+             'OS_PASSWORD': 'password',
+             'OS_TENANT_ID': 'tenant_id',
+             'OS_AUTH_URL': 'http://no.where/v2.0',
+             'NOVA_ENDPOINT_TYPE': 'internal',
+             'OS_ENDPOINT_TYPE': 'osURL'}
+
 
 def _create_ver_list(versions):
     return {'versions': {'values': versions}}
@@ -247,6 +254,15 @@ class ShellTest(utils.TestCase):
         self.shell('list')
         client_kwargs = mock_client.call_args_list[0][1]
         self.assertEqual(client_kwargs['endpoint_type'], 'novaURL')
+
+    @mock.patch('novaclient.client.Client')
+    @requests_mock.Mocker()
+    def test_endpoint_type_like_other_clients(self, mock_client, m_requests):
+        self.make_env(fake_env=FAKE_ENV4)
+        self.register_keystone_discovery_fixture(m_requests)
+        self.shell('list')
+        client_kwargs = mock_client.call_args_list[0][1]
+        self.assertEqual(client_kwargs['endpoint_type'], 'internalURL')
 
     @mock.patch('novaclient.client.Client')
     @requests_mock.Mocker()
