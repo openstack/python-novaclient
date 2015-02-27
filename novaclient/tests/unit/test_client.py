@@ -316,12 +316,10 @@ class ClientTest(utils.TestCase):
         cs.http_log_debug = True
         cs.http_log_req('GET', '/foo', {'headers': {}})
         cs.http_log_req('GET', '/foo', {'headers':
-                                        {'X-Auth-Token': 'totally_bogus'}
-                                    })
+                                        {'X-Auth-Token': 'totally_bogus'}})
         cs.http_log_req('GET', '/foo', {'headers':
                                         {'X-Foo': 'bar',
-                                         'X-Auth-Token': 'totally_bogus'}
-                                    })
+                                         'X-Auth-Token': 'totally_bogus'}})
         cs.http_log_req('GET', '/foo', {'headers': {},
                                         'data':
                                             '{"auth": {"passwordCredentials": '
