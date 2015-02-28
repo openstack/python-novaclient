@@ -31,7 +31,7 @@ class CellsManager(base.Manager):
         """
         Get a cell.
 
-        :param cell: Name of the :class:`Cell` to get.
+        :param cell_name: Name of the :class:`Cell` to get.
         :rtype: :class:`Cell`
         """
         return self._get("/os-cells/%s" % cell_name, "cell")
@@ -40,7 +40,7 @@ class CellsManager(base.Manager):
         """
         Get capacities for a cell.
 
-        :param cell: Name of the :class:`Cell` to get capacities for.
+        :param cell_name: Name of the :class:`Cell` to get capacities for.
         :rtype: :class:`Cell`
         """
         path = ["%s/capacities" % cell_name, "capacities"][cell_name is None]

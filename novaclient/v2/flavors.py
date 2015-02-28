@@ -51,8 +51,6 @@ class Flavor(base.Resource):
     def get_keys(self):
         """
         Get extra specs from a flavor.
-
-        :param flavor: The :class:`Flavor` to get extra specs from
         """
         _resp, body = self.manager.api.client.get(
             "/flavors/%s/os-extra_specs" % base.getid(self))
@@ -62,7 +60,6 @@ class Flavor(base.Resource):
         """
         Set extra specs on a flavor.
 
-        :param flavor: The :class:`Flavor` to set extra spec on
         :param metadata: A dict of key/value pairs to be set
         """
         utils.validate_flavor_metadata_keys(metadata.keys())
@@ -76,7 +73,6 @@ class Flavor(base.Resource):
         """
         Unset extra specs on a flavor.
 
-        :param flavor: The :class:`Flavor` to unset extra spec on
         :param keys: A list of keys to be unset
         """
         for k in keys:

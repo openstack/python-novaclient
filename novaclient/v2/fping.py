@@ -58,7 +58,7 @@ class FpingManager(base.ManagerWithFind):
         """
         Fping a specific server.
 
-        :param network: ID of the server to fping.
+        :param server: ID of the server to fping.
         :rtype: :class:`Fping`
         """
         return self._get("/os-fping/%s" % base.getid(server), "server")
