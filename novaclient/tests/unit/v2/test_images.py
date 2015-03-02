@@ -26,6 +26,7 @@ class ImagesTest(utils.FixturedTestCase):
         il = self.cs.images.list()
         self.assert_called('GET', '/images/detail')
         [self.assertIsInstance(i, images.Image) for i in il]
+        self.assertEqual(2, len(il))
 
     def test_list_images_undetailed(self):
         il = self.cs.images.list(detailed=False)
