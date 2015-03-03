@@ -14,6 +14,7 @@ from oslo.serialization import jsonutils
 
 from novaclient.tests.unit import fakes
 from novaclient.tests.unit.fixture_data import base
+from novaclient.tests.unit.v2 import fakes as v2_fakes
 
 
 class Base(base.Fixture):
@@ -382,43 +383,24 @@ class V1(Base):
         context.status_code = 202
         assert len(body.keys()) == 1
         action = list(body)[0]
-        if action == 'reboot':
-            assert list(body[action]) == ['type']
-            assert body[action]['type'] in ['HARD', 'SOFT']
+
+        if v2_fakes.FakeHTTPClient.check_server_actions(body):
+            # NOTE(snikitin): No need to do any operations here. This 'pass'
+            # is needed to avoid AssertionError in the last 'else' statement
+            # if we found 'action' in method check_server_actions and
+            # raise AssertionError if we didn't find 'action' at all.
+            pass
         elif action == 'rebuild':
             body = body[action]
             adminPass = body.get('adminPass', 'randompassword')
             assert 'imageRef' in body
             _body = self.server_1234.copy()
             _body['adminPass'] = adminPass
-        elif action == 'resize':
-            keys = body[action].keys()
-            assert 'flavorRef' in keys
         elif action == 'confirmResize':
             assert body[action] is None
             # This one method returns a different response code
             context.status_code = 204
             return None
-        elif action == 'revertResize':
-            assert body[action] is None
-        elif action == 'migrate':
-            assert body[action] is None
-        elif action == 'os-stop':
-            assert body[action] is None
-        elif action == 'os-start':
-            assert body[action] is None
-        elif action == 'forceDelete':
-            assert body[action] is None
-        elif action == 'restore':
-            assert body[action] is None
-        elif action == 'pause':
-            assert body[action] is None
-        elif action == 'unpause':
-            assert body[action] is None
-        elif action == 'lock':
-            assert body[action] is None
-        elif action == 'unlock':
-            assert body[action] is None
         elif action == 'rescue':
             if body[action]:
                 keys = set(body[action].keys())
@@ -426,65 +408,15 @@ class V1(Base):
             else:
                 assert body[action] is None
             _body = {'adminPass': 'RescuePassword'}
-        elif action == 'unrescue':
-            assert body[action] is None
-        elif action == 'resume':
-            assert body[action] is None
-        elif action == 'suspend':
-            assert body[action] is None
-        elif action == 'lock':
-            assert body[action] is None
-        elif action == 'unlock':
-            assert body[action] is None
-        elif action == 'shelve':
-            assert body[action] is None
-        elif action == 'shelveOffload':
-            assert body[action] is None
-        elif action == 'unshelve':
-            assert body[action] is None
-        elif action == 'addFixedIp':
-            assert list(body[action]) == ['networkId']
-        elif action == 'removeFixedIp':
-            assert list(body[action]) == ['address']
-        elif action == 'addFloatingIp':
-            assert (list(body[action]) == ['address'] or
-                    sorted(list(body[action])) == ['address',
-                                                   'fixed_address'])
-        elif action == 'removeFloatingIp':
-            assert list(body[action]) == ['address']
         elif action == 'createImage':
             assert set(body[action].keys()) == set(['name', 'metadata'])
             context.headers['location'] = "http://blah/images/456"
-        elif action == 'changePassword':
-            assert list(body[action]) == ['adminPass']
         elif action == 'os-getConsoleOutput':
             assert list(body[action]) == ['length']
             context.status_code = 202
             return {'output': 'foo'}
-        elif action == 'os-getVNCConsole':
-            assert list(body[action]) == ['type']
-        elif action == 'os-getSPICEConsole':
-            assert list(body[action]) == ['type']
-        elif action == 'os-getRDPConsole':
-            assert list(body[action]) == ['type']
         elif action == 'os-getSerialConsole':
             assert list(body[action]) == ['type']
-        elif action == 'os-migrateLive':
-            assert set(body[action].keys()) == set(['host',
-                                                    'block_migration',
-                                                    'disk_over_commit'])
-        elif action == 'os-resetState':
-            assert list(body[action]) == ['state']
-        elif action == 'resetNetwork':
-            assert body[action] is None
-        elif action == 'addSecurityGroup':
-            assert list(body[action]) == ['name']
-        elif action == 'removeSecurityGroup':
-            assert list(body[action]) == ['name']
-        elif action == 'createBackup':
-            assert set(body[action]) == set(['name',
-                                             'backup_type',
-                                             'rotation'])
         elif action == 'evacuate':
             keys = list(body[action])
             if 'adminPass' in keys:
