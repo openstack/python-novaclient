@@ -70,7 +70,7 @@ class FlavorsTest(utils.TestCase):
         self.assertEqual(256, f.ram)
         self.assertEqual(10, f.disk)
         self.assertEqual(10, f.ephemeral)
-        self.assertEqual(True, f.is_public)
+        self.assertTrue(f.is_public)
 
     def test_get_flavor_details_alphanum_id(self):
         f = self.cs.flavors.get('aa1')
@@ -79,7 +79,7 @@ class FlavorsTest(utils.TestCase):
         self.assertEqual(128, f.ram)
         self.assertEqual(0, f.disk)
         self.assertEqual(0, f.ephemeral)
-        self.assertEqual(True, f.is_public)
+        self.assertTrue(f.is_public)
 
     def test_get_flavor_details_diablo(self):
         f = self.cs.flavors.get(3)

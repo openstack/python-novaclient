@@ -311,7 +311,7 @@ class ValidationsTestCase(test_utils.TestCase):
                 utils.validate_flavor_metadata_keys([key])
                 self.fail("Invalid key passed validation: %s" % key)
             except exceptions.CommandError as ce:
-                self.assertTrue(key in str(ce))
+                self.assertIn(key, str(ce))
 
 
 class ResourceManagerExtraKwargsHookTestCase(test_utils.TestCase):
