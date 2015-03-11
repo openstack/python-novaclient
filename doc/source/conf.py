@@ -72,12 +72,12 @@ def gen_ref(ver, title, names):
 
 gen_ref(None, "Exceptions", ["exceptions"])
 gen_ref("v2", "Version 1.1, Version 2 API Reference, Version 3 API Reference",
-        ["flavors", "images", "servers", "hosts", "agents", "aggregates",
-         "availability_zones", "certs", "fixed_ips", "floating_ip_pools",
-         "floating_ips", "hypervisors", "keypairs", "limits", "networks",
-         "quota_classes", "quotas", "security_group_rules",
-         "security_groups", "services", "virtual_interfaces",
-         "volume_snapshots", "volumes", "volume_types"])
+        ["client", "flavors", "images", "servers", "hosts", "agents",
+         "aggregates", "availability_zones", "certs", "fixed_ips",
+         "floating_ip_pools", "floating_ips", "hypervisors", "keypairs",
+         "limits", "networks", "quota_classes", "quotas",
+         "security_group_rules", "security_groups", "services",
+         "virtual_interfaces", "volume_snapshots", "volumes", "volume_types"])
 
 # -- General configuration ----------------------------------------------------
 
@@ -85,6 +85,8 @@ gen_ref("v2", "Version 1.1, Version 2 API Reference, Version 3 API Reference",
 # extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
 extensions = ['sphinx.ext.autodoc', 'oslosphinx']
+
+autoclass_content = 'both'
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
