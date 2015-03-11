@@ -2145,7 +2145,7 @@ class ShellTest(utils.TestCase):
 
     def test_volume_show(self):
         self.run_command('volume-show Work')
-        self.assert_called('GET', '/volumes?name=Work', pos=-2)
+        self.assert_called('GET', '/volumes?display_name=Work', pos=-2)
         self.assert_called(
             'GET',
             '/volumes/15e59938-07d5-11e1-90e3-e3dffe0c5983',

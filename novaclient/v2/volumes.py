@@ -86,6 +86,9 @@ class VolumeManager(base.ManagerWithFind):
         """
         search_opts = search_opts or {}
 
+        if 'name' in search_opts.keys():
+            search_opts['display_name'] = search_opts.pop('name')
+
         qparams = dict((k, v) for (k, v) in six.iteritems(search_opts) if v)
 
         query_string = '?%s' % parse.urlencode(qparams) if qparams else ''
