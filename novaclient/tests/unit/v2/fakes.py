@@ -258,7 +258,7 @@ class FakeHTTPClient(base_client.HTTPClient):
                 },
                 "flavor": {
                     "id": 1,
-                    "name": "256 MB Server",
+                    "name": "256 mb server",
                 },
                 "hostId": "e4d909c290d0fb1ca068ffaddf22cbd0",
                 "status": "BUILD",
@@ -299,7 +299,7 @@ class FakeHTTPClient(base_client.HTTPClient):
                 },
                 "flavor": {
                     "id": 1,
-                    "name": "256 MB Server",
+                    "name": "256 mb server",
                 },
                 "hostId": "9e107d9d372bb6826bd81d3542a419d6",
                 "status": "ACTIVE",
@@ -340,7 +340,7 @@ class FakeHTTPClient(base_client.HTTPClient):
                 "image": "",
                 "flavor": {
                     "id": 1,
-                    "name": "256 MB Server",
+                    "name": "256 mb server",
                 },
                 "hostId": "9e107d9d372bb6826bd81d3542a419d6",
                 "status": "ACTIVE",
@@ -672,19 +672,19 @@ class FakeHTTPClient(base_client.HTTPClient):
 
     def get_flavors_detail(self, **kw):
         flavors = {'flavors': [
-            {'id': 1, 'name': '256 MB Server', 'ram': 256, 'disk': 10,
+            {'id': 1, 'name': '256 mb server', 'ram': 256, 'disk': 10,
              'OS-FLV-EXT-DATA:ephemeral': 10,
              'os-flavor-access:is_public': True,
              'links': {}},
-            {'id': 2, 'name': '512 MB Server', 'ram': 512, 'disk': 20,
+            {'id': 2, 'name': '512 mb server', 'ram': 512, 'disk': 20,
              'OS-FLV-EXT-DATA:ephemeral': 20,
              'os-flavor-access:is_public': False,
              'links': {}},
-            {'id': 4, 'name': '1024 MB Server', 'ram': 1024, 'disk': 10,
+            {'id': 4, 'name': '1024 mb server', 'ram': 1024, 'disk': 10,
              'OS-FLV-EXT-DATA:ephemeral': 10,
              'os-flavor-access:is_public': True,
              'links': {}},
-            {'id': 'aa1', 'name': '128 MB Server', 'ram': 128, 'disk': 0,
+            {'id': 'aa1', 'name': '128 mb server', 'ram': 128, 'disk': 0,
              'OS-FLV-EXT-DATA:ephemeral': 0,
              'os-flavor-access:is_public': True,
              'links': {}}
@@ -736,16 +736,16 @@ class FakeHTTPClient(base_client.HTTPClient):
             {},
             {'flavor': {
                 'id': 3,
-                'name': '256 MB Server',
+                'name': '256 mb server',
                 'ram': 256,
                 'disk': 10,
             }},
         )
 
-    def get_flavors_512_MB_Server(self, **kw):
+    def get_flavors_512_mb_server(self, **kw):
         raise exceptions.NotFound('404')
 
-    def get_flavors_128_MB_Server(self, **kw):
+    def get_flavors_128_mb_server(self, **kw):
         raise exceptions.NotFound('404')
 
     def get_flavors_aa1(self, **kw):

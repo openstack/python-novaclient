@@ -93,10 +93,10 @@ class FlavorsTest(utils.TestCase):
     def test_find(self):
         f = self.cs.flavors.find(ram=256)
         self.cs.assert_called('GET', '/flavors/detail')
-        self.assertEqual('256 MB Server', f.name)
+        self.assertEqual('256 mb server', f.name)
 
         f = self.cs.flavors.find(disk=0)
-        self.assertEqual('128 MB Server', f.name)
+        self.assertEqual('128 mb server', f.name)
 
         self.assertRaises(exceptions.NotFound, self.cs.flavors.find,
                           disk=12345)
