@@ -372,7 +372,7 @@ def _boot(cs, args):
     dest='files',
     default=[],
     help=_("Store arbitrary files from <src-path> locally to <dst-path> "
-           "on the new server. You may store up to 5 files."))
+           "on the new server. Limited by the injected_files quota value."))
 @cliutils.arg(
     '--key-name',
     default=os.environ.get('NOVACLIENT_DEFAULT_KEY_NAME'),
