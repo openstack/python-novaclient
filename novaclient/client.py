@@ -51,7 +51,7 @@ class TCPKeepAliveAdapter(adapters.HTTPAdapter):
     def init_poolmanager(self, *args, **kwargs):
         if requests.__version__ >= '2.4.1':
             kwargs.setdefault('socket_options', [
-                (socket.IPROTO_TCP, socket.TCP_NODELAY, 1),
+                (socket.IPPROTO_TCP, socket.TCP_NODELAY, 1),
                 (socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1),
             ])
         super(TCPKeepAliveAdapter, self).init_poolmanager(*args, **kwargs)
