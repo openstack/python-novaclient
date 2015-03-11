@@ -4326,7 +4326,9 @@ def do_server_group_list(cs, args):
 
 
 def do_secgroup_list_default_rules(cs, args):
-    """List rules for the default security group."""
+    """List rules that will be added to the 'default' security group for
+    new tenants.
+    """
     _print_secgroup_rules(cs.security_group_default_rules.list(),
                           show_source_group=False)
 
@@ -4345,7 +4347,9 @@ def do_secgroup_list_default_rules(cs, args):
     help=_('Port at end of range.'))
 @cliutils.arg('cidr', metavar='<cidr>', help=_('CIDR for address range.'))
 def do_secgroup_add_default_rule(cs, args):
-    """Add a rule to the default security group."""
+    """Add a rule to the set of rules that will be added to the 'default'
+    security group for new tenants.
+    """
     rule = cs.security_group_default_rules.create(args.ip_proto,
                                                   args.from_port,
                                                   args.to_port,
@@ -4367,7 +4371,9 @@ def do_secgroup_add_default_rule(cs, args):
     help=_('Port at end of range.'))
 @cliutils.arg('cidr', metavar='<cidr>', help=_('CIDR for address range.'))
 def do_secgroup_delete_default_rule(cs, args):
-    """Delete a rule from the default security group."""
+    """Delete a rule from the set of rules that will be added to the
+    'default' security group for new tenants.
+    """
     for rule in cs.security_group_default_rules.list():
         if (rule.ip_protocol and
                 rule.ip_protocol.upper() == args.ip_proto.upper() and
