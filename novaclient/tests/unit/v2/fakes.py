@@ -2196,6 +2196,7 @@ class FakeSessionMockClient(base_client.SessionClient, FakeHTTPClient):
         self.callstack = []
         self.auth = mock.Mock()
         self.session = mock.Mock()
+        self.service_type = 'service_type'
 
         self.auth.get_auth_ref.return_value.project_id = 'tenant_id'
 

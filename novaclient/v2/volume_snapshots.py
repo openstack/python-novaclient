@@ -55,11 +55,12 @@ class SnapshotManager(base.ManagerWithFind):
         :param display_description: Description of the snapshot
         :rtype: :class:`Snapshot`
         """
-        body = {'snapshot': {'volume_id': volume_id,
-                             'force': force,
-                             'display_name': display_name,
-                             'display_description': display_description}}
-        return self._create('/snapshots', body, 'snapshot')
+        with self.alternate_service_type('volume'):
+            body = {'snapshot': {'volume_id': volume_id,
+                                 'force': force,
+                                 'display_name': display_name,
+                                 'display_description': display_description}}
+            return self._create('/snapshots', body, 'snapshot')
 
     def get(self, snapshot_id):
         """
@@ -68,7 +69,8 @@ class SnapshotManager(base.ManagerWithFind):
         :param snapshot_id: The ID of the snapshot to get.
         :rtype: :class:`Snapshot`
         """
-        return self._get("/snapshots/%s" % snapshot_id, "snapshot")
+        with self.alternate_service_type('volume'):
+            return self._get("/snapshots/%s" % snapshot_id, "snapshot")
 
     def list(self, detailed=True):
         """
@@ -76,10 +78,11 @@ class SnapshotManager(base.ManagerWithFind):
 
         :rtype: list of :class:`Snapshot`
         """
-        if detailed is True:
-            return self._list("/snapshots/detail", "snapshots")
-        else:
-            return self._list("/snapshots", "snapshots")
+        with self.alternate_service_type('volume'):
+            if detailed is True:
+                return self._list("/snapshots/detail", "snapshots")
+            else:
+                return self._list("/snapshots", "snapshots")
 
     def delete(self, snapshot):
         """
@@ -87,4 +90,5 @@ class SnapshotManager(base.ManagerWithFind):
 
         :param snapshot: The :class:`Snapshot` to delete.
         """
-        self._delete("/snapshots/%s" % base.getid(snapshot))
+        with self.alternate_service_type('volume'):
+            self._delete("/snapshots/%s" % base.getid(snapshot))

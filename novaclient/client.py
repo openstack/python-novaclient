@@ -212,6 +212,11 @@ class HTTPClient(object):
                 # otherwise we will get all the requests logging messages
                 rql.setLevel(logging.WARNING)
 
+        # NOTE(melwitt): Service catalog is only set if bypass_url isn't
+        #                used. Otherwise, we can cache using services_url.
+        self.service_catalog = None
+        self.services_url = {}
+
     def use_token_cache(self, use_it):
         self.os_cache = use_it
 
@@ -405,7 +410,12 @@ class HTTPClient(object):
             path = re.sub(r'v[1-9]/[a-z0-9]+$', '', path)
             url = parse.urlunsplit((scheme, netloc, path, None, None))
         else:
-            url = self.management_url + url
+            if self.service_catalog:
+                url = self.get_service_url(self.service_type) + url
+            else:
+                # NOTE(melwitt): The service catalog is not available
+                #                when bypass_url is used.
+                url = self.management_url + url
 
         # Perform the request once. If we get a 401 back then it
         # might be because the auth token expired, so try to
@@ -448,6 +458,19 @@ class HTTPClient(object):
     def delete(self, url, **kwargs):
         return self._cs_request(url, 'DELETE', **kwargs)
 
+    def get_service_url(self, service_type):
+        if service_type not in self.services_url:
+            url = self.service_catalog.url_for(
+                attr='region',
+                filter_value=self.region_name,
+                endpoint_type=self.endpoint_type,
+                service_type=service_type,
+                service_name=self.service_name,
+                volume_service_name=self.volume_service_name,)
+            url = url.rstrip('/')
+            self.services_url[service_type] = url
+        return self.services_url[service_type]
+
     def _extract_service_catalog(self, url, resp, body, extract_token=True):
         """See what the auth service told us and process the response.
         We may get redirected to another site, fail or actually get
@@ -464,14 +487,7 @@ class HTTPClient(object):
                     self.auth_token = self.service_catalog.get_token()
                     self.tenant_id = self.service_catalog.get_tenant_id()
 
-                management_url = self.service_catalog.url_for(
-                    attr='region',
-                    filter_value=self.region_name,
-                    endpoint_type=self.endpoint_type,
-                    service_type=self.service_type,
-                    service_name=self.service_name,
-                    volume_service_name=self.volume_service_name,)
-                self.management_url = management_url.rstrip('/')
+                self.management_url = self.get_service_url(self.service_type)
                 return None
             except exceptions.AmbiguousEndpoints:
                 print(_("Found more than one valid endpoint. Use a more "

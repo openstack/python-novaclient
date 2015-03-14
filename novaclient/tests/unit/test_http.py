@@ -82,6 +82,7 @@ def get_authed_client():
     cl = get_client()
     cl.management_url = "http://example.com"
     cl.auth_token = "token"
+    cl.get_service_url = mock.Mock(return_value="http://example.com")
     return cl
 
 

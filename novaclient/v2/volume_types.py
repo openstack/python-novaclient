@@ -41,7 +41,8 @@ class VolumeTypeManager(base.ManagerWithFind):
 
         :rtype: list of :class:`VolumeType`.
         """
-        return self._list("/types", "volume_types")
+        with self.alternate_service_type('volume'):
+            return self._list("/types", "volume_types")
 
     def get(self, volume_type):
         """
@@ -50,7 +51,9 @@ class VolumeTypeManager(base.ManagerWithFind):
         :param volume_type: The ID of the :class:`VolumeType` to get.
         :rtype: :class:`VolumeType`
         """
-        return self._get("/types/%s" % base.getid(volume_type), "volume_type")
+        with self.alternate_service_type('volume'):
+            return self._get("/types/%s" % base.getid(volume_type),
+                             "volume_type")
 
     def delete(self, volume_type):
         """
@@ -58,7 +61,8 @@ class VolumeTypeManager(base.ManagerWithFind):
 
         :param volume_type: The ID of the :class:`VolumeType` to get.
         """
-        self._delete("/types/%s" % base.getid(volume_type))
+        with self.alternate_service_type('volume'):
+            self._delete("/types/%s" % base.getid(volume_type))
 
     def create(self, name):
         """
@@ -67,11 +71,10 @@ class VolumeTypeManager(base.ManagerWithFind):
         :param name: Descriptive name of the volume type
         :rtype: :class:`VolumeType`
         """
-
-        body = {
-            "volume_type": {
-                "name": name,
+        with self.alternate_service_type('volume'):
+            body = {
+                "volume_type": {
+                    "name": name,
+                }
             }
-        }
-
-        return self._create("/types", body, "volume_type")
+            return self._create("/types", body, "volume_type")

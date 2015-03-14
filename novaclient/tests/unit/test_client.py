@@ -86,6 +86,7 @@ class ClientTest(utils.TestCase):
                                                 auth_url="http://www.blah.com")
         instance.auth_token = 'foobar'
         instance.management_url = 'http://example.com'
+        instance.get_service_url = mock.Mock(return_value='http://example.com')
         instance.version = 'v2.0'
         mock_request = mock.Mock()
         mock_request.side_effect = novaclient.exceptions.Unauthorized(401)
@@ -136,6 +137,8 @@ class ClientTest(utils.TestCase):
                                                 auth_url="http://www.blah.com")
         instance.auth_token = 'foobar'
         instance.management_url = management_url % projectid
+        mock_get_service_url = mock.Mock(return_value=instance.management_url)
+        instance.get_service_url = mock_get_service_url
         instance.version = 'v2.0'
 
         # If passing None as the part of url, a client accesses the url which

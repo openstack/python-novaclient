@@ -81,6 +81,15 @@ class Manager(base.HookableMixin):
                         for res in data if res]
 
     @contextlib.contextmanager
+    def alternate_service_type(self, service_type):
+        original_service_type = self.api.client.service_type
+        self.api.client.service_type = service_type
+        try:
+            yield
+        finally:
+            self.api.client.service_type = original_service_type
+
+    @contextlib.contextmanager
     def completion_cache(self, cache_type, obj_class, mode):
         """
         The completion cache store items that can be used for bash

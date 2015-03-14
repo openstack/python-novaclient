@@ -60,14 +60,16 @@ class VolumeManager(base.ManagerWithFind):
         :rtype: :class:`Volume`
         :param imageRef: reference to an image stored in glance
         """
-        body = {'volume': {'size': size,
-                           'snapshot_id': snapshot_id,
-                           'display_name': display_name,
-                           'display_description': display_description,
-                           'volume_type': volume_type,
-                           'availability_zone': availability_zone,
-                           'imageRef': imageRef}}
-        return self._create('/volumes', body, 'volume')
+        # NOTE(melwitt): Ensure we use the volume endpoint for this call
+        with self.alternate_service_type('volume'):
+            body = {'volume': {'size': size,
+                               'snapshot_id': snapshot_id,
+                               'display_name': display_name,
+                               'display_description': display_description,
+                               'volume_type': volume_type,
+                               'availability_zone': availability_zone,
+                               'imageRef': imageRef}}
+            return self._create('/volumes', body, 'volume')
 
     def get(self, volume_id):
         """
@@ -76,7 +78,8 @@ class VolumeManager(base.ManagerWithFind):
         :param volume_id: The ID of the volume to get.
         :rtype: :class:`Volume`
         """
-        return self._get("/volumes/%s" % volume_id, "volume")
+        with self.alternate_service_type('volume'):
+            return self._get("/volumes/%s" % volume_id, "volume")
 
     def list(self, detailed=True, search_opts=None):
         """
@@ -84,19 +87,21 @@ class VolumeManager(base.ManagerWithFind):
 
         :rtype: list of :class:`Volume`
         """
-        search_opts = search_opts or {}
+        with self.alternate_service_type('volume'):
+            search_opts = search_opts or {}
 
-        if 'name' in search_opts.keys():
-            search_opts['display_name'] = search_opts.pop('name')
+            if 'name' in search_opts.keys():
+                search_opts['display_name'] = search_opts.pop('name')
 
-        qparams = dict((k, v) for (k, v) in six.iteritems(search_opts) if v)
+            qparams = dict((k, v) for (k, v) in
+                           six.iteritems(search_opts) if v)
 
-        query_string = '?%s' % parse.urlencode(qparams) if qparams else ''
+            query_str = '?%s' % parse.urlencode(qparams) if qparams else ''
 
-        if detailed is True:
-            return self._list("/volumes/detail%s" % query_string, "volumes")
-        else:
-            return self._list("/volumes%s" % query_string, "volumes")
+            if detailed is True:
+                return self._list("/volumes/detail%s" % query_str, "volumes")
+            else:
+                return self._list("/volumes%s" % query_str, "volumes")
 
     def delete(self, volume):
         """
@@ -104,7 +109,8 @@ class VolumeManager(base.ManagerWithFind):
 
         :param volume: The :class:`Volume` to delete.
         """
-        self._delete("/volumes/%s" % base.getid(volume))
+        with self.alternate_service_type('volume'):
+            self._delete("/volumes/%s" % base.getid(volume))
 
     def create_server_volume(self, server_id, volume_id, device):
         """
