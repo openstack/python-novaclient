@@ -11,9 +11,11 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import contextlib
 import json
 import re
 import textwrap
+import time
 import uuid
 
 from oslo.serialization import jsonutils
@@ -339,3 +341,23 @@ def validate_flavor_metadata_keys(keys):
                     'numbers, spaces, underscores, periods, colons and '
                     'hyphens.')
             raise exceptions.CommandError(msg % key)
+
+
+@contextlib.contextmanager
+def record_time(times, enabled, *args):
+    """Record the time of a specific action.
+
+    :param times: A list of tuples holds time data.
+    :type times: list
+    :param enabled: Whether timing is enabled.
+    :type enabled: bool
+    :param *args: Other data to be stored besides time data, these args
+                  will be joined to a string.
+    """
+    if not enabled:
+        yield
+    else:
+        start = time.time()
+        yield
+        end = time.time()
+        times.append((' '.join(args), start, end))

@@ -26,7 +26,6 @@ import hashlib
 import logging
 import re
 import socket
-import time
 
 from keystoneclient import adapter
 from oslo.utils import importutils
@@ -44,6 +43,7 @@ from six.moves.urllib import parse
 from novaclient import exceptions
 from novaclient.i18n import _
 from novaclient import service_catalog
+from novaclient import utils
 
 
 class TCPKeepAliveAdapter(adapters.HTTPAdapter):
@@ -76,22 +76,18 @@ class SessionClient(adapter.LegacyJsonAdapter):
 
     def __init__(self, *args, **kwargs):
         self.times = []
+        self.timings = kwargs.pop('timings', False)
         super(SessionClient, self).__init__(*args, **kwargs)
 
     def request(self, url, method, **kwargs):
         # NOTE(jamielennox): The standard call raises errors from
         # keystoneclient, where we need to raise the novaclient errors.
         raise_exc = kwargs.pop('raise_exc', True)
-        start_time = time.time()
-        resp, body = super(SessionClient, self).request(url,
-                                                        method,
-                                                        raise_exc=False,
-                                                        **kwargs)
-
-        end_time = time.time()
-        self.times.append(('%s %s' % (method, url),
-                          start_time, end_time))
-
+        with utils.record_time(self.times, self.timings, method, url):
+            resp, body = super(SessionClient, self).request(url,
+                                                            method,
+                                                            raise_exc=False,
+                                                            **kwargs)
         if raise_exc and resp.status_code >= 400:
             raise exceptions.from_response(resp, body, url, method)
 
@@ -393,10 +389,8 @@ class HTTPClient(object):
         return resp, body
 
     def _time_request(self, url, method, **kwargs):
-        start_time = time.time()
-        resp, body = self.request(url, method, **kwargs)
-        self.times.append(("%s %s" % (method, url),
-                           start_time, time.time()))
+        with utils.record_time(self.times, self.timings, method, url):
+            resp, body = self.request(url, method, **kwargs)
         return resp, body
 
     def _cs_request(self, url, method, **kwargs):
@@ -686,6 +680,7 @@ def _construct_http_client(username=None, password=None, project_id=None,
                              region_name=region_name,
                              service_name=service_name,
                              user_agent=user_agent,
+                             timings=timings,
                              **kwargs)
     else:
         # FIXME(jamielennox): username and password are now optional. Need

@@ -19,6 +19,7 @@ import logging
 import socket
 
 import fixtures
+from keystoneclient import adapter
 import mock
 import requests
 
@@ -388,3 +389,34 @@ class ClientTest(utils.TestCase):
         self.assertIn('RESP BODY: {"access": {"token": {"id":'
                       ' "{SHA1}4fc49c6a671ce889078ff6b250f7066cf6d2ada2"}}}',
                       output)
+
+    @mock.patch.object(novaclient.client.HTTPClient, 'request')
+    def test_timings(self, m_request):
+        m_request.return_value = (None, None)
+
+        client = novaclient.client.HTTPClient(user='zqfan', password='')
+        client._time_request("http://no.where", 'GET')
+        self.assertEqual(0, len(client.times))
+
+        client = novaclient.client.HTTPClient(user='zqfan', password='',
+                                              timings=True)
+        client._time_request("http://no.where", 'GET')
+        self.assertEqual(1, len(client.times))
+        self.assertEqual('GET http://no.where', client.times[0][0])
+
+
+class SessionClientTest(utils.TestCase):
+
+    @mock.patch.object(adapter.LegacyJsonAdapter, 'request')
+    def test_timings(self, m_request):
+        m_request.return_value = (mock.MagicMock(status_code=200), None)
+
+        client = novaclient.client.SessionClient(session=mock.MagicMock())
+        client.request("http://no.where", 'GET')
+        self.assertEqual(0, len(client.times))
+
+        client = novaclient.client.SessionClient(session=mock.MagicMock(),
+                                                 timings=True)
+        client.request("http://no.where", 'GET')
+        self.assertEqual(1, len(client.times))
+        self.assertEqual('GET http://no.where', client.times[0][0])

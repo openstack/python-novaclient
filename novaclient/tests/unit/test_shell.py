@@ -373,6 +373,16 @@ class ShellTest(utils.TestCase):
         except SystemExit as ex:
             self.assertEqual(ex.code, 130)
 
+    @mock.patch.object(novaclient.shell.OpenStackComputeShell, 'times')
+    @requests_mock.Mocker()
+    def test_timing(self, m_times, m_requests):
+        m_times.append.side_effect = RuntimeError('Boom!')
+        self.make_env()
+        self.register_keystone_discovery_fixture(m_requests)
+        self.shell('list')
+        exc = self.assertRaises(RuntimeError, self.shell, '--timings list')
+        self.assertEqual('Boom!', str(exc))
+
 
 class ShellTestKeystoneV3(ShellTest):
     def make_env(self, exclude=None, fake_env=FAKE_ENV):

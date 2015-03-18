@@ -28,7 +28,6 @@ import logging
 import os
 import pkgutil
 import sys
-import time
 
 from keystoneclient.auth.identity.generic import password
 from keystoneclient.auth.identity.generic import token
@@ -717,25 +716,23 @@ class OpenStackComputeShell(object):
             project_name = args.os_project_name or args.os_tenant_name
             if use_session:
                 # Not using Nova auth plugin, so use keystone
-                start_time = time.time()
-                keystone_session = ksession.Session.load_from_cli_options(args)
-                keystone_auth = self._get_keystone_auth(
-                    keystone_session,
-                    args.os_auth_url,
-                    username=args.os_username,
-                    user_id=args.os_user_id,
-                    user_domain_id=args.os_user_domain_id,
-                    user_domain_name=args.os_user_domain_name,
-                    password=args.os_password,
-                    auth_token=args.os_auth_token,
-                    project_id=project_id,
-                    project_name=project_name,
-                    project_domain_id=args.os_project_domain_id,
-                    project_domain_name=args.os_project_domain_name)
-                end_time = time.time()
-                self.times.append(
-                    ('%s %s' % ('auth_url', args.os_auth_url),
-                     start_time, end_time))
+                with utils.record_time(self.times, args.timings,
+                                       'auth_url', args.os_auth_url):
+                    keystone_session = (ksession.Session
+                                        .load_from_cli_options(args))
+                    keystone_auth = self._get_keystone_auth(
+                        keystone_session,
+                        args.os_auth_url,
+                        username=args.os_username,
+                        user_id=args.os_user_id,
+                        user_domain_id=args.os_user_domain_id,
+                        user_domain_name=args.os_user_domain_name,
+                        password=args.os_password,
+                        auth_token=args.os_auth_token,
+                        project_id=project_id,
+                        project_name=project_name,
+                        project_domain_id=args.os_project_domain_id,
+                        project_domain_name=args.os_project_domain_name)
 
         if (options.os_compute_api_version and
                 options.os_compute_api_version != '1.0'):
