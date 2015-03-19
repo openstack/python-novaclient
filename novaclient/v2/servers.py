@@ -492,6 +492,14 @@ class ServerManager(base.BootingManagerWithFind):
             body['server']['block_device_mapping'] = \
                 self._parse_block_device_mapping(block_device_mapping)
         elif block_device_mapping_v2:
+            # Following logic can't be removed because it will leaves
+            # a valid boot with both --image and --block-device
+            # failed , see bug 1433609 for more info
+            if image:
+                bdm_dict = {'uuid': image.id, 'source_type': 'image',
+                            'destination_type': 'local', 'boot_index': 0,
+                            'delete_on_termination': True}
+                block_device_mapping_v2.insert(0, bdm_dict)
             body['server']['block_device_mapping_v2'] = block_device_mapping_v2
 
         if nics is not None:
