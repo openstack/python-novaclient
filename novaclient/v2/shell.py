@@ -2935,9 +2935,13 @@ def _find_keypair(cs, keypair):
     default=False,
     help=_('Include reservations count.'))
 def do_absolute_limits(cs, args):
-    """Print a list of absolute limits for a user"""
+    """DEPRECATED, use limits instead."""
     limits = cs.limits.get(args.reserved, args.tenant).absolute
+    _print_absolute_limits(limits)
 
+
+def _print_absolute_limits(limits):
+    """Prints absolute limits."""
     class Limit(object):
         def __init__(self, name, used, max, other):
             self.name = name
@@ -2999,10 +3003,35 @@ def do_absolute_limits(cs, args):
 
 
 def do_rate_limits(cs, args):
-    """Print a list of rate limits for a user"""
+    """DEPRECATED, use limits instead."""
     limits = cs.limits.get().rate
+    _print_rate_limits(limits)
+
+
+def _print_rate_limits(limits):
+    """print rate limits."""
     columns = ['Verb', 'URI', 'Value', 'Remain', 'Unit', 'Next_Available']
     utils.print_list(limits, columns)
+
+
+@cliutils.arg(
+    '--tenant',
+    # nova db searches by project_id
+    dest='tenant',
+    metavar='<tenant>',
+    nargs='?',
+    help=_('Display information from single tenant (Admin only).'))
+@cliutils.arg(
+    '--reserved',
+    dest='reserved',
+    action='store_true',
+    default=False,
+    help=_('Include reservations count.'))
+def do_limits(cs, args):
+    """Print rate and absolute limits."""
+    limits = cs.limits.get(args.reserved, args.tenant)
+    _print_rate_limits(limits.rate)
+    _print_absolute_limits(limits.absolute)
 
 
 @cliutils.arg(
