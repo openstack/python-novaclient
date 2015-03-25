@@ -71,7 +71,7 @@ def gen_ref(ver, title, names):
                              "pkg": pkg, "name": name})
 
 gen_ref(None, "Exceptions", ["exceptions"])
-gen_ref("v2", "Version 1.1, Version 2 API Reference, Version 3 API Reference",
+gen_ref("v2", "Version 1.1, Version 2 API",
         ["client", "flavors", "images", "servers", "hosts", "agents",
          "aggregates", "availability_zones", "certs", "fixed_ips",
          "floating_ip_pools", "floating_ips", "hypervisors", "keypairs",

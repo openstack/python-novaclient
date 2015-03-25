@@ -14,7 +14,7 @@ First create a client instance with your credentials::
     >>> from novaclient import client
     >>> nova = client.Client(VERSION, USERNAME, PASSWORD, PROJECT_ID, AUTH_URL)
 
-Here ``VERSION`` can be: ``1.1``, ``2`` and ``3``.
+Here ``VERSION`` can be: ``1.1``, ``2``.
 
 Alternatively, you can create a client instance using the keystoneclient
 session API::
