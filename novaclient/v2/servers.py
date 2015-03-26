@@ -840,8 +840,7 @@ class ServerManager(base.BootingManagerWithFind):
         :param image: The :class:`Image` to boot with.
         :param flavor: The :class:`Flavor` to boot onto.
         :param meta: A dict of arbitrary key/value metadata to store for this
-                     server. A maximum of five entries is allowed, and both
-                     keys and values must be 255 characters or less.
+                     server. Both keys and values must be <=255 characters.
         :param files: A dict of files to overrwrite on the server upon boot.
                       Keys are file names (i.e. ``/etc/passwd``) and values
                       are the file contents (either as a string or as a
@@ -962,8 +961,7 @@ class ServerManager(base.BootingManagerWithFind):
             be preserved when rebuilding the instance. Defaults to False.
         :param name: Something to name the server.
         :param meta: A dict of arbitrary key/value metadata to store for this
-                     server. A maximum of five entries is allowed, and both
-                     keys and values must be 255 characters or less.
+                     server. Both keys and values must be <=255 characters.
         :param files: A dict of files to overwrite on the server upon boot.
                       Keys are file names (i.e. ``/etc/passwd``) and values
                       are the file contents (either as a string or as a
