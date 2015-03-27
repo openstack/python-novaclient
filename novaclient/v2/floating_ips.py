@@ -24,6 +24,9 @@ class FloatingIP(base.Resource):
         """
         self.manager.delete(self)
 
+    def __repr__(self):
+        return "<FloatingIP: %s>" % self.address
+
 
 class FloatingIPManager(base.ManagerWithFind):
     resource_class = FloatingIP
