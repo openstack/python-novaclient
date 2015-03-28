@@ -355,3 +355,22 @@ class DoActionOnManyTestCase(test_utils.TestCase):
 
     def test_do_action_on_many_last_fails(self):
         self._test_do_action_on_many([None, Exception()], fail=True)
+
+
+class RecordTimeTestCase(test_utils.TestCase):
+
+    def test_record_time(self):
+        times = []
+
+        with utils.record_time(times, True, 'a', 'b'):
+            pass
+        self.assertEqual(1, len(times))
+        self.assertEqual(3, len(times[0]))
+        self.assertEqual('a b', times[0][0])
+        self.assertIsInstance(times[0][1], float)
+        self.assertIsInstance(times[0][2], float)
+
+        times = []
+        with utils.record_time(times, False, 'x'):
+            pass
+        self.assertEqual(0, len(times))
