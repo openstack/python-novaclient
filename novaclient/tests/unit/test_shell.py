@@ -343,10 +343,6 @@ class ShellTest(utils.TestCase):
         self._test_service_type('2', 'compute', mock_client)
 
     @mock.patch('novaclient.client.Client')
-    def test_v3_service_type(self, mock_client):
-        self._test_service_type('3', 'computev3', mock_client)
-
-    @mock.patch('novaclient.client.Client')
     def test_v_unknown_service_type(self, mock_client):
         self._test_service_type('unknown', 'compute', mock_client)
 

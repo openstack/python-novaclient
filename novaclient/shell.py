@@ -58,13 +58,7 @@ from novaclient.v2 import shell as shell_v2
 
 DEFAULT_OS_COMPUTE_API_VERSION = "2"
 DEFAULT_NOVA_ENDPOINT_TYPE = 'publicURL'
-# NOTE(cyeoh): Having the service type dependent on the API version
-# is pretty ugly, but we have to do this because traditionally the
-# catalog entry for compute points directly to the V2 API rather than
-# the root, and then doing version discovery.
-DEFAULT_NOVA_SERVICE_TYPE_MAP = {'1.1': 'compute',
-                                 '2': 'compute',
-                                 '3': 'computev3'}
+DEFAULT_NOVA_SERVICE_TYPE = "compute"
 
 logger = logging.getLogger(__name__)
 
@@ -414,7 +408,7 @@ class OpenStackComputeShell(object):
             metavar='<compute-api-ver>',
             default=cliutils.env('OS_COMPUTE_API_VERSION',
                                  default=DEFAULT_OS_COMPUTE_API_VERSION),
-            help=_('Accepts 1.1 or 3, '
+            help=_('Accepts number of API version, '
                    'defaults to env[OS_COMPUTE_API_VERSION].'))
         parser.add_argument(
             '--os_compute_api_version',
@@ -490,9 +484,9 @@ class OpenStackComputeShell(object):
     def _discover_via_contrib_path(self, version):
         module_path = os.path.dirname(os.path.abspath(__file__))
         version_str = "v%s" % version.replace('.', '_')
-        # NOTE(akurilin): v1.1, v2 and v3 have one implementation, so
-        # we should discover contrib modules in one place.
-        if version_str in ["v1_1", "v3"]:
+        # NOTE(andreykurilin): v1.1 uses implementation of v2, so we should
+        # discover contrib modules in novaclient.v2 dir.
+        if version_str == "v1_1":
             version_str = "v2"
         ext_path = os.path.join(module_path, version_str, 'contrib')
         ext_glob = os.path.join(ext_path, "*.py")
@@ -656,15 +650,8 @@ class OpenStackComputeShell(object):
             endpoint_type += 'URL'
 
         if not service_type:
-            os_compute_api_version = (options.os_compute_api_version or
-                                      DEFAULT_OS_COMPUTE_API_VERSION)
-            try:
-                service_type = DEFAULT_NOVA_SERVICE_TYPE_MAP[
-                    os_compute_api_version]
-            except KeyError:
-                service_type = DEFAULT_NOVA_SERVICE_TYPE_MAP[
-                    DEFAULT_OS_COMPUTE_API_VERSION]
-            service_type = cliutils.get_service_type(args.func) or service_type
+            service_type = (cliutils.get_service_type(args.func) or
+                            DEFAULT_NOVA_SERVICE_TYPE)
 
         # If we have an auth token but no management_url, we must auth anyway.
         # Expired tokens are handled by client.py:_cs_request
@@ -734,8 +721,7 @@ class OpenStackComputeShell(object):
                         project_domain_id=args.os_project_domain_id,
                         project_domain_name=args.os_project_domain_name)
 
-        if (options.os_compute_api_version and
-                options.os_compute_api_version != '1.0'):
+        if options.os_compute_api_version:
             if not any([args.os_tenant_id, args.os_tenant_name,
                         args.os_project_id, args.os_project_name]):
                 raise exc.CommandError(_("You must provide a project name or"
@@ -805,32 +791,6 @@ class OpenStackComputeShell(object):
             raise exc.CommandError(_("Invalid OpenStack Nova credentials."))
         except exc.AuthorizationFailure:
             raise exc.CommandError(_("Unable to authorize user"))
-
-        if options.os_compute_api_version == "3" and service_type != 'image':
-            # NOTE(cyeoh): create an image based client because the
-            # images api is no longer proxied by the V3 API and we
-            # sometimes need to be able to look up images information
-            # via glance when connected to the nova api.
-            image_service_type = 'image'
-            # NOTE(hdd): the password is needed again because creating a new
-            # Client without specifying bypass_url will force authentication.
-            # We can't reuse self.cs's bypass_url, because that's the URL for
-            # the nova service; we need to get glance's URL for this Client
-            if not os_password:
-                os_password = helper.password
-            self.cs.image_cs = client.Client(
-                options.os_compute_api_version, os_username,
-                os_password, os_tenant_name, tenant_id=os_tenant_id,
-                auth_url=os_auth_url, insecure=insecure,
-                region_name=os_region_name, endpoint_type=endpoint_type,
-                extensions=self.extensions, service_type=image_service_type,
-                service_name=service_name, auth_system=os_auth_system,
-                auth_plugin=auth_plugin,
-                volume_service_name=volume_service_name,
-                timings=args.timings, bypass_url=bypass_url,
-                os_cache=os_cache, http_log_debug=options.debug,
-                session=keystone_session, auth=keystone_auth,
-                cacert=cacert, timeout=timeout)
 
         args.func(self.cs, args)
 
