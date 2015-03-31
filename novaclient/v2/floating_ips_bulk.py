@@ -17,25 +17,29 @@
 Bulk Floating IPs interface
 """
 from novaclient import base
+from novaclient.v2 import floating_ips
 
 
-class FloatingIP(base.Resource):
+class FloatingIPRange(base.Resource):
     def __repr__(self):
-        return "<FloatingIP: %s>" % self.address
+        return "<FloatingIPRange: %s>" % self.ip_range
 
 
 class FloatingIPBulkManager(base.ManagerWithFind):
-    resource_class = FloatingIP
+    resource_class = FloatingIPRange
 
     def list(self, host=None):
         """
         List all floating IPs
         """
         if host is None:
-            return self._list('/os-floating-ips-bulk', 'floating_ip_info')
+            return self._list('/os-floating-ips-bulk',
+                              'floating_ip_info',
+                              obj_class=floating_ips.FloatingIP)
         else:
             return self._list('/os-floating-ips-bulk/%s' % host,
-                              'floating_ip_info')
+                              'floating_ip_info',
+                              obj_class=floating_ips.FloatingIP)
 
     def create(self, ip_range, pool=None, interface=None):
         """

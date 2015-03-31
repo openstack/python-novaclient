@@ -16,7 +16,7 @@
 from novaclient.tests.unit.fixture_data import client
 from novaclient.tests.unit.fixture_data import floatingips as data
 from novaclient.tests.unit import utils
-from novaclient.v2 import floating_ips_bulk
+from novaclient.v2 import floating_ips
 
 
 class FloatingIPsBulkTest(utils.FixturedTestCase):
@@ -27,13 +27,13 @@ class FloatingIPsBulkTest(utils.FixturedTestCase):
     def test_list_floating_ips_bulk(self):
         fl = self.cs.floating_ips_bulk.list()
         self.assert_called('GET', '/os-floating-ips-bulk')
-        [self.assertIsInstance(f, floating_ips_bulk.FloatingIP)
+        [self.assertIsInstance(f, floating_ips.FloatingIP)
          for f in fl]
 
     def test_list_floating_ips_bulk_host_filter(self):
         fl = self.cs.floating_ips_bulk.list('testHost')
         self.assert_called('GET', '/os-floating-ips-bulk/testHost')
-        [self.assertIsInstance(f, floating_ips_bulk.FloatingIP)
+        [self.assertIsInstance(f, floating_ips.FloatingIP)
          for f in fl]
 
     def test_create_floating_ips_bulk(self):
