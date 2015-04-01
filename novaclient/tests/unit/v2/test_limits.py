@@ -32,23 +32,6 @@ class LimitsTest(utils.FixturedTestCase):
         self.assert_called('GET', '/limits?tenant_id=1234')
         self.assertIsInstance(obj, limits.Limits)
 
-    def test_absolute_limits(self):
-        obj = self.cs.limits.get()
-
-        expected = (
-            limits.AbsoluteLimit("maxTotalRAMSize", 51200),
-            limits.AbsoluteLimit("maxServerMeta", 5),
-            limits.AbsoluteLimit("maxImageMeta", 5),
-            limits.AbsoluteLimit("maxPersonality", 5),
-            limits.AbsoluteLimit("maxPersonalitySize", 10240),
-        )
-
-        abs_limits = list(obj.absolute)
-        self.assertEqual(len(abs_limits), len(expected))
-
-        for limit in abs_limits:
-            self.assertIn(limit, expected)
-
     def test_absolute_limits_reserved(self):
         obj = self.cs.limits.get(reserved=True)
 
@@ -67,7 +50,7 @@ class LimitsTest(utils.FixturedTestCase):
         for limit in abs_limits:
             self.assertIn(limit, expected)
 
-    def test_rate_limits(self):
+    def test_rate_absolute_limits(self):
         obj = self.cs.limits.get()
 
         expected = (
@@ -85,4 +68,18 @@ class LimitsTest(utils.FixturedTestCase):
         self.assertEqual(len(rate_limits), len(expected))
 
         for limit in rate_limits:
+            self.assertIn(limit, expected)
+
+        expected = (
+            limits.AbsoluteLimit("maxTotalRAMSize", 51200),
+            limits.AbsoluteLimit("maxServerMeta", 5),
+            limits.AbsoluteLimit("maxImageMeta", 5),
+            limits.AbsoluteLimit("maxPersonality", 5),
+            limits.AbsoluteLimit("maxPersonalitySize", 10240),
+        )
+
+        abs_limits = list(obj.absolute)
+        self.assertEqual(len(abs_limits), len(expected))
+
+        for limit in abs_limits:
             self.assertIn(limit, expected)
