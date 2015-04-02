@@ -23,9 +23,11 @@ import requests_mock
 import six
 from testtools import matchers
 
+from novaclient import api_versions
 import novaclient.client
 from novaclient import exceptions
 import novaclient.shell
+from novaclient.tests.unit import fake_actions_module
 from novaclient.tests.unit import utils
 
 FAKE_ENV = {'OS_USERNAME': 'username',
@@ -400,6 +402,113 @@ class ShellTest(utils.TestCase):
         mock_client_instance = mock_client.return_value
         keyring_saver = mock_client_instance.client.keyring_saver
         self.assertIsInstance(keyring_saver, novaclient.shell.SecretsHelper)
+
+
+class TestLoadVersionedActions(utils.TestCase):
+
+    def test_load_versioned_actions(self):
+        parser = novaclient.shell.NovaClientArgumentParser()
+        subparsers = parser.add_subparsers(metavar='<subcommand>')
+        shell = novaclient.shell.OpenStackComputeShell()
+        shell.subcommands = {}
+        shell._find_actions(subparsers, fake_actions_module,
+                            api_versions.APIVersion("2.15"), False)
+        self.assertIn('fake-action', shell.subcommands.keys())
+        self.assertEqual(
+            1, shell.subcommands['fake-action'].get_default('func')())
+
+        shell.subcommands = {}
+        shell._find_actions(subparsers, fake_actions_module,
+                            api_versions.APIVersion("2.25"), False)
+        self.assertIn('fake-action', shell.subcommands.keys())
+        self.assertEqual(
+            2, shell.subcommands['fake-action'].get_default('func')())
+
+        self.assertIn('fake-action2', shell.subcommands.keys())
+        self.assertEqual(
+            3, shell.subcommands['fake-action2'].get_default('func')())
+
+    def test_load_versioned_actions_not_in_version_range(self):
+        parser = novaclient.shell.NovaClientArgumentParser()
+        subparsers = parser.add_subparsers(metavar='<subcommand>')
+        shell = novaclient.shell.OpenStackComputeShell()
+        shell.subcommands = {}
+        shell._find_actions(subparsers, fake_actions_module,
+                            api_versions.APIVersion("2.10000"), False)
+        self.assertNotIn('fake-action', shell.subcommands.keys())
+        self.assertIn('fake-action2', shell.subcommands.keys())
+
+    def test_load_versioned_actions_with_help(self):
+        parser = novaclient.shell.NovaClientArgumentParser()
+        subparsers = parser.add_subparsers(metavar='<subcommand>')
+        shell = novaclient.shell.OpenStackComputeShell()
+        shell.subcommands = {}
+        shell._find_actions(subparsers, fake_actions_module,
+                            api_versions.APIVersion("2.10000"), True)
+        self.assertIn('fake-action', shell.subcommands.keys())
+        expected_desc = ("(Supported by API versions '%(start)s' - "
+                         "'%(end)s')") % {'start': '2.10', 'end': '2.30'}
+        self.assertIn(expected_desc,
+                      shell.subcommands['fake-action'].description)
+
+    @mock.patch.object(novaclient.shell.NovaClientArgumentParser,
+                       'add_argument')
+    def test_load_versioned_actions_with_args(self, mock_add_arg):
+        parser = novaclient.shell.NovaClientArgumentParser(add_help=False)
+        subparsers = parser.add_subparsers(metavar='<subcommand>')
+        shell = novaclient.shell.OpenStackComputeShell()
+        shell.subcommands = {}
+        shell._find_actions(subparsers, fake_actions_module,
+                            api_versions.APIVersion("2.1"), False)
+        self.assertIn('fake-action2', shell.subcommands.keys())
+        mock_add_arg.assert_has_calls([
+            mock.call('-h', '--help', action='help', help='==SUPPRESS=='),
+            mock.call('--foo')])
+
+    @mock.patch.object(novaclient.shell.NovaClientArgumentParser,
+                       'add_argument')
+    def test_load_versioned_actions_with_args2(self, mock_add_arg):
+        parser = novaclient.shell.NovaClientArgumentParser(add_help=False)
+        subparsers = parser.add_subparsers(metavar='<subcommand>')
+        shell = novaclient.shell.OpenStackComputeShell()
+        shell.subcommands = {}
+        shell._find_actions(subparsers, fake_actions_module,
+                            api_versions.APIVersion("2.4"), False)
+        self.assertIn('fake-action2', shell.subcommands.keys())
+        mock_add_arg.assert_has_calls([
+            mock.call('-h', '--help', action='help', help='==SUPPRESS=='),
+            mock.call('--bar')])
+
+    @mock.patch.object(novaclient.shell.NovaClientArgumentParser,
+                       'add_argument')
+    def test_load_versioned_actions_with_args_not_in_version_range(
+            self, mock_add_arg):
+        parser = novaclient.shell.NovaClientArgumentParser(add_help=False)
+        subparsers = parser.add_subparsers(metavar='<subcommand>')
+        shell = novaclient.shell.OpenStackComputeShell()
+        shell.subcommands = {}
+        shell._find_actions(subparsers, fake_actions_module,
+                            api_versions.APIVersion("2.10000"), False)
+        self.assertIn('fake-action2', shell.subcommands.keys())
+        mock_add_arg.assert_has_calls([
+            mock.call('-h', '--help', action='help', help='==SUPPRESS==')])
+
+    @mock.patch.object(novaclient.shell.NovaClientArgumentParser,
+                       'add_argument')
+    def test_load_versioned_actions_with_args_and_help(self, mock_add_arg):
+        parser = novaclient.shell.NovaClientArgumentParser(add_help=False)
+        subparsers = parser.add_subparsers(metavar='<subcommand>')
+        shell = novaclient.shell.OpenStackComputeShell()
+        shell.subcommands = {}
+        shell._find_actions(subparsers, fake_actions_module,
+                            api_versions.APIVersion("2.4"), True)
+        mock_add_arg.assert_has_calls([
+            mock.call('-h', '--help', action='help', help='==SUPPRESS=='),
+            mock.call('-h', '--help', action='help', help='==SUPPRESS=='),
+            mock.call('--foo',
+                      help=" (Supported by API versions '2.1' - '2.2')"),
+            mock.call('--bar',
+                      help=" (Supported by API versions '2.3' - '2.4')")])
 
 
 class ShellTestKeystoneV3(ShellTest):

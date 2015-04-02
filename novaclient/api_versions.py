@@ -11,6 +11,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import functools
 import logging
 import os
 import pkgutil
@@ -20,6 +21,7 @@ from oslo_utils import strutils
 
 from novaclient import exceptions
 from novaclient.i18n import _, _LW
+from novaclient import utils
 
 LOG = logging.getLogger(__name__)
 if not LOG.handlers:
@@ -29,6 +31,7 @@ if not LOG.handlers:
 # key is a deprecated version and value is an alternative version.
 DEPRECATED_VERSIONS = {"1.1": "2"}
 
+_SUBSTITUTIONS = {}
 
 _type_error_msg = _("'%(other)s' should be an instance of '%(cls)s'")
 
@@ -150,6 +153,31 @@ class APIVersion(object):
         return "%s.%s" % (self.ver_major, self.ver_minor)
 
 
+class VersionedMethod(object):
+
+    def __init__(self, name, start_version, end_version, func):
+        """Versioning information for a single method
+
+        :param name: Name of the method
+        :param start_version: Minimum acceptable version
+        :param end_version: Maximum acceptable_version
+        :param func: Method to call
+
+        Minimum and maximums are inclusive
+        """
+        self.name = name
+        self.start_version = start_version
+        self.end_version = end_version
+        self.func = func
+
+    def __str__(self):
+        return ("Version Method %s: min: %s, max: %s"
+                % (self.name, self.start_version, self.end_version))
+
+    def __repr__(self):
+        return "<VersionedMethod %s>" % self.name
+
+
 def get_available_major_versions():
     # NOTE(andreykurilin): available clients version should not be
     # hardcoded, so let's discover them.
@@ -206,3 +234,44 @@ def update_headers(headers, api_version):
 
     if not api_version.is_null() and api_version.ver_minor != 0:
         headers["X-OpenStack-Nova-API-Version"] = api_version.get_string()
+
+
+def add_substitution(versioned_method):
+    _SUBSTITUTIONS.setdefault(versioned_method.name, [])
+    _SUBSTITUTIONS[versioned_method.name].append(versioned_method)
+
+
+def get_substitutions(func_name, api_version=None):
+    substitutions = _SUBSTITUTIONS.get(func_name, [])
+    if api_version and not api_version.is_null():
+        return [m for m in substitutions
+                if api_version.matches(m.start_version, m.end_version)]
+    return substitutions
+
+
+def wraps(start_version, end_version=None):
+    start_version = APIVersion(start_version)
+    if end_version:
+        end_version = APIVersion(end_version)
+    else:
+        end_version = APIVersion("%s.latest" % start_version.ver_major)
+
+    def decor(func):
+        func.versioned = True
+        name = utils.get_function_name(func)
+        versioned_method = VersionedMethod(name, start_version,
+                                           end_version, func)
+        add_substitution(versioned_method)
+
+        @functools.wraps(func)
+        def substitution(obj, *args, **kwargs):
+            methods = get_substitutions(name, obj.api_version)
+
+            if not methods:
+                raise exceptions.VersionNotFoundForAPIMethod(
+                    obj.api_version.get_string(), name)
+            else:
+                return max(methods, key=lambda f: f.start_version).func(
+                    obj, *args, **kwargs)
+        return substitution
+    return decor

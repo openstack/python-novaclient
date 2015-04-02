@@ -368,3 +368,13 @@ def record_time(times, enabled, *args):
         yield
         end = time.time()
         times.append((' '.join(args), start, end))
+
+
+def get_function_name(func):
+    if six.PY2:
+        if hasattr(func, "im_class"):
+            return "%s.%s" % (func.im_class, func.__name__)
+        else:
+            return "%s.%s" % (func.__module__, func.__name__)
+    else:
+        return "%s.%s" % (func.__module__, func.__qualname__)
