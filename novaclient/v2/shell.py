@@ -1873,11 +1873,17 @@ def do_show(cs, args):
 
 
 @cliutils.arg(
+    '--all-tenants',
+    action='store_const',
+    const=1,
+    default=0,
+    help=_('Delete server(s) in another tenant by name (Admin only).'))
+@cliutils.arg(
     'server', metavar='<server>', nargs='+',
     help=_('Name or ID of server(s).'))
 def do_delete(cs, args):
     """Immediately shut down and delete specified server(s)."""
-    find_args = {'all_tenants': '1'}
+    find_args = {'all_tenants': args.all_tenants}
     utils.do_action_on_many(
         lambda s: _find_server(cs, s, **find_args).delete(),
         args.server,
