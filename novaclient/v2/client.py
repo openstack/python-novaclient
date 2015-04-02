@@ -103,7 +103,7 @@ class Client(object):
                  auth_system='keystone', auth_plugin=None, auth_token=None,
                  cacert=None, tenant_id=None, user_id=None,
                  connection_pool=False, session=None, auth=None,
-                 **kwargs):
+                 api_version=None, **kwargs):
         """
         :param str username: Username
         :param str api_key: API Key
@@ -133,6 +133,8 @@ class Client(object):
         :param bool connection_pool: Use a connection pool
         :param str session: Session
         :param str auth: Auth
+        :param api_version: Compute API version
+        :type api_version: novaclient.api_versions.APIVersion
         """
         # FIXME(comstud): Rename the api_key argument above when we
         # know it's not being used as keyword argument
@@ -153,6 +155,7 @@ class Client(object):
         self.limits = limits.LimitsManager(self)
         self.servers = servers.ServerManager(self)
         self.versions = versions.VersionManager(self)
+        self.api_version = api_version
 
         # extensions
         self.agents = agents.AgentsManager(self)
@@ -224,6 +227,7 @@ class Client(object):
             connection_pool=connection_pool,
             session=session,
             auth=auth,
+            api_version=api_version,
             **kwargs)
 
     @client._original_only

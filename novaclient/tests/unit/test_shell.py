@@ -97,8 +97,8 @@ class ShellTest(utils.TestCase):
     def setUp(self):
         super(ShellTest, self).setUp()
         self.useFixture(fixtures.MonkeyPatch(
-                        'novaclient.client.get_client_class',
-                        mock.MagicMock))
+                        'novaclient.client.Client',
+                        mock.MagicMock()))
         self.nc_util = mock.patch(
             'novaclient.openstack.common.cliutils.isunauthenticated').start()
         self.nc_util.return_value = False
@@ -344,7 +344,9 @@ class ShellTest(utils.TestCase):
 
     @mock.patch('novaclient.client.Client')
     def test_v_unknown_service_type(self, mock_client):
-        self._test_service_type('unknown', 'compute', mock_client)
+        self.assertRaises(exceptions.UnsupportedVersion,
+                          self._test_service_type,
+                          'unknown', 'compute', mock_client)
 
     @mock.patch('sys.argv', ['nova'])
     @mock.patch('sys.stdout', six.StringIO())
