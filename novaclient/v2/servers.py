@@ -433,10 +433,19 @@ class ServerManager(base.BootingManagerWithFind):
             if hasattr(userdata, 'read'):
                 userdata = userdata.read()
 
+            # NOTE(melwitt): Text file data is converted to bytes prior to
+            # base64 encoding. The utf-8 encoding will fail for binary files.
             if six.PY3:
-                userdata = userdata.encode("utf-8")
+                try:
+                    userdata = userdata.encode("utf-8")
+                except AttributeError:
+                    # In python 3, 'bytes' object has no attribute 'encode'
+                    pass
             else:
-                userdata = encodeutils.safe_encode(userdata)
+                try:
+                    userdata = encodeutils.safe_encode(userdata)
+                except UnicodeDecodeError:
+                    pass
 
             userdata_b64 = base64.b64encode(userdata).decode('utf-8')
             body["server"]["user_data"] = userdata_b64
