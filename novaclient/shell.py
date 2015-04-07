@@ -21,12 +21,7 @@ Command-line interface to the OpenStack Nova API.
 from __future__ import print_function
 import argparse
 import getpass
-import glob
-import imp
-import itertools
 import logging
-import os
-import pkgutil
 import sys
 
 from keystoneclient.auth.identity.generic import password
@@ -35,7 +30,6 @@ from keystoneclient.auth.identity import v3 as identity
 from keystoneclient import session as ksession
 from oslo_utils import encodeutils
 from oslo_utils import strutils
-import pkg_resources
 import six
 
 HAS_KEYRING = False
@@ -456,56 +450,10 @@ class OpenStackComputeShell(object):
 
         return parser
 
+    # TODO(lyj): Delete this method after heat patched to use
+    #            client.discover_extensions
     def _discover_extensions(self, version):
-        extensions = []
-        for name, module in itertools.chain(
-                self._discover_via_python_path(),
-                self._discover_via_contrib_path(version),
-                self._discover_via_entry_points()):
-
-            extension = novaclient.extension.Extension(name, module)
-            extensions.append(extension)
-
-        return extensions
-
-    def _discover_via_python_path(self):
-        for (module_loader, name, _ispkg) in pkgutil.iter_modules():
-            if name.endswith('_python_novaclient_ext'):
-                if not hasattr(module_loader, 'load_module'):
-                    # Python 2.6 compat: actually get an ImpImporter obj
-                    module_loader = module_loader.find_module(name)
-
-                module = module_loader.load_module(name)
-                if hasattr(module, 'extension_name'):
-                    name = module.extension_name
-
-                yield name, module
-
-    def _discover_via_contrib_path(self, version):
-        module_path = os.path.dirname(os.path.abspath(__file__))
-        version_str = "v%s" % version.replace('.', '_')
-        # NOTE(andreykurilin): v1.1 uses implementation of v2, so we should
-        # discover contrib modules in novaclient.v2 dir.
-        if version_str == "v1_1":
-            version_str = "v2"
-        ext_path = os.path.join(module_path, version_str, 'contrib')
-        ext_glob = os.path.join(ext_path, "*.py")
-
-        for ext_path in glob.iglob(ext_glob):
-            name = os.path.basename(ext_path)[:-3]
-
-            if name == "__init__":
-                continue
-
-            module = imp.load_source(name, ext_path)
-            yield name, module
-
-    def _discover_via_entry_points(self):
-        for ep in pkg_resources.iter_entry_points('novaclient.extension'):
-            name = ep.name
-            module = ep.load()
-
-            yield name, module
+        return client.discover_extensions(version)
 
     def _add_bash_completion_subparser(self, subparsers):
         subparser = subparsers.add_parser(
