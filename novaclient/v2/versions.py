@@ -16,7 +16,10 @@
 version interface
 """
 
+from six.moves import urllib
+
 from novaclient import base
+from novaclient import client
 
 
 class Version(base.Resource):
@@ -30,6 +33,19 @@ class Version(base.Resource):
 class VersionManager(base.ManagerWithFind):
     resource_class = Version
 
+    def _is_session_client(self):
+        return isinstance(self.api.client, client.SessionClient)
+
     def list(self):
         """List all versions."""
-        return self._list(None, "versions")
+
+        version_url = None
+        if self._is_session_client():
+            # NOTE: "list versions" API needs to be accessed without base
+            # URI (like "v2/{project-id}"), so here should be a scheme("http",
+            # etc.) and a hostname.
+            endpoint = self.api.client.get_endpoint()
+            url = urllib.parse.urlparse(endpoint)
+            version_url = '%s://%s/' % (url.scheme, url.netloc)
+
+        return self._list(version_url, "versions")

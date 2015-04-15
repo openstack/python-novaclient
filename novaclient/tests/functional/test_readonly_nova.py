@@ -156,6 +156,9 @@ class SimpleReadOnlyNovaClientTest(base.ClientTestBase):
         self.nova('migration-list')
         self.nova('migration-list', flags='--debug')
 
+    def test_version_list(self):
+        self.nova('version-list')
+
     # Optional arguments:
 
     def test_admin_version(self):
