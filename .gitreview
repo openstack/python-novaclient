@@ -2,3 +2,5 @@
 host=review.openstack.org
 port=29418
 project=openstack/python-novaclient.git
+defaultbranch=stable/kilo
+
