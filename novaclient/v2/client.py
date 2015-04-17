@@ -62,7 +62,7 @@ class Client(object):
 
         >>> from keystoneclient.auth.identity import v2
         >>> from keystoneclient import session
-        >>> from novaclient.client import Client
+        >>> from novaclient import client
         >>> auth = v2.Password(auth_url=AUTH_URL,
                                username=USERNAME,
                                password=PASSWORD,
@@ -72,9 +72,9 @@ class Client(object):
 
     Then call methods on its managers::
 
-        >>> client.servers.list()
+        >>> nova.servers.list()
         ...
-        >>> client.flavors.list()
+        >>> nova.flavors.list()
         ...
 
     It is also possible to use an instance as a context manager in which
