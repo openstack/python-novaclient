@@ -169,3 +169,9 @@ class SimpleReadOnlyNovaClientTest(base.ClientTestBase):
 
     def test_admin_timing(self):
         self.nova('list', flags='--timing')
+
+    def test_admin_invalid_bypass_url(self):
+        self.assertRaises(exceptions.CommandFailed,
+                          self.nova,
+                          'list',
+                          flags='--bypass-url badurl')

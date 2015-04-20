@@ -208,8 +208,6 @@ class HTTPClient(object):
                 # otherwise we will get all the requests logging messages
                 rql.setLevel(logging.WARNING)
 
-        # NOTE(melwitt): Service catalog is only set if bypass_url isn't
-        #                used. Otherwise, we can cache using services_url.
         self.service_catalog = None
         self.services_url = {}
 
@@ -404,11 +402,9 @@ class HTTPClient(object):
             path = re.sub(r'v[1-9]/[a-z0-9]+$', '', path)
             url = parse.urlunsplit((scheme, netloc, path, None, None))
         else:
-            if self.service_catalog:
+            if self.service_catalog and not self.bypass_url:
                 url = self.get_service_url(self.service_type) + url
             else:
-                # NOTE(melwitt): The service catalog is not available
-                #                when bypass_url is used.
                 url = self.management_url + url
 
         # Perform the request once. If we get a 401 back then it

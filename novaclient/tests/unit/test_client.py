@@ -266,6 +266,45 @@ class ClientTest(utils.TestCase):
         self.assertEqual("compute/v100", cs.bypass_url)
         self.assertEqual("compute/v100", cs.management_url)
 
+    def test_service_url_lookup(self):
+        service_type = 'compute'
+        cs = novaclient.client.HTTPClient(None, None, None,
+                                          auth_url='foo/v2',
+                                          service_type=service_type)
+
+        @mock.patch.object(cs, 'get_service_url', return_value='compute/v5')
+        @mock.patch.object(cs, 'request', return_value=(200, '{}'))
+        @mock.patch.object(cs, 'authenticate')
+        def do_test(mock_auth, mock_request, mock_get):
+
+            def set_service_catalog():
+                cs.service_catalog = 'catalog'
+
+            mock_auth.side_effect = set_service_catalog
+            cs.get('/servers')
+            mock_get.assert_called_once_with(service_type)
+            mock_request.assert_called_once_with('compute/v5/servers',
+                                                 'GET', headers=mock.ANY)
+            mock_auth.assert_called_once_with()
+
+        do_test()
+
+    def test_bypass_url_no_service_url_lookup(self):
+        bypass_url = 'compute/v100'
+        cs = novaclient.client.HTTPClient(None, None, None,
+                                          auth_url='foo/v2',
+                                          bypass_url=bypass_url)
+
+        @mock.patch.object(cs, 'get_service_url')
+        @mock.patch.object(cs, 'request', return_value=(200, '{}'))
+        def do_test(mock_request, mock_get):
+            cs.get('/servers')
+            self.assertFalse(mock_get.called)
+            mock_request.assert_called_once_with(bypass_url + '/servers',
+                                                 'GET', headers=mock.ANY)
+
+        do_test()
+
     @mock.patch("novaclient.client.requests.Session")
     def test_session(self, mock_session):
         fake_session = mock.Mock()
