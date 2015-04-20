@@ -28,8 +28,8 @@ import re
 import socket
 
 from keystoneclient import adapter
-from oslo.utils import importutils
-from oslo.utils import netutils
+from oslo_utils import importutils
+from oslo_utils import netutils
 import requests
 from requests import adapters
 

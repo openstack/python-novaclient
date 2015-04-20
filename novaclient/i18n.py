@@ -10,16 +10,16 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-"""oslo.i18n integration module for novaclient.
+"""oslo_i18n integration module for novaclient.
 
 See http://docs.openstack.org/developer/oslo.i18n/usage.html .
 
 """
 
-from oslo import i18n
+import oslo_i18n
 
 
-_translators = i18n.TranslatorFactory(domain='novaclient')
+_translators = oslo_i18n.TranslatorFactory(domain='novaclient')
 
 # The primary translation function using the well-known name "_"
 _ = _translators.primary

@@ -28,9 +28,9 @@ import os
 import sys
 import time
 
-from oslo.utils import encodeutils
-from oslo.utils import strutils
-from oslo.utils import timeutils
+from oslo_utils import encodeutils
+from oslo_utils import strutils
+from oslo_utils import timeutils
 import six
 
 from novaclient import client
