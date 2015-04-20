@@ -819,6 +819,16 @@ class ServerManager(base.BootingManagerWithFind):
         """
         self._action('unshelve', server, None)
 
+    def ips(self, server):
+        """
+        Return IP Addresses associated with the server.
+
+        Often a cheaper call then getting all the details for a server.
+        """
+        _resp, body = self.api.client.get("/servers/%s/ips" %
+                                          base.getid(server))
+        return body['addresses']
+
     def diagnostics(self, server):
         """Retrieve server diagnostics."""
         return self.api.client.get("/servers/%s/diagnostics" %
