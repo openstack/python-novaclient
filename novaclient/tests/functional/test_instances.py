@@ -10,31 +10,10 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import os
 import time
 import uuid
 
-import novaclient.client
 from novaclient.tests.functional import base
-
-
-# TODO(sdague): content that probably should be in utils, also throw
-# Exceptions when they fail.
-def pick_flavor(flavors):
-    """Given a flavor list pick a reasonable one."""
-    for flavor in flavors:
-        if flavor.name == 'm1.tiny':
-            return flavor
-
-    for flavor in flavors:
-        if flavor.name == 'm1.small':
-            return flavor
-
-
-def pick_image(images):
-    for image in images:
-        if image.name.startswith('cirros') and image.name.endswith('-uec'):
-            return image
 
 
 def volume_id_from_cli_create(output):
@@ -67,27 +46,6 @@ def volume_at_status(output, volume_id, status):
 
 
 class TestInstanceCLI(base.ClientTestBase):
-    def setUp(self):
-        super(TestInstanceCLI, self).setUp()
-        # TODO(sdague): while we collect this information in
-        # tempest-lib, we do it in a way that's not available for top
-        # level tests. Long term this probably needs to be in the base
-        # class.
-        user = os.environ['OS_USERNAME']
-        passwd = os.environ['OS_PASSWORD']
-        tenant = os.environ['OS_TENANT_NAME']
-        auth_url = os.environ['OS_AUTH_URL']
-
-        # TODO(sdague): we made a lot of fun of the glanceclient team
-        # for version as int in first parameter. I guess we know where
-        # they copied it from.
-        self.client = novaclient.client.Client(
-            2, user, passwd, tenant,
-            auth_url=auth_url)
-
-        # pick some reasonable flavor / image combo
-        self.flavor = pick_flavor(self.client.flavors.list())
-        self.image = pick_image(self.client.images.list())
 
     def test_attach_volume(self):
         """Test we can attach a volume via the cli.
