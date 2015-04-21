@@ -77,3 +77,9 @@ To use with nova, with keystone as the authentication system::
     [...]
     >>> nt.keypairs.list()
     [...]
+
+
+* License: Apache License, Version 2.0
+* Documentation: http://docs.openstack.org/developer/python-novaclient
+* Source: http://git.openstack.org/cgit/openstack/python-novaclient
+* Bugs: http://bugs.launchpad.net/python-novaclient
