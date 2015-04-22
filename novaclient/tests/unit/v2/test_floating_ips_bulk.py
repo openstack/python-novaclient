@@ -62,3 +62,8 @@ class FloatingIPsBulkTest(utils.FixturedTestCase):
         body = {'ip_range': '192.168.1.0/30'}
         self.assert_called('PUT', '/os-floating-ips-bulk/delete', body)
         self.assertEqual(fl.floating_ips_bulk_delete, body['ip_range'])
+
+    def test_repr(self):
+        fl = self.cs.floating_ips_bulk.create('192.168.1.0/30', 'poolTest',
+                                              'interfaceTest')
+        self.assertEqual('<FloatingIPRange: 192.168.1.0/30>', "%s" % fl)

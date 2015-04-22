@@ -57,3 +57,9 @@ class FloatingIPsTest(utils.FixturedTestCase):
         self.assert_called('POST', '/os-floating-ips')
         self.assertEqual('nova', fl.pool)
         self.assertIsInstance(fl, floating_ips.FloatingIP)
+
+    def test_repr(self):
+        fl = self.cs.floating_ips.list()[0]
+        string = "%s" % fl
+        self.assertEqual("<FloatingIP fixed_ip=10.0.0.1, id=1, ip=11.0.0.1>",
+                         string)
