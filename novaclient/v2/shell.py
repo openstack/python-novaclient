@@ -1898,17 +1898,6 @@ def _find_image(cs, image):
 def _find_flavor(cs, flavor):
     """Get a flavor by name, ID, or RAM size."""
     try:
-        # isinstance() is being used to check if flavor is an instance of
-        # integer. It will help us to check if the user has entered flavor
-        # name or flavorid. If flavor name has been entered it is being
-        # converted to lowercase using lower(). Incase it is an ID the user
-        # has passed it will not go through the "flavor = flavor.lower()"
-        # code.The reason for checking if it is a flavor name or flavorid is
-        #  that int has no lower() so it will give an error.
-        if isinstance(flavor, six.integer_types):
-            pass
-        else:
-            flavor = flavor.lower()
         return utils.find_resource(cs.flavors, flavor, is_public=None)
     except exceptions.NotFound:
         return cs.flavors.find(ram=flavor)
