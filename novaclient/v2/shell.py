@@ -118,8 +118,11 @@ def _parse_block_device_mapping_v2(args, image):
     for ephemeral_spec in args.ephemeral:
         bdm_dict = {'source_type': 'blank', 'destination_type': 'local',
                     'boot_index': -1, 'delete_on_termination': True}
-
-        eph_dict = dict(v.split('=') for v in ephemeral_spec.split(','))
+        try:
+            eph_dict = dict(v.split('=') for v in ephemeral_spec.split(','))
+        except ValueError:
+            err_msg = (_("Invalid ephemeral argument '%s'.") % args.ephemeral)
+            raise argparse.ArgumentTypeError(err_msg)
         if 'size' in eph_dict:
             bdm_dict['volume_size'] = eph_dict['size']
         if 'format' in eph_dict:

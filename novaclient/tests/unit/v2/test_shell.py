@@ -16,6 +16,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import argparse
 import base64
 import datetime
 import os
@@ -685,6 +686,10 @@ class ShellTest(utils.TestCase):
                     'max_count': 3,
                 }
             }, pos=4)
+
+    def test_boot_invalid_ephemeral_data_format(self):
+        cmd = 'boot --flavor 1 --image 1 --ephemeral 1 some-server'
+        self.assertRaises(argparse.ArgumentTypeError, self.run_command, cmd)
 
     def test_flavor_list(self):
         self.run_command('flavor-list')
