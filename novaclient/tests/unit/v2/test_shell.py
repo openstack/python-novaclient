@@ -1090,6 +1090,18 @@ class ShellTest(utils.TestCase):
         self.assertRaises(exceptions.CommandError,
                           self.run_command, 'show xxx')
 
+    def test_show_unavailable_image_and_flavor(self):
+        output = self.run_command('show 9013')
+        self.assert_called('GET', '/servers/9013', pos=-8)
+        self.assert_called('GET',
+                           '/flavors/80645cf4-6ad3-410a-bbc8-6f3e1e291f51',
+                           pos=-7)
+        self.assert_called('GET',
+                           '/images/3e861307-73a6-4d1f-8d68-f68b03223032',
+                           pos=-3)
+        self.assertIn('Image not found', output)
+        self.assertIn('Flavor not found', output)
+
     @mock.patch('novaclient.v2.shell.utils.print_dict')
     def test_print_server(self, mock_print_dict):
         self.run_command('show 5678')

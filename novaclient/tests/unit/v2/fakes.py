@@ -362,7 +362,19 @@ class FakeHTTPClient(base_client.HTTPClient):
                 "metadata": {
                     "Server Label": "DB 1"
                 }
-            }
+            },
+            {
+                "id": 9013,
+                "name": "sample-server4",
+                "flavor": {
+                    "id": '80645cf4-6ad3-410a-bbc8-6f3e1e291f51',
+                },
+                "image": {
+                    "id": '3e861307-73a6-4d1f-8d68-f68b03223032',
+                },
+                "hostId": "9e107d9d372bb6826bd81d3542a419d6",
+                "status": "ACTIVE",
+            },
         ]})
 
     def post_servers(self, body, **kw):
@@ -414,6 +426,10 @@ class FakeHTTPClient(base_client.HTTPClient):
 
     def get_servers_9012(self, **kw):
         r = {'server': self.get_servers_detail()[2]['servers'][2]}
+        return (200, {}, r)
+
+    def get_servers_9013(self, **kw):
+        r = {'server': self.get_servers_detail()[2]['servers'][3]}
         return (200, {}, r)
 
     def put_servers_1234(self, body, **kw):
@@ -748,6 +764,9 @@ class FakeHTTPClient(base_client.HTTPClient):
     def get_flavors_128_MB_Server(self, **kw):
         raise exceptions.NotFound('404')
 
+    def get_flavors_80645cf4_6ad3_410a_bbc8_6f3e1e291f51(self, **kw):
+        raise exceptions.NotFound('404')
+
     def get_flavors_aa1(self, **kw):
         # Alphanumeric flavor id are allowed.
         return (
@@ -997,6 +1016,9 @@ class FakeHTTPClient(base_client.HTTPClient):
 
     def get_images_456(self, **kw):
         return (200, {}, {'image': self.get_images_detail()[2]['images'][1]})
+
+    def get_images_3e861307_73a6_4d1f_8d68_f68b03223032(self):
+        raise exceptions.NotFound('404')
 
     def post_images(self, body, **kw):
         assert list(body) == ['image']

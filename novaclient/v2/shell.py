@@ -1833,8 +1833,11 @@ def _print_server(cs, args, server=None):
     if minimal:
         info['flavor'] = flavor_id
     else:
-        info['flavor'] = '%s (%s)' % (_find_flavor(cs, flavor_id).name,
-                                      flavor_id)
+        try:
+            info['flavor'] = '%s (%s)' % (_find_flavor(cs, flavor_id).name,
+                                          flavor_id)
+        except Exception:
+            info['flavor'] = '%s (%s)' % (_("Flavor not found"), flavor_id)
 
     if 'security_groups' in info:
         # when we have multiple nics the info will include the
