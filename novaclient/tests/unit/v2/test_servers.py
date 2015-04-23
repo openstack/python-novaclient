@@ -12,6 +12,10 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import base64
+import os
+import tempfile
+
 import mock
 from oslo_serialization import jsonutils
 import six
@@ -198,6 +202,32 @@ class ServersTest(utils.FixturedTestCase):
         )
         self.assert_called('POST', '/servers')
         self.assertIsInstance(s, servers.Server)
+
+    def test_create_server_userdata_bin(self):
+        with tempfile.TemporaryFile(mode='wb+') as bin_file:
+            original_data = os.urandom(1024)
+            bin_file.write(original_data)
+            bin_file.flush()
+            bin_file.seek(0)
+            s = self.cs.servers.create(
+                name="My server",
+                image=1,
+                flavor=1,
+                meta={'foo': 'bar'},
+                userdata=bin_file,
+                key_name="fakekey",
+                files={
+                    '/etc/passwd': 'some data',                 # a file
+                    '/tmp/foo.txt': six.StringIO('data'),   # a stream
+                },
+            )
+            self.assert_called('POST', '/servers')
+            self.assertIsInstance(s, servers.Server)
+            # verify userdata matches original
+            body = jsonutils.loads(self.requests.last_request.body)
+            transferred_data = body['server']['user_data']
+            transferred_data = base64.b64decode(transferred_data)
+            self.assertEqual(original_data, transferred_data)
 
     def _create_disk_config(self, disk_config):
         s = self.cs.servers.create(
