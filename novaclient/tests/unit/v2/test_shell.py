@@ -1136,14 +1136,26 @@ class ShellTest(utils.TestCase):
         self.assert_called('DELETE', '/servers/5678', pos=-1)
         self.run_command('delete sample-server sample-server2')
         self.assert_called('GET',
-                           '/servers?all_tenants=1&name=sample-server', pos=-6)
+                           '/servers?name=sample-server', pos=-6)
         self.assert_called('GET', '/servers/1234', pos=-5)
         self.assert_called('DELETE', '/servers/1234', pos=-4)
         self.assert_called('GET',
-                           '/servers?all_tenants=1&name=sample-server2',
+                           '/servers?name=sample-server2',
                            pos=-3)
         self.assert_called('GET', '/servers/5678', pos=-2)
         self.assert_called('DELETE', '/servers/5678', pos=-1)
+
+    def test_delete_two_with_two_existent_all_tenants(self):
+        self.run_command('delete sample-server sample-server2 --all-tenants')
+        self.assert_called('GET',
+                           '/servers?all_tenants=1&name=sample-server', pos=0)
+        self.assert_called('GET', '/servers/1234', pos=1)
+        self.assert_called('DELETE', '/servers/1234', pos=2)
+        self.assert_called('GET',
+                           '/servers?all_tenants=1&name=sample-server2',
+                           pos=3)
+        self.assert_called('GET', '/servers/5678', pos=4)
+        self.assert_called('DELETE', '/servers/5678', pos=5)
 
     def test_delete_two_with_one_nonexistent(self):
         cmd = 'delete 1234 123456789'
