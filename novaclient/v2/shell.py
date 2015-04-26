@@ -4456,5 +4456,8 @@ def do_server_group_get(cs, args):
 def do_version_list(cs, args):
     """List all API versions."""
     result = cs.versions.list()
-    columns = ["Id", "Status", "Updated"]
+    if 'min_version' in dir(result[0]):
+        columns = ["Id", "Status", "Updated", "Min Version", "Version"]
+    else:
+        columns = ["Id", "Status", "Updated"]
     utils.print_list(result, columns)
