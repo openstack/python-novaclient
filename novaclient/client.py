@@ -24,8 +24,10 @@ import copy
 import functools
 import hashlib
 import logging
+import pkgutil
 import re
 import socket
+import warnings
 
 from keystoneclient import adapter
 from oslo_utils import importutils
@@ -41,9 +43,13 @@ except ImportError:
 from six.moves.urllib import parse
 
 from novaclient import exceptions
-from novaclient.i18n import _
+from novaclient.i18n import _, _LW
 from novaclient import service_catalog
 from novaclient import utils
+
+
+# key is a deprecated version and value is an alternative version.
+DEPRECATED_VERSIONS = {"1.1": "2"}
 
 
 class TCPKeepAliveAdapter(adapters.HTTPAdapter):
@@ -712,20 +718,29 @@ def _construct_http_client(username=None, password=None, project_id=None,
 
 
 def get_client_class(version):
-    version_map = {
-        '1.1': 'novaclient.v2.client.Client',
-        '2': 'novaclient.v2.client.Client',
-        '3': 'novaclient.v2.client.Client',
-    }
+    version = str(version)
+    if version in DEPRECATED_VERSIONS:
+        warnings.warn(_LW(
+            "Version %(deprecated_version)s is deprecated, using "
+            "alternative version %(alternative)s instead.") %
+            {"deprecated_version": version,
+             "alternative": DEPRECATED_VERSIONS[version]})
+        version = DEPRECATED_VERSIONS[version]
     try:
-        client_path = version_map[str(version)]
-    except (KeyError, ValueError):
+        return importutils.import_class(
+            "novaclient.v%s.client.Client" % version)
+    except ImportError:
+        # NOTE(andreykurilin): available clients version should not be
+        # hardcoded, so let's discover them.
+        matcher = re.compile(r"v[0-9_]*$")
+        submodules = pkgutil.iter_modules(['novaclient'])
+        available_versions = [
+            name[1:].replace("_", ".") for loader, name, ispkg in submodules
+            if matcher.search(name)]
         msg = _("Invalid client version '%(version)s'. must be one of: "
                 "%(keys)s") % {'version': version,
-                               'keys': ', '.join(version_map.keys())}
+                               'keys': ', '.join(available_versions)}
         raise exceptions.UnsupportedVersion(msg)
-
-    return importutils.import_class(client_path)
 
 
 def Client(version, *args, **kwargs):
