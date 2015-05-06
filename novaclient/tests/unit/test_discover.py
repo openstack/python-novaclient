@@ -19,7 +19,7 @@ import inspect
 import mock
 import pkg_resources
 
-import novaclient.shell
+from novaclient import client
 from novaclient.tests.unit import utils
 
 
@@ -38,8 +38,7 @@ class DiscoverTest(utils.TestCase):
         @mock.patch.object(pkg_resources, 'iter_entry_points',
                            mock_iter_entry_points)
         def test():
-            shell = novaclient.shell.OpenStackComputeShell()
-            for name, module in shell._discover_via_entry_points():
+            for name, module in client._discover_via_entry_points():
                 self.assertEqual('foo', name)
                 self.assertTrue(inspect.ismodule(module))
 
@@ -47,27 +46,26 @@ class DiscoverTest(utils.TestCase):
 
     def test_discover_extensions(self):
 
-        def mock_discover_via_python_path(self):
+        def mock_discover_via_python_path():
             yield 'foo', imp.new_module('foo')
 
-        def mock_discover_via_contrib_path(self, version):
+        def mock_discover_via_contrib_path(version):
             yield 'bar', imp.new_module('bar')
 
-        def mock_discover_via_entry_points(self):
+        def mock_discover_via_entry_points():
             yield 'baz', imp.new_module('baz')
 
-        @mock.patch.object(novaclient.shell.OpenStackComputeShell,
+        @mock.patch.object(client,
                            '_discover_via_python_path',
                            mock_discover_via_python_path)
-        @mock.patch.object(novaclient.shell.OpenStackComputeShell,
+        @mock.patch.object(client,
                            '_discover_via_contrib_path',
                            mock_discover_via_contrib_path)
-        @mock.patch.object(novaclient.shell.OpenStackComputeShell,
+        @mock.patch.object(client,
                            '_discover_via_entry_points',
                            mock_discover_via_entry_points)
         def test():
-            shell = novaclient.shell.OpenStackComputeShell()
-            extensions = shell._discover_extensions('1.1')
+            extensions = client.discover_extensions('1.1')
             self.assertEqual(3, len(extensions))
             names = sorted(['foo', 'bar', 'baz'])
             sorted_extensions = sorted(extensions, key=lambda ext: ext.name)

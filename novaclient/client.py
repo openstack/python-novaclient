@@ -22,8 +22,12 @@ OpenStack Client interface. Handles the REST calls and responses.
 
 import copy
 import functools
+import glob
 import hashlib
+import imp
+import itertools
 import logging
+import os
 import pkgutil
 import re
 import socket
@@ -32,6 +36,7 @@ import warnings
 from keystoneclient import adapter
 from oslo_utils import importutils
 from oslo_utils import netutils
+import pkg_resources
 import requests
 from requests import adapters
 
@@ -43,6 +48,7 @@ except ImportError:
 from six.moves.urllib import parse
 
 from novaclient import exceptions
+from novaclient import extension as ext
 from novaclient.i18n import _, _LW
 from novaclient import service_catalog
 from novaclient import utils
@@ -711,6 +717,61 @@ def _construct_http_client(username=None, password=None, project_id=None,
                           http_log_debug=http_log_debug,
                           cacert=cacert,
                           connection_pool=connection_pool)
+
+
+def discover_extensions(version):
+    extensions = []
+    for name, module in itertools.chain(
+            _discover_via_python_path(),
+            _discover_via_contrib_path(version),
+            _discover_via_entry_points()):
+
+        extension = ext.Extension(name, module)
+        extensions.append(extension)
+
+    return extensions
+
+
+def _discover_via_python_path():
+    for (module_loader, name, _ispkg) in pkgutil.iter_modules():
+        if name.endswith('_python_novaclient_ext'):
+            if not hasattr(module_loader, 'load_module'):
+                # Python 2.6 compat: actually get an ImpImporter obj
+                module_loader = module_loader.find_module(name)
+
+            module = module_loader.load_module(name)
+            if hasattr(module, 'extension_name'):
+                name = module.extension_name
+
+            yield name, module
+
+
+def _discover_via_contrib_path(version):
+    module_path = os.path.dirname(os.path.abspath(__file__))
+    version_str = "v%s" % version.replace('.', '_')
+    # NOTE(andreykurilin): v1.1 uses implementation of v2, so we should
+    # discover contrib modules in novaclient.v2 dir.
+    if version_str == "v1_1":
+        version_str = "v2"
+    ext_path = os.path.join(module_path, version_str, 'contrib')
+    ext_glob = os.path.join(ext_path, "*.py")
+
+    for ext_path in glob.iglob(ext_glob):
+        name = os.path.basename(ext_path)[:-3]
+
+        if name == "__init__":
+            continue
+
+        module = imp.load_source(name, ext_path)
+        yield name, module
+
+
+def _discover_via_entry_points():
+    for ep in pkg_resources.iter_entry_points('novaclient.extension'):
+        name = ep.name
+        module = ep.load()
+
+        yield name, module
 
 
 def get_client_class(version):
