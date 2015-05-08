@@ -21,6 +21,19 @@ wrong the tests might raise AssertionError. I've indicated in comments the
 places where actual behavior differs from the spec.
 """
 
+########################################################################
+#
+# THIS MODULE IS DEPRECATED
+#
+# Please refer to
+# https://etherpad.openstack.org/p/kilo-novaclient-library-proposals for
+# the discussion leading to this deprecation.
+#
+# We recommend checking out the python-openstacksdk project
+# (https://launchpad.net/python-openstacksdk) instead.
+#
+########################################################################
+
 # W0102: Dangerous default value %s as argument
 # pylint: disable=W0102
 
@@ -168,6 +181,8 @@ class FakeHTTPClient(client.HTTPClient):
         else:
             status, body = resp
             headers = {}
+        self.last_request_id = headers.get('x-openstack-request-id',
+                                           'req-test')
         return TestResponse({
             "status_code": status,
             "text": body,

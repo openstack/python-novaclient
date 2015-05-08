@@ -25,6 +25,7 @@ OpenStack Client interface. Handles the REST calls and responses.
 # E0202: An attribute inherited from %s hide this method
 # pylint: disable=E0202
 
+import hashlib
 import logging
 import time
 
@@ -33,14 +34,15 @@ try:
 except ImportError:
     import json
 
-from oslo.utils import importutils
+from oslo_utils import encodeutils
+from oslo_utils import importutils
 import requests
 
 from novaclient.openstack.common._i18n import _
 from novaclient.openstack.common.apiclient import exceptions
 
-
 _logger = logging.getLogger(__name__)
+SENSITIVE_HEADERS = ('X-Auth-Token', 'X-Subject-Token',)
 
 
 class HTTPClient(object):
@@ -98,6 +100,18 @@ class HTTPClient(object):
         self.http = http or requests.Session()
 
         self.cached_token = None
+        self.last_request_id = None
+
+    def _safe_header(self, name, value):
+        if name in SENSITIVE_HEADERS:
+            # because in python3 byte string handling is ... ug
+            v = value.encode('utf-8')
+            h = hashlib.sha1(v)
+            d = h.hexdigest()
+            return encodeutils.safe_decode(name), "{SHA1}%s" % d
+        else:
+            return (encodeutils.safe_decode(name),
+                    encodeutils.safe_decode(value))
 
     def _http_log_req(self, method, url, kwargs):
         if not self.debug:
@@ -110,7 +124,8 @@ class HTTPClient(object):
         ]
 
         for element in kwargs['headers']:
-            header = "-H '%s: %s'" % (element, kwargs['headers'][element])
+            header = ("-H '%s: %s'" %
+                      self._safe_header(element, kwargs['headers'][element]))
             string_parts.append(header)
 
         _logger.debug("REQ: %s" % " ".join(string_parts))
@@ -176,6 +191,8 @@ class HTTPClient(object):
             self.times.append(("%s %s" % (method, url),
                                start_time, time.time()))
         self._http_log_resp(resp)
+
+        self.last_request_id = resp.headers.get('x-openstack-request-id')
 
         if resp.status_code >= 400:
             _logger.debug(
@@ -326,6 +343,10 @@ class BaseClient(object):
     def client_request(self, method, url, **kwargs):
         return self.http_client.client_request(
             self, method, url, **kwargs)
+
+    @property
+    def last_request_id(self):
+        return self.http_client.last_request_id
 
     def head(self, url, **kwargs):
         return self.client_request("HEAD", url, **kwargs)

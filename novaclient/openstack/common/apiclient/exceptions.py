@@ -20,6 +20,19 @@
 Exception definitions.
 """
 
+########################################################################
+#
+# THIS MODULE IS DEPRECATED
+#
+# Please refer to
+# https://etherpad.openstack.org/p/kilo-novaclient-library-proposals for
+# the discussion leading to this deprecation.
+#
+# We recommend checking out the python-openstacksdk project
+# (https://launchpad.net/python-openstacksdk) instead.
+#
+########################################################################
+
 import inspect
 import sys
 
@@ -54,8 +67,13 @@ class AuthorizationFailure(ClientException):
     pass
 
 
-class ConnectionRefused(ClientException):
+class ConnectionError(ClientException):
     """Cannot connect to API service."""
+    pass
+
+
+class ConnectionRefused(ConnectionError):
+    """Connection refused while trying to connect to API service."""
     pass
 
 
@@ -72,7 +90,7 @@ class AuthSystemNotFound(AuthorizationFailure):
     """User has specified an AuthSystem that is not installed."""
     def __init__(self, auth_system):
         super(AuthSystemNotFound, self).__init__(
-            _("AuthSystemNotFound: %s") % repr(auth_system))
+            _("AuthSystemNotFound: %r") % auth_system)
         self.auth_system = auth_system
 
 
@@ -95,7 +113,7 @@ class AmbiguousEndpoints(EndpointException):
     """Found more than one matching endpoint in Service Catalog."""
     def __init__(self, endpoints=None):
         super(AmbiguousEndpoints, self).__init__(
-            _("AmbiguousEndpoints: %s") % repr(endpoints))
+            _("AmbiguousEndpoints: %r") % endpoints)
         self.endpoints = endpoints
 
 
@@ -439,12 +457,15 @@ def from_response(response, method, url):
         except ValueError:
             pass
         else:
-            if isinstance(body, dict) and isinstance(body.get("error"), dict):
-                error = body["error"]
-                kwargs["message"] = error.get("message")
-                kwargs["details"] = error.get("details")
+            if isinstance(body, dict):
+                error = body.get(list(body)[0])
+                if isinstance(error, dict):
+                    kwargs["message"] = (error.get("message") or
+                                         error.get("faultstring"))
+                    kwargs["details"] = (error.get("details") or
+                                         six.text_type(body))
     elif content_type.startswith("text/"):
-        kwargs["details"] = response.text
+        kwargs["details"] = getattr(response, 'text', '')
 
     try:
         cls = _code_map[response.status_code]
