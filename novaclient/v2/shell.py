@@ -31,13 +31,13 @@ import time
 from oslo_utils import encodeutils
 from oslo_utils import strutils
 from oslo_utils import timeutils
+from oslo_utils import uuidutils
 import six
 
 from novaclient import client
 from novaclient import exceptions
 from novaclient.i18n import _
 from novaclient.openstack.common import cliutils
-from novaclient.openstack.common import uuidutils
 from novaclient import utils
 from novaclient.v2 import availability_zones
 from novaclient.v2 import quotas
