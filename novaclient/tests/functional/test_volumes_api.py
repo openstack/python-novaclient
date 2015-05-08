@@ -10,13 +10,11 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import os
 import time
 import uuid
 
 import six.moves
 
-from novaclient import client
 from novaclient import exceptions
 from novaclient.tests.functional import base
 
@@ -34,15 +32,6 @@ def wait_for_delete(test, name, thing, get_func):
 
 
 class TestVolumesAPI(base.ClientTestBase):
-
-    def setUp(self):
-        super(TestVolumesAPI, self).setUp()
-        user = os.environ['OS_USERNAME']
-        passwd = os.environ['OS_PASSWORD']
-        tenant = os.environ['OS_TENANT_NAME']
-        auth_url = os.environ['OS_AUTH_URL']
-
-        self.client = client.Client(2, user, passwd, tenant, auth_url=auth_url)
 
     def test_volumes_snapshots_types_create_get_list_delete(self):
         # Create a volume
