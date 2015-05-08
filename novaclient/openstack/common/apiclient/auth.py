@@ -17,6 +17,19 @@
 # E0202: An attribute inherited from %s hide this method
 # pylint: disable=E0202
 
+########################################################################
+#
+# THIS MODULE IS DEPRECATED
+#
+# Please refer to
+# https://etherpad.openstack.org/p/kilo-novaclient-library-proposals for
+# the discussion leading to this deprecation.
+#
+# We recommend checking out the python-openstacksdk project
+# (https://launchpad.net/python-openstacksdk) instead.
+#
+########################################################################
+
 import abc
 import argparse
 import os
