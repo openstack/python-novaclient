@@ -39,12 +39,13 @@ class ServerGroupsManager(base.ManagerWithFind):
     """
     resource_class = ServerGroup
 
-    def list(self):
+    def list(self, all_projects=False):
         """Get a list of all server groups.
 
         :rtype: list of :class:`ServerGroup`.
         """
-        return self._list('/os-server-groups', 'server_groups')
+        all = '?all_projects' if all_projects else ''
+        return self._list('/os-server-groups%s' % all, 'server_groups')
 
     def get(self, id):
         """Get a specific server group.

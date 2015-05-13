@@ -4350,9 +4350,15 @@ def _print_server_group_details(server_group):
     utils.print_list(server_group, columns)
 
 
+@cliutils.arg(
+    '--all-projects',
+    dest='all_projects',
+    action='store_true',
+    default=False,
+    help=_('Display server groups from all projects (Admin only).'))
 def do_server_group_list(cs, args):
     """Print a list of all server groups."""
-    server_groups = cs.server_groups.list()
+    server_groups = cs.server_groups.list(args.all_projects)
     _print_server_group_details(server_groups)
 
 

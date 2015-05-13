@@ -2405,6 +2405,14 @@ class ShellTest(utils.TestCase):
         self.assert_called('DELETE', '/os-server-groups/56789')
         self.assert_called('DELETE', '/os-server-groups/12345', pos=-2)
 
+    def test_list_server_group(self):
+        self.run_command('server-group-list')
+        self.assert_called('GET', '/os-server-groups')
+
+    def test_list_server_group_with_all_projects(self):
+        self.run_command('server-group-list --all-projects')
+        self.assert_called('GET', '/os-server-groups?all_projects')
+
 
 class ShellTestV11(ShellTest):
     FAKE_ENV = {
