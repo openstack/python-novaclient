@@ -10,10 +10,10 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import ConfigParser
 import os
 
 import fixtures
+import os_client_config
 import tempest_lib.cli.base
 import testtools
 
@@ -47,6 +47,11 @@ class NoImageException(Exception):
 
 class NoFlavorException(Exception):
     """We couldn't find an acceptable flavor."""
+    pass
+
+
+class NoCloudConfigException(Exception):
+    """We couldn't find a cloud configuration."""
     pass
 
 
@@ -93,30 +98,47 @@ class ClientTestBase(testtools.TestCase):
 
         # Collecting of credentials:
         #
-        # Support the existence of a functional_creds.conf for
-        # testing. This makes it possible to use a config file.
+        # Grab the cloud config from a user's clouds.yaml file.
+        # First look for a functional_admin cloud, as this is a cloud
+        # that the user may have defined for functional testing that has
+        # admin credentials.
+        # If that is not found, get the devstack config and override the
+        # username and project_name to be admin so that admin credentials
+        # will be used.
         #
-        # Those variables can be overridden by environmental variables
-        # as well to support existing users running these the old
-        # way. We should deprecate that.
-
+        # Finally, fall back to looking for environment variables to support
+        # existing users running these the old way. We should deprecate that
+        # as tox 2.0 blanks out environment.
+        #
         # TODO(sdague): while we collect this information in
         # tempest-lib, we do it in a way that's not available for top
         # level tests. Long term this probably needs to be in the base
         # class.
-        user = os.environ.get('OS_USERNAME')
-        passwd = os.environ.get('OS_PASSWORD')
-        tenant = os.environ.get('OS_TENANT_NAME')
-        auth_url = os.environ.get('OS_AUTH_URL')
+        openstack_config = os_client_config.config.OpenStackConfig()
+        try:
+            cloud_config = openstack_config.get_one_cloud('functional_admin')
+        except os_client_config.exceptions.OpenStackConfigException:
+            try:
+                cloud_config = openstack_config.get_one_cloud(
+                    'devstack', auth=dict(
+                        username='admin', project_name='admin'))
+            except os_client_config.exceptions.OpenStackConfigException:
+                try:
+                    cloud_config = openstack_config.get_one_cloud('envvars')
+                except os_client_config.exceptions.OpenStackConfigException:
+                    cloud_config = None
 
-        config = ConfigParser.RawConfigParser()
-        if config.read('functional_creds.conf'):
-            # the OR pattern means the environment is preferred for
-            # override
-            user = user or config.get('admin', 'user')
-            passwd = passwd or config.get('admin', 'pass')
-            tenant = tenant or config.get('admin', 'tenant')
-            auth_url = auth_url or config.get('auth', 'uri')
+        if cloud_config is None:
+            raise NoCloudConfigException(
+                "Cloud not find a cloud named functional_admin or a cloud"
+                " named devstack. Please check your clouds.yaml file and"
+                " try again.")
+        auth_info = cloud_config.config['auth']
+
+        user = auth_info['username']
+        passwd = auth_info['password']
+        tenant = auth_info['project_name']
+        auth_url = auth_info['auth_url']
 
         # TODO(sdague): we made a lot of fun of the glanceclient team
         # for version as int in first parameter. I guess we know where
