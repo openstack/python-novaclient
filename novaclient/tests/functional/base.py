@@ -10,6 +10,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import ConfigParser
 import os
 
 import fixtures
@@ -90,14 +91,32 @@ class ClientTestBase(testtools.TestCase):
                                                    format=self.log_format,
                                                    level=None))
 
+        # Collecting of credentials:
+        #
+        # Support the existence of a functional_creds.conf for
+        # testing. This makes it possible to use a config file.
+        #
+        # Those variables can be overridden by environmental variables
+        # as well to support existing users running these the old
+        # way. We should deprecate that.
+
         # TODO(sdague): while we collect this information in
         # tempest-lib, we do it in a way that's not available for top
         # level tests. Long term this probably needs to be in the base
         # class.
-        user = os.environ['OS_USERNAME']
-        passwd = os.environ['OS_PASSWORD']
-        tenant = os.environ['OS_TENANT_NAME']
-        auth_url = os.environ['OS_AUTH_URL']
+        user = os.environ.get('OS_USERNAME')
+        passwd = os.environ.get('OS_PASSWORD')
+        tenant = os.environ.get('OS_TENANT_NAME')
+        auth_url = os.environ.get('OS_AUTH_URL')
+
+        config = ConfigParser.RawConfigParser()
+        if config.read('functional_creds.conf'):
+            # the OR pattern means the environment is preferred for
+            # override
+            user = user or config.get('admin', 'user')
+            passwd = passwd or config.get('admin', 'pass')
+            tenant = tenant or config.get('admin', 'tenant')
+            auth_url = auth_url or config.get('auth', 'uri')
 
         # TODO(sdague): we made a lot of fun of the glanceclient team
         # for version as int in first parameter. I guess we know where
@@ -120,10 +139,10 @@ class ClientTestBase(testtools.TestCase):
             os.path.join(os.path.abspath('.'), '.tox/functional/bin'))
 
         self.cli_clients = tempest_lib.cli.base.CLIClient(
-            username=os.environ.get('OS_USERNAME'),
-            password=os.environ.get('OS_PASSWORD'),
-            tenant_name=os.environ.get('OS_TENANT_NAME'),
-            uri=os.environ.get('OS_AUTH_URL'),
+            username=user,
+            password=passwd,
+            tenant_name=tenant,
+            uri=auth_url,
             cli_dir=cli_dir)
 
     def nova(self, *args, **kwargs):

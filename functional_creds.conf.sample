@@ -1,0 +1,8 @@
+# Credentials for functional testing
+[auth]
+uri = http://10.42.0.50:5000/v2.0
+
+[admin]
+user = admin
+tenant = admin
+pass = secrete

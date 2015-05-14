@@ -83,3 +83,16 @@ To use with nova, with keystone as the authentication system::
 * Documentation: http://docs.openstack.org/developer/python-novaclient
 * Source: http://git.openstack.org/cgit/openstack/python-novaclient
 * Bugs: http://bugs.launchpad.net/python-novaclient
+
+Testing
+-------
+
+There are multiple test targets that can be run to validate the code.
+
+* tox -e pep8 - style guidelines enforcement
+* tox -e py27 - traditional unit testing
+* tox -e functional - live functional testing against an existing
+  openstack
+
+Functional testing assumes the existance of a functional_creds.conf in
+the root directory. See the .sample for example format.
