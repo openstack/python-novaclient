@@ -61,11 +61,10 @@ DEPRECATED_VERSIONS = {"1.1": "2"}
 class TCPKeepAliveAdapter(adapters.HTTPAdapter):
     """The custom adapter used to set TCP Keep-Alive on all connections."""
     def init_poolmanager(self, *args, **kwargs):
-        if requests.__version__ >= '2.4.1':
-            kwargs.setdefault('socket_options', [
-                (socket.IPPROTO_TCP, socket.TCP_NODELAY, 1),
-                (socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1),
-            ])
+        kwargs.setdefault('socket_options', [
+            (socket.IPPROTO_TCP, socket.TCP_NODELAY, 1),
+            (socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1),
+        ])
         super(TCPKeepAliveAdapter, self).init_poolmanager(*args, **kwargs)
 
 
