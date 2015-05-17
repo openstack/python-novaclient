@@ -319,7 +319,8 @@ def _boot(cs, args):
         block_device_mapping_v2=block_device_mapping_v2,
         nics=nics,
         scheduler_hints=hints,
-        config_drive=config_drive)
+        config_drive=config_drive,
+        admin_pass=args.admin_pass)
 
     return boot_args, boot_kwargs
 
@@ -502,6 +503,12 @@ def _boot(cs, args):
     action="store_true",
     default=False,
     help=_('Report the new server boot progress until it completes.'))
+@cliutils.arg(
+    '--admin-pass',
+    dest='admin_pass',
+    metavar='<value>',
+    default=None,
+    help='Admin password for the instance')
 def do_boot(cs, args):
     """Boot a new server."""
     boot_args, boot_kwargs = _boot(cs, args)

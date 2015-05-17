@@ -849,7 +849,7 @@ class ServerManager(base.BootingManagerWithFind):
                key_name=None, availability_zone=None,
                block_device_mapping=None, block_device_mapping_v2=None,
                nics=None, scheduler_hints=None,
-               config_drive=None, disk_config=None, **kwargs):
+               config_drive=None, disk_config=None, admin_pass=None, **kwargs):
         # TODO(anthony): indicate in doc string if param is an extension
         # and/or optional
         """
@@ -892,6 +892,8 @@ class ServerManager(base.BootingManagerWithFind):
         :param disk_config: (optional extension) control how the disk is
                             partitioned when the server is created.  possible
                             values are 'AUTO' or 'MANUAL'.
+        :param admin_pass: (optional extension) add a user supplied admin
+                           password.
         """
         if not min_count:
             min_count = 1
@@ -908,7 +910,7 @@ class ServerManager(base.BootingManagerWithFind):
             max_count=max_count, security_groups=security_groups,
             key_name=key_name, availability_zone=availability_zone,
             scheduler_hints=scheduler_hints, config_drive=config_drive,
-            disk_config=disk_config, **kwargs)
+            disk_config=disk_config, admin_pass=admin_pass, **kwargs)
 
         if block_device_mapping:
             resource_url = "/os-volumes_boot"
