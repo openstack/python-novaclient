@@ -25,19 +25,22 @@ class HostsTest(utils.FixturedTestCase):
     def test_describe_resource(self):
         hs = self.cs.hosts.get('host')
         self.assert_called('GET', '/os-hosts/host')
-        [self.assertIsInstance(h, hosts.Host) for h in hs]
+        for h in hs:
+            self.assertIsInstance(h, hosts.Host)
 
     def test_list_host(self):
         hs = self.cs.hosts.list()
         self.assert_called('GET', '/os-hosts')
-        [self.assertIsInstance(h, hosts.Host) for h in hs]
-        [self.assertEqual(h.zone, 'nova1') for h in hs]
+        for h in hs:
+            self.assertIsInstance(h, hosts.Host)
+            self.assertEqual(h.zone, 'nova1')
 
     def test_list_host_with_zone(self):
         hs = self.cs.hosts.list('nova')
         self.assert_called('GET', '/os-hosts?zone=nova')
-        [self.assertIsInstance(h, hosts.Host) for h in hs]
-        [self.assertEqual(h.zone, 'nova') for h in hs]
+        for h in hs:
+            self.assertIsInstance(h, hosts.Host)
+            self.assertEqual(h.zone, 'nova')
 
     def test_update_enable(self):
         host = self.cs.hosts.get('sample_host')[0]

@@ -40,7 +40,8 @@ class UsageTest(utils.TestCase):
             ("start=%s&" % now.isoformat()) +
             ("end=%s&" % now.isoformat()) +
             ("detailed=%s" % int(bool(detailed))))
-        [self.assertIsInstance(u, usage.Usage) for u in usages]
+        for u in usages:
+            self.assertIsInstance(u, usage.Usage)
 
     def test_usage_list_detailed(self):
         self.test_usage_list(True)

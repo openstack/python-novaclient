@@ -26,12 +26,14 @@ class VolumesTest(utils.TestCase):
     def test_list_servers(self):
         vl = cs.volumes.list()
         cs.assert_called('GET', '/volumes/detail')
-        [self.assertIsInstance(v, volumes.Volume) for v in vl]
+        for v in vl:
+            self.assertIsInstance(v, volumes.Volume)
 
     def test_list_volumes_undetailed(self):
         vl = cs.volumes.list(detailed=False)
         cs.assert_called('GET', '/volumes')
-        [self.assertIsInstance(v, volumes.Volume) for v in vl]
+        for v in vl:
+            self.assertIsInstance(v, volumes.Volume)
 
     def test_get_volume_details(self):
         vol_id = '15e59938-07d5-11e1-90e3-e3dffe0c5983'
@@ -86,7 +88,8 @@ class VolumesTest(utils.TestCase):
     def test_list_server_volumes(self):
         vl = cs.volumes.get_server_volumes(1234)
         cs.assert_called('GET', '/servers/1234/os-volume_attachments')
-        [self.assertIsInstance(v, volumes.Volume) for v in vl]
+        for v in vl:
+            self.assertIsInstance(v, volumes.Volume)
 
     def test_delete_server_volume(self):
         cs.volumes.delete_server_volume(1234, 'Work')

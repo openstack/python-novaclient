@@ -25,7 +25,8 @@ class NetworksTest(utils.FixturedTestCase):
     def test_list_networks(self):
         fl = self.cs.networks.list()
         self.assert_called('GET', '/os-networks')
-        [self.assertIsInstance(f, networks.Network) for f in fl]
+        for f in fl:
+            self.assertIsInstance(f, networks.Network)
 
     def test_get_network(self):
         f = self.cs.networks.get(1)

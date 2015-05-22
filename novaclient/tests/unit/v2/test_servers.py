@@ -40,12 +40,14 @@ class ServersTest(utils.FixturedTestCase):
     def test_list_servers(self):
         sl = self.cs.servers.list()
         self.assert_called('GET', '/servers/detail')
-        [self.assertIsInstance(s, servers.Server) for s in sl]
+        for s in sl:
+            self.assertIsInstance(s, servers.Server)
 
     def test_list_servers_undetailed(self):
         sl = self.cs.servers.list(detailed=False)
         self.assert_called('GET', '/servers')
-        [self.assertIsInstance(s, servers.Server) for s in sl]
+        for s in sl:
+            self.assertIsInstance(s, servers.Server)
 
     def test_list_servers_with_marker_limit(self):
         sl = self.cs.servers.list(marker=1234, limit=2)

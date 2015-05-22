@@ -29,7 +29,8 @@ class CloudpipeTest(utils.FixturedTestCase):
     def test_list_cloudpipes(self):
         cp = self.cs.cloudpipe.list()
         self.assert_called('GET', '/os-cloudpipe')
-        [self.assertIsInstance(c, cloudpipe.Cloudpipe) for c in cp]
+        for c in cp:
+            self.assertIsInstance(c, cloudpipe.Cloudpipe)
 
     def test_create(self):
         project = "test"

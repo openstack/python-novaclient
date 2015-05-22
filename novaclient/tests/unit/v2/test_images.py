@@ -25,13 +25,15 @@ class ImagesTest(utils.FixturedTestCase):
     def test_list_images(self):
         il = self.cs.images.list()
         self.assert_called('GET', '/images/detail')
-        [self.assertIsInstance(i, images.Image) for i in il]
+        for i in il:
+            self.assertIsInstance(i, images.Image)
         self.assertEqual(2, len(il))
 
     def test_list_images_undetailed(self):
         il = self.cs.images.list(detailed=False)
         self.assert_called('GET', '/images')
-        [self.assertIsInstance(i, images.Image) for i in il]
+        for i in il:
+            self.assertIsInstance(i, images.Image)
 
     def test_list_images_with_limit(self):
         self.cs.images.list(limit=4)

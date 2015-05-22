@@ -27,14 +27,14 @@ class FloatingIPsBulkTest(utils.FixturedTestCase):
     def test_list_floating_ips_bulk(self):
         fl = self.cs.floating_ips_bulk.list()
         self.assert_called('GET', '/os-floating-ips-bulk')
-        [self.assertIsInstance(f, floating_ips.FloatingIP)
-         for f in fl]
+        for f in fl:
+            self.assertIsInstance(f, floating_ips.FloatingIP)
 
     def test_list_floating_ips_bulk_host_filter(self):
         fl = self.cs.floating_ips_bulk.list('testHost')
         self.assert_called('GET', '/os-floating-ips-bulk/testHost')
-        [self.assertIsInstance(f, floating_ips.FloatingIP)
-         for f in fl]
+        for f in fl:
+            self.assertIsInstance(f, floating_ips.FloatingIP)
 
     def test_create_floating_ips_bulk(self):
         fl = self.cs.floating_ips_bulk.create('192.168.1.0/30')

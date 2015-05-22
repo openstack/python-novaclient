@@ -42,7 +42,8 @@ class KeypairsTest(utils.FixturedTestCase):
     def test_list_keypairs(self):
         kps = self.cs.keypairs.list()
         self.assert_called('GET', '/%s' % self.keypair_prefix)
-        [self.assertIsInstance(kp, keypairs.Keypair) for kp in kps]
+        for kp in kps:
+            self.assertIsInstance(kp, keypairs.Keypair)
 
     def test_delete_keypair(self):
         kp = self.cs.keypairs.list()[0]
