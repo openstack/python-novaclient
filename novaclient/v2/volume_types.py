@@ -15,15 +15,17 @@
 
 
 """
-Volume Type interface.
+DEPRECATED: Volume Type interface.
 """
+
+import warnings
 
 from novaclient import base
 
 
 class VolumeType(base.Resource):
     """
-    A Volume Type is the type of volume to be created
+    DEPRECATED: A Volume Type is the type of volume to be created
     """
     def __repr__(self):
         return "<Volume Type: %s>" % self.name
@@ -31,46 +33,62 @@ class VolumeType(base.Resource):
 
 class VolumeTypeManager(base.ManagerWithFind):
     """
-    Manage :class:`VolumeType` resources.
+    DEPRECATED: Manage :class:`VolumeType` resources.
     """
     resource_class = VolumeType
 
     def list(self):
         """
-        Get a list of all volume types.
+        DEPRECATED: Get a list of all volume types.
 
         :rtype: list of :class:`VolumeType`.
         """
+        warnings.warn('The novaclient.v2.volume_types module is deprecated '
+                      'and will be removed after Nova 2016.1 is released. Use '
+                      'python-cinderclient or python-openstacksdk instead.',
+                      DeprecationWarning)
         with self.alternate_service_type('volume'):
             return self._list("/types", "volume_types")
 
     def get(self, volume_type):
         """
-        Get a specific volume type.
+        DEPRECATED: Get a specific volume type.
 
         :param volume_type: The ID of the :class:`VolumeType` to get.
         :rtype: :class:`VolumeType`
         """
+        warnings.warn('The novaclient.v2.volume_types module is deprecated '
+                      'and will be removed after Nova 2016.1 is released. Use '
+                      'python-cinderclient or python-openstacksdk instead.',
+                      DeprecationWarning)
         with self.alternate_service_type('volume'):
             return self._get("/types/%s" % base.getid(volume_type),
                              "volume_type")
 
     def delete(self, volume_type):
         """
-        Delete a specific volume_type.
+        DEPRECATED: Delete a specific volume_type.
 
         :param volume_type: The ID of the :class:`VolumeType` to get.
         """
+        warnings.warn('The novaclient.v2.volume_types module is deprecated '
+                      'and will be removed after Nova 2016.1 is released. Use '
+                      'python-cinderclient or python-openstacksdk instead.',
+                      DeprecationWarning)
         with self.alternate_service_type('volume'):
             self._delete("/types/%s" % base.getid(volume_type))
 
     def create(self, name):
         """
-        Create a volume type.
+        DEPRECATED: Create a volume type.
 
         :param name: Descriptive name of the volume type
         :rtype: :class:`VolumeType`
         """
+        warnings.warn('The novaclient.v2.volume_types module is deprecated '
+                      'and will be removed after Nova 2016.1 is released. Use '
+                      'python-cinderclient or python-openstacksdk instead.',
+                      DeprecationWarning)
         with self.alternate_service_type('volume'):
             body = {
                 "volume_type": {

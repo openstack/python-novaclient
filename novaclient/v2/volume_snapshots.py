@@ -14,15 +14,17 @@
 #    under the License.
 
 """
-Volume snapshot interface (1.1 extension).
+DEPRECATED: Volume snapshot interface (1.1 extension).
 """
+
+import warnings
 
 from novaclient import base
 
 
 class Snapshot(base.Resource):
     """
-    A Snapshot is a point-in-time snapshot of an openstack volume.
+    DEPRECATED: A Snapshot is a point-in-time snapshot of an openstack volume.
     """
     NAME_ATTR = 'display_name'
 
@@ -31,14 +33,14 @@ class Snapshot(base.Resource):
 
     def delete(self):
         """
-        Delete this snapshot.
+        DEPRECATED: Delete this snapshot.
         """
         self.manager.delete(self)
 
 
 class SnapshotManager(base.ManagerWithFind):
     """
-    Manage :class:`Snapshot` resources.
+    DEPRECATED: Manage :class:`Snapshot` resources.
     """
     resource_class = Snapshot
 
@@ -46,7 +48,7 @@ class SnapshotManager(base.ManagerWithFind):
                display_description=None):
 
         """
-        Create a snapshot of the given volume.
+        DEPRECATED: Create a snapshot of the given volume.
 
         :param volume_id: The ID of the volume to snapshot.
         :param force: If force is True, create a snapshot even if the volume is
@@ -55,6 +57,10 @@ class SnapshotManager(base.ManagerWithFind):
         :param display_description: Description of the snapshot
         :rtype: :class:`Snapshot`
         """
+        warnings.warn('The novaclient.v2.volume_snapshots module is '
+                      'deprecated and will be removed after Nova 2016.1 is '
+                      'released. Use python-cinderclient or '
+                      'python-openstacksdk instead.', DeprecationWarning)
         with self.alternate_service_type('volume'):
             body = {'snapshot': {'volume_id': volume_id,
                                  'force': force,
@@ -64,20 +70,28 @@ class SnapshotManager(base.ManagerWithFind):
 
     def get(self, snapshot_id):
         """
-        Get a snapshot.
+        DEPRECATED: Get a snapshot.
 
         :param snapshot_id: The ID of the snapshot to get.
         :rtype: :class:`Snapshot`
         """
+        warnings.warn('The novaclient.v2.volume_snapshots module is '
+                      'deprecated and will be removed after Nova 2016.1 is '
+                      'released. Use python-cinderclient or '
+                      'python-openstacksdk instead.', DeprecationWarning)
         with self.alternate_service_type('volume'):
             return self._get("/snapshots/%s" % snapshot_id, "snapshot")
 
     def list(self, detailed=True):
         """
-        Get a list of all snapshots.
+        DEPRECATED: Get a list of all snapshots.
 
         :rtype: list of :class:`Snapshot`
         """
+        warnings.warn('The novaclient.v2.volume_snapshots module is '
+                      'deprecated and will be removed after Nova 2016.1 is '
+                      'released. Use python-cinderclient or '
+                      'python-openstacksdk instead.', DeprecationWarning)
         with self.alternate_service_type('volume'):
             if detailed is True:
                 return self._list("/snapshots/detail", "snapshots")
@@ -86,9 +100,13 @@ class SnapshotManager(base.ManagerWithFind):
 
     def delete(self, snapshot):
         """
-        Delete a snapshot.
+        DEPRECATED: Delete a snapshot.
 
         :param snapshot: The :class:`Snapshot` to delete.
         """
+        warnings.warn('The novaclient.v2.volume_snapshots module is '
+                      'deprecated and will be removed after Nova 2016.1 is '
+                      'released. Use python-cinderclient or '
+                      'python-openstacksdk instead.', DeprecationWarning)
         with self.alternate_service_type('volume'):
             self._delete("/snapshots/%s" % base.getid(snapshot))

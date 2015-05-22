@@ -13,6 +13,10 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import warnings
+
+import mock
+
 from novaclient.tests.unit import utils
 from novaclient.tests.unit.v2 import fakes
 from novaclient.v2 import volumes
@@ -23,26 +27,33 @@ cs = fakes.FakeClient()
 
 class VolumesTest(utils.TestCase):
 
-    def test_list_servers(self):
+    @mock.patch.object(warnings, 'warn')
+    def test_list_volumes(self, mock_warn):
         vl = cs.volumes.list()
         cs.assert_called('GET', '/volumes/detail')
         for v in vl:
             self.assertIsInstance(v, volumes.Volume)
+        self.assertEqual(1, mock_warn.call_count)
 
-    def test_list_volumes_undetailed(self):
+    @mock.patch.object(warnings, 'warn')
+    def test_list_volumes_undetailed(self, mock_warn):
         vl = cs.volumes.list(detailed=False)
         cs.assert_called('GET', '/volumes')
         for v in vl:
             self.assertIsInstance(v, volumes.Volume)
+        self.assertEqual(1, mock_warn.call_count)
 
-    def test_get_volume_details(self):
+    @mock.patch.object(warnings, 'warn')
+    def test_get_volume_details(self, mock_warn):
         vol_id = '15e59938-07d5-11e1-90e3-e3dffe0c5983'
         v = cs.volumes.get(vol_id)
         cs.assert_called('GET', '/volumes/%s' % vol_id)
         self.assertIsInstance(v, volumes.Volume)
         self.assertEqual(v.id, vol_id)
+        self.assertEqual(1, mock_warn.call_count)
 
-    def test_create_volume(self):
+    @mock.patch.object(warnings, 'warn')
+    def test_create_volume(self, mock_warn):
         v = cs.volumes.create(
             size=2,
             display_name="My volume",
@@ -50,8 +61,10 @@ class VolumesTest(utils.TestCase):
         )
         cs.assert_called('POST', '/volumes')
         self.assertIsInstance(v, volumes.Volume)
+        self.assertEqual(1, mock_warn.call_count)
 
-    def test_delete_volume(self):
+    @mock.patch.object(warnings, 'warn')
+    def test_delete_volume(self, mock_warn):
         vol_id = '15e59938-07d5-11e1-90e3-e3dffe0c5983'
         v = cs.volumes.get(vol_id)
         v.delete()
@@ -60,6 +73,7 @@ class VolumesTest(utils.TestCase):
         cs.assert_called('DELETE', '/volumes/%s' % vol_id)
         cs.volumes.delete(v)
         cs.assert_called('DELETE', '/volumes/%s' % vol_id)
+        self.assertEqual(4, mock_warn.call_count)
 
     def test_create_server_volume(self):
         v = cs.volumes.create_server_volume(

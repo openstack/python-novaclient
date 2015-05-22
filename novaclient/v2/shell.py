@@ -61,6 +61,14 @@ CLIENT_BDM2_KEYS = {
 }
 
 
+# NOTE(mriedem): Remove this along with the deprecated commands in the first
+# python-novaclient release AFTER the nova server 2016.1 'M' release.
+def emit_volume_deprecation_warning(command_name):
+    print('WARNING: Command %s is deprecated and will be removed after Nova '
+          '2016.1 is released. Use python-cinderclient or openstackclient '
+          'instead.' % command_name, file=sys.stderr)
+
+
 def _key_value_pairing(text):
     try:
         (k, v) = text.split('=', 1)
@@ -1986,7 +1994,8 @@ def _translate_availability_zone_keys(collection):
     const=1,
     help=argparse.SUPPRESS)
 def do_volume_list(cs, args):
-    """List all the volumes."""
+    """DEPRECATED: List all the volumes."""
+    emit_volume_deprecation_warning('volume-list')
     search_opts = {'all_tenants': args.all_tenants}
     volumes = cs.volumes.list(search_opts=search_opts)
     _translate_volume_keys(volumes)
@@ -2004,7 +2013,8 @@ def do_volume_list(cs, args):
     metavar='<volume>',
     help=_('Name or ID of the volume.'))
 def do_volume_show(cs, args):
-    """Show details about a volume."""
+    """DEPRECATED: Show details about a volume."""
+    emit_volume_deprecation_warning('volume-show')
     volume = _find_volume(cs, args.volume)
     _print_volume(volume)
 
@@ -2056,7 +2066,8 @@ def do_volume_show(cs, args):
     help=_('Optional Availability Zone for volume. (Default=None)'),
     default=None)
 def do_volume_create(cs, args):
-    """Add a new volume."""
+    """DEPRECATED: Add a new volume."""
+    emit_volume_deprecation_warning('volume-create')
     volume = cs.volumes.create(args.size,
                                args.snapshot_id,
                                args.display_name,
@@ -2072,7 +2083,8 @@ def do_volume_create(cs, args):
     metavar='<volume>', nargs='+',
     help=_('Name or ID of the volume(s) to delete.'))
 def do_volume_delete(cs, args):
-    """Remove volume(s)."""
+    """DEPRECATED: Remove volume(s)."""
+    emit_volume_deprecation_warning('volume-delete')
     for volume in args.volume:
         try:
             _find_volume(cs, volume).delete()
@@ -2138,7 +2150,8 @@ def do_volume_detach(cs, args):
 
 
 def do_volume_snapshot_list(cs, _args):
-    """List all the snapshots."""
+    """DEPRECATED: List all the snapshots."""
+    emit_volume_deprecation_warning('volume-snapshot-list')
     snapshots = cs.volume_snapshots.list()
     _translate_volume_snapshot_keys(snapshots)
     utils.print_list(snapshots, ['ID', 'Volume ID', 'Status', 'Display Name',
@@ -2150,7 +2163,8 @@ def do_volume_snapshot_list(cs, _args):
     metavar='<snapshot>',
     help=_('Name or ID of the snapshot.'))
 def do_volume_snapshot_show(cs, args):
-    """Show details about a snapshot."""
+    """DEPRECATED: Show details about a snapshot."""
+    emit_volume_deprecation_warning('volume-snapshot-show')
     snapshot = _find_volume_snapshot(cs, args.snapshot)
     _print_volume_snapshot(snapshot)
 
@@ -2182,7 +2196,8 @@ def do_volume_snapshot_show(cs, args):
     '--display_description',
     help=argparse.SUPPRESS)
 def do_volume_snapshot_create(cs, args):
-    """Add a new snapshot."""
+    """DEPRECATED: Add a new snapshot."""
+    emit_volume_deprecation_warning('volume-snapshot-create')
     snapshot = cs.volume_snapshots.create(args.volume_id,
                                           args.force,
                                           args.display_name,
@@ -2195,7 +2210,8 @@ def do_volume_snapshot_create(cs, args):
     metavar='<snapshot>',
     help=_('Name or ID of the snapshot to delete.'))
 def do_volume_snapshot_delete(cs, args):
-    """Remove a snapshot."""
+    """DEPRECATED: Remove a snapshot."""
+    emit_volume_deprecation_warning('volume-snapshot-delete')
     snapshot = _find_volume_snapshot(cs, args.snapshot)
     snapshot.delete()
 
@@ -2205,7 +2221,8 @@ def _print_volume_type_list(vtypes):
 
 
 def do_volume_type_list(cs, args):
-    """Print a list of available 'volume types'."""
+    """DEPRECATED: Print a list of available 'volume types'."""
+    emit_volume_deprecation_warning('volume-type-list')
     vtypes = cs.volume_types.list()
     _print_volume_type_list(vtypes)
 
@@ -2215,7 +2232,8 @@ def do_volume_type_list(cs, args):
     metavar='<name>',
     help=_("Name of the new volume type"))
 def do_volume_type_create(cs, args):
-    """Create a new volume type."""
+    """DEPRECATED: Create a new volume type."""
+    emit_volume_deprecation_warning('volume-type-create')
     vtype = cs.volume_types.create(args.name)
     _print_volume_type_list([vtype])
 
@@ -2225,7 +2243,8 @@ def do_volume_type_create(cs, args):
     metavar='<id>',
     help=_("Unique ID of the volume type to delete"))
 def do_volume_type_delete(cs, args):
-    """Delete a specific volume type."""
+    """DEPRECATED: Delete a specific volume type."""
+    emit_volume_deprecation_warning('volume-type-delete')
     cs.volume_types.delete(args.id)
 
 
