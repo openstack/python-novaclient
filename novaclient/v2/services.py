@@ -16,6 +16,7 @@
 """
 service interface
 """
+from novaclient import api_versions
 from novaclient import base
 
 
@@ -48,11 +49,23 @@ class ServiceManager(base.ManagerWithFind):
             url = "%s?%s" % (url, "&".join(filters))
         return self._list(url, "services")
 
+    @api_versions.wraps("2.0", "2.10")
     def _update_body(self, host, binary, disabled_reason=None):
         body = {"host": host,
                 "binary": binary}
         if disabled_reason is not None:
             body["disabled_reason"] = disabled_reason
+        return body
+
+    @api_versions.wraps("2.11")
+    def _update_body(self, host, binary, disabled_reason=None,
+                     force_down=None):
+        body = {"host": host,
+                "binary": binary}
+        if disabled_reason is not None:
+            body["disabled_reason"] = disabled_reason
+        if force_down is not None:
+            body["forced_down"] = force_down
         return body
 
     def enable(self, host, binary):
@@ -73,3 +86,9 @@ class ServiceManager(base.ManagerWithFind):
     def delete(self, service_id):
         """Delete a service."""
         return self._delete("/os-services/%s" % service_id)
+
+    @api_versions.wraps("2.11")
+    def force_down(self, host, binary, force_down=None):
+        """Force service state to down specified by hostname and binary."""
+        body = self._update_body(host, binary, force_down=force_down)
+        return self._update("/os-services/force-down", body, "service")

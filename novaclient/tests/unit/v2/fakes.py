@@ -1677,6 +1677,12 @@ class FakeHTTPClient(base_client.HTTPClient):
     def delete_os_services_1(self, **kw):
         return (204, {}, None)
 
+    def put_os_services_force_down(self, body, **kw):
+        return (200, {}, {'service': {
+            'host': body['host'],
+            'binary': body['binary'],
+            'forced_down': False}})
+
     #
     # Fixed IPs
     #

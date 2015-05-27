@@ -3568,6 +3568,21 @@ def do_service_disable(cs, args):
         utils.print_list([result], ['Host', 'Binary', 'Status'])
 
 
+@api_versions.wraps("2.11")
+@cliutils.arg('host', metavar='<hostname>', help=_('Name of host.'))
+@cliutils.arg('binary', metavar='<binary>', help=_('Service binary.'))
+@cliutils.arg(
+    '--unset',
+    dest='force_down',
+    help=_("Unset the force state down of service"),
+    action='store_false',
+    default=True)
+def do_service_force_down(cs, args):
+    """Force service to down."""
+    result = cs.services.force_down(args.host, args.binary, args.force_down)
+    utils.print_list([result], ['Host', 'Binary', 'Forced down'])
+
+
 @cliutils.arg('id', metavar='<id>', help=_('Id of service.'))
 def do_service_delete(cs, args):
     """Delete the service."""
