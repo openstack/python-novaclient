@@ -319,7 +319,14 @@ def _load_entry_point(ep_name, name=None):
     """Try to load the entry point ep_name that matches name."""
     for ep in pkg_resources.iter_entry_points(ep_name, name=name):
         try:
-            return ep.load()
+            # FIXME(dhellmann): It would be better to use stevedore
+            # here, since it abstracts this difference in behavior
+            # between versions of setuptools, but this seemed like a
+            # more expedient fix.
+            if hasattr(ep, 'resolve') and hasattr(ep, 'require'):
+                return ep.resolve()
+            else:
+                return ep.load(require=False)
         except (ImportError, pkg_resources.UnknownExtra, AttributeError):
             continue
 

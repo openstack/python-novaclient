@@ -37,7 +37,14 @@ def discover_auth_systems():
     ep_name = 'openstack.client.auth_plugin'
     for ep in pkg_resources.iter_entry_points(ep_name):
         try:
-            auth_plugin = ep.load()
+            # FIXME(dhellmann): It would be better to use stevedore
+            # here, since it abstracts this difference in behavior
+            # between versions of setuptools, but this seemed like a
+            # more expedient fix.
+            if hasattr(ep, 'resolve') and hasattr(ep, 'require'):
+                auth_plugin = ep.resolve()
+            else:
+                auth_plugin = ep.load(require=False)
         except (ImportError, pkg_resources.UnknownExtra, AttributeError) as e:
             logger.debug("ERROR: Cannot load auth plugin %s" % ep.name)
             logger.debug(e, exc_info=1)
