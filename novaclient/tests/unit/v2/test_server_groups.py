@@ -31,6 +31,13 @@ class ServerGroupsTest(utils.FixturedTestCase):
             self.assertTrue(isinstance(server_group,
                                        server_groups.ServerGroup))
 
+    def test_list_server_groups_with_all_projects(self):
+        result = self.cs.server_groups.list(all_projects=True)
+        self.assert_called('GET', '/os-server-groups?all_projects')
+        for server_group in result:
+            self.assertTrue(isinstance(server_group,
+                                       server_groups.ServerGroup))
+
     def test_create_server_group(self):
         kwargs = {'name': 'ig1',
                   'policies': ['anti-affinity']}
