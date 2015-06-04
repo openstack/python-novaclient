@@ -26,7 +26,6 @@ Contents:
    api
    ref/index
    ref/v2/index
-   releases
 
 Contributing
 ============
@@ -78,6 +77,17 @@ The process for command deprecation is:
      2.25.0. Once the change was merged, python-novaclient 2.26.0 was released.
      Since there was less than six months before 2015.2 would be released, the
      deprecation cycle ran through the 2016.1 Nova server release.
+
+
+Man Page
+========
+
+.. toctree::
+   :maxdepth: 1
+
+   man/nova
+
+
 
 Indices and tables
 ==================

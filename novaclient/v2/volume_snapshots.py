@@ -52,7 +52,7 @@ class SnapshotManager(base.ManagerWithFind):
 
         :param volume_id: The ID of the volume to snapshot.
         :param force: If force is True, create a snapshot even if the volume is
-        attached to an instance. Default is False.
+                      attached to an instance. Default is False.
         :param display_name: Name of the snapshot
         :param display_description: Description of the snapshot
         :rtype: :class:`Snapshot`
