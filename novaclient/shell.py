@@ -703,6 +703,7 @@ class OpenStackComputeShell(object):
         # identifying keyring key can come from the underlying client
         if must_auth:
             helper = SecretsHelper(args, self.cs.client)
+            self.cs.client.keyring_saver = helper
             if (auth_plugin and auth_plugin.opts and
                     "os_password" not in auth_plugin.opts):
                 use_pw = False
@@ -724,7 +725,6 @@ class OpenStackComputeShell(object):
                 # We're missing something, so auth with user/pass and save
                 # the result in our helper.
                 self.cs.client.password = helper.password
-                self.cs.client.keyring_saver = helper
 
         try:
             # This does a couple of bits which are useful even if we've

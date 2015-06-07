@@ -379,6 +379,26 @@ class ShellTest(utils.TestCase):
         exc = self.assertRaises(RuntimeError, self.shell, '--timings list')
         self.assertEqual('Boom!', str(exc))
 
+    @mock.patch('novaclient.shell.SecretsHelper.tenant_id',
+                return_value=True)
+    @mock.patch('novaclient.shell.SecretsHelper.auth_token',
+                return_value=True)
+    @mock.patch('novaclient.shell.SecretsHelper.management_url',
+                return_value=True)
+    @mock.patch('novaclient.client.Client')
+    @requests_mock.Mocker()
+    def test_keyring_saver_helper(self, mock_client,
+                                  sh_management_url_function,
+                                  sh_auth_token_function,
+                                  sh_tenant_id_function,
+                                  m_requests):
+        self.make_env(fake_env=FAKE_ENV)
+        self.register_keystone_discovery_fixture(m_requests)
+        self.shell('list')
+        mock_client_instance = mock_client.return_value
+        keyring_saver = mock_client_instance.client.keyring_saver
+        self.assertIsInstance(keyring_saver, novaclient.shell.SecretsHelper)
+
 
 class ShellTestKeystoneV3(ShellTest):
     def make_env(self, exclude=None, fake_env=FAKE_ENV):
