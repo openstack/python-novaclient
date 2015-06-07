@@ -221,6 +221,7 @@ class HTTPClient(object):
 
         self.service_catalog = None
         self.services_url = {}
+        self.last_request_id = None
 
     def use_token_cache(self, use_it):
         self.os_cache = use_it
@@ -392,6 +393,8 @@ class HTTPClient(object):
         else:
             body = None
 
+        self.last_request_id = (resp.headers.get('x-openstack-request-id')
+                                if resp.headers else None)
         if resp.status_code >= 400:
             raise exceptions.from_response(resp, body, url, method)
 

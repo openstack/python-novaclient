@@ -57,6 +57,10 @@ class Manager(base.HookableMixin):
     def __init__(self, api):
         self.api = api
 
+    @property
+    def client(self):
+        return self.api.client
+
     def _list(self, url, response_key, obj_class=None, body=None):
         if body:
             _resp, body = self.api.client.post(url, body=body)

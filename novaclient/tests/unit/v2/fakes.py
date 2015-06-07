@@ -56,6 +56,7 @@ class FakeHTTPClient(base_client.HTTPClient):
         self.bypass_url = 'bypass_url'
         self.os_cache = 'os_cache'
         self.http_log_debug = 'http_log_debug'
+        self.last_request_id = None
 
     def _cs_request(self, url, method, **kwargs):
         # Check that certain things are called correctly
