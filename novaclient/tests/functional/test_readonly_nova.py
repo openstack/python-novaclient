@@ -161,6 +161,13 @@ class SimpleReadOnlyNovaClientTest(base.ClientTestBase):
     def test_version_list(self):
         self.nova('version-list')
 
+    def test_quota_defaults(self):
+        self.nova('quota-defaults')
+        self.nova('quota-defaults', flags='--debug')
+
+    def test_bash_completion(self):
+        self.nova('bash-completion')
+
     # Optional arguments:
 
     def test_admin_version(self):
