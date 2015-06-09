@@ -9,8 +9,8 @@ See the `OpenStack CLI guide`_ for information on how to use the ``nova``
 command-line tool. You may also want to look at the
 `OpenStack API documentation`_.
 
-.. _OpenStack CLI Guide: http://docs.openstack.org/cli/quick-start/content/
-.. _OpenStack API documentation: http://docs.openstack.org/api/
+.. _OpenStack CLI Guide: http://docs.openstack.org/cli-reference/content/novaclient_commands.html
+.. _OpenStack API documentation: http://docs.openstack.org/api/quick-start/content/
 
 The project is hosted on `Launchpad`_, where bugs can be filed. The code is
 hosted on `Github`_. Patches must be submitted using `Gerrit`_, *not* Github
