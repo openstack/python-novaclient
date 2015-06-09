@@ -205,6 +205,21 @@ class ServersTest(utils.FixturedTestCase):
         self.assert_called('POST', '/servers')
         self.assertIsInstance(s, servers.Server)
 
+    def test_create_server_admin_pass(self):
+        test_password = "test-pass"
+        test_key = "fakekey"
+        s = self.cs.servers.create(
+            name="My server",
+            image=1,
+            flavor=1,
+            admin_pass=test_password,
+            key_name=test_key
+        )
+        self.assert_called('POST', '/servers')
+        self.assertIsInstance(s, servers.Server)
+        body = jsonutils.loads(self.requests.last_request.body)
+        self.assertEqual(test_password, body['server']['adminPass'])
+
     def test_create_server_userdata_bin(self):
         with tempfile.TemporaryFile(mode='wb+') as bin_file:
             original_data = os.urandom(1024)
