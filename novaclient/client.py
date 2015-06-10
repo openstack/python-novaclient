@@ -773,6 +773,18 @@ def _discover_via_entry_points():
         yield name, module
 
 
+def _get_available_client_versions():
+    # NOTE(andreykurilin): available clients version should not be
+    # hardcoded, so let's discover them.
+    matcher = re.compile(r"v[0-9_]*$")
+    submodules = pkgutil.iter_modules([os.path.dirname(__file__)])
+    available_versions = [
+        name[1:].replace("_", ".") for loader, name, ispkg in submodules
+        if matcher.search(name)]
+
+    return available_versions
+
+
 def get_client_class(version):
     version = str(version)
     if version in DEPRECATED_VERSIONS:
@@ -786,13 +798,7 @@ def get_client_class(version):
         return importutils.import_class(
             "novaclient.v%s.client.Client" % version)
     except ImportError:
-        # NOTE(andreykurilin): available clients version should not be
-        # hardcoded, so let's discover them.
-        matcher = re.compile(r"v[0-9_]*$")
-        submodules = pkgutil.iter_modules(['novaclient'])
-        available_versions = [
-            name[1:].replace("_", ".") for loader, name, ispkg in submodules
-            if matcher.search(name)]
+        available_versions = _get_available_client_versions()
         msg = _("Invalid client version '%(version)s'. must be one of: "
                 "%(keys)s") % {'version': version,
                                'keys': ', '.join(available_versions)}
