@@ -4411,7 +4411,7 @@ def do_secgroup_list_default_rules(cs, args):
 @cliutils.arg('cidr', metavar='<cidr>', help=_('CIDR for address range.'))
 def do_secgroup_add_default_rule(cs, args):
     """Add a rule to the set of rules that will be added to the 'default'
-    security group for new tenants.
+    security group for new tenants (nova-network only).
     """
     rule = cs.security_group_default_rules.create(args.ip_proto,
                                                   args.from_port,
@@ -4435,7 +4435,7 @@ def do_secgroup_add_default_rule(cs, args):
 @cliutils.arg('cidr', metavar='<cidr>', help=_('CIDR for address range.'))
 def do_secgroup_delete_default_rule(cs, args):
     """Delete a rule from the set of rules that will be added to the
-    'default' security group for new tenants.
+    'default' security group for new tenants (nova-network only).
     """
     for rule in cs.security_group_default_rules.list():
         if (rule.ip_protocol and
