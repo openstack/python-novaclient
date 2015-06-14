@@ -161,6 +161,10 @@ class ClientTest(utils.TestCase):
         self._check_version_url('http://foo.com/nova/v2/%s',
                                 'http://foo.com/nova/')
 
+    def test_get_available_client_versions(self):
+        output = novaclient.client._get_available_client_versions()
+        self.assertNotEqual([], output)
+
     def test_get_client_class_v2(self):
         output = novaclient.client.get_client_class('2')
         self.assertEqual(output, novaclient.v2.client.Client)
