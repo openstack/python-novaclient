@@ -2476,14 +2476,9 @@ def do_floating_ip_delete(cs, args):
                                   args.address)
 
 
-@cliutils.arg(
-    '--all-tenants',
-    action='store_true',
-    default=False,
-    help=_('Display floatingips from all tenants (Admin only).'))
-def do_floating_ip_list(cs, args):
+def do_floating_ip_list(cs, _args):
     """List floating IPs."""
-    _print_floating_ip_list(cs.floating_ips.list(args.all_tenants))
+    _print_floating_ip_list(cs.floating_ips.list())
 
 
 def do_floating_ip_pool_list(cs, _args):

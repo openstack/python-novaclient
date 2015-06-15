@@ -31,12 +31,6 @@ class FloatingIPsTest(utils.FixturedTestCase):
         for fip in fips:
             self.assertIsInstance(fip, floating_ips.FloatingIP)
 
-    def test_list_floating_ips_all_tenants(self):
-        fips = self.cs.floating_ips.list(all_tenants=True)
-        self.assert_called('GET', '/os-floating-ips?all_tenants=1')
-        for fip in fips:
-            self.assertIsInstance(fip, floating_ips.FloatingIP)
-
     def test_delete_floating_ip(self):
         fl = self.cs.floating_ips.list()[0]
         fl.delete()
