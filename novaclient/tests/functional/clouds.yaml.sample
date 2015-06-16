@@ -1,0 +1,7 @@
+clouds:
+  devstack:
+    auth:
+      username: admin
+      password: a
+      project_name: admin
+      auth_url: http://localhost:5000/v2.0
