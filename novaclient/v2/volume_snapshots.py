@@ -58,7 +58,7 @@ class SnapshotManager(base.ManagerWithFind):
         :rtype: :class:`Snapshot`
         """
         warnings.warn('The novaclient.v2.volume_snapshots module is '
-                      'deprecated and will be removed after Nova 2016.1 is '
+                      'deprecated and will be removed after Nova 13.0.0 is '
                       'released. Use python-cinderclient or '
                       'python-openstacksdk instead.', DeprecationWarning)
         with self.alternate_service_type('volume'):
@@ -76,7 +76,7 @@ class SnapshotManager(base.ManagerWithFind):
         :rtype: :class:`Snapshot`
         """
         warnings.warn('The novaclient.v2.volume_snapshots module is '
-                      'deprecated and will be removed after Nova 2016.1 is '
+                      'deprecated and will be removed after Nova 13.0.0 is '
                       'released. Use python-cinderclient or '
                       'python-openstacksdk instead.', DeprecationWarning)
         with self.alternate_service_type('volume'):
@@ -89,7 +89,7 @@ class SnapshotManager(base.ManagerWithFind):
         :rtype: list of :class:`Snapshot`
         """
         warnings.warn('The novaclient.v2.volume_snapshots module is '
-                      'deprecated and will be removed after Nova 2016.1 is '
+                      'deprecated and will be removed after Nova 13.0.0 is '
                       'released. Use python-cinderclient or '
                       'python-openstacksdk instead.', DeprecationWarning)
         with self.alternate_service_type('volume'):
@@ -105,7 +105,7 @@ class SnapshotManager(base.ManagerWithFind):
         :param snapshot: The :class:`Snapshot` to delete.
         """
         warnings.warn('The novaclient.v2.volume_snapshots module is '
-                      'deprecated and will be removed after Nova 2016.1 is '
+                      'deprecated and will be removed after Nova 13.0.0 is '
                       'released. Use python-cinderclient or '
                       'python-openstacksdk instead.', DeprecationWarning)
         with self.alternate_service_type('volume'):
