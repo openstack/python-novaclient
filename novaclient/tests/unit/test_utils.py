@@ -266,6 +266,20 @@ class PrintResultTestCase(test_utils.TestCase):
                          '+----------+----------------+\n',
                          sys.stdout.getvalue())
 
+    @mock.patch('sys.stdout', six.StringIO())
+    def test_print_large_dict_list(self):
+        dict = {'k': ['foo1', 'bar1', 'foo2', 'bar2',
+                      'foo3', 'bar3', 'foo4', 'bar4']}
+        utils.print_dict(dict, wrap=40)
+        self.assertEqual(
+            '+----------+------------------------------------------+\n'
+            '| Property | Value                                    |\n'
+            '+----------+------------------------------------------+\n'
+            '| k        | ["foo1", "bar1", "foo2", "bar2", "foo3", |\n'
+            '|          | "bar3", "foo4", "bar4"]                  |\n'
+            '+----------+------------------------------------------+\n',
+            sys.stdout.getvalue())
+
 
 class FlattenTestCase(test_utils.TestCase):
     def test_flattening(self):
