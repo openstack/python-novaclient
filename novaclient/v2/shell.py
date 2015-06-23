@@ -62,10 +62,10 @@ CLIENT_BDM2_KEYS = {
 
 
 # NOTE(mriedem): Remove this along with the deprecated commands in the first
-# python-novaclient release AFTER the nova server 2016.1 'M' release.
+# python-novaclient release AFTER the nova server 13.0.0 'M' release.
 def emit_volume_deprecation_warning(command_name):
     print('WARNING: Command %s is deprecated and will be removed after Nova '
-          '2016.1 is released. Use python-cinderclient or openstackclient '
+          '13.0.0 is released. Use python-cinderclient or openstackclient '
           'instead.' % command_name, file=sys.stderr)
 
 

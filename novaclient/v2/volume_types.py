@@ -44,7 +44,7 @@ class VolumeTypeManager(base.ManagerWithFind):
         :rtype: list of :class:`VolumeType`.
         """
         warnings.warn('The novaclient.v2.volume_types module is deprecated '
-                      'and will be removed after Nova 2016.1 is released. Use '
+                      'and will be removed after Nova 13.0.0 is released. Use '
                       'python-cinderclient or python-openstacksdk instead.',
                       DeprecationWarning)
         with self.alternate_service_type('volume'):
@@ -58,7 +58,7 @@ class VolumeTypeManager(base.ManagerWithFind):
         :rtype: :class:`VolumeType`
         """
         warnings.warn('The novaclient.v2.volume_types module is deprecated '
-                      'and will be removed after Nova 2016.1 is released. Use '
+                      'and will be removed after Nova 13.0.0 is released. Use '
                       'python-cinderclient or python-openstacksdk instead.',
                       DeprecationWarning)
         with self.alternate_service_type('volume'):
@@ -72,7 +72,7 @@ class VolumeTypeManager(base.ManagerWithFind):
         :param volume_type: The ID of the :class:`VolumeType` to get.
         """
         warnings.warn('The novaclient.v2.volume_types module is deprecated '
-                      'and will be removed after Nova 2016.1 is released. Use '
+                      'and will be removed after Nova 13.0.0 is released. Use '
                       'python-cinderclient or python-openstacksdk instead.',
                       DeprecationWarning)
         with self.alternate_service_type('volume'):
@@ -86,7 +86,7 @@ class VolumeTypeManager(base.ManagerWithFind):
         :rtype: :class:`VolumeType`
         """
         warnings.warn('The novaclient.v2.volume_types module is deprecated '
-                      'and will be removed after Nova 2016.1 is released. Use '
+                      'and will be removed after Nova 13.0.0 is released. Use '
                       'python-cinderclient or python-openstacksdk instead.',
                       DeprecationWarning)
         with self.alternate_service_type('volume'):
