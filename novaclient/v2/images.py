@@ -52,12 +52,14 @@ class ImageManager(base.ManagerWithFind):
         """
         return self._get("/images/%s" % base.getid(image), "image")
 
-    def list(self, detailed=True, limit=None):
+    def list(self, detailed=True, limit=None, marker=None):
         """
         Get a list of all images.
 
         :rtype: list of :class:`Image`
         :param limit: maximum number of images to return.
+        :param marker: Begin returning images that appear later in the image
+                       list than that represented by this image id (optional).
         """
         params = {}
         detail = ''
@@ -65,6 +67,9 @@ class ImageManager(base.ManagerWithFind):
             detail = '/detail'
         if limit:
             params['limit'] = int(limit)
+        if marker:
+            params['marker'] = str(marker)
+        params = sorted(params.items(), key=lambda x: x[0])
         query = '?%s' % parse.urlencode(params) if params else ''
         return self._list('/images%s%s' % (detail, query), 'images')
 

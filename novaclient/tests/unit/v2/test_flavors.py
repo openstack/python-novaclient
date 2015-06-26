@@ -45,6 +45,10 @@ class FlavorsTest(utils.TestCase):
         for flavor in fl:
             self.assertIsInstance(flavor, self.flavor_type)
 
+    def test_list_flavors_with_marker_limit(self):
+        self.cs.flavors.list(marker=1234, limit=4)
+        self.cs.assert_called('GET', '/flavors/detail?limit=4&marker=1234')
+
     def test_list_flavors_is_public_none(self):
         fl = self.cs.flavors.list(is_public=None)
         self.cs.assert_called('GET', '/flavors/detail?is_public=None')

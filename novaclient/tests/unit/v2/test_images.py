@@ -35,9 +35,9 @@ class ImagesTest(utils.FixturedTestCase):
         for i in il:
             self.assertIsInstance(i, images.Image)
 
-    def test_list_images_with_limit(self):
-        self.cs.images.list(limit=4)
-        self.assert_called('GET', '/images/detail?limit=4')
+    def test_list_images_with_marker_limit(self):
+        self.cs.images.list(marker=1234, limit=4)
+        self.assert_called('GET', '/images/detail?limit=4&marker=1234')
 
     def test_get_image_details(self):
         i = self.cs.images.get(1)
