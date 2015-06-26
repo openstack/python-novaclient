@@ -136,6 +136,31 @@ class ServersTest(utils.FixturedTestCase):
 
         test_create_server_from_volume()
 
+    def test_create_server_boot_from_volume_bdm_v2(self):
+        old_boot = self.cs.servers._boot
+
+        bdm = [{"volume_size": "1",
+                "volume_id": "11111111-1111-1111-1111-111111111111",
+                "delete_on_termination": "0",
+                "device_name": "vda"}]
+
+        def wrapped_boot(url, key, *boot_args, **boot_kwargs):
+            self.assertEqual(boot_kwargs['block_device_mapping_v2'], bdm)
+            return old_boot(url, key, *boot_args, **boot_kwargs)
+
+        with mock.patch.object(self.cs.servers, '_boot', wrapped_boot):
+            s = self.cs.servers.create(
+                name="My server",
+                image=1,
+                flavor=1,
+                meta={'foo': 'bar'},
+                userdata="hello moto",
+                key_name="fakekey",
+                block_device_mapping_v2=bdm
+            )
+            self.assert_called('POST', '/os-volumes_boot')
+            self.assertIsInstance(s, servers.Server)
+
     def test_create_server_boot_with_nics_ipv6(self):
         old_boot = self.cs.servers._boot
         nics = [{'net-id': '11111111-1111-1111-1111-111111111111',
