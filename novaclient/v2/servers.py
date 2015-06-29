@@ -505,7 +505,7 @@ class ServerManager(base.BootingManagerWithFind):
             # a valid boot with both --image and --block-device
             # failed , see bug 1433609 for more info
             if image:
-                bdm_dict = {'uuid': image.id, 'source_type': 'image',
+                bdm_dict = {'uuid': base.getid(image), 'source_type': 'image',
                             'destination_type': 'local', 'boot_index': 0,
                             'delete_on_termination': True}
                 block_device_mapping_v2.insert(0, bdm_dict)
