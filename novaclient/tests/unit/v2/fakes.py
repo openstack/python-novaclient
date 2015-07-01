@@ -665,6 +665,8 @@ class FakeHTTPClient(base_client.HTTPClient):
         elif action == 'createImage':
             assert set(body[action].keys()) == set(['name', 'metadata'])
             _headers = dict(location="http://blah/images/456")
+            if body[action]['name'] == 'mysnapshot_deleted':
+                _headers = dict(location="http://blah/images/457")
         elif action == 'os-getConsoleOutput':
             assert list(body[action]) == ['length']
             return (202, {}, {'output': 'foo'})
@@ -1035,6 +1037,16 @@ class FakeHTTPClient(base_client.HTTPClient):
                 "status": "SAVING",
                 "progress": 80,
                 "links": {},
+            },
+            {
+                "id": 3,
+                "name": "My Server Backup Deleted",
+                "serverId": 1234,
+                "updated": "2010-10-10T12:00:00Z",
+                "created": "2010-08-10T12:00:00Z",
+                "status": "DELETED",
+                "fault": {'message': 'Image has been deleted.'},
+                "links": {},
             }
         ]})
 
@@ -1046,6 +1058,9 @@ class FakeHTTPClient(base_client.HTTPClient):
 
     def get_images_456(self, **kw):
         return (200, {}, {'image': self.get_images_detail()[2]['images'][1]})
+
+    def get_images_457(self, **kw):
+        return (200, {}, {'image': self.get_images_detail()[2]['images'][2]})
 
     def get_images_3e861307_73a6_4d1f_8d68_f68b03223032(self):
         raise exceptions.NotFound('404')

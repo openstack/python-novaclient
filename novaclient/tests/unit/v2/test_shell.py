@@ -813,6 +813,24 @@ class ShellTest(utils.TestCase):
         self.assertIn('My Server Backup', output)
         self.assertIn('SAVING', output)
 
+    @mock.patch('novaclient.v2.shell._poll_for_status')
+    def test_create_image_with_poll(self, poll_method):
+        self.run_command(
+            'image-create sample-server mysnapshot --poll')
+        self.assert_called_anytime(
+            'POST', '/servers/1234/action',
+            {'createImage': {'name': 'mysnapshot', 'metadata': {}}},
+        )
+        self.assertEqual(1, poll_method.call_count)
+        poll_method.assert_has_calls(
+            [mock.call(self.shell.cs.images.get, '456', 'snapshotting',
+                       ['active'])])
+
+    def test_create_image_with_poll_to_check_image_state_deleted(self):
+        self.assertRaises(
+            exceptions.InstanceInDeletedState, self.run_command,
+            'image-create sample-server mysnapshot_deleted --poll')
+
     def test_image_delete(self):
         self.run_command('image-delete 1')
         self.assert_called('DELETE', '/images/1')
