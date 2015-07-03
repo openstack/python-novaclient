@@ -445,11 +445,6 @@ class OpenStackComputeShell(object):
 
         return parser
 
-    # TODO(lyj): Delete this method after heat patched to use
-    #            client.discover_extensions
-    def _discover_extensions(self, version):
-        return client.discover_extensions(version)
-
     def _add_bash_completion_subparser(self, subparsers):
         subparser = subparsers.add_parser(
             'bash_completion',
@@ -729,7 +724,7 @@ class OpenStackComputeShell(object):
             api_version = api_versions.discover_version(self.cs, api_version)
 
         # build available subcommands based on version
-        self.extensions = self._discover_extensions(api_version)
+        self.extensions = client.discover_extensions(api_version)
         self._run_extension_hooks('__pre_parse_args__')
 
         subcommand_parser = self.get_subcommand_parser(
