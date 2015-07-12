@@ -2367,13 +2367,14 @@ class ShellTest(utils.TestCase):
                            {'keypair':
                                {'name': 'test'}})
 
-    @mock.patch.object(builtins, 'open',
-                       mock.mock_open(read_data='FAKE_PUBLIC_KEY'))
     def test_keypair_import(self):
-        self.run_command('keypair-add --pub-key test.pub test')
-        self.assert_called(
-            'POST', '/os-keypairs', {
-                'keypair': {'public_key': 'FAKE_PUBLIC_KEY', 'name': 'test'}})
+        with mock.patch.object(builtins, 'open',
+                               mock.mock_open(read_data='FAKE_PUBLIC_KEY')):
+            self.run_command('keypair-add --pub-key test.pub test')
+            self.assert_called(
+                'POST', '/os-keypairs', {
+                    'keypair': {'public_key': 'FAKE_PUBLIC_KEY',
+                                'name': 'test'}})
 
     def test_keypair_stdin(self):
         with mock.patch('sys.stdin', six.StringIO('FAKE_PUBLIC_KEY')):
