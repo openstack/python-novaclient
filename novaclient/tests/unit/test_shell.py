@@ -104,6 +104,19 @@ class ShellTest(utils.TestCase):
         self.nc_util = mock.patch(
             'novaclient.openstack.common.cliutils.isunauthenticated').start()
         self.nc_util.return_value = False
+        self.mock_server_version_range = mock.patch(
+            'novaclient.api_versions._get_server_version_range').start()
+        self.mock_server_version_range.return_value = (
+            novaclient.API_MIN_VERSION,
+            novaclient.API_MIN_VERSION)
+        self.orig_max_ver = novaclient.API_MAX_VERSION
+        self.orig_min_ver = novaclient.API_MIN_VERSION
+        self.addCleanup(self._clear_fake_version)
+        self.addCleanup(mock.patch.stopall)
+
+    def _clear_fake_version(self):
+        novaclient.API_MAX_VERSION = self.orig_max_ver
+        novaclient.API_MIN_VERSION = self.orig_min_ver
 
     def shell(self, argstr, exitcodes=(0,)):
         orig = sys.stdout
@@ -168,6 +181,7 @@ class ShellTest(utils.TestCase):
                             matchers.MatchesRegex(r, re.DOTALL | re.MULTILINE))
 
     def test_help_no_options(self):
+        self.make_env()
         required = [
             '.*?^usage: ',
             '.*?^\s+root-password\s+Change the admin password',
@@ -179,6 +193,7 @@ class ShellTest(utils.TestCase):
                             matchers.MatchesRegex(r, re.DOTALL | re.MULTILINE))
 
     def test_bash_completion(self):
+        self.make_env()
         stdout, stderr = self.shell('bash-completion')
         # just check we have some output
         required = [
@@ -402,6 +417,79 @@ class ShellTest(utils.TestCase):
         mock_client_instance = mock_client.return_value
         keyring_saver = mock_client_instance.client.keyring_saver
         self.assertIsInstance(keyring_saver, novaclient.shell.SecretsHelper)
+
+    @mock.patch('novaclient.client.Client')
+    def test_microversion_with_latest(self, mock_client):
+        self.make_env()
+        novaclient.API_MAX_VERSION = api_versions.APIVersion('2.3')
+        self.mock_server_version_range.return_value = (
+            api_versions.APIVersion("2.1"), api_versions.APIVersion("2.3"))
+        self.shell('--os-compute-api-version 2.latest list')
+        client_args = mock_client.call_args_list[1][0]
+        self.assertEqual(api_versions.APIVersion("2.3"), client_args[0])
+
+    @mock.patch('novaclient.client.Client')
+    def test_microversion_with_specified_version(self, mock_client):
+        self.make_env()
+        self.mock_server_version_range.return_value = (
+            api_versions.APIVersion("2.10"), api_versions.APIVersion("2.100"))
+        novaclient.API_MAX_VERSION = api_versions.APIVersion("2.100")
+        novaclient.API_MIN_VERSION = api_versions.APIVersion("2.90")
+        self.shell('--os-compute-api-version 2.99 list')
+        client_args = mock_client.call_args_list[1][0]
+        self.assertEqual(api_versions.APIVersion("2.99"), client_args[0])
+
+    @mock.patch('novaclient.client.Client')
+    def test_microversion_with_specified_version_out_of_range(self,
+                                                              mock_client):
+        novaclient.API_MAX_VERSION = api_versions.APIVersion("2.100")
+        novaclient.API_MIN_VERSION = api_versions.APIVersion("2.90")
+        self.assertRaises(exceptions.CommandError,
+                          self.shell, '--os-compute-api-version 2.199 list')
+
+    @mock.patch('novaclient.client.Client')
+    def test_microversion_with_v2_and_v2_1_server(self, mock_client):
+        self.make_env()
+        self.mock_server_version_range.return_value = (
+            api_versions.APIVersion('2.1'), api_versions.APIVersion('2.3'))
+        novaclient.API_MAX_VERSION = api_versions.APIVersion("2.100")
+        novaclient.API_MIN_VERSION = api_versions.APIVersion("2.1")
+        self.shell('--os-compute-api-version 2 list')
+        client_args = mock_client.call_args_list[1][0]
+        self.assertEqual(api_versions.APIVersion("2.0"), client_args[0])
+
+    @mock.patch('novaclient.client.Client')
+    def test_microversion_with_v2_and_v2_server(self, mock_client):
+        self.make_env()
+        self.mock_server_version_range.return_value = (
+            api_versions.APIVersion(), api_versions.APIVersion())
+        novaclient.API_MAX_VERSION = api_versions.APIVersion("2.100")
+        novaclient.API_MIN_VERSION = api_versions.APIVersion("2.1")
+        self.shell('--os-compute-api-version 2 list')
+        client_args = mock_client.call_args_list[1][0]
+        self.assertEqual(api_versions.APIVersion("2.0"), client_args[0])
+
+    @mock.patch('novaclient.client.Client')
+    def test_microversion_with_v2_without_server_compatible(self, mock_client):
+        self.make_env()
+        self.mock_server_version_range.return_value = (
+            api_versions.APIVersion('2.2'), api_versions.APIVersion('2.3'))
+        novaclient.API_MAX_VERSION = api_versions.APIVersion("2.100")
+        novaclient.API_MIN_VERSION = api_versions.APIVersion("2.1")
+        self.assertRaises(
+            exceptions.UnsupportedVersion,
+            self.shell, '--os-compute-api-version 2 list')
+
+    def test_microversion_with_specific_version_without_microversions(self):
+        self.make_env()
+        self.mock_server_version_range.return_value = (
+            api_versions.APIVersion(), api_versions.APIVersion())
+        novaclient.API_MAX_VERSION = api_versions.APIVersion("2.100")
+        novaclient.API_MIN_VERSION = api_versions.APIVersion("2.1")
+        self.assertRaises(
+            exceptions.UnsupportedVersion,
+            self.shell,
+            '--os-compute-api-version 2.3 list')
 
 
 class TestLoadVersionedActions(utils.TestCase):

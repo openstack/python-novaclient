@@ -2260,7 +2260,14 @@ class FakeSessionMockClient(base_client.SessionClient, FakeHTTPClient):
         self.callstack = []
         self.auth = mock.Mock()
         self.session = mock.Mock()
+        self.session.get_endpoint.return_value = FakeHTTPClient.get_endpoint(
+            self)
         self.service_type = 'service_type'
+        self.service_name = None
+        self.endpoint_override = None
+        self.interface = None
+        self.region_name = None
+        self.version = None
 
         self.auth.get_auth_ref.return_value.project_id = 'tenant_id'
 

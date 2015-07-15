@@ -1,4 +1,4 @@
-# Copyright 2015 Mirantis
+# Copyright 2016 Mirantis
 # All Rights Reserved.
 #
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -15,9 +15,11 @@
 
 import mock
 
+import novaclient
 from novaclient import api_versions
 from novaclient import exceptions
 from novaclient.tests.unit import utils
+from novaclient.v2 import versions
 
 
 class APIVersionTestCase(utils.TestCase):
@@ -247,3 +249,88 @@ class WrapsTestCase(utils.TestCase):
         some_func(obj, *some_args, **some_kwargs)
 
         checker.assert_called_once_with(*((obj,) + some_args), **some_kwargs)
+
+
+class DiscoverVersionTestCase(utils.TestCase):
+    def setUp(self):
+        super(DiscoverVersionTestCase, self).setUp()
+        self.orig_max = novaclient.API_MAX_VERSION
+        self.orig_min = novaclient.API_MIN_VERSION
+        self.addCleanup(self._clear_fake_version)
+
+    def _clear_fake_version(self):
+        novaclient.API_MAX_VERSION = self.orig_max
+        novaclient.API_MIN_VERSION = self.orig_min
+
+    def test_server_is_too_new(self):
+        fake_client = mock.MagicMock()
+        fake_client.versions.get_current.return_value = mock.MagicMock(
+            version="2.7", min_version="2.4")
+        novaclient.API_MAX_VERSION = api_versions.APIVersion("2.3")
+        novaclient.API_MIN_VERSION = api_versions.APIVersion("2.1")
+        self.assertRaises(exceptions.UnsupportedVersion,
+                          api_versions.discover_version, fake_client,
+                          api_versions.APIVersion('2.latest'))
+
+    def test_server_is_too_old(self):
+        fake_client = mock.MagicMock()
+        fake_client.versions.get_current.return_value = mock.MagicMock(
+            version="2.7", min_version="2.4")
+        novaclient.API_MAX_VERSION = api_versions.APIVersion("2.10")
+        novaclient.API_MIN_VERSION = api_versions.APIVersion("2.9")
+
+        self.assertRaises(exceptions.UnsupportedVersion,
+                          api_versions.discover_version, fake_client,
+                          api_versions.APIVersion('2.latest'))
+
+    def test_server_end_version_is_the_latest_one(self):
+        fake_client = mock.MagicMock()
+        fake_client.versions.get_current.return_value = mock.MagicMock(
+            version="2.7", min_version="2.4")
+        novaclient.API_MAX_VERSION = api_versions.APIVersion("2.11")
+        novaclient.API_MIN_VERSION = api_versions.APIVersion("2.1")
+
+        self.assertEqual(
+            "2.7",
+            api_versions.discover_version(
+                fake_client,
+                api_versions.APIVersion('2.latest')).get_string())
+
+    def test_client_end_version_is_the_latest_one(self):
+        fake_client = mock.MagicMock()
+        fake_client.versions.get_current.return_value = mock.MagicMock(
+            version="2.16", min_version="2.4")
+        novaclient.API_MAX_VERSION = api_versions.APIVersion("2.11")
+        novaclient.API_MIN_VERSION = api_versions.APIVersion("2.1")
+
+        self.assertEqual(
+            "2.11",
+            api_versions.discover_version(
+                fake_client,
+                api_versions.APIVersion('2.latest')).get_string())
+
+    def test_server_without_microversion(self):
+        fake_client = mock.MagicMock()
+        fake_client.versions.get_current.return_value = mock.MagicMock(
+            version='', min_version='')
+        novaclient.API_MAX_VERSION = api_versions.APIVersion("2.11")
+        novaclient.API_MIN_VERSION = api_versions.APIVersion("2.1")
+
+        self.assertEqual(
+            "2.0",
+            api_versions.discover_version(
+                fake_client,
+                api_versions.APIVersion('2.latest')).get_string())
+
+    def test_server_without_microversion_and_no_version_field(self):
+        fake_client = mock.MagicMock()
+        fake_client.versions.get_current.return_value = versions.Version(
+            None, {})
+        novaclient.API_MAX_VERSION = api_versions.APIVersion("2.11")
+        novaclient.API_MIN_VERSION = api_versions.APIVersion("2.1")
+
+        self.assertEqual(
+            "2.0",
+            api_versions.discover_version(
+                fake_client,
+                api_versions.APIVersion('2.latest')).get_string())
