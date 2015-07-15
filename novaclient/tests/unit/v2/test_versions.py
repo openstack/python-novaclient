@@ -36,3 +36,31 @@ class VersionsTest(utils.TestCase):
     def test_list_services_with_session_client(self, mock_is_session_client):
         self.cs.versions.list()
         self.cs.assert_called('GET', 'http://nova-api:8774/')
+
+    @mock.patch.object(versions.VersionManager, '_is_session_client',
+                       return_value=False)
+    @mock.patch.object(versions.VersionManager, 'list')
+    def test_get_current_with_http_client(self, mock_list,
+                                          mock_is_session_client):
+        current_version = versions.Version(
+            None, {"links": [{"href": "http://nova-api:8774/v2.1"}]},
+            loaded=True)
+
+        mock_list.return_value = [
+            versions.Version(
+                None, {"links": [{"href": "http://url/v1"}]}, loaded=True),
+            versions.Version(
+                None, {"links": [{"href": "http://url/v2"}]}, loaded=True),
+            versions.Version(
+                None, {"links": [{"href": "http://url/v3"}]}, loaded=True),
+            current_version,
+            versions.Version(
+                None, {"links": [{"href": "http://url/v21"}]}, loaded=True)]
+        self.assertEqual(current_version, self.cs.versions.get_current())
+
+    @mock.patch.object(versions.VersionManager, '_is_session_client',
+                       return_value=True)
+    def test_get_current_with_session_client(self, mock_is_session_client):
+        self.cs.callback = []
+        self.cs.versions.get_current()
+        self.cs.assert_called('GET', 'http://nova-api:8774/v2.1')
