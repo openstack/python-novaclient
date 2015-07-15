@@ -33,26 +33,30 @@ from novaclient.tests.unit import utils
 FAKE_ENV = {'OS_USERNAME': 'username',
             'OS_PASSWORD': 'password',
             'OS_TENANT_NAME': 'tenant_name',
-            'OS_AUTH_URL': 'http://no.where/v2.0'}
+            'OS_AUTH_URL': 'http://no.where/v2.0',
+            'OS_COMPUTE_API_VERSION': '2'}
 
 FAKE_ENV2 = {'OS_USER_ID': 'user_id',
              'OS_PASSWORD': 'password',
              'OS_TENANT_ID': 'tenant_id',
-             'OS_AUTH_URL': 'http://no.where/v2.0'}
+             'OS_AUTH_URL': 'http://no.where/v2.0',
+             'OS_COMPUTE_API_VERSION': '2'}
 
 FAKE_ENV3 = {'OS_USER_ID': 'user_id',
              'OS_PASSWORD': 'password',
              'OS_TENANT_ID': 'tenant_id',
              'OS_AUTH_URL': 'http://no.where/v2.0',
              'NOVA_ENDPOINT_TYPE': 'novaURL',
-             'OS_ENDPOINT_TYPE': 'osURL'}
+             'OS_ENDPOINT_TYPE': 'osURL',
+             'OS_COMPUTE_API_VERSION': '2'}
 
 FAKE_ENV4 = {'OS_USER_ID': 'user_id',
              'OS_PASSWORD': 'password',
              'OS_TENANT_ID': 'tenant_id',
              'OS_AUTH_URL': 'http://no.where/v2.0',
              'NOVA_ENDPOINT_TYPE': 'internal',
-             'OS_ENDPOINT_TYPE': 'osURL'}
+             'OS_ENDPOINT_TYPE': 'osURL',
+             'OS_COMPUTE_API_VERSION': '2'}
 
 
 def _create_ver_list(versions):
