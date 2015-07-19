@@ -74,6 +74,8 @@ class FakeHTTPClient(base_client.HTTPClient):
             munged_url = munged_url.replace('.', '_')
             munged_url = munged_url.replace('-', '_')
             munged_url = munged_url.replace(' ', '_')
+            munged_url = munged_url.replace('!', '_')
+            munged_url = munged_url.replace('@', '_')
             callback = "%s_%s" % (method.lower(), munged_url)
 
         if url is None or callback == "get_http:__nova_api:8774":
@@ -1776,6 +1778,48 @@ class FakeHTTPClient(base_client.HTTPClient):
                 'disk_available_least': 200}
         })
 
+    def get_os_hypervisors_hyper1(self, **kw):
+        return (200, {}, {
+            'hypervisor':
+            {'id': 1234,
+             'service': {'id': 1, 'host': 'compute1'},
+             'vcpus': 4,
+             'memory_mb': 10 * 1024,
+             'local_gb': 250,
+             'vcpus_used': 2,
+             'memory_mb_used': 5 * 1024,
+             'local_gb_used': 125,
+             'hypervisor_type': "xen",
+             'hypervisor_version': 3,
+             'hypervisor_hostname': "hyper1",
+             'free_ram_mb': 5 * 1024,
+             'free_disk_gb': 125,
+             'current_workload': 2,
+             'running_vms': 2,
+             'cpu_info': 'cpu_info',
+             'disk_available_least': 100}})
+
+    def get_os_hypervisors_region_child_1(self, **kw):
+        return (200, {}, {
+            'hypervisor':
+            {'id': 'region!child@1',
+             'service': {'id': 1, 'host': 'compute1'},
+             'vcpus': 4,
+             'memory_mb': 10 * 1024,
+             'local_gb': 250,
+             'vcpus_used': 2,
+             'memory_mb_used': 5 * 1024,
+             'local_gb_used': 125,
+             'hypervisor_type': "xen",
+             'hypervisor_version': 3,
+             'hypervisor_hostname': "hyper1",
+             'free_ram_mb': 5 * 1024,
+             'free_disk_gb': 125,
+             'current_workload': 2,
+             'running_vms': 2,
+             'cpu_info': 'cpu_info',
+             'disk_available_least': 100}})
+
     def get_os_hypervisors_hyper_search(self, **kw):
         return (200, {}, {
             'hypervisors': [
@@ -1825,6 +1869,12 @@ class FakeHTTPClient(base_client.HTTPClient):
     def get_os_hypervisors_1234_uptime(self, **kw):
         return (200, {}, {
             'hypervisor': {'id': 1234,
+                           'hypervisor_hostname': "hyper1",
+                           'uptime': "fake uptime"}})
+
+    def get_os_hypervisors_region_child_1_uptime(self, **kw):
+        return (200, {}, {
+            'hypervisor': {'id': 'region!child@1',
                            'hypervisor_hostname': "hyper1",
                            'uptime': "fake uptime"}})
 
