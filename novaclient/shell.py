@@ -498,6 +498,7 @@ class OpenStackComputeShell(object):
         # print debug messages
         logging.basicConfig(level=logging.DEBUG,
                             format=streamformat)
+        logging.getLogger('iso8601').setLevel(logging.WARNING)
 
     def _get_keystone_auth(self, session, auth_url, **kwargs):
         auth_token = kwargs.pop('auth_token', None)
