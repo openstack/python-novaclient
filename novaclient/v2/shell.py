@@ -1730,6 +1730,12 @@ def do_refresh_network(cs, args):
 
 @cliutils.arg('server', metavar='<server>', help=_('Name or ID of server.'))
 def do_root_password(cs, args):
+    """DEPRECATED, use set-password instead."""
+    do_set_password(cs, args)
+
+
+@cliutils.arg('server', metavar='<server>', help=_('Name or ID of server.'))
+def do_set_password(cs, args):
     """
     Change the admin password for a server.
     """
