@@ -30,14 +30,13 @@ import logging
 import os
 import pkgutil
 import re
-import socket
 
 from keystoneclient import adapter
+from keystoneclient import session
 from oslo_utils import importutils
 from oslo_utils import netutils
 import pkg_resources
 import requests
-from requests import adapters
 
 try:
     import json
@@ -54,16 +53,6 @@ from novaclient import service_catalog
 from novaclient import utils
 
 
-class TCPKeepAliveAdapter(adapters.HTTPAdapter):
-    """The custom adapter used to set TCP Keep-Alive on all connections."""
-    def init_poolmanager(self, *args, **kwargs):
-        kwargs.setdefault('socket_options', [
-            (socket.IPPROTO_TCP, socket.TCP_NODELAY, 1),
-            (socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1),
-        ])
-        super(TCPKeepAliveAdapter, self).init_poolmanager(*args, **kwargs)
-
-
 class _ClientConnectionPool(object):
 
     def __init__(self):
@@ -74,7 +63,7 @@ class _ClientConnectionPool(object):
         Store and reuse HTTP adapters per Service URL.
         """
         if url not in self._adapters:
-            self._adapters[url] = TCPKeepAliveAdapter()
+            self._adapters[url] = session.TCPKeepAliveAdapter()
 
         return self._adapters[url]
 

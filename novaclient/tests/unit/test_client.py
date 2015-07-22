@@ -16,7 +16,6 @@
 
 import json
 import logging
-import socket
 
 import fixtures
 from keystoneclient import adapter
@@ -29,27 +28,9 @@ from novaclient.tests.unit import utils
 import novaclient.v2.client
 
 
-class TCPKeepAliveAdapterTest(utils.TestCase):
-
-    @mock.patch.object(requests.adapters.HTTPAdapter, 'init_poolmanager')
-    def test_init_poolmanager(self, mock_init_poolmgr):
-        adapter = novaclient.client.TCPKeepAliveAdapter()
-        kwargs = {}
-        adapter.init_poolmanager(**kwargs)
-        if requests.__version__ >= '2.4.1':
-            kwargs.setdefault('socket_options', [
-                (socket.IPPROTO_TCP, socket.TCP_NODELAY, 1),
-                (socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1),
-            ])
-        # NOTE(melwitt): This is called twice because
-        #                HTTPAdapter.__init__ calls it first.
-        self.assertEqual(2, mock_init_poolmgr.call_count)
-        mock_init_poolmgr.assert_called_with(**kwargs)
-
-
 class ClientConnectionPoolTest(utils.TestCase):
 
-    @mock.patch("novaclient.client.TCPKeepAliveAdapter")
+    @mock.patch("keystoneclient.session.TCPKeepAliveAdapter")
     def test_get(self, mock_http_adapter):
         mock_http_adapter.side_effect = lambda: mock.Mock()
         pool = novaclient.client._ClientConnectionPool()
