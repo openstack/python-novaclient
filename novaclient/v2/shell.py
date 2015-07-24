@@ -3667,10 +3667,14 @@ def do_hypervisor_servers(cs, args):
     'hypervisor',
     metavar='<hypervisor>',
     help=_('Name or ID of the hypervisor to show the details of.'))
+@cliutils.arg(
+    '--wrap', dest='wrap', metavar='<integer>', default=40,
+    help=_('Wrap the output to a specified length. '
+           'Default is 40 or 0 to disable'))
 def do_hypervisor_show(cs, args):
     """Display the details of the specified hypervisor."""
     hyper = _find_hypervisor(cs, args.hypervisor)
-    utils.print_dict(utils.flatten_dict(hyper._info))
+    utils.print_dict(utils.flatten_dict(hyper._info), wrap=int(args.wrap))
 
 
 @cliutils.arg(
