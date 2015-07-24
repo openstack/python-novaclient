@@ -31,7 +31,6 @@ import os
 import pkgutil
 import re
 import socket
-import warnings
 
 from keystoneclient import adapter
 from oslo_utils import importutils
@@ -47,15 +46,12 @@ except ImportError:
 
 from six.moves.urllib import parse
 
+from novaclient import api_versions
 from novaclient import exceptions
 from novaclient import extension as ext
-from novaclient.i18n import _, _LW
+from novaclient.i18n import _
 from novaclient import service_catalog
 from novaclient import utils
-
-
-# key is a deprecated version and value is an alternative version.
-DEPRECATED_VERSIONS = {"1.1": "2"}
 
 
 class TCPKeepAliveAdapter(adapters.HTTPAdapter):
@@ -88,9 +84,13 @@ class SessionClient(adapter.LegacyJsonAdapter):
     def __init__(self, *args, **kwargs):
         self.times = []
         self.timings = kwargs.pop('timings', False)
+        self.api_version = kwargs.pop('api_version', None)
+        self.api_version = self.api_version or api_versions.APIVersion()
         super(SessionClient, self).__init__(*args, **kwargs)
 
     def request(self, url, method, **kwargs):
+        kwargs.setdefault('headers', kwargs.get('headers', {}))
+        api_versions.update_headers(kwargs["headers"], self.api_version)
         # NOTE(jamielennox): The standard call raises errors from
         # keystoneclient, where we need to raise the novaclient errors.
         raise_exc = kwargs.pop('raise_exc', True)
@@ -144,12 +144,13 @@ class HTTPClient(object):
                  http_log_debug=False, auth_system='keystone',
                  auth_plugin=None, auth_token=None,
                  cacert=None, tenant_id=None, user_id=None,
-                 connection_pool=False):
+                 connection_pool=False, api_version=None):
         self.user = user
         self.user_id = user_id
         self.password = password
         self.projectid = projectid
         self.tenant_id = tenant_id
+        self.api_version = api_version or api_versions.APIVersion()
 
         self._connection_pool = (_ClientConnectionPool()
                                  if connection_pool else None)
@@ -357,6 +358,7 @@ class HTTPClient(object):
             kwargs['headers']['Content-Type'] = 'application/json'
             kwargs['data'] = json.dumps(kwargs['body'])
             del kwargs['body']
+        api_versions.update_headers(kwargs["headers"], self.api_version)
         if self.timeout is not None:
             kwargs.setdefault('timeout', self.timeout)
         kwargs['verify'] = self.verify_cert
@@ -681,7 +683,7 @@ def _construct_http_client(username=None, password=None, project_id=None,
                            auth_token=None, cacert=None, tenant_id=None,
                            user_id=None, connection_pool=False, session=None,
                            auth=None, user_agent='python-novaclient',
-                           interface=None, **kwargs):
+                           interface=None, api_version=None, **kwargs):
     if session:
         return SessionClient(session=session,
                              auth=auth,
@@ -691,6 +693,7 @@ def _construct_http_client(username=None, password=None, project_id=None,
                              service_name=service_name,
                              user_agent=user_agent,
                              timings=timings,
+                             api_version=api_version,
                              **kwargs)
     else:
         # FIXME(jamielennox): username and password are now optional. Need
@@ -718,10 +721,13 @@ def _construct_http_client(username=None, password=None, project_id=None,
                           os_cache=os_cache,
                           http_log_debug=http_log_debug,
                           cacert=cacert,
-                          connection_pool=connection_pool)
+                          connection_pool=connection_pool,
+                          api_version=api_version)
 
 
 def discover_extensions(version):
+    if not isinstance(version, api_versions.APIVersion):
+        version = api_versions.get_api_version(version)
     extensions = []
     for name, module in itertools.chain(
             _discover_via_python_path(),
@@ -750,12 +756,7 @@ def _discover_via_python_path():
 
 def _discover_via_contrib_path(version):
     module_path = os.path.dirname(os.path.abspath(__file__))
-    version_str = "v%s" % version.replace('.', '_')
-    # NOTE(andreykurilin): v1.1 uses implementation of v2, so we should
-    # discover contrib modules in novaclient.v2 dir.
-    if version_str == "v1_1":
-        version_str = "v2"
-    ext_path = os.path.join(module_path, version_str, 'contrib')
+    ext_path = os.path.join(module_path, "v%s" % version.ver_major, 'contrib')
     ext_glob = os.path.join(ext_path, "*.py")
 
     for ext_path in glob.iglob(ext_glob):
@@ -776,38 +777,25 @@ def _discover_via_entry_points():
         yield name, module
 
 
-def _get_available_client_versions():
-    # NOTE(andreykurilin): available clients version should not be
-    # hardcoded, so let's discover them.
-    matcher = re.compile(r"v[0-9_]*$")
-    submodules = pkgutil.iter_modules([os.path.dirname(__file__)])
-    available_versions = [
-        name[1:].replace("_", ".") for loader, name, ispkg in submodules
-        if matcher.search(name)]
-
-    return available_versions
+def _get_client_class_and_version(version):
+    if not isinstance(version, api_versions.APIVersion):
+        version = api_versions.get_api_version(version)
+    else:
+        api_versions.check_major_version(version)
+    if version.is_latest():
+        raise exceptions.UnsupportedVersion(
+            _("The version should be explicit, not latest."))
+    return version, importutils.import_class(
+        "novaclient.v%s.client.Client" % version.ver_major)
 
 
 def get_client_class(version):
-    version = str(version)
-    if version in DEPRECATED_VERSIONS:
-        warnings.warn(_LW(
-            "Version %(deprecated_version)s is deprecated, using "
-            "alternative version %(alternative)s instead.") %
-            {"deprecated_version": version,
-             "alternative": DEPRECATED_VERSIONS[version]})
-        version = DEPRECATED_VERSIONS[version]
-    try:
-        return importutils.import_class(
-            "novaclient.v%s.client.Client" % version)
-    except ImportError:
-        available_versions = _get_available_client_versions()
-        msg = _("Invalid client version '%(version)s'. must be one of: "
-                "%(keys)s") % {'version': version,
-                               'keys': ', '.join(available_versions)}
-        raise exceptions.UnsupportedVersion(msg)
+    """Returns Client class based on given version."""
+    _api_version, client_class = _get_client_class_and_version(version)
+    return client_class
 
 
 def Client(version, *args, **kwargs):
-    client_class = get_client_class(version)
-    return client_class(*args, **kwargs)
+    """Initialize client object based on given version."""
+    api_version, client_class = _get_client_class_and_version(version)
+    return client_class(api_version=api_version, *args, **kwargs)

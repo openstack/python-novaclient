@@ -159,6 +159,14 @@ class MethodNotAllowed(ClientException):
     message = "Method Not Allowed"
 
 
+class NotAcceptable(ClientException):
+    """
+    HTTP 406 - Not Acceptable
+    """
+    http_status = 406
+    message = "Not Acceptable"
+
+
 class Conflict(ClientException):
     """
     HTTP 409 - Conflict
@@ -199,8 +207,8 @@ class HTTPNotImplemented(ClientException):
 #
 # Instead, we have to hardcode it:
 _error_classes = [BadRequest, Unauthorized, Forbidden, NotFound,
-                  MethodNotAllowed, Conflict, OverLimit, RateLimit,
-                  HTTPNotImplemented]
+                  MethodNotAllowed, NotAcceptable, Conflict, OverLimit,
+                  RateLimit, HTTPNotImplemented]
 _code_map = dict((c.http_status, c) for c in _error_classes)
 
 

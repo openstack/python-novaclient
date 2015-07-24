@@ -161,10 +161,6 @@ class ClientTest(utils.TestCase):
         self._check_version_url('http://foo.com/nova/v2/%s',
                                 'http://foo.com/nova/')
 
-    def test_get_available_client_versions(self):
-        output = novaclient.client._get_available_client_versions()
-        self.assertNotEqual([], output)
-
     def test_get_client_class_v2(self):
         output = novaclient.client.get_client_class('2')
         self.assertEqual(output, novaclient.v2.client.Client)
@@ -180,6 +176,12 @@ class ClientTest(utils.TestCase):
     def test_get_client_class_unknown(self):
         self.assertRaises(novaclient.exceptions.UnsupportedVersion,
                           novaclient.client.get_client_class, '0')
+
+    def test_get_client_class_latest(self):
+        self.assertRaises(novaclient.exceptions.UnsupportedVersion,
+                          novaclient.client.get_client_class, 'latest')
+        self.assertRaises(novaclient.exceptions.UnsupportedVersion,
+                          novaclient.client.get_client_class, '2.latest')
 
     def test_client_with_os_cache_enabled(self):
         cs = novaclient.v2.client.Client("user", "password", "project_id",

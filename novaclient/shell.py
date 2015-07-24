@@ -29,6 +29,7 @@ from keystoneclient.auth.identity.generic import token
 from keystoneclient.auth.identity import v3 as identity
 from keystoneclient import session as ksession
 from oslo_utils import encodeutils
+from oslo_utils import importutils
 from oslo_utils import strutils
 import six
 
@@ -41,6 +42,7 @@ except ImportError:
     pass
 
 import novaclient
+from novaclient import api_versions
 import novaclient.auth_plugin
 from novaclient import client
 from novaclient import exceptions as exc
@@ -48,7 +50,6 @@ import novaclient.extension
 from novaclient.i18n import _
 from novaclient.openstack.common import cliutils
 from novaclient import utils
-from novaclient.v2 import shell as shell_v2
 
 DEFAULT_OS_COMPUTE_API_VERSION = "2"
 DEFAULT_NOVA_ENDPOINT_TYPE = 'publicURL'
@@ -402,7 +403,7 @@ class OpenStackComputeShell(object):
             metavar='<compute-api-ver>',
             default=cliutils.env('OS_COMPUTE_API_VERSION',
                                  default=DEFAULT_OS_COMPUTE_API_VERSION),
-            help=_('Accepts number of API version, '
+            help=_('Accepts X, X.Y (where X is major and Y is minor part), '
                    'defaults to env[OS_COMPUTE_API_VERSION].'))
         parser.add_argument(
             '--os_compute_api_version',
@@ -431,15 +432,10 @@ class OpenStackComputeShell(object):
         self.subcommands = {}
         subparsers = parser.add_subparsers(metavar='<subcommand>')
 
-        try:
-            actions_module = {
-                '1.1': shell_v2,
-                '2': shell_v2,
-                '3': shell_v2,
-            }[version]
-        except KeyError:
-            actions_module = shell_v2
+        actions_module = importutils.import_module(
+            "novaclient.v%s.shell" % version.ver_major)
 
+        # TODO(andreykurilin): discover actions based on microversions
         self._find_actions(subparsers, actions_module)
         self._find_actions(subparsers, self)
 
@@ -523,9 +519,11 @@ class OpenStackComputeShell(object):
         # Discover available auth plugins
         novaclient.auth_plugin.discover_auth_systems()
 
-        # build available subcommands based on version
-        self.extensions = self._discover_extensions(
+        api_version = api_versions.get_api_version(
             options.os_compute_api_version)
+
+        # build available subcommands based on version
+        self.extensions = self._discover_extensions(api_version)
         self._run_extension_hooks('__pre_parse_args__')
 
         # NOTE(dtroyer): Hackery to handle --endpoint_type due to argparse
@@ -536,8 +534,7 @@ class OpenStackComputeShell(object):
             spot = argv.index('--endpoint_type')
             argv[spot] = '--endpoint-type'
 
-        subcommand_parser = self.get_subcommand_parser(
-            options.os_compute_api_version)
+        subcommand_parser = self.get_subcommand_parser(api_version)
         self.parser = subcommand_parser
 
         if options.help or not argv:
@@ -670,23 +667,22 @@ class OpenStackComputeShell(object):
                         project_domain_id=args.os_project_domain_id,
                         project_domain_name=args.os_project_domain_name)
 
-        if options.os_compute_api_version:
-            if not any([args.os_tenant_id, args.os_tenant_name,
-                        args.os_project_id, args.os_project_name]):
-                raise exc.CommandError(_("You must provide a project name or"
-                                         " project id via --os-project-name,"
-                                         " --os-project-id, env[OS_PROJECT_ID]"
-                                         " or env[OS_PROJECT_NAME]. You may"
-                                         " use os-project and os-tenant"
-                                         " interchangeably."))
+        if not any([args.os_tenant_id, args.os_tenant_name,
+                    args.os_project_id, args.os_project_name]):
+            raise exc.CommandError(_("You must provide a project name or"
+                                     " project id via --os-project-name,"
+                                     " --os-project-id, env[OS_PROJECT_ID]"
+                                     " or env[OS_PROJECT_NAME]. You may"
+                                     " use os-project and os-tenant"
+                                     " interchangeably."))
 
-            if not os_auth_url:
-                raise exc.CommandError(
-                    _("You must provide an auth url "
-                      "via either --os-auth-url or env[OS_AUTH_URL]"))
+        if not os_auth_url:
+            raise exc.CommandError(
+                _("You must provide an auth url "
+                  "via either --os-auth-url or env[OS_AUTH_URL]"))
 
         self.cs = client.Client(
-            options.os_compute_api_version,
+            api_version,
             os_username, os_password, os_tenant_name,
             tenant_id=os_tenant_id, user_id=os_user_id,
             auth_url=os_auth_url, insecure=insecure,
