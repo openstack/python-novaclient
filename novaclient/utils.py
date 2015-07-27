@@ -97,6 +97,8 @@ def print_list(objs, fields, formatters={}, sortby_index=None):
                 data = getattr(o, field_name, '')
                 if data is None:
                     data = '-'
+                # '\r' would break the table, so remove it.
+                data = str(data).replace("\r", "")
                 row.append(data)
         pt.add_row(row)
 
@@ -163,7 +165,10 @@ def print_dict(d, dict_property="Property", dict_value="Value", wrap=0):
             v = textwrap.fill(str(v), wrap)
         # if value has a newline, add in multiple rows
         # e.g. fault with stacktrace
-        if v and isinstance(v, six.string_types) and r'\n' in v:
+        if v and isinstance(v, six.string_types) and (r'\n' in v or '\r' in v):
+            # '\r' would break the table, so remove it.
+            if '\r' in v:
+                v = v.replace('\r', '')
             lines = v.strip().split(r'\n')
             col1 = k
             for line in lines:
