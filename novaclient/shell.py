@@ -426,7 +426,7 @@ class OpenStackComputeShell(object):
 
         return parser
 
-    def get_subcommand_parser(self, version):
+    def get_subcommand_parser(self, version, do_help=False):
         parser = self.get_base_parser()
 
         self.subcommands = {}
@@ -435,12 +435,11 @@ class OpenStackComputeShell(object):
         actions_module = importutils.import_module(
             "novaclient.v%s.shell" % version.ver_major)
 
-        # TODO(andreykurilin): discover actions based on microversions
-        self._find_actions(subparsers, actions_module)
-        self._find_actions(subparsers, self)
+        self._find_actions(subparsers, actions_module, version, do_help)
+        self._find_actions(subparsers, self, version, do_help)
 
         for extension in self.extensions:
-            self._find_actions(subparsers, extension.module)
+            self._find_actions(subparsers, extension.module, version, do_help)
 
         self._add_bash_completion_subparser(subparsers)
 
@@ -460,12 +459,28 @@ class OpenStackComputeShell(object):
         self.subcommands['bash_completion'] = subparser
         subparser.set_defaults(func=self.do_bash_completion)
 
-    def _find_actions(self, subparsers, actions_module):
+    def _find_actions(self, subparsers, actions_module, version, do_help):
+        msg = _(" (Supported by API versions '%(start)s' - '%(end)s')")
         for attr in (a for a in dir(actions_module) if a.startswith('do_')):
             # I prefer to be hyphen-separated instead of underscores.
             command = attr[3:].replace('_', '-')
             callback = getattr(actions_module, attr)
             desc = callback.__doc__ or ''
+            if hasattr(callback, "versioned"):
+                subs = api_versions.get_substitutions(
+                    utils.get_function_name(callback))
+                if do_help:
+                    desc += msg % {'start': subs[0].start_version.get_string(),
+                                   'end': subs[-1].end_version.get_string()}
+                else:
+                    for versioned_method in subs:
+                        if version.matches(versioned_method.start_version,
+                                           versioned_method.end_version):
+                            callback = versioned_method.func
+                            break
+                    else:
+                        continue
+
             action_help = desc.strip()
             arguments = getattr(callback, 'arguments', [])
 
@@ -482,7 +497,26 @@ class OpenStackComputeShell(object):
             )
             self.subcommands[command] = subparser
             for (args, kwargs) in arguments:
-                subparser.add_argument(*args, **kwargs)
+                start_version = kwargs.get("start_version", None)
+                if start_version:
+                    start_version = api_versions.APIVersion(start_version)
+                    end_version = kwargs.get("end_version", None)
+                    if end_version:
+                        end_version = api_versions.APIVersion(end_version)
+                    else:
+                        end_version = api_versions.APIVersion(
+                            "%s.latest" % start_version.ver_major)
+                    if do_help:
+                        kwargs["help"] = kwargs.get("help", "") + (msg % {
+                            "start": start_version.get_string(),
+                            "end": end_version.get_string()})
+                    else:
+                        if not version.matches(start_version, end_version):
+                            continue
+                kw = kwargs.copy()
+                kw.pop("start_version", None)
+                kw.pop("end_version", None)
+                subparser.add_argument(*args, **kw)
             subparser.set_defaults(func=callback)
 
     def setup_debugging(self, debug):
@@ -534,7 +568,8 @@ class OpenStackComputeShell(object):
             spot = argv.index('--endpoint_type')
             argv[spot] = '--endpoint-type'
 
-        subcommand_parser = self.get_subcommand_parser(api_version)
+        subcommand_parser = self.get_subcommand_parser(
+            api_version, do_help=("help" in args))
         self.parser = subcommand_parser
 
         if options.help or not argv:

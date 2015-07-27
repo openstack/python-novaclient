@@ -2282,10 +2282,11 @@ class FakeHTTPClient(base_client.HTTPClient):
 
 class FakeSessionClient(fakes.FakeClient, client.Client):
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, api_version, *args, **kwargs):
         client.Client.__init__(self, 'username', 'password',
                                'project_id', 'auth_url',
-                               extensions=kwargs.get('extensions'))
+                               extensions=kwargs.get('extensions'),
+                               api_version=api_version)
         self.client = FakeSessionMockClient(**kwargs)
 
 
