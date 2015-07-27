@@ -1062,6 +1062,14 @@ class ShellTest(utils.TestCase):
                            {'revertResize': None})
 
     @mock.patch('getpass.getpass', mock.Mock(return_value='p'))
+    def test_set_password(self):
+        self.run_command('set-password sample-server')
+        self.assert_called('POST', '/servers/1234/action',
+                           {'changePassword': {'adminPass': 'p'}})
+
+    # root-password is deprecated, keeping this arond until it's removed
+    # entirely - penick
+    @mock.patch('getpass.getpass', mock.Mock(return_value='p'))
     def test_root_password(self):
         self.run_command('root-password sample-server')
         self.assert_called('POST', '/servers/1234/action',

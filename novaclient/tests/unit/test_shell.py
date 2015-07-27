@@ -146,7 +146,7 @@ class ShellTest(utils.TestCase):
     def test_help(self):
         required = [
             '.*?^usage: ',
-            '.*?^\s+root-password\s+Change the admin password',
+            '.*?^\s+set-password\s+Change the admin password',
             '.*?^See "nova help COMMAND" for help on a specific command',
         ]
         stdout, stderr = self.shell('help')
@@ -156,11 +156,11 @@ class ShellTest(utils.TestCase):
 
     def test_help_on_subcommand(self):
         required = [
-            '.*?^usage: nova root-password',
+            '.*?^usage: nova set-password',
             '.*?^Change the admin password',
             '.*?^Positional arguments:',
         ]
-        stdout, stderr = self.shell('help root-password')
+        stdout, stderr = self.shell('help set-password')
         for r in required:
             self.assertThat((stdout + stderr),
                             matchers.MatchesRegex(r, re.DOTALL | re.MULTILINE))
@@ -168,7 +168,7 @@ class ShellTest(utils.TestCase):
     def test_help_no_options(self):
         required = [
             '.*?^usage: ',
-            '.*?^\s+root-password\s+Change the admin password',
+            '.*?^\s+set-password\s+Change the admin password',
             '.*?^See "nova help COMMAND" for help on a specific command',
         ]
         stdout, stderr = self.shell('')
