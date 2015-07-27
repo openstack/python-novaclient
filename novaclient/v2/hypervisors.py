@@ -31,6 +31,7 @@ class Hypervisor(base.Resource):
 
 class HypervisorManager(base.ManagerWithFind):
     resource_class = Hypervisor
+    is_alphanum_id_allowed = True
 
     def list(self, detailed=True):
         """

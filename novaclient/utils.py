@@ -184,7 +184,8 @@ def print_dict(d, dict_property="Property", dict_value="Value", wrap=0):
 
 def find_resource(manager, name_or_id, **find_args):
     """Helper for the _find_* methods."""
-    # for str id which is not uuid (for Flavor and Keypair search currently)
+    # for str id which is not uuid (for Flavor, Keypair and hypervsior in cells
+    # environments search currently)
     if getattr(manager, 'is_alphanum_id_allowed', False):
         try:
             return manager.get(name_or_id)
