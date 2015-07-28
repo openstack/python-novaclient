@@ -58,6 +58,7 @@ class FakeHTTPClient(base_client.HTTPClient):
         self.os_cache = 'os_cache'
         self.http_log_debug = 'http_log_debug'
         self.last_request_id = None
+        self.management_url = self.get_endpoint()
 
     def _cs_request(self, url, method, **kwargs):
         # Check that certain things are called correctly
@@ -83,6 +84,8 @@ class FakeHTTPClient(base_client.HTTPClient):
             # To get API version information, it is necessary to GET
             # a nova endpoint directly without "v2/<tenant-id>".
             callback = "get_versions"
+        elif callback == "get_http:__nova_api:8774_v2_1":
+            callback = "get_current_version"
 
         if not hasattr(self, callback):
             raise AssertionError('Called unknown API method: %s %s, '
@@ -101,7 +104,7 @@ class FakeHTTPClient(base_client.HTTPClient):
         return r, body
 
     def get_endpoint(self):
-        return "http://nova-api:8774/v2/190a755eef2e4aac9f06aa6be9786385"
+        return "http://nova-api:8774/v2.1/190a755eef2e4aac9f06aa6be9786385"
 
     def get_versions(self):
         return (200, {}, {
@@ -119,6 +122,16 @@ class FakeHTTPClient(base_client.HTTPClient):
                  "version": "2.3",
                  "id": "v2.1"}
             ]})
+
+    def get_current_version(self):
+        return (200, {}, {
+            "version": {"status": "CURRENT",
+                        "updated": "2013-07-23T11:33:21Z",
+                        "links": [{"href": "http://nova-api:8774/v2.1/",
+                                   "rel": "self"}],
+                        "min_version": "2.1",
+                        "version": "2.3",
+                        "id": "v2.1"}})
 
     #
     # agents

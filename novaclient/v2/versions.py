@@ -36,6 +36,21 @@ class VersionManager(base.ManagerWithFind):
     def _is_session_client(self):
         return isinstance(self.api.client, client.SessionClient)
 
+    def get_current(self):
+        """Returns info about current version."""
+        if self._is_session_client():
+            url = self.api.client.get_endpoint().rsplit("/", 1)[0]
+            return self._get(url, "version")
+        else:
+            # NOTE(andreykurilin): HTTPClient doesn't have ability to send get
+            # request without token in the url, so `self._get` doesn't work.
+            all_versions = self.list()
+            url = self.client.management_url.rsplit("/", 1)[0]
+            for version in all_versions:
+                for link in version.links:
+                    if link["href"].rstrip('/') == url:
+                        return version
+
     def list(self):
         """List all versions."""
 
