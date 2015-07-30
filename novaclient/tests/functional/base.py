@@ -11,6 +11,7 @@
 #    under the License.
 
 import os
+import time
 
 import fixtures
 import os_client_config
@@ -170,3 +171,22 @@ class ClientTestBase(testtools.TestCase):
     def nova(self, *args, **kwargs):
         return self.cli_clients.nova(*args,
                                      **kwargs)
+
+    def wait_for_volume_status(self, volume, status, timeout=60,
+                               poll_interval=1):
+        """Wait until volume reaches given status.
+
+        :param volume_id: uuid4 id of given volume
+        :param status: expected status of volume
+        :param timeout: timeout in seconds
+        :param poll_interval: poll interval in seconds
+        """
+        start_time = time.time()
+        while time.time() - start_time < timeout:
+            volume = self.client.volumes.get(volume.id)
+            if volume.status == status:
+                break
+            time.sleep(poll_interval)
+        else:
+            self.fail("Volume %s did not reach status %s after %d s"
+                      % (volume.id, status, timeout))
