@@ -93,6 +93,11 @@ class VersionNotFoundForAPIMethod(Exception):
         return self.msg_fmt % {"vers": self.version, "method": self.method}
 
 
+class InstanceInDeletedState(Exception):
+    """Instance is in the deleted state."""
+    pass
+
+
 class ClientException(Exception):
     """
     The base exception class for all exceptions this library raises.

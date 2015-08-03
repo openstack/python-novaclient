@@ -583,6 +583,10 @@ def _poll_for_status(poll_fn, obj_id, action, final_ok_states,
             if not silent:
                 print(_("\nError %s server") % action)
             raise exceptions.InstanceInErrorState(obj.fault['message'])
+        elif status == "deleted":
+            if not silent:
+                print(_("\nDeleted %s server") % action)
+            raise exceptions.InstanceInDeletedState(obj.fault['message'])
 
         if not silent:
             print_progress(progress)
