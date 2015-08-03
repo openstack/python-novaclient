@@ -44,15 +44,7 @@ class TestVolumesAPI(base.ClientTestBase):
         self.addCleanup(volume.delete)
 
         # Wait for the volume to become available
-        for x in six.moves.range(60):
-            volume = self.client.volumes.get(volume.id)
-            if volume.status == 'available':
-                break
-            elif volume.status == 'error':
-                self.fail('Volume %s is in error state' % volume.id)
-            time.sleep(1)
-        else:
-            self.fail('Volume %s not available after 60s' % volume.id)
+        self.wait_for_volume_status(volume, 'available')
 
         # List all volumes
         self.client.volumes.list()

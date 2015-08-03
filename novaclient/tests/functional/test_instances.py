@@ -10,39 +10,9 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import time
 import uuid
 
 from novaclient.tests.functional import base
-
-
-def volume_id_from_cli_create(output):
-    """Scrape the volume id out of the 'volume create' command
-
-    The cli for Nova automatically routes requests to the volumes
-    service end point. However the nova api low level commands don't
-    redirect to the correct service endpoint, so for volumes commands
-    (even setup ones) we use the cli for magic routing.
-
-    This function lets us get the id out of the prettytable that's
-    dumped on the cli during create.
-
-    """
-    for line in output.split("\n"):
-        fields = line.split()
-        if len(fields) > 4:
-            if fields[1] == "id":
-                return fields[3]
-
-
-def volume_at_status(output, volume_id, status):
-    for line in output.split("\n"):
-        fields = line.split()
-        if len(fields) > 4:
-            if fields[1] == volume_id:
-                return fields[3] == status
-    raise Exception("Volume %s did not reach status '%s' in output: %s"
-                    % (volume_id, status, output))
 
 
 class TestInstanceCLI(base.ClientTestBase):
@@ -84,30 +54,19 @@ class TestInstanceCLI(base.ClientTestBase):
 
         # create a volume for attachment. We use the CLI because it
         # magic routes to cinder, however the low level API does not.
-        volume_id = volume_id_from_cli_create(
-            self.nova('volume-create', params="1"))
-        self.addCleanup(self.nova, 'volume-delete', params=volume_id)
+        volume = self.client.volumes.create(1)
+        self.addCleanup(self.nova, 'volume-delete', params=volume.id)
 
         # allow volume to become available
-        for x in xrange(60):
-            volumes = self.nova('volume-list')
-            if volume_at_status(volumes, volume_id, 'available'):
-                break
-            time.sleep(1)
-        else:
-            self.fail("Volume %s not available after 60s" % volume_id)
+        self.wait_for_volume_status(volume, 'available')
 
         # attach the volume
-        self.nova('volume-attach', params="%s %s" % (name, volume_id))
+        self.nova('volume-attach', params="%s %s" % (name, volume.id))
 
         # volume needs to transition to 'in-use' to be attached
-        for x in xrange(60):
-            volumes = self.nova('volume-list')
-            if volume_at_status(volumes, volume_id, 'in-use'):
-                break
-            time.sleep(1)
-        else:
-            self.fail("Volume %s not attached after 60s" % volume_id)
+        self.wait_for_volume_status(volume, 'in-use')
 
         # clean up on success
-        self.nova('volume-detach', params="%s %s" % (name, volume_id))
+        self.nova('volume-detach', params="%s %s" % (name, volume.id))
+        self.wait_for_volume_status(volume, 'available')
+        self.nova('volume-delete', params=volume.id)
