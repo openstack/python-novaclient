@@ -2471,7 +2471,8 @@ class ShellTest(utils.TestCase):
         self.run_command('server-group-create wjsg affinity')
         self.assert_called('POST', '/os-server-groups',
                            {'server_group': {'name': 'wjsg',
-                                             'policies': ['affinity']}})
+                                             'policies': ['affinity']}},
+                           pos=0)
 
     def test_delete_multi_server_groups(self):
         self.run_command('server-group-delete 12345 56789')
