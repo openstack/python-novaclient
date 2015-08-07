@@ -860,7 +860,7 @@ class ServerManager(base.BootingManagerWithFind):
         :param flavor: The :class:`Flavor` to boot onto.
         :param meta: A dict of arbitrary key/value metadata to store for this
                      server. Both keys and values must be <=255 characters.
-        :param files: A dict of files to overrwrite on the server upon boot.
+        :param files: A dict of files to overwrite on the server upon boot.
                       Keys are file names (i.e. ``/etc/passwd``) and values
                       are the file contents (either as a string or as a
                       file-like object). A maximum of five entries is allowed,
