@@ -22,6 +22,7 @@ from oslo_utils import strutils
 import novaclient
 from novaclient import exceptions
 from novaclient.i18n import _, _LW
+from novaclient.openstack.common import cliutils
 from novaclient import utils
 
 LOG = logging.getLogger(__name__)
@@ -340,8 +341,14 @@ def wraps(start_version, end_version=None):
             if not methods:
                 raise exceptions.VersionNotFoundForAPIMethod(
                     obj.api_version.get_string(), name)
-            else:
-                return max(methods, key=lambda f: f.start_version).func(
-                    obj, *args, **kwargs)
+
+            method = max(methods, key=lambda f: f.start_version)
+
+            return method.func(obj, *args, **kwargs)
+
+        if hasattr(func, 'arguments'):
+            for cli_args, cli_kwargs in func.arguments:
+                cliutils.add_arg(substitution, *cli_args, **cli_kwargs)
         return substitution
+
     return decor
