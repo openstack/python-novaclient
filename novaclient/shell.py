@@ -51,7 +51,7 @@ from novaclient.i18n import _
 from novaclient.openstack.common import cliutils
 from novaclient import utils
 
-DEFAULT_OS_COMPUTE_API_VERSION = "2"
+DEFAULT_OS_COMPUTE_API_VERSION = "2.latest"
 DEFAULT_NOVA_ENDPOINT_TYPE = 'publicURL'
 DEFAULT_NOVA_SERVICE_TYPE = "compute"
 
