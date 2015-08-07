@@ -14,5 +14,10 @@
 
 import pbr.version
 
+from novaclient import api_versions
+
 
 __version__ = pbr.version.VersionInfo('python-novaclient').version_string()
+
+API_MIN_VERSION = api_versions.APIVersion("2.1")
+API_MAX_VERSION = api_versions.APIVersion("2.1")

@@ -19,6 +19,7 @@ import re
 
 from oslo_utils import strutils
 
+import novaclient
 from novaclient import exceptions
 from novaclient.i18n import _, _LW
 from novaclient import utils
@@ -227,6 +228,75 @@ def get_api_version(version_string):
     api_version = APIVersion(version_string)
     check_major_version(api_version)
     return api_version
+
+
+def _get_server_version_range(client):
+    version = client.versions.get_current()
+
+    if not hasattr(version, 'version') or not version.version:
+        return APIVersion(), APIVersion()
+
+    return APIVersion(version.min_version), APIVersion(version.version)
+
+
+def discover_version(client, requested_version):
+    """Returns latest version supported by both API and client.
+
+    :param client: client object
+    :returns: APIVersion
+    """
+
+    server_start_version, server_end_version = _get_server_version_range(
+        client)
+
+    if (not requested_version.is_latest() and
+            requested_version != APIVersion('2.0')):
+        if server_start_version.is_null() and server_end_version.is_null():
+            raise exceptions.UnsupportedVersion(
+                _("Server doesn't support microversions"))
+        if not requested_version.matches(server_start_version,
+                                         server_end_version):
+            raise exceptions.UnsupportedVersion(
+                _("The specified version isn't supported by server. The valid "
+                  "version range is '%(min)s' to '%(max)s'") % {
+                    "min": server_start_version.get_string(),
+                    "max": server_end_version.get_string()})
+        return requested_version
+
+    if requested_version == APIVersion('2.0'):
+        if (server_start_version == APIVersion('2.1') or
+                (server_start_version.is_null() and
+                 server_end_version.is_null())):
+            return APIVersion('2.0')
+        else:
+            raise exceptions.UnsupportedVersion(
+                _("The server isn't backward compatible with Nova V2 REST "
+                  "API"))
+
+    if server_start_version.is_null() and server_end_version.is_null():
+        return APIVersion('2.0')
+    elif novaclient.API_MIN_VERSION > server_end_version:
+        raise exceptions.UnsupportedVersion(
+            _("Server version is too old. The client valid version range is "
+              "'%(client_min)s' to '%(client_max)s'. The server valid version "
+              "range is '%(server_min)s' to '%(server_max)s'.") % {
+                  'client_min': novaclient.API_MIN_VERSION.get_string(),
+                  'client_max': novaclient.API_MAX_VERSION.get_string(),
+                  'server_min': server_start_version.get_string(),
+                  'server_max': server_end_version.get_string()})
+    elif novaclient.API_MAX_VERSION < server_start_version:
+        raise exceptions.UnsupportedVersion(
+            _("Server version is too new. The client valid version range is "
+              "'%(client_min)s' to '%(client_max)s'. The server valid version "
+              "range is '%(server_min)s' to '%(server_max)s'.") % {
+                  'client_min': novaclient.API_MIN_VERSION.get_string(),
+                  'client_max': novaclient.API_MAX_VERSION.get_string(),
+                  'server_min': server_start_version.get_string(),
+                  'server_max': server_end_version.get_string()})
+    elif novaclient.API_MAX_VERSION <= server_end_version:
+        return novaclient.API_MAX_VERSION
+    elif server_end_version < novaclient.API_MAX_VERSION:
+        return server_end_version
 
 
 def update_headers(headers, api_version):
