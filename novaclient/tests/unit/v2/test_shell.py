@@ -75,11 +75,15 @@ class ShellTest(utils.TestCase):
 
     @mock.patch('sys.stdout', new_callable=six.StringIO)
     @mock.patch('sys.stderr', new_callable=six.StringIO)
-    def run_command(self, cmd, mock_stderr, mock_stdout):
+    def run_command(self, cmd, mock_stderr, mock_stdout, api_version=None):
+        version_options = []
+        if api_version:
+            version_options.extend(["--os-compute-api-version", api_version,
+                                    "--service-type", "computev21"])
         if isinstance(cmd, list):
-            self.shell.main(cmd)
+            self.shell.main(version_options + cmd)
         else:
-            self.shell.main(cmd.split())
+            self.shell.main(version_options + cmd.split())
         return mock_stdout.getvalue(), mock_stderr.getvalue()
 
     def assert_called(self, method, url, body=None, **kwargs):
@@ -2395,28 +2399,61 @@ class ShellTest(utils.TestCase):
                           self.run_command,
                           "ssh --ipv6 --network nonexistent server")
 
-    def test_keypair_add(self):
-        self.run_command('keypair-add test')
-        self.assert_called('POST', '/os-keypairs',
-                           {'keypair':
-                               {'name': 'test'}})
+    def _check_keypair_add(self, expected_key_type=None, extra_args='',
+                           api_version=None):
+        self.run_command("keypair-add %s test" % extra_args,
+                         api_version=api_version)
+        expected_body = {"keypair": {"name": "test"}}
+        if expected_key_type:
+            expected_body["keypair"]["type"] = expected_key_type
+        self.assert_called("POST", "/os-keypairs", expected_body)
 
-    def test_keypair_import(self):
+    def test_keypair_add_v20(self):
+        self._check_keypair_add(api_version="2.0")
+
+    def test_keypair_add_v22(self):
+        self._check_keypair_add('ssh', api_version="2.2")
+
+    def test_keypair_add_ssh(self):
+        self._check_keypair_add('ssh', '--key-type ssh', api_version="2.2")
+
+    def test_keypair_add_ssh_x509(self):
+        self._check_keypair_add('x509', '--key-type x509', api_version="2.2")
+
+    def _check_keypair_import(self, expected_key_type=None, extra_args='',
+                              api_version=None):
         with mock.patch.object(builtins, 'open',
                                mock.mock_open(read_data='FAKE_PUBLIC_KEY')):
-            self.run_command('keypair-add --pub-key test.pub test')
+            self.run_command('keypair-add --pub-key test.pub %s test' %
+                             extra_args, api_version=api_version)
+            expected_body = {"keypair": {'public_key': 'FAKE_PUBLIC_KEY',
+                                         'name': 'test'}}
+            if expected_key_type:
+                expected_body["keypair"]["type"] = expected_key_type
             self.assert_called(
-                'POST', '/os-keypairs', {
-                    'keypair': {'public_key': 'FAKE_PUBLIC_KEY',
-                                'name': 'test'}})
+                'POST', '/os-keypairs', expected_body)
+
+    def test_keypair_import_v20(self):
+        self._check_keypair_import(api_version="2.0")
+
+    def test_keypair_import_v22(self):
+        self._check_keypair_import('ssh', api_version="2.2")
+
+    def test_keypair_import_ssh(self):
+        self._check_keypair_import('ssh', '--key-type ssh', api_version="2.2")
+
+    def test_keypair_import_x509(self):
+        self._check_keypair_import('x509', '--key-type x509',
+                                   api_version="2.2")
 
     def test_keypair_stdin(self):
         with mock.patch('sys.stdin', six.StringIO('FAKE_PUBLIC_KEY')):
-            self.run_command('keypair-add --pub-key - test')
+            self.run_command('keypair-add --pub-key - test', api_version="2.2")
             self.assert_called(
                 'POST', '/os-keypairs', {
                     'keypair':
-                        {'public_key': 'FAKE_PUBLIC_KEY', 'name': 'test'}})
+                        {'public_key': 'FAKE_PUBLIC_KEY', 'name': 'test',
+                         'type': 'ssh'}})
 
     def test_keypair_list(self):
         self.run_command('keypair-list')
