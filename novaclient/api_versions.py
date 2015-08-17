@@ -240,9 +240,11 @@ def _get_server_version_range(client):
 
 
 def discover_version(client, requested_version):
-    """Returns latest version supported by both API and client.
+    """Checks ``requested_version`` and returns the most recent version
+    supported by both the API and the client.
 
     :param client: client object
+    :param requested_version: requested version represented by APIVersion obj
     :returns: APIVersion
     """
 
