@@ -2501,7 +2501,7 @@ def do_floating_ip_pool_list(cs, _args):
     '--host', dest='host', metavar='<host>', default=None,
     help=_('Filter by host'))
 def do_floating_ip_bulk_list(cs, args):
-    """List all floating IPs."""
+    """List all floating IPs (nova-network only)."""
     utils.print_list(cs.floating_ips_bulk.list(args.host), ['project_id',
                                                             'address',
                                                             'instance_uuid',
@@ -2517,13 +2517,13 @@ def do_floating_ip_bulk_list(cs, args):
     '--interface', metavar='<interface>', default=None,
     help=_('Interface for new Floating IPs'))
 def do_floating_ip_bulk_create(cs, args):
-    """Bulk create floating IPs by range."""
+    """Bulk create floating IPs by range (nova-network only)."""
     cs.floating_ips_bulk.create(args.ip_range, args.pool, args.interface)
 
 
 @cliutils.arg('ip_range', metavar='<range>', help=_('Address range to delete'))
 def do_floating_ip_bulk_delete(cs, args):
-    """Bulk delete floating IPs by range."""
+    """Bulk delete floating IPs by range (nova-network only)."""
     cs.floating_ips_bulk.delete(args.ip_range)
 
 
