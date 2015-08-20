@@ -51,6 +51,7 @@ from novaclient.i18n import _
 from novaclient.openstack.common import cliutils
 from novaclient import utils
 
+DEFAULT_MAJOR_OS_COMPUTE_API_VERSION = "2.0"
 DEFAULT_OS_COMPUTE_API_VERSION = "2.latest"
 DEFAULT_NOVA_ENDPOINT_TYPE = 'publicURL'
 DEFAULT_NOVA_SERVICE_TYPE = "compute"
@@ -560,8 +561,12 @@ class OpenStackComputeShell(object):
         # Discover available auth plugins
         novaclient.auth_plugin.discover_auth_systems()
 
-        api_version = api_versions.get_api_version(
-            args.os_compute_api_version)
+        if not args.os_compute_api_version:
+            api_version = api_versions.get_api_version(
+                DEFAULT_MAJOR_OS_COMPUTE_API_VERSION)
+        else:
+            api_version = api_versions.get_api_version(
+                args.os_compute_api_version)
 
         os_username = args.os_username
         os_user_id = args.os_user_id
