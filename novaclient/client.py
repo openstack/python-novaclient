@@ -404,7 +404,7 @@ class HTTPClient(object):
             # a nova endpoint directly without "v2/<tenant-id>".
             magic_tuple = parse.urlsplit(self.management_url)
             scheme, netloc, path, query, frag = magic_tuple
-            path = re.sub(r'v[1-9]/[a-z0-9]+$', '', path)
+            path = re.sub(r'v[1-9](\.[1-9][0-9]*)?/[a-z0-9]+$', '', path)
             url = parse.urlunsplit((scheme, netloc, path, None, None))
         else:
             if self.service_catalog and not self.bypass_url:
