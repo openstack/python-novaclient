@@ -260,7 +260,7 @@ class HTTPClient(object):
         if key in target:
             if text:
                 target[key] = text
-            else:
+            elif target[key] is not None:
                 # because in python3 byte string handling is ... ug
                 value = target[key].encode('utf-8')
                 sha1sum = hashlib.sha1(value)

@@ -361,6 +361,8 @@ class ClientTest(utils.TestCase):
         cs.http_log_debug = True
         cs.http_log_req('GET', '/foo', {'headers': {}})
         cs.http_log_req('GET', '/foo', {'headers':
+                                        {'X-Auth-Token': None}})
+        cs.http_log_req('GET', '/foo', {'headers':
                                         {'X-Auth-Token': 'totally_bogus'}})
         cs.http_log_req('GET', '/foo', {'headers':
                                         {'X-Foo': 'bar',
@@ -373,6 +375,10 @@ class ClientTest(utils.TestCase):
         output = self.logger.output.split('\n')
 
         self.assertIn("REQ: curl -g -i '/foo' -X GET", output)
+        self.assertIn(
+            "REQ: curl -g -i '/foo' -X GET -H "
+            '"X-Auth-Token: None"',
+            output)
         self.assertIn(
             "REQ: curl -g -i '/foo' -X GET -H "
             '"X-Auth-Token: {SHA1}b42162b6ffdbd7c3c37b7c95b7ba9f51dda0236d"',
