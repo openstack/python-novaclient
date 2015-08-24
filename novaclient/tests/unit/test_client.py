@@ -137,9 +137,15 @@ class ClientTest(utils.TestCase):
 
     def test_client_version_url(self):
         self._check_version_url('http://foo.com/v2/%s', 'http://foo.com/')
+        self._check_version_url('http://foo.com/v2.1/%s', 'http://foo.com/')
+        self._check_version_url('http://foo.com/v3.785/%s', 'http://foo.com/')
 
     def test_client_version_url_with_project_name(self):
         self._check_version_url('http://foo.com/nova/v2/%s',
+                                'http://foo.com/nova/')
+        self._check_version_url('http://foo.com/nova/v2.1/%s',
+                                'http://foo.com/nova/')
+        self._check_version_url('http://foo.com/nova/v3.785/%s',
                                 'http://foo.com/nova/')
 
     def test_get_client_class_v2(self):
