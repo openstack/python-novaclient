@@ -1347,6 +1347,15 @@ def do_image_delete(cs, args):
     default=None,
     help=('The last server uuid of the previous page; displays list of servers'
           ' after "marker".'))
+@cliutils.arg(
+    '--limit',
+    dest='limit',
+    metavar='<limit>',
+    type=int,
+    default=None,
+    help=("Maximum number of servers to display. (If limit is bigger than "
+          "'osapi_max_limit' option of Nova API, limit 'osapi_max_limit' will "
+          "be used instead)."))
 def do_list(cs, args):
     """List active servers."""
     imageid = None
@@ -1406,7 +1415,8 @@ def do_list(cs, args):
                               search_opts=search_opts,
                               sort_keys=sort_keys,
                               sort_dirs=sort_dirs,
-                              marker=args.marker)
+                              marker=args.marker,
+                              limit=args.limit)
     convert = [('OS-EXT-SRV-ATTR:host', 'host'),
                ('OS-EXT-STS:task_state', 'task_state'),
                ('OS-EXT-SRV-ATTR:instance_name', 'instance_name'),

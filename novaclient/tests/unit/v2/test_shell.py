@@ -944,6 +944,10 @@ class ShellTest(utils.TestCase):
         self.run_command('list --marker some-uuid')
         self.assert_called('GET', '/servers/detail?marker=some-uuid')
 
+    def test_list_with_limit(self):
+        self.run_command('list --limit 3')
+        self.assert_called('GET', '/servers/detail?limit=3')
+
     def test_reboot(self):
         self.run_command('reboot sample-server')
         self.assert_called('POST', '/servers/1234/action',
