@@ -1340,6 +1340,13 @@ def do_image_delete(cs, args):
     help=('Comma-separated list of sort keys and directions in the form'
           ' of <key>[:<asc|desc>]. The direction defaults to descending if'
           ' not specified.'))
+@cliutils.arg(
+    '--marker',
+    dest='marker',
+    metavar='<marker>',
+    default=None,
+    help=('The last server uuid of the previous page; displays list of servers'
+          ' after "marker".'))
 def do_list(cs, args):
     """List active servers."""
     imageid = None
@@ -1398,7 +1405,8 @@ def do_list(cs, args):
     servers = cs.servers.list(detailed=detailed,
                               search_opts=search_opts,
                               sort_keys=sort_keys,
-                              sort_dirs=sort_dirs)
+                              sort_dirs=sort_dirs,
+                              marker=args.marker)
     convert = [('OS-EXT-SRV-ATTR:host', 'host'),
                ('OS-EXT-STS:task_state', 'task_state'),
                ('OS-EXT-SRV-ATTR:instance_name', 'instance_name'),

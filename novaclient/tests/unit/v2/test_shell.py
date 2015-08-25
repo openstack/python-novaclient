@@ -940,6 +940,10 @@ class ShellTest(utils.TestCase):
         self.assertIn('OS-EXT-MOD: Some Thing', output)
         self.assertIn('mod_some_thing_value', output)
 
+    def test_list_with_marker(self):
+        self.run_command('list --marker some-uuid')
+        self.assert_called('GET', '/servers/detail?marker=some-uuid')
+
     def test_reboot(self):
         self.run_command('reboot sample-server')
         self.assert_called('POST', '/servers/1234/action',
