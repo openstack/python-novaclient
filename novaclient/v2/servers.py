@@ -572,32 +572,44 @@ class ServerManager(base.BootingManagerWithFind):
             if val:
                 qparams[opt] = val
 
-        if marker:
-            qparams['marker'] = marker
-
-        if limit:
-            qparams['limit'] = limit
-
-        # Transform the dict to a sequence of two-element tuples in fixed
-        # order, then the encoded string will be consistent in Python 2&3.
-        if qparams or sort_keys or sort_dirs:
-            # sort keys and directions are unique since the same parameter
-            # key is repeated for each associated value
-            # (ie, &sort_key=key1&sort_key=key2&sort_key=key3)
-            items = list(qparams.items())
-            if sort_keys:
-                items.extend(('sort_key', sort_key) for sort_key in sort_keys)
-            if sort_dirs:
-                items.extend(('sort_dir', sort_dir) for sort_dir in sort_dirs)
-            new_qparams = sorted(items, key=lambda x: x[0])
-            query_string = "?%s" % parse.urlencode(new_qparams)
-        else:
-            query_string = ""
-
         detail = ""
         if detailed:
             detail = "/detail"
-        return self._list("/servers%s%s" % (detail, query_string), "servers")
+
+        result = []
+        while True:
+            if marker:
+                qparams['marker'] = marker
+
+            if limit and limit != -1:
+                qparams['limit'] = limit
+
+            # Transform the dict to a sequence of two-element tuples in fixed
+            # order, then the encoded string will be consistent in Python 2&3.
+            if qparams or sort_keys or sort_dirs:
+                # sort keys and directions are unique since the same parameter
+                # key is repeated for each associated value
+                # (ie, &sort_key=key1&sort_key=key2&sort_key=key3)
+                items = list(qparams.items())
+                if sort_keys:
+                    items.extend(('sort_key', sort_key)
+                                 for sort_key in sort_keys)
+                if sort_dirs:
+                    items.extend(('sort_dir', sort_dir)
+                                 for sort_dir in sort_dirs)
+                new_qparams = sorted(items, key=lambda x: x[0])
+                query_string = "?%s" % parse.urlencode(new_qparams)
+            else:
+                query_string = ""
+
+            servers = self._list("/servers%s%s" % (detail, query_string),
+                                 "servers")
+            result.extend(servers)
+
+            if not servers or limit != -1:
+                break
+            marker = result[-1].id
+        return result
 
     def add_fixed_ip(self, server, network_id):
         """

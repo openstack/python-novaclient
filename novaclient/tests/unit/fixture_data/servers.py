@@ -159,6 +159,16 @@ class Base(base.Fixture):
                                    json=get_servers_detail,
                                    headers=self.json_headers)
 
+        self.requests.register_uri(
+            'GET', self.url('detail', marker=self.server_1234["id"]),
+            json={"servers": [self.server_1234, self.server_5678]},
+            headers=self.json_headers, complete_qs=True)
+
+        self.requests.register_uri(
+            'GET', self.url('detail', marker=self.server_5678["id"]),
+            json={"servers": []},
+            headers=self.json_headers, complete_qs=True)
+
         self.server_1235 = self.server_1234.copy()
         self.server_1235['id'] = 1235
         self.server_1235['status'] = 'error'
