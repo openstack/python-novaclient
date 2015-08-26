@@ -153,7 +153,7 @@ class ClientTestBase(testtools.TestCase):
         self.image = pick_image(self.client.images.list())
 
         # create a CLI client in case we'd like to do CLI
-        # testing. tempest_lib does this realy weird thing where it
+        # testing. tempest_lib does this really weird thing where it
         # builds a giant factory of all the CLIs that it knows
         # about. Eventually that should really be unwound into
         # something more sensible.
