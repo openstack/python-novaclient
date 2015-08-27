@@ -43,6 +43,20 @@ class ServersTest(utils.FixturedTestCase):
         for s in sl:
             self.assertIsInstance(s, servers.Server)
 
+    def test_list_all_servers(self):
+        # use marker just to identify this call in fixtures
+        sl = self.cs.servers.list(limit=-1, marker=1234)
+
+        self.assertEqual(2, len(sl))
+
+        self.assertEqual(self.requests.request_history[-2].method, 'GET')
+        self.assertEqual(self.requests.request_history[-2].path_url,
+                         '/servers/detail?marker=1234')
+        self.assert_called('GET', '/servers/detail?marker=5678')
+
+        for s in sl:
+            self.assertIsInstance(s, servers.Server)
+
     def test_list_servers_undetailed(self):
         sl = self.cs.servers.list(detailed=False)
         self.assert_called('GET', '/servers')

@@ -1353,9 +1353,10 @@ def do_image_delete(cs, args):
     metavar='<limit>',
     type=int,
     default=None,
-    help=("Maximum number of servers to display. (If limit is bigger than "
+    help=("Maximum number of servers to display. If limit == -1, all servers "
+          "will be displayed. If limit is bigger than "
           "'osapi_max_limit' option of Nova API, limit 'osapi_max_limit' will "
-          "be used instead)."))
+          "be used instead."))
 def do_list(cs, args):
     """List active servers."""
     imageid = None
