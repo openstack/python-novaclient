@@ -1459,7 +1459,10 @@ def do_list(cs, args):
     const=servers.REBOOT_HARD,
     default=servers.REBOOT_SOFT,
     help=_('Perform a hard reboot (instead of a soft one).'))
-@cliutils.arg('server', metavar='<server>', help=_('Name or ID of server.'))
+@cliutils.arg(
+    'server',
+    metavar='<server>', nargs='+',
+    help=_('Name or ID of server(s).'))
 @cliutils.arg(
     '--poll',
     dest='poll',
@@ -1468,12 +1471,20 @@ def do_list(cs, args):
     help=_('Poll until reboot is complete.'))
 def do_reboot(cs, args):
     """Reboot a server."""
-    server = _find_server(cs, args.server)
-    server.reboot(args.reboot_type)
+    servers = [_find_server(cs, s) for s in args.server]
+    utils.do_action_on_many(
+        lambda s: s.reboot(args.reboot_type),
+        servers,
+        _("Request to reboot server %s has been accepted."),
+        _("Unable to reboot the specified server(s)."))
 
     if args.poll:
-        _poll_for_status(cs.servers.get, server.id, 'rebooting', ['active'],
-                         show_progress=False)
+        utils.do_action_on_many(
+            lambda s: _poll_for_status(cs.servers.get, s.id, 'rebooting',
+                                       ['active'], show_progress=False),
+            servers,
+            _("Wait for server %s reboot."),
+            _("Wait for specified server(s) failed."))
 
 
 @cliutils.arg('server', metavar='<server>', help=_('Name or ID of server.'))
