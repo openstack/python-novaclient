@@ -11,7 +11,6 @@
 #    under the License.
 
 import time
-import uuid
 
 import six.moves
 
@@ -75,8 +74,7 @@ class TestVolumesAPI(base.ClientTestBase):
         self.client.servers.list()
 
         # Create a volume type
-        # TODO(melwitt): Use a better random name
-        name = str(uuid.uuid4())
+        name = self.name_generate('VolumeType')
         volume_type = self.client.volume_types.create(name)
 
         # This cleanup tests volume type delete

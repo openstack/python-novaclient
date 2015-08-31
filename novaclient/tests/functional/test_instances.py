@@ -10,8 +10,6 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import uuid
-
 from novaclient.tests.functional import base
 
 
@@ -37,8 +35,7 @@ class TestInstanceCLI(base.ClientTestBase):
         destroy.
 
         """
-        # TODO(sdague): better random name
-        name = str(uuid.uuid4())
+        name = self.name_generate('Instance')
 
         # Boot via the cli, as we're primarily testing the cli in this test
         network = self.client.networks.list()[0]

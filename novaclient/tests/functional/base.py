@@ -12,9 +12,11 @@
 
 import os
 import time
+import uuid
 
 import fixtures
 import os_client_config
+import six
 import tempest_lib.cli.base
 import testtools
 
@@ -190,3 +192,11 @@ class ClientTestBase(testtools.TestCase):
         else:
             self.fail("Volume %s did not reach status %s after %d s"
                       % (volume.id, status, timeout))
+
+    def name_generate(self, prefix='Entity'):
+        """Generate randomized name for some entity.
+
+        :param prefix: string prefix
+        """
+        name = "%s-%s" % (prefix, six.text_type(uuid.uuid4()))
+        return name
