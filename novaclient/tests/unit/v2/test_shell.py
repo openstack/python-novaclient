@@ -956,6 +956,13 @@ class ShellTest(utils.TestCase):
         self.assert_called('POST', '/servers/1234/action',
                            {'reboot': {'type': 'HARD'}})
 
+    def test_reboot_many(self):
+        self.run_command('reboot sample-server sample-server2')
+        self.assert_called('POST', '/servers/1234/action',
+                           {'reboot': {'type': 'SOFT'}}, pos=-2)
+        self.assert_called('POST', '/servers/5678/action',
+                           {'reboot': {'type': 'SOFT'}}, pos=-1)
+
     def test_rebuild(self):
         output, _ = self.run_command('rebuild sample-server 1')
         self.assert_called('GET', '/servers?name=sample-server', pos=-6)
