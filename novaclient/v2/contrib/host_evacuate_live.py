@@ -54,15 +54,25 @@ def _server_live_migrate(cs, server, args):
     action='store_true',
     default=False,
     help=_('Enable disk overcommit.'))
+@cliutils.arg(
+    '--max-servers',
+    type=int,
+    dest='max_servers',
+    metavar='<max_servers>',
+    help='Maximum number of servers to live migrate simultaneously')
 def do_host_evacuate_live(cs, args):
     """Live migrate all instances of the specified host
     to other available hosts.
     """
     hypervisors = cs.hypervisors.search(args.host, servers=True)
     response = []
+    migrating = 0
     for hyper in hypervisors:
         for server in getattr(hyper, 'servers', []):
             response.append(_server_live_migrate(cs, server, args))
+            migrating = migrating + 1
+            if args.max_servers is not None and migrating >= args.max_servers:
+                break
 
     utils.print_list(response, ["Server UUID", "Live Migration Accepted",
                                 "Error Message"])

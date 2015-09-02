@@ -1583,6 +1583,14 @@ class ShellTest(utils.TestCase):
         self.assert_called('POST', '/servers/uuid3/action', body, pos=3)
         self.assert_called('POST', '/servers/uuid4/action', body, pos=4)
 
+    def test_host_evacuate_list_with_max_servers(self):
+        self.run_command('host-evacuate-live --max-servers 1 hyper')
+        self.assert_called('GET', '/os-hypervisors/hyper/servers', pos=0)
+        body = {'os-migrateLive': {'host': None,
+                                   'block_migration': False,
+                                   'disk_over_commit': False}}
+        self.assert_called('POST', '/servers/uuid1/action', body, pos=1)
+
     def test_reset_state(self):
         self.run_command('reset-state sample-server')
         self.assert_called('POST', '/servers/1234/action',
