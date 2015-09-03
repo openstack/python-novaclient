@@ -63,4 +63,4 @@ class VersionsTest(utils.TestCase):
     def test_get_current_with_session_client(self, mock_is_session_client):
         self.cs.callback = []
         self.cs.versions.get_current()
-        self.cs.assert_called('GET', 'http://nova-api:8774/v2.1')
+        self.cs.assert_called('GET', 'http://nova-api:8774/v2.1/')

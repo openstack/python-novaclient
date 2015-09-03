@@ -40,6 +40,11 @@ class VersionManager(base.ManagerWithFind):
         """Returns info about current version."""
         if self._is_session_client():
             url = self.api.client.get_endpoint().rsplit("/", 1)[0]
+            # NOTE(sdague): many service providers don't really
+            # implement GET / in the expected way, if we do a GET /v2
+            # that's actually a 300 redirect to /v2/... because of how
+            # paste works. So adding the end slash is really important.
+            url = "%s/" % url
             return self._get(url, "version")
         else:
             # NOTE(andreykurilin): HTTPClient doesn't have ability to send get
