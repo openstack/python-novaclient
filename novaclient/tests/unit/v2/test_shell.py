@@ -2293,8 +2293,7 @@ class ShellTest(utils.TestCase):
         self.run_command('volume-attach sample-server Work')
         self.assert_called('POST', '/servers/1234/os-volume_attachments',
                            {'volumeAttachment':
-                               {'device': None,
-                                'volumeId': 'Work'}})
+                               {'volumeId': 'Work'}})
 
     def test_volume_update(self):
         self.run_command('volume-update sample-server Work Work')
