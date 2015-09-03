@@ -20,6 +20,7 @@ from six.moves import urllib
 
 from novaclient import base
 from novaclient import client
+from novaclient import exceptions as exc
 
 
 class Version(base.Resource):
@@ -45,7 +46,15 @@ class VersionManager(base.ManagerWithFind):
             # that's actually a 300 redirect to /v2/... because of how
             # paste works. So adding the end slash is really important.
             url = "%s/" % url
-            return self._get(url, "version")
+            try:
+                return self._get(url, "version")
+            except exc.Unauthorized:
+                # NOTE(sdague): RAX's repose configuration blocks
+                # access to the versioned endpoint, which is
+                # definitely non-compliant behavior. However, there is
+                # no defcore test for this yet. Remove this code block
+                # once we land things in defcore.
+                return None
         else:
             # NOTE(andreykurilin): HTTPClient doesn't have ability to send get
             # request without token in the url, so `self._get` doesn't work.

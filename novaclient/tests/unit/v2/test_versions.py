@@ -14,6 +14,7 @@
 
 import mock
 
+from novaclient import exceptions as exc
 from novaclient.tests.unit import utils
 from novaclient.tests.unit.v2 import fakes
 from novaclient.v2 import versions
@@ -64,3 +65,11 @@ class VersionsTest(utils.TestCase):
         self.cs.callback = []
         self.cs.versions.get_current()
         self.cs.assert_called('GET', 'http://nova-api:8774/v2.1/')
+
+    @mock.patch.object(versions.VersionManager, '_is_session_client',
+                       return_value=True)
+    @mock.patch.object(versions.VersionManager, '_get',
+                       side_effect=exc.Unauthorized("401 RAX"))
+    def test_get_current_with_rax_workaround(self, session, get):
+        self.cs.callback = []
+        self.assertIsNone(self.cs.versions.get_current())
