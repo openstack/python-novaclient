@@ -97,8 +97,7 @@ class TestKeypairsNovaClientV22(TestKeypairsNovaClient):
     """
 
     def nova(self, *args, **kwargs):
-        return self.cli_clients.nova(flags='--os-compute-api-version 2.2 '
-                                           '--service-type computev21',
+        return self.cli_clients.nova(flags='--os-compute-api-version 2.2 ',
                                      *args, **kwargs)
 
     def test_create_keypair(self):
