@@ -509,7 +509,7 @@ def _boot(cs, args):
     dest='admin_pass',
     metavar='<value>',
     default=None,
-    help='Admin password for the instance')
+    help=_('Admin password for the instance'))
 def do_boot(cs, args):
     """Boot a new server."""
     boot_args, boot_kwargs = _boot(cs, args)
@@ -541,7 +541,7 @@ def do_cloudpipe_create(cs, args):
 
 
 @cliutils.arg('address', metavar='<ip address>', help=_('New IP Address.'))
-@cliutils.arg('port', metavar='<port>', help='New Port.')
+@cliutils.arg('port', metavar='<port>', help=_('New Port.'))
 def do_cloudpipe_configure(cs, args):
     """Update the VPN IP/port of a cloudpipe instance."""
     cs.cloudpipe.update(args.address, args.port)
@@ -866,8 +866,8 @@ def do_scrub(cs, args):
     '--fields',
     default=None,
     metavar='<fields>',
-    help='Comma-separated list of fields to display. '
-         'Use the show command to see which fields are available.')
+    help=_('Comma-separated list of fields to display. '
+           'Use the show command to see which fields are available.'))
 def do_network_list(cs, args):
     """Print a list of available networks."""
     network_list = cs.networks.list()
@@ -924,7 +924,7 @@ def do_network_delete(cs, args):
 @cliutils.arg(
     'network',
     metavar='<network>',
-    help="uuid of network")
+    help=_("uuid of network"))
 def do_network_disassociate(cs, args):
     """Disassociate host and/or project from the given network."""
     if args.host_only:
@@ -938,11 +938,11 @@ def do_network_disassociate(cs, args):
 @cliutils.arg(
     'network',
     metavar='<network>',
-    help="uuid of network")
+    help=_("uuid of network"))
 @cliutils.arg(
     'host',
     metavar='<host>',
-    help="Name of host")
+    help=_("Name of host"))
 def do_network_associate_host(cs, args):
     """Associate host with network."""
     cs.networks.associate_host(args.network, args.host)
@@ -951,7 +951,7 @@ def do_network_associate_host(cs, args):
 @cliutils.arg(
     'network',
     metavar='<network>',
-    help="uuid of network")
+    help=_("uuid of network"))
 def do_network_associate_project(cs, args):
     """Associate project with network."""
     cs.networks.associate_project(args.network)
@@ -1029,7 +1029,7 @@ def _filter_network_create_options(args):
 @cliutils.arg(
     '--dns1',
     dest="dns1",
-    metavar="<DNS Address>", help='First DNS')
+    metavar="<DNS Address>", help=_('First DNS'))
 @cliutils.arg(
     '--dns2',
     dest="dns2",
@@ -1320,7 +1320,7 @@ def do_image_delete(cs, args):
     dest='deleted',
     action="store_true",
     default=False,
-    help='Only display deleted servers (Admin only).')
+    help=_('Only display deleted servers (Admin only).'))
 @cliutils.arg(
     '--fields',
     default=None,
@@ -1514,7 +1514,7 @@ def do_reboot(cs, args):
     '--preserve-ephemeral',
     action="store_true",
     default=False,
-    help='Preserve the default ephemeral storage partition on rebuild.')
+    help=_('Preserve the default ephemeral storage partition on rebuild.'))
 @cliutils.arg(
     '--name',
     metavar='<name>',
@@ -1975,7 +1975,7 @@ def _find_flavor(cs, flavor):
 @cliutils.arg(
     'network_id',
     metavar='<network-id>',
-    help='Network ID.')
+    help=_('Network ID.'))
 def do_add_fixed_ip(cs, args):
     """Add new IP address on a network to server."""
     server = _find_server(cs, args.server)
@@ -2336,7 +2336,7 @@ def do_get_spice_console(cs, args):
 @cliutils.arg(
     'console_type',
     metavar='<console-type>',
-    help='Type of rdp console ("rdp-html5").')
+    help=_('Type of rdp console ("rdp-html5").'))
 def do_get_rdp_console(cs, args):
     """Get a rdp console to a server."""
     server = _find_server(cs, args.server)
@@ -2372,7 +2372,7 @@ def do_get_serial_console(cs, args):
     utils.print_list([SerialConsole(data['console'])], ['Type', 'Url'])
 
 
-@cliutils.arg('server', metavar='<server>', help='Name or ID of server.')
+@cliutils.arg('server', metavar='<server>', help=_('Name or ID of server.'))
 @cliutils.arg(
     'private_key',
     metavar='<private-key>',
@@ -2429,13 +2429,13 @@ def do_add_floating_ip(cs, args):
     _associate_floating_ip(cs, args)
 
 
-@cliutils.arg('server', metavar='<server>', help='Name or ID of server.')
-@cliutils.arg('address', metavar='<address>', help='IP Address.')
+@cliutils.arg('server', metavar='<server>', help=_('Name or ID of server.'))
+@cliutils.arg('address', metavar='<address>', help=_('IP Address.'))
 @cliutils.arg(
     '--fixed-address',
     metavar='<fixed_address>',
     default=None,
-    help='Fixed IP Address to associate with.')
+    help=_('Fixed IP Address to associate with.'))
 def do_floating_ip_associate(cs, args):
     """Associate a floating IP address to a server."""
     _associate_floating_ip(cs, args)
@@ -2453,8 +2453,8 @@ def do_remove_floating_ip(cs, args):
     _disassociate_floating_ip(cs, args)
 
 
-@cliutils.arg('server', metavar='<server>', help='Name or ID of server.')
-@cliutils.arg('address', metavar='<address>', help='IP Address.')
+@cliutils.arg('server', metavar='<server>', help=_('Name or ID of server.'))
+@cliutils.arg('address', metavar='<address>', help=_('IP Address.'))
 def do_floating_ip_disassociate(cs, args):
     """Disassociate a floating IP address from a server."""
     _disassociate_floating_ip(cs, args)
@@ -3659,7 +3659,7 @@ def do_host_list(cs, args):
     utils.print_list(result, columns)
 
 
-@cliutils.arg('host', metavar='<hostname>', help='Name of host.')
+@cliutils.arg('host', metavar='<hostname>', help=_('Name of host.'))
 @cliutils.arg(
     '--status', metavar='<enable|disable>', default=None, dest='status',
     help=_('Either enable or disable a host.'))
@@ -3683,7 +3683,7 @@ def do_host_update(cs, args):
     utils.print_list([result], columns)
 
 
-@cliutils.arg('host', metavar='<hostname>', help='Name of host.')
+@cliutils.arg('host', metavar='<hostname>', help=_('Name of host.'))
 @cliutils.arg(
     '--action', metavar='<action>', dest='action',
     choices=['startup', 'shutdown', 'reboot'],
@@ -4535,7 +4535,7 @@ def do_secgroup_delete_default_rule(cs, args):
     raise exceptions.CommandError(_("Rule not found"))
 
 
-@cliutils.arg('name', metavar='<name>', help='Server group name.')
+@cliutils.arg('name', metavar='<name>', help=_('Server group name.'))
 # NOTE(wingwj): The '--policy' way is still reserved here for preserving
 # the backwards compatibility of CLI, even if a user won't get this usage
 # in '--help' description. It will be deprecated after an suitable deprecation
@@ -4551,7 +4551,7 @@ def do_secgroup_delete_default_rule(cs, args):
     metavar='<policy>',
     default=argparse.SUPPRESS,
     nargs='*',
-    help='Policies for the server groups ("affinity" or "anti-affinity")')
+    help=_('Policies for the server groups ("affinity" or "anti-affinity")'))
 @cliutils.arg(
     '--policy',
     default=[],
@@ -4572,7 +4572,7 @@ def do_server_group_create(cs, args):
     'id',
     metavar='<id>',
     nargs='+',
-    help="Unique ID(s) of the server group to delete")
+    help=_("Unique ID(s) of the server group to delete"))
 def do_server_group_delete(cs, args):
     """Delete specific server group(s)."""
     failure_count = 0
@@ -4593,7 +4593,7 @@ def do_server_group_delete(cs, args):
 @cliutils.arg(
     'id',
     metavar='<id>',
-    help="Unique ID of the server group to get")
+    help=_("Unique ID of the server group to get"))
 def do_server_group_get(cs, args):
     """Get a specific server group."""
     server_group = cs.server_groups.get(args.id)
