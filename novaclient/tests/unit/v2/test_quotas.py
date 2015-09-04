@@ -45,9 +45,7 @@ class QuotaSetsTest(utils.FixturedTestCase):
         q.update(cores=2, force=True)
         self.assert_called(
             'PUT', '/os-quota-sets/97f4c221bff44578b0300df4ef119353',
-            {'quota_set': {'force': True,
-                           'cores': 2,
-                           'tenant_id': '97f4c221bff44578b0300df4ef119353'}})
+            {'quota_set': {'force': True, 'cores': 2}})
 
     def test_quotas_delete(self):
         tenant_id = 'test'

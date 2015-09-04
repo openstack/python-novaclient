@@ -41,14 +41,10 @@ class QuotaSetManager(base.Manager):
             url = '/os-quota-sets/%s' % tenant_id
         return self._get(url, "quota_set")
 
-    def _update_body(self, tenant_id, **kwargs):
-        kwargs['tenant_id'] = tenant_id
-        return {'quota_set': kwargs}
-
     def update(self, tenant_id, **kwargs):
 
         user_id = kwargs.pop('user_id', None)
-        body = self._update_body(tenant_id, **kwargs)
+        body = {'quota_set': kwargs}
 
         for key in list(body['quota_set']):
             if body['quota_set'][key] is None:
