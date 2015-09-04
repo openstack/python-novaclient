@@ -1259,8 +1259,7 @@ class FakeHTTPClient(base_client.HTTPClient):
 
     def put_os_quota_sets_97f4c221bff44578b0300df4ef119353(self, body, **kw):
         assert list(body) == ['quota_set']
-        fakes.assert_has_keys(body['quota_set'],
-                              required=['tenant_id'])
+        fakes.assert_has_keys(body['quota_set'])
         return (200, {}, {
             'quota_set': {
                 'tenant_id': '97f4c221bff44578b0300df4ef119353',

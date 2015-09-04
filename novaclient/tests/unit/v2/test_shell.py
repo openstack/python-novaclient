@@ -1835,8 +1835,7 @@ class ShellTest(utils.TestCase):
         self.assert_called(
             'PUT',
             '/os-quota-sets/97f4c221bff44578b0300df4ef119353',
-            {'quota_set': {'instances': 5,
-                           'tenant_id': '97f4c221bff44578b0300df4ef119353'}})
+            {'quota_set': {'instances': 5}})
 
     def test_user_quota_update(self):
         self.run_command(
@@ -1846,8 +1845,7 @@ class ShellTest(utils.TestCase):
         self.assert_called(
             'PUT',
             '/os-quota-sets/97f4c221bff44578b0300df4ef119353?user_id=u1',
-            {'quota_set': {'instances': 5,
-                           'tenant_id': '97f4c221bff44578b0300df4ef119353'}})
+            {'quota_set': {'instances': 5}})
 
     def test_quota_force_update(self):
         self.run_command(
@@ -1856,8 +1854,7 @@ class ShellTest(utils.TestCase):
         self.assert_called(
             'PUT', '/os-quota-sets/97f4c221bff44578b0300df4ef119353',
             {'quota_set': {'force': True,
-                           'instances': 5,
-                           'tenant_id': '97f4c221bff44578b0300df4ef119353'}})
+                           'instances': 5}})
 
     def test_quota_update_fixed_ip(self):
         self.run_command(
@@ -1865,8 +1862,7 @@ class ShellTest(utils.TestCase):
             ' --fixed-ips=5')
         self.assert_called(
             'PUT', '/os-quota-sets/97f4c221bff44578b0300df4ef119353',
-            {'quota_set': {'fixed_ips': 5,
-                           'tenant_id': '97f4c221bff44578b0300df4ef119353'}})
+            {'quota_set': {'fixed_ips': 5}})
 
     def test_quota_delete(self):
         self.run_command('quota-delete --tenant '
