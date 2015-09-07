@@ -556,7 +556,8 @@ class OpenStackComputeShell(object):
 
         self.setup_debugging(args.debug)
         self.extensions = []
-        do_help = ('help' in argv) or not argv
+        do_help = ('help' in argv) or (
+            '--help' in argv) or ('-h' in argv) or not argv
 
         # Discover available auth plugins
         novaclient.auth_plugin.discover_auth_systems()
