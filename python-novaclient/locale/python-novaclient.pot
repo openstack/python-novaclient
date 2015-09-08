@@ -1,0 +1,2171 @@
+# Translations template for python-novaclient.
+# Copyright (C) 2015 ORGANIZATION
+# This file is distributed under the same license as the python-novaclient
+# project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2015.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: python-novaclient 2.28.2.dev1\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2015-09-08 10:09-0700\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 1.3\n"
+
+#: novaclient/api_versions.py:38
+#, python-format
+msgid "'%(other)s' should be an instance of '%(cls)s'"
+msgstr ""
+
+#: novaclient/api_versions.py:64
+#, python-format
+msgid ""
+"Invalid format of client version '%s'. Expected format 'X.Y', where X is "
+"a major part and Y is a minor part of version."
+msgstr ""
+
+#: novaclient/api_versions.py:136
+msgid "Null APIVersion doesn't support 'matches'."
+msgstr ""
+
+#: novaclient/api_versions.py:152
+msgid "Null APIVersion cannot be converted to string."
+msgstr ""
+
+#: novaclient/api_versions.py:204
+#, python-format
+msgid "Invalid client version '%(version)s'. Major part should be '%(major)s'"
+msgstr ""
+
+#: novaclient/api_versions.py:209
+#, python-format
+msgid ""
+"Invalid client version '%(version)s'. Major part must be one of: "
+"'%(major)s'"
+msgstr ""
+
+#: novaclient/api_versions.py:259
+msgid "Server doesn't support microversions"
+msgstr ""
+
+#: novaclient/api_versions.py:263
+#, python-format
+msgid ""
+"The specified version isn't supported by server. The valid version range "
+"is '%(min)s' to '%(max)s'"
+msgstr ""
+
+#: novaclient/api_versions.py:276
+msgid "The server isn't backward compatible with Nova V2 REST API"
+msgstr ""
+
+#: novaclient/api_versions.py:283
+#, python-format
+msgid ""
+"Server version is too old. The client valid version range is "
+"'%(client_min)s' to '%(client_max)s'. The server valid version range is "
+"'%(server_min)s' to '%(server_max)s'."
+msgstr ""
+
+#: novaclient/api_versions.py:292
+#, python-format
+msgid ""
+"Server version is too new. The client valid version range is "
+"'%(client_min)s' to '%(client_max)s'. The server valid version range is "
+"'%(server_min)s' to '%(server_max)s'."
+msgstr ""
+
+#: novaclient/client.py:488
+msgid "Found more than one valid endpoint. Use a more restrictive filter"
+msgstr ""
+
+#: novaclient/client.py:494
+msgid "Could not find any suitable endpoint. Correct region?"
+msgstr ""
+
+#: novaclient/client.py:526
+#, python-format
+msgid "Authentication requires 'auth_url', which should be specified in '%s'"
+msgstr ""
+
+#: novaclient/client.py:776
+msgid "The version should be explicit, not latest."
+msgstr ""
+
+#: novaclient/shell.py:68
+#, python-format
+msgid "%s must be a float"
+msgstr ""
+
+#: novaclient/shell.py:71
+#, python-format
+msgid "%s must be greater than 0"
+msgstr ""
+
+#: novaclient/shell.py:135
+msgid "Unable to save empty management url/auth token"
+msgstr ""
+
+#: novaclient/shell.py:219
+#, python-format
+msgid ""
+"error: %(errmsg)s\n"
+"Try '%(mainp)s help %(subp)s' for more information.\n"
+msgstr ""
+
+#: novaclient/shell.py:287
+msgid "Print debugging output"
+msgstr ""
+
+#: novaclient/shell.py:294
+msgid "Use the auth token cache. Defaults to False if env[OS_CACHE] is not set."
+msgstr ""
+
+#: novaclient/shell.py:301
+msgid "Print call timing info"
+msgstr ""
+
+#: novaclient/shell.py:320
+msgid "Defaults to env[OS_TENANT_NAME]."
+msgstr ""
+
+#: novaclient/shell.py:329
+msgid "Defaults to env[OS_TENANT_ID]."
+msgstr ""
+
+#: novaclient/shell.py:339
+msgid "Defaults to env[OS_REGION_NAME]."
+msgstr ""
+
+#: novaclient/shell.py:356
+msgid "Defaults to compute for most actions"
+msgstr ""
+
+#: novaclient/shell.py:365
+msgid "Defaults to env[NOVA_SERVICE_NAME]"
+msgstr ""
+
+#: novaclient/shell.py:374
+msgid "Defaults to env[NOVA_VOLUME_SERVICE_NAME]"
+msgstr ""
+
+#: novaclient/shell.py:388
+msgid "Defaults to env[NOVA_ENDPOINT_TYPE], env[OS_ENDPOINT_TYPE] or "
+msgstr ""
+
+#: novaclient/shell.py:407
+msgid ""
+"Accepts X, X.Y (where X is major and Y is minor part) or \"X.latest\", "
+"defaults to env[OS_COMPUTE_API_VERSION]."
+msgstr ""
+
+#: novaclient/shell.py:459
+#, python-format
+msgid " (Supported by API versions '%(start)s' - '%(end)s')"
+msgstr ""
+
+#: novaclient/shell.py:639
+msgid ""
+"You must provide a username or user id via --os-username, --os-user-id, "
+"env[OS_USERNAME] or env[OS_USER_ID]"
+msgstr ""
+
+#: novaclient/shell.py:645 novaclient/shell.py:688
+msgid ""
+"You must provide a project name or project id via --os-project-name, "
+"--os-project-id, env[OS_PROJECT_ID] or env[OS_PROJECT_NAME]. You may use "
+"os-project and os-tenant interchangeably."
+msgstr ""
+
+#: novaclient/shell.py:658
+msgid ""
+"You must provide an auth url via either --os-auth-url or env[OS_AUTH_URL]"
+" or specify an auth_system which defines a default url with --os-auth-"
+"system or env[OS_AUTH_SYSTEM]"
+msgstr ""
+
+#: novaclient/shell.py:697
+msgid "You must provide an auth url via either --os-auth-url or env[OS_AUTH_URL]"
+msgstr ""
+
+#: novaclient/shell.py:723
+#, python-format
+msgid ""
+"The specified version isn't supported by client. The valid version range "
+"is '%(min)s' to '%(max)s'"
+msgstr ""
+
+#: novaclient/shell.py:818
+msgid "Invalid OpenStack Nova credentials."
+msgstr ""
+
+#: novaclient/shell.py:820
+msgid "Unable to authorize user"
+msgstr ""
+
+#: novaclient/shell.py:873
+#, python-format
+msgid "'%s' is not a valid subcommand"
+msgstr ""
+
+#: novaclient/utils.py:61
+#, python-format
+msgid ""
+"Hook '%(hook_name)s' is attempting to redefine attributes "
+"'%(conflicting_keys)s'"
+msgstr ""
+
+#: novaclient/utils.py:232
+#, python-format
+msgid "No %(class)s with a name or ID of '%(name)s' exists."
+msgstr ""
+
+#: novaclient/utils.py:237
+#, python-format
+msgid ""
+"Multiple %(class)s matches found for '%(name)s', use an ID to be more "
+"specific."
+msgstr ""
+
+#: novaclient/utils.py:353
+#, python-format
+msgid ""
+"Invalid key: \"%s\". Keys may only contain letters, numbers, spaces, "
+"underscores, periods, colons and hyphens."
+msgstr ""
+
+#: novaclient/openstack/common/cliutils.py:40
+#, python-format
+msgid "Missing arguments: %s"
+msgstr ""
+
+#: novaclient/openstack/common/cliutils.py:158
+#, python-format
+msgid ""
+"Field labels list %(labels)s has different number of elements than fields"
+" list %(fields)s"
+msgstr ""
+
+#: novaclient/openstack/common/apiclient/base.py:244
+#: novaclient/openstack/common/apiclient/base.py:401
+#, python-format
+msgid "No %(name)s matching %(args)s."
+msgstr ""
+
+#: novaclient/openstack/common/apiclient/client.py:250
+msgid "Cannot find endpoint or token for request"
+msgstr ""
+
+#: novaclient/openstack/common/apiclient/client.py:381
+#, python-format
+msgid ""
+"Invalid %(api_name)s client version '%(version)s'. Must be one of: "
+"%(version_map)s"
+msgstr ""
+
+#: novaclient/openstack/common/apiclient/exceptions.py:84
+#, python-format
+msgid "Authentication failed. Missing options: %s"
+msgstr ""
+
+#: novaclient/openstack/common/apiclient/exceptions.py:93
+#, python-format
+msgid "AuthSystemNotFound: %r"
+msgstr ""
+
+#: novaclient/openstack/common/apiclient/exceptions.py:116
+#, python-format
+msgid "AmbiguousEndpoints: %r"
+msgstr ""
+
+#: novaclient/openstack/common/apiclient/exceptions.py:124
+msgid "HTTP Error"
+msgstr ""
+
+#: novaclient/openstack/common/apiclient/exceptions.py:144
+msgid "HTTP Redirection"
+msgstr ""
+
+#: novaclient/openstack/common/apiclient/exceptions.py:152
+msgid "HTTP Client Error"
+msgstr ""
+
+#: novaclient/openstack/common/apiclient/exceptions.py:161
+msgid "HTTP Server Error"
+msgstr ""
+
+#: novaclient/openstack/common/apiclient/exceptions.py:171
+msgid "Multiple Choices"
+msgstr ""
+
+#: novaclient/openstack/common/apiclient/exceptions.py:180
+msgid "Bad Request"
+msgstr ""
+
+#: novaclient/openstack/common/apiclient/exceptions.py:190
+msgid "Unauthorized"
+msgstr ""
+
+#: novaclient/openstack/common/apiclient/exceptions.py:199
+msgid "Payment Required"
+msgstr ""
+
+#: novaclient/openstack/common/apiclient/exceptions.py:209
+msgid "Forbidden"
+msgstr ""
+
+#: novaclient/openstack/common/apiclient/exceptions.py:219
+msgid "Not Found"
+msgstr ""
+
+#: novaclient/openstack/common/apiclient/exceptions.py:229
+msgid "Method Not Allowed"
+msgstr ""
+
+#: novaclient/openstack/common/apiclient/exceptions.py:239
+msgid "Not Acceptable"
+msgstr ""
+
+#: novaclient/openstack/common/apiclient/exceptions.py:248
+msgid "Proxy Authentication Required"
+msgstr ""
+
+#: novaclient/openstack/common/apiclient/exceptions.py:257
+msgid "Request Timeout"
+msgstr ""
+
+#: novaclient/openstack/common/apiclient/exceptions.py:267
+msgid "Conflict"
+msgstr ""
+
+#: novaclient/openstack/common/apiclient/exceptions.py:277
+msgid "Gone"
+msgstr ""
+
+#: novaclient/openstack/common/apiclient/exceptions.py:287
+msgid "Length Required"
+msgstr ""
+
+#: novaclient/openstack/common/apiclient/exceptions.py:297
+msgid "Precondition Failed"
+msgstr ""
+
+#: novaclient/openstack/common/apiclient/exceptions.py:306
+msgid "Request Entity Too Large"
+msgstr ""
+
+#: novaclient/openstack/common/apiclient/exceptions.py:323
+msgid "Request-URI Too Long"
+msgstr ""
+
+#: novaclient/openstack/common/apiclient/exceptions.py:333
+msgid "Unsupported Media Type"
+msgstr ""
+
+#: novaclient/openstack/common/apiclient/exceptions.py:343
+msgid "Requested Range Not Satisfiable"
+msgstr ""
+
+#: novaclient/openstack/common/apiclient/exceptions.py:352
+msgid "Expectation Failed"
+msgstr ""
+
+#: novaclient/openstack/common/apiclient/exceptions.py:362
+msgid "Unprocessable Entity"
+msgstr ""
+
+#: novaclient/openstack/common/apiclient/exceptions.py:371
+msgid "Internal Server Error"
+msgstr ""
+
+#: novaclient/openstack/common/apiclient/exceptions.py:382
+msgid "Not Implemented"
+msgstr ""
+
+#: novaclient/openstack/common/apiclient/exceptions.py:392
+msgid "Bad Gateway"
+msgstr ""
+
+#: novaclient/openstack/common/apiclient/exceptions.py:401
+msgid "Service Unavailable"
+msgstr ""
+
+#: novaclient/openstack/common/apiclient/exceptions.py:411
+msgid "Gateway Timeout"
+msgstr ""
+
+#: novaclient/openstack/common/apiclient/exceptions.py:420
+msgid "HTTP Version Not Supported"
+msgstr ""
+
+#: novaclient/openstack/common/apiclient/utils.py:86
+#, python-format
+msgid "No %(name)s with a name or ID of '%(name_or_id)s' exists."
+msgstr ""
+
+#: novaclient/openstack/common/apiclient/utils.py:94
+#, python-format
+msgid ""
+"Multiple %(name)s matches found for '%(name_or_id)s', use an ID to be "
+"more specific."
+msgstr ""
+
+#: novaclient/v2/flavor_access.py:40
+msgid "Unknown list options."
+msgstr ""
+
+#: novaclient/v2/flavor_access.py:50
+msgid "Sorry, query by tenant not supported."
+msgstr ""
+
+#: novaclient/v2/flavors.py:177
+msgid "Ram must be an integer."
+msgstr ""
+
+#: novaclient/v2/flavors.py:181
+msgid "VCPUs must be an integer."
+msgstr ""
+
+#: novaclient/v2/flavors.py:185
+msgid "Disk must be an integer."
+msgstr ""
+
+#: novaclient/v2/flavors.py:193
+msgid "Swap must be an integer."
+msgstr ""
+
+#: novaclient/v2/flavors.py:197
+msgid "Ephemeral must be an integer."
+msgstr ""
+
+#: novaclient/v2/flavors.py:201
+msgid "rxtx_factor must be a float."
+msgstr ""
+
+#: novaclient/v2/flavors.py:206
+msgid "is_public must be a boolean."
+msgstr ""
+
+#: novaclient/v2/networks.py:121
+msgid "Must disassociate either host or project or both"
+msgstr ""
+
+#: novaclient/v2/security_group_default_rules.py:47
+#: novaclient/v2/security_group_rules.py:52
+msgid "From port must be an integer."
+msgstr ""
+
+#: novaclient/v2/security_group_default_rules.py:51
+#: novaclient/v2/security_group_rules.py:56
+msgid "To port must be an integer."
+msgstr ""
+
+#: novaclient/v2/security_group_default_rules.py:53
+#: novaclient/v2/security_group_rules.py:58
+msgid "IP protocol must be 'tcp', 'udp', or 'icmp'."
+msgstr ""
+
+#: novaclient/v2/servers.py:524
+msgid "Only one of 'v4-fixed-ip' and 'v6-fixed-ip' may be provided."
+msgstr ""
+
+#: novaclient/v2/shell.py:133
+#, python-format
+msgid "Invalid ephemeral argument '%s'."
+msgstr ""
+
+#: novaclient/v2/shell.py:166
+msgid "you need to specify a Flavor ID "
+msgstr ""
+
+#: novaclient/v2/shell.py:175
+msgid "num_instances should be >= 1"
+msgstr ""
+
+#: novaclient/v2/shell.py:179
+msgid "Don't mix num-instances and max/min-count"
+msgstr ""
+
+#: novaclient/v2/shell.py:183
+msgid "min_count should be >= 1"
+msgstr ""
+
+#: novaclient/v2/shell.py:188
+msgid "max_count should be >= 1"
+msgstr ""
+
+#: novaclient/v2/shell.py:193
+msgid "min_count should be <= max_count"
+msgstr ""
+
+#: novaclient/v2/shell.py:205 novaclient/v2/shell.py:1561
+#, python-format
+msgid "Can't open '%(src)s': %(exc)s"
+msgstr ""
+
+#: novaclient/v2/shell.py:208 novaclient/v2/shell.py:1564
+#, python-format
+msgid ""
+"Invalid file argument '%s'. File arguments must be of the form '--file "
+"<dst-path=src-path>'"
+msgstr ""
+
+#: novaclient/v2/shell.py:222
+#, python-format
+msgid "Can't open '%(user_data)s': %(exc)s"
+msgstr ""
+
+#: novaclient/v2/shell.py:254
+msgid ""
+"you need to specify at least one source ID (Image, Snapshot, or Volume), "
+"a block device mapping or provide a set of properties to match against an"
+" image"
+msgstr ""
+
+#: novaclient/v2/shell.py:260
+msgid ""
+"you can't mix old block devices (--block-device-mapping) with the new "
+"ones (--block-device, --boot-volume, --snapshot, --ephemeral, --swap)"
+msgstr ""
+
+#: novaclient/v2/shell.py:266
+#, python-format
+msgid ""
+"Invalid nic argument '%s'. Nic arguments must be of the form --nic <net-"
+"id=net-uuid,v4-fixed-ip=ip-addr,v6-fixed-ip=ip-addr,port-id=port-uuid>, "
+"with at minimum net-id or port-id (but not both) specified."
+msgstr ""
+
+#: novaclient/v2/shell.py:333
+msgid "Name or ID of flavor (see 'nova flavor-list')."
+msgstr ""
+
+#: novaclient/v2/shell.py:338
+msgid "Name or ID of image (see 'nova image-list'). "
+msgstr ""
+
+#: novaclient/v2/shell.py:345
+msgid "Image metadata property (see 'nova image-show'). "
+msgstr ""
+
+#: novaclient/v2/shell.py:350
+msgid "Volume ID to boot from."
+msgstr ""
+
+#: novaclient/v2/shell.py:355
+msgid "Snapshot ID to boot from (will create a volume)."
+msgstr ""
+
+#: novaclient/v2/shell.py:367
+msgid "Boot at least <number> servers (limited by quota)."
+msgstr ""
+
+#: novaclient/v2/shell.py:373
+msgid "Boot up to <number> servers (limited by quota)."
+msgstr ""
+
+#: novaclient/v2/shell.py:379 novaclient/v2/shell.py:1528
+msgid ""
+"Record arbitrary key/value metadata to /meta_data.json on the metadata "
+"server. Can be specified multiple times."
+msgstr ""
+
+#: novaclient/v2/shell.py:387
+msgid ""
+"Store arbitrary files from <src-path> locally to <dst-path> on the new "
+"server. Limited by the injected_files quota value."
+msgstr ""
+
+#: novaclient/v2/shell.py:393
+msgid ""
+"Key name of keypair that should be created earlier with            the "
+"command keypair-add"
+msgstr ""
+
+#: novaclient/v2/shell.py:398 novaclient/v2/shell.py:1522
+msgid "Name for the new server"
+msgstr ""
+
+#: novaclient/v2/shell.py:403
+msgid "user data file to pass to be exposed by the metadata server."
+msgstr ""
+
+#: novaclient/v2/shell.py:411
+msgid "The availability zone for server placement."
+msgstr ""
+
+#: novaclient/v2/shell.py:419
+msgid "Comma separated list of security group names."
+msgstr ""
+
+#: novaclient/v2/shell.py:428
+msgid ""
+"Block device mapping in the format <dev-name>=<id>:<type>:<size(GB"
+")>:<delete-on-terminate>."
+msgstr ""
+
+#: novaclient/v2/shell.py:439
+msgid ""
+"Block device mapping with the keys: id=UUID (image_id, snapshot_id or "
+"volume_id only if using source image, snapshot or volume) source=source "
+"type (image, snapshot, volume or blank), dest=destination type of the "
+"block device (volume or local), bus=device's bus (e.g. uml, lxc, virtio, "
+"...; if omitted, hypervisor driver chooses a suitable default, honoured "
+"only if device type is supplied) type=device type (e.g. disk, cdrom, ...;"
+" defaults to 'disk') device=name of the device (e.g. vda, xda, ...; if "
+"omitted, hypervisor driver chooses suitable device depending on selected "
+"bus), size=size of the block device in MB(for swap) and in GB(for other "
+"formats) (if omitted, hypervisor driver calculates size), format=device "
+"will be formatted (e.g. swap, ntfs, ...; optional), bootindex=integer "
+"used for ordering the boot disks (for image backed instances it is equal "
+"to 0, for others need to be specified) and shutdown=shutdown behaviour "
+"(either preserve or remove, for local destination set to remove)."
+msgstr ""
+
+#: novaclient/v2/shell.py:464
+msgid "Create and attach a local swap block device of <swap_size> MB."
+msgstr ""
+
+#: novaclient/v2/shell.py:470
+msgid ""
+"Create and attach a local ephemeral block device of <size> GB and format "
+"it to <format>."
+msgstr ""
+
+#: novaclient/v2/shell.py:478
+msgid "Send arbitrary key/value pairs to the scheduler for custom use."
+msgstr ""
+
+#: novaclient/v2/shell.py:487
+msgid ""
+"Create a NIC on the server. Specify option multiple times to create "
+"multiple NICs. net-id: attach NIC to network with this UUID (either port-"
+"id or net-id must be provided), v4-fixed-ip: IPv4 fixed address for NIC "
+"(optional), v6-fixed-ip: IPv6 fixed address for NIC (optional), port-id: "
+"attach NIC to port with this UUID (either port-id or net-id must be "
+"provided)."
+msgstr ""
+
+#: novaclient/v2/shell.py:500
+msgid "Enable config drive"
+msgstr ""
+
+#: novaclient/v2/shell.py:506
+msgid "Report the new server boot progress until it completes."
+msgstr ""
+
+#: novaclient/v2/shell.py:512
+msgid "Admin password for the instance"
+msgstr ""
+
+#: novaclient/v2/shell.py:537
+msgid "UUID of the project to create the cloudpipe for."
+msgstr ""
+
+#: novaclient/v2/shell.py:543
+msgid "New IP Address."
+msgstr ""
+
+#: novaclient/v2/shell.py:544
+msgid "New Port."
+msgstr ""
+
+#: novaclient/v2/shell.py:558
+#, python-format
+msgid ""
+"\r"
+"Server %(action)s... %(progress)s%% complete"
+msgstr ""
+
+#: novaclient/v2/shell.py:561
+#, python-format
+msgid ""
+"\r"
+"Server %(action)s..."
+msgstr ""
+
+#: novaclient/v2/shell.py:581
+msgid ""
+"\n"
+"Finished"
+msgstr ""
+
+#: novaclient/v2/shell.py:585
+#, python-format
+msgid ""
+"\n"
+"Error %s server"
+msgstr ""
+
+#: novaclient/v2/shell.py:589
+#, python-format
+msgid ""
+"\n"
+"Deleted %s server"
+msgstr ""
+
+#: novaclient/v2/shell.py:670
+msgid "Get extra-specs of each flavor."
+msgstr ""
+
+#: novaclient/v2/shell.py:676
+msgid "Display all flavors (Admin only)."
+msgstr ""
+
+#: novaclient/v2/shell.py:689
+msgid "Name or ID of the flavor to delete"
+msgstr ""
+
+#: novaclient/v2/shell.py:700 novaclient/v2/shell.py:760
+msgid "Name or ID of flavor"
+msgstr ""
+
+#: novaclient/v2/shell.py:710
+msgid "Name of the new flavor"
+msgstr ""
+
+#: novaclient/v2/shell.py:714
+msgid ""
+"Unique ID (integer or UUID) for the new flavor. If specifying 'auto', a "
+"UUID will be generated as id"
+msgstr ""
+
+#: novaclient/v2/shell.py:719
+msgid "Memory size in MB"
+msgstr ""
+
+#: novaclient/v2/shell.py:723
+msgid "Disk size in GB"
+msgstr ""
+
+#: novaclient/v2/shell.py:727
+msgid "Ephemeral space size in GB (default 0)"
+msgstr ""
+
+#: novaclient/v2/shell.py:732
+msgid "Number of vcpus"
+msgstr ""
+
+#: novaclient/v2/shell.py:736
+msgid "Swap space size in MB (default 0)"
+msgstr ""
+
+#: novaclient/v2/shell.py:741
+msgid "RX/TX factor (default 1)"
+msgstr ""
+
+#: novaclient/v2/shell.py:746
+msgid "Make flavor accessible to the public (default true)"
+msgstr ""
+
+#: novaclient/v2/shell.py:765
+msgid "Actions: 'set' or 'unset'"
+msgstr ""
+
+#: novaclient/v2/shell.py:772
+msgid "Extra_specs to set/unset (only key is necessary on unset)"
+msgstr ""
+
+#: novaclient/v2/shell.py:787
+msgid "Filter results by flavor name or ID."
+msgstr ""
+
+#: novaclient/v2/shell.py:790
+msgid "Filter results by tenant ID."
+msgstr ""
+
+#: novaclient/v2/shell.py:794
+msgid "Unable to filter results by both --flavor and --tenant."
+msgstr ""
+
+#: novaclient/v2/shell.py:799
+msgid "Failed to get access list for public flavor type."
+msgstr ""
+
+#: novaclient/v2/shell.py:805
+msgid "Unable to get all access lists. Specify --flavor or --tenant"
+msgstr ""
+
+#: novaclient/v2/shell.py:820
+msgid "Flavor name or ID to add access for the given tenant."
+msgstr ""
+
+#: novaclient/v2/shell.py:823
+msgid "Tenant ID to add flavor access for."
+msgstr ""
+
+#: novaclient/v2/shell.py:835
+msgid "Flavor name or ID to remove access for the given tenant."
+msgstr ""
+
+#: novaclient/v2/shell.py:838
+msgid "Tenant ID to remove flavor access for."
+msgstr ""
+
+#: novaclient/v2/shell.py:849
+msgid "The ID of the project."
+msgstr ""
+
+#: novaclient/v2/shell.py:869 novaclient/v2/shell.py:1328
+msgid ""
+"Comma-separated list of fields to display. Use the show command to see "
+"which fields are available."
+msgstr ""
+
+#: novaclient/v2/shell.py:891 novaclient/v2/shell.py:901
+msgid "uuid or label of network"
+msgstr ""
+
+#: novaclient/v2/shell.py:927 novaclient/v2/shell.py:941
+#: novaclient/v2/shell.py:954
+msgid "uuid of network"
+msgstr ""
+
+#: novaclient/v2/shell.py:945
+msgid "Name of host"
+msgstr ""
+
+#: novaclient/v2/shell.py:977
+msgid "Label for network"
+msgstr ""
+
+#: novaclient/v2/shell.py:982
+msgid "IPv4 subnet (ex: 10.0.0.0/8)"
+msgstr ""
+
+#: novaclient/v2/shell.py:986
+msgid "IPv6 subnet (ex: fe80::/64"
+msgstr ""
+
+#: novaclient/v2/shell.py:992
+msgid "The vlan ID to be assigned to the project."
+msgstr ""
+
+#: novaclient/v2/shell.py:998
+msgid ""
+"First vlan ID to be assigned to the project. Subsequent vlan IDs will be "
+"assigned incrementally."
+msgstr ""
+
+#: novaclient/v2/shell.py:1005
+msgid "vpn start"
+msgstr ""
+
+#: novaclient/v2/shell.py:1009
+msgid "gateway"
+msgstr ""
+
+#: novaclient/v2/shell.py:1013
+msgid "IPv6 gateway"
+msgstr ""
+
+#: novaclient/v2/shell.py:1018
+msgid "VIFs on this network are connected to this bridge."
+msgstr ""
+
+#: novaclient/v2/shell.py:1023
+msgid "The bridge is connected to this interface."
+msgstr ""
+
+#: novaclient/v2/shell.py:1028
+msgid "Multi host"
+msgstr ""
+
+#: novaclient/v2/shell.py:1032
+msgid "First DNS"
+msgstr ""
+
+#: novaclient/v2/shell.py:1037
+msgid "Second DNS"
+msgstr ""
+
+#: novaclient/v2/shell.py:1042
+msgid "Network UUID"
+msgstr ""
+
+#: novaclient/v2/shell.py:1047
+msgid "IPv4 subnet for fixed IPs (ex: 10.20.0.0/16)"
+msgstr ""
+
+#: novaclient/v2/shell.py:1052
+msgid "Project ID"
+msgstr ""
+
+#: novaclient/v2/shell.py:1057
+msgid "Network interface priority"
+msgstr ""
+
+#: novaclient/v2/shell.py:1062
+msgid "MTU for network"
+msgstr ""
+
+#: novaclient/v2/shell.py:1067
+msgid "Enable dhcp"
+msgstr ""
+
+#: novaclient/v2/shell.py:1071
+msgid "Dhcp-server (defaults to gateway address)"
+msgstr ""
+
+#: novaclient/v2/shell.py:1076
+msgid "Share address"
+msgstr ""
+
+#: novaclient/v2/shell.py:1080
+msgid "Start of allowed addresses for instances"
+msgstr ""
+
+#: novaclient/v2/shell.py:1084
+msgid "End of allowed addresses for instances"
+msgstr ""
+
+#: novaclient/v2/shell.py:1090
+msgid "Must specify either fixed_range_v4 or fixed_range_v6"
+msgstr ""
+
+#: novaclient/v2/shell.py:1111
+msgid "Number of images to return per request."
+msgstr ""
+
+#: novaclient/v2/shell.py:1131 novaclient/v2/shell.py:1207
+msgid "Name or ID of image"
+msgstr ""
+
+#: novaclient/v2/shell.py:1136 novaclient/v2/shell.py:1852
+#: novaclient/v2/contrib/metadata_extensions.py:29
+msgid "Actions: 'set' or 'delete'"
+msgstr ""
+
+#: novaclient/v2/shell.py:1143
+msgid "Metadata to add/update or delete (only key is necessary on delete)"
+msgstr ""
+
+#: novaclient/v2/shell.py:1216
+msgid "Name or ID of image(s)."
+msgstr ""
+
+#: novaclient/v2/shell.py:1223
+#, python-format
+msgid "Delete for image %(image)s failed: %(e)s"
+msgstr ""
+
+#: novaclient/v2/shell.py:1232
+msgid "Only return servers that match reservation-id."
+msgstr ""
+
+#: novaclient/v2/shell.py:1241
+msgid "Search with regular expression match by IP address."
+msgstr ""
+
+#: novaclient/v2/shell.py:1247
+msgid "Search with regular expression match by IPv6 address."
+msgstr ""
+
+#: novaclient/v2/shell.py:1253
+msgid "Search with regular expression match by name"
+msgstr ""
+
+#: novaclient/v2/shell.py:1259
+msgid "Search with regular expression match by server name."
+msgstr ""
+
+#: novaclient/v2/shell.py:1268
+msgid "Search by server status"
+msgstr ""
+
+#: novaclient/v2/shell.py:1274
+msgid "Search by flavor name or ID"
+msgstr ""
+
+#: novaclient/v2/shell.py:1280
+msgid "Search by image name or ID"
+msgstr ""
+
+#: novaclient/v2/shell.py:1286
+msgid "Search servers by hostname to which they are assigned (Admin only)."
+msgstr ""
+
+#: novaclient/v2/shell.py:1297 novaclient/v2/shell.py:2037
+#: novaclient/v2/shell.py:2805
+msgid "Display information from all tenants (Admin only)."
+msgstr ""
+
+#: novaclient/v2/shell.py:1310
+msgid ""
+"Display information from single tenant (Admin only). The --all-tenants "
+"option must also be provided."
+msgstr ""
+
+#: novaclient/v2/shell.py:1317
+msgid "Display information from single user (Admin only)."
+msgstr ""
+
+#: novaclient/v2/shell.py:1323
+msgid "Only display deleted servers (Admin only)."
+msgstr ""
+
+#: novaclient/v2/shell.py:1335
+msgid "Get only uuid and name."
+msgstr ""
+
+#: novaclient/v2/shell.py:1410
+#, python-format
+msgid "Unknown sort direction: %s"
+msgstr ""
+
+#: novaclient/v2/shell.py:1461
+msgid "Perform a hard reboot (instead of a soft one)."
+msgstr ""
+
+#: novaclient/v2/shell.py:1465 novaclient/v2/shell.py:1651
+#: novaclient/v2/shell.py:1664 novaclient/v2/shell.py:1945
+#: novaclient/v2/shell.py:3519
+msgid "Name or ID of server(s)."
+msgstr ""
+
+#: novaclient/v2/shell.py:1471
+msgid "Poll until reboot is complete."
+msgstr ""
+
+#: novaclient/v2/shell.py:1478
+#, python-format
+msgid "Request to reboot server %s has been accepted."
+msgstr ""
+
+#: novaclient/v2/shell.py:1479
+msgid "Unable to reboot the specified server(s)."
+msgstr ""
+
+#: novaclient/v2/shell.py:1486
+#, python-format
+msgid "Wait for server %s reboot."
+msgstr ""
+
+#: novaclient/v2/shell.py:1487
+msgid "Wait for specified server(s) failed."
+msgstr ""
+
+#: novaclient/v2/shell.py:1490 novaclient/v2/shell.py:1585
+#: novaclient/v2/shell.py:1607 novaclient/v2/shell.py:1613
+#: novaclient/v2/shell.py:1619 novaclient/v2/shell.py:1636
+#: novaclient/v2/shell.py:1642 novaclient/v2/shell.py:1674
+#: novaclient/v2/shell.py:1682 novaclient/v2/shell.py:1688
+#: novaclient/v2/shell.py:1694 novaclient/v2/shell.py:1700
+#: novaclient/v2/shell.py:1724 novaclient/v2/shell.py:1730
+#: novaclient/v2/shell.py:1736 novaclient/v2/shell.py:1742
+#: novaclient/v2/shell.py:1748 novaclient/v2/shell.py:1766
+#: novaclient/v2/shell.py:1772 novaclient/v2/shell.py:1785
+#: novaclient/v2/shell.py:1828 novaclient/v2/shell.py:1931
+#: novaclient/v2/shell.py:1974 novaclient/v2/shell.py:1985
+#: novaclient/v2/shell.py:2147 novaclient/v2/shell.py:2170
+#: novaclient/v2/shell.py:2189 novaclient/v2/shell.py:2299
+#: novaclient/v2/shell.py:2317 novaclient/v2/shell.py:2335
+#: novaclient/v2/shell.py:2353 novaclient/v2/shell.py:2375
+#: novaclient/v2/shell.py:2392 novaclient/v2/shell.py:2407
+#: novaclient/v2/shell.py:2420 novaclient/v2/shell.py:2432
+#: novaclient/v2/shell.py:2449 novaclient/v2/shell.py:2456
+#: novaclient/v2/shell.py:2468 novaclient/v2/shell.py:2479
+#: novaclient/v2/shell.py:2490 novaclient/v2/shell.py:3486
+#: novaclient/v2/shell.py:3542 novaclient/v2/shell.py:3857
+#: novaclient/v2/shell.py:4304 novaclient/v2/shell.py:4346
+#: novaclient/v2/shell.py:4356 novaclient/v2/shell.py:4381
+msgid "Name or ID of server."
+msgstr ""
+
+#: novaclient/v2/shell.py:1491
+msgid "Name or ID of new image."
+msgstr ""
+
+#: novaclient/v2/shell.py:1497
+msgid "Set the provided admin password on the rebuilt server."
+msgstr ""
+
+#: novaclient/v2/shell.py:1506
+msgid "Report the server rebuild progress until it completes."
+msgstr ""
+
+#: novaclient/v2/shell.py:1512 novaclient/v2/shell.py:1930
+msgid "Skips flavor/image lookups when showing servers"
+msgstr ""
+
+#: novaclient/v2/shell.py:1517
+msgid "Preserve the default ephemeral storage partition on rebuild."
+msgstr ""
+
+#: novaclient/v2/shell.py:1536
+msgid ""
+"Store arbitrary files from <src-path> locally to <dst-path> on the new "
+"server. You may store up to 5 files."
+msgstr ""
+
+#: novaclient/v2/shell.py:1578
+msgid "Name (old name) or ID of server."
+msgstr ""
+
+#: novaclient/v2/shell.py:1579
+msgid "New name for the server."
+msgstr ""
+
+#: novaclient/v2/shell.py:1589
+msgid "Name or ID of new flavor."
+msgstr ""
+
+#: novaclient/v2/shell.py:1595
+msgid "Report the server resize progress until it completes."
+msgstr ""
+
+#: novaclient/v2/shell.py:1625
+msgid "Report the server migration progress until it completes."
+msgstr ""
+
+#: novaclient/v2/shell.py:1657
+#, python-format
+msgid "Request to stop server %s has been accepted."
+msgstr ""
+
+#: novaclient/v2/shell.py:1658
+msgid "Unable to stop the specified server(s)."
+msgstr ""
+
+#: novaclient/v2/shell.py:1670
+#, python-format
+msgid "Request to start server %s has been accepted."
+msgstr ""
+
+#: novaclient/v2/shell.py:1671
+msgid "Unable to start the specified server(s)."
+msgstr ""
+
+#: novaclient/v2/shell.py:1705
+msgid "The admin password to be set in the rescue environment."
+msgstr ""
+
+#: novaclient/v2/shell.py:1710
+msgid "The image to rescue with."
+msgstr ""
+
+#: novaclient/v2/shell.py:1757
+msgid ""
+"Name or ID of a server for which the network cache should be refreshed "
+"from neutron (Admin only)."
+msgstr ""
+
+#: novaclient/v2/shell.py:1781
+msgid "Passwords do not match."
+msgstr ""
+
+#: novaclient/v2/shell.py:1786
+msgid "Name of snapshot."
+msgstr ""
+
+#: novaclient/v2/shell.py:1792
+msgid "Print image info."
+msgstr ""
+
+#: novaclient/v2/shell.py:1798
+msgid "Report the snapshot progress and poll until image creation is complete."
+msgstr ""
+
+#: novaclient/v2/shell.py:1829
+msgid "Name of the backup image."
+msgstr ""
+
+#: novaclient/v2/shell.py:1832
+msgid "The backup type, like \"daily\" or \"weekly\"."
+msgstr ""
+
+#: novaclient/v2/shell.py:1835
+msgid "Int parameter representing how many backups to keep around."
+msgstr ""
+
+#: novaclient/v2/shell.py:1847
+msgid "Name or ID of server"
+msgstr ""
+
+#: novaclient/v2/shell.py:1859 novaclient/v2/contrib/metadata_extensions.py:36
+msgid "Metadata to set or delete (only key is necessary on delete)"
+msgstr ""
+
+#: novaclient/v2/shell.py:1896
+msgid "Flavor not found"
+msgstr ""
+
+#: novaclient/v2/shell.py:1915
+msgid "Image not found"
+msgstr ""
+
+#: novaclient/v2/shell.py:1917
+msgid "Attempt to boot from volume - no image supplied"
+msgstr ""
+
+#: novaclient/v2/shell.py:1942
+msgid "Delete server(s) in another tenant by name (Admin only)."
+msgstr ""
+
+#: novaclient/v2/shell.py:1952
+#, python-format
+msgid "Request to delete server %s has been accepted."
+msgstr ""
+
+#: novaclient/v2/shell.py:1953
+msgid "Unable to delete the specified server(s)."
+msgstr ""
+
+#: novaclient/v2/shell.py:1978
+msgid "Network ID."
+msgstr ""
+
+#: novaclient/v2/shell.py:1986 novaclient/v2/shell.py:2421
+#: novaclient/v2/shell.py:2433 novaclient/v2/shell.py:2450
+#: novaclient/v2/shell.py:2457
+msgid "IP Address."
+msgstr ""
+
+#: novaclient/v2/shell.py:2062
+msgid "Name or ID of the volume."
+msgstr ""
+
+#: novaclient/v2/shell.py:2074
+msgid "Size of volume in GB"
+msgstr ""
+
+#: novaclient/v2/shell.py:2079
+msgid "Optional snapshot id to create the volume from. (Default=None)"
+msgstr ""
+
+#: novaclient/v2/shell.py:2086
+msgid "Optional image id to create the volume from. (Default=None)"
+msgstr ""
+
+#: novaclient/v2/shell.py:2092
+msgid "Optional volume name. (Default=None)"
+msgstr ""
+
+#: novaclient/v2/shell.py:2100
+msgid "Optional volume description. (Default=None)"
+msgstr ""
+
+#: novaclient/v2/shell.py:2108
+msgid "Optional volume type. (Default=None)"
+msgstr ""
+
+#: novaclient/v2/shell.py:2114
+msgid "Optional Availability Zone for volume. (Default=None)"
+msgstr ""
+
+#: novaclient/v2/shell.py:2132
+msgid "Name or ID of the volume(s) to delete."
+msgstr ""
+
+#: novaclient/v2/shell.py:2140
+#, python-format
+msgid "Delete for volume %(volume)s failed: %(e)s"
+msgstr ""
+
+#: novaclient/v2/shell.py:2151 novaclient/v2/shell.py:2178
+msgid "ID of the volume to attach."
+msgstr ""
+
+#: novaclient/v2/shell.py:2154
+msgid ""
+"Name of the device e.g. /dev/vdb. Use \"auto\" for autoassign (if "
+"supported)"
+msgstr ""
+
+#: novaclient/v2/shell.py:2174
+msgid "Attachment ID of the volume."
+msgstr ""
+
+#: novaclient/v2/shell.py:2193
+msgid "ID of the volume to detach."
+msgstr ""
+
+#: novaclient/v2/shell.py:2212
+msgid "Name or ID of the snapshot."
+msgstr ""
+
+#: novaclient/v2/shell.py:2223
+msgid "ID of the volume to snapshot"
+msgstr ""
+
+#: novaclient/v2/shell.py:2227
+msgid ""
+"Optional flag to indicate whether to snapshot a volume even if its "
+"attached to a server. (Default=False)"
+msgstr ""
+
+#: novaclient/v2/shell.py:2234
+msgid "Optional snapshot name. (Default=None)"
+msgstr ""
+
+#: novaclient/v2/shell.py:2242
+msgid "Optional snapshot description. (Default=None)"
+msgstr ""
+
+#: novaclient/v2/shell.py:2259
+msgid "Name or ID of the snapshot to delete."
+msgstr ""
+
+#: novaclient/v2/shell.py:2281
+msgid "Name of the new volume type"
+msgstr ""
+
+#: novaclient/v2/shell.py:2292
+msgid "Unique ID of the volume type to delete"
+msgstr ""
+
+#: novaclient/v2/shell.py:2303
+msgid "Type of vnc console (\"novnc\" or \"xvpvnc\")."
+msgstr ""
+
+#: novaclient/v2/shell.py:2321
+msgid "Type of spice console (\"spice-html5\")."
+msgstr ""
+
+#: novaclient/v2/shell.py:2339
+msgid "Type of rdp console (\"rdp-html5\")."
+msgstr ""
+
+#: novaclient/v2/shell.py:2356
+msgid "Type of serial console, default=\"serial\"."
+msgstr ""
+
+#: novaclient/v2/shell.py:2361
+msgid "Invalid parameter value for 'console_type', currently supported 'serial'."
+msgstr ""
+
+#: novaclient/v2/shell.py:2379
+msgid ""
+"Private key (used locally to decrypt password) (Optional). When "
+"specified, the command displays the clear (decrypted) VM password. When "
+"not specified, the ciphered VM password is displayed."
+msgstr ""
+
+#: novaclient/v2/shell.py:2412
+msgid "Length in lines to tail."
+msgstr ""
+
+#: novaclient/v2/shell.py:2426 novaclient/v2/shell.py:2438
+msgid "Fixed IP Address to associate with."
+msgstr ""
+
+#: novaclient/v2/shell.py:2472 novaclient/v2/shell.py:2483
+msgid "Name of Security Group."
+msgstr ""
+
+#: novaclient/v2/shell.py:2501
+msgid "Name of Floating IP Pool. (Optional)"
+msgstr ""
+
+#: novaclient/v2/shell.py:2509
+msgid "IP of Floating IP."
+msgstr ""
+
+#: novaclient/v2/shell.py:2516
+#, python-format
+msgid "Floating IP %s not found."
+msgstr ""
+
+#: novaclient/v2/shell.py:2532
+msgid "Filter by host"
+msgstr ""
+
+#: novaclient/v2/shell.py:2542
+msgid "Address range to create"
+msgstr ""
+
+#: novaclient/v2/shell.py:2545
+msgid "Pool for new Floating IPs"
+msgstr ""
+
+#: novaclient/v2/shell.py:2548
+msgid "Interface for new Floating IPs"
+msgstr ""
+
+#: novaclient/v2/shell.py:2554
+msgid "Address range to delete"
+msgstr ""
+
+#: novaclient/v2/shell.py:2575 novaclient/v2/shell.py:2594
+#: novaclient/v2/shell.py:2605 novaclient/v2/shell.py:2612
+#: novaclient/v2/shell.py:2618 novaclient/v2/shell.py:2634
+msgid "DNS domain"
+msgstr ""
+
+#: novaclient/v2/shell.py:2576 novaclient/v2/shell.py:2592
+msgid "IP address"
+msgstr ""
+
+#: novaclient/v2/shell.py:2577 novaclient/v2/shell.py:2593
+#: novaclient/v2/shell.py:2606
+msgid "DNS name"
+msgstr ""
+
+#: novaclient/v2/shell.py:2582
+msgid "You must specify either --ip or --name"
+msgstr ""
+
+#: novaclient/v2/shell.py:2598
+msgid "dns type (e.g. \"A\")"
+msgstr ""
+
+#: novaclient/v2/shell.py:2623
+msgid "Limit access to this domain to servers in the specified availability zone."
+msgstr ""
+
+#: novaclient/v2/shell.py:2637
+msgid "Limit access to this domain to users of the specified project."
+msgstr ""
+
+#: novaclient/v2/shell.py:2690
+#, python-format
+msgid ""
+"Multiple security group matches found for name '%s', use an ID to be more"
+" specific."
+msgstr ""
+
+#: novaclient/v2/shell.py:2695
+#, python-format
+msgid "Secgroup ID or name '%s' not found."
+msgstr ""
+
+#: novaclient/v2/shell.py:2703 novaclient/v2/shell.py:2731
+#: novaclient/v2/shell.py:2773 novaclient/v2/shell.py:2788
+#: novaclient/v2/shell.py:2825 novaclient/v2/shell.py:2835
+#: novaclient/v2/shell.py:2874
+msgid "ID or name of security group."
+msgstr ""
+
+#: novaclient/v2/shell.py:2707 novaclient/v2/shell.py:2735
+#: novaclient/v2/shell.py:2843 novaclient/v2/shell.py:2882
+#: novaclient/v2/shell.py:4488 novaclient/v2/shell.py:4512
+msgid "IP protocol (icmp, tcp, udp)."
+msgstr ""
+
+#: novaclient/v2/shell.py:2711 novaclient/v2/shell.py:2739
+#: novaclient/v2/shell.py:2847 novaclient/v2/shell.py:2886
+#: novaclient/v2/shell.py:4492 novaclient/v2/shell.py:4516
+msgid "Port at start of range."
+msgstr ""
+
+#: novaclient/v2/shell.py:2715 novaclient/v2/shell.py:2743
+#: novaclient/v2/shell.py:2851 novaclient/v2/shell.py:2890
+#: novaclient/v2/shell.py:4496 novaclient/v2/shell.py:4520
+msgid "Port at end of range."
+msgstr ""
+
+#: novaclient/v2/shell.py:2716 novaclient/v2/shell.py:2744
+#: novaclient/v2/shell.py:4497 novaclient/v2/shell.py:4521
+msgid "CIDR for address range."
+msgstr ""
+
+#: novaclient/v2/shell.py:2757 novaclient/v2/shell.py:2915
+#: novaclient/v2/shell.py:4535
+msgid "Rule not found"
+msgstr ""
+
+#: novaclient/v2/shell.py:2760 novaclient/v2/shell.py:2774
+msgid "Name of security group."
+msgstr ""
+
+#: novaclient/v2/shell.py:2763 novaclient/v2/shell.py:2777
+msgid "Description of security group."
+msgstr ""
+
+#: novaclient/v2/shell.py:2839 novaclient/v2/shell.py:2878
+msgid "ID or name of source group."
+msgstr ""
+
+#: novaclient/v2/shell.py:2861 novaclient/v2/shell.py:2900
+msgid "ip_proto, from_port, and to_port must be specified together"
+msgstr ""
+
+#: novaclient/v2/shell.py:2928
+msgid "Name of key."
+msgstr ""
+
+#: novaclient/v2/shell.py:2933
+msgid "Path to a public ssh key."
+msgstr ""
+
+#: novaclient/v2/shell.py:2941
+msgid "Keypair type. Can be ssh or x509."
+msgstr ""
+
+#: novaclient/v2/shell.py:2956
+#, python-format
+msgid "Can't open or read '%(key)s': %(exc)s"
+msgstr ""
+
+#: novaclient/v2/shell.py:2967
+msgid "Keypair name to delete."
+msgstr ""
+
+#: novaclient/v2/shell.py:2995
+#, python-format
+msgid "Public key: %s"
+msgstr ""
+
+#: novaclient/v2/shell.py:3001
+msgid "Name or ID of keypair"
+msgstr ""
+
+#: novaclient/v2/shell.py:3019 novaclient/v2/shell.py:3112
+msgid "Display information from single tenant (Admin only)."
+msgstr ""
+
+#: novaclient/v2/shell.py:3025 novaclient/v2/shell.py:3118
+msgid "Include reservations count."
+msgstr ""
+
+#: novaclient/v2/shell.py:3129 novaclient/v2/shell.py:3178
+msgid "Usage range start date ex 2012-01-20 (default: 4 weeks ago)"
+msgstr ""
+
+#: novaclient/v2/shell.py:3134 novaclient/v2/shell.py:3182
+msgid "Usage range end date, ex 2012-01-20 (default: tomorrow)"
+msgstr ""
+
+#: novaclient/v2/shell.py:3165 novaclient/v2/shell.py:3224
+#, python-format
+msgid "Usage from %(start)s to %(end)s:"
+msgstr ""
+
+#: novaclient/v2/shell.py:3188
+msgid "UUID of tenant to get usage for."
+msgstr ""
+
+#: novaclient/v2/shell.py:3232
+msgid "None"
+msgstr ""
+
+#: novaclient/v2/shell.py:3240
+msgid "Filename for the private key [Default: pk.pem]"
+msgstr ""
+
+#: novaclient/v2/shell.py:3246
+msgid "Filename for the X.509 certificate [Default: cert.pem]"
+msgstr ""
+
+#: novaclient/v2/shell.py:3251
+#, python-format
+msgid "Unable to write privatekey - %s exists."
+msgstr ""
+
+#: novaclient/v2/shell.py:3254
+#, python-format
+msgid "Unable to write x509 cert - %s exists."
+msgstr ""
+
+#: novaclient/v2/shell.py:3263
+#, python-format
+msgid "Wrote private key to %s"
+msgstr ""
+
+#: novaclient/v2/shell.py:3269
+#, python-format
+msgid "Wrote x509 certificate to %s"
+msgstr ""
+
+#: novaclient/v2/shell.py:3277
+msgid "Filename to write the x509 root cert."
+msgstr ""
+
+#: novaclient/v2/shell.py:3281
+#, python-format
+msgid ""
+"Unable to write x509 root cert -                                       %s"
+" exists."
+msgstr ""
+
+#: novaclient/v2/shell.py:3287
+#, python-format
+msgid "Wrote x509 root cert to %s"
+msgstr ""
+
+#: novaclient/v2/shell.py:3294 novaclient/v2/shell.py:3315
+msgid "type of hypervisor."
+msgstr ""
+
+#: novaclient/v2/shell.py:3303
+msgid "type of os."
+msgstr ""
+
+#: novaclient/v2/shell.py:3307
+msgid "type of architecture"
+msgstr ""
+
+#: novaclient/v2/shell.py:3308 novaclient/v2/shell.py:3331
+msgid "version"
+msgstr ""
+
+#: novaclient/v2/shell.py:3309 novaclient/v2/shell.py:3332
+msgid "url"
+msgstr ""
+
+#: novaclient/v2/shell.py:3310
+msgid "md5 hash"
+msgstr ""
+
+#: novaclient/v2/shell.py:3324 novaclient/v2/shell.py:3330
+msgid "id of the agent-build"
+msgstr ""
+
+#: novaclient/v2/shell.py:3333
+msgid "md5hash"
+msgstr ""
+
+#: novaclient/v2/shell.py:3353 novaclient/v2/shell.py:3381
+msgid "Name of aggregate."
+msgstr ""
+
+#: novaclient/v2/shell.py:3359
+msgid "The availability zone of the aggregate (optional)."
+msgstr ""
+
+#: novaclient/v2/shell.py:3369
+msgid "Name or ID of aggregate to delete."
+msgstr ""
+
+#: novaclient/v2/shell.py:3374
+#, python-format
+msgid "Aggregate %s has been successfully deleted."
+msgstr ""
+
+#: novaclient/v2/shell.py:3380 novaclient/v2/shell.py:3402
+msgid "Name or ID of aggregate to update."
+msgstr ""
+
+#: novaclient/v2/shell.py:3387
+msgid "The availability zone of the aggregate."
+msgstr ""
+
+#: novaclient/v2/shell.py:3396
+#, python-format
+msgid "Aggregate %s has been successfully updated."
+msgstr ""
+
+#: novaclient/v2/shell.py:3409
+msgid ""
+"Metadata to add/update to aggregate. Specify only the key to delete a "
+"metadata item."
+msgstr ""
+
+#: novaclient/v2/shell.py:3417
+msgid "metadata already exists"
+msgstr ""
+
+#: novaclient/v2/shell.py:3420
+#, python-format
+msgid "metadata key %s does not exist hence can not be deleted"
+msgstr ""
+
+#: novaclient/v2/shell.py:3424
+#, python-format
+msgid "Metadata has been successfully updated for aggregate %s."
+msgstr ""
+
+#: novaclient/v2/shell.py:3431 novaclient/v2/shell.py:3447
+#: novaclient/v2/shell.py:3463
+msgid "Name or ID of aggregate."
+msgstr ""
+
+#: novaclient/v2/shell.py:3434
+msgid "The host to add to the aggregate."
+msgstr ""
+
+#: novaclient/v2/shell.py:3439
+#, python-format
+msgid "Host %(host)s has been successfully added for aggregate %(aggregate_id)s "
+msgstr ""
+
+#: novaclient/v2/shell.py:3450
+msgid "The host to remove from the aggregate."
+msgstr ""
+
+#: novaclient/v2/shell.py:3455
+#, python-format
+msgid ""
+"Host %(host)s has been successfully removed from aggregate "
+"%(aggregate_id)s "
+msgstr ""
+
+#: novaclient/v2/shell.py:3489
+msgid "destination host name."
+msgstr ""
+
+#: novaclient/v2/shell.py:3495
+msgid "True in case of block_migration. (Default=False:live_migration)"
+msgstr ""
+
+#: novaclient/v2/shell.py:3505
+msgid "Allow overcommit.(Default=False)"
+msgstr ""
+
+#: novaclient/v2/shell.py:3523
+msgid ""
+"Request the server be reset to \"active\" state instead of \"error\" "
+"state (the default)."
+msgstr ""
+
+#: novaclient/v2/shell.py:3552 novaclient/v2/shell.py:3575
+#: novaclient/v2/shell.py:3583 novaclient/v2/shell.py:3602
+#: novaclient/v2/shell.py:3641 novaclient/v2/shell.py:3662
+#: novaclient/v2/shell.py:3686 novaclient/v2/contrib/metadata_extensions.py:24
+msgid "Name of host."
+msgstr ""
+
+#: novaclient/v2/shell.py:3557 novaclient/v2/shell.py:3576
+#: novaclient/v2/shell.py:3584 novaclient/v2/shell.py:3603
+msgid "Service binary."
+msgstr ""
+
+#: novaclient/v2/shell.py:3588
+msgid "Reason for disabling service."
+msgstr ""
+
+#: novaclient/v2/shell.py:3607
+msgid "Unset the force state down of service"
+msgstr ""
+
+#: novaclient/v2/shell.py:3616
+msgid "Id of service."
+msgstr ""
+
+#: novaclient/v2/shell.py:3622 novaclient/v2/shell.py:3629
+#: novaclient/v2/shell.py:3635
+msgid "Fixed IP Address."
+msgstr ""
+
+#: novaclient/v2/shell.py:3653
+msgid ""
+"Filters the list, returning only those hosts in the availability zone "
+"<zone>."
+msgstr ""
+
+#: novaclient/v2/shell.py:3665
+msgid "Either enable or disable a host."
+msgstr ""
+
+#: novaclient/v2/shell.py:3671
+msgid "Either put or resume host to/from maintenance."
+msgstr ""
+
+#: novaclient/v2/shell.py:3690
+msgid "A power action: startup, reboot, or shutdown."
+msgstr ""
+
+#: novaclient/v2/shell.py:3706
+msgid "List hypervisors matching the given <hostname>."
+msgstr ""
+
+#: novaclient/v2/shell.py:3721
+msgid "The hypervisor hostname (or pattern) to search for."
+msgstr ""
+
+#: novaclient/v2/shell.py:3750
+msgid "Name or ID of the hypervisor to show the details of."
+msgstr ""
+
+#: novaclient/v2/shell.py:3753
+msgid "Wrap the output to a specified length. Default is 40 or 0 to disable"
+msgstr ""
+
+#: novaclient/v2/shell.py:3764
+msgid "Name or ID of the hypervisor to show the uptime of."
+msgstr ""
+
+#: novaclient/v2/shell.py:3811
+#, python-format
+msgid ""
+"WARNING: %(service)s has no endpoint in %(region)s! Available endpoints "
+"for this service:"
+msgstr ""
+
+#: novaclient/v2/shell.py:3839
+msgid "wrap PKI tokens to a specified length, or 0 to disable"
+msgstr ""
+
+#: novaclient/v2/shell.py:3864
+msgid "Optional flag to indicate which port to use for ssh. (Default=22)"
+msgstr ""
+
+#: novaclient/v2/shell.py:3878
+msgid ""
+"Optional flag to indicate which IP type to use. Possible values  includes"
+" fixed and floating (the Default)."
+msgstr ""
+
+#: novaclient/v2/shell.py:3882
+msgid "Network to use for the ssh."
+msgstr ""
+
+#: novaclient/v2/shell.py:3888
+msgid ""
+"Optional flag to indicate whether to use an IPv6 address attached to a "
+"server. (Defaults to IPv4 address)"
+msgstr ""
+
+#: novaclient/v2/shell.py:3891
+msgid "Login to use."
+msgstr ""
+
+#: novaclient/v2/shell.py:3896
+msgid "Private key file, same as the -i option to the ssh command."
+msgstr ""
+
+#: novaclient/v2/shell.py:3901
+msgid "Extra options to pass to ssh. see: man ssh"
+msgstr ""
+
+#: novaclient/v2/shell.py:3919
+#, python-format
+msgid "Server '%(server)s' is not attached to network '%(network)s'"
+msgstr ""
+
+#: novaclient/v2/shell.py:3925
+#, python-format
+msgid ""
+"Server '%(server)s' is attached to more than one network. Please pick the"
+" network to use."
+msgstr ""
+
+#: novaclient/v2/shell.py:3929
+#, python-format
+msgid "Server '%(server)s' is not attached to any network."
+msgstr ""
+
+#: novaclient/v2/shell.py:3942
+#, python-format
+msgid ""
+"No address that would match network '%(network)s' and type "
+"'%(address_type)s' of version %(pretty_version)s has been found for "
+"server '%(server)s'."
+msgstr ""
+
+#: novaclient/v2/shell.py:3949
+#, python-format
+msgid "More than one %(pretty_version)s %(address_type)s addressfound."
+msgstr ""
+
+#: novaclient/v2/shell.py:4012
+msgid "ID of tenant to list the quotas for."
+msgstr ""
+
+#: novaclient/v2/shell.py:4017
+msgid "ID of user to list the quotas for."
+msgstr ""
+
+#: novaclient/v2/shell.py:4036
+msgid "ID of tenant to list the default quotas for."
+msgstr ""
+
+#: novaclient/v2/shell.py:4054
+msgid "ID of tenant to set the quotas for."
+msgstr ""
+
+#: novaclient/v2/shell.py:4059
+msgid "ID of user to set the quotas for."
+msgstr ""
+
+#: novaclient/v2/shell.py:4064 novaclient/v2/shell.py:4205
+msgid "New value for the \"instances\" quota."
+msgstr ""
+
+#: novaclient/v2/shell.py:4069 novaclient/v2/shell.py:4210
+msgid "New value for the \"cores\" quota."
+msgstr ""
+
+#: novaclient/v2/shell.py:4074 novaclient/v2/shell.py:4215
+msgid "New value for the \"ram\" quota."
+msgstr ""
+
+#: novaclient/v2/shell.py:4080 novaclient/v2/shell.py:4221
+msgid "New value for the \"floating-ips\" quota."
+msgstr ""
+
+#: novaclient/v2/shell.py:4090 novaclient/v2/shell.py:4231
+msgid "New value for the \"fixed-ips\" quota."
+msgstr ""
+
+#: novaclient/v2/shell.py:4096 novaclient/v2/shell.py:4237
+msgid "New value for the \"metadata-items\" quota."
+msgstr ""
+
+#: novaclient/v2/shell.py:4106 novaclient/v2/shell.py:4247
+msgid "New value for the \"injected-files\" quota."
+msgstr ""
+
+#: novaclient/v2/shell.py:4116 novaclient/v2/shell.py:4257
+msgid "New value for the \"injected-file-content-bytes\" quota."
+msgstr ""
+
+#: novaclient/v2/shell.py:4126 novaclient/v2/shell.py:4267
+msgid "New value for the \"injected-file-path-bytes\" quota."
+msgstr ""
+
+#: novaclient/v2/shell.py:4132 novaclient/v2/shell.py:4273
+msgid "New value for the \"key-pairs\" quota."
+msgstr ""
+
+#: novaclient/v2/shell.py:4138 novaclient/v2/shell.py:4279
+msgid "New value for the \"security-groups\" quota."
+msgstr ""
+
+#: novaclient/v2/shell.py:4144 novaclient/v2/shell.py:4285
+msgid "New value for the \"security-group-rules\" quota."
+msgstr ""
+
+#: novaclient/v2/shell.py:4150 novaclient/v2/shell.py:4291
+msgid "New value for the \"server-groups\" quota."
+msgstr ""
+
+#: novaclient/v2/shell.py:4156 novaclient/v2/shell.py:4297
+msgid "New value for the \"server-group-members\" quota."
+msgstr ""
+
+#: novaclient/v2/shell.py:4162
+msgid ""
+"Whether force update the quota even if the already used and reserved "
+"exceeds the new quota"
+msgstr ""
+
+#: novaclient/v2/shell.py:4174
+msgid "ID of tenant to delete quota for."
+msgstr ""
+
+#: novaclient/v2/shell.py:4178
+msgid "ID of user to delete quota for."
+msgstr ""
+
+#: novaclient/v2/shell.py:4190
+msgid "Name of quota class to list the quotas for."
+msgstr ""
+
+#: novaclient/v2/shell.py:4200
+msgid "Name of quota class to set the quotas for."
+msgstr ""
+
+#: novaclient/v2/shell.py:4307
+msgid ""
+"Name or ID of the target host.  If no host is specified, the scheduler "
+"will choose one."
+msgstr ""
+
+#: novaclient/v2/shell.py:4313
+msgid ""
+"Set the provided admin password on the evacuated server. Not applicable "
+"with on-shared-storage flag"
+msgstr ""
+
+#: novaclient/v2/shell.py:4320
+msgid "Specifies whether server files are located on shared storage"
+msgstr ""
+
+#: novaclient/v2/shell.py:4360 novaclient/v2/shell.py:4382
+msgid "Port ID."
+msgstr ""
+
+#: novaclient/v2/shell.py:4365
+msgid "Network ID"
+msgstr ""
+
+#: novaclient/v2/shell.py:4370
+msgid "Requested fixed IP."
+msgstr ""
+
+#: novaclient/v2/shell.py:4470
+msgid "Display server groups from all projects (Admin only)."
+msgstr ""
+
+#: novaclient/v2/shell.py:4538
+msgid "Server group name."
+msgstr ""
+
+#: novaclient/v2/shell.py:4554
+msgid "Policies for the server groups (\"affinity\" or \"anti-affinity\")"
+msgstr ""
+
+#: novaclient/v2/shell.py:4563
+msgid "at least one policy must be specified"
+msgstr ""
+
+#: novaclient/v2/shell.py:4575
+msgid "Unique ID(s) of the server group to delete"
+msgstr ""
+
+#: novaclient/v2/shell.py:4583
+#, python-format
+msgid "Server group %s has been successfully deleted."
+msgstr ""
+
+#: novaclient/v2/shell.py:4586
+#, python-format
+msgid "Delete for server group %(sg)s failed: %(e)s"
+msgstr ""
+
+#: novaclient/v2/shell.py:4589
+msgid "Unable to delete any of the specified server groups."
+msgstr ""
+
+#: novaclient/v2/shell.py:4596
+msgid "Unique ID of the server group to get"
+msgstr ""
+
+#: novaclient/v2/contrib/baremetal.py:158
+msgid "Name of nova compute host which will control this baremetal node"
+msgstr ""
+
+#: novaclient/v2/contrib/baremetal.py:164
+msgid "Number of CPUs in the node"
+msgstr ""
+
+#: novaclient/v2/contrib/baremetal.py:169
+msgid "Megabytes of RAM in the node"
+msgstr ""
+
+#: novaclient/v2/contrib/baremetal.py:174
+msgid "Gigabytes of local storage in the node"
+msgstr ""
+
+#: novaclient/v2/contrib/baremetal.py:178
+msgid "MAC address to provision the node"
+msgstr ""
+
+#: novaclient/v2/contrib/baremetal.py:182
+msgid "Power management IP for the node"
+msgstr ""
+
+#: novaclient/v2/contrib/baremetal.py:186
+msgid "Username for the node's power management"
+msgstr ""
+
+#: novaclient/v2/contrib/baremetal.py:190
+msgid "Password for the node's power management"
+msgstr ""
+
+#: novaclient/v2/contrib/baremetal.py:195
+msgid "ShellInABox port?"
+msgstr ""
+
+#: novaclient/v2/contrib/baremetal.py:211
+msgid "ID of the node to delete."
+msgstr ""
+
+#: novaclient/v2/contrib/baremetal.py:293
+#: novaclient/v2/contrib/baremetal.py:303
+#: novaclient/v2/contrib/baremetal.py:325
+#: novaclient/v2/contrib/baremetal.py:335
+msgid "ID of node"
+msgstr ""
+
+#: novaclient/v2/contrib/baremetal.py:307
+#: novaclient/v2/contrib/baremetal.py:329
+msgid "MAC address of interface"
+msgstr ""
+
+#: novaclient/v2/contrib/baremetal.py:312
+msgid "OpenFlow Datapath ID of interface"
+msgstr ""
+
+#: novaclient/v2/contrib/baremetal.py:317
+msgid "OpenFlow port number of interface"
+msgstr ""
+
+#: novaclient/v2/contrib/cells.py:53
+msgid "Name of the cell."
+msgstr ""
+
+#: novaclient/v2/contrib/cells.py:63
+msgid "Name of the cell to get the capacities."
+msgstr ""
+
+#: novaclient/v2/contrib/cells.py:68
+#, python-format
+msgid "Ram Available: %s MB"
+msgstr ""
+
+#: novaclient/v2/contrib/cells.py:71
+#, python-format
+msgid ""
+"\n"
+"Disk Available: %s MB"
+msgstr ""
+
+#: novaclient/v2/contrib/host_evacuate.py:34
+#, python-format
+msgid "Error while evacuating instance: %s"
+msgstr ""
+
+#: novaclient/v2/contrib/host_evacuate.py:46
+msgid ""
+"Name of target host. If no host is specified the scheduler will select a "
+"target."
+msgstr ""
+
+#: novaclient/v2/contrib/host_evacuate.py:53
+msgid "Specifies whether all instances files are on shared storage"
+msgstr ""
+
+#: novaclient/v2/contrib/host_evacuate_live.py:35
+#, python-format
+msgid "Error while live migrating instance: %s"
+msgstr ""
+
+#: novaclient/v2/contrib/host_evacuate_live.py:46
+msgid "Name of target host."
+msgstr ""
+
+#: novaclient/v2/contrib/host_evacuate_live.py:51
+msgid "Enable block migration."
+msgstr ""
+
+#: novaclient/v2/contrib/host_evacuate_live.py:56
+msgid "Enable disk overcommit."
+msgstr ""
+
+#: novaclient/v2/contrib/host_servers_migrate.py:33
+#, python-format
+msgid "Error while migrating instance: %s"
+msgstr ""
+
+#: novaclient/v2/contrib/instance_action.py:47
+msgid "Name or UUID of the server to show an action for."
+msgstr ""
+
+#: novaclient/v2/contrib/instance_action.py:51
+msgid "Request ID of the action to get."
+msgstr ""
+
+#: novaclient/v2/contrib/instance_action.py:65
+msgid "Name or UUID of the server to list actions for."
+msgstr ""
+
+#: novaclient/v2/contrib/migrations.py:61
+msgid "Fetch migrations for the given host."
+msgstr ""
+
+#: novaclient/v2/contrib/migrations.py:66
+msgid "Fetch migrations for the given status."
+msgstr ""
+
+#: novaclient/v2/contrib/migrations.py:71
+msgid "Fetch migrations for the given cell_name."
+msgstr ""
+
+#: novaclient/v2/contrib/tenant_networks.py:79
+#: novaclient/v2/contrib/tenant_networks.py:94
+msgid "Network label (ex. my_new_network)"
+msgstr ""
+
+#: novaclient/v2/contrib/tenant_networks.py:83
+#: novaclient/v2/contrib/tenant_networks.py:98
+msgid "IP block to allocate from (ex. 172.16.0.0/24 or 2001:DB8::/64)"
+msgstr ""
+
