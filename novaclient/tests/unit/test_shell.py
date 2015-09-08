@@ -162,16 +162,26 @@ class ShellTest(utils.TestCase):
             for r in required:
                 self.assertIn(r, stderr)
 
-    def test_help(self):
+    def _test_help(self, command):
         required = [
             '.*?^usage: ',
             '.*?^\s+set-password\s+Change the admin password',
             '.*?^See "nova help COMMAND" for help on a specific command',
         ]
-        stdout, stderr = self.shell('help')
+        stdout, stderr = self.shell(command)
         for r in required:
             self.assertThat((stdout + stderr),
                             matchers.MatchesRegex(r, re.DOTALL | re.MULTILINE))
+
+    def test_help(self):
+        self._test_help('help')
+
+    def test_help_option(self):
+        self._test_help('--help')
+        self._test_help('-h')
+
+    def test_help_no_subcommand(self):
+        self._test_help('')
 
     def test_help_on_subcommand(self):
         required = [
