@@ -2998,7 +2998,7 @@ def _print_keypair(keypair):
 @cliutils.arg(
     'keypair',
     metavar='<keypair>',
-    help=_("Name or ID of keypair"))
+    help=_("Name of keypair."))
 def do_keypair_show(cs, args):
     """Show details about the given keypair."""
     keypair = _find_keypair(cs, args.keypair)
@@ -3006,7 +3006,7 @@ def do_keypair_show(cs, args):
 
 
 def _find_keypair(cs, keypair):
-    """Get a keypair by name or ID."""
+    """Get a keypair by name."""
     return utils.find_resource(cs.keypairs, keypair)
 
 
