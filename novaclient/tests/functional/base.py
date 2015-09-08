@@ -193,6 +193,28 @@ class ClientTestBase(testtools.TestCase):
             self.fail("Volume %s did not reach status %s after %d s"
                       % (volume.id, status, timeout))
 
+    def wait_for_resource_delete(self, resource, manager,
+                                 timeout=60, poll_interval=1):
+        """Wait until getting the resource raises NotFound exception.
+
+        :param resource: Resource object.
+        :param manager: Manager object with get method.
+        :param timeout: timeout in seconds
+        :param poll_interval: poll interval in seconds
+        """
+        start_time = time.time()
+        while time.time() - start_time < timeout:
+            try:
+                manager.get(resource)
+            except Exception as e:
+                if getattr(e, "http_status", None) == 404:
+                    break
+                else:
+                    raise
+            time.sleep(poll_interval)
+        else:
+            self.fail("The resource '%s' still exists." % resource.id)
+
     def name_generate(self, prefix='Entity'):
         """Generate randomized name for some entity.
 
@@ -200,3 +222,24 @@ class ClientTestBase(testtools.TestCase):
         """
         name = "%s-%s" % (prefix, six.text_type(uuid.uuid4()))
         return name
+
+    def _get_value_from_the_table(self, table, key):
+        """Parses table to get desired value.
+
+        EXAMPLE of the table:
+        # +-------------+----------------------------------+
+        # |   Property  |              Value               |
+        # +-------------+----------------------------------+
+        # | description |                                  |
+        # |   enabled   |               True               |
+        # |      id     | 582df899eabc47018c96713c2f7196ba |
+        # |     name    |              admin               |
+        # +-------------+----------------------------------+
+        """
+        lines = table.split("\n")
+        for line in lines:
+            if "|" in line:
+                l_property, l_value = line.split("|")[1:3]
+                if l_property.strip() == key:
+                    return l_value.strip()
+        raise ValueError("Property '%s' is missing from the table." % key)
