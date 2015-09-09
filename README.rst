@@ -1,5 +1,5 @@
 Python bindings to the OpenStack Nova API
-==================================================
+=========================================
 
 This is a client for the OpenStack Nova API. There's a Python API (the
 ``novaclient`` module), and a command-line script (``nova``). Each

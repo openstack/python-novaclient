@@ -785,6 +785,27 @@ def get_client_class(version):
 
 
 def Client(version, *args, **kwargs):
-    """Initialize client object based on given version."""
+    """Initialize client object based on given version.
+
+    HOW-TO:
+    The simplest way to create a client instance is initialization with your
+    credentials::
+
+        >>> from novaclient import client
+        >>> nova = client.Client(VERSION, USERNAME, PASSWORD,
+        ...                      PROJECT_ID, AUTH_URL)
+
+    Here ``VERSION`` can be a string or
+    ``novaclient.api_versions.APIVersion`` obj. If you prefer string value,
+    you can use ``1.1`` (deprecated now), ``2`` or ``2.X``
+    (where X is a microversion).
+
+
+    Alternatively, you can create a client instance using the keystoneclient
+    session API. See "The novaclient Python API" page at
+    python-novaclient's doc.
+    """
     api_version, client_class = _get_client_class_and_version(version)
-    return client_class(api_version=api_version, *args, **kwargs)
+    kwargs.pop("direct_use", None)
+    return client_class(api_version=api_version, direct_use=False,
+                        *args, **kwargs)
