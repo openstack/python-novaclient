@@ -683,6 +683,9 @@ class OpenStackComputeShell(object):
                         project_name=project_name,
                         project_domain_id=args.os_project_domain_id,
                         project_domain_name=args.os_project_domain_name)
+            else:
+                # set password for auth plugins
+                os_password = args.os_password
 
         if not do_help and not any([args.os_tenant_id, args.os_tenant_name,
                                     args.os_project_id, args.os_project_name]):
