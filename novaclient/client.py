@@ -30,6 +30,7 @@ import logging
 import os
 import pkgutil
 import re
+import warnings
 
 from keystoneclient import adapter
 from keystoneclient import session
@@ -48,7 +49,7 @@ from six.moves.urllib import parse
 from novaclient import api_versions
 from novaclient import exceptions
 from novaclient import extension as ext
-from novaclient.i18n import _
+from novaclient.i18n import _, _LW
 from novaclient import service_catalog
 from novaclient import utils
 
@@ -780,6 +781,8 @@ def _get_client_class_and_version(version):
 
 def get_client_class(version):
     """Returns Client class based on given version."""
+    warnings.warn(_LW("'get_client_class' is deprecated. "
+                      "Please use `novaclient.client.Client` instead."))
     _api_version, client_class = _get_client_class_and_version(version)
     return client_class
 
