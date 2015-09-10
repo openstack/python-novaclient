@@ -13,6 +13,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from novaclient import api_versions
 from novaclient import client
 from novaclient.i18n import _LW
 from novaclient.v2 import agents
@@ -129,7 +130,7 @@ class Client(object):
         self.limits = limits.LimitsManager(self)
         self.servers = servers.ServerManager(self)
         self.versions = versions.VersionManager(self)
-        self.api_version = api_version
+        self.api_version = api_version or api_versions.APIVersion("2.0")
 
         # extensions
         self.agents = agents.AgentsManager(self)
