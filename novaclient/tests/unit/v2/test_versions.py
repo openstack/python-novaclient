@@ -73,3 +73,11 @@ class VersionsTest(utils.TestCase):
     def test_get_current_with_rax_workaround(self, session, get):
         self.cs.callback = []
         self.assertIsNone(self.cs.versions.get_current())
+
+    @mock.patch.object(versions.VersionManager, '_is_session_client',
+                       return_value=False)
+    @mock.patch.object(versions.VersionManager, '_list',
+                       side_effect=exc.Unauthorized("401 RAX"))
+    def test_get_current_with_rax_auth_plugin_workaround(self, session, _list):
+        self.cs.callback = []
+        self.assertIsNone(self.cs.versions.get_current())
