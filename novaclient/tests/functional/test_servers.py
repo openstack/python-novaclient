@@ -16,6 +16,30 @@ from novaclient.tests.functional import base
 from novaclient.v2 import shell
 
 
+class TestServersBootNovaClient(base.ClientTestBase):
+    """Servers boot functional tests.
+    """
+
+    def test_boot_server_with_legacy_bdm(self):
+        volume_size = 1
+        volume_name = str(uuid.uuid4())
+        volume = self.client.volumes.create(size=volume_size,
+                                            display_name=volume_name,
+                                            imageRef=self.image.id)
+        self.wait_for_volume_status(volume, "available")
+
+        server_info = self.nova("boot", params=(
+            "%(name)s --flavor %(flavor)s --poll "
+            "--block-device-mapping vda=%(volume_id)s:::1" % {
+                "name": str(uuid.uuid4()), "flavor":
+                    self.flavor.id,
+                "volume_id": volume.id}))
+        server_id = self._get_value_from_the_table(server_info, "id")
+
+        self.client.servers.delete(server_id)
+        self.wait_for_resource_delete(server_id, self.client.servers)
+
+
 class TestServersListNovaClient(base.ClientTestBase):
     """Servers list functional tests.
     """

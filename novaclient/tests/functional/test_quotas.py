@@ -25,19 +25,10 @@ class TestQuotasNovaClient(base.ClientTestBase):
                         'server_groups', 'server_group_members']
 
     def test_quotas_update(self):
-        # `nova quota-update` requires tenant-id. EXAMPLE of keystone output:
-        # +-------------+----------------------------------+
-        # |   Property  |              Value               |
-        # +-------------+----------------------------------+
-        # | description |                                  |
-        # |   enabled   |               True               |
-        # |      id     | 582df899eabc47018c96713c2f7196ba |
-        # |     name    |              admin               |
-        # +-------------+----------------------------------+
+        # `nova quota-update` requires tenant-id.
         tenant_info = self.cli_clients.keystone(
-            "tenant-get", params=self.cli_clients.tenant_name).split("\n")
-        tenant_id = [l.rsplit("|", 2)[-2].strip()
-                     for l in tenant_info if "id" in l][0]
+            "tenant-get", params=self.cli_clients.tenant_name)
+        tenant_id = self._get_value_from_the_table(tenant_info, "id")
 
         self.addCleanup(self.client.quotas.delete, tenant_id)
 
