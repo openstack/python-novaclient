@@ -58,6 +58,13 @@ FAKE_ENV4 = {'OS_USER_ID': 'user_id',
              'OS_ENDPOINT_TYPE': 'osURL',
              'OS_COMPUTE_API_VERSION': '2'}
 
+FAKE_ENV5 = {'OS_USERNAME': 'username',
+             'OS_PASSWORD': 'password',
+             'OS_TENANT_NAME': 'tenant_name',
+             'OS_AUTH_URL': 'http://no.where/v2.0',
+             'OS_COMPUTE_API_VERSION': '2',
+             'OS_AUTH_SYSTEM': 'rackspace'}
+
 
 def _create_ver_list(versions):
     return {'versions': {'values': versions}}
@@ -504,6 +511,15 @@ class ShellTest(utils.TestCase):
             exceptions.UnsupportedVersion,
             self.shell,
             '--os-compute-api-version 2.3 list')
+
+    @mock.patch('novaclient.client.Client')
+    def test_custom_auth_plugin(self, mock_client):
+        self.make_env(fake_env=FAKE_ENV5)
+        self.shell('list')
+        password = mock_client.call_args_list[0][0][2]
+        client_kwargs = mock_client.call_args_list[0][1]
+        self.assertEqual(password, 'password')
+        self.assertIs(client_kwargs['session'], None)
 
 
 class TestLoadVersionedActions(utils.TestCase):
