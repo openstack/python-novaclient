@@ -214,7 +214,6 @@ class ShellTest(utils.TestCase):
                             matchers.MatchesRegex(r, re.DOTALL | re.MULTILINE))
 
     def test_bash_completion(self):
-        self.make_env()
         stdout, stderr = self.shell('bash-completion')
         # just check we have some output
         required = [
