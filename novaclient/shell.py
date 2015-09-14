@@ -31,7 +31,6 @@ from keystoneclient import session as ksession
 from oslo_utils import encodeutils
 from oslo_utils import importutils
 from oslo_utils import strutils
-import six
 
 HAS_KEYRING = False
 all_errors = ValueError
@@ -897,12 +896,11 @@ def main():
     try:
         argv = [encodeutils.safe_decode(a) for a in sys.argv[1:]]
         OpenStackComputeShell().main(argv)
-
-    except Exception as e:
-        logger.debug(e, exc_info=1)
-        details = {'name': encodeutils.safe_encode(e.__class__.__name__),
-                   'msg': encodeutils.safe_encode(six.text_type(e))}
-        print("ERROR (%(name)s): %(msg)s" % details,
+    except Exception as exc:
+        logger.debug(exc, exc_info=1)
+        print("ERROR (%s): %s"
+              % (exc.__class__.__name__,
+                 encodeutils.exception_to_unicode(exc)),
               file=sys.stderr)
         sys.exit(1)
     except KeyboardInterrupt:
