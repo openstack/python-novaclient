@@ -3529,6 +3529,8 @@ def do_reset_state(cs, args):
     for server in args.server:
         try:
             _find_server(cs, server).reset_state(args.state)
+            msg = "Reset state for server %s succeeded; new state is %s"
+            print(msg % (server, args.state))
         except Exception as e:
             failure_flag = True
             msg = "Reset state for server %s failed: %s" % (server, e)
