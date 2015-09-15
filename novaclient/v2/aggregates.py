@@ -85,11 +85,11 @@ class AggregateManager(base.ManagerWithFind):
                             body, "aggregate")
 
     def set_metadata(self, aggregate, metadata):
-        """Set a aggregate metadata, replacing the existing metadata."""
+        """Set aggregate metadata, replacing the existing metadata."""
         body = {'set_metadata': {'metadata': metadata}}
         return self._create("/os-aggregates/%s/action" % base.getid(aggregate),
                             body, "aggregate")
 
     def delete(self, aggregate):
-        """Delete the specified aggregates."""
+        """Delete the specified aggregate."""
         self._delete('/os-aggregates/%s' % (base.getid(aggregate)))
