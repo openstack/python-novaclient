@@ -521,6 +521,16 @@ class ShellTest(utils.TestCase):
         self.assertEqual(password, 'password')
         self.assertIs(client_kwargs['session'], None)
 
+    @mock.patch.object(novaclient.shell.OpenStackComputeShell, 'main')
+    def test_main_error_handling(self, mock_compute_shell):
+        class MyException(Exception):
+            pass
+        with mock.patch('sys.stderr', six.StringIO()):
+            mock_compute_shell.side_effect = MyException('message')
+            self.assertRaises(SystemExit, novaclient.shell.main)
+            err = sys.stderr.getvalue()
+        self.assertEqual(err, 'ERROR (MyException): message\n')
+
 
 class TestLoadVersionedActions(utils.TestCase):
 
