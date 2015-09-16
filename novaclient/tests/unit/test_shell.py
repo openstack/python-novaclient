@@ -169,12 +169,13 @@ class ShellTest(utils.TestCase):
             for r in required:
                 self.assertIn(r, stderr)
 
-    def _test_help(self, command):
-        required = [
-            '.*?^usage: ',
-            '.*?^\s+set-password\s+Change the admin password',
-            '.*?^See "nova help COMMAND" for help on a specific command',
-        ]
+    def _test_help(self, command, required=None):
+        if required is None:
+            required = [
+                '.*?^usage: ',
+                '.*?^\s+set-password\s+Change the admin password',
+                '.*?^See "nova help COMMAND" for help on a specific command',
+            ]
         stdout, stderr = self.shell(command)
         for r in required:
             self.assertThat((stdout + stderr),
@@ -187,7 +188,7 @@ class ShellTest(utils.TestCase):
         self._test_help('--help')
         self._test_help('-h')
 
-    def test_help_no_subcommand(self):
+    def test_help_no_options(self):
         self._test_help('')
 
     def test_help_on_subcommand(self):
@@ -196,22 +197,7 @@ class ShellTest(utils.TestCase):
             '.*?^Change the admin password',
             '.*?^Positional arguments:',
         ]
-        stdout, stderr = self.shell('help set-password')
-        for r in required:
-            self.assertThat((stdout + stderr),
-                            matchers.MatchesRegex(r, re.DOTALL | re.MULTILINE))
-
-    def test_help_no_options(self):
-        self.make_env()
-        required = [
-            '.*?^usage: ',
-            '.*?^\s+set-password\s+Change the admin password',
-            '.*?^See "nova help COMMAND" for help on a specific command',
-        ]
-        stdout, stderr = self.shell('')
-        for r in required:
-            self.assertThat((stdout + stderr),
-                            matchers.MatchesRegex(r, re.DOTALL | re.MULTILINE))
+        self._test_help('help set-password', required=required)
 
     def test_bash_completion(self):
         self.make_env()
