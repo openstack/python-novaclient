@@ -20,11 +20,7 @@ from novaclient.v2 import shell
 class TestFixedIPsNovaClient(base.ClientTestBase):
     """FixedIPs functional tests."""
 
-    API_VERSION = '2.1'
-
-    def nova(self, *args, **kwargs):
-        flags = '--os-compute-api-version %s ' % self.API_VERSION
-        return self.cli_clients.nova(flags=flags, *args, **kwargs)
+    COMPUTE_API_VERSION = '2.1'
 
     def _create_server(self):
         name = self.name_generate(prefix='server')
@@ -61,7 +57,7 @@ class TestFixedIPsNovaClient(base.ClientTestBase):
 class TestFixedIPsNovaClientV24(TestFixedIPsNovaClient):
     """FixedIPs functional tests for v2.4 nova-api microversion."""
 
-    API_VERSION = '2.4'
+    COMPUTE_API_VERSION = '2.4'
 
     def test_fixedip_get(self):
         self._test_fixedip_get(expect_reserved=True)

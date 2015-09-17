@@ -17,6 +17,8 @@ class TestQuotasNovaClient(base.ClientTestBase):
     """Nova quotas functional tests.
     """
 
+    COMPUTE_API_VERSION = "2.1"
+
     _quota_resources = ['instances', 'cores', 'ram',
                         'floating_ips', 'fixed_ips', 'metadata_items',
                         'injected_files', 'injected_file_content_bytes',

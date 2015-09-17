@@ -15,6 +15,8 @@ from novaclient.tests.functional import base
 
 class TestInstanceCLI(base.ClientTestBase):
 
+    COMPUTE_API_VERSION = "2.1"
+
     def test_attach_volume(self):
         """Test we can attach a volume via the cli.
 
