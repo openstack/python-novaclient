@@ -200,7 +200,6 @@ class ShellTest(utils.TestCase):
         self._test_help('help set-password', required=required)
 
     def test_bash_completion(self):
-        self.make_env()
         stdout, stderr = self.shell('bash-completion')
         # just check we have some output
         required = [
