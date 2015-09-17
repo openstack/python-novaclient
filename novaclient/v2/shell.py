@@ -3621,11 +3621,23 @@ def do_service_delete(cs, args):
     cs.services.delete(args.id)
 
 
+@api_versions.wraps("2.0", "2.3")
+def _print_fixed_ip(cs, fixed_ip):
+    fields = ['address', 'cidr', 'hostname', 'host']
+    utils.print_list([fixed_ip], fields)
+
+
+@api_versions.wraps("2.4")
+def _print_fixed_ip(cs, fixed_ip):
+    fields = ['address', 'cidr', 'hostname', 'host', 'reserved']
+    utils.print_list([fixed_ip], fields)
+
+
 @cliutils.arg('fixed_ip', metavar='<fixed_ip>', help=_('Fixed IP Address.'))
 def do_fixed_ip_get(cs, args):
     """Retrieve info on a fixed IP."""
     result = cs.fixed_ips.get(args.fixed_ip)
-    utils.print_list([result], ['address', 'cidr', 'hostname', 'host'])
+    _print_fixed_ip(cs, result)
 
 
 @cliutils.arg('fixed_ip', metavar='<fixed_ip>', help=_('Fixed IP Address.'))

@@ -243,3 +243,36 @@ class ClientTestBase(testtools.TestCase):
                 if l_property.strip() == key:
                     return l_value.strip()
         raise ValueError("Property '%s' is missing from the table." % key)
+
+    def _get_column_value_from_single_row_table(self, table, column):
+        """Get the value for the column in the single-row table
+
+        Example table:
+
+        +----------+-------------+----------+----------+
+        | address  | cidr        | hostname | host     |
+        +----------+-------------+----------+----------+
+        | 10.0.0.3 | 10.0.0.0/24 | test     | myhost   |
+        +----------+-------------+----------+----------+
+
+        :param table: newline-separated table with |-separated cells
+        :param column: name of the column to look for
+        :raises: ValueError if the column value is not found
+        """
+        lines = table.split("\n")
+        # Determine the column header index first.
+        column_index = -1
+        for line in lines:
+            if "|" in line:
+                if column_index == -1:
+                    headers = line.split("|")[1:-1]
+                    for index, header in enumerate(headers):
+                        if header.strip() == column:
+                            column_index = index
+                            break
+                else:
+                    # We expect a single-row table so we should be able to get
+                    # the value now using the column index.
+                    return line.split("|")[1:-1][column_index].strip()
+
+        raise ValueError("Unable to find value for column '%s'.")
