@@ -1,9 +1,9 @@
-=====================================
+====================================
 python-novaclient functional testing
-=====================================
+====================================
 
 Idea
-------
+----
 
 Over time we have noticed two issues with novaclient unit tests.
 
@@ -22,7 +22,7 @@ multiple occasions).
 
 
 Testing Theory
-----------------
+--------------
 
 We are treating python-novaclient as legacy code, so we do not want to spend a
 lot of effort adding in missing features. In the future the CLI will move to
@@ -38,7 +38,7 @@ native support to the CLI for the required functionality would involve a
 non trivial amount of work.
 
 Functional Test Guidelines
----------------------------
+--------------------------
 
 * Consume credentials via standard client environmental variables::
 

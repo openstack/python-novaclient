@@ -1,5 +1,5 @@
 The :program:`nova` shell utility
-=========================================
+=================================
 
 .. program:: nova
 .. highlight:: bash
