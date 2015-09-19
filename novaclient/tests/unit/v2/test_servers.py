@@ -43,6 +43,12 @@ class ServersTest(utils.FixturedTestCase):
         for s in sl:
             self.assertIsInstance(s, servers.Server)
 
+    def test_filter_servers_unicode(self):
+        sl = self.cs.servers.list(search_opts={'name': u't€sting'})
+        self.assert_called('GET', '/servers/detail?name=t%E2%82%ACsting')
+        for s in sl:
+            self.assertIsInstance(s, servers.Server)
+
     def test_list_all_servers(self):
         # use marker just to identify this call in fixtures
         sl = self.cs.servers.list(limit=-1, marker=1234)

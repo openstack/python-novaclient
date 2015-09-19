@@ -570,6 +570,8 @@ class ServerManager(base.BootingManagerWithFind):
 
         for opt, val in six.iteritems(search_opts):
             if val:
+                if isinstance(val, six.text_type):
+                    val = val.encode('utf-8')
                 qparams[opt] = val
 
         detail = ""
