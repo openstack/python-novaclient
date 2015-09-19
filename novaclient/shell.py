@@ -283,7 +283,7 @@ class OpenStackComputeShell(object):
             '--debug',
             default=False,
             action='store_true',
-            help=_("Print debugging output"))
+            help=_("Print debugging output."))
 
         parser.add_argument(
             '--os-cache',
@@ -297,12 +297,12 @@ class OpenStackComputeShell(object):
             '--timings',
             default=False,
             action='store_true',
-            help=_("Print call timing info"))
+            help=_("Print call timing info."))
 
         parser.add_argument(
             '--os-auth-token',
             default=cliutils.env('OS_AUTH_TOKEN'),
-            help='Defaults to env[OS_AUTH_TOKEN]')
+            help='Defaults to env[OS_AUTH_TOKEN].')
 
         parser.add_argument(
             '--os_username',
@@ -352,7 +352,7 @@ class OpenStackComputeShell(object):
         parser.add_argument(
             '--service-type',
             metavar='<service-type>',
-            help=_('Defaults to compute for most actions'))
+            help=_('Defaults to compute for most actions.'))
         parser.add_argument(
             '--service_type',
             help=argparse.SUPPRESS)
@@ -361,7 +361,7 @@ class OpenStackComputeShell(object):
             '--service-name',
             metavar='<service-name>',
             default=cliutils.env('NOVA_SERVICE_NAME'),
-            help=_('Defaults to env[NOVA_SERVICE_NAME]'))
+            help=_('Defaults to env[NOVA_SERVICE_NAME].'))
         parser.add_argument(
             '--service_name',
             help=argparse.SUPPRESS)
@@ -370,7 +370,7 @@ class OpenStackComputeShell(object):
             '--volume-service-name',
             metavar='<volume-service-name>',
             default=cliutils.env('NOVA_VOLUME_SERVICE_NAME'),
-            help=_('Defaults to env[NOVA_VOLUME_SERVICE_NAME]'))
+            help=_('Defaults to env[NOVA_VOLUME_SERVICE_NAME].'))
         parser.add_argument(
             '--volume_service_name',
             help=argparse.SUPPRESS)
@@ -415,7 +415,7 @@ class OpenStackComputeShell(object):
             dest='bypass_url',
             default=cliutils.env('NOVACLIENT_BYPASS_URL'),
             help="Use this API endpoint instead of the Service Catalog. "
-                 "Defaults to env[NOVACLIENT_BYPASS_URL]")
+                 "Defaults to env[NOVACLIENT_BYPASS_URL].")
         parser.add_argument('--bypass_url',
                             help=argparse.SUPPRESS)
 
@@ -869,7 +869,7 @@ class OpenStackComputeShell(object):
         'command',
         metavar='<subcommand>',
         nargs='?',
-        help='Display help for <subcommand>')
+        help='Display help for <subcommand>.')
     def do_help(self, args):
         """
         Display help about this program or one of its subcommands.
