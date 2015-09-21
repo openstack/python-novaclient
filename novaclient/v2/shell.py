@@ -1307,8 +1307,7 @@ def do_image_delete(cs, args):
     dest='tenant',
     metavar='<tenant>',
     nargs='?',
-    help=_('Display information from single tenant (Admin only). '
-           'The --all-tenants option must also be provided.'))
+    help=_('Display information from single tenant (Admin only).'))
 @cliutils.arg(
     '--user',
     dest='user',
