@@ -70,6 +70,8 @@ class ClientTestBase(testtools.TestCase):
     * initially just check return codes, and later test command outputs
 
     """
+    COMPUTE_API_VERSION = None
+
     log_format = ('%(asctime)s %(process)d %(levelname)-8s '
                   '[%(name)s] %(message)s')
 
@@ -170,9 +172,12 @@ class ClientTestBase(testtools.TestCase):
             uri=auth_url,
             cli_dir=cli_dir)
 
-    def nova(self, *args, **kwargs):
-        return self.cli_clients.nova(*args,
-                                     **kwargs)
+    def nova(self, action, flags='', params='', fail_ok=False,
+             endpoint_type='publicURL', merge_stderr=False):
+        if self.COMPUTE_API_VERSION:
+            flags += " --os-compute-api-version %s " % self.COMPUTE_API_VERSION
+        return self.cli_clients.nova(action, flags, params, fail_ok,
+                                     endpoint_type, merge_stderr)
 
     def wait_for_volume_status(self, volume, status, timeout=60,
                                poll_interval=1):

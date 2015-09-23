@@ -20,6 +20,8 @@ class TestServersBootNovaClient(base.ClientTestBase):
     """Servers boot functional tests.
     """
 
+    COMPUTE_API_VERSION = "2.1"
+
     def test_boot_server_with_legacy_bdm(self):
         volume_size = 1
         volume_name = str(uuid.uuid4())
@@ -43,6 +45,8 @@ class TestServersBootNovaClient(base.ClientTestBase):
 class TestServersListNovaClient(base.ClientTestBase):
     """Servers list functional tests.
     """
+
+    COMPUTE_API_VERSION = "2.1"
 
     def _create_servers(self, name, number):
         network = self.client.networks.list()[0]

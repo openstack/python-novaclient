@@ -24,6 +24,8 @@ class SimpleReadOnlyNovaClientTest(base.ClientTestBase):
     This only exercises client commands that are read only.
     """
 
+    COMPUTE_API_VERSION = "2.1"
+
     def test_admin_fake_action(self):
         self.assertRaises(exceptions.CommandFailed,
                           self.nova,

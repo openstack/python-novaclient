@@ -23,6 +23,8 @@ class TestKeypairsNovaClient(base.ClientTestBase):
     """Keypairs functional tests.
     """
 
+    COMPUTE_API_VERSION = "2.1"
+
     def _serialize_kwargs(self, kwargs):
         kwargs_pairs = ['--%(key)s %(val)s' % {'key': key.replace('_', '-'),
                                                'val': val}
@@ -96,9 +98,7 @@ class TestKeypairsNovaClientV22(TestKeypairsNovaClient):
     """Keypairs functional tests for v2.2 nova-api microversion.
     """
 
-    def nova(self, *args, **kwargs):
-        return self.cli_clients.nova(flags='--os-compute-api-version 2.2 ',
-                                     *args, **kwargs)
+    COMPUTE_API_VERSION = "2.2"
 
     def test_create_keypair(self):
         keypair = super(TestKeypairsNovaClientV22, self).test_create_keypair()

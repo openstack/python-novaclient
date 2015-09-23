@@ -32,6 +32,8 @@ def wait_for_delete(test, name, thing, get_func):
 
 class TestVolumesAPI(base.ClientTestBase):
 
+    COMPUTE_API_VERSION = "2.1"
+
     def test_volumes_snapshots_types_create_get_list_delete(self):
         # Create a volume
         volume = self.client.volumes.create(1)
