@@ -52,12 +52,3 @@ class TestFixedIPsNovaClient(base.ClientTestBase):
 
     def test_fixedip_get(self):
         self._test_fixedip_get()
-
-
-class TestFixedIPsNovaClientV24(TestFixedIPsNovaClient):
-    """FixedIPs functional tests for v2.4 nova-api microversion."""
-
-    COMPUTE_API_VERSION = '2.4'
-
-    def test_fixedip_get(self):
-        self._test_fixedip_get(expect_reserved=True)
