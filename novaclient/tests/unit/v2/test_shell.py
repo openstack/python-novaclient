@@ -804,6 +804,15 @@ class ShellTest(utils.TestCase):
             {'createImage': {'name': 'mysnapshot', 'metadata': {}}},
         )
 
+    def test_create_image_with_metadata(self):
+        self.run_command(
+            'image-create sample-server mysnapshot --metadata mykey=123')
+        self.assert_called(
+            'POST', '/servers/1234/action',
+            {'createImage': {'name': 'mysnapshot',
+                             'metadata': {'mykey': '123'}}},
+        )
+
     def test_create_image_show(self):
         output, _ = self.run_command(
             'image-create sample-server mysnapshot --show')
