@@ -68,7 +68,8 @@ class VolumeManager(base.ManagerWithFind):
                       '13.0.0 is released. Use python-cinderclient or '
                       'python-openstacksdk instead.', DeprecationWarning)
         # NOTE(melwitt): Ensure we use the volume endpoint for this call
-        with self.alternate_service_type('volume'):
+        with self.alternate_service_type(
+                'volumev2', allowed_types=('volume', 'volumev2')):
             body = {'volume': {'size': size,
                                'snapshot_id': snapshot_id,
                                'display_name': display_name,
@@ -89,7 +90,8 @@ class VolumeManager(base.ManagerWithFind):
                       'method is deprecated and will be removed after Nova '
                       '13.0.0 is released. Use python-cinderclient or '
                       'python-openstacksdk instead.', DeprecationWarning)
-        with self.alternate_service_type('volume'):
+        with self.alternate_service_type(
+                'volumev2', allowed_types=('volume', 'volumev2')):
             return self._get("/volumes/%s" % volume_id, "volume")
 
     def list(self, detailed=True, search_opts=None):
@@ -102,7 +104,8 @@ class VolumeManager(base.ManagerWithFind):
                       'method is deprecated and will be removed after Nova '
                       '13.0.0 is released. Use python-cinderclient or '
                       'python-openstacksdk instead.', DeprecationWarning)
-        with self.alternate_service_type('volume'):
+        with self.alternate_service_type(
+                'volumev2', allowed_types=('volume', 'volumev2')):
             search_opts = search_opts or {}
 
             if 'name' in search_opts.keys():
@@ -128,7 +131,8 @@ class VolumeManager(base.ManagerWithFind):
                       'method is deprecated and will be removed after Nova '
                       '13.0.0 is released. Use python-cinderclient or '
                       'python-openstacksdk instead.', DeprecationWarning)
-        with self.alternate_service_type('volume'):
+        with self.alternate_service_type(
+                'volumev2', allowed_types=('volume', 'volumev2')):
             self._delete("/volumes/%s" % base.getid(volume))
 
     def create_server_volume(self, server_id, volume_id, device=None):

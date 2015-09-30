@@ -89,13 +89,16 @@ class Manager(base.HookableMixin):
                         for res in data if res]
 
     @contextlib.contextmanager
-    def alternate_service_type(self, service_type):
+    def alternate_service_type(self, default, allowed_types=()):
         original_service_type = self.api.client.service_type
-        self.api.client.service_type = service_type
-        try:
+        if original_service_type in allowed_types:
             yield
-        finally:
-            self.api.client.service_type = original_service_type
+        else:
+            self.api.client.service_type = default
+            try:
+                yield
+            finally:
+                self.api.client.service_type = original_service_type
 
     @contextlib.contextmanager
     def completion_cache(self, cache_type, obj_class, mode):

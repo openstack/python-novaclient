@@ -47,7 +47,8 @@ class VolumeTypeManager(base.ManagerWithFind):
                       'and will be removed after Nova 13.0.0 is released. Use '
                       'python-cinderclient or python-openstacksdk instead.',
                       DeprecationWarning)
-        with self.alternate_service_type('volume'):
+        with self.alternate_service_type(
+                'volumev2', allowed_types=('volume', 'volumev2')):
             return self._list("/types", "volume_types")
 
     def get(self, volume_type):
@@ -61,7 +62,8 @@ class VolumeTypeManager(base.ManagerWithFind):
                       'and will be removed after Nova 13.0.0 is released. Use '
                       'python-cinderclient or python-openstacksdk instead.',
                       DeprecationWarning)
-        with self.alternate_service_type('volume'):
+        with self.alternate_service_type(
+                'volumev2', allowed_types=('volume', 'volumev2')):
             return self._get("/types/%s" % base.getid(volume_type),
                              "volume_type")
 
@@ -75,7 +77,8 @@ class VolumeTypeManager(base.ManagerWithFind):
                       'and will be removed after Nova 13.0.0 is released. Use '
                       'python-cinderclient or python-openstacksdk instead.',
                       DeprecationWarning)
-        with self.alternate_service_type('volume'):
+        with self.alternate_service_type(
+                'volumev2', allowed_types=('volume', 'volumev2')):
             self._delete("/types/%s" % base.getid(volume_type))
 
     def create(self, name):
@@ -89,7 +92,8 @@ class VolumeTypeManager(base.ManagerWithFind):
                       'and will be removed after Nova 13.0.0 is released. Use '
                       'python-cinderclient or python-openstacksdk instead.',
                       DeprecationWarning)
-        with self.alternate_service_type('volume'):
+        with self.alternate_service_type(
+                'volumev2', allowed_types=('volume', 'volumev2')):
             body = {
                 "volume_type": {
                     "name": name,

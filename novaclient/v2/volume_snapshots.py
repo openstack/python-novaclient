@@ -61,7 +61,8 @@ class SnapshotManager(base.ManagerWithFind):
                       'deprecated and will be removed after Nova 13.0.0 is '
                       'released. Use python-cinderclient or '
                       'python-openstacksdk instead.', DeprecationWarning)
-        with self.alternate_service_type('volume'):
+        with self.alternate_service_type(
+                'volumev2', allowed_types=('volume', 'volumev2')):
             body = {'snapshot': {'volume_id': volume_id,
                                  'force': force,
                                  'display_name': display_name,
@@ -79,7 +80,9 @@ class SnapshotManager(base.ManagerWithFind):
                       'deprecated and will be removed after Nova 13.0.0 is '
                       'released. Use python-cinderclient or '
                       'python-openstacksdk instead.', DeprecationWarning)
-        with self.alternate_service_type('volume'):
+        with self.alternate_service_type(
+                'volumev2', allowed_types=('volume', 'volumev2')):
+
             return self._get("/snapshots/%s" % snapshot_id, "snapshot")
 
     def list(self, detailed=True):
@@ -92,7 +95,8 @@ class SnapshotManager(base.ManagerWithFind):
                       'deprecated and will be removed after Nova 13.0.0 is '
                       'released. Use python-cinderclient or '
                       'python-openstacksdk instead.', DeprecationWarning)
-        with self.alternate_service_type('volume'):
+        with self.alternate_service_type(
+                'volumev2', allowed_types=('volume', 'volumev2')):
             if detailed is True:
                 return self._list("/snapshots/detail", "snapshots")
             else:
@@ -108,5 +112,6 @@ class SnapshotManager(base.ManagerWithFind):
                       'deprecated and will be removed after Nova 13.0.0 is '
                       'released. Use python-cinderclient or '
                       'python-openstacksdk instead.', DeprecationWarning)
-        with self.alternate_service_type('volume'):
+        with self.alternate_service_type(
+                'volumev2', allowed_types=('volume', 'volumev2')):
             self._delete("/snapshots/%s" % base.getid(snapshot))
