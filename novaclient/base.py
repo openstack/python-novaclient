@@ -292,7 +292,9 @@ class BootingManagerWithFind(ManagerWithFind):
             mapping_parts = mapping.split(':')
             source_id = mapping_parts[0]
 
-            if len(mapping_parts) > 1:
+            if len(mapping_parts) == 1:
+                bdm_dict['volume_id'] = source_id
+            elif len(mapping_parts) > 1:
                 source_type = mapping_parts[1]
                 if source_type.startswith('snap'):
                     bdm_dict['snapshot_id'] = source_id
