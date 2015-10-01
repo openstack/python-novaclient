@@ -2303,6 +2303,16 @@ def do_volume_type_delete(cs, args):
     cs.volume_types.delete(args.id)
 
 
+@api_versions.wraps('2.0', '2.5')
+def console_dict_accessor(cs, data):
+    return data['console']
+
+
+@api_versions.wraps('2.6')
+def console_dict_accessor(cs, data):
+    return data['remote_console']
+
+
 @cliutils.arg('server', metavar='<server>', help=_('Name or ID of server.'))
 @cliutils.arg(
     'console_type',
@@ -2318,7 +2328,8 @@ def do_get_vnc_console(cs, args):
             self.type = console_dict['type']
             self.url = console_dict['url']
 
-    utils.print_list([VNCConsole(data['console'])], ['Type', 'Url'])
+    utils.print_list([VNCConsole(console_dict_accessor(cs, data))],
+                     ['Type', 'Url'])
 
 
 @cliutils.arg('server', metavar='<server>', help=_('Name or ID of server.'))
@@ -2336,7 +2347,8 @@ def do_get_spice_console(cs, args):
             self.type = console_dict['type']
             self.url = console_dict['url']
 
-    utils.print_list([SPICEConsole(data['console'])], ['Type', 'Url'])
+    utils.print_list([SPICEConsole(console_dict_accessor(cs, data))],
+                     ['Type', 'Url'])
 
 
 @cliutils.arg('server', metavar='<server>', help=_('Name or ID of server.'))
@@ -2354,7 +2366,8 @@ def do_get_rdp_console(cs, args):
             self.type = console_dict['type']
             self.url = console_dict['url']
 
-    utils.print_list([RDPConsole(data['console'])], ['Type', 'Url'])
+    utils.print_list([RDPConsole(console_dict_accessor(cs, data))],
+                     ['Type', 'Url'])
 
 
 @cliutils.arg('server', metavar='<server>', help=_('Name or ID of server.'))
@@ -2376,7 +2389,8 @@ def do_get_serial_console(cs, args):
             self.type = console_dict['type']
             self.url = console_dict['url']
 
-    utils.print_list([SerialConsole(data['console'])], ['Type', 'Url'])
+    utils.print_list([SerialConsole(console_dict_accessor(cs, data))],
+                     ['Type', 'Url'])
 
 
 @cliutils.arg('server', metavar='<server>', help=_('Name or ID of server.'))

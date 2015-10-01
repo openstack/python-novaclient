@@ -20,6 +20,7 @@ import mock
 from oslo_serialization import jsonutils
 import six
 
+from novaclient import api_versions
 from novaclient import exceptions
 from novaclient.tests.unit.fixture_data import client
 from novaclient.tests.unit.fixture_data import floatingips
@@ -794,3 +795,41 @@ class ServersTest(utils.FixturedTestCase):
         s = self.cs.servers.get(1234)
         s.interface_detach('port-id')
         self.assert_called('DELETE', '/servers/1234/os-interface/port-id')
+
+
+class ServersV26Test(ServersTest):
+    def setUp(self):
+        super(ServersV26Test, self).setUp()
+        self.cs.api_version = api_versions.APIVersion("2.6")
+
+    def test_get_vnc_console(self):
+        s = self.cs.servers.get(1234)
+        s.get_vnc_console('fake')
+        self.assert_called('POST', '/servers/1234/remote-consoles')
+
+        self.cs.servers.get_vnc_console(s, 'fake')
+        self.assert_called('POST', '/servers/1234/remote-consoles')
+
+    def test_get_spice_console(self):
+        s = self.cs.servers.get(1234)
+        s.get_spice_console('fake')
+        self.assert_called('POST', '/servers/1234/remote-consoles')
+
+        self.cs.servers.get_spice_console(s, 'fake')
+        self.assert_called('POST', '/servers/1234/remote-consoles')
+
+    def test_get_serial_console(self):
+        s = self.cs.servers.get(1234)
+        s.get_serial_console('fake')
+        self.assert_called('POST', '/servers/1234/remote-consoles')
+
+        self.cs.servers.get_serial_console(s, 'fake')
+        self.assert_called('POST', '/servers/1234/remote-consoles')
+
+    def test_get_rdp_console(self):
+        s = self.cs.servers.get(1234)
+        s.get_rdp_console('fake')
+        self.assert_called('POST', '/servers/1234/remote-consoles')
+
+        self.cs.servers.get_rdp_console(s, 'fake')
+        self.assert_called('POST', '/servers/1234/remote-consoles')
