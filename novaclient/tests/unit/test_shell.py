@@ -516,6 +516,14 @@ class ShellTest(utils.TestCase):
             err = sys.stderr.getvalue()
         self.assertEqual(err, 'ERROR (MyException): message\n')
 
+    def test_default_os_compute_api_version(self):
+        default_version = api_versions.APIVersion(
+            novaclient.shell.DEFAULT_OS_COMPUTE_API_VERSION)
+        # The default should never be the latest.
+        self.assertFalse(default_version.is_latest())
+        # The default should be less than or equal to API_MAX_VERSION.
+        self.assertLessEqual(default_version, novaclient.API_MAX_VERSION)
+
 
 class TestLoadVersionedActions(utils.TestCase):
 
