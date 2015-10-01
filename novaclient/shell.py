@@ -51,7 +51,11 @@ from novaclient.openstack.common import cliutils
 from novaclient import utils
 
 DEFAULT_MAJOR_OS_COMPUTE_API_VERSION = "2.0"
-DEFAULT_OS_COMPUTE_API_VERSION = "2.latest"
+# The default behaviour of nova client CLI is that CLI negotiates with server
+# to find out the most recent version between client and server, and
+# '2.latest' means to that. This value never be changed until we decided to
+# change the default behaviour of nova client CLI.
+DEFAULT_OS_COMPUTE_API_VERSION = '2.latest'
 DEFAULT_NOVA_ENDPOINT_TYPE = 'publicURL'
 DEFAULT_NOVA_SERVICE_TYPE = "compute"
 
