@@ -20,7 +20,9 @@ class TestServersBootNovaClient(base.ClientTestBase):
     """Servers boot functional tests.
     """
 
-    def test_boot_server_with_legacy_bdm(self):
+    COMPUTE_API_VERSION = "2.1"
+
+    def _boot_server_with_legacy_bdm(self, bdm_params=()):
         volume_size = 1
         volume_name = str(uuid.uuid4())
         volume = self.client.volumes.create(size=volume_size,
@@ -28,16 +30,31 @@ class TestServersBootNovaClient(base.ClientTestBase):
                                             imageRef=self.image.id)
         self.wait_for_volume_status(volume, "available")
 
+        bdm_params = ':'.join(bdm_params)
+        if bdm_params:
+            bdm_params = ''.join((':', bdm_params))
+
         server_info = self.nova("boot", params=(
             "%(name)s --flavor %(flavor)s --poll "
-            "--block-device-mapping vda=%(volume_id)s:::1" % {
+            "--block-device-mapping vda=%(volume_id)s%(bdm_params)s" % {
                 "name": str(uuid.uuid4()), "flavor":
                     self.flavor.id,
-                "volume_id": volume.id}))
+                "volume_id": volume.id,
+                "bdm_params": bdm_params}))
         server_id = self._get_value_from_the_table(server_info, "id")
 
         self.client.servers.delete(server_id)
         self.wait_for_resource_delete(server_id, self.client.servers)
+
+    def test_boot_server_with_legacy_bdm(self):
+        # bdm v1 format
+        # <id>:<type>:<size(GB)>:<delete-on-terminate>
+        # params = (type, size, delete-on-terminate)
+        params = ('', '', '1')
+        self._boot_server_with_legacy_bdm(bdm_params=params)
+
+    def test_boot_server_with_legacy_bdm_volume_id_only(self):
+        self._boot_server_with_legacy_bdm()
 
 
 class TestServersListNovaClient(base.ClientTestBase):
