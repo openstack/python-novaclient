@@ -27,6 +27,8 @@ from oslo_utils import timeutils
 import six
 from six.moves import builtins
 
+import novaclient
+from novaclient import api_versions
 import novaclient.client
 from novaclient import exceptions
 import novaclient.shell
@@ -2501,6 +2503,34 @@ class ShellTest(utils.TestCase):
     def test_list_server_group_with_all_projects(self):
         self.run_command('server-group-list --all-projects')
         self.assert_called('GET', '/os-server-groups?all_projects')
+
+    def test_versions(self):
+        exclusions = set([
+            1,   # Same as version 2.0
+            3,   # Not implemented when test added, should not apply to adds.
+            5,   # Not implemented when test added, should not apply to adds.
+            6,   # Not implemented when test added, should not apply to adds.
+            7,   # Not implemented when test added, should not apply to adds.
+            8,   # Not implemented when test added, should not apply to adds.
+            9,   # Not implemented when test added, should not apply to adds.
+            10,  # Not implemented when test added, should not apply to adds.
+        ])
+        versions_supported = set(range(0,
+                                 novaclient.API_MAX_VERSION.ver_minor + 1))
+
+        versions_covered = set()
+        for key, values in api_versions._SUBSTITUTIONS.items():
+            for value in values:
+                if value.start_version.ver_major == 2:
+                    versions_covered.add(value.start_version.ver_minor)
+
+        versions_not_covered = versions_supported - versions_covered
+        unaccounted_for = versions_not_covered - exclusions
+
+        failure_msg = ('Minor versions %s have been skipped.  Please do not '
+                       'raise API_MAX_VERSION without adding support or '
+                       'excluding them.' % sorted(unaccounted_for))
+        self.assertEqual(set([]), unaccounted_for, failure_msg)
 
 
 class ShellTestV11(ShellTest):
