@@ -24,20 +24,26 @@
 
 import sys
 import warnings
-
-from novaclient import v2
+from importlib import import_module
 
 warnings.warn("Module novaclient.v1_1 is deprecated (taken as a basis for "
               "novaclient.v2). "
               "The preferable way to get client class or object you can find "
               "in novaclient.client module.")
 
+class _NovaV2Finder:
+    def find_module(fullname, path=None):
+        if not fullname.startswith('novaclient.v1_1'):
+            return
 
-class MovedModule(object):
-    def __init__(self, new_module):
-        self.new_module = new_module
+        return _NovaV2Loader
 
-    def __getattr__(self, attr):
-        return getattr(self.new_module, attr)
+class _NovaV2Loader:
+    def load_module(fullname):
+        name = fullname.replace('novaclient.v1_1', 'novaclient.v2')
+        module = import_module(name)
+        sys.modules[fullname] = module
 
-sys.modules["novaclient.v1_1"] = MovedModule(v2)
+        return module
+
+sys.meta_path.append(_NovaV2Finder)
