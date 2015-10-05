@@ -4473,13 +4473,7 @@ def do_availability_zone_list(cs, _args):
 
 
 def _print_server_group_details(server_group):
-    # This is for compatible with Nova v2 API, remove after v2
-    # is dropped.
-    if hasattr(server_group, 'project_id'):
-        columns = ['Id', 'Name', 'Project_id', 'Policies',
-                   'Members', 'Metadata']
-    else:
-        columns = ['Id', 'Name', 'Policies', 'Members', 'Metadata']
+    columns = ['Id', 'Name', 'Policies', 'Members', 'Metadata']
     utils.print_list(server_group, columns)
 
 
