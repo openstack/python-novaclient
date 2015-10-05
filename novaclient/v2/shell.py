@@ -1784,6 +1784,13 @@ def do_set_password(cs, args):
 @cliutils.arg('server', metavar='<server>', help=_('Name or ID of server.'))
 @cliutils.arg('name', metavar='<name>', help=_('Name of snapshot.'))
 @cliutils.arg(
+    '--metadata',
+    metavar="<key=value>",
+    action='append',
+    default=[],
+    help=_("Record arbitrary key/value metadata to /meta_data.json "
+           "on the metadata server. Can be specified multiple times."))
+@cliutils.arg(
     '--show',
     dest='show',
     action="store_true",
@@ -1799,7 +1806,8 @@ def do_set_password(cs, args):
 def do_image_create(cs, args):
     """Create a new image by taking a snapshot of a running server."""
     server = _find_server(cs, args.server)
-    image_uuid = cs.servers.create_image(server, args.name)
+    meta = dict(v.split('=', 1) for v in args.metadata) or None
+    image_uuid = cs.servers.create_image(server, args.name, meta)
 
     if args.poll:
         _poll_for_status(cs.images.get, image_uuid, 'snapshotting',
