@@ -2862,8 +2862,7 @@ def do_secgroup_add_group_rule(cs, args):
     """Add a source group rule to a security group."""
     secgroup = _get_secgroup(cs, args.secgroup)
     source_group = _get_secgroup(cs, args.source_group)
-    params = {}
-    params['group_id'] = source_group.id
+    params = {'group_id': source_group.id}
 
     if args.ip_proto or args.from_port or args.to_port:
         if not (args.ip_proto and args.from_port and args.to_port):
@@ -2901,8 +2900,7 @@ def do_secgroup_delete_group_rule(cs, args):
     """Delete a source group rule from a security group."""
     secgroup = _get_secgroup(cs, args.secgroup)
     source_group = _get_secgroup(cs, args.source_group)
-    params = {}
-    params['group_name'] = source_group.name
+    params = {'group_name': source_group.name}
 
     if args.ip_proto or args.from_port or args.to_port:
         if not (args.ip_proto and args.from_port and args.to_port):
