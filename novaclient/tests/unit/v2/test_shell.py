@@ -956,6 +956,12 @@ class ShellTest(utils.TestCase):
         self.run_command('list --limit 3')
         self.assert_called('GET', '/servers/detail?limit=3')
 
+    def test_meta_parsing(self):
+        meta = ['key1=meta1', 'key2=meta2']
+        ref = {'key1': 'meta1', 'key2': 'meta2'}
+        parsed_meta = novaclient.v2.shell._meta_parsing(meta)
+        self.assertEqual(ref, parsed_meta)
+
     def test_reboot(self):
         self.run_command('reboot sample-server')
         self.assert_called('POST', '/servers/1234/action',

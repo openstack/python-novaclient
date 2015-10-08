@@ -79,6 +79,10 @@ def _key_value_pairing(text):
         raise argparse.ArgumentTypeError(msg)
 
 
+def _meta_parsing(metadata):
+    return dict(v.split('=', 1) for v in metadata)
+
+
 def _match_image(cs, wanted_properties):
     image_list = cs.images.list()
     images_matched = []
@@ -194,7 +198,7 @@ def _boot(cs, args):
 
     flavor = _find_flavor(cs, args.flavor)
 
-    meta = dict(v.split('=', 1) for v in args.meta)
+    meta = _meta_parsing(args.meta)
 
     files = {}
     for f in args.files:
@@ -1547,7 +1551,7 @@ def do_rebuild(cs, args):
     kwargs = utils.get_resource_manager_extra_kwargs(do_rebuild, args)
     kwargs['preserve_ephemeral'] = args.preserve_ephemeral
     kwargs['name'] = args.name
-    meta = dict(v.split('=', 1) for v in args.meta)
+    meta = _meta_parsing(args.meta)
     kwargs['meta'] = meta
 
     files = {}
@@ -1806,7 +1810,7 @@ def do_set_password(cs, args):
 def do_image_create(cs, args):
     """Create a new image by taking a snapshot of a running server."""
     server = _find_server(cs, args.server)
-    meta = dict(v.split('=', 1) for v in args.metadata) or None
+    meta = _meta_parsing(args.metadata) or None
     image_uuid = cs.servers.create_image(server, args.name, meta)
 
     if args.poll:
