@@ -93,7 +93,8 @@ class FlavorManager(base.ManagerWithFind):
     resource_class = Flavor
     is_alphanum_id_allowed = True
 
-    def list(self, detailed=True, is_public=True, marker=None, limit=None):
+    def list(self, detailed=True, is_public=True, marker=None, limit=None,
+             sort_key=None, sort_dir=None):
         """
         Get a list of all flavors.
 
@@ -101,6 +102,8 @@ class FlavorManager(base.ManagerWithFind):
         :param limit: maximum number of flavors to return (optional).
         :param marker: Begin returning flavors that appear later in the flavor
                        list than that represented by this flavor id (optional).
+        :param sort_key: Flavors list sort key (optional).
+        :param sort_dir: Flavors list sort direction (optional).
         """
         qparams = {}
         # is_public is ternary - None means give all flavors.
@@ -110,6 +113,10 @@ class FlavorManager(base.ManagerWithFind):
             qparams['marker'] = str(marker)
         if limit:
             qparams['limit'] = int(limit)
+        if sort_key:
+            qparams['sort_key'] = str(sort_key)
+        if sort_dir:
+            qparams['sort_dir'] = str(sort_dir)
         if not is_public:
             qparams['is_public'] = is_public
         qparams = sorted(qparams.items(), key=lambda x: x[0])
