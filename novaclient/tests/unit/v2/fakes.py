@@ -18,6 +18,7 @@ import datetime
 
 import mock
 from oslo_utils import strutils
+import re
 import six
 from six.moves.urllib import parse
 
@@ -26,6 +27,12 @@ from novaclient import exceptions
 from novaclient.tests.unit import fakes
 from novaclient.tests.unit import utils
 from novaclient.v2 import client
+
+# regex to compare callback to result of get_endpoint()
+ENDPOINT_RE = re.compile(
+    r"^(get_http:__nova_api:8774_)(v\d(_\d)?)_(\w{32})$")
+
+ENDPOINT_TYPE_RE = re.compile(r"^(v\d(\.\d)?)$")
 
 
 class FakeClient(fakes.FakeClient, client.Client):
@@ -49,7 +56,13 @@ class FakeHTTPClient(base_client.HTTPClient):
         self.projectid = 'projectid'
         self.user = 'user'
         self.region_name = 'region_name'
-        self.endpoint_type = 'endpoint_type'
+
+        # determines which endpoint to return in get_endpoint()
+        if 'endpoint_type' in kwargs:
+            self.endpoint_type = kwargs['endpoint_type']
+        else:
+            self.endpoint_type = 'endpoint_type'
+
         self.service_type = 'service_type'
         self.service_name = 'service_name'
         self.volume_service_name = 'volume_service_name'
@@ -86,6 +99,12 @@ class FakeHTTPClient(base_client.HTTPClient):
             callback = "get_versions"
         elif callback == "get_http:__nova_api:8774_v2_1":
             callback = "get_current_version"
+        elif ENDPOINT_RE.search(callback):
+            # compare callback to result of get_endpoint()
+            # NOTE(sdague): if we try to call a thing that doesn't
+            # exist, just return a 404. This allows the stack to act
+            # more like we'd expect when making REST calls.
+            raise exceptions.NotFound('404')
 
         if not hasattr(self, callback):
             raise AssertionError('Called unknown API method: %s %s, '
@@ -104,7 +123,13 @@ class FakeHTTPClient(base_client.HTTPClient):
         return r, body
 
     def get_endpoint(self):
-        return "http://nova-api:8774/v2.1/190a755eef2e4aac9f06aa6be9786385"
+        # check if endpoint matches expected format (eg, v2.1)
+        if (hasattr(self, 'endpoint_type')
+           and ENDPOINT_TYPE_RE.search(self.endpoint_type)):
+            return "http://nova-api:8774/%s/" % self.endpoint_type
+        else:
+            return (
+                "http://nova-api:8774/v2.1/190a755eef2e4aac9f06aa6be9786385")
 
     def get_versions(self):
         return (200, {}, {

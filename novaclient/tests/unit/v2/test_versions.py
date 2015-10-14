@@ -81,3 +81,21 @@ class VersionsTest(utils.TestCase):
     def test_get_current_with_rax_auth_plugin_workaround(self, session, _list):
         self.cs.callback = []
         self.assertIsNone(self.cs.versions.get_current())
+
+    @mock.patch.object(versions.VersionManager, '_is_session_client',
+                       return_value=True)
+    def test_get_endpoint_without_project_id(self, mock_is_session_client):
+        # create a fake client such that get_endpoint()
+        # doesn't return uuid in url
+        endpoint_type = 'v2.1'
+        expected_endpoint = 'http://nova-api:8774/v2.1/'
+        cs_2_1 = fakes.FakeClient(endpoint_type=endpoint_type)
+
+        result = cs_2_1.versions.get_current()
+        self.assertEqual(result.manager.api.client.endpoint_type,
+                         endpoint_type, "Check endpoint_type was set")
+        self.assertEqual(result.manager.api.client.management_url,
+                         expected_endpoint, "Check endpoint without uuid")
+
+        # check that the full request works as expected
+        cs_2_1.assert_called('GET', 'http://nova-api:8774/v2.1/')
