@@ -21,6 +21,7 @@ import fixtures
 from keystoneclient import adapter
 import mock
 import requests
+import six
 
 import novaclient.client
 import novaclient.extension
@@ -438,6 +439,35 @@ class ClientTest(utils.TestCase):
         self.assertEqual(1, len(client.times))
         self.assertEqual('GET http://no.where', client.times[0][0])
 
+    @mock.patch.object(requests, 'request')
+    def test_request_exception_conversions(self, m_request):
+        client = novaclient.client.HTTPClient(user='zqfan', password='')
+
+        exc = requests.HTTPError()
+        exc.response = requests.Response()
+        exc.response.status_code = 12345
+        m_request.side_effect = exc
+        exc = self.assertRaises(novaclient.exceptions.ClientException,
+                                client.request, "http://www.openstack.org",
+                                'GET')
+        self.assertIn("HTTP 12345", six.text_type(exc))
+
+        m_request.side_effect = requests.ConnectionError()
+        self.assertRaises(novaclient.exceptions.ConnectionError,
+                          client.request, "http://www.openstack.org", 'GET')
+
+        m_request.side_effect = requests.Timeout()
+        self.assertRaises(novaclient.exceptions.RequestTimeout,
+                          client.request, "http://www.openstack.org", 'GET')
+
+        m_request.side_effect = requests.TooManyRedirects()
+        self.assertRaises(novaclient.exceptions.TooManyRedirects,
+                          client.request, "http://www.openstack.org", 'GET')
+
+        m_request.side_effect = requests.RequestException()
+        self.assertRaises(novaclient.exceptions.RequestException,
+                          client.request, "http://www.openstack.org", 'GET')
+
 
 class SessionClientTest(utils.TestCase):
 
@@ -454,3 +484,32 @@ class SessionClientTest(utils.TestCase):
         client.request("http://no.where", 'GET')
         self.assertEqual(1, len(client.times))
         self.assertEqual('GET http://no.where', client.times[0][0])
+
+    @mock.patch.object(adapter.LegacyJsonAdapter, 'request')
+    def test_request_exception_conversions(self, m_request):
+        client = novaclient.client.SessionClient(session=mock.MagicMock())
+
+        exc = requests.HTTPError()
+        exc.response = requests.Response()
+        exc.response.status_code = 12345
+        m_request.side_effect = exc
+        exc = self.assertRaises(novaclient.exceptions.ClientException,
+                                client.request, "http://www.openstack.org",
+                                'GET')
+        self.assertIn("HTTP 12345", six.text_type(exc))
+
+        m_request.side_effect = requests.ConnectionError()
+        self.assertRaises(novaclient.exceptions.ConnectionError,
+                          client.request, "http://www.openstack.org", 'GET')
+
+        m_request.side_effect = requests.Timeout()
+        self.assertRaises(novaclient.exceptions.RequestTimeout,
+                          client.request, "http://www.openstack.org", 'GET')
+
+        m_request.side_effect = requests.TooManyRedirects()
+        self.assertRaises(novaclient.exceptions.TooManyRedirects,
+                          client.request, "http://www.openstack.org", 'GET')
+
+        m_request.side_effect = requests.RequestException()
+        self.assertRaises(novaclient.exceptions.RequestException,
+                          client.request, "http://www.openstack.org", 'GET')

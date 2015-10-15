@@ -84,13 +84,12 @@ class SessionClient(adapter.LegacyJsonAdapter):
         # NOTE(jamielennox): The standard call raises errors from
         # keystoneclient, where we need to raise the novaclient errors.
         raise_exc = kwargs.pop('raise_exc', True)
-        with utils.record_time(self.times, self.timings, method, url):
-            resp, body = super(SessionClient, self).request(url,
-                                                            method,
-                                                            raise_exc=False,
-                                                            **kwargs)
-        if raise_exc and resp.status_code >= 400:
-            raise exceptions.from_response(resp, body, url, method)
+        with utils.converted_exceptions():
+            with utils.record_time(self.times, self.timings, method, url):
+                resp, body = super(SessionClient, self).request(
+                    url, method, raise_exc=False, **kwargs)
+            if raise_exc and resp.status_code >= 400:
+                raise exceptions.from_response(resp, body, url, method)
 
         return resp, body
 
@@ -360,10 +359,11 @@ class HTTPClient(object):
         if session:
             request_func = session.request
 
-        resp = request_func(
-            method,
-            url,
-            **kwargs)
+        with utils.converted_exceptions():
+            resp = request_func(
+                method,
+                url,
+                **kwargs)
 
         self.http_log_resp(resp)
 
