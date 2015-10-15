@@ -1,6 +1,14 @@
 Python bindings to the OpenStack Nova API
 =========================================
 
+.. image:: https://img.shields.io/pypi/v/python-novaclient.svg
+    :target: https://pypi.python.org/pypi/python-novaclient/
+    :alt: Latest Version
+
+.. image:: https://img.shields.io/pypi/dm/python-novaclient.svg
+    :target: https://pypi.python.org/pypi/python-novaclient/
+    :alt: Downloads
+
 This is a client for the OpenStack Nova API. There's a Python API (the
 ``novaclient`` module), and a command-line script (``nova``). Each
 implements 100% of the OpenStack Nova API.
@@ -12,16 +20,25 @@ command-line tool. You may also want to look at the
 .. _OpenStack CLI Guide: http://docs.openstack.org/cli-reference/content/novaclient_commands.html
 .. _OpenStack API documentation: http://docs.openstack.org/api/quick-start/content/
 
-The project is hosted on `Launchpad`_, where bugs can be filed. The code is
-hosted on `Github`_. Patches must be submitted using `Gerrit`_, *not* Github
-pull requests.
-
-.. _Github: https://github.com/openstack/python-novaclient
-.. _Launchpad: https://launchpad.net/python-novaclient
-.. _Gerrit: http://docs.openstack.org/infra/manual/developers.html#development-workflow
-
 python-novaclient is licensed under the Apache License like the rest of
 OpenStack.
+
+* License: Apache License, Version 2.0
+* `PyPi`_ - package installation
+* `Online Documentation`_
+* `Blueprints`_ - feature specifications
+* `Bugs`_ - issue tracking
+* `Source`_
+* `Specs`_
+* `How to Contribute`_
+
+.. _PyPi: https://pypi.python.org/pypi/python-novaclient
+.. _Online Documentation: http://docs.openstack.org/developer/python-novaclient
+.. _Blueprints: https://blueprints.launchpad.net/python-novaclient
+.. _Bugs: https://bugs.launchpad.net/python-novaclient
+.. _Source: https://git.openstack.org/cgit/openstack/python-novaclient
+.. _How to Contribute: http://docs.openstack.org/infra/manual/developers.html
+.. _Specs: http://specs.openstack.org/openstack/nova-specs/
 
 
 .. contents:: Contents:
@@ -77,11 +94,6 @@ To use with keystone as the authentication system::
     >>> nt.keypairs.list()
     [...]
 
-
-* License: Apache License, Version 2.0
-* Documentation: http://docs.openstack.org/developer/python-novaclient
-* Source: http://git.openstack.org/cgit/openstack/python-novaclient
-* Bugs: http://bugs.launchpad.net/python-novaclient
 
 Testing
 -------
