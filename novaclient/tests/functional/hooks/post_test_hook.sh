@@ -30,15 +30,11 @@ export NOVACLIENT_DIR="$BASE/new/python-novaclient"
 
 sudo chown -R jenkins:stack $NOVACLIENT_DIR
 
-# ensure clouds.yaml exists
-mkdir -p ~/.config/openstack
-sudo cp -a ~stack/.config/openstack/clouds.yaml ~/.config/openstack
 # FIXME(melwitt): Currently, novaclient requires version in the
 # auth url in order to work and it doesn't support keystone v3.
 # Use v2.0 in the auth url in clouds.yaml to enable the functional
 # test job to work until novaclient is updated to support v3
-sudo sed -i -e 's/auth_url: \([^v ]\+\)\(\/v[0-9]\+\.\?[0-9]*\)\?$/auth_url: \1\/v2.0/g' ~/.config/openstack/clouds.yaml
-sudo chown -R jenkins:stack ~/.config/openstack
+sudo sed -i -e 's/auth_url: \([^v ]\+\)\(\/v[0-9]\+\.\?[0-9]*\)\?$/auth_url: \1\/v2.0/g' /etc/openstack/clouds.yaml
 
 # Go to the novaclient dir
 cd $NOVACLIENT_DIR
