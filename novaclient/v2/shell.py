@@ -707,12 +707,12 @@ def do_flavor_show(cs, args):
 @cliutils.arg(
     'name',
     metavar='<name>',
-    help=_("Name of the new flavor."))
+    help=_("Unique name of the new flavor."))
 @cliutils.arg(
     'id',
     metavar='<id>',
-    help=_("Unique ID (integer or UUID) for the new flavor."
-           " If specifying 'auto', a UUID will be generated as ID."))
+    help=_("Unique ID of the new flavor."
+           " Specifying 'auto' will generated a UUID for the ID."))
 @cliutils.arg(
     'ram',
     metavar='<ram>',
