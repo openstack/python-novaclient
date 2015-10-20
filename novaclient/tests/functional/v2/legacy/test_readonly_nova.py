@@ -179,7 +179,7 @@ class SimpleReadOnlyNovaClientTest(base.ClientTestBase):
         self.nova('list', flags='--debug')
 
     def test_admin_timeout(self):
-        self.nova('list', flags='--timeout %d' % 10)
+        self.nova('list', flags='--timeout %d' % 60)
 
     def test_admin_timing(self):
         self.nova('list', flags='--timing')
