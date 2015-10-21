@@ -65,6 +65,12 @@ FAKE_ENV5 = {'OS_USERNAME': 'username',
              'OS_COMPUTE_API_VERSION': '2',
              'OS_AUTH_SYSTEM': 'rackspace'}
 
+FAKE_ENV6 = {'OS_USERNAME': 'username',
+             'OS_PASSWORD': 'password',
+             'OS_TENANT_NAME': 'tenant_name',
+             'OS_AUTH_URL': 'http://no.where/v2.0',
+             'OS_AUTH_SYSTEM': 'rackspace'}
+
 
 def _create_ver_list(versions):
     return {'versions': {'values': versions}}
@@ -425,6 +431,25 @@ class ShellTest(utils.TestCase):
         self.assertIsInstance(keyring_saver, novaclient.shell.SecretsHelper)
 
     @mock.patch('novaclient.client.Client')
+    def test_microversion_with_default_behaviour(self, mock_client):
+        self.make_env(fake_env=FAKE_ENV6)
+        self.mock_server_version_range.return_value = (
+            api_versions.APIVersion("2.1"), api_versions.APIVersion("2.3"))
+        self.shell('list')
+        client_args = mock_client.call_args_list[1][0]
+        self.assertEqual(api_versions.APIVersion("2.3"), client_args[0])
+
+    @mock.patch('novaclient.client.Client')
+    def test_microversion_with_default_behaviour_with_legacy_server(
+            self, mock_client):
+        self.make_env(fake_env=FAKE_ENV6)
+        self.mock_server_version_range.return_value = (
+            api_versions.APIVersion(), api_versions.APIVersion())
+        self.shell('list')
+        client_args = mock_client.call_args_list[1][0]
+        self.assertEqual(api_versions.APIVersion("2.0"), client_args[0])
+
+    @mock.patch('novaclient.client.Client')
     def test_microversion_with_latest(self, mock_client):
         self.make_env()
         novaclient.API_MAX_VERSION = api_versions.APIVersion('2.3')
@@ -515,14 +540,6 @@ class ShellTest(utils.TestCase):
             self.assertRaises(SystemExit, novaclient.shell.main)
             err = sys.stderr.getvalue()
         self.assertEqual(err, 'ERROR (MyException): message\n')
-
-    def test_default_os_compute_api_version(self):
-        default_version = api_versions.APIVersion(
-            novaclient.shell.DEFAULT_OS_COMPUTE_API_VERSION)
-        # The default should never be the latest.
-        self.assertFalse(default_version.is_latest())
-        # The default should be less than or equal to API_MAX_VERSION.
-        self.assertLessEqual(default_version, novaclient.API_MAX_VERSION)
 
 
 class TestLoadVersionedActions(utils.TestCase):

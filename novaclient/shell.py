@@ -51,16 +51,11 @@ from novaclient.openstack.common import cliutils
 from novaclient import utils
 
 DEFAULT_MAJOR_OS_COMPUTE_API_VERSION = "2.0"
-# We default to the highest *incremental* version that we know we can support.
-# There should not be gaps in support for this version even if
-# novaclient.API_MAX_VERSION is higher. The difference is API_MAX_VERSION
-# caps what the user can request (they are opting into something), whereas
-# DEFAULT_OS_COMPUTE_API_VERSION should be the highest version that the client
-# actually supports without gaps in between. When a higher incremental version
-# is implemented in the client, this version should be updated. Note that this
-# value should never be 2.latest since what's latest changes depending on which
-# cloud provider you're talking to.
-DEFAULT_OS_COMPUTE_API_VERSION = '2.5'
+# The default behaviour of nova client CLI is that CLI negotiates with server
+# to find out the most recent version between client and server, and
+# '2.latest' means to that. This value never be changed until we decided to
+# change the default behaviour of nova client CLI.
+DEFAULT_OS_COMPUTE_API_VERSION = '2.latest'
 DEFAULT_NOVA_ENDPOINT_TYPE = 'publicURL'
 DEFAULT_NOVA_SERVICE_TYPE = "compute"
 
