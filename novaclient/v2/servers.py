@@ -25,6 +25,7 @@ from oslo_utils import encodeutils
 import six
 from six.moves.urllib import parse
 
+from novaclient import api_versions
 from novaclient import base
 from novaclient import crypto
 from novaclient.i18n import _
@@ -661,6 +662,7 @@ class ServerManager(base.BootingManagerWithFind):
         address = address.ip if hasattr(address, 'ip') else address
         self._action('removeFloatingIp', server, {'address': address})
 
+    @api_versions.wraps('2.0', '2.5')
     def get_vnc_console(self, server, console_type):
         """
         Get a vnc console for an instance
@@ -672,6 +674,7 @@ class ServerManager(base.BootingManagerWithFind):
         return self._action('os-getVNCConsole', server,
                             {'type': console_type})[1]
 
+    @api_versions.wraps('2.0', '2.5')
     def get_spice_console(self, server, console_type):
         """
         Get a spice console for an instance
@@ -683,6 +686,7 @@ class ServerManager(base.BootingManagerWithFind):
         return self._action('os-getSPICEConsole', server,
                             {'type': console_type})[1]
 
+    @api_versions.wraps('2.0', '2.5')
     def get_rdp_console(self, server, console_type):
         """
         Get a rdp console for an instance
@@ -694,6 +698,7 @@ class ServerManager(base.BootingManagerWithFind):
         return self._action('os-getRDPConsole', server,
                             {'type': console_type})[1]
 
+    @api_versions.wraps('2.0', '2.5')
     def get_serial_console(self, server, console_type):
         """
         Get a serial console for an instance
@@ -704,6 +709,54 @@ class ServerManager(base.BootingManagerWithFind):
 
         return self._action('os-getSerialConsole', server,
                             {'type': console_type})[1]
+
+    @api_versions.wraps('2.6')
+    def get_vnc_console(self, server, console_type):
+        """
+        Get a vnc console for an instance
+
+        :param server: The :class:`Server` (or its ID) to add an IP to.
+        :param console_type: Type of vnc console to get ('novnc' or 'xvpvnc')
+        """
+
+        return self._console(server,
+                             {'protocol': 'vnc', 'type': console_type})[1]
+
+    @api_versions.wraps('2.6')
+    def get_spice_console(self, server, console_type):
+        """
+        Get a spice console for an instance
+
+        :param server: The :class:`Server` (or its ID) to add an IP to.
+        :param console_type: Type of spice console to get ('spice-html5')
+        """
+
+        return self._console(server,
+                             {'protocol': 'spice', 'type': console_type})[1]
+
+    @api_versions.wraps('2.6')
+    def get_rdp_console(self, server, console_type):
+        """
+        Get a rdp console for an instance
+
+        :param server: The :class:`Server` (or its ID) to add an IP to.
+        :param console_type: Type of rdp console to get ('rdp-html5')
+        """
+
+        return self._console(server,
+                             {'protocol': 'rdp', 'type': console_type})[1]
+
+    @api_versions.wraps('2.6')
+    def get_serial_console(self, server, console_type):
+        """
+        Get a serial console for an instance
+
+        :param server: The :class:`Server` (or its ID) to add an IP to.
+        :param console_type: Type of serial console to get ('serial')
+        """
+
+        return self._console(server,
+                             {'protocol': 'serial', 'type': console_type})[1]
 
     def get_password(self, server, private_key=None):
         """
@@ -1276,4 +1329,12 @@ class ServerManager(base.BootingManagerWithFind):
         body = {action: info}
         self.run_hooks('modify_body_for_action', body, **kwargs)
         url = '/servers/%s/action' % base.getid(server)
+        return self.api.client.post(url, body=body)
+
+    def _console(self, server, info=None, **kwargs):
+        """
+        Retrieve a console of a particular protocol -- vnc/spice/rdp/serial
+        """
+        body = {'remote_console': info}
+        url = '/servers/%s/remote-consoles' % base.getid(server)
         return self.api.client.post(url, body=body)
