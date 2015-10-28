@@ -22,7 +22,6 @@ from oslo_serialization import jsonutils
 from oslo_utils import encodeutils
 import pkg_resources
 import prettytable
-import requests
 import six
 
 from novaclient import exceptions
@@ -375,29 +374,6 @@ def record_time(times, enabled, *args):
         yield
         end = time.time()
         times.append((' '.join(args), start, end))
-
-
-@contextlib.contextmanager
-def converted_exceptions():
-    try:
-        yield
-
-    except requests.HTTPError as e:
-        status_code = e.response.status_code
-        raise exceptions.ClientException(status_code,
-                                         encodeutils.exception_to_unicode(e))
-
-    except requests.ConnectionError as e:
-        raise exceptions.ConnectionError(encodeutils.exception_to_unicode(e))
-
-    except requests.Timeout as e:
-        raise exceptions.RequestTimeout(encodeutils.exception_to_unicode(e))
-
-    except requests.TooManyRedirects as e:
-        raise exceptions.TooManyRedirects(encodeutils.exception_to_unicode(e))
-
-    except requests.RequestException as e:
-        raise exceptions.RequestException(encodeutils.exception_to_unicode(e))
 
 
 def get_function_name(func):

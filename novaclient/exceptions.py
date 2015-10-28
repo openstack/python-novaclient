@@ -283,26 +283,3 @@ def from_response(response, body, url, method=None):
 class ResourceNotFound(Exception):
     """Error in getting the resource."""
     pass
-
-
-class RequestTimeout(ClientException):
-    """
-    HTTP 408 - Request Timeout
-    """
-    http_status = 408
-    message = "Request Timeout"
-
-
-class TooManyRedirects(Exception):
-    """Too many redirects."""
-    pass
-
-
-class ConnectionError(Exception):
-    """A Connection error occurred."""
-    pass
-
-
-class RequestException(Exception):
-    """An ambiguous exception occurred."""
-    pass
