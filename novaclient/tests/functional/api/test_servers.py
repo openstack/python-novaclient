@@ -19,7 +19,8 @@ class TestServersAPI(base.ClientTestBase):
     def test_server_ips(self):
         server_name = "test_server"
         initial_server = self.client.servers.create(
-            server_name, self.image, self.flavor)
+            server_name, self.image, self.flavor,
+            nics=[{"net-id": self.network.id}])
         self.addCleanup(initial_server.delete)
 
         for x in range(60):
@@ -32,4 +33,4 @@ class TestServersAPI(base.ClientTestBase):
             self.fail("Server %s did not go ACTIVE after 60s" % server)
 
         ips = self.client.servers.ips(server)
-        self.assertIn('private', ips)
+        self.assertIn(self.network.label, ips)

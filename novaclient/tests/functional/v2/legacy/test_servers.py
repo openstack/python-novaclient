@@ -75,11 +75,11 @@ class TestServersListNovaClient(base.ClientTestBase):
     COMPUTE_API_VERSION = "2.1"
 
     def _create_servers(self, name, number):
-        network = self.client.networks.list()[0]
         servers = []
         for i in range(number):
             servers.append(self.client.servers.create(
-                name, self.image, self.flavor, nics=[{"net-id": network.id}]))
+                name, self.image, self.flavor,
+                nics=[{"net-id": self.network.id}]))
             shell._poll_for_status(
                 self.client.servers.get, servers[-1].id,
                 'building', ['active'])
