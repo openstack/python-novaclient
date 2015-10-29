@@ -125,7 +125,7 @@ class Client(object):
         # tenant name) and tenant_id is a UUID (what the Nova API
         # often refers to as a project_id or tenant_id).
 
-        password = api_key
+        password = kwargs.pop('password', api_key)
         self.projectid = project_id
         self.tenant_id = tenant_id
         self.user_id = user_id
