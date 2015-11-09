@@ -29,10 +29,16 @@ from novaclient.tests.unit import utils
 from novaclient.v2 import client
 
 # regex to compare callback to result of get_endpoint()
+# checks version number (vX or vX.X where X is a number)
+# and also checks if the id is on the end
 ENDPOINT_RE = re.compile(
-    r"^(get_http:__nova_api:8774_)(v\d(_\d)?)_(\w{32})$")
+    r"^get_http:__nova_api:8774_v\d(_\d)?_\w{32}$")
 
-ENDPOINT_TYPE_RE = re.compile(r"^(v\d(\.\d)?)$")
+# accepts formats like v2 or v2.1
+ENDPOINT_TYPE_RE = re.compile(r"^v\d(\.\d)?$")
+
+# accepts formats like v2 or v2_1
+CALLBACK_RE = re.compile(r"^get_http:__nova_api:8774_v\d(_\d)?$")
 
 
 class FakeClient(fakes.FakeClient, client.Client):
@@ -58,6 +64,8 @@ class FakeHTTPClient(base_client.HTTPClient):
         self.region_name = 'region_name'
 
         # determines which endpoint to return in get_endpoint()
+        # NOTE(augustina): this is a hacky workaround, ultimately
+        # we need to fix our whole mocking architecture (fixtures?)
         if 'endpoint_type' in kwargs:
             self.endpoint_type = kwargs['endpoint_type']
         else:
@@ -97,7 +105,7 @@ class FakeHTTPClient(base_client.HTTPClient):
             # To get API version information, it is necessary to GET
             # a nova endpoint directly without "v2/<tenant-id>".
             callback = "get_versions"
-        elif callback == "get_http:__nova_api:8774_v2_1":
+        elif CALLBACK_RE.search(callback):
             callback = "get_current_version"
         elif ENDPOINT_RE.search(callback):
             # compare callback to result of get_endpoint()
@@ -149,14 +157,47 @@ class FakeHTTPClient(base_client.HTTPClient):
             ]})
 
     def get_current_version(self):
-        return (200, {}, {
-            "version": {"status": "CURRENT",
-                        "updated": "2013-07-23T11:33:21Z",
-                        "links": [{"href": "http://nova-api:8774/v2.1/",
-                                   "rel": "self"}],
-                        "min_version": "2.1",
-                        "version": "2.3",
-                        "id": "v2.1"}})
+        versions = {
+            # v2 doesn't contain version or min_version fields
+            "v2": {
+                "version": {
+                    "status": "SUPPORTED",
+                    "updated": "2011-01-21T11:33:21Z",
+                    "links": [{
+                        "href": "http://nova-api:8774/v2/",
+                        "rel": "self"
+                    }],
+                    "id": "v2.0"
+                }
+            },
+            "v2.1": {
+                "version": {
+                    "status": "CURRENT",
+                    "updated": "2013-07-23T11:33:21Z",
+                    "links": [{
+                        "href": "http://nova-api:8774/v2.1/",
+                        "rel": "self"
+                    }],
+                    "min_version": "2.1",
+                    "version": "2.3",
+                    "id": "v2.1"
+                }
+            }
+        }
+
+        # if an endpoint_type that matches a version wasn't initialized,
+        #  default to v2.1
+        endpoint = 'v2.1'
+
+        if hasattr(self, 'endpoint_type'):
+            if ENDPOINT_TYPE_RE.search(self.endpoint_type):
+                if self.endpoint_type in versions:
+                    endpoint = self.endpoint_type
+                else:
+                    raise AssertionError(
+                        "Unknown endpoint_type:%s" % self.endpoint_type)
+
+        return (200, {}, versions[endpoint])
 
     #
     # agents

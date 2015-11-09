@@ -99,3 +99,21 @@ class VersionsTest(utils.TestCase):
 
         # check that the full request works as expected
         cs_2_1.assert_called('GET', 'http://nova-api:8774/v2.1/')
+
+    @mock.patch.object(versions.VersionManager, '_is_session_client',
+                       return_value=True)
+    def test_v2_get_endpoint_without_project_id(self, mock_is_session_client):
+        # create a fake client such that get_endpoint()
+        #  doesn't return uuid in url
+        endpoint_type = 'v2'
+        expected_endpoint = 'http://nova-api:8774/v2/'
+        cs_2 = fakes.FakeClient(endpoint_type=endpoint_type)
+
+        result = cs_2.versions.get_current()
+        self.assertEqual(result.manager.api.client.endpoint_type,
+                         endpoint_type, "Check v2 endpoint_type was set")
+        self.assertEqual(result.manager.api.client.management_url,
+                         expected_endpoint, "Check v2 endpoint without uuid")
+
+        # check that the full request works as expected
+        cs_2.assert_called('GET', 'http://nova-api:8774/v2/')
