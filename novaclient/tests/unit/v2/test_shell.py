@@ -2266,6 +2266,10 @@ class ShellTest(utils.TestCase):
             pos=-1
         )
 
+    def test_volume_attachments(self):
+        self.run_command('volume-attachments 1234')
+        self.assert_called('GET', '/servers/1234/os-volume_attachments')
+
     def test_volume_create(self):
         _, err = self.run_command('volume-create 2 --display-name Work')
         self.assertIn('Command volume-create is deprecated', err)

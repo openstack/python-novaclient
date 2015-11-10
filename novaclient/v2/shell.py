@@ -2032,6 +2032,12 @@ def _translate_availability_zone_keys(collection):
                     [('zoneName', 'name'), ('zoneState', 'status')])
 
 
+def _translate_volume_attachments_keys(collection):
+    _translate_keys(collection,
+                    [('serverId', 'server_id'),
+                     ('volumeId', 'volume_id')])
+
+
 @cliutils.arg(
     '--all-tenants',
     dest='all_tenants',
@@ -2202,6 +2208,17 @@ def do_volume_detach(cs, args):
     """Detach a volume from a server."""
     cs.volumes.delete_server_volume(_find_server(cs, args.server).id,
                                     args.attachment_id)
+
+
+@cliutils.arg(
+    'server',
+    metavar='<server>',
+    help=_('Name or ID of server.'))
+def do_volume_attachments(cs, args):
+    """List all the volumes attached to a server"""
+    volumes = cs.volumes.get_server_volumes(_find_server(cs, args.server).id)
+    _translate_volume_attachments_keys(volumes)
+    utils.print_list(volumes, ['ID', 'DEVICE', 'SERVER ID', 'VOLUME ID'])
 
 
 def do_volume_snapshot_list(cs, _args):
