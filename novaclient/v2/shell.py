@@ -154,6 +154,9 @@ def _parse_block_device_mapping_v2(args, image):
 
 def _boot(cs, args):
     """Boot a new server."""
+    if not args.flavor:
+        raise exceptions.CommandError(_("you need to specify a Flavor ID."))
+
     if args.image:
         image = _find_image(cs, args.image)
     else:
@@ -165,9 +168,6 @@ def _boot(cs, args):
             # TODO(harlowja): log a warning that we
             # are selecting the first of many?
             image = images[0]
-
-    if not args.flavor:
-        raise exceptions.CommandError(_("you need to specify a Flavor ID "))
 
     min_count = 1
     max_count = 1
