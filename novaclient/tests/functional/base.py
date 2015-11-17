@@ -135,7 +135,7 @@ class ClientTestBase(testtools.TestCase):
 
         if cloud_config is None:
             raise NoCloudConfigException(
-                "Cloud not find a cloud named functional_admin or a cloud"
+                "Could not find a cloud named functional_admin or a cloud"
                 " named devstack. Please check your clouds.yaml file and"
                 " try again.")
         auth_info = cloud_config.config['auth']
