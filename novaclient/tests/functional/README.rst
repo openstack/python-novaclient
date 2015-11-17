@@ -47,4 +47,9 @@ Functional Test Guidelines
     OS_TENANT_NAME
     OS_AUTH_URL
 
+* Usage of insecure SSL can be configured via the standard client environment
+  variable::
+
+    OS_INSECURE
+
 * Try not to require an additional configuration file
