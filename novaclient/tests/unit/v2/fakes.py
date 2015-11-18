@@ -40,6 +40,10 @@ ENDPOINT_TYPE_RE = re.compile(r"^v\d(\.\d)?$")
 # accepts formats like v2 or v2_1
 CALLBACK_RE = re.compile(r"^get_http:__nova_api:8774_v\d(_\d)?$")
 
+# fake image uuids
+FAKE_IMAGE_UUID_1 = 'c99d7632-bd66-4be9-aed5-3dd14b223a76'
+FAKE_IMAGE_UUID_2 = 'f27f479a-ddda-419a-9bbc-d6b56b210161'
+
 
 class FakeClient(fakes.FakeClient, client.Client):
 
@@ -362,7 +366,7 @@ class FakeHTTPClient(base_client.HTTPClient):
                 "id": 1234,
                 "name": "sample-server",
                 "image": {
-                    "id": 2,
+                    "id": FAKE_IMAGE_UUID_2,
                     "name": "sample image",
                 },
                 "flavor": {
@@ -1091,7 +1095,9 @@ class FakeHTTPClient(base_client.HTTPClient):
     def get_images(self, **kw):
         return (200, {}, {'images': [
             {'id': 1, 'name': 'CentOS 5.2'},
-            {'id': 2, 'name': 'My Server Backup'}
+            {'id': 2, 'name': 'My Server Backup'},
+            {'id': FAKE_IMAGE_UUID_1, 'name': 'CentOS 5.2'},
+            {'id': FAKE_IMAGE_UUID_2, 'name': 'My Server Backup'}
         ]})
 
     def get_images_detail(self, **kw):
@@ -1126,6 +1132,27 @@ class FakeHTTPClient(base_client.HTTPClient):
                 "status": "DELETED",
                 "fault": {'message': 'Image has been deleted.'},
                 "links": {},
+            },
+            {
+                'id': FAKE_IMAGE_UUID_1,
+                'name': 'CentOS 5.2',
+                "updated": "2010-10-10T12:00:00Z",
+                "created": "2010-08-10T12:00:00Z",
+                "status": "ACTIVE",
+                "metadata": {
+                    "test_key": "test_value",
+                },
+                "links": {},
+            },
+            {
+                "id": FAKE_IMAGE_UUID_2,
+                "name": "My Server Backup",
+                "serverId": 1234,
+                "updated": "2010-10-10T12:00:00Z",
+                "created": "2010-08-10T12:00:00Z",
+                "status": "SAVING",
+                "progress": 80,
+                "links": {},
             }
         ]})
 
@@ -1140,6 +1167,12 @@ class FakeHTTPClient(base_client.HTTPClient):
 
     def get_images_457(self, **kw):
         return (200, {}, {'image': self.get_images_detail()[2]['images'][2]})
+
+    def get_images_c99d7632_bd66_4be9_aed5_3dd14b223a76(self, **kw):
+        return (200, {}, {'image': self.get_images_detail()[2]['images'][3]})
+
+    def get_images_f27f479a_ddda_419a_9bbc_d6b56b210161(self, **kw):
+        return (200, {}, {'image': self.get_images_detail()[2]['images'][4]})
 
     def get_images_3e861307_73a6_4d1f_8d68_f68b03223032(self):
         raise exceptions.NotFound('404')
@@ -1162,6 +1195,12 @@ class FakeHTTPClient(base_client.HTTPClient):
         return (204, {}, None)
 
     def delete_images_2(self, **kw):
+        return (204, {}, None)
+
+    def delete_images_c99d7632_bd66_4be9_aed5_3dd14b223a76(self, **kw):
+        return (204, {}, None)
+
+    def delete_images_f27f479a_ddda_419a_9bbc_d6b56b210161(self, **kw):
         return (204, {}, None)
 
     def delete_images_1_metadata_test_key(self, **kw):
