@@ -49,6 +49,11 @@ class FlavorsTest(utils.TestCase):
         self.cs.flavors.list(marker=1234, limit=4)
         self.cs.assert_called('GET', '/flavors/detail?limit=4&marker=1234')
 
+    def test_list_flavors_with_sort_key_dir(self):
+        self.cs.flavors.list(sort_key='id', sort_dir='asc')
+        self.cs.assert_called('GET',
+                              '/flavors/detail?sort_dir=asc&sort_key=id')
+
     def test_list_flavors_is_public_none(self):
         fl = self.cs.flavors.list(is_public=None)
         self.cs.assert_called('GET', '/flavors/detail?is_public=None')
