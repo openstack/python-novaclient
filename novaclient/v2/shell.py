@@ -824,7 +824,7 @@ def do_flavor_access_list(cs, args):
         kwargs = {'tenant': args.tenant}
     else:
         raise exceptions.CommandError(_("Unable to get all access lists. "
-                                        "Specify --flavor or --tenant"))
+                                        "Specify --flavor"))
 
     try:
         access_list = cs.flavor_access.list(**kwargs)
