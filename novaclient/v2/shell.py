@@ -678,12 +678,29 @@ def _print_flavor_list(flavors, show_extra_specs=False):
     action='store_true',
     default=False,
     help=_('Display all flavors (Admin only).'))
+@cliutils.arg(
+    '--marker',
+    dest='marker',
+    metavar='<marker>',
+    default=None,
+    help=('The last flavor ID of the previous page; displays list of flavors'
+          ' after "marker".'))
+@cliutils.arg(
+    '--limit',
+    dest='limit',
+    metavar='<limit>',
+    type=int,
+    default=None,
+    help=("Maximum number of flavors to display. If limit == -1, all flavors "
+          "will be displayed. If limit is bigger than "
+          "'osapi_max_limit' option of Nova API, limit 'osapi_max_limit' will "
+          "be used instead."))
 def do_flavor_list(cs, args):
     """Print a list of available 'flavors' (sizes of servers)."""
     if args.all:
         flavors = cs.flavors.list(is_public=None)
     else:
-        flavors = cs.flavors.list()
+        flavors = cs.flavors.list(marker=args.marker, limit=args.limit)
     _print_flavor_list(flavors, args.extra_specs)
 
 
