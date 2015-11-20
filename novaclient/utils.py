@@ -98,7 +98,7 @@ def print_list(objs, fields, formatters={}, sortby_index=None):
                 if data is None:
                     data = '-'
                 # '\r' would break the table, so remove it.
-                data = str(data).replace("\r", "")
+                data = six.text_type(data).replace("\r", "")
                 row.append(data)
         pt.add_row(row)
 
@@ -162,7 +162,7 @@ def print_dict(d, dict_property="Property", dict_value="Value", wrap=0):
         if isinstance(v, (dict, list)):
             v = jsonutils.dumps(v)
         if wrap > 0:
-            v = textwrap.fill(str(v), wrap)
+            v = textwrap.fill(six.text_type(v), wrap)
         # if value has a newline, add in multiple rows
         # e.g. fault with stacktrace
         if v and isinstance(v, six.string_types) and (r'\n' in v or '\r' in v):
