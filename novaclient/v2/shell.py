@@ -451,7 +451,8 @@ def _boot(cs, args):
            "type=device type (e.g. disk, cdrom, ...; defaults to 'disk') "
            "device=name of the device (e.g. vda, xda, ...; "
            "if omitted, hypervisor driver chooses suitable device "
-           "depending on selected bus), "
+           "depending on selected bus; note the libvirt driver always "
+           "uses default device names), "
            "size=size of the block device in MB(for swap) and in "
            "GB(for other formats) "
            "(if omitted, hypervisor driver calculates size), "
@@ -2186,7 +2187,8 @@ def do_volume_delete(cs, args):
 @cliutils.arg(
     'device', metavar='<device>', default=None, nargs='?',
     help=_('Name of the device e.g. /dev/vdb. '
-           'Use "auto" for autoassign (if supported)'))
+           'Use "auto" for autoassign (if supported). '
+           'Libvirt driver will use default device name.'))
 def do_volume_attach(cs, args):
     """Attach a volume to a server."""
     if args.device == 'auto':
