@@ -14,6 +14,7 @@
 import sys
 
 import mock
+from oslo_utils import encodeutils
 import six
 
 from novaclient import base
@@ -215,6 +216,21 @@ class PrintResultTestCase(test_utils.TestCase):
                          '+------+-------+\n',
                          sys.stdout.getvalue())
 
+    @mock.patch('sys.stdout', six.StringIO())
+    def test_print_unicode_list(self):
+        objs = [_FakeResult("k", u'\u2026')]
+        utils.print_list(objs, ["Name", "Value"])
+        if six.PY3:
+            s = u'\u2026'
+        else:
+            s = encodeutils.safe_encode(u'\u2026')
+        self.assertEqual('+------+-------+\n'
+                         '| Name | Value |\n'
+                         '+------+-------+\n'
+                         '| k    | %s     |\n'
+                         '+------+-------+\n' % s,
+                         sys.stdout.getvalue())
+
     # without sorting
     @mock.patch('sys.stdout', six.StringIO())
     def test_print_list_sort_by_none(self):
@@ -279,6 +295,21 @@ class PrintResultTestCase(test_utils.TestCase):
             '|          | "bar3", "foo4", "bar4"]                  |\n'
             '+----------+------------------------------------------+\n',
             sys.stdout.getvalue())
+
+    @mock.patch('sys.stdout', six.StringIO())
+    def test_print_unicode_dict(self):
+        dict = {'k': u'\u2026'}
+        utils.print_dict(dict)
+        if six.PY3:
+            s = u'\u2026'
+        else:
+            s = encodeutils.safe_encode(u'\u2026')
+        self.assertEqual('+----------+-------+\n'
+                         '| Property | Value |\n'
+                         '+----------+-------+\n'
+                         '| k        | %s     |\n'
+                         '+----------+-------+\n' % s,
+                         sys.stdout.getvalue())
 
 
 class FlattenTestCase(test_utils.TestCase):
