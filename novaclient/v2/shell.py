@@ -34,6 +34,7 @@ from oslo_utils import timeutils
 from oslo_utils import uuidutils
 import six
 
+import novaclient
 from novaclient import api_versions
 from novaclient import client
 from novaclient import exceptions
@@ -4674,4 +4675,12 @@ def do_version_list(cs, args):
         columns = ["Id", "Status", "Updated", "Min Version", "Version"]
     else:
         columns = ["Id", "Status", "Updated"]
+
+    print(_("Client supported API versions:"))
+    print(_("Minimum version %(v)s") %
+          {'v': novaclient.API_MIN_VERSION.get_string()})
+    print(_("Maximum version %(v)s") %
+          {'v': novaclient.API_MAX_VERSION.get_string()})
+
+    print (_("\nServer supported API versions:"))
     utils.print_list(result, columns)
