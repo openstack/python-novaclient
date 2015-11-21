@@ -85,3 +85,8 @@ class HostsTest(utils.FixturedTestCase):
     def test_hosts_repr(self):
         hs = self.cs.hosts.get('host')
         self.assertEqual('<Host: dummy>', repr(hs[0]))
+
+    def test_hosts_list_repr(self):
+        hs = self.cs.hosts.list()
+        for h in hs:
+            self.assertEqual('<Host: %s>' % h.host_name, repr(h))
