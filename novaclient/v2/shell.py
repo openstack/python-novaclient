@@ -326,7 +326,9 @@ def _boot(cs, args):
         nics=nics,
         scheduler_hints=hints,
         config_drive=config_drive,
-        admin_pass=args.admin_pass)
+        admin_pass=args.admin_pass,
+        access_ip_v4=args.access_ip_v4,
+        access_ip_v6=args.access_ip_v6)
 
     return boot_args, boot_kwargs
 
@@ -515,6 +517,18 @@ def _boot(cs, args):
     metavar='<value>',
     default=None,
     help=_('Admin password for the instance.'))
+@cliutils.arg(
+    '--access-ip-v4',
+    dest='access_ip_v4',
+    metavar='<value>',
+    default=None,
+    help=_('Alternative access ip v4 of the instance.'))
+@cliutils.arg(
+    '--access-ip-v6',
+    dest='access_ip_v6',
+    metavar='<value>',
+    default=None,
+    help=_('Alternative access ip v6 of the instance.'))
 def do_boot(cs, args):
     """Boot a new server."""
     boot_args, boot_kwargs = _boot(cs, args)

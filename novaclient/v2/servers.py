@@ -421,7 +421,8 @@ class ServerManager(base.BootingManagerWithFind):
               max_count=None, security_groups=None, key_name=None,
               availability_zone=None, block_device_mapping=None,
               block_device_mapping_v2=None, nics=None, scheduler_hints=None,
-              config_drive=None, admin_pass=None, disk_config=None, **kwargs):
+              config_drive=None, admin_pass=None, disk_config=None,
+              access_ip_v4=None, access_ip_v6=None, **kwargs):
         """
         Create (boot) a new server.
         """
@@ -536,6 +537,12 @@ class ServerManager(base.BootingManagerWithFind):
 
         if disk_config is not None:
             body['server']['OS-DCF:diskConfig'] = disk_config
+
+        if access_ip_v4 is not None:
+            body['server']['accessIPv4'] = access_ip_v4
+
+        if access_ip_v6 is not None:
+            body['server']['accessIPv6'] = access_ip_v6
 
         return self._create(resource_url, body, response_key,
                             return_raw=return_raw, **kwargs)
@@ -916,7 +923,8 @@ class ServerManager(base.BootingManagerWithFind):
                key_name=None, availability_zone=None,
                block_device_mapping=None, block_device_mapping_v2=None,
                nics=None, scheduler_hints=None,
-               config_drive=None, disk_config=None, admin_pass=None, **kwargs):
+               config_drive=None, disk_config=None, admin_pass=None,
+               access_ip_v4=None, access_ip_v6=None, **kwargs):
         # TODO(anthony): indicate in doc string if param is an extension
         # and/or optional
         """
@@ -961,6 +969,8 @@ class ServerManager(base.BootingManagerWithFind):
                             values are 'AUTO' or 'MANUAL'.
         :param admin_pass: (optional extension) add a user supplied admin
                            password.
+        :param access_ip_v4: (optional extension) add alternative access ip v4
+        :param access_ip_v6: (optional extension) add alternative access ip v6
         """
         if not min_count:
             min_count = 1
@@ -977,7 +987,8 @@ class ServerManager(base.BootingManagerWithFind):
             max_count=max_count, security_groups=security_groups,
             key_name=key_name, availability_zone=availability_zone,
             scheduler_hints=scheduler_hints, config_drive=config_drive,
-            disk_config=disk_config, admin_pass=admin_pass, **kwargs)
+            disk_config=disk_config, admin_pass=admin_pass,
+            access_ip_v4=access_ip_v4, access_ip_v6=access_ip_v6, **kwargs)
 
         if block_device_mapping:
             resource_url = "/os-volumes_boot"
