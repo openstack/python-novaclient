@@ -36,6 +36,7 @@ import six
 
 import novaclient
 from novaclient import api_versions
+from novaclient import base
 from novaclient import client
 from novaclient import exceptions
 from novaclient.i18n import _
@@ -4681,3 +4682,12 @@ def do_version_list(cs, args):
 
     print (_("\nServer supported API versions:"))
     utils.print_list(result, columns)
+
+
+@cliutils.arg('server', metavar='<server>', help=_('ID of server.'))
+def do_virtual_interface_list(cs, args):
+    """Show virtual interface info about the given server."""
+    server = _find_server(cs, args.server)
+    interface_list = cs.virtual_interfaces.list(base.getid(server))
+    columns = ['Id', 'Mac address']
+    utils.print_list(interface_list, columns)
