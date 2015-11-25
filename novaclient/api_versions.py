@@ -30,6 +30,7 @@ if not LOG.handlers:
     LOG.addHandler(logging.StreamHandler())
 
 
+HEADER_NAME = "X-OpenStack-Nova-API-Version"
 # key is a deprecated version and value is an alternative version.
 DEPRECATED_VERSIONS = {"1.1": "2"}
 
@@ -306,7 +307,16 @@ def update_headers(headers, api_version):
     """Set 'X-OpenStack-Nova-API-Version' header if api_version is not null"""
 
     if not api_version.is_null() and api_version.ver_minor != 0:
-        headers["X-OpenStack-Nova-API-Version"] = api_version.get_string()
+        headers[HEADER_NAME] = api_version.get_string()
+
+
+def check_headers(response, api_version):
+    """Checks that 'X-OpenStack-Nova-API-Version' header in response."""
+    if api_version.ver_minor > 0 and HEADER_NAME not in response.headers:
+        LOG.warning(_LW(
+            "Your request was processed by a Nova API which does not support "
+            "microversions (%s header is missing from response). "
+            "Warning: Response may be incorrect."), HEADER_NAME)
 
 
 def add_substitution(versioned_method):
