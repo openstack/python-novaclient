@@ -2535,7 +2535,6 @@ class ShellTest(utils.TestCase):
             5,   # Not implemented when test added, should not apply to adds.
             7,   # doesn't require any changes in novaclient
             9,   # doesn't require any changes in novaclient
-            10,  # Not implemented when test added, should not apply to adds.
         ])
         versions_supported = set(range(0,
                                  novaclient.API_MAX_VERSION.ver_minor + 1))
