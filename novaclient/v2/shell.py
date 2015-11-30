@@ -2351,6 +2351,17 @@ def console_dict_accessor(cs, data):
     return data['remote_console']
 
 
+class Console(object):
+    def __init__(self, console_dict):
+        self.type = console_dict['type']
+        self.url = console_dict['url']
+
+
+def print_console(cs, data):
+    utils.print_list([Console(console_dict_accessor(cs, data))],
+                     ['Type', 'Url'])
+
+
 @cliutils.arg('server', metavar='<server>', help=_('Name or ID of server.'))
 @cliutils.arg(
     'console_type',
@@ -2361,13 +2372,7 @@ def do_get_vnc_console(cs, args):
     server = _find_server(cs, args.server)
     data = server.get_vnc_console(args.console_type)
 
-    class VNCConsole(object):
-        def __init__(self, console_dict):
-            self.type = console_dict['type']
-            self.url = console_dict['url']
-
-    utils.print_list([VNCConsole(console_dict_accessor(cs, data))],
-                     ['Type', 'Url'])
+    print_console(cs, data)
 
 
 @cliutils.arg('server', metavar='<server>', help=_('Name or ID of server.'))
@@ -2380,13 +2385,7 @@ def do_get_spice_console(cs, args):
     server = _find_server(cs, args.server)
     data = server.get_spice_console(args.console_type)
 
-    class SPICEConsole(object):
-        def __init__(self, console_dict):
-            self.type = console_dict['type']
-            self.url = console_dict['url']
-
-    utils.print_list([SPICEConsole(console_dict_accessor(cs, data))],
-                     ['Type', 'Url'])
+    print_console(cs, data)
 
 
 @cliutils.arg('server', metavar='<server>', help=_('Name or ID of server.'))
@@ -2399,13 +2398,7 @@ def do_get_rdp_console(cs, args):
     server = _find_server(cs, args.server)
     data = server.get_rdp_console(args.console_type)
 
-    class RDPConsole(object):
-        def __init__(self, console_dict):
-            self.type = console_dict['type']
-            self.url = console_dict['url']
-
-    utils.print_list([RDPConsole(console_dict_accessor(cs, data))],
-                     ['Type', 'Url'])
+    print_console(cs, data)
 
 
 @cliutils.arg('server', metavar='<server>', help=_('Name or ID of server.'))
@@ -2422,13 +2415,17 @@ def do_get_serial_console(cs, args):
     server = _find_server(cs, args.server)
     data = server.get_serial_console(args.console_type)
 
-    class SerialConsole(object):
-        def __init__(self, console_dict):
-            self.type = console_dict['type']
-            self.url = console_dict['url']
+    print_console(cs, data)
 
-    utils.print_list([SerialConsole(console_dict_accessor(cs, data))],
-                     ['Type', 'Url'])
+
+@cliutils.arg('server', metavar='<server>', help=_('Name or ID of server.'))
+@api_versions.wraps('2.8')
+def do_get_mks_console(cs, args):
+    """Get a serial console to a server."""
+    server = _find_server(cs, args.server)
+    data = server.get_mks_console()
+
+    print_console(cs, data)
 
 
 @cliutils.arg('server', metavar='<server>', help=_('Name or ID of server.'))

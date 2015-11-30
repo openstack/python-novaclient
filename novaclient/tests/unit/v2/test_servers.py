@@ -833,3 +833,17 @@ class ServersV26Test(ServersTest):
 
         self.cs.servers.get_rdp_console(s, 'fake')
         self.assert_called('POST', '/servers/1234/remote-consoles')
+
+
+class ServersV28Test(ServersV26Test):
+    def setUp(self):
+        super(ServersV28Test, self).setUp()
+        self.cs.api_version = api_versions.APIVersion("2.8")
+
+    def test_get_mks_console(self):
+        s = self.cs.servers.get(1234)
+        s.get_mks_console()
+        self.assert_called('POST', '/servers/1234/remote-consoles')
+
+        self.cs.servers.get_mks_console(s)
+        self.assert_called('POST', '/servers/1234/remote-consoles')
