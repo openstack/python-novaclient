@@ -1272,7 +1272,7 @@ class ServerManager(base.BootingManagerWithFind):
 
     def remove_security_group(self, server, security_group):
         """
-        Add a Security Group to an instance
+        Remove a Security Group to an instance
 
         :param server: ID of the instance.
         :param security_group: The name of security group to remove.
