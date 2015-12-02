@@ -60,9 +60,7 @@ class _ClientConnectionPool(object):
         self._adapters = {}
 
     def get(self, url):
-        """
-        Store and reuse HTTP adapters per Service URL.
-        """
+        """Store and reuse HTTP adapters per Service URL."""
         if url not in self._adapters:
             self._adapters[url] = session.TCPKeepAliveAdapter()
 
@@ -103,9 +101,10 @@ class SessionClient(adapter.LegacyJsonAdapter):
 
 
 def _original_only(f):
-    """Indicates and enforces that this function can only be used if we are
-    using the original HTTPClient object.
+    """Decorator to indicate and enforce original HTTPClient object.
 
+    Indicates and enforces that this function can only be used if we are
+    using the original HTTPClient object.
     We use this to specify that if you use the newer Session HTTP client then
     you are aware that the way you use your client has been updated and certain
     functions are no longer allowed to be used.
@@ -471,7 +470,9 @@ class HTTPClient(object):
         return self.services_url[service_type]
 
     def _extract_service_catalog(self, url, resp, body, extract_token=True):
-        """See what the auth service told us and process the response.
+        """Extract service catalog from input resource body.
+
+        See what the auth service told us and process the response.
         We may get redirected to another site, fail or actually get
         back a service catalog with a token and our endpoints.
         """
@@ -505,7 +506,9 @@ class HTTPClient(object):
             raise exceptions.from_response(resp, body, url)
 
     def _fetch_endpoints_from_auth(self, url):
-        """We have a token, but don't know the final endpoint for
+        """Fetch endpoint using token.
+
+        We have a token, but don't know the final endpoint for
         the region. We have to go back to the auth service and
         ask again. This request requires an admin-level token
         to work. The proxy token supplied could be from a low-level enduser.

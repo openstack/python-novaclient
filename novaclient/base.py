@@ -36,7 +36,8 @@ Resource = base.Resource
 
 
 def getid(obj):
-    """
+    """Get object's ID or object.
+
     Abstracts the common pattern of allowing both an object or an object's ID
     as a parameter when dealing with relationships.
     """
@@ -47,7 +48,8 @@ def getid(obj):
 
 
 class Manager(base.HookableMixin):
-    """
+    """Manager for API service.
+
     Managers interact with a particular type of API (servers, flavors, images,
     etc.) and provide CRUD operations for them.
     """
@@ -102,7 +104,8 @@ class Manager(base.HookableMixin):
 
     @contextlib.contextmanager
     def completion_cache(self, cache_type, obj_class, mode):
-        """
+        """The completion cache for bash autocompletion.
+
         The completion cache store items that can be used for bash
         autocompletion, like UUIDs or human-friendly IDs.
 
@@ -192,18 +195,14 @@ class Manager(base.HookableMixin):
 
 @six.add_metaclass(abc.ABCMeta)
 class ManagerWithFind(Manager):
-    """
-    Like a `Manager`, but with additional `find()`/`findall()` methods.
-    """
+    """Like a `Manager`, but with additional `find()`/`findall()` methods."""
 
     @abc.abstractmethod
     def list(self):
         pass
 
     def find(self, **kwargs):
-        """
-        Find a single item with attributes matching ``**kwargs``.
-        """
+        """Find a single item with attributes matching ``**kwargs``."""
         matches = self.findall(**kwargs)
         num_matches = len(matches)
         if num_matches == 0:
@@ -215,9 +214,7 @@ class ManagerWithFind(Manager):
             return matches[0]
 
     def findall(self, **kwargs):
-        """
-        Find all items with attributes matching ``**kwargs``.
-        """
+        """Find all items with attributes matching ``**kwargs``."""
         found = []
         searches = kwargs.items()
 
