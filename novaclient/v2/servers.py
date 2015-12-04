@@ -95,6 +95,13 @@ class Server(base.Resource):
         """
         return self.manager.get_serial_console(self, console_type)
 
+    def get_mks_console(self):
+        """
+        Get mks console for a Server.
+
+        """
+        return self.manager.get_mks_console(self)
+
     def get_password(self, private_key=None):
         """
         Get password for a Server.
@@ -667,7 +674,7 @@ class ServerManager(base.BootingManagerWithFind):
         """
         Get a vnc console for an instance
 
-        :param server: The :class:`Server` (or its ID) to add an IP to.
+        :param server: The :class:`Server` (or its ID) to get console for.
         :param console_type: Type of vnc console to get ('novnc' or 'xvpvnc')
         """
 
@@ -679,7 +686,7 @@ class ServerManager(base.BootingManagerWithFind):
         """
         Get a spice console for an instance
 
-        :param server: The :class:`Server` (or its ID) to add an IP to.
+        :param server: The :class:`Server` (or its ID) to get console for.
         :param console_type: Type of spice console to get ('spice-html5')
         """
 
@@ -691,7 +698,7 @@ class ServerManager(base.BootingManagerWithFind):
         """
         Get a rdp console for an instance
 
-        :param server: The :class:`Server` (or its ID) to add an IP to.
+        :param server: The :class:`Server` (or its ID) to get console for.
         :param console_type: Type of rdp console to get ('rdp-html5')
         """
 
@@ -703,7 +710,7 @@ class ServerManager(base.BootingManagerWithFind):
         """
         Get a serial console for an instance
 
-        :param server: The :class:`Server` (or its ID) to add an IP to.
+        :param server: The :class:`Server` (or its ID) to get console for.
         :param console_type: Type of serial console to get ('serial')
         """
 
@@ -715,7 +722,7 @@ class ServerManager(base.BootingManagerWithFind):
         """
         Get a vnc console for an instance
 
-        :param server: The :class:`Server` (or its ID) to add an IP to.
+        :param server: The :class:`Server` (or its ID) to get console for.
         :param console_type: Type of vnc console to get ('novnc' or 'xvpvnc')
         """
 
@@ -727,7 +734,7 @@ class ServerManager(base.BootingManagerWithFind):
         """
         Get a spice console for an instance
 
-        :param server: The :class:`Server` (or its ID) to add an IP to.
+        :param server: The :class:`Server` (or its ID) to get console for.
         :param console_type: Type of spice console to get ('spice-html5')
         """
 
@@ -739,7 +746,7 @@ class ServerManager(base.BootingManagerWithFind):
         """
         Get a rdp console for an instance
 
-        :param server: The :class:`Server` (or its ID) to add an IP to.
+        :param server: The :class:`Server` (or its ID) to get console for.
         :param console_type: Type of rdp console to get ('rdp-html5')
         """
 
@@ -751,12 +758,23 @@ class ServerManager(base.BootingManagerWithFind):
         """
         Get a serial console for an instance
 
-        :param server: The :class:`Server` (or its ID) to add an IP to.
+        :param server: The :class:`Server` (or its ID) to get console for.
         :param console_type: Type of serial console to get ('serial')
         """
 
         return self._console(server,
                              {'protocol': 'serial', 'type': console_type})[1]
+
+    @api_versions.wraps('2.8')
+    def get_mks_console(self, server):
+        """
+        Get a mks console for an instance
+
+        :param server: The :class:`Server` (or its ID) to get console for.
+        """
+
+        return self._console(server,
+                             {'protocol': 'mks', 'type': 'webmks'})[1]
 
     def get_password(self, server, private_key=None):
         """
