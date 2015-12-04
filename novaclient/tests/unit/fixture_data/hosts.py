@@ -62,12 +62,12 @@ class BaseFixture(base.Fixture):
             return {
                 'hosts': [
                     {
-                        'host': 'host1',
+                        'host_name': 'host1',
                         'service': service or 'nova-compute',
                         'zone': zone
                     },
                     {
-                        'host': 'host1',
+                        'host_name': 'host1',
                         'service': service or 'nova-cert',
                         'zone': zone
                     }

@@ -40,6 +40,18 @@ class Host(base.Resource):
     def reboot(self):
         return self.manager.host_action(self.host, 'reboot')
 
+    @property
+    def host_name(self):
+        return self.host
+
+    @host_name.setter
+    def host_name(self, value):
+        # A host from hosts.list() has the attribute "host_name" instead of
+        # "host." This sets "host" if that's the case. Even though it doesn't
+        # exactly mirror the response format, it enables users to work with
+        # host objects from list and non-list operations interchangeably.
+        self.host = value
+
 
 class HostManager(base.ManagerWithFind):
     resource_class = Host
