@@ -27,6 +27,11 @@ def do_fake_action():
     return 2
 
 
+@api_versions.wraps("2.0")
+def do_another_fake_action():
+    return 0
+
+
 @cliutils.arg(
     '--foo',
     start_version='2.1',

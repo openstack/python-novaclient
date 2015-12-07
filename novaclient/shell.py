@@ -59,6 +59,9 @@ DEFAULT_OS_COMPUTE_API_VERSION = '2.latest'
 DEFAULT_NOVA_ENDPOINT_TYPE = 'publicURL'
 DEFAULT_NOVA_SERVICE_TYPE = "compute"
 
+HINT_HELP_MSG = (" [hint: use '--os-compute-api-version' flag to show help "
+                 "message for proper version]")
+
 logger = logging.getLogger(__name__)
 
 
@@ -466,19 +469,26 @@ class OpenStackComputeShell(object):
             callback = getattr(actions_module, attr)
             desc = callback.__doc__ or ''
             if hasattr(callback, "versioned"):
+                additional_msg = ""
                 subs = api_versions.get_substitutions(
                     utils.get_function_name(callback))
                 if do_help:
-                    desc += msg % {'start': subs[0].start_version.get_string(),
-                                   'end': subs[-1].end_version.get_string()}
-                else:
-                    for versioned_method in subs:
+                    additional_msg = msg % {
+                        'start': subs[0].start_version.get_string(),
+                        'end': subs[-1].end_version.get_string()}
+                    if version.is_latest():
+                        additional_msg += HINT_HELP_MSG
+                subs = [versioned_method for versioned_method in subs
                         if version.matches(versioned_method.start_version,
-                                           versioned_method.end_version):
-                            callback = versioned_method.func
-                            break
-                    else:
-                        continue
+                                           versioned_method.end_version)]
+                if subs:
+                    # use the "latest" substitution
+                    callback = subs[-1].func
+                else:
+                    # there is no proper versioned method
+                    continue
+                desc = callback.__doc__ or desc
+                desc += additional_msg
 
             action_help = desc.strip()
             arguments = getattr(callback, 'arguments', [])
