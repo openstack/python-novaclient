@@ -2533,10 +2533,8 @@ class ShellTest(utils.TestCase):
             1,   # Same as version 2.0
             3,   # Not implemented when test added, should not apply to adds.
             5,   # Not implemented when test added, should not apply to adds.
-            6,   # Not implemented when test added, should not apply to adds.
-            7,   # Not implemented when test added, should not apply to adds.
-            8,   # Not implemented when test added, should not apply to adds.
-            9,   # Not implemented when test added, should not apply to adds.
+            7,   # doesn't require any changes in novaclient
+            9,   # doesn't require any changes in novaclient
             10,  # Not implemented when test added, should not apply to adds.
         ])
         versions_supported = set(range(0,
