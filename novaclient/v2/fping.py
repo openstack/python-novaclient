@@ -32,11 +32,13 @@ class FpingManager(base.ManagerWithFind):
     """Manage :class:`Fping` resources."""
     resource_class = Fping
 
-    def list(self, all_tenants=False, include=[], exclude=[]):
+    def list(self, all_tenants=False, include=None, exclude=None):
         """Fping all servers.
 
         :returns: list of :class:`Fping`.
         """
+        include = include or []
+        exclude = exclude or []
         params = []
         if all_tenants:
             params.append("all_tenants=1")
