@@ -29,8 +29,7 @@ class FixedIPsManager(base.Manager):
     resource_class = FixedIP
 
     def get(self, fixed_ip):
-        """
-        Show information for a Fixed IP
+        """Show information for a Fixed IP.
 
         :param fixed_ip: Fixed IP address to get info for
         """
@@ -38,7 +37,7 @@ class FixedIPsManager(base.Manager):
                          "fixed_ip")
 
     def reserve(self, fixed_ip):
-        """Reserve a Fixed IP
+        """Reserve a Fixed IP.
 
         :param fixed_ip: Fixed IP address to reserve
         """
@@ -47,7 +46,7 @@ class FixedIPsManager(base.Manager):
                              body=body)
 
     def unreserve(self, fixed_ip):
-        """Unreserve a Fixed IP
+        """Unreserve a Fixed IP.
 
         :param fixed_ip: Fixed IP address to unreserve
         """

@@ -26,7 +26,5 @@ class FloatingIPPoolManager(base.ManagerWithFind):
     resource_class = FloatingIPPool
 
     def list(self):
-        """
-        Retrieve a list of all floating ip pools.
-        """
+        """Retrieve a list of all floating ip pools."""
         return self._list('/os-floating-ip-pools', 'floating_ip_pools')
