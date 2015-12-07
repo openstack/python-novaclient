@@ -17,15 +17,13 @@ from novaclient.tests.functional.v2.legacy import test_servers
 
 
 class TestServersBootNovaClient(test_servers.TestServersBootNovaClient):
-    """Servers boot functional tests.
-    """
+    """Servers boot functional tests."""
 
     COMPUTE_API_VERSION = "2.latest"
 
 
 class TestServersListNovaClient(test_servers.TestServersListNovaClient):
-    """Servers list functional tests.
-    """
+    """Servers list functional tests."""
 
     COMPUTE_API_VERSION = "2.latest"
 

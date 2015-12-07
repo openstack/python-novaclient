@@ -18,8 +18,7 @@ from novaclient.tests.functional import base
 
 class SimpleReadOnlyNovaClientTest(base.ClientTestBase):
 
-    """
-    read only functional python-novaclient tests.
+    """Read only functional python-novaclient tests.
 
     This only exercises client commands that are read only.
     """

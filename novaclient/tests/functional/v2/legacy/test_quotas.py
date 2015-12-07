@@ -14,8 +14,7 @@ from novaclient.tests.functional import base
 
 
 class TestQuotasNovaClient(base.ClientTestBase):
-    """Nova quotas functional tests.
-    """
+    """Nova quotas functional tests."""
 
     COMPUTE_API_VERSION = "2.1"
 

@@ -59,7 +59,8 @@ class NoCloudConfigException(Exception):
 
 
 class ClientTestBase(testtools.TestCase):
-    """
+    """Base test class for read only python-novaclient commands.
+
     This is a first pass at a simple read only python-novaclient test. This
     only exercises client commands that are read only.
 

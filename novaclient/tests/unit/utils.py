@@ -104,9 +104,9 @@ class FixturedTestCase(testscenarios.TestWithScenarios, TestCase):
 
 
 class TestResponse(requests.Response):
-    """
-    Class used to wrap requests.Response and provide some
-    convenience to initialize with a dict
+    """Class used to wrap requests.Response.
+
+    Provide some convenience to initialize with a dict.
     """
 
     def __init__(self, data):
