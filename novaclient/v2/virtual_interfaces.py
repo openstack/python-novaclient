@@ -22,7 +22,7 @@ from novaclient import base
 
 class VirtualInterface(base.Resource):
     def __repr__(self):
-        pass
+        return "<VirtualInterface>"
 
 
 class VirtualInterfaceManager(base.ManagerWithFind):
