@@ -4017,7 +4017,7 @@ def do_ssh(cs, args):
             'network': args.network, 'address_type': address_type,
             'pretty_version': pretty_version, 'server': args.server})
     elif len(matching_addresses) > 1:
-        msg = _("More than one %(pretty_version)s %(address_type)s address"
+        msg = _("More than one %(pretty_version)s %(address_type)s address "
                 "found.")
         raise exceptions.CommandError(msg % {'pretty_version': pretty_version,
                                              'address_type': address_type})
