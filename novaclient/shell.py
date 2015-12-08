@@ -30,6 +30,8 @@ from oslo_utils import importutils
 from oslo_utils import strutils
 import six
 
+osprofiler_profiler = importutils.try_import("osprofiler.profiler")
+
 HAS_KEYRING = False
 all_errors = ValueError
 try:
@@ -509,6 +511,19 @@ class OpenStackComputeShell(object):
             dest='endpoint_override',
             help=argparse.SUPPRESS)
 
+        if osprofiler_profiler:
+            parser.add_argument('--profile',
+                                metavar='HMAC_KEY',
+                                help='HMAC key to use for encrypting context '
+                                'data for performance profiling of operation. '
+                                'This key should be the value of the HMAC key '
+                                'configured for the OSprofiler middleware in '
+                                'nova; it is specified in the Nova '
+                                'configuration file at "/etc/nova/nova.conf". '
+                                'Without the key, profiling will not be '
+                                'triggered even if OSprofiler is enabled on '
+                                'the server side.')
+
         self._append_global_identity_args(parser, argv)
 
         return parser
@@ -749,6 +764,10 @@ class OpenStackComputeShell(object):
                 _("You must provide an auth url "
                   "via either --os-auth-url or env[OS_AUTH_URL]"))
 
+        additional_kwargs = {}
+        if osprofiler_profiler:
+            additional_kwargs["profile"] = args.profile
+
         # This client is just used to discover api version. Version API needn't
         # microversion, so we just pass version 2 at here.
         self.cs = client.Client(
@@ -767,7 +786,8 @@ class OpenStackComputeShell(object):
             project_domain_id=os_project_domain_id,
             project_domain_name=os_project_domain_name,
             user_domain_id=os_user_domain_id,
-            user_domain_name=os_user_domain_name)
+            user_domain_name=os_user_domain_name,
+            **additional_kwargs)
 
         if not skip_auth:
             if not api_version.is_latest():
@@ -857,6 +877,11 @@ class OpenStackComputeShell(object):
                 self.cs.client.password = helper.password
 
         args.func(self.cs, args)
+
+        if osprofiler_profiler and args.profile:
+            trace_id = osprofiler_profiler.get().get_base_id()
+            print("To display trace use the command:\n\n"
+                  "  osprofiler trace show --html %s " % trace_id)
 
         if args.timings:
             self._dump_timings(self.times + self.cs.get_timings())

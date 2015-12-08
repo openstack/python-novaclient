@@ -24,7 +24,8 @@ COMPUTE_URL = 'http://compute.host'
 class V1(fixtures.Fixture):
 
     def __init__(self, requests_mock,
-                 compute_url=COMPUTE_URL, identity_url=IDENTITY_URL):
+                 compute_url=COMPUTE_URL, identity_url=IDENTITY_URL,
+                 **client_kwargs):
         super(V1, self).__init__()
         self.identity_url = identity_url
         self.compute_url = compute_url
@@ -41,6 +42,8 @@ class V1(fixtures.Fixture):
         s = self.token.add_service('computev3')
         s.add_endpoint(self.compute_url)
 
+        self._client_kwargs = client_kwargs
+
     def setUp(self):
         super(V1, self).setUp()
 
@@ -52,13 +55,14 @@ class V1(fixtures.Fixture):
         self.requests_mock.get(self.identity_url,
                                json=self.discovery,
                                headers=headers)
-        self.client = self.new_client()
+        self.client = self.new_client(**self._client_kwargs)
 
-    def new_client(self):
+    def new_client(self, **client_kwargs):
         return client.Client("2", username='xx',
                              password='xx',
                              project_id='xx',
-                             auth_url=self.identity_url)
+                             auth_url=self.identity_url,
+                             **client_kwargs)
 
 
 class SessionV1(V1):

@@ -1,0 +1,25 @@
+---
+prelude: >
+    OSprofiler support was added to the client. That makes
+    possible to trigger Nova operation trace generation from
+    the CLI.
+features:
+  - A new ``--profile`` option was added to allow Nova
+    profiling from the CLI. If the user wishes to trace a
+    nova boot request he or she needs to type the following
+    command -- ``nova --profile <secret_key> boot --image <image>
+    --flavor <flavor> <vm_name>``, where ``secret_key`` should match one
+    of the keys defined in nova.conf. As a result of this operation
+    additional information regarding ``trace_id`` will be
+    printed, that can be used to generate human-friendly
+    html report -- ``osprofiler trace show --html <trace_id> --out
+    trace.html``.
+    To enable profiling, user needs to have osprofiler
+    installed in the local environment via ``pip install osprofiler``.
+security:
+  - OSprofiler support, that was added during the Ocata release cycle,
+    requires passing of trace information between various
+    OpenStack services. This information is signed by one of
+    the HMAC keys defined in nova.conf file. That means that
+    only someone who knows this key is able to send the proper
+    header to trigger profiling.

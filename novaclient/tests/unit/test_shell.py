@@ -655,6 +655,27 @@ class ShellTest(utils.TestCase):
         exc = self.assertRaises(RuntimeError, self.shell, '--timings list')
         self.assertEqual('Boom!', str(exc))
 
+    @requests_mock.Mocker()
+    def test_osprofiler(self, m_requests):
+        self.make_env()
+
+        def client(*args, **kwargs):
+            self.assertEqual('swordfish', kwargs['profile'])
+        with mock.patch('novaclient.client.Client', client):
+            # we are only interested in the fact Client is initialized properly
+            self.shell('list --profile swordfish', (0, 2))
+
+    @requests_mock.Mocker()
+    def test_osprofiler_not_installed(self, m_requests):
+        self.make_env()
+
+        # NOTE(rpodolyaka): osprofiler is in test-requirements, so we have to
+        # simulate its absence here
+        with mock.patch('novaclient.shell.osprofiler_profiler', None):
+            _, stderr = self.shell('list --profile swordfish', (0, 2))
+            self.assertIn('unrecognized arguments: --profile swordfish',
+                          stderr)
+
     @mock.patch('novaclient.shell.SecretsHelper.tenant_id',
                 return_value=True)
     @mock.patch('novaclient.shell.SecretsHelper.auth_token',

@@ -30,6 +30,9 @@ from keystoneauth1 import session as ksession
 from oslo_utils import importutils
 import pkg_resources
 
+osprofiler_profiler = importutils.try_import("osprofiler.profiler")
+osprofiler_web = importutils.try_import("osprofiler.web")
+
 from novaclient import api_versions
 from novaclient import exceptions
 from novaclient import extension as ext
@@ -67,6 +70,12 @@ class SessionClient(adapter.LegacyJsonAdapter):
     def request(self, url, method, **kwargs):
         kwargs.setdefault('headers', kwargs.get('headers', {}))
         api_versions.update_headers(kwargs["headers"], self.api_version)
+
+        # NOTE(dbelova): osprofiler_web.get_trace_id_headers does not add any
+        # headers in case if osprofiler is not initialized.
+        if osprofiler_web:
+            kwargs['headers'].update(osprofiler_web.get_trace_id_headers())
+
         # NOTE(jamielennox): The standard call raises errors from
         # keystoneauth1, where we need to raise the novaclient errors.
         raise_exc = kwargs.pop('raise_exc', True)
@@ -343,6 +352,17 @@ def Client(version, username=None, password=None, project_id=None,
 
     api_version, client_class = _get_client_class_and_version(version)
     kwargs.pop("direct_use", None)
+
+    profile = kwargs.pop("profile", None)
+    if osprofiler_profiler and profile:
+        # Initialize the root of the future trace: the created trace ID will
+        # be used as the very first parent to which all related traces will be
+        # bound to. The given HMAC key must correspond to the one set in
+        # nova-api nova.conf, otherwise the latter will fail to check the
+        # request signature and will skip initialization of osprofiler on
+        # the server side.
+        osprofiler_profiler.init(profile)
+
     return client_class(api_version=api_version,
                         auth_url=auth_url,
                         direct_use=False,
