@@ -234,6 +234,23 @@ class ShellTest(utils.TestCase):
             }},
         )
 
+    def test_boot_access_ip(self):
+        self.run_command(
+            'boot --flavor 1 --image 1 --access-ip-v4 10.10.10.10 '
+            '--access-ip-v6 ::1 some-server')
+        self.assert_called_anytime(
+            'POST', '/servers',
+            {'server': {
+                'flavorRef': '1',
+                'name': 'some-server',
+                'imageRef': '1',
+                'accessIPv4': '10.10.10.10',
+                'accessIPv6': '::1',
+                'max_count': 1,
+                'min_count': 1
+            }},
+        )
+
     def test_boot_config_drive_custom(self):
         self.run_command(
             'boot --flavor 1 --image 1 --config-drive /dev/hda some-server')

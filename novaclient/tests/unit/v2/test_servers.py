@@ -204,6 +204,30 @@ class ServersTest(utils.FixturedTestCase):
             self.assert_called('POST', '/servers')
             self.assertIsInstance(s, servers.Server)
 
+    def test_create_server_boot_with_address(self):
+        old_boot = self.cs.servers._boot
+        access_ip_v6 = '::1'
+        access_ip_v4 = '10.10.10.10'
+
+        def wrapped_boot(url, key, *boot_args, **boot_kwargs):
+            self.assertEqual(boot_kwargs['access_ip_v6'], access_ip_v6)
+            self.assertEqual(boot_kwargs['access_ip_v4'], access_ip_v4)
+            return old_boot(url, key, *boot_args, **boot_kwargs)
+
+        with mock.patch.object(self.cs.servers, '_boot', wrapped_boot):
+            s = self.cs.servers.create(
+                name="My server",
+                image=1,
+                flavor=1,
+                meta={'foo': 'bar'},
+                userdata="hello moto",
+                key_name="fakekey",
+                access_ip_v6=access_ip_v6,
+                access_ip_v4=access_ip_v4
+            )
+            self.assert_called('POST', '/servers')
+            self.assertIsInstance(s, servers.Server)
+
     def test_create_server_userdata_file_object(self):
         s = self.cs.servers.create(
             name="My server",
