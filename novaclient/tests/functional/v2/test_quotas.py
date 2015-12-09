@@ -14,8 +14,7 @@ from novaclient.tests.functional.v2.legacy import test_quotas
 
 
 class TestQuotasNovaClient(test_quotas.TestQuotasNovaClient):
-    """Nova quotas functional tests.
-    """
+    """Nova quotas functional tests."""
 
     COMPUTE_API_VERSION = "2.latest"
 

@@ -20,8 +20,7 @@ from novaclient.tests.functional.v2 import fake_crypto
 
 
 class TestKeypairsNovaClient(base.ClientTestBase):
-    """Keypairs functional tests.
-    """
+    """Keypairs functional tests."""
 
     COMPUTE_API_VERSION = "2.1"
 

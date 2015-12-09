@@ -16,8 +16,7 @@ from novaclient.tests.functional.v2.legacy import test_readonly_nova
 class SimpleReadOnlyNovaClientTest(
         test_readonly_nova.SimpleReadOnlyNovaClientTest):
 
-    """
-    read only functional python-novaclient tests.
+    """Read only functional python-novaclient tests.
 
     This only exercises client commands that are read only.
     """

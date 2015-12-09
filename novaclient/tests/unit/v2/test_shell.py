@@ -2613,16 +2613,14 @@ class GetSecgroupTest(utils.TestCase):
 
 class GetFirstEndpointTest(utils.TestCase):
     def test_only_one_endpoint(self):
-        """If there is only one endpoint, it is returned."""
+        # If there is only one endpoint, it is returned.
         endpoint = {"url": "test"}
         result = novaclient.v2.shell._get_first_endpoint([endpoint], "XYZ")
         self.assertEqual(endpoint, result)
 
     def test_multiple_endpoints(self):
-        """If there are multiple endpoints, the first one of the appropriate
-        region is returned.
-
-        """
+        # If there are multiple endpoints, the first one of the appropriate
+        # region is returned.
         endpoints = [
             {"region": "XYZ"},
             {"region": "ORD", "number": 1},
@@ -2632,10 +2630,9 @@ class GetFirstEndpointTest(utils.TestCase):
         self.assertEqual(endpoints[1], result)
 
     def test_multiple_endpoints_but_none_suitable(self):
-        """If there are multiple endpoints but none of them are suitable, an
-        exception is raised.
+        # If there are multiple endpoints but none of them are suitable, an
+        # exception is raised.
 
-        """
         endpoints = [
             {"region": "XYZ"},
             {"region": "PQR"},
@@ -2646,7 +2643,7 @@ class GetFirstEndpointTest(utils.TestCase):
                           endpoints, "ORD")
 
     def test_no_endpoints(self):
-        """If there are no endpoints available, an exception is raised."""
+        # If there are no endpoints available, an exception is raised.
         self.assertRaises(LookupError,
                           novaclient.v2.shell._get_first_endpoint,
                           [], "ORD")

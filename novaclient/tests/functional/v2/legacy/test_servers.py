@@ -17,8 +17,7 @@ from novaclient.v2 import shell
 
 
 class TestServersBootNovaClient(base.ClientTestBase):
-    """Servers boot functional tests.
-    """
+    """Servers boot functional tests."""
 
     COMPUTE_API_VERSION = "2.1"
 
@@ -58,8 +57,7 @@ class TestServersBootNovaClient(base.ClientTestBase):
 
 
 class TestServersListNovaClient(base.ClientTestBase):
-    """Servers list functional tests.
-    """
+    """Servers list functional tests."""
 
     COMPUTE_API_VERSION = "2.1"
 

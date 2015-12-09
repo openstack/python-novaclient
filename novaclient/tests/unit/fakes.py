@@ -36,8 +36,40 @@ def assert_has_keys(dict, required=[], optional=[]):
 class FakeClient(object):
 
     def assert_called(self, method, url, body=None, pos=-1):
-        """
-        Assert than an API method was just called.
+        """Assert than an HTTP method was called at given order/position.
+
+        :param method: HTTP method name which is expected to be called
+        :param url: Expected request url to be called with given method
+        :param body: Expected request body to be called with given method
+                     and url. Default is None.
+        :param pos: Order of the expected method call. If multiple methods
+                    calls are made in single API request, then, order of each
+                    method call can be checked by passing expected order to
+                    this arg.
+                    Default is -1 which means most recent call.
+
+        Usage::
+            1. self.run_command('flavor-list --extra-specs')
+               self.assert_called('GET', '/flavors/aa1/os-extra_specs')
+
+            2. self.run_command(["boot", "--image", "1",
+                                 "--flavor", "512 MB Server",
+                                 "--max-count", "3", "server"])
+               self.assert_called('GET', '/images/1', pos=0)
+               self.assert_called('GET', '/flavors/512 MB Server', pos=1)
+               self.assert_called('GET', '/flavors?is_public=None', pos=2)
+               self.assert_called('GET', '/flavors/2', pos=3)
+               self.assert_called(
+                   'POST', '/servers',
+                    {
+                        'server': {
+                            'flavorRef': '2',
+                            'name': 'server',
+                            'imageRef': '1',
+                            'min_count': 1,
+                            'max_count': 3,
+                        }
+                    }, pos=4)
         """
         expected = (method, url)
         called = self.client.callstack[pos][0:2]
@@ -54,8 +86,15 @@ class FakeClient(object):
                                      (self.client.callstack[pos][2], body))
 
     def assert_called_anytime(self, method, url, body=None):
-        """
-        Assert than an API method was called anytime in the test.
+        """Assert than an HTTP method was called anytime in the test.
+
+        :param method: HTTP method name which is expected to be called
+        :param url: Expected request url to be called with given method
+        :param body: Expected request body to be called with given method
+                     and url. Default is None.
+        Usage::
+            self.run_command('flavor-list --extra-specs')
+            self.assert_called_anytime('GET', '/flavors/detail')
         """
         expected = (method, url)
 

@@ -15,8 +15,7 @@ from novaclient.tests.functional.v2.legacy import test_keypairs
 
 
 class TestKeypairsNovaClientV22(test_keypairs.TestKeypairsNovaClient):
-    """Keypairs functional tests for v2.2 nova-api microversion.
-    """
+    """Keypairs functional tests for v2.2 nova-api microversion."""
 
     COMPUTE_API_VERSION = "2.2"
 
