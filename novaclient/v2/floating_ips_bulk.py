@@ -29,9 +29,7 @@ class FloatingIPBulkManager(base.ManagerWithFind):
     resource_class = FloatingIPRange
 
     def list(self, host=None):
-        """
-        List all floating IPs
-        """
+        """List all floating IPs."""
         if host is None:
             return self._list('/os-floating-ips-bulk',
                               'floating_ip_info',
@@ -42,9 +40,7 @@ class FloatingIPBulkManager(base.ManagerWithFind):
                               obj_class=floating_ips.FloatingIP)
 
     def create(self, ip_range, pool=None, interface=None):
-        """
-        Create floating IPs by range
-        """
+        """Create floating IPs by range."""
         body = {"floating_ips_bulk_create": {'ip_range': ip_range}}
         if pool is not None:
             body['floating_ips_bulk_create']['pool'] = pool
@@ -55,8 +51,6 @@ class FloatingIPBulkManager(base.ManagerWithFind):
                             'floating_ips_bulk_create')
 
     def delete(self, ip_range):
-        """
-        Delete floating IPs by range
-        """
+        """Delete floating IPs by range."""
         body = {"ip_range": ip_range}
         return self._update('/os-floating-ips-bulk/delete', body)

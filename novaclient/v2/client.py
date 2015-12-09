@@ -52,8 +52,7 @@ from novaclient.v2 import volumes
 
 
 class Client(object):
-    """
-    Top-level object to access the OpenStack Compute API.
+    """Top-level object to access the OpenStack Compute API.
 
     .. warning:: All scripts and projects should not initialize this class
       directly. It should be done via `novaclient.client.Client` interface.
@@ -70,7 +69,8 @@ class Client(object):
                  cacert=None, tenant_id=None, user_id=None,
                  connection_pool=False, session=None, auth=None,
                  api_version=None, direct_use=True, **kwargs):
-        """
+        """Initialization of Client object.
+
         :param str username: Username
         :param str api_key: API Key
         :param str project_id: Project ID
@@ -226,8 +226,7 @@ class Client(object):
 
     @client._original_only
     def authenticate(self):
-        """
-        Authenticate against the server.
+        """Authenticate against the server.
 
         Normally this is called automatically when you first access the API,
         but you can call this method to force authentication right now.

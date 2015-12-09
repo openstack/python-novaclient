@@ -30,19 +30,13 @@ class Certificate(base.Resource):
 
 
 class CertificateManager(base.Manager):
-    """
-    Manage :class:`Certificate` resources.
-    """
+    """Manage :class:`Certificate` resources."""
     resource_class = Certificate
 
     def create(self):
-        """
-        Create a x509 certificate for a user in tenant.
-        """
+        """Create a x509 certificate for a user in tenant."""
         return self._create('/os-certificates', {}, 'certificate')
 
     def get(self):
-        """
-        Get root certificate.
-        """
+        """Get root certificate."""
         return self._get("/os-certificates/root", 'certificate')

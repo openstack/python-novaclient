@@ -21,9 +21,7 @@ from novaclient import base
 
 
 class Fping(base.Resource):
-    """
-    A server to fping.
-    """
+    """A server to fping."""
     HUMAN_ID = True
 
     def __repr__(self):
@@ -31,16 +29,13 @@ class Fping(base.Resource):
 
 
 class FpingManager(base.ManagerWithFind):
-    """
-    Manage :class:`Fping` resources.
-    """
+    """Manage :class:`Fping` resources."""
     resource_class = Fping
 
     def list(self, all_tenants=False, include=[], exclude=[]):
-        """
-        Fping all servers.
+        """Fping all servers.
 
-        :rtype: list of :class:`Fping`.
+        :returns: list of :class:`Fping`.
         """
         params = []
         if all_tenants:
@@ -55,10 +50,9 @@ class FpingManager(base.ManagerWithFind):
         return self._list(uri, "servers")
 
     def get(self, server):
-        """
-        Fping a specific server.
+        """Fping a specific server.
 
         :param server: ID of the server to fping.
-        :rtype: :class:`Fping`
+        :returns: :class:`Fping`
         """
         return self._get("/os-fping/%s" % base.getid(server), "server")

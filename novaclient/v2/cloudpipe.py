@@ -32,8 +32,7 @@ class CloudpipeManager(base.ManagerWithFind):
     resource_class = Cloudpipe
 
     def create(self, project):
-        """
-        Launch a cloudpipe instance.
+        """Launch a cloudpipe instance.
 
         :param project: UUID of the project (tenant) for the cloudpipe
         """
@@ -42,13 +41,12 @@ class CloudpipeManager(base.ManagerWithFind):
                             return_raw=True)
 
     def list(self):
-        """
-        Get a list of cloudpipe instances.
-        """
+        """Get a list of cloudpipe instances."""
         return self._list('/os-cloudpipe', 'cloudpipes')
 
     def update(self, address, port):
-        """
+        """Configure cloudpipe parameters for the project.
+
         Update VPN address and port for all networks associated
         with the project defined by authentication
 

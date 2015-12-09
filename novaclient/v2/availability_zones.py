@@ -22,9 +22,7 @@ from novaclient import base
 
 
 class AvailabilityZone(base.Resource):
-    """
-    An availability zone object.
-    """
+    """An availability zone object."""
     NAME_ATTR = 'display_name'
 
     def __repr__(self):
@@ -32,17 +30,15 @@ class AvailabilityZone(base.Resource):
 
 
 class AvailabilityZoneManager(base.ManagerWithFind):
-    """
-    Manage :class:`AvailabilityZone` resources.
-    """
+    """Manage :class:`AvailabilityZone` resources."""
     resource_class = AvailabilityZone
     return_parameter_name = "availabilityZoneInfo"
 
     def list(self, detailed=True):
-        """
-        Get a list of all availability zones.
+        """Get a list of all availability zones.
 
-        :rtype: list of :class:`AvailabilityZone`
+        :param detailed: If True, list availability zones with details.
+        :returns: list of :class:`AvailabilityZone`
         """
         if detailed is True:
             return self._list("/os-availability-zone/detail",

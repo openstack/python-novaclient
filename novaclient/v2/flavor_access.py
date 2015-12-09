@@ -26,9 +26,7 @@ class FlavorAccess(base.Resource):
 
 
 class FlavorAccessManager(base.ManagerWithFind):
-    """
-    Manage :class:`FlavorAccess` resources.
-    """
+    """Manage :class:`FlavorAccess` resources."""
     resource_class = FlavorAccess
 
     def list(self, **kwargs):
