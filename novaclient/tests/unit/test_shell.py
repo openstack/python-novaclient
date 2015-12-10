@@ -16,7 +16,7 @@ import re
 import sys
 
 import fixtures
-from keystoneclient import fixture
+from keystoneauth1 import fixture
 import mock
 import prettytable
 import requests_mock

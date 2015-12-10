@@ -11,9 +11,9 @@
 # under the License.
 
 import fixtures
-from keystoneclient.auth.identity import v2
-from keystoneclient import fixture
-from keystoneclient import session
+from keystoneauth1 import fixture
+from keystoneauth1 import loading
+from keystoneauth1 import session
 
 from novaclient.v2 import client as v2client
 
@@ -33,6 +33,7 @@ class V1(fixtures.Fixture):
 
         self.token = fixture.V2Token()
         self.token.set_scope()
+        self.discovery = fixture.V2Discovery(href=self.identity_url)
 
         s = self.token.add_service('compute')
         s.add_endpoint(self.compute_url)
@@ -48,6 +49,9 @@ class V1(fixtures.Fixture):
         self.requests.register_uri('POST', auth_url,
                                    json=self.token,
                                    headers=headers)
+        self.requests.register_uri('GET', self.identity_url,
+                                   json=self.discovery,
+                                   headers=headers)
         self.client = self.new_client()
 
     def new_client(self):
@@ -61,5 +65,7 @@ class SessionV1(V1):
 
     def new_client(self):
         self.session = session.Session()
-        self.session.auth = v2.Password(self.identity_url, 'xx', 'xx')
+        loader = loading.get_plugin_loader('password')
+        self.session.auth = loader.load_from_options(
+            auth_url=self.identity_url, username='xx', password='xx')
         return v2client.Client(session=self.session)

@@ -15,7 +15,7 @@
 
 import argparse
 
-from keystoneclient import fixture
+from keystoneauth1 import fixture
 import mock
 import pkg_resources
 import requests

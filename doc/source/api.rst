@@ -19,22 +19,28 @@ If you prefer string value, you can use ``1.1`` (deprecated now), ``2`` or
 ``2.X`` (where X is a microversion).
 
 
-Alternatively, you can create a client instance using the keystoneclient
+Alternatively, you can create a client instance using the keystoneauth
 session API::
 
-    >>> from keystoneclient.auth.identity import v2
-    >>> from keystoneclient import session
+    >>> from keystoneauth1 import loading
+    >>> from keystoneauth1 import session
     >>> from novaclient import client
-    >>> auth = v2.Password(auth_url=AUTH_URL,
-    ...                    username=USERNAME,
-    ...                    password=PASSWORD,
-    ...                    tenant_name=PROJECT_ID)
+    >>> loader = loading.get_plugin_loader('password')
+    >>> auth = loader.Password(auth_url=AUTH_URL,
+    ...                        username=USERNAME,
+    ...                        password=PASSWORD,
+    ...                        project_id=PROJECT_ID)
     >>> sess = session.Session(auth=auth)
     >>> nova = client.Client(VERSION, session=sess)
 
-For more information on this keystoneclient API, see `Using Sessions`_.
+If you have PROJECT_NAME instead of a PROJECT_ID, use the project_name
+parameter. Similarly, if your cloud uses keystone v3 and you have a DOMAIN_NAME
+or DOMAIN_ID, provide it as `user_domain_(name|id)` and if you are using a
+PROJECT_NAME also provide the domain information as `project_domain_(name|id)`.
 
-.. _Using Sessions: http://docs.openstack.org/developer/python-keystoneclient/using-sessions.html
+For more information on this keystoneauth API, see `Using Sessions`_.
+
+.. _Using Sessions: http://docs.openstack.org/developer/keystoneauth/using-sessions.html
 
 It is also possible to use an instance as a context manager in which case
 there will be a session kept alive for the duration of the with statement::

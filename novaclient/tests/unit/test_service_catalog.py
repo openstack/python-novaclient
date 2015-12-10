@@ -11,7 +11,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from keystoneclient import fixture
+from keystoneauth1 import fixture
 
 from novaclient import exceptions
 from novaclient import service_catalog
