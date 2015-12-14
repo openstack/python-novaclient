@@ -2993,9 +2993,15 @@ def _keypair_create(cs, args, name, pub_key):
     return cs.keypairs.create(name, pub_key)
 
 
-@api_versions.wraps("2.2")
+@api_versions.wraps("2.2", "2.9")
 def _keypair_create(cs, args, name, pub_key):
     return cs.keypairs.create(name, pub_key, key_type=args.key_type)
+
+
+@api_versions.wraps("2.10")
+def _keypair_create(cs, args, name, pub_key):
+    return cs.keypairs.create(name, pub_key, key_type=args.key_type,
+                              user_id=args.user)
 
 
 @cliutils.arg('name', metavar='<name>', help=_('Name of key.'))
@@ -3013,6 +3019,12 @@ def _keypair_create(cs, args, name, pub_key):
     default='ssh',
     help=_('Keypair type. Can be ssh or x509.'),
     start_version="2.2")
+@cliutils.arg(
+    '--user',
+    metavar='<user-id>',
+    default=None,
+    help=_('ID of user to whom to add key-pair (Admin only).'),
+    start_version="2.10")
 def do_keypair_add(cs, args):
     """Create a new key pair for use with servers."""
     name = args.name
@@ -3037,11 +3049,24 @@ def do_keypair_add(cs, args):
         print(private_key)
 
 
+@api_versions.wraps("2.0", "2.9")
 @cliutils.arg('name', metavar='<name>', help=_('Keypair name to delete.'))
 def do_keypair_delete(cs, args):
     """Delete keypair given by its name."""
     name = _find_keypair(cs, args.name)
     cs.keypairs.delete(name)
+
+
+@api_versions.wraps("2.10")
+@cliutils.arg('name', metavar='<name>', help=_('Keypair name to delete.'))
+@cliutils.arg(
+    '--user',
+    metavar='<user-id>',
+    default=None,
+    help=_('Id of key-pair owner (Admin only).'))
+def do_keypair_delete(cs, args):
+    """Delete keypair given by its name."""
+    cs.keypairs.delete(args.name, args.user)
 
 
 @api_versions.wraps("2.0", "2.1")
@@ -3054,9 +3079,23 @@ def _get_keypairs_list_columns(cs, args):
     return ['Name', 'Type', 'Fingerprint']
 
 
+@api_versions.wraps("2.0", "2.9")
 def do_keypair_list(cs, args):
     """Print a list of keypairs for a user"""
     keypairs = cs.keypairs.list()
+    columns = _get_keypairs_list_columns(cs, args)
+    utils.print_list(keypairs, columns)
+
+
+@api_versions.wraps("2.10")
+@cliutils.arg(
+    '--user',
+    metavar='<user-id>',
+    default=None,
+    help=_('List key-pairs of specified user id (Admin only).'))
+def do_keypair_list(cs, args):
+    """Print a list of keypairs for a user"""
+    keypairs = cs.keypairs.list(args.user)
     columns = _get_keypairs_list_columns(cs, args)
     utils.print_list(keypairs, columns)
 
@@ -3068,6 +3107,7 @@ def _print_keypair(keypair):
     print(_("Public key: %s") % pk)
 
 
+@api_versions.wraps("2.0", "2.9")
 @cliutils.arg(
     'keypair',
     metavar='<keypair>',
@@ -3075,6 +3115,22 @@ def _print_keypair(keypair):
 def do_keypair_show(cs, args):
     """Show details about the given keypair."""
     keypair = _find_keypair(cs, args.keypair)
+    _print_keypair(keypair)
+
+
+@api_versions.wraps("2.10")
+@cliutils.arg(
+    'keypair',
+    metavar='<keypair>',
+    help=_("Name of keypair."))
+@cliutils.arg(
+    '--user',
+    metavar='<user-id>',
+    default=None,
+    help=_('Id of key-pair owner (Admin only).'))
+def do_keypair_show(cs, args):
+    """Show details about the given keypair."""
+    keypair = cs.keypairs.get(args.keypair, args.user)
     _print_keypair(keypair)
 
 
