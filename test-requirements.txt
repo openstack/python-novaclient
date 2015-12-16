@@ -18,4 +18,4 @@ testtools>=1.4.0
 tempest-lib>=0.8.0
 
 # releasenotes
-reno>=0.1.1  # Apache2
+reno>=0.1.1 # Apache2
