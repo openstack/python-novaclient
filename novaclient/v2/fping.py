@@ -16,6 +16,7 @@
 """
 Fping interface.
 """
+from six.moves import urllib
 
 from novaclient import base
 
@@ -41,14 +42,14 @@ class FpingManager(base.ManagerWithFind):
         exclude = exclude or []
         params = []
         if all_tenants:
-            params.append("all_tenants=1")
+            params.append(("all_tenants", 1))
         if include:
-            params.append("include=%s" % ",".join(include))
+            params.append(("include", ",".join(include)))
         elif exclude:
-            params.append("exclude=%s" % ",".join(exclude))
+            params.append(("exclude", ",".join(exclude)))
         uri = "/os-fping"
         if params:
-            uri = "%s?%s" % (uri, "&".join(params))
+            uri = "%s?%s" % (uri, urllib.parse.urlencode(params))
         return self._list(uri, "servers")
 
     def get(self, server):
