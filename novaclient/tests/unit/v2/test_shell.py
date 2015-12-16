@@ -1052,8 +1052,22 @@ class ShellTest(utils.TestCase):
         self.run_command('start sample-server')
         self.assert_called('POST', '/servers/1234/action', {'os-start': None})
 
+    def test_start_with_all_tenants(self):
+        self.run_command('start sample-server --all-tenants')
+        self.assert_called('GET',
+                           '/servers?all_tenants=1&name=sample-server', pos=0)
+        self.assert_called('GET', '/servers/1234', pos=1)
+        self.assert_called('POST', '/servers/1234/action', {'os-start': None})
+
     def test_stop(self):
         self.run_command('stop sample-server')
+        self.assert_called('POST', '/servers/1234/action', {'os-stop': None})
+
+    def test_stop_with_all_tenants(self):
+        self.run_command('stop sample-server --all-tenants')
+        self.assert_called('GET',
+                           '/servers?all_tenants=1&name=sample-server', pos=0)
+        self.assert_called('GET', '/servers/1234', pos=1)
         self.assert_called('POST', '/servers/1234/action', {'os-stop': None})
 
     def test_pause(self):
@@ -1635,6 +1649,14 @@ class ShellTest(utils.TestCase):
         self.run_command('reset-state sample-server --active')
         self.assert_called('POST', '/servers/1234/action',
                            {'os-resetState': {'state': 'active'}})
+
+    def test_reset_state_with_all_tenants(self):
+        self.run_command('reset-state sample-server --all-tenants')
+        self.assert_called('GET',
+                           '/servers?all_tenants=1&name=sample-server', pos=0)
+        self.assert_called('GET', '/servers/1234', pos=1)
+        self.assert_called('POST', '/servers/1234/action',
+                           {'os-resetState': {'state': 'error'}})
 
     def test_reset_state_multiple(self):
         self.run_command('reset-state sample-server sample-server2')

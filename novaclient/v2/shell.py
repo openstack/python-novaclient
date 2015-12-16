@@ -1682,26 +1682,40 @@ def do_unpause(cs, args):
 
 
 @cliutils.arg(
+    '--all-tenants',
+    action='store_const',
+    const=1,
+    default=0,
+    help=_('Stop server(s) in another tenant by name (Admin only).'))
+@cliutils.arg(
     'server',
     metavar='<server>', nargs='+',
     help=_('Name or ID of server(s).'))
 def do_stop(cs, args):
     """Stop the server(s)."""
+    find_args = {'all_tenants': args.all_tenants}
     utils.do_action_on_many(
-        lambda s: _find_server(cs, s).stop(),
+        lambda s: _find_server(cs, s, **find_args).stop(),
         args.server,
         _("Request to stop server %s has been accepted."),
         _("Unable to stop the specified server(s)."))
 
 
 @cliutils.arg(
+    '--all-tenants',
+    action='store_const',
+    const=1,
+    default=0,
+    help=_('Start server(s) in another tenant by name (Admin only).'))
+@cliutils.arg(
     'server',
     metavar='<server>', nargs='+',
     help=_('Name or ID of server(s).'))
 def do_start(cs, args):
     """Start the server(s)."""
+    find_args = {'all_tenants': args.all_tenants}
     utils.do_action_on_many(
-        lambda s: _find_server(cs, s).start(),
+        lambda s: _find_server(cs, s, **find_args).start(),
         args.server,
         _("Request to start server %s has been accepted."),
         _("Unable to start the specified server(s)."))
@@ -3644,6 +3658,12 @@ def do_live_migration(cs, args):
 
 
 @cliutils.arg(
+    '--all-tenants',
+    action='store_const',
+    const=1,
+    default=0,
+    help=_('Reset state server(s) in another tenant by name (Admin only).'))
+@cliutils.arg(
     'server', metavar='<server>', nargs='+',
     help=_('Name or ID of server(s).'))
 @cliutils.arg(
@@ -3654,10 +3674,11 @@ def do_live_migration(cs, args):
 def do_reset_state(cs, args):
     """Reset the state of a server."""
     failure_flag = False
+    find_args = {'all_tenants': args.all_tenants}
 
     for server in args.server:
         try:
-            _find_server(cs, server).reset_state(args.state)
+            _find_server(cs, server, **find_args).reset_state(args.state)
             msg = "Reset state for server %s succeeded; new state is %s"
             print(msg % (server, args.state))
         except Exception as e:
