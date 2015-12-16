@@ -343,7 +343,7 @@ def get_substitutions(func_name, api_version=None):
     if api_version and not api_version.is_null():
         return [m for m in substitutions
                 if api_version.matches(m.start_version, m.end_version)]
-    return substitutions
+    return sorted(substitutions, key=lambda m: m.start_version)
 
 
 def wraps(start_version, end_version=None):
@@ -368,9 +368,7 @@ def wraps(start_version, end_version=None):
                 raise exceptions.VersionNotFoundForAPIMethod(
                     obj.api_version.get_string(), name)
 
-            method = max(methods, key=lambda f: f.start_version)
-
-            return method.func(obj, *args, **kwargs)
+            return methods[-1].func(obj, *args, **kwargs)
 
         if hasattr(func, 'arguments'):
             for cli_args, cli_kwargs in func.arguments:

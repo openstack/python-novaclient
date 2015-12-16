@@ -582,12 +582,27 @@ class TestLoadVersionedActions(utils.TestCase):
         shell = novaclient.shell.OpenStackComputeShell()
         shell.subcommands = {}
         shell._find_actions(subparsers, fake_actions_module,
-                            api_versions.APIVersion("2.10000"), True)
+                            api_versions.APIVersion("2.15"), True)
         self.assertIn('fake-action', shell.subcommands.keys())
-        expected_desc = ("(Supported by API versions '%(start)s' - "
+        expected_desc = (" (Supported by API versions '%(start)s' - "
                          "'%(end)s')") % {'start': '2.10', 'end': '2.30'}
-        self.assertIn(expected_desc,
-                      shell.subcommands['fake-action'].description)
+        self.assertEqual(expected_desc,
+                         shell.subcommands['fake-action'].description)
+
+    def test_load_versioned_actions_with_help_on_latest(self):
+        parser = novaclient.shell.NovaClientArgumentParser()
+        subparsers = parser.add_subparsers(metavar='<subcommand>')
+        shell = novaclient.shell.OpenStackComputeShell()
+        shell.subcommands = {}
+        shell._find_actions(subparsers, fake_actions_module,
+                            api_versions.APIVersion("2.latest"), True)
+        self.assertIn('another-fake-action', shell.subcommands.keys())
+        expected_desc = (" (Supported by API versions '%(start)s' - "
+                         "'%(end)s')%(hint)s") % {
+            'start': '2.0', 'end': '2.latest',
+            'hint': novaclient.shell.HINT_HELP_MSG}
+        self.assertEqual(expected_desc,
+                         shell.subcommands['another-fake-action'].description)
 
     @mock.patch.object(novaclient.shell.NovaClientArgumentParser,
                        'add_argument')
@@ -641,7 +656,6 @@ class TestLoadVersionedActions(utils.TestCase):
         shell._find_actions(subparsers, fake_actions_module,
                             api_versions.APIVersion("2.4"), True)
         mock_add_arg.assert_has_calls([
-            mock.call('-h', '--help', action='help', help='==SUPPRESS=='),
             mock.call('-h', '--help', action='help', help='==SUPPRESS=='),
             mock.call('--foo',
                       help=" (Supported by API versions '2.1' - '2.2')"),
