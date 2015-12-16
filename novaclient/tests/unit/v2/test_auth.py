@@ -14,7 +14,7 @@
 import copy
 import json
 
-from keystoneclient import fixture
+from keystoneauth1 import fixture
 import mock
 import requests
 

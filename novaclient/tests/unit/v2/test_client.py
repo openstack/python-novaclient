@@ -12,7 +12,7 @@
 
 import uuid
 
-from keystoneclient import session
+from keystoneauth1 import session
 
 from novaclient.tests.unit import utils
 from novaclient.v2 import client

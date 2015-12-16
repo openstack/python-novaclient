@@ -1,0 +1,11 @@
+---
+features:
+- keystoneauth plugins are now supported.
+upgrade:
+- novaclient now requires the keystoneauth library.
+deprecations:
+- novaclient auth strategy plugins are deprecated. Please use
+  keystoneauth auth plugins instead.
+- nova credentials is deprecated. Please use openstack token issue
+- nova endpoints is deprecated. Please use openstack catalog list
+  instead.

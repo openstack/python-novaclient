@@ -18,7 +18,7 @@ import json
 import logging
 
 import fixtures
-from keystoneclient import adapter
+from keystoneauth1 import adapter
 import mock
 import requests
 
@@ -30,7 +30,7 @@ import novaclient.v2.client
 
 class ClientConnectionPoolTest(utils.TestCase):
 
-    @mock.patch("keystoneclient.session.TCPKeepAliveAdapter")
+    @mock.patch("keystoneauth1.session.TCPKeepAliveAdapter")
     def test_get(self, mock_http_adapter):
         mock_http_adapter.side_effect = lambda: mock.Mock()
         pool = novaclient.client._ClientConnectionPool()

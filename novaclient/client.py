@@ -32,8 +32,8 @@ import pkgutil
 import re
 import warnings
 
-from keystoneclient import adapter
-from keystoneclient import session
+from keystoneauth1 import adapter
+from keystoneauth1 import session
 from oslo_utils import importutils
 from oslo_utils import netutils
 import pkg_resources
@@ -80,7 +80,7 @@ class SessionClient(adapter.LegacyJsonAdapter):
         kwargs.setdefault('headers', kwargs.get('headers', {}))
         api_versions.update_headers(kwargs["headers"], self.api_version)
         # NOTE(jamielennox): The standard call raises errors from
-        # keystoneclient, where we need to raise the novaclient errors.
+        # keystoneauth1, where we need to raise the novaclient errors.
         raise_exc = kwargs.pop('raise_exc', True)
         with utils.record_time(self.times, self.timings, method, url):
             resp, body = super(SessionClient, self).request(url,
@@ -680,6 +680,8 @@ def _construct_http_client(username=None, password=None, project_id=None,
                            user_id=None, connection_pool=False, session=None,
                            auth=None, user_agent='python-novaclient',
                            interface=None, api_version=None, **kwargs):
+    # TODO(mordred): If not session, just make a Session, then return
+    # SessionClient always
     if session:
         return SessionClient(session=session,
                              auth=auth,
@@ -806,7 +808,7 @@ def Client(version, *args, **kwargs):
     (where X is a microversion).
 
 
-    Alternatively, you can create a client instance using the keystoneclient
+    Alternatively, you can create a client instance using the keystoneauth
     session API. See "The novaclient Python API" page at
     python-novaclient's doc.
     """

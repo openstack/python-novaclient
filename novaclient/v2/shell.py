@@ -27,6 +27,7 @@ import logging
 import os
 import sys
 import time
+import warnings
 
 from oslo_utils import encodeutils
 from oslo_utils import strutils
@@ -3951,10 +3952,11 @@ def ensure_service_catalog_present(cs):
 
 def do_endpoints(cs, _args):
     """Discover endpoints that get returned from the authenticate services."""
+    warnings.warn(
+        "nova endpoints is deprecated, use openstack catalog list instead")
     if isinstance(cs.client, client.SessionClient):
-        auth = cs.client.auth
-        sc = auth.get_access(cs.client.session).service_catalog
-        for service in sc.get_data():
+        access = cs.client.auth.get_access(cs.client.session)
+        for service in access.service_catalog.catalog:
             _print_endpoints(service, cs.client.region_name)
     else:
         ensure_service_catalog_present(cs)
@@ -4003,12 +4005,14 @@ def _get_first_endpoint(endpoints, region):
     help=_('Wrap PKI tokens to a specified length, or 0 to disable.'))
 def do_credentials(cs, _args):
     """Show user credentials returned from auth."""
+    warnings.warn(
+        "nova credentials is deprecated, use openstack client instead")
     if isinstance(cs.client, client.SessionClient):
-        auth = cs.client.auth
-        sc = auth.get_access(cs.client.session).service_catalog
-        utils.print_dict(sc.catalog['user'], 'User Credentials',
+        access = cs.client.auth.get_access(cs.client.session)
+        utils.print_dict(access._user, 'User Credentials',
                          wrap=int(_args.wrap))
-        utils.print_dict(sc.get_token(), 'Token', wrap=int(_args.wrap))
+        if hasattr(access, '_token'):
+            utils.print_dict(access._token, 'Token', wrap=int(_args.wrap))
     else:
         ensure_service_catalog_present(cs)
         catalog = cs.client.service_catalog.catalog

@@ -23,11 +23,9 @@ import argparse
 import getpass
 import logging
 import sys
+import warnings
 
-from keystoneclient.auth.identity.generic import password
-from keystoneclient.auth.identity.generic import token
-from keystoneclient.auth.identity import v3 as identity
-from keystoneclient import session as ksession
+from keystoneauth1 import loading
 from oslo_utils import encodeutils
 from oslo_utils import importutils
 from oslo_utils import strutils
@@ -249,23 +247,33 @@ class NovaClientArgumentParser(argparse.ArgumentParser):
 class OpenStackComputeShell(object):
     times = []
 
-    def _append_global_identity_args(self, parser):
+    def _append_global_identity_args(self, parser, argv):
         # Register the CLI arguments that have moved to the session object.
-        ksession.Session.register_cli_options(parser)
+        loading.register_session_argparse_arguments(parser)
+        # Peek into argv to see if os-auth-token or os-token were given,
+        # in which case, the token auth plugin is what the user wants
+        # else, we'll default to password
+        default_auth_plugin = 'password'
+        if 'os-token' in argv:
+            default_auth_plugin = 'token'
+        loading.register_auth_argparse_arguments(
+            parser, argv, default=default_auth_plugin)
 
         parser.set_defaults(insecure=cliutils.env('NOVACLIENT_INSECURE',
                             default=False))
-
-        identity.Password.register_argparse_arguments(parser)
+        parser.set_defaults(os_auth_url=cliutils.env('OS_AUTH_URL',
+                                                     'NOVA_URL'))
 
         parser.set_defaults(os_username=cliutils.env('OS_USERNAME',
                                                      'NOVA_USERNAME'))
         parser.set_defaults(os_password=cliutils.env('OS_PASSWORD',
                                                      'NOVA_PASSWORD'))
-        parser.set_defaults(os_auth_url=cliutils.env('OS_AUTH_URL',
-                                                     'NOVA_URL'))
+        parser.set_defaults(os_project_name=cliutils.env(
+            'OS_PROJECT_NAME', 'OS_TENANT_NAME', 'NOVA_PROJECT_ID'))
+        parser.set_defaults(os_project_id=cliutils.env(
+            'OS_PROJECT_ID', 'OS_TENANT_ID'))
 
-    def get_base_parser(self):
+    def get_base_parser(self, argv):
         parser = NovaClientArgumentParser(
             prog='nova',
             description=__doc__.strip(),
@@ -308,8 +316,7 @@ class OpenStackComputeShell(object):
 
         parser.add_argument(
             '--os-auth-token',
-            default=cliutils.env('OS_AUTH_TOKEN'),
-            help='Defaults to env[OS_AUTH_TOKEN].')
+            help=argparse.SUPPRESS)
 
         parser.add_argument(
             '--os_username',
@@ -320,19 +327,8 @@ class OpenStackComputeShell(object):
             help=argparse.SUPPRESS)
 
         parser.add_argument(
-            '--os-tenant-name',
-            metavar='<auth-tenant-name>',
-            default=cliutils.env('OS_TENANT_NAME', 'NOVA_PROJECT_ID'),
-            help=_('Defaults to env[OS_TENANT_NAME].'))
-        parser.add_argument(
             '--os_tenant_name',
             help=argparse.SUPPRESS)
-
-        parser.add_argument(
-            '--os-tenant-id',
-            metavar='<auth-tenant-id>',
-            default=cliutils.env('OS_TENANT_ID'),
-            help=_('Defaults to env[OS_TENANT_ID].'))
 
         parser.add_argument(
             '--os_auth_url',
@@ -351,7 +347,7 @@ class OpenStackComputeShell(object):
             '--os-auth-system',
             metavar='<auth-system>',
             default=cliutils.env('OS_AUTH_SYSTEM'),
-            help='Defaults to env[OS_AUTH_SYSTEM].')
+            help=argparse.SUPPRESS)
         parser.add_argument(
             '--os_auth_system',
             help=argparse.SUPPRESS)
@@ -429,12 +425,12 @@ class OpenStackComputeShell(object):
         # The auth-system-plugins might require some extra options
         novaclient.auth_plugin.load_auth_system_opts(parser)
 
-        self._append_global_identity_args(parser)
+        self._append_global_identity_args(parser, argv)
 
         return parser
 
-    def get_subcommand_parser(self, version, do_help=False):
-        parser = self.get_base_parser()
+    def get_subcommand_parser(self, version, do_help=False, argv=None):
+        parser = self.get_base_parser(argv)
 
         self.subcommands = {}
         subparsers = parser.add_subparsers(metavar='<subcommand>')
@@ -539,23 +535,9 @@ class OpenStackComputeShell(object):
                             format=streamformat)
         logging.getLogger('iso8601').setLevel(logging.WARNING)
 
-    def _get_keystone_auth(self, session, auth_url, **kwargs):
-        auth_token = kwargs.pop('auth_token', None)
-        if auth_token:
-            return token.Token(auth_url, auth_token, **kwargs)
-        else:
-            return password.Password(
-                auth_url,
-                username=kwargs.pop('username'),
-                user_id=kwargs.pop('user_id'),
-                password=kwargs.pop('password'),
-                user_domain_id=kwargs.pop('user_domain_id'),
-                user_domain_name=kwargs.pop('user_domain_name'),
-                **kwargs)
-
     def main(self, argv):
         # Parse args once to find version and debug settings
-        parser = self.get_base_parser()
+        parser = self.get_base_parser(argv)
 
         # NOTE(dtroyer): Hackery to handle --endpoint_type due to argparse
         #                thinking usage-list --end is ambiguous; but it
@@ -564,6 +546,10 @@ class OpenStackComputeShell(object):
         if '--endpoint_type' in argv:
             spot = argv.index('--endpoint_type')
             argv[spot] = '--endpoint-type'
+        # For backwards compat with old os-auth-token parameter
+        if '--os-auth-token' in argv:
+            spot = argv.index('--os-auth-token')
+            argv[spot] = '--os-token'
 
         (args, args_list) = parser.parse_known_args(argv)
 
@@ -589,8 +575,10 @@ class OpenStackComputeShell(object):
         os_username = args.os_username
         os_user_id = args.os_user_id
         os_password = None  # Fetched and set later as needed
-        os_tenant_name = args.os_tenant_name
-        os_tenant_id = args.os_tenant_id
+        os_project_name = getattr(
+            args, 'os_project_name', getattr(args, 'os_tenant_name', None))
+        os_project_id = getattr(
+            args, 'os_project_id', getattr(args, 'os_tenant_id', None))
         os_auth_url = args.os_auth_url
         os_region_name = args.os_region_name
         os_auth_system = args.os_auth_system
@@ -613,10 +601,14 @@ class OpenStackComputeShell(object):
         # Finally, authenticate unless we have both.
         # Note if we don't auth we probably don't have a tenant ID so we can't
         # cache the token.
-        auth_token = args.os_auth_token if args.os_auth_token else None
+        auth_token = getattr(args, 'os_token', None)
         management_url = bypass_url if bypass_url else None
 
         if os_auth_system and os_auth_system != "keystone":
+            warnings.warn(_(
+                'novaclient auth plugins that are not keystone are deprecated.'
+                ' Auth plugins should now be done as plugins to keystoneauth'
+                ' and selected with --os-auth-type or OS_AUTH_TYPE'))
             auth_plugin = novaclient.auth_plugin.load_plugin(os_auth_system)
         else:
             auth_plugin = None
@@ -658,8 +650,7 @@ class OpenStackComputeShell(object):
                           "or user id via --os-username, --os-user-id, "
                           "env[OS_USERNAME] or env[OS_USER_ID]"))
 
-            if not any([args.os_tenant_name, args.os_tenant_id,
-                        args.os_project_id, args.os_project_name]):
+            if not any([os_project_name, os_project_id]):
                 raise exc.CommandError(_("You must provide a project name or"
                                          " project id via --os-project-name,"
                                          " --os-project-id, env[OS_PROJECT_ID]"
@@ -679,34 +670,20 @@ class OpenStackComputeShell(object):
                           "default url with --os-auth-system "
                           "or env[OS_AUTH_SYSTEM]"))
 
-            project_id = args.os_project_id or args.os_tenant_id
-            project_name = args.os_project_name or args.os_tenant_name
             if use_session:
                 # Not using Nova auth plugin, so use keystone
                 with utils.record_time(self.times, args.timings,
                                        'auth_url', args.os_auth_url):
-                    keystone_session = (ksession.Session
-                                        .load_from_cli_options(args))
-                    keystone_auth = self._get_keystone_auth(
-                        keystone_session,
-                        args.os_auth_url,
-                        username=args.os_username,
-                        user_id=args.os_user_id,
-                        user_domain_id=args.os_user_domain_id,
-                        user_domain_name=args.os_user_domain_name,
-                        password=args.os_password,
-                        auth_token=args.os_auth_token,
-                        project_id=project_id,
-                        project_name=project_name,
-                        project_domain_id=args.os_project_domain_id,
-                        project_domain_name=args.os_project_domain_name)
+                    keystone_session = (
+                        loading.load_session_from_argparse_arguments(args))
+                    keystone_auth = (
+                        loading.load_auth_from_argparse_arguments(args))
             else:
                 # set password for auth plugins
                 os_password = args.os_password
 
         if (not skip_auth and
-                not any([args.os_tenant_id, args.os_tenant_name,
-                         args.os_project_id, args.os_project_name])):
+                not any([os_project_name, os_project_id])):
             raise exc.CommandError(_("You must provide a project name or"
                                      " project id via --os-project-name,"
                                      " --os-project-id, env[OS_PROJECT_ID]"
@@ -723,8 +700,8 @@ class OpenStackComputeShell(object):
         # microversion, so we just pass version 2 at here.
         self.cs = client.Client(
             api_versions.APIVersion("2.0"),
-            os_username, os_password, os_tenant_name,
-            tenant_id=os_tenant_id, user_id=os_user_id,
+            os_username, os_password, os_project_name,
+            tenant_id=os_project_id, user_id=os_user_id,
             auth_url=os_auth_url, insecure=insecure,
             region_name=os_region_name, endpoint_type=endpoint_type,
             extensions=self.extensions, service_type=service_type,
@@ -755,7 +732,7 @@ class OpenStackComputeShell(object):
         self._run_extension_hooks('__pre_parse_args__')
 
         subcommand_parser = self.get_subcommand_parser(
-            api_version, do_help=do_help)
+            api_version, do_help=do_help, argv=argv)
         self.parser = subcommand_parser
 
         if args.help or not argv:
@@ -787,8 +764,8 @@ class OpenStackComputeShell(object):
         # Recreate client object with discovered version.
         self.cs = client.Client(
             api_version,
-            os_username, os_password, os_tenant_name,
-            tenant_id=os_tenant_id, user_id=os_user_id,
+            os_username, os_password, os_project_name,
+            tenant_id=os_project_id, user_id=os_user_id,
             auth_url=os_auth_url, insecure=insecure,
             region_name=os_region_name, endpoint_type=endpoint_type,
             extensions=self.extensions, service_type=service_type,
