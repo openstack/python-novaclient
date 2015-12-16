@@ -197,13 +197,7 @@ def find_resource(manager, name_or_id, **find_args):
         except exceptions.NotFound:
             pass
 
-    # try to get entity as integer id
-    try:
-        return manager.get(int(name_or_id))
-    except (TypeError, ValueError, exceptions.NotFound):
-        pass
-
-    # now try to get entity as uuid
+    # first try to get entity as uuid
     try:
         tmp_id = encodeutils.safe_encode(name_or_id)
 
@@ -215,6 +209,7 @@ def find_resource(manager, name_or_id, **find_args):
     except (TypeError, ValueError, exceptions.NotFound):
         pass
 
+    # then try to get entity as name
     try:
         try:
             resource = getattr(manager, 'resource_class', None)
@@ -225,17 +220,23 @@ def find_resource(manager, name_or_id, **find_args):
         except exceptions.NotFound:
             pass
 
-        # finally try to find entity by human_id
+        # then try to find entity by human_id
         try:
             return manager.find(human_id=name_or_id, **find_args)
         except exceptions.NotFound:
-            msg = (_("No %(class)s with a name or ID of '%(name)s' exists.") %
-                   {'class': manager.resource_class.__name__.lower(),
-                    'name': name_or_id})
-            raise exceptions.CommandError(msg)
+            pass
     except exceptions.NoUniqueMatch:
         msg = (_("Multiple %(class)s matches found for '%(name)s', use an ID "
                  "to be more specific.") %
+               {'class': manager.resource_class.__name__.lower(),
+                'name': name_or_id})
+        raise exceptions.CommandError(msg)
+
+    # finally try to get entity as integer id
+    try:
+        return manager.get(int(name_or_id))
+    except (TypeError, ValueError, exceptions.NotFound):
+        msg = (_("No %(class)s with a name or ID of '%(name)s' exists.") %
                {'class': manager.resource_class.__name__.lower(),
                 'name': name_or_id})
         raise exceptions.CommandError(msg)
