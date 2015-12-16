@@ -20,6 +20,8 @@ import six
 import tempest_lib.cli.base
 import testtools
 
+import novaclient
+import novaclient.api_versions
 import novaclient.client
 
 
@@ -146,11 +148,12 @@ class ClientTestBase(testtools.TestCase):
         tenant = auth_info['project_name']
         auth_url = auth_info['auth_url']
 
-        # TODO(sdague): we made a lot of fun of the glanceclient team
-        # for version as int in first parameter. I guess we know where
-        # they copied it from.
+        if self.COMPUTE_API_VERSION == "2.latest":
+            version = novaclient.API_MAX_VERSION.get_string()
+        else:
+            version = self.COMPUTE_API_VERSION or "2"
         self.client = novaclient.client.Client(
-            2, user, passwd, tenant,
+            version, user, passwd, tenant,
             auth_url=auth_url)
 
         # pick some reasonable flavor / image combo
