@@ -2450,8 +2450,8 @@ def do_get_serial_console(cs, args):
     print_console(cs, data)
 
 
-@cliutils.arg('server', metavar='<server>', help=_('Name or ID of server.'))
 @api_versions.wraps('2.8')
+@cliutils.arg('server', metavar='<server>', help=_('Name or ID of server.'))
 def do_get_mks_console(cs, args):
     """Get a serial console to a server."""
     server = _find_server(cs, args.server)
