@@ -2576,6 +2576,10 @@ class ShellTest(utils.TestCase):
         self.run_command('server-group-list --all-projects')
         self.assert_called('GET', '/os-server-groups?all_projects')
 
+    def test_list_server_os_virtual_interfaces(self):
+        self.run_command('virtual-interface-list 1234')
+        self.assert_called('GET', '/servers/1234/os-virtual-interfaces')
+
     def test_versions(self):
         exclusions = set([
             1,   # Same as version 2.0
