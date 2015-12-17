@@ -118,8 +118,7 @@ class ShellTest(utils.TestCase):
         self.useFixture(fixtures.MonkeyPatch(
                         'novaclient.client.Client',
                         mock.MagicMock()))
-        self.nc_util = mock.patch(
-            'novaclient.openstack.common.cliutils.isunauthenticated').start()
+        self.nc_util = mock.patch('novaclient.utils.isunauthenticated').start()
         self.nc_util.return_value = False
         self.mock_server_version_range = mock.patch(
             'novaclient.api_versions._get_server_version_range').start()

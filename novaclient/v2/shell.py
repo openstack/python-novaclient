@@ -3618,7 +3618,7 @@ def _print_aggregate_details(aggregate):
         return utils.pretty_choice_dict(getattr(fields, 'metadata', {}) or {})
 
     def parser_hosts(fields):
-        return cliutils.pretty_choice_list(getattr(fields, 'hosts', []))
+        return utils.pretty_choice_list(getattr(fields, 'hosts', []))
 
     formatters = {
         'Metadata': parser_metadata,
@@ -4600,7 +4600,7 @@ def _treeizeAvailabilityZone(zone):
     return result
 
 
-@cliutils.service_type('compute')
+@utils.service_type('compute')
 def do_availability_zone_list(cs, _args):
     """List all the availability zones."""
     try:
