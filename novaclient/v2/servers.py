@@ -569,7 +569,11 @@ class ServerManager(base.BootingManagerWithFind):
         Get a list of servers.
 
         :param detailed: Whether to return detailed server info (optional).
-        :param search_opts: Search options to filter out servers (optional).
+        :param search_opts: Search options to filter out servers which don't
+            match the search_opts (optional). The search opts format is a
+            dictionary of key / value pairs that will be appended to the query
+            string.  For a complete list of keys see:
+            http://developer.openstack.org/api-ref-compute-v2.html#listServers
         :param marker: Begin returning servers that appear later in the server
                        list than that represented by this server id (optional).
         :param limit: Maximum number of servers to return (optional).
@@ -577,6 +581,16 @@ class ServerManager(base.BootingManagerWithFind):
         :param sort_dirs: List of sort directions
 
         :rtype: list of :class:`Server`
+
+        Examples:
+
+        client.servers.list() - returns detailed list of servers
+
+        client.servers.list(search_opts={'status': 'ERROR'}) -
+        returns list of servers in error state.
+
+        client.servers.list(limit=10) - returns only 10 servers
+
         """
         if search_opts is None:
             search_opts = {}
