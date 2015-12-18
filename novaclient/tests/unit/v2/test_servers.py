@@ -871,3 +871,17 @@ class ServersV28Test(ServersV26Test):
 
         self.cs.servers.get_mks_console(s)
         self.assert_called('POST', '/servers/1234/remote-consoles')
+
+
+class ServersV214Test(ServersV28Test):
+    def setUp(self):
+        super(ServersV214Test, self).setUp()
+        self.cs.api_version = api_versions.APIVersion("2.14")
+
+    def test_evacuate(self):
+        s = self.cs.servers.get(1234)
+        s.evacuate('fake_target_host')
+        self.assert_called('POST', '/servers/1234/action')
+        self.cs.servers.evacuate(s, 'fake_target_host',
+                                 password='NewAdminPassword')
+        self.assert_called('POST', '/servers/1234/action')
