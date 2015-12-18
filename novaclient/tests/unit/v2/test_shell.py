@@ -976,6 +976,12 @@ class ShellTest(utils.TestCase):
         self.assertIn('OS-EXT-MOD: Some Thing', output)
         self.assertIn('mod_some_thing_value', output)
 
+    def test_list_invalid_fields(self):
+        self.assertRaises(exceptions.CommandError,
+                          self.run_command,
+                          'list --fields host,security_groups,'
+                          'OS-EXT-MOD:some_thing,invalid')
+
     def test_list_with_marker(self):
         self.run_command('list --marker some-uuid')
         self.assert_called('GET', '/servers/detail?marker=some-uuid')
@@ -1988,6 +1994,11 @@ class ShellTest(utils.TestCase):
         self.assert_called('GET', '/os-networks')
         self.assertIn('1234', output)
         self.assertIn('4ffc664c198e435e9853f2538fbcd7a7', output)
+
+    def test_network_list_invalid_fields(self):
+        self.assertRaises(exceptions.CommandError,
+                          self.run_command,
+                          'network-list --fields vlan,project_id,invalid')
 
     def test_network_show(self):
         self.run_command('network-show 1')

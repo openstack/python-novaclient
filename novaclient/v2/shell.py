@@ -914,11 +914,19 @@ def do_network_list(cs, args):
 
     formatters = {}
     field_titles = []
+    non_existent_fields = []
     if args.fields:
         for field in args.fields.split(','):
+            if network_list and not hasattr(network_list[0], field):
+                non_existent_fields.append(field)
+                continue
             field_title, formatter = utils._make_field_formatter(field, {})
             field_titles.append(field_title)
             formatters[field_title] = formatter
+        if non_existent_fields:
+            raise exceptions.CommandError(
+                _("Non-existent fields are specified: %s")
+                % non_existent_fields)
 
     columns = columns + field_titles
     utils.print_list(network_list, columns)
@@ -1424,15 +1432,6 @@ def do_list(cs, args):
     filters = {'flavor': lambda f: f['id'],
                'security_groups': utils._format_security_groups}
 
-    formatters = {}
-    field_titles = []
-    if args.fields:
-        for field in args.fields.split(','):
-            field_title, formatter = utils._make_field_formatter(field,
-                                                                 filters)
-            field_titles.append(field_title)
-            formatters[field_title] = formatter
-
     id_col = 'ID'
 
     detailed = not args.minimal
@@ -1463,6 +1462,24 @@ def do_list(cs, args):
                ('hostId', 'host_id')]
     _translate_keys(servers, convert)
     _translate_extended_states(servers)
+
+    formatters = {}
+    field_titles = []
+    non_existent_fields = []
+    if args.fields:
+        for field in args.fields.split(','):
+            if servers and not hasattr(servers[0], field):
+                non_existent_fields.append(field)
+                continue
+            field_title, formatter = utils._make_field_formatter(field,
+                                                                 filters)
+            field_titles.append(field_title)
+            formatters[field_title] = formatter
+        if non_existent_fields:
+            raise exceptions.CommandError(
+                _("Non-existent fields are specified: %s")
+                % non_existent_fields)
+
     if args.minimal:
         columns = [
             id_col,
