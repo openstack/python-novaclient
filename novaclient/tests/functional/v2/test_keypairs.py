@@ -10,8 +10,6 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import tempest_lib.cli.base
-
 from novaclient.tests.functional import base
 from novaclient.tests.functional.v2 import fake_crypto
 from novaclient.tests.functional.v2.legacy import test_keypairs
@@ -46,35 +44,10 @@ class TestKeypairsNovaClientV22(test_keypairs.TestKeypairsNovaClient):
         self.assertIn('x509', keypair)
 
 
-class TestKeypairsNovaClientV210(base.ClientTestBase):
-    """Keypairs functional tests for v2.10 nova-api microversion.
-    """
+class TestKeypairsNovaClientV210(base.TenantTestBase):
+    """Keypairs functional tests for v2.10 nova-api microversion."""
 
     COMPUTE_API_VERSION = "2.10"
-
-    def setUp(self):
-        super(TestKeypairsNovaClientV210, self).setUp()
-        user_name = self.name_generate("v2.10")
-        password = "password"
-        user = self.cli_clients.keystone(
-            "user-create --name %(name)s --pass %(pass)s --tenant %(tenant)s" %
-            {"name": user_name, "pass": password,
-             "tenant": self.cli_clients.tenant_name})
-        self.user_id = self._get_value_from_the_table(user, "id")
-        self.addCleanup(self.cli_clients.keystone,
-                        "user-delete %s" % self.user_id)
-        self.cli_clients_2 = tempest_lib.cli.base.CLIClient(
-            username=user_name,
-            password=password,
-            tenant_name=self.cli_clients.tenant_name,
-            uri=self.cli_clients.uri,
-            cli_dir=self.cli_clients.cli_dir)
-
-    def another_nova(self, action, flags='', params='', fail_ok=False,
-                     endpoint_type='publicURL', merge_stderr=False):
-        flags += " --os-compute-api-version %s " % self.COMPUTE_API_VERSION
-        return self.cli_clients_2.nova(action, flags, params, fail_ok,
-                                       endpoint_type, merge_stderr)
 
     def test_create_and_list_keypair(self):
         name = self.name_generate("v2_10")
