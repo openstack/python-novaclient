@@ -4919,10 +4919,22 @@ def do_version_list(cs, args):
     utils.print_list(result, columns)
 
 
+@api_versions.wraps("2.0", "2.11")
+def _print_virtual_interface_list(cs, interface_list):
+    columns = ['Id', 'Mac address']
+    utils.print_list(interface_list, columns)
+
+
+@api_versions.wraps("2.12")
+def _print_virtual_interface_list(cs, interface_list):
+    columns = ['Id', 'Mac address', 'Network ID']
+    formatters = {"Network ID": lambda o: o.net_id}
+    utils.print_list(interface_list, columns, formatters)
+
+
 @cliutils.arg('server', metavar='<server>', help=_('ID of server.'))
 def do_virtual_interface_list(cs, args):
     """Show virtual interface info about the given server."""
     server = _find_server(cs, args.server)
     interface_list = cs.virtual_interfaces.list(base.getid(server))
-    columns = ['Id', 'Mac address']
-    utils.print_list(interface_list, columns)
+    _print_virtual_interface_list(cs, interface_list)
