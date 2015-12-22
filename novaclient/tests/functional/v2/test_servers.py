@@ -10,8 +10,6 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import uuid
-
 from novaclient.tests.functional import base
 from novaclient.tests.functional.v2.legacy import test_servers
 
@@ -39,11 +37,7 @@ class TestServerLockV29(base.ClientTestBase):
 
     def test_attribute_presented(self):
         # prepare
-        name = str(uuid.uuid4())
-        network = self.client.networks.list()[0]
-        server = self.client.servers.create(
-            name, self.image, self.flavor, nics=[{"net-id": network.id}])
-        self.addCleanup(server.delete)
+        server = self._create_server()
 
         # testing
         self._show_server_and_check_lock_attr(server, False)
@@ -60,13 +54,8 @@ class TestServersDescription(base.ClientTestBase):
     COMPUTE_API_VERSION = "2.19"
 
     def _boot_server_with_description(self):
-        name = str(uuid.uuid4())
-        network = self.client.networks.list()[0]
         descr = "Some words about this test VM."
-        server = self.client.servers.create(
-            name, self.image, self.flavor, nics=[{"net-id": network.id}],
-            description=descr)
-        self.addCleanup(server.delete)
+        server = self._create_server(description=descr)
 
         self.assertEqual(descr, server.description)
 

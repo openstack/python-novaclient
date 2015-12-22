@@ -14,7 +14,6 @@
 from oslo_utils import strutils
 
 from novaclient.tests.functional import base
-from novaclient.v2 import shell
 
 
 class TestFixedIPsNovaClient(base.ClientTestBase):
@@ -22,17 +21,8 @@ class TestFixedIPsNovaClient(base.ClientTestBase):
 
     COMPUTE_API_VERSION = '2.1'
 
-    def _create_server(self):
-        name = self.name_generate(prefix='server')
-        server = self.client.servers.create(name, self.image, self.flavor)
-        shell._poll_for_status(
-            self.client.servers.get, server.id,
-            'building', ['active'])
-        self.addCleanup(server.delete)
-        return server
-
     def _test_fixedip_get(self, expect_reserved=False):
-        server = self._create_server()
+        server = self._create_server(with_network=False)
         networks = server.networks
         self.assertIn('private', networks)
         fixed_ip = networks['private'][0]

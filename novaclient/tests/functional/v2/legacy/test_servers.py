@@ -13,7 +13,6 @@
 import uuid
 
 from novaclient.tests.functional import base
-from novaclient.v2 import shell
 
 
 class TestServersBootNovaClient(base.ClientTestBase):
@@ -75,17 +74,7 @@ class TestServersListNovaClient(base.ClientTestBase):
     COMPUTE_API_VERSION = "2.1"
 
     def _create_servers(self, name, number):
-        servers = []
-        for i in range(number):
-            servers.append(self.client.servers.create(
-                name, self.image, self.flavor,
-                nics=[{"net-id": self.network.id}]))
-            shell._poll_for_status(
-                self.client.servers.get, servers[-1].id,
-                'building', ['active'])
-
-            self.addCleanup(servers[-1].delete)
-        return servers
+        return [self._create_server(name) for i in range(number)]
 
     def test_list_with_limit(self):
         name = str(uuid.uuid4())

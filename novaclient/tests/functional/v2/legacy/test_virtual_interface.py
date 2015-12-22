@@ -12,24 +12,12 @@
 #    under the License.
 
 from novaclient.tests.functional import base
-from novaclient.v2 import shell
 
 
 class TestVirtualInterfacesNovaClient(base.ClientTestBase):
     """Virtual Interfaces functional tests."""
 
     COMPUTE_API_VERSION = "2.1"
-
-    def _create_server(self):
-        name = self.name_generate(prefix='server')
-        network = self.client.networks.list()[0]
-        server = self.client.servers.create(
-            name, self.image, self.flavor, nics=[{"net-id": network.id}])
-        shell._poll_for_status(
-            self.client.servers.get, server.id,
-            'building', ['active'])
-        self.addCleanup(server.delete)
-        return server
 
     def test_virtual_interface_list(self):
         server = self._create_server()

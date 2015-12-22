@@ -13,7 +13,6 @@
 import json
 
 from novaclient.tests.functional import base
-from novaclient.v2 import shell
 
 
 class TestExtAttrNovaClient(base.ClientTestBase):
@@ -22,16 +21,11 @@ class TestExtAttrNovaClient(base.ClientTestBase):
     COMPUTE_API_VERSION = "2.1"
 
     def _create_server_and_attach_volume(self):
-        name = self.name_generate(prefix='server')
-        server = self.client.servers.create(name, self.image, self.flavor)
-        self.addCleanup(server.delete)
-        shell._poll_for_status(
-            self.client.servers.get, server.id,
-            'building', ['active'])
+        server = self._create_server()
         volume = self.client.volumes.create(1)
         self.addCleanup(self.nova, 'volume-delete', params=volume.id)
         self.wait_for_volume_status(volume, 'available')
-        self.nova('volume-attach', params="%s %s" % (name, volume.id))
+        self.nova('volume-attach', params="%s %s" % (server.name, volume.id))
         self.addCleanup(self._release_volume, server, volume)
         self.wait_for_volume_status(volume, 'in-use')
         return server, volume

@@ -23,6 +23,7 @@ import testtools
 import novaclient
 import novaclient.api_versions
 import novaclient.client
+import novaclient.v2.shell
 
 
 # The following are simple filter functions that filter our available
@@ -306,6 +307,20 @@ class ClientTestBase(testtools.TestCase):
                     return line.split("|")[1:-1][column_index].strip()
 
         raise ValueError("Unable to find value for column '%s'.")
+
+    def _create_server(self, name=None, with_network=True, **kwargs):
+        name = name or self.name_generate(prefix='server')
+        if with_network:
+            nics = [{"net-id": self.network.id}]
+        else:
+            nics = None
+        server = self.client.servers.create(name, self.image, self.flavor,
+                                            nics=nics, **kwargs)
+        self.addCleanup(server.delete)
+        novaclient.v2.shell._poll_for_status(
+            self.client.servers.get, server.id,
+            'building', ['active'])
+        return server
 
 
 class TenantTestBase(ClientTestBase):

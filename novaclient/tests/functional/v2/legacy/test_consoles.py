@@ -14,22 +14,12 @@
 from tempest_lib import exceptions
 
 from novaclient.tests.functional import base
-from novaclient.v2 import shell
 
 
 class TestConsolesNovaClient(base.ClientTestBase):
     """Consoles functional tests."""
 
     COMPUTE_API_VERSION = "2.1"
-
-    def _create_server(self):
-        name = self.name_generate(prefix='server')
-        server = self.client.servers.create(name, self.image, self.flavor)
-        shell._poll_for_status(
-            self.client.servers.get, server.id,
-            'building', ['active'])
-        self.addCleanup(server.delete)
-        return server
 
     def _test_console_get(self, command):
         server = self._create_server()
