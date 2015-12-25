@@ -34,8 +34,10 @@ class Snapshot(base.Resource):
     def delete(self):
         """
         DEPRECATED: Delete this snapshot.
+
+        :returns: An instance of novaclient.base.TupleWithMeta
         """
-        self.manager.delete(self)
+        return self.manager.delete(self)
 
 
 class SnapshotManager(base.ManagerWithFind):
@@ -107,6 +109,7 @@ class SnapshotManager(base.ManagerWithFind):
         DEPRECATED: Delete a snapshot.
 
         :param snapshot: The :class:`Snapshot` to delete.
+        :returns: An instance of novaclient.base.TupleWithMeta
         """
         warnings.warn('The novaclient.v2.volume_snapshots module is '
                       'deprecated and will be removed after Nova 13.0.0 is '
@@ -114,4 +117,4 @@ class SnapshotManager(base.ManagerWithFind):
                       'python-openstacksdk instead.', DeprecationWarning)
         with self.alternate_service_type(
                 'volumev2', allowed_types=('volume', 'volumev2')):
-            self._delete("/snapshots/%s" % base.getid(snapshot))
+            return self._delete("/snapshots/%s" % base.getid(snapshot))

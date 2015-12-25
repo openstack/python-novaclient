@@ -72,6 +72,7 @@ class VolumeTypeManager(base.ManagerWithFind):
         DEPRECATED: Delete a specific volume_type.
 
         :param volume_type: The ID of the :class:`VolumeType` to get.
+        :returns: An instance of novaclient.base.TupleWithMeta
         """
         warnings.warn('The novaclient.v2.volume_types module is deprecated '
                       'and will be removed after Nova 13.0.0 is released. Use '
@@ -79,7 +80,7 @@ class VolumeTypeManager(base.ManagerWithFind):
                       DeprecationWarning)
         with self.alternate_service_type(
                 'volumev2', allowed_types=('volume', 'volumev2')):
-            self._delete("/types/%s" % base.getid(volume_type))
+            return self._delete("/types/%s" % base.getid(volume_type))
 
     def create(self, name):
         """

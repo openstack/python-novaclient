@@ -38,8 +38,10 @@ class Volume(base.Resource):
     def delete(self):
         """
         DEPRECATED: Delete this volume.
+
+        :returns: An instance of novaclient.base.TupleWithMeta
         """
-        self.manager.delete(self)
+        return self.manager.delete(self)
 
 
 class VolumeManager(base.ManagerWithFind):
@@ -126,6 +128,7 @@ class VolumeManager(base.ManagerWithFind):
         DEPRECATED: Delete a volume.
 
         :param volume: The :class:`Volume` to delete.
+        :returns: An instance of novaclient.base.TupleWithMeta
         """
         warnings.warn('The novaclient.v2.volumes.VolumeManager.delete() '
                       'method is deprecated and will be removed after Nova '
@@ -133,7 +136,7 @@ class VolumeManager(base.ManagerWithFind):
                       'python-openstacksdk instead.', DeprecationWarning)
         with self.alternate_service_type(
                 'volumev2', allowed_types=('volume', 'volumev2')):
-            self._delete("/volumes/%s" % base.getid(volume))
+            return self._delete("/volumes/%s" % base.getid(volume))
 
     def create_server_volume(self, server_id, volume_id, device=None):
         """
@@ -193,6 +196,7 @@ class VolumeManager(base.ManagerWithFind):
 
         :param server_id: The ID of the server
         :param attachment_id: The ID of the attachment
+        :returns: An instance of novaclient.base.TupleWithMeta
         """
-        self._delete("/servers/%s/os-volume_attachments/%s" %
-                     (server_id, attachment_id,))
+        return self._delete("/servers/%s/os-volume_attachments/%s" %
+                            (server_id, attachment_id,))

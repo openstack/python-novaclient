@@ -2184,7 +2184,7 @@ class FakeHTTPClient(base_client.HTTPClient):
     # I suppose they are outdated and should be updated after Cinder released
 
     def get_volumes_detail(self, **kw):
-        return (200, {}, {"volumes": [
+        return (200, FAKE_RESPONSE_HEADERS, {"volumes": [
             {
                 "display_name": "Work",
                 "display_description": "volume for work",
@@ -2211,7 +2211,7 @@ class FakeHTTPClient(base_client.HTTPClient):
                 "metadata": {}}]})
 
     def get_volumes(self, **kw):
-        return (200, {}, {"volumes": [
+        return (200, FAKE_RESPONSE_HEADERS, {"volumes": [
             {
                 "display_name": "Work",
                 "display_description": "volume for work",
@@ -2238,7 +2238,7 @@ class FakeHTTPClient(base_client.HTTPClient):
                 "metadata": {}}]})
 
     def get_volumes_15e59938_07d5_11e1_90e3_e3dffe0c5983(self, **kw):
-        return (200, {}, {
+        return (200, FAKE_RESPONSE_HEADERS, {
                 "volume": self.get_volumes_detail()[2]['volumes'][0]})
 
     def get_volumes_15e59938_07d5_11e1_90e3_ee32ba30feaa(self, **kw):
@@ -2246,7 +2246,7 @@ class FakeHTTPClient(base_client.HTTPClient):
                 "volume": self.get_volumes_detail()[2]['volumes'][1]})
 
     def post_volumes(self, **kw):
-        return (200, {}, {"volume":
+        return (200, FAKE_RESPONSE_HEADERS, {"volume":
                 {"status": "creating",
                  "display_name": "vol-007",
                  "attachments": [(0)],
@@ -2260,22 +2260,23 @@ class FakeHTTPClient(base_client.HTTPClient):
                  "size": 1}})
 
     def delete_volumes_15e59938_07d5_11e1_90e3_e3dffe0c5983(self, **kw):
-        return (200, {}, {})
+        return (200, FAKE_RESPONSE_HEADERS, {})
 
     def delete_volumes_15e59938_07d5_11e1_90e3_ee32ba30feaa(self, **kw):
         return (200, {}, {})
 
     def post_servers_1234_os_volume_attachments(self, **kw):
-        return (200, {}, {
+        return (200, FAKE_RESPONSE_HEADERS, {
             "volumeAttachment":
                 {"device": "/dev/vdb",
                  "volumeId": 2}})
 
     def put_servers_1234_os_volume_attachments_Work(self, **kw):
-        return (200, {}, {"volumeAttachment": {"volumeId": 2}})
+        return (200, FAKE_RESPONSE_HEADERS,
+                {"volumeAttachment": {"volumeId": 2}})
 
     def get_servers_1234_os_volume_attachments(self, **kw):
-        return (200, {}, {
+        return (200, FAKE_RESPONSE_HEADERS, {
             "volumeAttachments": [
                 {"display_name": "Work",
                  "display_description": "volume for work",
@@ -2288,7 +2289,7 @@ class FakeHTTPClient(base_client.HTTPClient):
                  "metadata": {}}]})
 
     def get_servers_1234_os_volume_attachments_Work(self, **kw):
-        return (200, {}, {
+        return (200, FAKE_RESPONSE_HEADERS, {
             "volumeAttachment":
                 {"display_name": "Work",
                  "display_description": "volume for work",
@@ -2301,7 +2302,7 @@ class FakeHTTPClient(base_client.HTTPClient):
                  "metadata": {}}})
 
     def delete_servers_1234_os_volume_attachments_Work(self, **kw):
-        return (200, {}, {})
+        return (200, FAKE_RESPONSE_HEADERS, {})
 
     def get_servers_1234_os_instance_actions(self, **kw):
         return (200, FAKE_RESPONSE_HEADERS, {

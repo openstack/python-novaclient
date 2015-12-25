@@ -30,6 +30,7 @@ class VolumesTest(utils.TestCase):
     @mock.patch.object(warnings, 'warn')
     def test_list_volumes(self, mock_warn):
         vl = cs.volumes.list()
+        self.assert_request_id(vl, fakes.FAKE_REQUEST_ID_LIST)
         cs.assert_called('GET', '/volumes/detail')
         for v in vl:
             self.assertIsInstance(v, volumes.Volume)
@@ -38,6 +39,7 @@ class VolumesTest(utils.TestCase):
     @mock.patch.object(warnings, 'warn')
     def test_list_volumes_undetailed(self, mock_warn):
         vl = cs.volumes.list(detailed=False)
+        self.assert_request_id(vl, fakes.FAKE_REQUEST_ID_LIST)
         cs.assert_called('GET', '/volumes')
         for v in vl:
             self.assertIsInstance(v, volumes.Volume)
@@ -47,6 +49,7 @@ class VolumesTest(utils.TestCase):
     def test_get_volume_details(self, mock_warn):
         vol_id = '15e59938-07d5-11e1-90e3-e3dffe0c5983'
         v = cs.volumes.get(vol_id)
+        self.assert_request_id(v, fakes.FAKE_REQUEST_ID_LIST)
         cs.assert_called('GET', '/volumes/%s' % vol_id)
         self.assertIsInstance(v, volumes.Volume)
         self.assertEqual(v.id, vol_id)
@@ -59,6 +62,7 @@ class VolumesTest(utils.TestCase):
             display_name="My volume",
             display_description="My volume desc",
         )
+        self.assert_request_id(v, fakes.FAKE_REQUEST_ID_LIST)
         cs.assert_called('POST', '/volumes')
         self.assertIsInstance(v, volumes.Volume)
         self.assertEqual(1, mock_warn.call_count)
@@ -67,11 +71,14 @@ class VolumesTest(utils.TestCase):
     def test_delete_volume(self, mock_warn):
         vol_id = '15e59938-07d5-11e1-90e3-e3dffe0c5983'
         v = cs.volumes.get(vol_id)
-        v.delete()
+        ret = v.delete()
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         cs.assert_called('DELETE', '/volumes/%s' % vol_id)
-        cs.volumes.delete(vol_id)
+        ret = cs.volumes.delete(vol_id)
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         cs.assert_called('DELETE', '/volumes/%s' % vol_id)
-        cs.volumes.delete(v)
+        ret = cs.volumes.delete(v)
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         cs.assert_called('DELETE', '/volumes/%s' % vol_id)
         self.assertEqual(4, mock_warn.call_count)
 
@@ -81,6 +88,7 @@ class VolumesTest(utils.TestCase):
             volume_id='15e59938-07d5-11e1-90e3-e3dffe0c5983',
             device='/dev/vdb'
         )
+        self.assert_request_id(v, fakes.FAKE_REQUEST_ID_LIST)
         cs.assert_called('POST', '/servers/1234/os-volume_attachments')
         self.assertIsInstance(v, volumes.Volume)
 
@@ -91,20 +99,24 @@ class VolumesTest(utils.TestCase):
             attachment_id='Work',
             new_volume_id=vol_id
         )
+        self.assert_request_id(v, fakes.FAKE_REQUEST_ID_LIST)
         cs.assert_called('PUT', '/servers/1234/os-volume_attachments/Work')
         self.assertIsInstance(v, volumes.Volume)
 
     def test_get_server_volume(self):
         v = cs.volumes.get_server_volume(1234, 'Work')
+        self.assert_request_id(v, fakes.FAKE_REQUEST_ID_LIST)
         cs.assert_called('GET', '/servers/1234/os-volume_attachments/Work')
         self.assertIsInstance(v, volumes.Volume)
 
     def test_list_server_volumes(self):
         vl = cs.volumes.get_server_volumes(1234)
+        self.assert_request_id(vl, fakes.FAKE_REQUEST_ID_LIST)
         cs.assert_called('GET', '/servers/1234/os-volume_attachments')
         for v in vl:
             self.assertIsInstance(v, volumes.Volume)
 
     def test_delete_server_volume(self):
-        cs.volumes.delete_server_volume(1234, 'Work')
+        ret = cs.volumes.delete_server_volume(1234, 'Work')
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         cs.assert_called('DELETE', '/servers/1234/os-volume_attachments/Work')
