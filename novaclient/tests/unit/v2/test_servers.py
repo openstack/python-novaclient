@@ -26,6 +26,7 @@ from novaclient.tests.unit.fixture_data import client
 from novaclient.tests.unit.fixture_data import floatingips
 from novaclient.tests.unit.fixture_data import servers as data
 from novaclient.tests.unit import utils
+from novaclient.tests.unit.v2 import fakes
 from novaclient.v2 import servers
 
 
@@ -40,12 +41,14 @@ class ServersTest(utils.FixturedTestCase):
 
     def test_list_servers(self):
         sl = self.cs.servers.list()
+        self.assert_request_id(sl, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('GET', '/servers/detail')
         for s in sl:
             self.assertIsInstance(s, servers.Server)
 
     def test_filter_servers_unicode(self):
         sl = self.cs.servers.list(search_opts={'name': u't€sting'})
+        self.assert_request_id(sl, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('GET', '/servers/detail?name=t%E2%82%ACsting')
         for s in sl:
             self.assertIsInstance(s, servers.Server)
@@ -53,6 +56,7 @@ class ServersTest(utils.FixturedTestCase):
     def test_list_all_servers(self):
         # use marker just to identify this call in fixtures
         sl = self.cs.servers.list(limit=-1, marker=1234)
+        self.assert_request_id(sl, fakes.FAKE_REQUEST_ID_LIST)
 
         self.assertEqual(2, len(sl))
 
@@ -66,12 +70,14 @@ class ServersTest(utils.FixturedTestCase):
 
     def test_list_servers_undetailed(self):
         sl = self.cs.servers.list(detailed=False)
+        self.assert_request_id(sl, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('GET', '/servers')
         for s in sl:
             self.assertIsInstance(s, servers.Server)
 
     def test_list_servers_with_marker_limit(self):
         sl = self.cs.servers.list(marker=1234, limit=2)
+        self.assert_request_id(sl, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('GET', '/servers/detail?limit=2&marker=1234')
         for s in sl:
             self.assertIsInstance(s, servers.Server)
@@ -79,6 +85,7 @@ class ServersTest(utils.FixturedTestCase):
     def test_list_servers_sort_single(self):
         sl = self.cs.servers.list(sort_keys=['display_name'],
                                   sort_dirs=['asc'])
+        self.assert_request_id(sl, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called(
             'GET',
             '/servers/detail?sort_dir=asc&sort_key=display_name')
@@ -88,6 +95,7 @@ class ServersTest(utils.FixturedTestCase):
     def test_list_servers_sort_multiple(self):
         sl = self.cs.servers.list(sort_keys=['display_name', 'id'],
                                   sort_dirs=['asc', 'desc'])
+        self.assert_request_id(sl, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called(
             'GET',
             ('/servers/detail?sort_dir=asc&sort_dir=desc&'
@@ -97,6 +105,7 @@ class ServersTest(utils.FixturedTestCase):
 
     def test_get_server_details(self):
         s = self.cs.servers.get(1234)
+        self.assert_request_id(s, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('GET', '/servers/1234')
         self.assertIsInstance(s, servers.Server)
         self.assertEqual(1234, s.id)
@@ -122,6 +131,7 @@ class ServersTest(utils.FixturedTestCase):
                 '/tmp/foo.txt': six.StringIO('data'),   # a stream
             }
         )
+        self.assert_request_id(s, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers')
         self.assertIsInstance(s, servers.Server)
 
@@ -152,6 +162,7 @@ class ServersTest(utils.FixturedTestCase):
                 block_device_mapping=bdm,
                 nics=nics
             )
+            self.assert_request_id(s, fakes.FAKE_REQUEST_ID_LIST)
             self.assert_called('POST', '/os-volumes_boot')
             self.assertIsInstance(s, servers.Server)
 
@@ -179,6 +190,7 @@ class ServersTest(utils.FixturedTestCase):
                 key_name="fakekey",
                 block_device_mapping_v2=bdm
             )
+            self.assert_request_id(s, fakes.FAKE_REQUEST_ID_LIST)
             self.assert_called('POST', '/os-volumes_boot')
             self.assertIsInstance(s, servers.Server)
 
@@ -201,6 +213,7 @@ class ServersTest(utils.FixturedTestCase):
                 key_name="fakekey",
                 nics=nics
             )
+            self.assert_request_id(s, fakes.FAKE_REQUEST_ID_LIST)
             self.assert_called('POST', '/servers')
             self.assertIsInstance(s, servers.Server)
 
@@ -225,6 +238,7 @@ class ServersTest(utils.FixturedTestCase):
                 access_ip_v6=access_ip_v6,
                 access_ip_v4=access_ip_v4
             )
+            self.assert_request_id(s, fakes.FAKE_REQUEST_ID_LIST)
             self.assert_called('POST', '/servers')
             self.assertIsInstance(s, servers.Server)
 
@@ -240,6 +254,7 @@ class ServersTest(utils.FixturedTestCase):
                 '/tmp/foo.txt': six.StringIO('data'),   # a stream
             },
         )
+        self.assert_request_id(s, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers')
         self.assertIsInstance(s, servers.Server)
 
@@ -256,6 +271,7 @@ class ServersTest(utils.FixturedTestCase):
                 '/tmp/foo.txt': six.StringIO('data'),   # a stream
             },
         )
+        self.assert_request_id(s, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers')
         self.assertIsInstance(s, servers.Server)
 
@@ -272,6 +288,7 @@ class ServersTest(utils.FixturedTestCase):
                 '/tmp/foo.txt': six.StringIO('data'),   # a stream
             },
         )
+        self.assert_request_id(s, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers')
         self.assertIsInstance(s, servers.Server)
 
@@ -285,6 +302,7 @@ class ServersTest(utils.FixturedTestCase):
             admin_pass=test_password,
             key_name=test_key
         )
+        self.assert_request_id(s, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers')
         self.assertIsInstance(s, servers.Server)
         body = jsonutils.loads(self.requests.last_request.body)
@@ -308,6 +326,7 @@ class ServersTest(utils.FixturedTestCase):
                     '/tmp/foo.txt': six.StringIO('data'),   # a stream
                 },
             )
+            self.assert_request_id(s, fakes.FAKE_REQUEST_ID_LIST)
             self.assert_called('POST', '/servers')
             self.assertIsInstance(s, servers.Server)
             # verify userdata matches original
@@ -323,6 +342,7 @@ class ServersTest(utils.FixturedTestCase):
             flavor=1,
             disk_config=disk_config
         )
+        self.assert_request_id(s, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers')
         self.assertIsInstance(s, servers.Server)
 
@@ -343,8 +363,10 @@ class ServersTest(utils.FixturedTestCase):
 
         # Update via instance
         s.update(name='hi')
+        self.assert_request_id(s, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('PUT', '/servers/1234')
         s.update(name='hi')
+        self.assert_request_id(s, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('PUT', '/servers/1234')
 
         # Silly, but not an error
@@ -352,33 +374,41 @@ class ServersTest(utils.FixturedTestCase):
 
         # Update via manager
         self.cs.servers.update(s, name='hi')
+        self.assert_request_id(s, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('PUT', '/servers/1234')
 
     def test_delete_server(self):
         s = self.cs.servers.get(1234)
-        s.delete()
+        ret = s.delete()
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('DELETE', '/servers/1234')
-        self.cs.servers.delete(1234)
+        ret = self.cs.servers.delete(1234)
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('DELETE', '/servers/1234')
-        self.cs.servers.delete(s)
+        ret = self.cs.servers.delete(s)
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('DELETE', '/servers/1234')
 
     def test_delete_server_meta(self):
-        self.cs.servers.delete_meta(1234, ['test_key'])
+        ret = self.cs.servers.delete_meta(1234, ['test_key'])
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('DELETE', '/servers/1234/metadata/test_key')
 
     def test_set_server_meta(self):
-        self.cs.servers.set_meta(1234, {'test_key': 'test_value'})
+        m = self.cs.servers.set_meta(1234, {'test_key': 'test_value'})
+        self.assert_request_id(m, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/metadata',
                            {'metadata': {'test_key': 'test_value'}})
 
     def test_set_server_meta_item(self):
-        self.cs.servers.set_meta_item(1234, 'test_key', 'test_value')
+        m = self.cs.servers.set_meta_item(1234, 'test_key', 'test_value')
+        self.assert_request_id(m, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('PUT', '/servers/1234/metadata/test_key',
                            {'meta': {'test_key': 'test_value'}})
 
     def test_find(self):
         server = self.cs.servers.find(name='sample-server')
+        self.assert_request_id(server, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('GET', '/servers/1234')
         self.assertEqual('sample-server', server.name)
 
@@ -386,33 +416,41 @@ class ServersTest(utils.FixturedTestCase):
                           flavor={"id": 1, "name": "256 MB Server"})
 
         sl = self.cs.servers.findall(flavor={"id": 1, "name": "256 MB Server"})
+        self.assert_request_id(sl, fakes.FAKE_REQUEST_ID_LIST)
         self.assertEqual([1234, 5678, 9012], [s.id for s in sl])
 
     def test_reboot_server(self):
         s = self.cs.servers.get(1234)
-        s.reboot()
+        ret = s.reboot()
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
-        self.cs.servers.reboot(s, reboot_type='HARD')
+        ret = self.cs.servers.reboot(s, reboot_type='HARD')
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
 
     def test_rebuild_server(self):
         s = self.cs.servers.get(1234)
-        s.rebuild(image=1)
+        ret = s.rebuild(image=1)
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
-        self.cs.servers.rebuild(s, image=1)
+        ret = self.cs.servers.rebuild(s, image=1)
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
-        s.rebuild(image=1, password='5678')
+        ret = s.rebuild(image=1, password='5678')
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
-        self.cs.servers.rebuild(s, image=1, password='5678')
+        ret = self.cs.servers.rebuild(s, image=1, password='5678')
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
 
     def _rebuild_resize_disk_config(self, disk_config, operation="rebuild"):
         s = self.cs.servers.get(1234)
 
         if operation == "rebuild":
-            s.rebuild(image=1, disk_config=disk_config)
+            ret = s.rebuild(image=1, disk_config=disk_config)
         elif operation == "resize":
-            s.resize(flavor=1, disk_config=disk_config)
+            ret = s.resize(flavor=1, disk_config=disk_config)
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
 
         # verify disk config param was used in the request:
@@ -430,7 +468,8 @@ class ServersTest(utils.FixturedTestCase):
 
     def test_rebuild_server_preserve_ephemeral(self):
         s = self.cs.servers.get(1234)
-        s.rebuild(image=1, preserve_ephemeral=True)
+        ret = s.rebuild(image=1, preserve_ephemeral=True)
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
         body = jsonutils.loads(self.requests.last_request.body)
         d = body['rebuild']
@@ -440,7 +479,8 @@ class ServersTest(utils.FixturedTestCase):
     def test_rebuild_server_name_meta_files(self):
         files = {'/etc/passwd': 'some data'}
         s = self.cs.servers.get(1234)
-        s.rebuild(image=1, name='new', meta={'foo': 'bar'}, files=files)
+        ret = s.rebuild(image=1, name='new', meta={'foo': 'bar'}, files=files)
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         body = jsonutils.loads(self.requests.last_request.body)
         d = body['rebuild']
         self.assertEqual('new', d['name'])
@@ -450,7 +490,8 @@ class ServersTest(utils.FixturedTestCase):
 
     def test_resize_server(self):
         s = self.cs.servers.get(1234)
-        s.resize(flavor=1)
+        ret = s.resize(flavor=1)
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
         self.cs.servers.resize(s, flavor=1)
         self.assert_called('POST', '/servers/1234/action')
@@ -463,165 +504,210 @@ class ServersTest(utils.FixturedTestCase):
 
     def test_confirm_resized_server(self):
         s = self.cs.servers.get(1234)
-        s.confirm_resize()
+        ret = s.confirm_resize()
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
         self.cs.servers.confirm_resize(s)
         self.assert_called('POST', '/servers/1234/action')
 
     def test_revert_resized_server(self):
         s = self.cs.servers.get(1234)
-        s.revert_resize()
+        ret = s.revert_resize()
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
-        self.cs.servers.revert_resize(s)
+        ret = self.cs.servers.revert_resize(s)
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
 
     def test_migrate_server(self):
         s = self.cs.servers.get(1234)
-        s.migrate()
+        ret = s.migrate()
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
-        self.cs.servers.migrate(s)
+        ret = self.cs.servers.migrate(s)
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
 
     def test_add_fixed_ip(self):
         s = self.cs.servers.get(1234)
-        s.add_fixed_ip(1)
+        fip = s.add_fixed_ip(1)
+        self.assert_request_id(fip, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
-        self.cs.servers.add_fixed_ip(s, 1)
+        fip = self.cs.servers.add_fixed_ip(s, 1)
+        self.assert_request_id(fip, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
 
     def test_remove_fixed_ip(self):
         s = self.cs.servers.get(1234)
-        s.remove_fixed_ip('10.0.0.1')
+        ret = s.remove_fixed_ip('10.0.0.1')
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
-        self.cs.servers.remove_fixed_ip(s, '10.0.0.1')
+        ret = self.cs.servers.remove_fixed_ip(s, '10.0.0.1')
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
 
     def test_add_floating_ip(self):
         s = self.cs.servers.get(1234)
-        s.add_floating_ip('11.0.0.1')
+        fip = s.add_floating_ip('11.0.0.1')
+        self.assert_request_id(fip, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
-        self.cs.servers.add_floating_ip(s, '11.0.0.1')
+        fip = self.cs.servers.add_floating_ip(s, '11.0.0.1')
+        self.assert_request_id(fip, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
         f = self.cs.floating_ips.list()[0]
-        self.cs.servers.add_floating_ip(s, f)
+        fip = self.cs.servers.add_floating_ip(s, f)
+        self.assert_request_id(fip, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
-        s.add_floating_ip(f)
+        fip = s.add_floating_ip(f)
+        self.assert_request_id(fip, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
 
     def test_add_floating_ip_to_fixed(self):
         s = self.cs.servers.get(1234)
-        s.add_floating_ip('11.0.0.1', fixed_address='12.0.0.1')
+        fip = s.add_floating_ip('11.0.0.1', fixed_address='12.0.0.1')
+        self.assert_request_id(fip, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
-        self.cs.servers.add_floating_ip(s, '11.0.0.1',
-                                        fixed_address='12.0.0.1')
+        fip = self.cs.servers.add_floating_ip(s, '11.0.0.1',
+                                              fixed_address='12.0.0.1')
+        self.assert_request_id(fip, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
         f = self.cs.floating_ips.list()[0]
-        self.cs.servers.add_floating_ip(s, f)
+        fip = self.cs.servers.add_floating_ip(s, f)
+        self.assert_request_id(fip, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
-        s.add_floating_ip(f)
+        fip = s.add_floating_ip(f)
+        self.assert_request_id(fip, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
 
     def test_remove_floating_ip(self):
         s = self.cs.servers.get(1234)
-        s.remove_floating_ip('11.0.0.1')
+        ret = s.remove_floating_ip('11.0.0.1')
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
-        self.cs.servers.remove_floating_ip(s, '11.0.0.1')
+        ret = self.cs.servers.remove_floating_ip(s, '11.0.0.1')
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
         f = self.cs.floating_ips.list()[0]
-        self.cs.servers.remove_floating_ip(s, f)
+        ret = self.cs.servers.remove_floating_ip(s, f)
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
-        s.remove_floating_ip(f)
+        ret = s.remove_floating_ip(f)
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
 
     def test_stop(self):
         s = self.cs.servers.get(1234)
-        s.stop()
+        resp, ret = s.stop()
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
-        self.cs.servers.stop(s)
+        resp, ret = self.cs.servers.stop(s)
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
 
     def test_force_delete(self):
         s = self.cs.servers.get(1234)
-        s.force_delete()
+        resp, ret = s.force_delete()
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
-        self.cs.servers.force_delete(s)
+        resp, ret = self.cs.servers.force_delete(s)
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
 
     def test_restore(self):
         s = self.cs.servers.get(1234)
-        s.restore()
+        resp, ret = s.restore()
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
-        self.cs.servers.restore(s)
+        resp, ret = self.cs.servers.restore(s)
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
 
     def test_start(self):
         s = self.cs.servers.get(1234)
-        s.start()
+        ret = s.start()
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
-        self.cs.servers.start(s)
+        ret = self.cs.servers.start(s)
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
 
     def test_rescue(self):
         s = self.cs.servers.get(1234)
-        s.rescue()
+        resp, ret = s.rescue()
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
-        self.cs.servers.rescue(s)
+        resp, ret = self.cs.servers.rescue(s)
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
 
     def test_rescue_password(self):
         s = self.cs.servers.get(1234)
-        s.rescue(password='asdf')
+        resp, ret = s.rescue(password='asdf')
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action',
                            {'rescue': {'adminPass': 'asdf'}})
-        self.cs.servers.rescue(s, password='asdf')
+        resp, ret = self.cs.servers.rescue(s, password='asdf')
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action',
                            {'rescue': {'adminPass': 'asdf'}})
 
     def test_rescue_image(self):
         s = self.cs.servers.get(1234)
-        s.rescue(image=1)
+        resp, ret = s.rescue(image=1)
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action',
                            {'rescue': {'rescue_image_ref': 1}})
-        self.cs.servers.rescue(s, image=1)
+        resp, ret = self.cs.servers.rescue(s, image=1)
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action',
                            {'rescue': {'rescue_image_ref': 1}})
 
     def test_unrescue(self):
         s = self.cs.servers.get(1234)
-        s.unrescue()
+        ret = s.unrescue()
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
-        self.cs.servers.unrescue(s)
+        ret = self.cs.servers.unrescue(s)
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
 
     def test_lock(self):
         s = self.cs.servers.get(1234)
-        s.lock()
+        ret = s.lock()
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
-        self.cs.servers.lock(s)
+        ret = self.cs.servers.lock(s)
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
 
     def test_unlock(self):
         s = self.cs.servers.get(1234)
-        s.unlock()
+        ret = s.unlock()
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
-        self.cs.servers.unlock(s)
+        ret = self.cs.servers.unlock(s)
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
 
     def test_backup(self):
         s = self.cs.servers.get(1234)
-        s.backup('back1', 'daily', 1)
+        sb = s.backup('back1', 'daily', 1)
+        self.assert_request_id(sb, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
-        self.cs.servers.backup(s, 'back1', 'daily', 2)
+        sb = self.cs.servers.backup(s, 'back1', 'daily', 2)
+        self.assert_request_id(sb, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
 
     def test_get_console_output_without_length(self):
         success = 'foo'
         s = self.cs.servers.get(1234)
-        s.get_console_output()
+        co = s.get_console_output()
+        self.assert_request_id(co, fakes.FAKE_REQUEST_ID_LIST)
         self.assertEqual(success, s.get_console_output())
         self.assert_called('POST', '/servers/1234/action')
 
-        self.cs.servers.get_console_output(s)
+        co = self.cs.servers.get_console_output(s)
+        self.assert_request_id(co, fakes.FAKE_REQUEST_ID_LIST)
         self.assertEqual(success, self.cs.servers.get_console_output(s))
         self.assert_called('POST', '/servers/1234/action')
 
@@ -629,11 +715,13 @@ class ServersTest(utils.FixturedTestCase):
         success = 'foo'
 
         s = self.cs.servers.get(1234)
-        s.get_console_output(length=50)
+        co = s.get_console_output(length=50)
+        self.assert_request_id(co, fakes.FAKE_REQUEST_ID_LIST)
         self.assertEqual(success, s.get_console_output(length=50))
         self.assert_called('POST', '/servers/1234/action')
 
-        self.cs.servers.get_console_output(s, length=50)
+        co = self.cs.servers.get_console_output(s, length=50)
+        self.assert_request_id(co, fakes.FAKE_REQUEST_ID_LIST)
         self.assertEqual(success,
                          self.cs.servers.get_console_output(s, length=50))
         self.assert_called('POST', '/servers/1234/action')
@@ -654,133 +742,168 @@ class ServersTest(utils.FixturedTestCase):
 
     def test_get_password(self):
         s = self.cs.servers.get(1234)
-        self.assertEqual(b'FooBar123',
-                         s.get_password('novaclient/tests/unit/idfake.pem'))
+        password = s.get_password('novaclient/tests/unit/idfake.pem')
+        self.assert_request_id(password, fakes.FAKE_REQUEST_ID_LIST)
+        self.assertEqual(b'FooBar123', password)
         self.assert_called('GET', '/servers/1234/os-server-password')
 
     def test_get_password_without_key(self):
         s = self.cs.servers.get(1234)
+        password = s.get_password()
+        self.assert_request_id(password, fakes.FAKE_REQUEST_ID_LIST)
         self.assertEqual(
             'OIuEuQttO8Rk93BcKlwHQsziDAnkAm/V6V8VPToA8ZeUaUBWwS0gwo2K6Y61Z96r'
             'qG447iRz0uTEEYq3RAYJk1mh3mMIRVl27t8MtIecR5ggVVbz1S9AwXJQypDKl0ho'
             'QFvhCBcMWPohyGewDJOhDbtuN1IoFI9G55ZvFwCm5y7m7B2aVcoLeIsJZE4PLsIw'
             '/y5a6Z3/AoJZYGG7IH5WN88UROU3B9JZGFB2qtPLQTOvDMZLUhoPRIJeHiVSlo1N'
             'tI2/++UsXVg3ow6ItqCJGgdNuGG5JB+bslDHWPxROpesEIHdczk46HCpHQN8f1sk'
-            'Hi/fmZZNQQqj1Ijq0caOIw==', s.get_password())
+            'Hi/fmZZNQQqj1Ijq0caOIw==', password)
         self.assert_called('GET', '/servers/1234/os-server-password')
 
     def test_clear_password(self):
         s = self.cs.servers.get(1234)
-        s.clear_password()
+        ret = s.clear_password()
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('DELETE', '/servers/1234/os-server-password')
 
     def test_get_server_diagnostics(self):
         s = self.cs.servers.get(1234)
-        diagnostics = s.diagnostics()
+        resp, diagnostics = s.diagnostics()
+        self.assert_request_id(diagnostics, fakes.FAKE_REQUEST_ID_LIST)
         self.assertIsNotNone(diagnostics)
         self.assert_called('GET', '/servers/1234/diagnostics')
 
-        diagnostics_from_manager = self.cs.servers.diagnostics(1234)
+        resp, diagnostics_from_manager = self.cs.servers.diagnostics(1234)
+        self.assert_request_id(diagnostics_from_manager,
+                               fakes.FAKE_REQUEST_ID_LIST)
         self.assertIsNotNone(diagnostics_from_manager)
         self.assert_called('GET', '/servers/1234/diagnostics')
 
-        self.assertEqual(diagnostics[1], diagnostics_from_manager[1])
+        self.assertEqual(diagnostics, diagnostics_from_manager)
 
     def test_get_vnc_console(self):
         s = self.cs.servers.get(1234)
-        s.get_vnc_console('fake')
+        vc = s.get_vnc_console('fake')
+        self.assert_request_id(vc, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
 
-        self.cs.servers.get_vnc_console(s, 'fake')
+        vc = self.cs.servers.get_vnc_console(s, 'fake')
+        self.assert_request_id(vc, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
 
     def test_get_spice_console(self):
         s = self.cs.servers.get(1234)
-        s.get_spice_console('fake')
+        sc = s.get_spice_console('fake')
+        self.assert_request_id(sc, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
 
-        self.cs.servers.get_spice_console(s, 'fake')
+        sc = self.cs.servers.get_spice_console(s, 'fake')
+        self.assert_request_id(sc, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
 
     def test_get_serial_console(self):
         s = self.cs.servers.get(1234)
-        s.get_serial_console('fake')
+        sc = s.get_serial_console('fake')
+        self.assert_request_id(sc, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
 
-        self.cs.servers.get_serial_console(s, 'fake')
+        sc = self.cs.servers.get_serial_console(s, 'fake')
+        self.assert_request_id(sc, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
 
     def test_get_rdp_console(self):
         s = self.cs.servers.get(1234)
-        s.get_rdp_console('fake')
+        rc = s.get_rdp_console('fake')
+        self.assert_request_id(rc, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
 
-        self.cs.servers.get_rdp_console(s, 'fake')
+        rc = self.cs.servers.get_rdp_console(s, 'fake')
+        self.assert_request_id(rc, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
 
     def test_create_image(self):
         s = self.cs.servers.get(1234)
-        s.create_image('123')
+        im = s.create_image('123')
+        self.assert_request_id(im, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
-        s.create_image('123', {})
+        im = s.create_image('123', {})
+        self.assert_request_id(im, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
-        self.cs.servers.create_image(s, '123')
+        im = self.cs.servers.create_image(s, '123')
+        self.assert_request_id(im, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
-        self.cs.servers.create_image(s, '123', {})
+        im = self.cs.servers.create_image(s, '123', {})
+        self.assert_request_id(im, fakes.FAKE_REQUEST_ID_LIST)
+        self.assert_called('POST', '/servers/1234/action')
 
     def test_live_migrate_server(self):
         s = self.cs.servers.get(1234)
-        s.live_migrate(host='hostname', block_migration=False,
-                       disk_over_commit=False)
+        ret = s.live_migrate(host='hostname', block_migration=False,
+                             disk_over_commit=False)
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
-        self.cs.servers.live_migrate(s, host='hostname', block_migration=False,
-                                     disk_over_commit=False)
+        ret = self.cs.servers.live_migrate(s, host='hostname',
+                                           block_migration=False,
+                                           disk_over_commit=False)
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
 
     def test_reset_state(self):
         s = self.cs.servers.get(1234)
-        s.reset_state('newstate')
+        ret = s.reset_state('newstate')
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
-        self.cs.servers.reset_state(s, 'newstate')
+        ret = self.cs.servers.reset_state(s, 'newstate')
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
 
     def test_reset_network(self):
         s = self.cs.servers.get(1234)
-        s.reset_network()
+        ret = s.reset_network()
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
-        self.cs.servers.reset_network(s)
+        ret = self.cs.servers.reset_network(s)
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
 
     def test_add_security_group(self):
         s = self.cs.servers.get(1234)
-        s.add_security_group('newsg')
+        sg = s.add_security_group('newsg')
+        self.assert_request_id(sg, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
-        self.cs.servers.add_security_group(s, 'newsg')
+        sg = self.cs.servers.add_security_group(s, 'newsg')
+        self.assert_request_id(sg, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
 
     def test_remove_security_group(self):
         s = self.cs.servers.get(1234)
-        s.remove_security_group('oldsg')
+        ret = s.remove_security_group('oldsg')
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
-        self.cs.servers.remove_security_group(s, 'oldsg')
+        ret = self.cs.servers.remove_security_group(s, 'oldsg')
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
 
     def test_list_security_group(self):
         s = self.cs.servers.get(1234)
-        s.list_security_group()
+        sgs = s.list_security_group()
+        self.assert_request_id(sgs, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('GET', '/servers/1234/os-security-groups')
 
     def test_evacuate(self):
         s = self.cs.servers.get(1234)
-        s.evacuate('fake_target_host', 'True')
+        resp, ret = s.evacuate('fake_target_host', 'True')
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
-        self.cs.servers.evacuate(s, 'fake_target_host',
-                                 'False', 'NewAdminPassword')
+        resp, ret = self.cs.servers.evacuate(s, 'fake_target_host',
+                                             'False', 'NewAdminPassword')
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
 
     def test_interface_list(self):
         s = self.cs.servers.get(1234)
-        s.interface_list()
+        il = s.interface_list()
+        self.assert_request_id(il, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('GET', '/servers/1234/os-interface')
 
     def test_interface_list_result_string_representable(self):
@@ -812,12 +935,14 @@ class ServersTest(utils.FixturedTestCase):
 
     def test_interface_attach(self):
         s = self.cs.servers.get(1234)
-        s.interface_attach(None, None, None)
+        ret = s.interface_attach(None, None, None)
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/os-interface')
 
     def test_interface_detach(self):
         s = self.cs.servers.get(1234)
-        s.interface_detach('port-id')
+        ret = s.interface_detach('port-id')
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('DELETE', '/servers/1234/os-interface/port-id')
 
 
@@ -828,34 +953,42 @@ class ServersV26Test(ServersTest):
 
     def test_get_vnc_console(self):
         s = self.cs.servers.get(1234)
-        s.get_vnc_console('fake')
+        vc = s.get_vnc_console('fake')
+        self.assert_request_id(vc, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/remote-consoles')
 
-        self.cs.servers.get_vnc_console(s, 'fake')
+        vc = self.cs.servers.get_vnc_console(s, 'fake')
+        self.assert_request_id(vc, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/remote-consoles')
 
     def test_get_spice_console(self):
         s = self.cs.servers.get(1234)
-        s.get_spice_console('fake')
+        sc = s.get_spice_console('fake')
+        self.assert_request_id(sc, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/remote-consoles')
 
-        self.cs.servers.get_spice_console(s, 'fake')
+        sc = self.cs.servers.get_spice_console(s, 'fake')
+        self.assert_request_id(sc, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/remote-consoles')
 
     def test_get_serial_console(self):
         s = self.cs.servers.get(1234)
-        s.get_serial_console('fake')
+        sc = s.get_serial_console('fake')
+        self.assert_request_id(sc, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/remote-consoles')
 
-        self.cs.servers.get_serial_console(s, 'fake')
+        sc = self.cs.servers.get_serial_console(s, 'fake')
+        self.assert_request_id(sc, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/remote-consoles')
 
     def test_get_rdp_console(self):
         s = self.cs.servers.get(1234)
-        s.get_rdp_console('fake')
+        rc = s.get_rdp_console('fake')
+        self.assert_request_id(rc, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/remote-consoles')
 
-        self.cs.servers.get_rdp_console(s, 'fake')
+        rc = self.cs.servers.get_rdp_console(s, 'fake')
+        self.assert_request_id(rc, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/remote-consoles')
 
 
@@ -866,10 +999,12 @@ class ServersV28Test(ServersV26Test):
 
     def test_get_mks_console(self):
         s = self.cs.servers.get(1234)
-        s.get_mks_console()
+        mksc = s.get_mks_console()
+        self.assert_request_id(mksc, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/remote-consoles')
 
-        self.cs.servers.get_mks_console(s)
+        mksc = self.cs.servers.get_mks_console(s)
+        self.assert_request_id(mksc, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/remote-consoles')
 
 
