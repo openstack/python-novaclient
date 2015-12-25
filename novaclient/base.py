@@ -28,6 +28,7 @@ import os
 import threading
 
 from oslo_utils import strutils
+from requests import Response
 import six
 
 from novaclient import exceptions
@@ -78,7 +79,43 @@ class HookableMixin(object):
             hook_func(*args, **kwargs)
 
 
-class Resource(object):
+class RequestIdMixin(object):
+    """Wrapper class to expose x-openstack-request-id to the caller.
+    """
+    def request_ids_setup(self):
+        self.x_openstack_request_ids = []
+
+    @property
+    def request_ids(self):
+        return self.x_openstack_request_ids
+
+    def append_request_ids(self, resp):
+        """Add request_ids as an attribute to the object
+
+        :param resp: Response object or list of Response objects
+        """
+        if isinstance(resp, list):
+            # Add list of request_ids if response is of type list.
+            for resp_obj in resp:
+                self._append_request_id(resp_obj)
+        elif resp is not None:
+            # Add request_ids if response contains single object.
+            self._append_request_id(resp)
+
+    def _append_request_id(self, resp):
+        if isinstance(resp, Response):
+            # Extract 'x-openstack-request-id' from headers if
+            # response is a Response object.
+            request_id = (resp.headers.get('x-openstack-request-id') or
+                          resp.headers.get('x-compute-request-id'))
+        else:
+            # If resp is of type string or None.
+            request_id = resp
+        if request_id not in self.x_openstack_request_ids:
+            self.x_openstack_request_ids.append(request_id)
+
+
+class Resource(RequestIdMixin):
     """Base class for OpenStack resources (tenant, user, etc.).
 
     This is pretty much just a bag for attributes.
@@ -87,22 +124,27 @@ class Resource(object):
     HUMAN_ID = False
     NAME_ATTR = 'name'
 
-    def __init__(self, manager, info, loaded=False):
+    def __init__(self, manager, info, loaded=False, resp=None):
         """Populate and bind to a manager.
 
         :param manager: BaseManager object
         :param info: dictionary representing resource attributes
         :param loaded: prevent lazy-loading if set to True
+        :param resp: Response or list of Response objects
         """
         self.manager = manager
         self._info = info
         self._add_details(info)
         self._loaded = loaded
+        self.request_ids_setup()
+        self.append_request_ids(resp)
 
     def __repr__(self):
         reprkeys = sorted(k
                           for k in self.__dict__.keys()
-                          if k[0] != '_' and k != 'manager')
+                          if k[0] != '_' and
+                          k not in ['manager', 'request_ids',
+                                    'x_openstack_request_ids'])
         info = ", ".join("%s=%s" % (k, getattr(self, k)) for k in reprkeys)
         return "<%s %s>" % (self.__class__.__name__, info)
 
@@ -150,9 +192,9 @@ class Resource(object):
         new = self.manager.get(self.id)
         if new:
             self._add_details(new._info)
-            if self.manager.client.last_request_id:
-                self._add_details(
-                    {'x_request_id': self.manager.client.last_request_id})
+            # The 'request_ids' attribute has been added,
+            # so store the request id to it instead of _info
+            self.append_request_ids(new.request_ids)
 
     def __eq__(self, other):
         if not isinstance(other, Resource):
@@ -196,9 +238,9 @@ class Manager(HookableMixin):
 
     def _list(self, url, response_key, obj_class=None, body=None):
         if body:
-            _resp, body = self.api.client.post(url, body=body)
+            resp, body = self.api.client.post(url, body=body)
         else:
-            _resp, body = self.api.client.get(url)
+            resp, body = self.api.client.get(url)
 
         if obj_class is None:
             obj_class = self.resource_class
@@ -214,8 +256,9 @@ class Manager(HookableMixin):
 
         with self.completion_cache('human_id', obj_class, mode="w"):
             with self.completion_cache('uuid', obj_class, mode="w"):
-                return [obj_class(self, res, loaded=True)
-                        for res in data if res]
+                items = [obj_class(self, res, loaded=True)
+                         for res in data if res]
+                return ListWithMeta(items, resp)
 
     @contextlib.contextmanager
     def alternate_service_type(self, default, allowed_types=()):
@@ -294,30 +337,51 @@ class Manager(HookableMixin):
             cache.write("%s\n" % val)
 
     def _get(self, url, response_key):
-        _resp, body = self.api.client.get(url)
-        return self.resource_class(self, body[response_key], loaded=True)
+        resp, body = self.api.client.get(url)
+        return self.resource_class(self, body[response_key], loaded=True,
+                                   resp=resp)
 
     def _create(self, url, body, response_key, return_raw=False, **kwargs):
         self.run_hooks('modify_body_for_create', body, **kwargs)
-        _resp, body = self.api.client.post(url, body=body)
+        resp, body = self.api.client.post(url, body=body)
         if return_raw:
-            return body[response_key]
+            return self.convert_into_with_meta(body[response_key], resp)
 
         with self.completion_cache('human_id', self.resource_class, mode="a"):
             with self.completion_cache('uuid', self.resource_class, mode="a"):
-                return self.resource_class(self, body[response_key])
+                return self.resource_class(self, body[response_key], resp=resp)
 
     def _delete(self, url):
-        _resp, _body = self.api.client.delete(url)
+        resp, body = self.api.client.delete(url)
+        return self.convert_into_with_meta(body, resp)
 
     def _update(self, url, body, response_key=None, **kwargs):
         self.run_hooks('modify_body_for_update', body, **kwargs)
-        _resp, body = self.api.client.put(url, body=body)
+        resp, body = self.api.client.put(url, body=body)
         if body:
             if response_key:
-                return self.resource_class(self, body[response_key])
+                return self.resource_class(self, body[response_key], resp=resp)
             else:
-                return self.resource_class(self, body)
+                return self.resource_class(self, body, resp=resp)
+        else:
+            return StrWithMeta(body, resp)
+
+    def convert_into_with_meta(self, item, resp):
+        if isinstance(item, six.string_types):
+            if six.PY2 and isinstance(item, six.text_type):
+                return UnicodeWithMeta(item, resp)
+            else:
+                return StrWithMeta(item, resp)
+        elif isinstance(item, six.binary_type):
+            return BytesWithMeta(item, resp)
+        elif isinstance(item, list):
+            return ListWithMeta(item, resp)
+        elif isinstance(item, tuple):
+            return TupleWithMeta(item, resp)
+        elif item is None:
+            return TupleWithMeta((), resp)
+        else:
+            return DictWithMeta(item, resp)
 
 
 @six.add_metaclass(abc.ABCMeta)
@@ -338,11 +402,12 @@ class ManagerWithFind(Manager):
         elif num_matches > 1:
             raise exceptions.NoUniqueMatch
         else:
+            matches[0].append_request_ids(matches.request_ids)
             return matches[0]
 
     def findall(self, **kwargs):
         """Find all items with attributes matching ``**kwargs``."""
-        found = []
+        found = ListWithMeta([], None)
         searches = kwargs.items()
 
         detailed = True
@@ -382,6 +447,7 @@ class ManagerWithFind(Manager):
                 searches = [(k, v) for k, v in searches if k != 'all_tenants']
 
         listing = self.list(**list_kwargs)
+        found.append_request_ids(listing.request_ids)
 
         for obj in listing:
             try:
@@ -433,3 +499,54 @@ class BootingManagerWithFind(ManagerWithFind):
 
             bdm.append(bdm_dict)
         return bdm
+
+
+class ListWithMeta(list, RequestIdMixin):
+    def __init__(self, values, resp):
+        super(ListWithMeta, self).__init__(values)
+        self.request_ids_setup()
+        self.append_request_ids(resp)
+
+
+class DictWithMeta(dict, RequestIdMixin):
+    def __init__(self, values, resp):
+        super(DictWithMeta, self).__init__(values)
+        self.request_ids_setup()
+        self.append_request_ids(resp)
+
+
+class TupleWithMeta(tuple, RequestIdMixin):
+    def __new__(cls, values, resp):
+        return super(TupleWithMeta, cls).__new__(cls, values)
+
+    def __init__(self, values, resp):
+        self.request_ids_setup()
+        self.append_request_ids(resp)
+
+
+class StrWithMeta(str, RequestIdMixin):
+    def __new__(cls, value, resp):
+        return super(StrWithMeta, cls).__new__(cls, value)
+
+    def __init__(self, values, resp):
+        self.request_ids_setup()
+        self.append_request_ids(resp)
+
+
+class BytesWithMeta(six.binary_type, RequestIdMixin):
+    def __new__(cls, value, resp):
+        return super(BytesWithMeta, cls).__new__(cls, value)
+
+    def __init__(self, values, resp):
+        self.request_ids_setup()
+        self.append_request_ids(resp)
+
+
+if six.PY2:
+    class UnicodeWithMeta(six.text_type, RequestIdMixin):
+        def __new__(cls, value, resp):
+            return super(UnicodeWithMeta, cls).__new__(cls, value)
+
+        def __init__(self, values, resp):
+            self.request_ids_setup()
+            self.append_request_ids(resp)

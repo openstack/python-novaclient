@@ -11,6 +11,9 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from requests import Response
+import six
+
 from novaclient import base
 from novaclient import exceptions
 from novaclient.tests.unit import utils
@@ -19,6 +22,18 @@ from novaclient.v2 import flavors
 
 
 cs = fakes.FakeClient()
+
+
+def create_response_obj_with_header():
+    resp = Response()
+    resp.headers['x-openstack-request-id'] = fakes.FAKE_REQUEST_ID
+    return resp
+
+
+def create_response_obj_with_compute_header():
+    resp = Response()
+    resp.headers['x-compute-request-id'] = fakes.FAKE_REQUEST_ID
+    return resp
 
 
 class BaseTest(utils.TestCase):
@@ -67,3 +82,75 @@ class BaseTest(utils.TestCase):
         self.assertRaises(exceptions.NotFound,
                           cs.flavors.find,
                           vegetable='carrot')
+
+    def test_resource_object_with_request_ids(self):
+        resp_obj = create_response_obj_with_header()
+        r = base.Resource(None, {"name": "1"}, resp=resp_obj)
+        self.assertEqual(fakes.FAKE_REQUEST_ID_LIST, r.request_ids)
+
+    def test_resource_object_with_compute_request_ids(self):
+        resp_obj = create_response_obj_with_compute_header()
+        r = base.Resource(None, {"name": "1"}, resp=resp_obj)
+        self.assertEqual(fakes.FAKE_REQUEST_ID_LIST, r.request_ids)
+
+
+class ListWithMetaTest(utils.TestCase):
+    def test_list_with_meta(self):
+        resp = create_response_obj_with_header()
+        obj = base.ListWithMeta([], resp)
+        self.assertEqual([], obj)
+        # Check request_ids attribute is added to obj
+        self.assertTrue(hasattr(obj, 'request_ids'))
+        self.assertEqual(fakes.FAKE_REQUEST_ID_LIST, obj.request_ids)
+
+
+class DictWithMetaTest(utils.TestCase):
+    def test_dict_with_meta(self):
+        resp = create_response_obj_with_header()
+        obj = base.DictWithMeta({}, resp)
+        self.assertEqual({}, obj)
+        # Check request_ids attribute is added to obj
+        self.assertTrue(hasattr(obj, 'request_ids'))
+        self.assertEqual(fakes.FAKE_REQUEST_ID_LIST, obj.request_ids)
+
+
+class TupleWithMetaTest(utils.TestCase):
+    def test_tuple_with_meta(self):
+        resp = create_response_obj_with_header()
+        expected_tuple = (1, 2)
+        obj = base.TupleWithMeta(expected_tuple, resp)
+        self.assertEqual(expected_tuple, obj)
+        # Check request_ids attribute is added to obj
+        self.assertTrue(hasattr(obj, 'request_ids'))
+        self.assertEqual(fakes.FAKE_REQUEST_ID_LIST, obj.request_ids)
+
+
+class StrWithMetaTest(utils.TestCase):
+    def test_str_with_meta(self):
+        resp = create_response_obj_with_header()
+        obj = base.StrWithMeta("test-str", resp)
+        self.assertEqual("test-str", obj)
+        # Check request_ids attribute is added to obj
+        self.assertTrue(hasattr(obj, 'request_ids'))
+        self.assertEqual(fakes.FAKE_REQUEST_ID_LIST, obj.request_ids)
+
+
+class BytesWithMetaTest(utils.TestCase):
+    def test_bytes_with_meta(self):
+        resp = create_response_obj_with_header()
+        obj = base.BytesWithMeta(b'test-bytes', resp)
+        self.assertEqual(b'test-bytes', obj)
+        # Check request_ids attribute is added to obj
+        self.assertTrue(hasattr(obj, 'request_ids'))
+        self.assertEqual(fakes.FAKE_REQUEST_ID_LIST, obj.request_ids)
+
+
+if six.PY2:
+    class UnicodeWithMetaTest(utils.TestCase):
+        def test_unicode_with_meta(self):
+            resp = create_response_obj_with_header()
+            obj = base.UnicodeWithMeta(u'test-unicode', resp)
+            self.assertEqual(u'test-unicode', obj)
+            # Check request_ids attribute is added to obj
+            self.assertTrue(hasattr(obj, 'request_ids'))
+            self.assertEqual(fakes.FAKE_REQUEST_ID_LIST, obj.request_ids)

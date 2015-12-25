@@ -622,7 +622,7 @@ class ServerManager(base.BootingManagerWithFind):
         if detailed:
             detail = "/detail"
 
-        result = []
+        result = base.ListWithMeta([], None)
         while True:
             if marker:
                 qparams['marker'] = marker

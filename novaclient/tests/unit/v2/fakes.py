@@ -45,6 +45,10 @@ CALLBACK_RE = re.compile(r"^get_http:__nova_api:8774_v\d(_\d)?$")
 FAKE_IMAGE_UUID_1 = 'c99d7632-bd66-4be9-aed5-3dd14b223a76'
 FAKE_IMAGE_UUID_2 = 'f27f479a-ddda-419a-9bbc-d6b56b210161'
 
+# fake request id
+FAKE_REQUEST_ID = fakes.FAKE_REQUEST_ID
+FAKE_REQUEST_ID_LIST = fakes.FAKE_REQUEST_ID_LIST
+
 
 class FakeClient(fakes.FakeClient, client.Client):
 

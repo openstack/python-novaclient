@@ -19,6 +19,7 @@ import six
 
 from novaclient import base
 from novaclient import exceptions
+from novaclient.tests.unit import fakes
 from novaclient.tests.unit import utils as test_utils
 from novaclient import utils
 
@@ -28,12 +29,17 @@ UUID = '8e8ec658-c7b0-4243-bdf8-6f7f2952c0d0'
 class FakeResource(object):
     NAME_ATTR = 'name'
 
+    request_ids = fakes.FAKE_REQUEST_ID_LIST
+
     def __init__(self, _id, properties):
         self.id = _id
         try:
             self.name = properties['name']
         except KeyError:
             pass
+
+    def append_request_ids(self, resp):
+        pass
 
 
 class FakeManager(base.ManagerWithFind):
@@ -63,7 +69,7 @@ class FakeManager(base.ManagerWithFind):
         raise exceptions.NotFound(resource_id)
 
     def list(self):
-        return self.resources
+        return base.ListWithMeta(self.resources, fakes.FAKE_REQUEST_ID_LIST)
 
 
 class FakeDisplayResource(object):
@@ -75,6 +81,9 @@ class FakeDisplayResource(object):
             self.display_name = properties['display_name']
         except KeyError:
             pass
+
+    def append_request_ids(self, resp):
+        pass
 
 
 class FakeDisplayManager(FakeManager):
