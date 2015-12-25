@@ -48,7 +48,12 @@ class Keypair(base.Resource):
         return self.name
 
     def delete(self):
-        self.manager.delete(self)
+        """
+        Delete this keypair.
+
+        :returns: An instance of novaclient.base.TupleWithMeta
+        """
+        return self.manager.delete(self)
 
 
 class KeypairManager(base.ManagerWithFind):
@@ -133,8 +138,9 @@ class KeypairManager(base.ManagerWithFind):
         Delete a keypair
 
         :param key: The :class:`Keypair` (or its ID) to delete.
+        :returns: An instance of novaclient.base.TupleWithMeta
         """
-        self._delete('/%s/%s' % (self.keypair_prefix, base.getid(key)))
+        return self._delete('/%s/%s' % (self.keypair_prefix, base.getid(key)))
 
     @api_versions.wraps("2.10")
     def delete(self, key, user_id=None):
@@ -143,10 +149,11 @@ class KeypairManager(base.ManagerWithFind):
 
         :param key: The :class:`Keypair` (or its ID) to delete.
         :param user_id: Id of key-pair owner (Admin only).
+        :returns: An instance of novaclient.base.TupleWithMeta
         """
         query_string = "?user_id=%s" % user_id if user_id else ""
         url = '/%s/%s%s' % (self.keypair_prefix, base.getid(key), query_string)
-        self._delete(url)
+        return self._delete(url)
 
     @api_versions.wraps("2.0", "2.9")
     def list(self):

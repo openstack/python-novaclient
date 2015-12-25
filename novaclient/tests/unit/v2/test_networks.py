@@ -14,6 +14,7 @@
 from novaclient.tests.unit.fixture_data import client
 from novaclient.tests.unit.fixture_data import networks as data
 from novaclient.tests.unit import utils
+from novaclient.tests.unit.v2 import fakes
 from novaclient.v2 import networks
 
 
@@ -24,21 +25,25 @@ class NetworksTest(utils.FixturedTestCase):
 
     def test_list_networks(self):
         fl = self.cs.networks.list()
+        self.assert_request_id(fl, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('GET', '/os-networks')
         for f in fl:
             self.assertIsInstance(f, networks.Network)
 
     def test_get_network(self):
         f = self.cs.networks.get(1)
+        self.assert_request_id(f, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('GET', '/os-networks/1')
         self.assertIsInstance(f, networks.Network)
 
     def test_delete(self):
-        self.cs.networks.delete('networkdelete')
+        ret = self.cs.networks.delete('networkdelete')
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('DELETE', '/os-networks/networkdelete')
 
     def test_create(self):
         f = self.cs.networks.create(label='foo')
+        self.assert_request_id(f, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/os-networks',
                            {'network': {'label': 'foo'}})
         self.assertIsInstance(f, networks.Network)
@@ -70,38 +75,45 @@ class NetworksTest(utils.FixturedTestCase):
         }
 
         f = self.cs.networks.create(**params)
+        self.assert_request_id(f, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/os-networks', {'network': params})
         self.assertIsInstance(f, networks.Network)
 
     def test_associate_project(self):
-        self.cs.networks.associate_project('networktest')
+        f = self.cs.networks.associate_project('networktest')
+        self.assert_request_id(f, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/os-networks/add',
                            {'id': 'networktest'})
 
     def test_associate_host(self):
-        self.cs.networks.associate_host('networktest', 'testHost')
+        f = self.cs.networks.associate_host('networktest', 'testHost')
+        self.assert_request_id(f, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/os-networks/networktest/action',
                            {'associate_host': 'testHost'})
 
     def test_disassociate(self):
-        self.cs.networks.disassociate('networkdisassociate')
+        f = self.cs.networks.disassociate('networkdisassociate')
+        self.assert_request_id(f, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST',
                            '/os-networks/networkdisassociate/action',
                            {'disassociate': None})
 
     def test_disassociate_host_only(self):
-        self.cs.networks.disassociate('networkdisassociate', True, False)
+        f = self.cs.networks.disassociate('networkdisassociate', True, False)
+        self.assert_request_id(f, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST',
                            '/os-networks/networkdisassociate/action',
                            {'disassociate_host': None})
 
     def test_disassociate_project(self):
-        self.cs.networks.disassociate('networkdisassociate', False, True)
+        f = self.cs.networks.disassociate('networkdisassociate', False, True)
+        self.assert_request_id(f, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST',
                            '/os-networks/networkdisassociate/action',
                            {'disassociate_project': None})
 
     def test_add(self):
-        self.cs.networks.add('networkadd')
+        f = self.cs.networks.add('networkadd')
+        self.assert_request_id(f, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/os-networks/add',
                            {'id': 'networkadd'})

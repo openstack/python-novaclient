@@ -33,6 +33,7 @@ class UsageTest(utils.TestCase):
     def test_usage_list(self, detailed=False):
         now = datetime.datetime.now()
         usages = self.cs.usage.list(now, now, detailed)
+        self.assert_request_id(usages, fakes.FAKE_REQUEST_ID_LIST)
 
         self.cs.assert_called(
             'GET',
@@ -49,6 +50,7 @@ class UsageTest(utils.TestCase):
     def test_usage_get(self):
         now = datetime.datetime.now()
         u = self.cs.usage.get("tenantfoo", now, now)
+        self.assert_request_id(u, fakes.FAKE_REQUEST_ID_LIST)
 
         self.cs.assert_called(
             'GET',

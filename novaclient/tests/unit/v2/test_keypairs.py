@@ -15,6 +15,7 @@ from novaclient import api_versions
 from novaclient.tests.unit.fixture_data import client
 from novaclient.tests.unit.fixture_data import keypairs as data
 from novaclient.tests.unit import utils
+from novaclient.tests.unit.v2 import fakes
 from novaclient.v2 import keypairs
 
 
@@ -36,23 +37,28 @@ class KeypairsTest(utils.FixturedTestCase):
 
     def test_get_keypair(self):
         kp = self.cs.keypairs.get('test')
+        self.assert_request_id(kp, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('GET', '/%s/test' % self.keypair_prefix)
         self.assertIsInstance(kp, keypairs.Keypair)
         self.assertEqual('test', kp.name)
 
     def test_list_keypairs(self):
         kps = self.cs.keypairs.list()
+        self.assert_request_id(kps, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('GET', '/%s' % self.keypair_prefix)
         for kp in kps:
             self.assertIsInstance(kp, keypairs.Keypair)
 
     def test_delete_keypair(self):
         kp = self.cs.keypairs.list()[0]
-        kp.delete()
+        ret = kp.delete()
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('DELETE', '/%s/test' % self.keypair_prefix)
-        self.cs.keypairs.delete('test')
+        ret = self.cs.keypairs.delete('test')
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('DELETE', '/%s/test' % self.keypair_prefix)
-        self.cs.keypairs.delete(kp)
+        ret = self.cs.keypairs.delete(kp)
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('DELETE', '/%s/test' % self.keypair_prefix)
 
 
@@ -64,6 +70,7 @@ class KeypairsV2TestCase(KeypairsTest):
     def test_create_keypair(self):
         name = "foo"
         kp = self.cs.keypairs.create(name)
+        self.assert_request_id(kp, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/%s' % self.keypair_prefix,
                            body={'keypair': {'name': name}})
         self.assertIsInstance(kp, keypairs.Keypair)
@@ -72,6 +79,7 @@ class KeypairsV2TestCase(KeypairsTest):
         name = "foo"
         pub_key = "fake-public-key"
         kp = self.cs.keypairs.create(name, pub_key)
+        self.assert_request_id(kp, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/%s' % self.keypair_prefix,
                            body={'keypair': {'name': name,
                                              'public_key': pub_key}})
@@ -87,6 +95,7 @@ class KeypairsV22TestCase(KeypairsTest):
         name = "foo"
         key_type = "some_type"
         kp = self.cs.keypairs.create(name, key_type=key_type)
+        self.assert_request_id(kp, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/%s' % self.keypair_prefix,
                            body={'keypair': {'name': name,
                                              'type': key_type}})
@@ -96,6 +105,7 @@ class KeypairsV22TestCase(KeypairsTest):
         name = "foo"
         pub_key = "fake-public-key"
         kp = self.cs.keypairs.create(name, pub_key)
+        self.assert_request_id(kp, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/%s' % self.keypair_prefix,
                            body={'keypair': {'name': name,
                                              'public_key': pub_key,

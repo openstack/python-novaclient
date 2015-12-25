@@ -33,7 +33,12 @@ class Network(base.Resource):
         return "<Network: %s>" % self.label
 
     def delete(self):
-        self.manager.delete(self)
+        """
+        Delete this network.
+
+        :returns: An instance of novaclient.base.TupleWithMeta
+        """
+        return self.manager.delete(self)
 
 
 class NetworkManager(base.ManagerWithFind):
@@ -65,8 +70,9 @@ class NetworkManager(base.ManagerWithFind):
         Delete a specific network.
 
         :param network: The ID of the :class:`Network` to delete.
+        :returns: An instance of novaclient.base.TupleWithMeta
         """
-        self._delete("/os-networks/%s" % base.getid(network))
+        return self._delete("/os-networks/%s" % base.getid(network))
 
     def create(self, **kwargs):
         """
@@ -109,6 +115,7 @@ class NetworkManager(base.ManagerWithFind):
         :param network: The ID of the :class:`Network`.
         :param disassociate_host: Whether to disassociate the host
         :param disassociate_project: Whether to disassociate the project
+        :returns: An instance of novaclient.base.TupleWithMeta
         """
         if disassociate_host and disassociate_project:
             body = {"disassociate": None}
@@ -120,8 +127,10 @@ class NetworkManager(base.ManagerWithFind):
             raise exceptions.CommandError(
                 _("Must disassociate either host or project or both"))
 
-        self.api.client.post("/os-networks/%s/action" %
-                             base.getid(network), body=body)
+        resp, body = self.api.client.post("/os-networks/%s/action" %
+                                          base.getid(network), body=body)
+
+        return self.convert_into_with_meta(body, resp)
 
     def associate_host(self, network, host):
         """
@@ -129,10 +138,13 @@ class NetworkManager(base.ManagerWithFind):
 
         :param network: The ID of the :class:`Network`.
         :param host: The name of the host to associate the network with
+        :returns: An instance of novaclient.base.TupleWithMeta
         """
-        self.api.client.post("/os-networks/%s/action" %
-                             base.getid(network),
-                             body={"associate_host": host})
+        resp, body = self.api.client.post("/os-networks/%s/action" %
+                                          base.getid(network),
+                                          body={"associate_host": host})
+
+        return self.convert_into_with_meta(body, resp)
 
     def associate_project(self, network):
         """
@@ -141,8 +153,12 @@ class NetworkManager(base.ManagerWithFind):
         The project is defined by the project authenticated against
 
         :param network: The ID of the :class:`Network`.
+        :returns: An instance of novaclient.base.TupleWithMeta
         """
-        self.api.client.post("/os-networks/add", body={"id": network})
+        resp, body = self.api.client.post("/os-networks/add",
+                                          body={"id": network})
+
+        return self.convert_into_with_meta(body, resp)
 
     def add(self, network=None):
         """
@@ -150,7 +166,10 @@ class NetworkManager(base.ManagerWithFind):
         automatically or provided explicitly.
 
         :param network: The ID of the :class:`Network` to associate (optional).
+        :returns: An instance of novaclient.base.TupleWithMeta
         """
-        self.api.client.post(
-            "/os-networks/add",
-            body={"id": base.getid(network) if network else None})
+        resp, body = self.api.client.post("/os-networks/add",
+                                          body={"id": base.getid(network)
+                                                if network else None})
+
+        return self.convert_into_with_meta(body, resp)

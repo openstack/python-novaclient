@@ -24,7 +24,7 @@ class V1(base.Fixture):
         super(V1, self).setUp()
         keypair = {'fingerprint': 'FAKE_KEYPAIR', 'name': 'test'}
 
-        headers = {'Content-Type': 'application/json'}
+        headers = self.json_headers
 
         self.requests.register_uri('GET', self.url(),
                                    json={'keypairs': [keypair]},
@@ -34,7 +34,8 @@ class V1(base.Fixture):
                                    json={'keypair': keypair},
                                    headers=headers)
 
-        self.requests.register_uri('DELETE', self.url('test'), status_code=202)
+        self.requests.register_uri('DELETE', self.url('test'), status_code=202,
+                                   headers=headers)
 
         def post_os_keypairs(request, context):
             body = jsonutils.loads(request.body)

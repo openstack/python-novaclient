@@ -24,11 +24,13 @@ class QuotaClassSetsTest(utils.TestCase):
 
     def test_class_quotas_get(self):
         class_name = 'test'
-        cs.quota_classes.get(class_name)
+        q = cs.quota_classes.get(class_name)
+        self.assert_request_id(q, fakes.FAKE_REQUEST_ID_LIST)
         cs.assert_called('GET', '/os-quota-class-sets/%s' % class_name)
 
     def test_update_quota(self):
         q = cs.quota_classes.get('test')
+        self.assert_request_id(q, fakes.FAKE_REQUEST_ID_LIST)
         q.update(cores=2)
         cs.assert_called('PUT', '/os-quota-class-sets/test')
 

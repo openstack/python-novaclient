@@ -27,7 +27,12 @@ class SecurityGroupRule(base.Resource):
         return str(self.id)
 
     def delete(self):
-        self.manager.delete(self)
+        """
+        Delete this security group rule.
+
+        :returns: An instance of novaclient.base.TupleWithMeta
+        """
+        return self.manager.delete(self)
 
 
 class SecurityGroupRuleManager(base.Manager):
@@ -74,5 +79,6 @@ class SecurityGroupRuleManager(base.Manager):
         Delete a security group rule
 
         :param rule: The security group rule to delete (ID or Class)
+        :returns: An instance of novaclient.base.TupleWithMeta
         """
-        self._delete('/os-security-group-rules/%s' % base.getid(rule))
+        return self._delete('/os-security-group-rules/%s' % base.getid(rule))

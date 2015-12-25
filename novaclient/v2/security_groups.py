@@ -28,10 +28,20 @@ class SecurityGroup(base.Resource):
         return str(self.id)
 
     def delete(self):
-        self.manager.delete(self)
+        """
+        Delete this security group.
+
+        :returns: An instance of novaclient.base.TupleWithMeta
+        """
+        return self.manager.delete(self)
 
     def update(self):
-        self.manager.update(self)
+        """
+        Update this security group.
+
+        :returns: :class:`SecurityGroup`
+        """
+        return self.manager.update(self)
 
 
 class SecurityGroupManager(base.ManagerWithFind):
@@ -66,9 +76,9 @@ class SecurityGroupManager(base.ManagerWithFind):
         Delete a security group
 
         :param group: The security group to delete (group or ID)
-        :rtype: None
+        :returns: An instance of novaclient.base.TupleWithMeta
         """
-        self._delete('/os-security-groups/%s' % base.getid(group))
+        return self._delete('/os-security-groups/%s' % base.getid(group))
 
     def get(self, group_id):
         """

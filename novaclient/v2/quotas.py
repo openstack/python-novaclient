@@ -61,8 +61,15 @@ class QuotaSetManager(base.Manager):
                          'quota_set')
 
     def delete(self, tenant_id, user_id=None):
+        """
+        Delete quota for a tenant or for a user.
+
+        :param tenant_id: A tenant for which quota is to be deleted
+        :param user_id: A user for which quota is to be deleted
+        :returns: An instance of novaclient.base.TupleWithMeta
+        """
         if user_id:
             url = '/os-quota-sets/%s?user_id=%s' % (tenant_id, user_id)
         else:
             url = '/os-quota-sets/%s' % tenant_id
-        self._delete(url)
+        return self._delete(url)

@@ -23,7 +23,7 @@ class V1(base.Fixture):
         uuid = '97f4c221-bff4-4578-b030-0df4ef119353'
         uuid2 = '97f4c221bff44578b0300df4ef119353'
         test_json = {'quota_set': self.test_quota('test')}
-        self.headers = {'Content-Type': 'application/json'}
+        self.headers = self.json_headers
 
         for u in ('test', 'tenant-id', 'tenant-id/defaults',
                   '%s/defaults' % uuid2):
@@ -47,7 +47,8 @@ class V1(base.Fixture):
                                    headers=self.headers)
 
         for u in ('test', uuid2):
-            self.requests.register_uri('DELETE', self.url(u), status_code=202)
+            self.requests.register_uri('DELETE', self.url(u), status_code=202,
+                                       headers=self.headers)
 
     def test_quota(self, tenant_id='test'):
         return {

@@ -33,6 +33,7 @@ class ServicesTest(utils.TestCase):
 
     def test_list_services(self):
         svs = self.cs.services.list()
+        self.assert_request_id(svs, fakes.FAKE_REQUEST_ID_LIST)
         self.cs.assert_called('GET', '/os-services')
         for s in svs:
             self.assertIsInstance(s, self._get_service_type())
@@ -42,6 +43,7 @@ class ServicesTest(utils.TestCase):
 
     def test_list_services_with_hostname(self):
         svs = self.cs.services.list(host='host2')
+        self.assert_request_id(svs, fakes.FAKE_REQUEST_ID_LIST)
         self.cs.assert_called('GET', '/os-services?host=host2')
         for s in svs:
             self.assertIsInstance(s, self._get_service_type())
@@ -50,6 +52,7 @@ class ServicesTest(utils.TestCase):
 
     def test_list_services_with_binary(self):
         svs = self.cs.services.list(binary='nova-cert')
+        self.assert_request_id(svs, fakes.FAKE_REQUEST_ID_LIST)
         self.cs.assert_called('GET', '/os-services?binary=nova-cert')
         for s in svs:
             self.assertIsInstance(s, self._get_service_type())
@@ -58,6 +61,7 @@ class ServicesTest(utils.TestCase):
 
     def test_list_services_with_host_binary(self):
         svs = self.cs.services.list(host='host2', binary='nova-cert')
+        self.assert_request_id(svs, fakes.FAKE_REQUEST_ID_LIST)
         self.cs.assert_called('GET',
                               '/os-services?host=host2&binary=nova-cert')
         for s in svs:
@@ -74,17 +78,20 @@ class ServicesTest(utils.TestCase):
 
     def test_services_enable(self):
         service = self.cs.services.enable('host1', 'nova-cert')
+        self.assert_request_id(service, fakes.FAKE_REQUEST_ID_LIST)
         values = self._update_body("host1", "nova-cert")
         self.cs.assert_called('PUT', '/os-services/enable', values)
         self.assertIsInstance(service, self._get_service_type())
         self.assertEqual('enabled', service.status)
 
     def test_services_delete(self):
-        self.cs.services.delete('1')
+        ret = self.cs.services.delete('1')
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.cs.assert_called('DELETE', '/os-services/1')
 
     def test_services_disable(self):
         service = self.cs.services.disable('host1', 'nova-cert')
+        self.assert_request_id(service, fakes.FAKE_REQUEST_ID_LIST)
         values = self._update_body("host1", "nova-cert")
         self.cs.assert_called('PUT', '/os-services/disable', values)
         self.assertIsInstance(service, self._get_service_type())
@@ -93,6 +100,7 @@ class ServicesTest(utils.TestCase):
     def test_services_disable_log_reason(self):
         service = self.cs.services.disable_log_reason(
             'compute1', 'nova-compute', 'disable bad host')
+        self.assert_request_id(service, fakes.FAKE_REQUEST_ID_LIST)
         values = self._update_body("compute1", "nova-compute",
                                    "disable bad host")
         self.cs.assert_called('PUT', '/os-services/disable-log-reason', values)
@@ -118,6 +126,7 @@ class ServicesV211TestCase(ServicesTest):
     def test_services_force_down(self):
         service = self.cs.services.force_down(
             'compute1', 'nova-compute', False)
+        self.assert_request_id(service, fakes.FAKE_REQUEST_ID_LIST)
         values = self._update_body("compute1", "nova-compute",
                                    force_down=False)
         self.cs.assert_called('PUT', '/os-services/force-down', values)

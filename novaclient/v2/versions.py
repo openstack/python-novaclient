@@ -76,6 +76,7 @@ class VersionManager(base.ManagerWithFind):
             for version in all_versions:
                 for link in version.links:
                     if link["href"].rstrip('/') == url:
+                        version.append_request_ids(all_versions.request_ids)
                         return version
 
     def get_current(self):

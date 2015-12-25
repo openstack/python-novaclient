@@ -33,14 +33,15 @@ class Fixture(base.Fixture):
             'cidr': '10.0.0.0/8'
         }
 
-        headers = {'Content-Type': 'application/json'}
+        headers = self.json_headers
 
         self.requests.register_uri('GET', self.url(),
                                    json={'security_group_rules': [rule]},
                                    headers=headers)
 
         for u in (1, 11, 12):
-            self.requests.register_uri('DELETE', self.url(u), status_code=202)
+            self.requests.register_uri('DELETE', self.url(u), status_code=202,
+                                       headers=headers)
 
         def post_rules(request, context):
             body = jsonutils.loads(request.body)

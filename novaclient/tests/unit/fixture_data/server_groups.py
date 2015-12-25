@@ -52,7 +52,7 @@ class Fixture(base.Fixture):
             }
         ]
 
-        headers = {'Content-Type': 'application/json'}
+        headers = self.json_headers
 
         self.requests.register_uri('GET', self.url(),
                                    json={'server_groups': server_groups},
@@ -62,7 +62,8 @@ class Fixture(base.Fixture):
         server_j = jsonutils.dumps({'server_group': server})
 
         def _register(method, *args):
-            self.requests.register_uri(method, self.url(*args), text=server_j)
+            self.requests.register_uri(method, self.url(*args), text=server_j,
+                                       headers=headers)
 
         _register('POST')
         _register('POST', server['id'])
@@ -71,4 +72,4 @@ class Fixture(base.Fixture):
         _register('POST', server['id'], '/action')
 
         self.requests.register_uri('DELETE', self.url(server['id']),
-                                   status_code=202)
+                                   status_code=202, headers=headers)

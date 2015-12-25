@@ -33,7 +33,7 @@ class Fixture(base.Fixture):
             ]
         }
 
-        headers = {'Content-Type': 'application/json'}
+        headers = self.json_headers
 
         self.requests.register_uri('GET', self.url(),
                                    json=get_os_networks,
@@ -55,8 +55,10 @@ class Fixture(base.Fixture):
 
         self.requests.register_uri('DELETE',
                                    self.url('networkdelete'),
-                                   status_code=202)
+                                   status_code=202,
+                                   headers=headers)
 
         for u in ('add', 'networkdisassociate/action', 'networktest/action',
                   '1/action', '2/action'):
-            self.requests.register_uri('POST', self.url(u), status_code=202)
+            self.requests.register_uri('POST', self.url(u), status_code=202,
+                                       headers=headers)

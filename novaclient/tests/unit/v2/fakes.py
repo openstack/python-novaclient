@@ -151,7 +151,7 @@ class FakeHTTPClient(base_client.HTTPClient):
                 "http://nova-api:8774/v2.1/190a755eef2e4aac9f06aa6be9786385")
 
     def get_versions(self):
-        return (200, {}, {
+        return (200, FAKE_RESPONSE_HEADERS, {
             "versions": [
                 {"status": "SUPPORTED", "updated": "2011-01-21T11:33:21Z",
                  "links": [{"href": "http://nova-api:8774/v2/",
@@ -208,7 +208,7 @@ class FakeHTTPClient(base_client.HTTPClient):
                     raise AssertionError(
                         "Unknown endpoint_type:%s" % self.endpoint_type)
 
-        return (200, {}, versions[endpoint])
+        return (200, FAKE_RESPONSE_HEADERS, versions[endpoint])
 
     #
     # agents
@@ -1402,7 +1402,7 @@ class FakeHTTPClient(base_client.HTTPClient):
     #
 
     def get_os_quota_class_sets_test(self, **kw):
-        return (200, {}, {
+        return (200, FAKE_RESPONSE_HEADERS, {
             'quota_class_set': {
                 'id': 'test',
                 'metadata_items': 1,
@@ -1589,7 +1589,7 @@ class FakeHTTPClient(base_client.HTTPClient):
     # Tenant Usage
     #
     def get_os_simple_tenant_usage(self, **kw):
-        return (200, {},
+        return (200, FAKE_RESPONSE_HEADERS,
                 {six.u('tenant_usages'): [{
                     six.u('total_memory_mb_usage'): 25451.762807466665,
                     six.u('total_vcpus_usage'): 49.71047423333333,
@@ -1615,7 +1615,7 @@ class FakeHTTPClient(base_client.HTTPClient):
                     six.u('total_local_gb_usage'): 0.0}]})
 
     def get_os_simple_tenant_usage_tenantfoo(self, **kw):
-        return (200, {},
+        return (200, FAKE_RESPONSE_HEADERS,
                 {six.u('tenant_usage'): {
                     six.u('total_memory_mb_usage'): 25451.762807466665,
                     six.u('total_vcpus_usage'): 49.71047423333333,
@@ -1756,44 +1756,47 @@ class FakeHTTPClient(base_client.HTTPClient):
     def get_os_services(self, **kw):
         host = kw.get('host', 'host1')
         binary = kw.get('binary', 'nova-compute')
-        return (200, {}, {'services': [{'binary': binary,
-                                        'host': host,
-                                        'zone': 'nova',
-                                        'status': 'enabled',
-                                        'state': 'up',
-                                        'updated_at': datetime.datetime(
-                                            2012, 10, 29, 13, 42, 2)},
-                                       {'binary': binary,
-                                        'host': host,
-                                        'zone': 'nova',
-                                        'status': 'disabled',
-                                        'state': 'down',
-                                        'updated_at': datetime.datetime(
-                                            2012, 9, 18, 8, 3, 38)},
-                                       ]})
+        return (200, FAKE_RESPONSE_HEADERS,
+                {'services': [{'binary': binary,
+                               'host': host,
+                               'zone': 'nova',
+                               'status': 'enabled',
+                               'state': 'up',
+                               'updated_at': datetime.datetime(
+                                   2012, 10, 29, 13, 42, 2)},
+                              {'binary': binary,
+                               'host': host,
+                               'zone': 'nova',
+                               'status': 'disabled',
+                               'state': 'down',
+                               'updated_at': datetime.datetime(
+                                   2012, 9, 18, 8, 3, 38)},
+                              ]})
 
     def put_os_services_enable(self, body, **kw):
-        return (200, {}, {'service': {'host': body['host'],
-                                      'binary': body['binary'],
-                                      'status': 'enabled'}})
+        return (200, FAKE_RESPONSE_HEADERS,
+                {'service': {'host': body['host'],
+                             'binary': body['binary'],
+                             'status': 'enabled'}})
 
     def put_os_services_disable(self, body, **kw):
-        return (200, {}, {'service': {'host': body['host'],
-                                      'binary': body['binary'],
-                                      'status': 'disabled'}})
+        return (200, FAKE_RESPONSE_HEADERS,
+                {'service': {'host': body['host'],
+                             'binary': body['binary'],
+                             'status': 'disabled'}})
 
     def put_os_services_disable_log_reason(self, body, **kw):
-        return (200, {}, {'service': {
+        return (200, FAKE_RESPONSE_HEADERS, {'service': {
             'host': body['host'],
             'binary': body['binary'],
             'status': 'disabled',
             'disabled_reason': body['disabled_reason']}})
 
     def delete_os_services_1(self, **kw):
-        return (204, {}, None)
+        return (204, FAKE_RESPONSE_HEADERS, None)
 
     def put_os_services_force_down(self, body, **kw):
-        return (200, {}, {'service': {
+        return (200, FAKE_RESPONSE_HEADERS, {'service': {
             'host': body['host'],
             'binary': body['binary'],
             'forced_down': False}})

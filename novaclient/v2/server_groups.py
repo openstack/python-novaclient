@@ -30,7 +30,12 @@ class ServerGroup(base.Resource):
         return '<ServerGroup: %s>' % self.id
 
     def delete(self):
-        self.manager.delete(self.id)
+        """
+        Delete this server group.
+
+        :returns: An instance of novaclient.base.TupleWithMeta
+        """
+        return self.manager.delete(self.id)
 
 
 class ServerGroupsManager(base.ManagerWithFind):
@@ -60,8 +65,9 @@ class ServerGroupsManager(base.ManagerWithFind):
         """Delete a specific server group.
 
         :param id: The ID of the :class:`ServerGroup` to delete.
+        :returns: An instance of novaclient.base.TupleWithMeta
         """
-        self._delete('/os-server-groups/%s' % id)
+        return self._delete('/os-server-groups/%s' % id)
 
     def create(self, **kwargs):
         """Create (allocate) a server group.

@@ -14,6 +14,7 @@
 from novaclient.tests.unit.fixture_data import client
 from novaclient.tests.unit.fixture_data import security_groups as data
 from novaclient.tests.unit import utils
+from novaclient.tests.unit.v2 import fakes
 from novaclient.v2 import security_groups
 
 
@@ -24,6 +25,7 @@ class SecurityGroupsTest(utils.FixturedTestCase):
 
     def _do_test_list_security_groups(self, search_opts, path):
         sgs = self.cs.security_groups.list(search_opts=search_opts)
+        self.assert_request_id(sgs, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('GET', path)
         for sg in sgs:
             self.assertIsInstance(sg, security_groups.SecurityGroup)
@@ -42,27 +44,33 @@ class SecurityGroupsTest(utils.FixturedTestCase):
 
     def test_get_security_groups(self):
         sg = self.cs.security_groups.get(1)
+        self.assert_request_id(sg, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('GET', '/os-security-groups/1')
         self.assertIsInstance(sg, security_groups.SecurityGroup)
         self.assertEqual('1', str(sg))
 
     def test_delete_security_group(self):
         sg = self.cs.security_groups.list()[0]
-        sg.delete()
+        ret = sg.delete()
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('DELETE', '/os-security-groups/1')
-        self.cs.security_groups.delete(1)
+        ret = self.cs.security_groups.delete(1)
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('DELETE', '/os-security-groups/1')
-        self.cs.security_groups.delete(sg)
+        ret = self.cs.security_groups.delete(sg)
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('DELETE', '/os-security-groups/1')
 
     def test_create_security_group(self):
         sg = self.cs.security_groups.create("foo", "foo barr")
+        self.assert_request_id(sg, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/os-security-groups')
         self.assertIsInstance(sg, security_groups.SecurityGroup)
 
     def test_update_security_group(self):
         sg = self.cs.security_groups.list()[0]
         secgroup = self.cs.security_groups.update(sg, "update", "update")
+        self.assert_request_id(secgroup, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('PUT', '/os-security-groups/1')
         self.assertIsInstance(secgroup, security_groups.SecurityGroup)
 

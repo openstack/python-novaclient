@@ -15,6 +15,7 @@ from novaclient import exceptions
 from novaclient.tests.unit.fixture_data import client
 from novaclient.tests.unit.fixture_data import security_group_rules as data
 from novaclient.tests.unit import utils
+from novaclient.tests.unit.v2 import fakes
 from novaclient.v2 import security_group_rules
 
 
@@ -24,12 +25,14 @@ class SecurityGroupRulesTest(utils.FixturedTestCase):
     data_fixture_class = data.Fixture
 
     def test_delete_security_group_rule(self):
-        self.cs.security_group_rules.delete(1)
+        ret = self.cs.security_group_rules.delete(1)
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('DELETE', '/os-security-group-rules/1')
 
     def test_create_security_group_rule(self):
         sg = self.cs.security_group_rules.create(1, "tcp", 1, 65535,
                                                  "10.0.0.0/16")
+        self.assert_request_id(sg, fakes.FAKE_REQUEST_ID_LIST)
 
         body = {
             "security_group_rule": {
@@ -48,6 +51,7 @@ class SecurityGroupRulesTest(utils.FixturedTestCase):
     def test_create_security_group_group_rule(self):
         sg = self.cs.security_group_rules.create(1, "tcp", 1, 65535,
                                                  "10.0.0.0/16", 101)
+        self.assert_request_id(sg, fakes.FAKE_REQUEST_ID_LIST)
 
         body = {
             "security_group_rule": {
@@ -80,10 +84,12 @@ class SecurityGroupRulesTest(utils.FixturedTestCase):
     def test_security_group_rule_str(self):
         sg = self.cs.security_group_rules.create(1, "tcp", 1, 65535,
                                                  "10.0.0.0/16")
+        self.assert_request_id(sg, fakes.FAKE_REQUEST_ID_LIST)
         self.assertEqual('1', str(sg))
 
     def test_security_group_rule_del(self):
         sg = self.cs.security_group_rules.create(1, "tcp", 1, 65535,
                                                  "10.0.0.0/16")
-        sg.delete()
+        ret = sg.delete()
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('DELETE', '/os-security-group-rules/1')

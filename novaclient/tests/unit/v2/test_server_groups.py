@@ -16,6 +16,7 @@
 from novaclient.tests.unit.fixture_data import client
 from novaclient.tests.unit.fixture_data import server_groups as data
 from novaclient.tests.unit import utils
+from novaclient.tests.unit.v2 import fakes
 from novaclient.v2 import server_groups
 
 
@@ -26,6 +27,7 @@ class ServerGroupsTest(utils.FixturedTestCase):
 
     def test_list_server_groups(self):
         result = self.cs.server_groups.list()
+        self.assert_request_id(result, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('GET', '/os-server-groups')
         for server_group in result:
             self.assertIsInstance(server_group,
@@ -33,6 +35,7 @@ class ServerGroupsTest(utils.FixturedTestCase):
 
     def test_list_server_groups_with_all_projects(self):
         result = self.cs.server_groups.list(all_projects=True)
+        self.assert_request_id(result, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('GET', '/os-server-groups?all_projects')
         for server_group in result:
             self.assertIsInstance(server_group,
@@ -42,6 +45,7 @@ class ServerGroupsTest(utils.FixturedTestCase):
         kwargs = {'name': 'ig1',
                   'policies': ['anti-affinity']}
         server_group = self.cs.server_groups.create(**kwargs)
+        self.assert_request_id(server_group, fakes.FAKE_REQUEST_ID_LIST)
         body = {'server_group': kwargs}
         self.assert_called('POST', '/os-server-groups', body)
         self.assertIsInstance(server_group,
@@ -50,17 +54,20 @@ class ServerGroupsTest(utils.FixturedTestCase):
     def test_get_server_group(self):
         id = '2cbd51f4-fafe-4cdb-801b-cf913a6f288b'
         server_group = self.cs.server_groups.get(id)
+        self.assert_request_id(server_group, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('GET', '/os-server-groups/%s' % id)
         self.assertIsInstance(server_group,
                               server_groups.ServerGroup)
 
     def test_delete_server_group(self):
         id = '2cbd51f4-fafe-4cdb-801b-cf913a6f288b'
-        self.cs.server_groups.delete(id)
+        ret = self.cs.server_groups.delete(id)
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('DELETE', '/os-server-groups/%s' % id)
 
     def test_delete_server_group_object(self):
         id = '2cbd51f4-fafe-4cdb-801b-cf913a6f288b'
         server_group = self.cs.server_groups.get(id)
-        server_group.delete()
+        ret = server_group.delete()
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('DELETE', '/os-server-groups/%s' % id)
