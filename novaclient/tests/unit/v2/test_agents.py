@@ -16,6 +16,7 @@
 from novaclient.tests.unit.fixture_data import agents as data
 from novaclient.tests.unit.fixture_data import client
 from novaclient.tests.unit import utils
+from novaclient.tests.unit.v2 import fakes
 from novaclient.v2 import agents
 
 
@@ -50,7 +51,8 @@ class AgentsTest(utils.FixturedTestCase):
             ]
         }
 
-        headers = {'Content-Type': 'application/json'}
+        headers = {'Content-Type': 'application/json',
+                   'x-openstack-request-id': fakes.FAKE_REQUEST_ID}
         self.requests.register_uri('GET', self.data_fixture.url(),
                                    json=get_os_agents,
                                    headers=headers)
@@ -59,6 +61,7 @@ class AgentsTest(utils.FixturedTestCase):
         self.stub_hypervisors()
         ags = self.cs.agents.list()
         self.assert_called('GET', '/os-agents')
+        self.assert_request_id(ags, fakes.FAKE_REQUEST_ID_LIST)
         for a in ags:
             self.assertIsInstance(a, agents.Agent)
             self.assertEqual('kvm', a.hypervisor)
@@ -67,6 +70,7 @@ class AgentsTest(utils.FixturedTestCase):
         self.stub_hypervisors('xen')
         ags = self.cs.agents.list('xen')
         self.assert_called('GET', '/os-agents?hypervisor=xen')
+        self.assert_request_id(ags, fakes.FAKE_REQUEST_ID_LIST)
         for a in ags:
             self.assertIsInstance(a, agents.Agent)
             self.assertEqual('xen', a.hypervisor)
@@ -76,6 +80,7 @@ class AgentsTest(utils.FixturedTestCase):
                                    '/xxx/xxx/xxx',
                                    'add6bb58e139be103324d04d82d8f546',
                                    'xen')
+        self.assert_request_id(ag, fakes.FAKE_REQUEST_ID_LIST)
         body = {'agent': {'url': '/xxx/xxx/xxx',
                           'hypervisor': 'xen',
                           'md5hash': 'add6bb58e139be103324d04d82d8f546',
@@ -86,7 +91,8 @@ class AgentsTest(utils.FixturedTestCase):
         self.assertEqual(1, ag._info.copy()['id'])
 
     def test_agents_delete(self):
-        self.cs.agents.delete('1')
+        ret = self.cs.agents.delete('1')
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('DELETE', '/os-agents/1')
 
     def _build_example_update_body(self):
@@ -99,6 +105,7 @@ class AgentsTest(utils.FixturedTestCase):
         ag = self.cs.agents.update('1', '8.0',
                                    '/yyy/yyyy/yyyy',
                                    'add6bb58e139be103324d04d82d8f546')
+        self.assert_request_id(ag, fakes.FAKE_REQUEST_ID_LIST)
         body = self._build_example_update_body()
         self.assert_called('PUT', '/os-agents/1', body)
         self.assertEqual(1, ag.id)

@@ -19,6 +19,7 @@ import six
 from novaclient.tests.unit.fixture_data import availability_zones as data
 from novaclient.tests.unit.fixture_data import client
 from novaclient.tests.unit import utils
+from novaclient.tests.unit.v2 import fakes
 from novaclient.v2 import availability_zones
 
 
@@ -45,6 +46,7 @@ class AvailabilityZoneTest(utils.FixturedTestCase):
 
     def test_list_availability_zone(self):
         zones = self.cs.availability_zones.list(detailed=False)
+        self.assert_request_id(zones, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('GET', '/os-availability-zone')
 
         for zone in zones:
@@ -65,6 +67,7 @@ class AvailabilityZoneTest(utils.FixturedTestCase):
 
     def test_detail_availability_zone(self):
         zones = self.cs.availability_zones.list(detailed=True)
+        self.assert_request_id(zones, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('GET', '/os-availability-zone/detail')
 
         for zone in zones:

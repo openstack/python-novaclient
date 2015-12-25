@@ -16,6 +16,7 @@ import six
 from novaclient.tests.unit.fixture_data import client
 from novaclient.tests.unit.fixture_data import cloudpipe as data
 from novaclient.tests.unit import utils
+from novaclient.tests.unit.v2 import fakes
 from novaclient.v2 import cloudpipe
 
 
@@ -28,6 +29,7 @@ class CloudpipeTest(utils.FixturedTestCase):
 
     def test_list_cloudpipes(self):
         cp = self.cs.cloudpipe.list()
+        self.assert_request_id(cp, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('GET', '/os-cloudpipe')
         for c in cp:
             self.assertIsInstance(c, cloudpipe.Cloudpipe)
@@ -35,12 +37,14 @@ class CloudpipeTest(utils.FixturedTestCase):
     def test_create(self):
         project = "test"
         cp = self.cs.cloudpipe.create(project)
+        self.assert_request_id(cp, fakes.FAKE_REQUEST_ID_LIST)
         body = {'cloudpipe': {'project_id': project}}
         self.assert_called('POST', '/os-cloudpipe', body)
         self.assertIsInstance(cp, six.string_types)
 
     def test_update(self):
-        self.cs.cloudpipe.update("192.168.1.1", 2345)
+        cp = self.cs.cloudpipe.update("192.168.1.1", 2345)
+        self.assert_request_id(cp, fakes.FAKE_REQUEST_ID_LIST)
         body = {'configure_project': {'vpn_ip': "192.168.1.1",
                                       'vpn_port': 2345}}
         self.assert_called('PUT', '/os-cloudpipe/configure-project', body)

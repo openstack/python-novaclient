@@ -17,6 +17,7 @@
 from novaclient.tests.unit.fixture_data import client
 from novaclient.tests.unit.fixture_data import floatingips as data
 from novaclient.tests.unit import utils
+from novaclient.tests.unit.v2 import fakes
 from novaclient.v2 import floating_ips
 
 
@@ -27,27 +28,33 @@ class FloatingIPsTest(utils.FixturedTestCase):
 
     def test_list_floating_ips(self):
         fips = self.cs.floating_ips.list()
+        self.assert_request_id(fips, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('GET', '/os-floating-ips')
         for fip in fips:
             self.assertIsInstance(fip, floating_ips.FloatingIP)
 
     def test_delete_floating_ip(self):
         fl = self.cs.floating_ips.list()[0]
-        fl.delete()
+        ret = fl.delete()
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('DELETE', '/os-floating-ips/1')
-        self.cs.floating_ips.delete(1)
+        ret = self.cs.floating_ips.delete(1)
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('DELETE', '/os-floating-ips/1')
-        self.cs.floating_ips.delete(fl)
+        ret = self.cs.floating_ips.delete(fl)
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('DELETE', '/os-floating-ips/1')
 
     def test_create_floating_ip(self):
         fl = self.cs.floating_ips.create()
+        self.assert_request_id(fl, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/os-floating-ips')
         self.assertIsNone(fl.pool)
         self.assertIsInstance(fl, floating_ips.FloatingIP)
 
     def test_create_floating_ip_with_pool(self):
         fl = self.cs.floating_ips.create('nova')
+        self.assert_request_id(fl, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/os-floating-ips')
         self.assertEqual('nova', fl.pool)
         self.assertIsInstance(fl, floating_ips.FloatingIP)

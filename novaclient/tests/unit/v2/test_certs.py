@@ -14,6 +14,7 @@
 from novaclient.tests.unit.fixture_data import certs as data
 from novaclient.tests.unit.fixture_data import client
 from novaclient.tests.unit import utils
+from novaclient.tests.unit.v2 import fakes
 from novaclient.v2 import certs
 
 
@@ -27,10 +28,12 @@ class CertsTest(utils.FixturedTestCase):
 
     def test_create_cert(self):
         cert = self.cs.certs.create()
+        self.assert_request_id(cert, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/os-certificates')
         self.assertIsInstance(cert, self.cert_type)
 
     def test_get_root_cert(self):
         cert = self.cs.certs.get()
+        self.assert_request_id(cert, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('GET', '/os-certificates/root')
         self.assertIsInstance(cert, self.cert_type)

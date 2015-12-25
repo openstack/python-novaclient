@@ -16,6 +16,7 @@
 from novaclient.tests.unit.fixture_data import client
 from novaclient.tests.unit.fixture_data import floatingips as data
 from novaclient.tests.unit import utils
+from novaclient.tests.unit.v2 import fakes
 from novaclient.v2 import floating_ips
 
 
@@ -26,18 +27,21 @@ class FloatingIPsBulkTest(utils.FixturedTestCase):
 
     def test_list_floating_ips_bulk(self):
         fl = self.cs.floating_ips_bulk.list()
+        self.assert_request_id(fl, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('GET', '/os-floating-ips-bulk')
         for f in fl:
             self.assertIsInstance(f, floating_ips.FloatingIP)
 
     def test_list_floating_ips_bulk_host_filter(self):
         fl = self.cs.floating_ips_bulk.list('testHost')
+        self.assert_request_id(fl, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('GET', '/os-floating-ips-bulk/testHost')
         for f in fl:
             self.assertIsInstance(f, floating_ips.FloatingIP)
 
     def test_create_floating_ips_bulk(self):
         fl = self.cs.floating_ips_bulk.create('192.168.1.0/30')
+        self.assert_request_id(fl, fakes.FAKE_REQUEST_ID_LIST)
         body = {'floating_ips_bulk_create': {'ip_range': '192.168.1.0/30'}}
         self.assert_called('POST', '/os-floating-ips-bulk', body)
         self.assertEqual(fl.ip_range,
@@ -46,6 +50,7 @@ class FloatingIPsBulkTest(utils.FixturedTestCase):
     def test_create_floating_ips_bulk_with_pool_and_host(self):
         fl = self.cs.floating_ips_bulk.create('192.168.1.0/30', 'poolTest',
                                               'interfaceTest')
+        self.assert_request_id(fl, fakes.FAKE_REQUEST_ID_LIST)
         body = {'floating_ips_bulk_create': {
             'ip_range': '192.168.1.0/30', 'pool': 'poolTest',
             'interface': 'interfaceTest'}}
@@ -59,6 +64,7 @@ class FloatingIPsBulkTest(utils.FixturedTestCase):
 
     def test_delete_floating_ips_bulk(self):
         fl = self.cs.floating_ips_bulk.delete('192.168.1.0/30')
+        self.assert_request_id(fl, fakes.FAKE_REQUEST_ID_LIST)
         body = {'ip_range': '192.168.1.0/30'}
         self.assert_called('PUT', '/os-floating-ips-bulk/delete', body)
         self.assertEqual(fl.floating_ips_bulk_delete, body['ip_range'])

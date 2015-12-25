@@ -16,6 +16,7 @@
 from novaclient.tests.unit.fixture_data import client
 from novaclient.tests.unit.fixture_data import fixedips as data
 from novaclient.tests.unit import utils
+from novaclient.tests.unit.v2 import fakes
 
 
 class FixedIpsTest(utils.FixturedTestCase):
@@ -27,6 +28,7 @@ class FixedIpsTest(utils.FixturedTestCase):
 
     def test_get_fixed_ip(self):
         info = self.cs.fixed_ips.get(fixed_ip='192.168.1.1')
+        self.assert_request_id(info, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('GET', '/os-fixed-ips/192.168.1.1')
         self.assertEqual('192.168.1.0/24', info.cidr)
         self.assertEqual('192.168.1.1', info.address)
@@ -35,10 +37,12 @@ class FixedIpsTest(utils.FixturedTestCase):
 
     def test_reserve_fixed_ip(self):
         body = {"reserve": None}
-        self.cs.fixed_ips.reserve(fixed_ip='192.168.1.1')
+        fixedip = self.cs.fixed_ips.reserve(fixed_ip='192.168.1.1')
+        self.assert_request_id(fixedip, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/os-fixed-ips/192.168.1.1/action', body)
 
     def test_unreserve_fixed_ip(self):
         body = {"unreserve": None}
-        self.cs.fixed_ips.unreserve(fixed_ip='192.168.1.1')
+        fixedip = self.cs.fixed_ips.unreserve(fixed_ip='192.168.1.1')
+        self.assert_request_id(fixedip, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/os-fixed-ips/192.168.1.1/action', body)

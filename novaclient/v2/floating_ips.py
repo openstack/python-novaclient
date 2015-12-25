@@ -19,8 +19,12 @@ from novaclient import base
 
 class FloatingIP(base.Resource):
     def delete(self):
-        """Delete this floating IP"""
-        self.manager.delete(self)
+        """
+        Delete this floating IP
+
+        :returns: An instance of novaclient.base.TupleWithMeta
+        """
+        return self.manager.delete(self)
 
 
 class FloatingIPManager(base.ManagerWithFind):
@@ -38,8 +42,9 @@ class FloatingIPManager(base.ManagerWithFind):
         """Delete (deallocate) a  floating IP for a tenant
 
         :param floating_ip: The floating IP address to delete.
+        :returns: An instance of novaclient.base.TupleWithMeta
         """
-        self._delete("/os-floating-ips/%s" % base.getid(floating_ip))
+        return self._delete("/os-floating-ips/%s" % base.getid(floating_ip))
 
     def get(self, floating_ip):
         """Retrieve a floating IP"""

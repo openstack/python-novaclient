@@ -26,6 +26,7 @@ class FlavorAccessTest(utils.TestCase):
     def test_list_access_by_flavor_private(self):
         kwargs = {'flavor': cs.flavors.get(2)}
         r = cs.flavor_access.list(**kwargs)
+        self.assert_request_id(r, fakes.FAKE_REQUEST_ID_LIST)
         cs.assert_called('GET', '/flavors/2/os-flavor-access')
         for a in r:
             self.assertIsInstance(a, flavor_access.FlavorAccess)
@@ -34,6 +35,7 @@ class FlavorAccessTest(utils.TestCase):
         flavor = cs.flavors.get(2)
         tenant = 'proj2'
         r = cs.flavor_access.add_tenant_access(flavor, tenant)
+        self.assert_request_id(r, fakes.FAKE_REQUEST_ID_LIST)
 
         body = {
             "addTenantAccess": {
@@ -49,6 +51,7 @@ class FlavorAccessTest(utils.TestCase):
         flavor = cs.flavors.get(2)
         tenant = 'proj2'
         r = cs.flavor_access.remove_tenant_access(flavor, tenant)
+        self.assert_request_id(r, fakes.FAKE_REQUEST_ID_LIST)
 
         body = {
             "removeTenantAccess": {

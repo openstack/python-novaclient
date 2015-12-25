@@ -16,6 +16,7 @@
 from novaclient.tests.unit.fixture_data import client
 from novaclient.tests.unit.fixture_data import fping as data
 from novaclient.tests.unit import utils
+from novaclient.tests.unit.v2 import fakes
 from novaclient.v2 import fping
 
 
@@ -26,10 +27,12 @@ class FpingTest(utils.FixturedTestCase):
 
     def test_fping_repr(self):
         r = self.cs.fping.get(1)
+        self.assert_request_id(r, fakes.FAKE_REQUEST_ID_LIST)
         self.assertEqual("<Fping: 1>", repr(r))
 
     def test_list_fpings(self):
         fl = self.cs.fping.list()
+        self.assert_request_id(fl, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('GET', '/os-fping')
         for f in fl:
             self.assertIsInstance(f, fping.Fping)
@@ -38,24 +41,28 @@ class FpingTest(utils.FixturedTestCase):
 
     def test_list_fpings_all_tenants(self):
         fl = self.cs.fping.list(all_tenants=True)
+        self.assert_request_id(fl, fakes.FAKE_REQUEST_ID_LIST)
         for f in fl:
             self.assertIsInstance(f, fping.Fping)
         self.assert_called('GET', '/os-fping?all_tenants=1')
 
     def test_list_fpings_exclude(self):
         fl = self.cs.fping.list(exclude=['1'])
+        self.assert_request_id(fl, fakes.FAKE_REQUEST_ID_LIST)
         for f in fl:
             self.assertIsInstance(f, fping.Fping)
         self.assert_called('GET', '/os-fping?exclude=1')
 
     def test_list_fpings_include(self):
         fl = self.cs.fping.list(include=['1'])
+        self.assert_request_id(fl, fakes.FAKE_REQUEST_ID_LIST)
         for f in fl:
             self.assertIsInstance(f, fping.Fping)
         self.assert_called('GET', '/os-fping?include=1')
 
     def test_get_fping(self):
         f = self.cs.fping.get(1)
+        self.assert_request_id(f, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('GET', '/os-fping/1')
         self.assertIsInstance(f, fping.Fping)
         self.assertEqual("fake-project", f.project_id)

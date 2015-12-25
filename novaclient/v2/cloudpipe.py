@@ -25,7 +25,12 @@ class Cloudpipe(base.Resource):
         return "<Cloudpipe: %s>" % self.project_id
 
     def delete(self):
-        self.manager.delete(self)
+        """
+        Delete the own cloudpipe instance
+
+        :returns: An instance of novaclient.base.TupleWithMeta
+        """
+        return self.manager.delete(self)
 
 
 class CloudpipeManager(base.ManagerWithFind):
@@ -52,8 +57,9 @@ class CloudpipeManager(base.ManagerWithFind):
 
         :param address: IP address
         :param port: Port number
+        :returns: An instance of novaclient.base.TupleWithMeta
         """
 
         body = {'configure_project': {'vpn_ip': address,
                                       'vpn_port': port}}
-        self._update("/os-cloudpipe/configure-project", body)
+        return self._update("/os-cloudpipe/configure-project", body)

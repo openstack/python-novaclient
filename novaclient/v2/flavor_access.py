@@ -62,7 +62,9 @@ class FlavorAccessManager(base.ManagerWithFind):
         body = {action: info}
         self.run_hooks('modify_body_for_action', body, **kwargs)
         url = '/flavors/%s/action' % base.getid(flavor)
-        _resp, body = self.api.client.post(url, body=body)
+        resp, body = self.api.client.post(url, body=body)
 
-        return [self.resource_class(self, res)
-                for res in body['flavor_access']]
+        items = [self.resource_class(self, res)
+                 for res in body['flavor_access']]
+
+        return base.ListWithMeta(items, resp)

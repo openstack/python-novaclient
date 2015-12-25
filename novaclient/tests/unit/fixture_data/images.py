@@ -30,7 +30,7 @@ class V1(base.Fixture):
             ]
         }
 
-        headers = {'Content-Type': 'application/json'}
+        headers = self.json_headers
 
         self.requests.register_uri('GET', self.url(),
                                    json=get_images,
@@ -78,7 +78,8 @@ class V1(base.Fixture):
                                    headers=headers)
 
         for u in (1, '1/metadata/test_key'):
-            self.requests.register_uri('DELETE', self.url(u), status_code=204)
+            self.requests.register_uri('DELETE', self.url(u), status_code=204,
+                                       headers=headers)
 
 
 class V3(V1):

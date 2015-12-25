@@ -33,8 +33,10 @@ class Image(base.Resource):
     def delete(self):
         """
         Delete this image.
+
+        :returns: An instance of novaclient.base.TupleWithMeta
         """
-        self.manager.delete(self)
+        return self.manager.delete(self)
 
 
 class ImageManager(base.ManagerWithFind):
@@ -81,8 +83,9 @@ class ImageManager(base.ManagerWithFind):
         that you didn't create.
 
         :param image: The :class:`Image` (or its ID) to delete.
+        :returns: An instance of novaclient.base.TupleWithMeta
         """
-        self._delete("/images/%s" % base.getid(image))
+        return self._delete("/images/%s" % base.getid(image))
 
     def set_meta(self, image, metadata):
         """
@@ -101,6 +104,12 @@ class ImageManager(base.ManagerWithFind):
 
         :param image: The :class:`Image` to delete metadata
         :param keys: A list of metadata keys to delete from the image
+        :returns: An instance of novaclient.base.TupleWithMeta
         """
+        result = base.TupleWithMeta((), None)
         for k in keys:
-            self._delete("/images/%s/metadata/%s" % (base.getid(image), k))
+            ret = self._delete("/images/%s/metadata/%s" %
+                               (base.getid(image), k))
+            result.append_request_ids(ret.request_ids)
+
+        return result

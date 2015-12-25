@@ -83,10 +83,11 @@ class DNSFixture(base.Fixture):
                                    headers=self.json_headers,
                                    status_code=205)
 
-        self.requests.register_uri('DELETE', self.url('testdomain'))
+        self.requests.register_uri('DELETE', self.url('testdomain'),
+                                   headers=self.json_headers)
 
         url = self.url('testdomain', 'entries', 'testname')
-        self.requests.register_uri('DELETE', url)
+        self.requests.register_uri('DELETE', url, headers=self.json_headers)
 
         def put_dns_testdomain_entries_testname(request, context):
             body = jsonutils.loads(request.body)

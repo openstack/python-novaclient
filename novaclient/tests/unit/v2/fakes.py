@@ -809,7 +809,7 @@ class FakeHTTPClient(base_client.HTTPClient):
                 if k not in ['id', 'name']:
                     del flavor[k]
 
-        return (200, {}, flavors)
+        return (200, FAKE_RESPONSE_HEADERS, flavors)
 
     def get_flavors_detail(self, **kw):
         flavors = {'flavors': [
@@ -852,12 +852,12 @@ class FakeHTTPClient(base_client.HTTPClient):
                     if not v['os-flavor-access:is_public']
                 ]
 
-        return (200, {}, flavors)
+        return (200, FAKE_RESPONSE_HEADERS, flavors)
 
     def get_flavors_1(self, **kw):
         return (
             200,
-            {},
+            FAKE_RESPONSE_HEADERS,
             {'flavor':
                 self.get_flavors_detail(is_public='None')[2]['flavors'][0]}
         )
@@ -874,7 +874,7 @@ class FakeHTTPClient(base_client.HTTPClient):
         # Diablo has no ephemeral
         return (
             200,
-            {},
+            FAKE_RESPONSE_HEADERS,
             {'flavor': {
                 'id': 3,
                 'name': '256 MB Server',
@@ -896,7 +896,7 @@ class FakeHTTPClient(base_client.HTTPClient):
         # Alphanumeric flavor id are allowed.
         return (
             200,
-            {},
+            FAKE_RESPONSE_HEADERS,
             {'flavor':
                 self.get_flavors_detail(is_public='None')[2]['flavors'][3]}
         )
@@ -910,15 +910,15 @@ class FakeHTTPClient(base_client.HTTPClient):
         )
 
     def delete_flavors_flavordelete(self, **kw):
-        return (202, {}, None)
+        return (202, FAKE_RESPONSE_HEADERS, None)
 
     def delete_flavors_2(self, **kw):
-        return (202, {}, None)
+        return (202, FAKE_RESPONSE_HEADERS, None)
 
     def post_flavors(self, body, **kw):
         return (
             202,
-            {},
+            FAKE_RESPONSE_HEADERS,
             {'flavor':
                 self.get_flavors_detail(is_public='None')[2]['flavors'][0]}
         )
@@ -952,7 +952,7 @@ class FakeHTTPClient(base_client.HTTPClient):
                               required=['k1'])
         return (
             200,
-            {},
+            FAKE_RESPONSE_HEADERS,
             {'extra_specs': {"k1": "v1"}})
 
     def post_flavors_4_os_extra_specs(self, body, **kw):
@@ -960,7 +960,7 @@ class FakeHTTPClient(base_client.HTTPClient):
 
         return (
             200,
-            {},
+            FAKE_RESPONSE_HEADERS,
             body)
 
     def delete_flavors_1_os_extra_specs_k1(self, **kw):
@@ -975,12 +975,13 @@ class FakeHTTPClient(base_client.HTTPClient):
 
     def get_flavors_2_os_flavor_access(self, **kw):
         return (
-            200, {},
+            200, FAKE_RESPONSE_HEADERS,
             {'flavor_access': [{'flavor_id': '2', 'tenant_id': 'proj1'},
                                {'flavor_id': '2', 'tenant_id': 'proj2'}]})
 
     def post_flavors_2_action(self, body, **kw):
-        return (202, {}, self.get_flavors_2_os_flavor_access()[2])
+        return (202, FAKE_RESPONSE_HEADERS,
+                self.get_flavors_2_os_flavor_access()[2])
 
     #
     # Floating IPs

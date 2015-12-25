@@ -17,6 +17,7 @@
 from novaclient.tests.unit.fixture_data import client
 from novaclient.tests.unit.fixture_data import floatingips as data
 from novaclient.tests.unit import utils
+from novaclient.tests.unit.v2 import fakes
 from novaclient.v2 import floating_ip_pools
 
 
@@ -27,6 +28,7 @@ class TestFloatingIPPools(utils.FixturedTestCase):
 
     def test_list_floating_ips(self):
         fl = self.cs.floating_ip_pools.list()
+        self.assert_request_id(fl, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('GET', '/os-floating-ip-pools')
         for f in fl:
             self.assertIsInstance(f, floating_ip_pools.FloatingIPPool)
