@@ -88,8 +88,9 @@ class BareMetalNodeManager(base.ManagerWithFind):
         Delete a baremetal node.
 
         :param node: The :class:`BareMetalNode` to delete.
+        :returns: An instance of novaclient.base.TupleWithMeta
         """
-        self._delete('/os-baremetal-nodes/%s' % base.getid(node))
+        return self._delete('/os-baremetal-nodes/%s' % base.getid(node))
 
     def get(self, node_id):
         """
@@ -122,8 +123,8 @@ class BareMetalNodeManager(base.ManagerWithFind):
                                   'datapath_id': datapath_id,
                                   'port_no': port_no}}
         url = '/os-baremetal-nodes/%s/action' % node_id
-        _resp, body = self.api.client.post(url, body=body)
-        return BareMetalNodeInterface(self, body['interface'])
+        resp, body = self.api.client.post(url, body=body)
+        return BareMetalNodeInterface(self, body['interface'], resp=resp)
 
     def remove_interface(self, node_id, address):
         """
@@ -131,21 +132,24 @@ class BareMetalNodeManager(base.ManagerWithFind):
 
         :param node_id: The ID of the node to modify.
         :param address: The MAC address to remove.
-        :rtype: bool
+        :returns: An instance of novaclient.base.TupleWithMeta
         """
         req_body = {'remove_interface': {'address': address}}
         url = '/os-baremetal-nodes/%s/action' % node_id
-        self.api.client.post(url, body=req_body)
+        resp, body = self.api.client.post(url, body=req_body)
+
+        return self.convert_into_with_meta(body, resp)
 
     def list_interfaces(self, node_id):
         """
         List the interfaces on a baremetal node.
 
         :param node_id: The ID of the node to list.
-        :rtype: list
+        :rtype: novaclient.base.ListWithMeta
         """
-        interfaces = []
+        interfaces = base.ListWithMeta([], None)
         node = self._get("/os-baremetal-nodes/%s" % node_id, 'node')
+        interfaces.append_request_ids(node.request_ids)
         for interface in node.interfaces:
             interface_object = BareMetalNodeInterface(self, interface)
             interfaces.append(interface_object)

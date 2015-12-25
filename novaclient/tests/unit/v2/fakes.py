@@ -296,7 +296,7 @@ class FakeHTTPClient(base_client.HTTPClient):
                 "updated": "2011-11-03T00:00:00+00:00"
             },
         ]
-        return (200, {}, {
+        return (200, FAKE_RESPONSE_HEADERS, {
             "extensions": exts,
         })
 
@@ -2304,7 +2304,7 @@ class FakeHTTPClient(base_client.HTTPClient):
         return (200, {}, {})
 
     def get_servers_1234_os_instance_actions(self, **kw):
-        return (200, {}, {
+        return (200, FAKE_RESPONSE_HEADERS, {
             "instanceActions":
                 [{"instance_uuid": "1234",
                   "user_id": "b968c25e04ab405f9fe4e6ca54cce9a5",
@@ -2315,7 +2315,7 @@ class FakeHTTPClient(base_client.HTTPClient):
                   "project_id": "04019601fe3648c0abd4f4abfb9e6106"}]})
 
     def get_servers_1234_os_instance_actions_req_abcde12345(self, **kw):
-        return (200, {}, {
+        return (200, FAKE_RESPONSE_HEADERS, {
             "instanceAction":
                 {"instance_uuid": "1234",
                  "user_id": "b968c25e04ab405f9fe4e6ca54cce9a5",
@@ -2352,7 +2352,7 @@ class FakeHTTPClient(base_client.HTTPClient):
             'rpc_port': 5673,
             'loaded': True
         }}
-        return (200, {}, cell)
+        return (200, FAKE_RESPONSE_HEADERS, cell)
 
     def get_os_cells_capacities(self, **kw):
         cell_capacities_response = {"cell": {"capacities": {"ram_free": {
@@ -2360,7 +2360,7 @@ class FakeHTTPClient(base_client.HTTPClient):
                             "16384": 0}, "total_mb": 7680}, "disk_free": {
             "units_by_mb": {"81920": 11, "20480": 46, "40960": 23, "163840": 5,
                             "0": 0}, "total_mb": 1052672}}}}
-        return (200, {}, cell_capacities_response)
+        return (200, FAKE_RESPONSE_HEADERS, cell_capacities_response)
 
     def get_os_cells_child_cell_capacities(self, **kw):
         return self.get_os_cells_capacities()
@@ -2381,7 +2381,7 @@ class FakeHTTPClient(base_client.HTTPClient):
                 "status": "Done",
                 "updated_at": "2012-10-29T13:42:02.000000"
             }]}
-        return (200, {}, migrations)
+        return (200, FAKE_RESPONSE_HEADERS, migrations)
 
     def post_os_server_external_events(self, **kw):
         return (200, {}, {'events': [

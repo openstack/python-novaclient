@@ -40,5 +40,6 @@ class ServerExternalEventsTestCase(utils.TestCase):
                    'status': 'completed',
                    'tag': 'tag'}]
         result = cs.server_external_events.create(events)
+        self.assert_request_id(result, fakes.FAKE_REQUEST_ID_LIST)
         self.assertEqual(events, result)
         cs.assert_called('POST', '/os-server-external-events')

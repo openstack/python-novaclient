@@ -29,7 +29,8 @@ cs = fakes.FakeClient(extensions=extensions)
 class InstanceActionExtensionTests(utils.TestCase):
     def test_list_instance_actions(self):
         server_uuid = '1234'
-        cs.instance_action.list(server_uuid)
+        ial = cs.instance_action.list(server_uuid)
+        self.assert_request_id(ial, fakes.FAKE_REQUEST_ID_LIST)
         cs.assert_called(
             'GET', '/servers/%s/os-instance-actions' %
             server_uuid)
@@ -37,7 +38,8 @@ class InstanceActionExtensionTests(utils.TestCase):
     def test_get_instance_action(self):
         server_uuid = '1234'
         request_id = 'req-abcde12345'
-        cs.instance_action.get(server_uuid, request_id)
+        ia = cs.instance_action.get(server_uuid, request_id)
+        self.assert_request_id(ia, fakes.FAKE_REQUEST_ID_LIST)
         cs.assert_called(
             'GET', '/servers/%s/os-instance-actions/%s'
             % (server_uuid, request_id))

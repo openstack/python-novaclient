@@ -29,18 +29,22 @@ cs = fakes.FakeClient(extensions=extensions)
 class TenantNetworkExtensionTests(utils.TestCase):
     def test_list_tenant_networks(self):
         nets = cs.tenant_networks.list()
+        self.assert_request_id(nets, fakes.FAKE_REQUEST_ID_LIST)
         cs.assert_called('GET', '/os-tenant-networks')
         self.assertTrue(len(nets) > 0)
 
     def test_get_tenant_network(self):
-        cs.tenant_networks.get(1)
+        net = cs.tenant_networks.get(1)
+        self.assert_request_id(net, fakes.FAKE_REQUEST_ID_LIST)
         cs.assert_called('GET', '/os-tenant-networks/1')
 
     def test_create_tenant_networks(self):
-        cs.tenant_networks.create(label="net",
-                                  cidr="10.0.0.0/24")
+        net = cs.tenant_networks.create(label="net",
+                                        cidr="10.0.0.0/24")
+        self.assert_request_id(net, fakes.FAKE_REQUEST_ID_LIST)
         cs.assert_called('POST', '/os-tenant-networks')
 
     def test_delete_tenant_networks(self):
-        cs.tenant_networks.delete(1)
+        ret = cs.tenant_networks.delete(1)
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         cs.assert_called('DELETE', '/os-tenant-networks/1')

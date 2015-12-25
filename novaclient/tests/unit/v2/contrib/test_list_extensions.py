@@ -27,6 +27,7 @@ cs = fakes.FakeClient(extensions=extensions)
 class ListExtensionsTests(utils.TestCase):
     def test_list_extensions(self):
         all_exts = cs.list_extensions.show_all()
+        self.assert_request_id(all_exts, fakes.FAKE_REQUEST_ID_LIST)
         cs.assert_called('GET', '/extensions')
         self.assertTrue(len(all_exts) > 0)
         for r in all_exts:

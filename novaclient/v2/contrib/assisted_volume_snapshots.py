@@ -28,8 +28,10 @@ class Snapshot(base.Resource):
     def delete(self):
         """
         Delete this snapshot.
+
+        :returns: An instance of novaclient.base.TupleWithMeta
         """
-        self.manager.delete(self)
+        return self.manager.delete(self)
 
 
 class AssistedSnapshotManager(base.Manager):
@@ -41,8 +43,15 @@ class AssistedSnapshotManager(base.Manager):
         return self._create('/os-assisted-volume-snapshots', body, 'snapshot')
 
     def delete(self, snapshot, delete_info):
-        self._delete("/os-assisted-volume-snapshots/%s?delete_info=%s" % (
-            base.getid(snapshot), json.dumps(delete_info)))
+        """
+        Delete a specified assisted volume snapshot.
+
+        :param snapshot: an assisted volume snapshot to delete
+        :param delete_info: Information for snapshot deletion
+        :returns: An instance of novaclient.base.TupleWithMeta
+        """
+        return self._delete("/os-assisted-volume-snapshots/%s?delete_info=%s" %
+                            (base.getid(snapshot), json.dumps(delete_info)))
 
 manager_class = AssistedSnapshotManager
 name = 'assisted_volume_snapshots'

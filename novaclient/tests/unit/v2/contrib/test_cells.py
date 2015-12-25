@@ -29,14 +29,17 @@ cs = fakes.FakeClient(extensions=extensions)
 class CellsExtensionTests(utils.TestCase):
     def test_get_cells(self):
         cell_name = 'child_cell'
-        cs.cells.get(cell_name)
+        cell = cs.cells.get(cell_name)
+        self.assert_request_id(cell, fakes.FAKE_REQUEST_ID_LIST)
         cs.assert_called('GET', '/os-cells/%s' % cell_name)
 
     def test_get_capacities_for_a_given_cell(self):
         cell_name = 'child_cell'
-        cs.cells.capacities(cell_name)
+        ca = cs.cells.capacities(cell_name)
+        self.assert_request_id(ca, fakes.FAKE_REQUEST_ID_LIST)
         cs.assert_called('GET', '/os-cells/%s/capacities' % cell_name)
 
     def test_get_capacities_for_all_cells(self):
-        cs.cells.capacities()
+        ca = cs.cells.capacities()
+        self.assert_request_id(ca, fakes.FAKE_REQUEST_ID_LIST)
         cs.assert_called('GET', '/os-cells/capacities')

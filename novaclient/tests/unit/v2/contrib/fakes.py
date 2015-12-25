@@ -15,6 +15,9 @@
 from novaclient.tests.unit.v2 import fakes
 from novaclient.v2 import client
 
+FAKE_REQUEST_ID_LIST = fakes.FAKE_REQUEST_ID_LIST
+FAKE_RESPONSE_HEADERS = fakes.FAKE_RESPONSE_HEADERS
+
 
 class FakeClient(fakes.FakeClient):
     def __init__(self, *args, **kwargs):
@@ -27,29 +30,29 @@ class FakeClient(fakes.FakeClient):
 
 class FakeHTTPClient(fakes.FakeHTTPClient):
     def get_os_tenant_networks(self):
-        return (200, {}, {
+        return (200, FAKE_RESPONSE_HEADERS, {
             'networks': [{"label": "1", "cidr": "10.0.0.0/24",
                           'project_id': '4ffc664c198e435e9853f2538fbcd7a7',
                           'id': '1'}]})
 
     def get_os_tenant_networks_1(self, **kw):
-        return (200, {}, {
+        return (200, FAKE_RESPONSE_HEADERS, {
             'network': {"label": "1", "cidr": "10.0.0.0/24",
                         'project_id': '4ffc664c198e435e9853f2538fbcd7a7',
                         'id': '1'}})
 
     def post_os_tenant_networks(self, **kw):
-        return (201, {}, {
+        return (201, FAKE_RESPONSE_HEADERS, {
             'network': {"label": "1", "cidr": "10.0.0.0/24",
                         'project_id': '4ffc664c198e435e9853f2538fbcd7a7',
                         'id': '1'}})
 
     def delete_os_tenant_networks_1(self, **kw):
-        return (204, {}, None)
+        return (204, FAKE_RESPONSE_HEADERS, None)
 
     def get_os_baremetal_nodes(self, **kw):
         return (
-            200, {}, {
+            200, FAKE_RESPONSE_HEADERS, {
                 'nodes': [
                     {
                         "id": 1,
@@ -72,7 +75,7 @@ class FakeHTTPClient(fakes.FakeHTTPClient):
 
     def get_os_baremetal_nodes_1(self, **kw):
         return (
-            200, {}, {
+            200, FAKE_RESPONSE_HEADERS, {
                 'node': {
                     "id": 1,
                     "instance_uuid": None,
@@ -93,7 +96,7 @@ class FakeHTTPClient(fakes.FakeHTTPClient):
 
     def post_os_baremetal_nodes(self, **kw):
         return (
-            200, {}, {
+            200, FAKE_RESPONSE_HEADERS, {
                 'node': {
                     "id": 1,
                     "instance_uuid": None,
@@ -112,14 +115,14 @@ class FakeHTTPClient(fakes.FakeHTTPClient):
         )
 
     def delete_os_baremetal_nodes_1(self, **kw):
-        return (202, {}, {})
+        return (202, FAKE_RESPONSE_HEADERS, {})
 
     def post_os_baremetal_nodes_1_action(self, **kw):
         body = kw['body']
         action = list(body)[0]
         if action == "add_interface":
             return (
-                200, {}, {
+                200, FAKE_RESPONSE_HEADERS, {
                     'interface': {
                         "id": 2,
                         "address": "bb:cc:dd:ee:ff:aa",
@@ -129,18 +132,19 @@ class FakeHTTPClient(fakes.FakeHTTPClient):
                 }
             )
         elif action == "remove_interface":
-            return (202, {}, {})
+            return (202, FAKE_RESPONSE_HEADERS, {})
         else:
             return (500, {}, {})
 
     def post_os_assisted_volume_snapshots(self, **kw):
-        return (202, {}, {'snapshot': {'id': 'blah', 'volumeId': '1'}})
+        return (202, FAKE_RESPONSE_HEADERS,
+                {'snapshot': {'id': 'blah', 'volumeId': '1'}})
 
     def delete_os_assisted_volume_snapshots_x(self, **kw):
-        return (202, {}, {})
+        return (202, FAKE_RESPONSE_HEADERS, {})
 
     def post_os_server_external_events(self, **kw):
-        return (200, {}, {
+        return (200, FAKE_RESPONSE_HEADERS, {
             'events': [
                 {'name': 'test-event',
                  'status': 'completed',

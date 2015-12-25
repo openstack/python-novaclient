@@ -26,12 +26,14 @@ class MigrationsTest(utils.TestCase):
 
     def test_list_migrations(self):
         ml = cs.migrations.list()
+        self.assert_request_id(ml, fakes.FAKE_REQUEST_ID_LIST)
         cs.assert_called('GET', '/os-migrations')
         for m in ml:
             self.assertIsInstance(m, migrations.Migration)
 
     def test_list_migrations_with_filters(self):
         ml = cs.migrations.list('host1', 'finished', 'child1')
+        self.assert_request_id(ml, fakes.FAKE_REQUEST_ID_LIST)
 
         cs.assert_called('GET',
                          '/os-migrations?cell_name=child1&host=host1'
