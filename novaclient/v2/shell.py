@@ -525,13 +525,13 @@ def _boot(cs, args):
     dest='access_ip_v4',
     metavar='<value>',
     default=None,
-    help=_('Alternative access ip v4 of the instance.'))
+    help=_('Alternative access IPv4 of the instance.'))
 @cliutils.arg(
     '--access-ip-v6',
     dest='access_ip_v6',
     metavar='<value>',
     default=None,
-    help=_('Alternative access ip v6 of the instance.'))
+    help=_('Alternative access IPv6 of the instance.'))
 def do_boot(cs, args):
     """Boot a new server."""
     boot_args, boot_kwargs = _boot(cs, args)
@@ -1190,7 +1190,7 @@ def do_image_list(cs, _args):
     help=_('Metadata to add/update or delete (only key is necessary on '
            'delete).'))
 def do_image_meta(cs, args):
-    """Set or Delete metadata on an image."""
+    """Set or delete metadata on an image."""
     image = _find_image(cs, args.image)
     metadata = _extract_metadata(args)
 
@@ -1935,7 +1935,7 @@ def do_backup(cs, args):
     default=[],
     help=_('Metadata to set or delete (only key is necessary on delete).'))
 def do_meta(cs, args):
-    """Set or Delete metadata on a server."""
+    """Set or delete metadata on a server."""
     server = _find_server(cs, args.server)
     metadata = _extract_metadata(args)
 
@@ -2159,14 +2159,14 @@ def do_volume_show(cs, args):
     '--snapshot-id',
     metavar='<snapshot-id>',
     default=None,
-    help=_('Optional snapshot id to create the volume from. (Default=None)'))
+    help=_('Optional snapshot ID to create the volume from. (Default=None)'))
 @cliutils.arg(
     '--snapshot_id',
     help=argparse.SUPPRESS)
 @cliutils.arg(
     '--image-id',
     metavar='<image-id>',
-    help=_('Optional image id to create the volume from. (Default=None)'),
+    help=_('Optional image ID to create the volume from. (Default=None)'),
     default=None)
 @cliutils.arg(
     '--display-name',
@@ -2286,7 +2286,7 @@ def do_volume_detach(cs, args):
     metavar='<server>',
     help=_('Name or ID of server.'))
 def do_volume_attachments(cs, args):
-    """List all the volumes attached to a server"""
+    """List all the volumes attached to a server."""
     volumes = cs.volumes.get_server_volumes(_find_server(cs, args.server).id)
     _translate_volume_attachments_keys(volumes)
     utils.print_list(volumes, ['ID', 'DEVICE', 'SERVER ID', 'VOLUME ID'])
@@ -3096,7 +3096,7 @@ def do_keypair_delete(cs, args):
     '--user',
     metavar='<user-id>',
     default=None,
-    help=_('Id of key-pair owner (Admin only).'))
+    help=_('ID of key-pair owner (Admin only).'))
 def do_keypair_delete(cs, args):
     """Delete keypair given by its name."""
     cs.keypairs.delete(args.name, args.user)
@@ -3125,7 +3125,7 @@ def do_keypair_list(cs, args):
     '--user',
     metavar='<user-id>',
     default=None,
-    help=_('List key-pairs of specified user id (Admin only).'))
+    help=_('List key-pairs of specified user ID (Admin only).'))
 def do_keypair_list(cs, args):
     """Print a list of keypairs for a user"""
     keypairs = cs.keypairs.list(args.user)
@@ -3160,7 +3160,7 @@ def do_keypair_show(cs, args):
     '--user',
     metavar='<user-id>',
     default=None,
-    help=_('Id of key-pair owner (Admin only).'))
+    help=_('ID of key-pair owner (Admin only).'))
 def do_keypair_show(cs, args):
     """Show details about the given keypair."""
     keypair = cs.keypairs.get(args.keypair, args.user)
