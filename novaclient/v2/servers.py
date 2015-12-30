@@ -1222,7 +1222,7 @@ class ServerManager(base.BootingManagerWithFind):
 
     def delete_meta(self, server, keys):
         """
-        Delete metadata from an server
+        Delete metadata from a server
         :param server: The :class:`Server` to add metadata to
         :param keys: A list of metadata keys to delete from the server
         """
