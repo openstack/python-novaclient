@@ -22,6 +22,7 @@ import re
 import six
 from six.moves.urllib import parse
 
+import novaclient
 from novaclient import client as base_client
 from novaclient import exceptions
 from novaclient.tests.unit import fakes
@@ -155,8 +156,8 @@ class FakeHTTPClient(base_client.HTTPClient):
                 {"status": "CURRENT", "updated": "2013-07-23T11:33:21Z",
                  "links": [{"href": "http://nova-api:8774/v2.1/",
                             "rel": "self"}],
-                 "min_version": "2.1",
-                 "version": "2.3",
+                 "min_version": novaclient.API_MIN_VERSION.get_string(),
+                 "version": novaclient.API_MAX_VERSION.get_string(),
                  "id": "v2.1"}
             ]})
 
@@ -182,8 +183,8 @@ class FakeHTTPClient(base_client.HTTPClient):
                         "href": "http://nova-api:8774/v2.1/",
                         "rel": "self"
                     }],
-                    "min_version": "2.1",
-                    "version": "2.3",
+                    "min_version": novaclient.API_MIN_VERSION.get_string(),
+                    "version": novaclient.API_MAX_VERSION.get_string(),
                     "id": "v2.1"
                 }
             }

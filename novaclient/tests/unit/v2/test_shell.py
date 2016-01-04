@@ -2618,6 +2618,10 @@ class ShellTest(utils.TestCase):
                        'excluding them.' % sorted(unaccounted_for))
         self.assertEqual(set([]), unaccounted_for, failure_msg)
 
+    def test_list_v2_10(self):
+        self.run_command('list', api_version='2.10')
+        self.assert_called('GET', '/servers/detail')
+
 
 class ShellWithSessionClientTest(ShellTest):
 
