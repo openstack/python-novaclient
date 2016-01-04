@@ -30,6 +30,7 @@ import time
 import warnings
 
 from oslo_utils import encodeutils
+from oslo_utils import netutils
 from oslo_utils import strutils
 from oslo_utils import timeutils
 from oslo_utils import uuidutils
@@ -287,6 +288,14 @@ def _boot(cs, args):
                 nic_info[k] = v
             else:
                 raise exceptions.CommandError(err_msg)
+
+        if nic_info['v4-fixed-ip'] and not netutils.is_valid_ipv4(
+                nic_info['v4-fixed-ip']):
+            raise exceptions.CommandError(_("Invalid ipv4 address."))
+
+        if nic_info['v6-fixed-ip'] and not netutils.is_valid_ipv6(
+                nic_info['v6-fixed-ip']):
+            raise exceptions.CommandError(_("Invalid ipv6 address."))
 
         if bool(nic_info['net-id']) == bool(nic_info['port-id']):
             raise exceptions.CommandError(err_msg)

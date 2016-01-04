@@ -561,6 +561,16 @@ class ShellTest(utils.TestCase):
                '--nic port-id=some=port,net-id=some=net some-server')
         self.assertRaises(exceptions.CommandError, self.run_command, cmd)
 
+    def test_boot_nics_invalid_ipv4(self):
+        cmd = ('boot --image 1 --flavor 1 '
+               '--nic net-id=a=c,v4-fixed-ip=2001:db9:0:1::10 some-server')
+        self.assertRaises(exceptions.CommandError, self.run_command, cmd)
+
+    def test_boot_nics_invalid_ipv6(self):
+        cmd = ('boot --image 1 --flavor 1 '
+               '--nic net-id=a=c,v6-fixed-ip=10.0.0.1 some-server')
+        self.assertRaises(exceptions.CommandError, self.run_command, cmd)
+
     def test_boot_files(self):
         testfile = os.path.join(os.path.dirname(__file__), 'testfile.txt')
         with open(testfile) as testfile_fd:
