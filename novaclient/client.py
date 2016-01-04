@@ -741,6 +741,8 @@ def discover_extensions(version):
 def _discover_via_python_path():
     for (module_loader, name, _ispkg) in pkgutil.iter_modules():
         if name.endswith('_python_novaclient_ext'):
+            if not hasattr(module_loader, 'load_module'):
+                module_loader = module_loader.find_module(name)
             module = module_loader.load_module(name)
             if hasattr(module, 'extension_name'):
                 name = module.extension_name
