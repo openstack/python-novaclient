@@ -35,7 +35,7 @@ class InstanceActionManager(base.ManagerWithFind):
 
     def list(self, server):
         """
-        Get a list of actions performed on an server.
+        Get a list of actions performed on a server.
         """
         return self._list('/servers/%s/os-instance-actions' %
                           base.getid(server), 'instanceActions')

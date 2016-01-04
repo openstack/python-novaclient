@@ -241,7 +241,7 @@ class InvalidUsage(RuntimeError):
 def from_response(response, body, url, method=None):
     """
     Return an instance of an ClientException or subclass
-    based on an requests response.
+    based on a requests response.
 
     Usage::
 

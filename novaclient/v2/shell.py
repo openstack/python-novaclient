@@ -3501,7 +3501,7 @@ def do_agent_modify(cs, args):
 
 
 def _find_aggregate(cs, aggregate):
-    """Get a aggregate by name or ID."""
+    """Get an aggregate by name or ID."""
     return utils.find_resource(cs.aggregates, aggregate)
 
 
@@ -4718,7 +4718,7 @@ def do_secgroup_delete_default_rule(cs, args):
 @cliutils.arg('name', metavar='<name>', help=_('Server group name.'))
 # NOTE(wingwj): The '--policy' way is still reserved here for preserving
 # the backwards compatibility of CLI, even if a user won't get this usage
-# in '--help' description. It will be deprecated after an suitable deprecation
+# in '--help' description. It will be deprecated after a suitable deprecation
 # period(probably 2 coordinated releases or so).
 #
 # Moreover, we imagine that a given user will use only positional parameters or
