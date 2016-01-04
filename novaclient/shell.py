@@ -645,12 +645,12 @@ class OpenStackComputeShell(object):
                 if not os_username and not os_user_id:
                     raise exc.CommandError(
                         _("You must provide a username "
-                          "or user id via --os-username, --os-user-id, "
+                          "or user ID via --os-username, --os-user-id, "
                           "env[OS_USERNAME] or env[OS_USER_ID]"))
 
             if not any([os_project_name, os_project_id]):
                 raise exc.CommandError(_("You must provide a project name or"
-                                         " project id via --os-project-name,"
+                                         " project ID via --os-project-name,"
                                          " --os-project-id, env[OS_PROJECT_ID]"
                                          " or env[OS_PROJECT_NAME]. You may"
                                          " use os-project and os-tenant"

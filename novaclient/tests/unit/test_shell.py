@@ -104,7 +104,7 @@ class ParserTest(utils.TestCase):
 class ShellTest(utils.TestCase):
 
     _msg_no_tenant_project = ("You must provide a project name or project"
-                              " id via --os-project-name, --os-project-id,"
+                              " ID via --os-project-name, --os-project-id,"
                               " env[OS_PROJECT_ID] or env[OS_PROJECT_NAME]."
                               " You may use os-project and os-tenant"
                               " interchangeably.")
@@ -218,7 +218,7 @@ class ShellTest(utils.TestCase):
                             matchers.MatchesRegex(r, re.DOTALL | re.MULTILINE))
 
     def test_no_username(self):
-        required = ('You must provide a username or user id'
+        required = ('You must provide a username or user ID'
                     ' via --os-username, --os-user-id,'
                     ' env[OS_USERNAME] or env[OS_USER_ID]')
         self.make_env(exclude='OS_USERNAME')
@@ -230,7 +230,7 @@ class ShellTest(utils.TestCase):
             self.fail('CommandError not raised')
 
     def test_no_user_id(self):
-        required = ('You must provide a username or user id'
+        required = ('You must provide a username or user ID'
                     ' via --os-username, --os-user-id,'
                     ' env[OS_USERNAME] or env[OS_USER_ID]')
         self.make_env(exclude='OS_USER_ID', fake_env=FAKE_ENV2)

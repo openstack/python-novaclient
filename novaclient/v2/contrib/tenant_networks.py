@@ -44,7 +44,7 @@ class TenantNetworkManager(base.ManagerWithFind):
 @cliutils.arg('network_id', metavar='<network_id>', help='ID of network')
 def do_net(cs, args):
     """
-    DEPRECATED, Use tenant-network-show instead.
+    DEPRECATED, use tenant-network-show instead.
     """
     do_tenant_network_show(cs, args)
 
