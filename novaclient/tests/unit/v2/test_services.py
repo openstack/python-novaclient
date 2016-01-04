@@ -122,4 +122,4 @@ class ServicesV211TestCase(ServicesTest):
                                    force_down=False)
         self.cs.assert_called('PUT', '/os-services/force-down', values)
         self.assertIsInstance(service, self._get_service_type())
-        self.assertEqual(False, service.forced_down)
+        self.assertFalse(service.forced_down)
