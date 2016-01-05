@@ -22,7 +22,6 @@ from oslo_utils import strutils
 import novaclient
 from novaclient import exceptions
 from novaclient.i18n import _, _LW
-from novaclient.openstack.common import cliutils
 from novaclient import utils
 
 LOG = logging.getLogger(__name__)
@@ -370,9 +369,12 @@ def wraps(start_version, end_version=None):
 
             return methods[-1].func(obj, *args, **kwargs)
 
-        if hasattr(func, 'arguments'):
-            for cli_args, cli_kwargs in func.arguments:
-                cliutils.add_arg(substitution, *cli_args, **cli_kwargs)
+        # Let's share "arguments" with original method and substitution to
+        # allow put cliutils.arg and wraps decorators in any order
+        if not hasattr(func, 'arguments'):
+            func.arguments = []
+        substitution.arguments = func.arguments
+
         return substitution
 
     return decor
