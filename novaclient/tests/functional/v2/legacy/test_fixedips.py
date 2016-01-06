@@ -43,8 +43,7 @@ class TestFixedIPsNovaClient(base.ClientTestBase):
             reserved = self._get_column_value_from_single_row_table(table,
                                                                     'reserved')
             # By default the fixed IP should not be reserved.
-            self.assertEqual(False, strutils.bool_from_string(reserved,
-                                                              strict=True))
+            self.assertFalse(strutils.bool_from_string(reserved, strict=True))
         else:
             self.assertRaises(ValueError,
                               self._get_column_value_from_single_row_table,
