@@ -28,15 +28,15 @@ class ServerGroupsTest(utils.FixturedTestCase):
         result = self.cs.server_groups.list()
         self.assert_called('GET', '/os-server-groups')
         for server_group in result:
-            self.assertTrue(isinstance(server_group,
-                                       server_groups.ServerGroup))
+            self.assertIsInstance(server_group,
+                                  server_groups.ServerGroup)
 
     def test_list_server_groups_with_all_projects(self):
         result = self.cs.server_groups.list(all_projects=True)
         self.assert_called('GET', '/os-server-groups?all_projects')
         for server_group in result:
-            self.assertTrue(isinstance(server_group,
-                                       server_groups.ServerGroup))
+            self.assertIsInstance(server_group,
+                                  server_groups.ServerGroup)
 
     def test_create_server_group(self):
         kwargs = {'name': 'ig1',
@@ -44,15 +44,15 @@ class ServerGroupsTest(utils.FixturedTestCase):
         server_group = self.cs.server_groups.create(**kwargs)
         body = {'server_group': kwargs}
         self.assert_called('POST', '/os-server-groups', body)
-        self.assertTrue(isinstance(server_group,
-                                   server_groups.ServerGroup))
+        self.assertIsInstance(server_group,
+                              server_groups.ServerGroup)
 
     def test_get_server_group(self):
         id = '2cbd51f4-fafe-4cdb-801b-cf913a6f288b'
         server_group = self.cs.server_groups.get(id)
         self.assert_called('GET', '/os-server-groups/%s' % id)
-        self.assertTrue(isinstance(server_group,
-                                   server_groups.ServerGroup))
+        self.assertIsInstance(server_group,
+                              server_groups.ServerGroup)
 
     def test_delete_server_group(self):
         id = '2cbd51f4-fafe-4cdb-801b-cf913a6f288b'

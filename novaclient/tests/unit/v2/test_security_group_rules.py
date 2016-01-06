@@ -43,7 +43,7 @@ class SecurityGroupRulesTest(utils.FixturedTestCase):
         }
 
         self.assert_called('POST', '/os-security-group-rules', body)
-        self.assertTrue(isinstance(sg, security_group_rules.SecurityGroupRule))
+        self.assertIsInstance(sg, security_group_rules.SecurityGroupRule)
 
     def test_create_security_group_group_rule(self):
         sg = self.cs.security_group_rules.create(1, "tcp", 1, 65535,
@@ -61,7 +61,7 @@ class SecurityGroupRulesTest(utils.FixturedTestCase):
         }
 
         self.assert_called('POST', '/os-security-group-rules', body)
-        self.assertTrue(isinstance(sg, security_group_rules.SecurityGroupRule))
+        self.assertIsInstance(sg, security_group_rules.SecurityGroupRule)
 
     def test_invalid_parameters_create(self):
         self.assertRaises(exceptions.CommandError,
