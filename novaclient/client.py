@@ -595,9 +595,9 @@ class HTTPClient(object):
 
     def _save_keys(self):
         # Store the token/mgmt url in the keyring for later requests.
-        if (self.keyring_saver and self.os_cache and not self.keyring_saved
-                and self.auth_token and self.management_url
-                and self.tenant_id):
+        if (self.keyring_saver and self.os_cache and not self.keyring_saved and
+                self.auth_token and self.management_url and
+                self.tenant_id):
             self.keyring_saver.save(self.auth_token,
                                     self.management_url,
                                     self.tenant_id)
