@@ -28,7 +28,8 @@ class ClientTest(utils.TestCase):
         s = session.Session()
         c = client.Client(session=s,
                           user_agent=user_agent,
-                          endpoint_override=endpoint_override)
+                          endpoint_override=endpoint_override,
+                          direct_use=False)
 
         self.assertEqual(user_agent, c.client.user_agent)
         self.assertEqual(endpoint_override, c.client.endpoint_override)
@@ -40,6 +41,7 @@ class ClientTest(utils.TestCase):
         s = session.Session()
         c = client.Client(session=s,
                           interface=interface,
-                          endpoint_type=endpoint_type)
+                          endpoint_type=endpoint_type,
+                          direct_use=False)
 
         self.assertEqual(interface, c.client.interface)

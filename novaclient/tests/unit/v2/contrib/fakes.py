@@ -20,7 +20,8 @@ class FakeClient(fakes.FakeClient):
     def __init__(self, *args, **kwargs):
         client.Client.__init__(self, 'username', 'password',
                                'project_id', 'auth_url',
-                               extensions=kwargs.get('extensions'))
+                               extensions=kwargs.get('extensions'),
+                               direct_use=False)
         self.client = FakeHTTPClient(**kwargs)
 
 

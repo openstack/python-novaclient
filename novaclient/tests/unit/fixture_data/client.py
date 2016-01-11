@@ -15,7 +15,7 @@ from keystoneauth1 import fixture
 from keystoneauth1 import loading
 from keystoneauth1 import session
 
-from novaclient.v2 import client as v2client
+from novaclient import client
 
 IDENTITY_URL = 'http://identityserver:5000/v2.0'
 COMPUTE_URL = 'http://compute.host'
@@ -55,10 +55,10 @@ class V1(fixtures.Fixture):
         self.client = self.new_client()
 
     def new_client(self):
-        return v2client.Client(username='xx',
-                               api_key='xx',
-                               project_id='xx',
-                               auth_url=self.identity_url)
+        return client.Client("2", username='xx',
+                             api_key='xx',
+                             project_id='xx',
+                             auth_url=self.identity_url)
 
 
 class SessionV1(V1):
@@ -68,4 +68,4 @@ class SessionV1(V1):
         loader = loading.get_plugin_loader('password')
         self.session.auth = loader.load_from_options(
             auth_url=self.identity_url, username='xx', password='xx')
-        return v2client.Client(session=self.session)
+        return client.Client("2", session=self.session)
