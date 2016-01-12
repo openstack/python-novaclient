@@ -137,8 +137,8 @@ class FakeHTTPClient(base_client.HTTPClient):
 
     def get_endpoint(self):
         # check if endpoint matches expected format (eg, v2.1)
-        if (hasattr(self, 'endpoint_type')
-           and ENDPOINT_TYPE_RE.search(self.endpoint_type)):
+        if (hasattr(self, 'endpoint_type') and
+                ENDPOINT_TYPE_RE.search(self.endpoint_type)):
             return "http://nova-api:8774/%s/" % self.endpoint_type
         else:
             return (
