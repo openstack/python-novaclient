@@ -43,6 +43,7 @@ from novaclient import client
 from novaclient import exceptions
 from novaclient.i18n import _
 from novaclient.openstack.common import cliutils
+from novaclient import shell
 from novaclient import utils
 from novaclient.v2 import availability_zones
 from novaclient.v2 import quotas
@@ -376,6 +377,9 @@ def _boot(cs, args):
     default=None,
     type=int,
     metavar='<number>',
+    action=shell.DeprecatedAction,
+    use=_('use "--min-count" and "--max-count"; this option will be removed '
+          'in novaclient 3.3.0.'),
     help=argparse.SUPPRESS)
 @cliutils.arg(
     '--min-count',
@@ -412,6 +416,9 @@ def _boot(cs, args):
            the command keypair-add."))
 @cliutils.arg(
     '--key_name',
+    action=shell.DeprecatedAction,
+    use=_('use "%s"; this option will be removed in '
+          'novaclient 3.3.0.') % '--key-name',
     help=argparse.SUPPRESS)
 @cliutils.arg('name', metavar='<name>', help=_('Name for the new server.'))
 @cliutils.arg(
@@ -421,6 +428,9 @@ def _boot(cs, args):
     help=_("user data file to pass to be exposed by the metadata server."))
 @cliutils.arg(
     '--user_data',
+    action=shell.DeprecatedAction,
+    use=_('use "%s"; this option will be removed in '
+          'novaclient 3.3.0.') % '--user-data',
     help=argparse.SUPPRESS)
 @cliutils.arg(
     '--availability-zone',
@@ -429,6 +439,9 @@ def _boot(cs, args):
     help=_("The availability zone for server placement."))
 @cliutils.arg(
     '--availability_zone',
+    action=shell.DeprecatedAction,
+    use=_('use "%s"; this option will be removed in '
+          'novaclient 3.3.0.') % '--availability-zone',
     help=argparse.SUPPRESS)
 @cliutils.arg(
     '--security-groups',
@@ -437,6 +450,9 @@ def _boot(cs, args):
     help=_("Comma separated list of security group names."))
 @cliutils.arg(
     '--security_groups',
+    action=shell.DeprecatedAction,
+    use=_('use "%s"; this option will be removed in '
+          'novaclient 3.3.0.') % '--security-groups',
     help=argparse.SUPPRESS)
 @cliutils.arg(
     '--block-device-mapping',
@@ -447,7 +463,10 @@ def _boot(cs, args):
            "<dev-name>=<id>:<type>:<size(GB)>:<delete-on-terminate>."))
 @cliutils.arg(
     '--block_device_mapping',
-    action='append',
+    real_action='append',
+    action=shell.DeprecatedAction,
+    use=_('use "%s"; this option will be removed in '
+          'novaclient 3.3.0.') % '--block-device-mapping',
     help=argparse.SUPPRESS)
 @cliutils.arg(
     '--block-device',
@@ -1288,6 +1307,9 @@ def do_image_delete(cs, args):
     help=_('Only return servers that match reservation-id.'))
 @cliutils.arg(
     '--reservation_id',
+    action=shell.DeprecatedAction,
+    use=_('use "%s"; this option will be removed in '
+          'novaclient 3.3.0.') % '--reservation-id',
     help=argparse.SUPPRESS)
 @cliutils.arg(
     '--ip',
@@ -1315,6 +1337,9 @@ def do_image_delete(cs, args):
     help=_('Search with regular expression match by server name.'))
 @cliutils.arg(
     '--instance_name',
+    action=shell.DeprecatedAction,
+    use=_('use "%s"; this option will be removed in '
+          'novaclient 3.3.0.') % '--instance-name',
     help=argparse.SUPPRESS)
 @cliutils.arg(
     '--status',
@@ -1356,6 +1381,9 @@ def do_image_delete(cs, args):
     nargs='?',
     type=int,
     const=1,
+    action=shell.DeprecatedAction,
+    use=_('use "%s"; this option will be removed in '
+          'novaclient 3.3.0.') % '--all-tenants',
     help=argparse.SUPPRESS)
 @cliutils.arg(
     '--tenant',
@@ -1561,6 +1589,9 @@ def do_reboot(cs, args):
     help=_("Set the provided admin password on the rebuilt server."))
 @cliutils.arg(
     '--rebuild_password',
+    action=shell.DeprecatedAction,
+    use=_('use "%s"; this option will be removed in '
+          'novaclient 3.3.0.') % '--rebuild-password',
     help=argparse.SUPPRESS)
 @cliutils.arg(
     '--poll',
@@ -2132,6 +2163,9 @@ def _translate_volume_attachments_keys(collection):
     nargs='?',
     type=int,
     const=1,
+    action=shell.DeprecatedAction,
+    use=_('use "%s"; this option will be removed in '
+          'novaclient 3.3.0.') % '--all-tenants',
     help=argparse.SUPPRESS)
 def do_volume_list(cs, args):
     """DEPRECATED: List all the volumes."""
@@ -2171,6 +2205,9 @@ def do_volume_show(cs, args):
     help=_('Optional snapshot ID to create the volume from. (Default=None)'))
 @cliutils.arg(
     '--snapshot_id',
+    action=shell.DeprecatedAction,
+    use=_('use "%s"; this option will be removed in '
+          'novaclient 3.3.0.') % '--snapshot-id',
     help=argparse.SUPPRESS)
 @cliutils.arg(
     '--image-id',
@@ -2184,6 +2221,9 @@ def do_volume_show(cs, args):
     help=_('Optional volume name. (Default=None)'))
 @cliutils.arg(
     '--display_name',
+    action=shell.DeprecatedAction,
+    use=_('use "%s"; this option will be removed in '
+          'novaclient 3.3.0.') % '--display-name',
     help=argparse.SUPPRESS)
 @cliutils.arg(
     '--display-description',
@@ -2192,6 +2232,9 @@ def do_volume_show(cs, args):
     help=_('Optional volume description. (Default=None)'))
 @cliutils.arg(
     '--display_description',
+    action=shell.DeprecatedAction,
+    use=_('use "%s"; this option will be removed in '
+          'novaclient 3.3.0.') % '--display-description',
     help=argparse.SUPPRESS)
 @cliutils.arg(
     '--volume-type',
@@ -2200,6 +2243,9 @@ def do_volume_show(cs, args):
     help=_('Optional volume type. (Default=None)'))
 @cliutils.arg(
     '--volume_type',
+    action=shell.DeprecatedAction,
+    use=_('use "%s"; this option will be removed in '
+          'novaclient 3.3.0.') % '--volume-type',
     help=argparse.SUPPRESS)
 @cliutils.arg(
     '--availability-zone', metavar='<availability-zone>',
@@ -2338,6 +2384,9 @@ def do_volume_snapshot_show(cs, args):
     help=_('Optional snapshot name. (Default=None)'))
 @cliutils.arg(
     '--display_name',
+    action=shell.DeprecatedAction,
+    use=_('use "%s"; this option will be removed in '
+          'novaclient 3.3.0.') % '--display-name',
     help=argparse.SUPPRESS)
 @cliutils.arg(
     '--display-description',
@@ -2346,6 +2395,9 @@ def do_volume_snapshot_show(cs, args):
     help=_('Optional snapshot description. (Default=None)'))
 @cliutils.arg(
     '--display_description',
+    action=shell.DeprecatedAction,
+    use=_('use "%s"; this option will be removed in '
+          'novaclient 3.3.0.') % '--display-description',
     help=argparse.SUPPRESS)
 def do_volume_snapshot_create(cs, args):
     """DEPRECATED: Add a new snapshot."""
@@ -2462,8 +2514,16 @@ def do_get_rdp_console(cs, args):
 
 @cliutils.arg('server', metavar='<server>', help=_('Name or ID of server.'))
 @cliutils.arg(
-    '--console_type', default='serial',
+    '--console-type',
+    default='serial',
     help=_('Type of serial console, default="serial".'))
+@cliutils.arg(
+    '--console_type',
+    default='serial',
+    action=shell.DeprecatedAction,
+    use=_('use "%s"; this option will be removed in '
+          'novaclient 3.3.0.') % '--console-type',
+    help=argparse.SUPPRESS)
 def do_get_serial_console(cs, args):
     """Get a serial console to a server."""
     if args.console_type not in ('serial',):
@@ -2741,6 +2801,9 @@ def do_dns_delete_domain(cs, args):
            'in the specified availability zone.'))
 @cliutils.arg(
     '--availability_zone',
+    action=shell.DeprecatedAction,
+    use=_('use "%s"; this option will be removed in '
+          'novaclient 3.3.0.') % '--availability-zone',
     help=argparse.SUPPRESS)
 def do_dns_create_private_domain(cs, args):
     """Create the specified DNS domain."""
@@ -2925,6 +2988,9 @@ def do_secgroup_delete(cs, args):
     nargs='?',
     type=int,
     const=1,
+    action=shell.DeprecatedAction,
+    use=_('use "%s"; this option will be removed in '
+          'novaclient 3.3.0.') % '--all-tenants',
     help=argparse.SUPPRESS)
 def do_secgroup_list(cs, args):
     """List security groups for the current tenant."""
@@ -3054,6 +3120,9 @@ def _keypair_create(cs, args, name, pub_key):
     help=_('Path to a public ssh key.'))
 @cliutils.arg(
     '--pub_key',
+    action=shell.DeprecatedAction,
+    use=_('use "%s"; this option will be removed in '
+          'novaclient 3.3.0.') % '--pub-key',
     help=argparse.SUPPRESS)
 @cliutils.arg(
     '--key-type',
@@ -3666,7 +3735,10 @@ def _print_aggregate_details(aggregate):
     help=_('True in case of block_migration. (Default=False:live_migration)'))
 @cliutils.arg(
     '--block_migrate',
-    action='store_true',
+    real_action='store_true',
+    action=shell.DeprecatedAction,
+    use=_('use "%s"; this option will be removed in '
+          'novaclient 3.3.0.') % '--block-migrate',
     help=argparse.SUPPRESS)
 @cliutils.arg(
     '--disk-over-commit',
@@ -3676,7 +3748,10 @@ def _print_aggregate_details(aggregate):
     help=_('Allow overcommit. (Default=False)'))
 @cliutils.arg(
     '--disk_over_commit',
-    action='store_true',
+    real_action='store_true',
+    action=shell.DeprecatedAction,
+    use=_('use "%s"; this option will be removed in '
+          'novaclient 3.3.0.') % '--disk-over-commit',
     help=argparse.SUPPRESS)
 def do_live_migration(cs, args):
     """Migrate running server to a new machine."""
@@ -4276,6 +4351,9 @@ def do_quota_defaults(cs, args):
 @cliutils.arg(
     '--floating_ips',
     type=int,
+    action=shell.DeprecatedAction,
+    use=_('use "%s"; this option will be removed in '
+          'novaclient 3.3.0.') % '--floating-ips',
     help=argparse.SUPPRESS)
 @cliutils.arg(
     '--fixed-ips',
@@ -4292,6 +4370,9 @@ def do_quota_defaults(cs, args):
 @cliutils.arg(
     '--metadata_items',
     type=int,
+    action=shell.DeprecatedAction,
+    use=_('use "%s"; this option will be removed in '
+          'novaclient 3.3.0.') % '--metadata-items',
     help=argparse.SUPPRESS)
 @cliutils.arg(
     '--injected-files',
@@ -4302,6 +4383,9 @@ def do_quota_defaults(cs, args):
 @cliutils.arg(
     '--injected_files',
     type=int,
+    action=shell.DeprecatedAction,
+    use=_('use "%s"; this option will be removed in '
+          'novaclient 3.3.0.') % '--injected-files',
     help=argparse.SUPPRESS)
 @cliutils.arg(
     '--injected-file-content-bytes',
@@ -4312,6 +4396,9 @@ def do_quota_defaults(cs, args):
 @cliutils.arg(
     '--injected_file_content_bytes',
     type=int,
+    action=shell.DeprecatedAction,
+    use=_('use "%s"; this option will be removed in '
+          'novaclient 3.3.0.') % '--injected-file-content-bytes',
     help=argparse.SUPPRESS)
 @cliutils.arg(
     '--injected-file-path-bytes',
@@ -4417,6 +4504,9 @@ def do_quota_class_show(cs, args):
 @cliutils.arg(
     '--floating_ips',
     type=int,
+    action=shell.DeprecatedAction,
+    use=_('use "%s"; this option will be removed in '
+          'novaclient 3.3.0.') % '--floating-ips',
     help=argparse.SUPPRESS)
 @cliutils.arg(
     '--fixed-ips',
@@ -4433,6 +4523,9 @@ def do_quota_class_show(cs, args):
 @cliutils.arg(
     '--metadata_items',
     type=int,
+    action=shell.DeprecatedAction,
+    use=_('use "%s"; this option will be removed in '
+          'novaclient 3.3.0.') % '--metadata-items',
     help=argparse.SUPPRESS)
 @cliutils.arg(
     '--injected-files',
@@ -4443,6 +4536,9 @@ def do_quota_class_show(cs, args):
 @cliutils.arg(
     '--injected_files',
     type=int,
+    action=shell.DeprecatedAction,
+    use=_('use "%s"; this option will be removed in '
+          'novaclient 3.3.0.') % '--injected-files',
     help=argparse.SUPPRESS)
 @cliutils.arg(
     '--injected-file-content-bytes',
@@ -4453,6 +4549,9 @@ def do_quota_class_show(cs, args):
 @cliutils.arg(
     '--injected_file_content_bytes',
     type=int,
+    action=shell.DeprecatedAction,
+    use=_('use "%s"; this option will be removed in '
+          'novaclient 3.3.0.') % '--injected-file-content-bytes',
     help=argparse.SUPPRESS)
 @cliutils.arg(
     '--injected-file-path-bytes',
@@ -4744,7 +4843,10 @@ def do_secgroup_delete_default_rule(cs, args):
 @cliutils.arg(
     '--policy',
     default=[],
-    action='append',
+    real_action='append',
+    action=shell.DeprecatedAction,
+    use=_('use positional parameters; this option will be removed in '
+          'novaclient 3.3.0.'),
     help=argparse.SUPPRESS)
 def do_server_group_create(cs, args):
     """Create a new server group with the specified details."""
