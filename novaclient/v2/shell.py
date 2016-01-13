@@ -4745,8 +4745,16 @@ def do_availability_zone_list(cs, _args):
                      sortby_index=None)
 
 
-def _print_server_group_details(server_group):
+@api_versions.wraps("2.0", "2.12")
+def _print_server_group_details(cs, server_group):
     columns = ['Id', 'Name', 'Policies', 'Members', 'Metadata']
+    utils.print_list(server_group, columns)
+
+
+@api_versions.wraps("2.13")
+def _print_server_group_details(cs, server_group):    # noqa
+    columns = ['Id', 'Name', 'Project Id', 'User Id',
+               'Policies', 'Members', 'Metadata']
     utils.print_list(server_group, columns)
 
 
@@ -4759,7 +4767,7 @@ def _print_server_group_details(server_group):
 def do_server_group_list(cs, args):
     """Print a list of all server groups."""
     server_groups = cs.server_groups.list(args.all_projects)
-    _print_server_group_details(server_groups)
+    _print_server_group_details(cs, server_groups)
 
 
 def do_secgroup_list_default_rules(cs, args):
@@ -4856,7 +4864,7 @@ def do_server_group_create(cs, args):
     kwargs = {'name': args.name,
               'policies': args.policy}
     server_group = cs.server_groups.create(**kwargs)
-    _print_server_group_details([server_group])
+    _print_server_group_details(cs, [server_group])
 
 
 @cliutils.arg(
@@ -4888,7 +4896,7 @@ def do_server_group_delete(cs, args):
 def do_server_group_get(cs, args):
     """Get a specific server group."""
     server_group = cs.server_groups.get(args.id)
-    _print_server_group_details([server_group])
+    _print_server_group_details(cs, [server_group])
 
 
 def do_version_list(cs, args):
