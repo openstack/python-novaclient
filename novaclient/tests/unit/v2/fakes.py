@@ -51,7 +51,8 @@ class FakeClient(fakes.FakeClient, client.Client):
     def __init__(self, api_version=None, *args, **kwargs):
         client.Client.__init__(self, 'username', 'password',
                                'project_id', 'auth_url',
-                               extensions=kwargs.get('extensions'))
+                               extensions=kwargs.get('extensions'),
+                               direct_use=False)
         self.api_version = api_version
         self.client = FakeHTTPClient(**kwargs)
 
@@ -2425,7 +2426,7 @@ class FakeSessionClient(fakes.FakeClient, client.Client):
         client.Client.__init__(self, 'username', 'password',
                                'project_id', 'auth_url',
                                extensions=kwargs.get('extensions'),
-                               api_version=api_version)
+                               api_version=api_version, direct_use=False)
         self.client = FakeSessionMockClient(**kwargs)
 
 

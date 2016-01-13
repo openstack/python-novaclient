@@ -26,9 +26,9 @@ except ImportError:
     import simplejson as json
 
 from novaclient import auth_plugin
+from novaclient import client
 from novaclient import exceptions
 from novaclient.tests.unit import utils
-from novaclient.v2 import client
 
 
 def mock_http_request(resp=None):
@@ -80,7 +80,7 @@ class DeprecatedAuthPluginTest(utils.TestCase):
         @mock.patch.object(requests, "request", mock_request)
         def test_auth_call():
             plugin = auth_plugin.DeprecatedAuthPlugin("fake")
-            cs = client.Client("username", "password", "project_id",
+            cs = client.Client("2", "username", "password", "project_id",
                                utils.AUTH_URL_V2, auth_system="fake",
                                auth_plugin=plugin)
             cs.client.authenticate()
@@ -110,7 +110,7 @@ class DeprecatedAuthPluginTest(utils.TestCase):
         def test_auth_call():
             auth_plugin.discover_auth_systems()
             plugin = auth_plugin.DeprecatedAuthPlugin("notexists")
-            cs = client.Client("username", "password", "project_id",
+            cs = client.Client("2", "username", "password", "project_id",
                                utils.AUTH_URL_V2, auth_system="notexists",
                                auth_plugin=plugin)
             self.assertRaises(exceptions.AuthSystemNotFound,
@@ -158,7 +158,7 @@ class DeprecatedAuthPluginTest(utils.TestCase):
         @mock.patch.object(requests, "request", mock_request)
         def test_auth_call():
             plugin = auth_plugin.DeprecatedAuthPlugin("fakewithauthurl")
-            cs = client.Client("username", "password", "project_id",
+            cs = client.Client("2", "username", "password", "project_id",
                                auth_system="fakewithauthurl",
                                auth_plugin=plugin)
             cs.client.authenticate()
@@ -186,7 +186,7 @@ class DeprecatedAuthPluginTest(utils.TestCase):
         plugin = auth_plugin.DeprecatedAuthPlugin("fakewithauthurl")
         self.assertRaises(
             exceptions.EndpointNotFound,
-            client.Client, "username", "password", "project_id",
+            client.Client, "2", "username", "password", "project_id",
             auth_system="fakewithauthurl", auth_plugin=plugin)
 
 
@@ -213,7 +213,7 @@ class AuthPluginTest(utils.TestCase):
 
         auth_plugin.discover_auth_systems()
         plugin = auth_plugin.load_plugin("fake")
-        cs = client.Client("username", "password", "project_id",
+        cs = client.Client("2", "username", "password", "project_id",
                            utils.AUTH_URL_V2, auth_system="fake",
                            auth_plugin=plugin)
         cs.client.authenticate()
@@ -304,7 +304,7 @@ class AuthPluginTest(utils.TestCase):
         auth_plugin.discover_auth_systems()
         plugin = auth_plugin.load_plugin("fake")
 
-        cs = client.Client("username", "password", "project_id",
+        cs = client.Client("2", "username", "password", "project_id",
                            auth_system="fakewithauthurl",
                            auth_plugin=plugin)
         self.assertEqual("http://faked/v2.0", cs.client.auth_url)
@@ -330,7 +330,7 @@ class AuthPluginTest(utils.TestCase):
 
         self.assertRaises(
             exceptions.EndpointNotFound,
-            client.Client, "username", "password", "project_id",
+            client.Client, "2", "username", "password", "project_id",
             auth_system="fake", auth_plugin=plugin)
 
     @mock.patch.object(pkg_resources, "iter_entry_points")
@@ -354,5 +354,5 @@ class AuthPluginTest(utils.TestCase):
 
         self.assertRaises(
             exceptions.EndpointNotFound,
-            client.Client, "username", "password", "project_id",
+            client.Client, "2", "username", "password", "project_id",
             auth_system="fake", auth_plugin=plugin)
