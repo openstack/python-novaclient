@@ -17,8 +17,8 @@ See the `OpenStack CLI guide`_ for information on how to use the ``nova``
 command-line tool. You may also want to look at the
 `OpenStack API documentation`_.
 
-.. _OpenStack CLI Guide: http://docs.openstack.org/cli-reference/content/novaclient_commands.html
-.. _OpenStack API documentation: http://docs.openstack.org/api/quick-start/content/
+.. _OpenStack CLI Guide: http://docs.openstack.org/cli-reference/nova.html
+.. _OpenStack API documentation: http://developer.openstack.org/api-ref-compute-v2.1.html
 
 python-novaclient is licensed under the Apache License like the rest of
 OpenStack.
