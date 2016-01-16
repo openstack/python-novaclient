@@ -22,7 +22,7 @@ class TestServersAPI(base.ClientTestBase):
             server_name, self.image, self.flavor)
         self.addCleanup(initial_server.delete)
 
-        for x in xrange(60):
+        for x in range(60):
             server = self.client.servers.get(initial_server)
             if server.status == "ACTIVE":
                 break

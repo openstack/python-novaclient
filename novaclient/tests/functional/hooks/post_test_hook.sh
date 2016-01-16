@@ -43,7 +43,7 @@ cd $NOVACLIENT_DIR
 echo "Running novaclient functional test suite"
 set +e
 # Preserve env for OS_ credentials
-sudo -E -H -u jenkins tox -efunctional
+sudo -E -H -u jenkins tox -e ${TOX_ENV:-functional}
 EXIT_CODE=$?
 set -e
 
