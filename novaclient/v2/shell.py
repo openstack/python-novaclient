@@ -273,11 +273,12 @@ def _boot(cs, args):
     nics = []
     for nic_str in args.nics:
         err_msg = (_("Invalid nic argument '%s'. Nic arguments must be of "
-                     "the form --nic <net-id=net-uuid,v4-fixed-ip=ip-addr,"
-                     "v6-fixed-ip=ip-addr,port-id=port-uuid>, with at minimum "
-                     "net-id or port-id (but not both) specified.") % nic_str)
+                     "the form --nic <net-id=net-uuid,net-name=network-name,"
+                     "v4-fixed-ip=ip-addr,v6-fixed-ip=ip-addr,"
+                     "port-id=port-uuid>, with only one of net-id, net-name "
+                     "or port-id specified.") % nic_str)
         nic_info = {"net-id": "", "v4-fixed-ip": "", "v6-fixed-ip": "",
-                    "port-id": ""}
+                    "port-id": "", "net-name": ""}
 
         for kv_str in nic_str.split(","):
             try:
@@ -286,6 +287,13 @@ def _boot(cs, args):
                 raise exceptions.CommandError(err_msg)
 
             if k in nic_info:
+                # if user has given a net-name resolve it to network ID
+                if k == 'net-name':
+                    k = 'net-id'
+                    v = _find_network_id(cs, v)
+                # if some argument was given multiple times
+                if nic_info[k]:
+                    raise exceptions.CommandError(err_msg)
                 nic_info[k] = v
             else:
                 raise exceptions.CommandError(err_msg)
@@ -517,15 +525,16 @@ def _boot(cs, args):
            "use."))
 @cliutils.arg(
     '--nic',
-    metavar="<net-id=net-uuid,v4-fixed-ip=ip-addr,v6-fixed-ip=ip-addr,"
-            "port-id=port-uuid>",
+    metavar="<net-id=net-uuid,net-name=network-name,v4-fixed-ip=ip-addr,"
+            "v6-fixed-ip=ip-addr,port-id=port-uuid>",
     action='append',
     dest='nics',
     default=[],
     help=_("Create a NIC on the server. "
            "Specify option multiple times to create multiple NICs. "
            "net-id: attach NIC to network with this UUID "
-           "(either port-id or net-id must be provided), "
+           "net-name: attach NIC to network with this name "
+           "(either port-id or net-id or net-name must be provided), "
            "v4-fixed-ip: IPv4 fixed address for NIC (optional), "
            "v6-fixed-ip: IPv6 fixed address for NIC (optional), "
            "port-id: attach NIC to port with this UUID "
@@ -2086,6 +2095,25 @@ def _find_flavor(cs, flavor):
         return utils.find_resource(cs.flavors, flavor, is_public=None)
     except exceptions.NotFound:
         return cs.flavors.find(ram=flavor)
+
+
+def _find_network_id(cs, net_name):
+    """Get unique network ID from network name."""
+    network_id = None
+    for net_info in cs.networks.list():
+        if net_name == net_info.label:
+            if network_id is not None:
+                msg = (_("Multiple network name matches found for name '%s', "
+                         "use network ID to be more specific.") % net_name)
+                raise exceptions.NoUniqueMatch(msg)
+            else:
+                network_id = net_info.id
+
+    if network_id is None:
+        msg = (_("No network name match for name '%s'") % net_name)
+        raise exceptions.ResourceNotFound(msg % {'network': net_name})
+    else:
+        return network_id
 
 
 @cliutils.arg('server', metavar='<server>', help=_('Name or ID of server.'))
