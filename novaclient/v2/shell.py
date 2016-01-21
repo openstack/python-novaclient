@@ -4849,7 +4849,7 @@ def do_secgroup_delete_default_rule(cs, args):
     metavar='<policy>',
     default=argparse.SUPPRESS,
     nargs='*',
-    help=_('Policies for the server groups. ("affinity" or "anti-affinity")'))
+    help=_('Policies for the server groups.'))
 @cliutils.arg(
     '--policy',
     default=[],

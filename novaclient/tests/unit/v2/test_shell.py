@@ -2610,6 +2610,7 @@ class ShellTest(utils.TestCase):
             9,   # doesn't require any changes in novaclient
             # TODO(andreykurilin): remove 12 when 1522424 will be resolved
             12,  # doesn't require any changes in novaclient
+            15,  # doesn't require any changes in novaclient
         ])
         versions_supported = set(range(0,
                                  novaclient.API_MAX_VERSION.ver_minor + 1))
