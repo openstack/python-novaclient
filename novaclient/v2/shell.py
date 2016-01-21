@@ -4605,19 +4605,21 @@ def do_quota_class_update(cs, args):
     dest='password',
     metavar='<password>',
     help=_("Set the provided admin password on the evacuated server. Not"
-            " applicable with on-shared-storage flag."))
+            " applicable if the server is on shared storage."))
 @cliutils.arg(
     '--on-shared-storage',
     dest='on_shared_storage',
     action="store_true",
     default=False,
-    help=_('Specifies whether server files are located on shared storage.'))
+    help=_('Specifies whether server files are located on shared storage.'),
+    start_version='2.0',
+    end_version='2.13')
 def do_evacuate(cs, args):
     """Evacuate server from failed host."""
 
     server = _find_server(cs, args.server)
-
-    res = server.evacuate(args.host, args.on_shared_storage, args.password)[1]
+    on_shared_storage = getattr(args, 'on_shared_storage', None)
+    res = server.evacuate(args.host, on_shared_storage, args.password)[1]
     if type(res) is dict:
         utils.print_dict(res)
 

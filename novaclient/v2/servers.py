@@ -388,17 +388,28 @@ class Server(base.Resource):
         """
         return self.manager.list_security_group(self)
 
-    def evacuate(self, host=None, on_shared_storage=True, password=None):
+    def evacuate(self, host=None, on_shared_storage=None, password=None):
         """
         Evacuate an instance from failed host to specified host.
 
         :param host: Name of the target host
         :param on_shared_storage: Specifies whether instance files located
-                        on shared storage
+                        on shared storage. After microversion 2.14, this
+                        parameter must have its default value of None.
         :param password: string to set as admin password on the evacuated
                          server.
         """
-        return self.manager.evacuate(self, host, on_shared_storage, password)
+        if api_versions.APIVersion("2.14") <= self.manager.api_version:
+            if on_shared_storage is not None:
+                raise ValueError("Setting 'on_shared_storage' argument is "
+                                 "prohibited after microversion 2.14.")
+            return self.manager.evacuate(self, host, password)
+        else:
+            # microversions 2.0 - 2.13
+            if on_shared_storage is None:
+                on_shared_storage = True
+            return self.manager.evacuate(self, host, on_shared_storage,
+                                         password)
 
     def interface_list(self):
         """
@@ -1305,6 +1316,7 @@ class ServerManager(base.BootingManagerWithFind):
                           base.getid(server), 'security_groups',
                           security_groups.SecurityGroup)
 
+    @api_versions.wraps("2.0", "2.13")
     def evacuate(self, server, host=None, on_shared_storage=True,
                  password=None):
         """
@@ -1318,6 +1330,25 @@ class ServerManager(base.BootingManagerWithFind):
         """
 
         body = {'onSharedStorage': on_shared_storage}
+        if host is not None:
+            body['host'] = host
+
+        if password is not None:
+            body['adminPass'] = password
+
+        return self._action('evacuate', server, body)
+
+    @api_versions.wraps("2.14")
+    def evacuate(self, server, host=None, password=None):
+        """
+        Evacuate a server instance.
+
+        :param server: The :class:`Server` (or its ID) to share onto.
+        :param host: Name of the target host.
+        :param password: string to set as password on the evacuated server.
+        """
+
+        body = {}
         if host is not None:
             body['host'] = host
 

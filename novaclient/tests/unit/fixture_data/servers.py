@@ -449,7 +449,7 @@ class V1(Base):
             keys = list(body[action])
             if 'adminPass' in keys:
                 keys.remove('adminPass')
-            assert set(keys) == set(['host', 'onSharedStorage'])
+            assert 'host' in keys
         else:
             raise AssertionError("Unexpected server action: %s" % action)
         return {'server': _body}
