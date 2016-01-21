@@ -285,3 +285,41 @@ class ClientTestBase(testtools.TestCase):
                     return line.split("|")[1:-1][column_index].strip()
 
         raise ValueError("Unable to find value for column '%s'.")
+
+
+class TenantTestBase(ClientTestBase):
+    """Base test class for additional tenant and user creation which
+    could be required in various test scenarios
+    """
+
+    def setUp(self):
+        super(TenantTestBase, self).setUp()
+        tenant = self.cli_clients.keystone(
+            'tenant-create --name %s --enabled True' %
+            self.name_generate('v' + self.COMPUTE_API_VERSION))
+        self.tenant_name = self._get_value_from_the_table(tenant, "name")
+        self.tenant_id = self._get_value_from_the_table(
+            self.cli_clients.keystone(
+                'tenant-get %s' % self.tenant_name), 'id')
+        self.addCleanup(self.cli_clients.keystone,
+                        "tenant-delete %s" % self.tenant_name)
+        user_name = self.name_generate('v' + self.COMPUTE_API_VERSION)
+        password = 'password'
+        user = self.cli_clients.keystone(
+            "user-create --name %(name)s --pass %(pass)s --tenant %(tenant)s" %
+            {"name": user_name, "pass": password, "tenant": self.tenant_name})
+        self.user_id = self._get_value_from_the_table(user, "id")
+        self.addCleanup(self.cli_clients.keystone,
+                        "user-delete %s" % self.user_id)
+        self.cli_clients_2 = tempest_lib.cli.base.CLIClient(
+            username=user_name,
+            password=password,
+            tenant_name=self.tenant_name,
+            uri=self.cli_clients.uri,
+            cli_dir=self.cli_clients.cli_dir)
+
+    def another_nova(self, action, flags='', params='', fail_ok=False,
+                     endpoint_type='publicURL', merge_stderr=False):
+        flags += " --os-compute-api-version %s " % self.COMPUTE_API_VERSION
+        return self.cli_clients_2.nova(action, flags, params, fail_ok,
+                                       endpoint_type, merge_stderr)
