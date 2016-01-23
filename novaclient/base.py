@@ -380,6 +380,10 @@ class ManagerWithFind(Manager):
                 all_tenants = kwargs['all_tenants']
                 list_kwargs['search_opts']['all_tenants'] = all_tenants
                 searches = [(k, v) for k, v in searches if k != 'all_tenants']
+            if "deleted" in kwargs:
+                deleted = kwargs['deleted']
+                list_kwargs['search_opts']['deleted'] = deleted
+                searches = [(k, v) for k, v in searches if k != 'deleted']
 
         listing = self.list(**list_kwargs)
 

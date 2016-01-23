@@ -1252,6 +1252,14 @@ class ShellTest(utils.TestCase):
         self.run_command('restore sample-server')
         self.assert_called('POST', '/servers/1234/action', {'restore': None})
 
+    def test_restore_withname(self):
+        self.run_command('restore sample-server')
+        self.assert_called('GET',
+                           '/servers?deleted=True&name=sample-server', pos=0)
+        self.assert_called('GET', '/servers/1234', pos=1)
+        self.assert_called('POST', '/servers/1234/action', {'restore': None},
+                           pos=2)
+
     def test_delete_two_with_two_existent(self):
         self.run_command('delete 1234 5678')
         self.assert_called('DELETE', '/servers/1234', pos=-5)

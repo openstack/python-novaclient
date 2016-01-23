@@ -25,4 +25,4 @@ def do_force_delete(cs, args):
 @cliutils.arg('server', metavar='<server>', help='Name or ID of server.')
 def do_restore(cs, args):
     """Restore a soft-deleted server."""
-    utils.find_resource(cs.servers, args.server).restore()
+    utils.find_resource(cs.servers, args.server, deleted=True).restore()
