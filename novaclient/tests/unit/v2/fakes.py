@@ -713,6 +713,8 @@ class FakeHTTPClient(base_client.HTTPClient):
         elif action == 'createBackup':
             assert set(body[action]) == set(['name', 'backup_type',
                                              'rotation'])
+        elif action == 'trigger_crash_dump':
+            assert body[action] is None
         else:
             return False
         return True

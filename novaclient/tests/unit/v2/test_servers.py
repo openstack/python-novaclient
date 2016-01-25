@@ -885,3 +885,16 @@ class ServersV214Test(ServersV28Test):
         self.cs.servers.evacuate(s, 'fake_target_host',
                                  password='NewAdminPassword')
         self.assert_called('POST', '/servers/1234/action')
+
+
+class ServersV217Test(ServersV214Test):
+    def setUp(self):
+        super(ServersV217Test, self).setUp()
+        self.cs.api_version = api_versions.APIVersion("2.17")
+
+    def test_trigger_crash_dump(self):
+        s = self.cs.servers.get(1234)
+        s.trigger_crash_dump()
+        self.assert_called('POST', '/servers/1234/action')
+        self.cs.servers.trigger_crash_dump(s)
+        self.assert_called('POST', '/servers/1234/action')
