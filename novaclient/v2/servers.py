@@ -429,6 +429,10 @@ class Server(base.Resource):
         """
         return self.manager.interface_detach(self, port_id)
 
+    def trigger_crash_dump(self):
+        """Trigger crash dump in an instance"""
+        return self.manager.trigger_crash_dump(self)
+
 
 class ServerManager(base.BootingManagerWithFind):
     resource_class = Server
@@ -1395,6 +1399,11 @@ class ServerManager(base.BootingManagerWithFind):
         """
         self._delete('/servers/%s/os-interface/%s' % (base.getid(server),
                                                       port_id))
+
+    @api_versions.wraps("2.17")
+    def trigger_crash_dump(self, server):
+        """Trigger crash dump in an instance"""
+        return self._action("trigger_crash_dump", server)
 
     def _action(self, action, server, info=None, **kwargs):
         """

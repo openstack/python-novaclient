@@ -4685,6 +4685,15 @@ def do_interface_detach(cs, args):
         utils.print_dict(res)
 
 
+@api_versions.wraps("2.17")
+@cliutils.arg('server', metavar='<server>', help=_('Name or ID of server.'))
+def do_trigger_crash_dump(cs, args):
+    """Trigger crash dump in an instance."""
+    server = _find_server(cs, args.server)
+
+    server.trigger_crash_dump()
+
+
 def _treeizeAvailabilityZone(zone):
     """Build a tree view for availability zones."""
     AvailabilityZone = availability_zones.AvailabilityZone
