@@ -77,9 +77,15 @@ class ConnectionRefused(Exception):
         return "ConnectionRefused: %s" % repr(self.response)
 
 
-class InstanceInErrorState(Exception):
-    """Instance is in the error state."""
-    pass
+class ResourceInErrorState(Exception):
+    """Resource is in the error state."""
+
+    def __init__(self, obj):
+        msg = "`%s` resource is in the error state" % obj.__class__.__name__
+        fault_msg = getattr(obj, "fault", {}).get("message")
+        if fault_msg:
+            msg += "due to '%s'" % fault_msg
+        self.message = "%s." % msg
 
 
 class VersionNotFoundForAPIMethod(Exception):
