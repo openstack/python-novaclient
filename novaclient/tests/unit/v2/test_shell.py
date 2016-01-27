@@ -2612,12 +2612,10 @@ class ShellTest(utils.TestCase):
     def test_versions(self):
         exclusions = set([
             1,   # Same as version 2.0
-            3,   # Not implemented when test added, should not apply to adds.
-            5,   # Not implemented when test added, should not apply to adds.
+            3,   # doesn't require any changes in novaclient
+            5,   # doesn't require any changes in novaclient
             7,   # doesn't require any changes in novaclient
             9,   # doesn't require any changes in novaclient
-            # TODO(andreykurilin): remove 12 when 1522424 will be resolved
-            12,  # doesn't require any changes in novaclient
             15,  # doesn't require any changes in novaclient
             16,  # doesn't require any changes in novaclient
         ])

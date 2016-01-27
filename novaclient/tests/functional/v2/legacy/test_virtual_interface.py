@@ -15,8 +15,8 @@ from novaclient.tests.functional import base
 from novaclient.v2 import shell
 
 
-class TestConsolesNovaClient(base.ClientTestBase):
-    """Consoles functional tests."""
+class TestVirtualInterfacesNovaClient(base.ClientTestBase):
+    """Virtual Interfaces functional tests."""
 
     COMPUTE_API_VERSION = "2.1"
 
@@ -31,10 +31,10 @@ class TestConsolesNovaClient(base.ClientTestBase):
         self.addCleanup(server.delete)
         return server
 
-    def _test_virtual_interface_list(self, command):
-        server = self._create_server()
-        completed_command = command % server.id
-        self.nova(completed_command)
-
     def test_virtual_interface_list(self):
-        self._test_virtual_interface_list('virtual-interface-list %s')
+        server = self._create_server()
+        output = self.nova('virtual-interface-list %s' % server.id)
+        self.assertTrue(len(output.split("\n")) > 5,
+                        "Output table of `virtual-interface-list` for the test"
+                        " server should not be empty.")
+        return output
