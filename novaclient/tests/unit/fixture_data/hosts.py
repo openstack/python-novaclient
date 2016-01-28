@@ -36,7 +36,7 @@ class BaseFixture(base.Fixture):
             ]
         }
 
-        headers = {'Content-Type': 'application/json'}
+        headers = self.json_headers
 
         self.requests.register_uri('GET', self.url('host'),
                                    json=get_os_hosts_host,

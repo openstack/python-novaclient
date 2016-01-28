@@ -38,7 +38,12 @@ class Aggregate(base.Resource):
         return self.manager.set_metadata(self, metadata)
 
     def delete(self):
-        self.manager.delete(self)
+        """
+        Delete the own aggregate.
+
+        :returns: An instance of novaclient.base.TupleWithMeta
+        """
+        return self.manager.delete(self)
 
 
 class AggregateManager(base.ManagerWithFind):
@@ -91,5 +96,10 @@ class AggregateManager(base.ManagerWithFind):
                             body, "aggregate")
 
     def delete(self, aggregate):
-        """Delete the specified aggregate."""
-        self._delete('/os-aggregates/%s' % (base.getid(aggregate)))
+        """
+        Delete the specified aggregate.
+
+        :param aggregate: The aggregate to delete
+        :returns: An instance of novaclient.base.TupleWithMeta
+        """
+        return self._delete('/os-aggregates/%s' % (base.getid(aggregate)))

@@ -14,6 +14,7 @@
 from novaclient.tests.unit.fixture_data import client
 from novaclient.tests.unit.fixture_data import hosts as data
 from novaclient.tests.unit import utils
+from novaclient.tests.unit.v2 import fakes
 from novaclient.v2 import hosts
 
 
@@ -24,12 +25,14 @@ class HostsTest(utils.FixturedTestCase):
 
     def test_describe_resource(self):
         hs = self.cs.hosts.get('host')
+        self.assert_request_id(hs, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('GET', '/os-hosts/host')
         for h in hs:
             self.assertIsInstance(h, hosts.Host)
 
     def test_list_host(self):
         hs = self.cs.hosts.list()
+        self.assert_request_id(hs, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('GET', '/os-hosts')
         for h in hs:
             self.assertIsInstance(h, hosts.Host)
@@ -37,6 +40,7 @@ class HostsTest(utils.FixturedTestCase):
 
     def test_list_host_with_zone(self):
         hs = self.cs.hosts.list('nova')
+        self.assert_request_id(hs, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('GET', '/os-hosts?zone=nova')
         for h in hs:
             self.assertIsInstance(h, hosts.Host)
@@ -46,6 +50,7 @@ class HostsTest(utils.FixturedTestCase):
         host = self.cs.hosts.get('sample_host')[0]
         values = {"status": "enabled"}
         result = host.update(values)
+        self.assert_request_id(result, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('PUT', '/os-hosts/sample_host', values)
         self.assertIsInstance(result, hosts.Host)
 
@@ -53,6 +58,7 @@ class HostsTest(utils.FixturedTestCase):
         host = self.cs.hosts.get('sample_host')[0]
         values = {"maintenance_mode": "enable"}
         result = host.update(values)
+        self.assert_request_id(result, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('PUT', '/os-hosts/sample_host', values)
         self.assertIsInstance(result, hosts.Host)
 
@@ -61,24 +67,28 @@ class HostsTest(utils.FixturedTestCase):
         values = {"status": "enabled",
                   "maintenance_mode": "enable"}
         result = host.update(values)
+        self.assert_request_id(result, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('PUT', '/os-hosts/sample_host', values)
         self.assertIsInstance(result, hosts.Host)
 
     def test_host_startup(self):
         host = self.cs.hosts.get('sample_host')[0]
-        host.startup()
+        resp, result = host.startup()
+        self.assert_request_id(result, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called(
             'GET', '/os-hosts/sample_host/startup')
 
     def test_host_reboot(self):
         host = self.cs.hosts.get('sample_host')[0]
-        host.reboot()
+        resp, result = host.reboot()
+        self.assert_request_id(result, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called(
             'GET', '/os-hosts/sample_host/reboot')
 
     def test_host_shutdown(self):
         host = self.cs.hosts.get('sample_host')[0]
-        host.shutdown()
+        resp, result = host.shutdown()
+        self.assert_request_id(result, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called(
             'GET', '/os-hosts/sample_host/shutdown')
 

@@ -69,9 +69,18 @@ class HostManager(base.ManagerWithFind):
         return self._update("/os-hosts/%s" % host, values)
 
     def host_action(self, host, action):
-        """Perform an action on a host."""
+        """
+        Perform an action on a host.
+
+        :param host: The host to perform an action
+        :param actiob: The action to perform
+        :returns: A Response object and an instance of
+                  novaclient.base.DictWithMeta
+        """
         url = '/os-hosts/{0}/{1}'.format(host, action)
-        return self.api.client.get(url)
+        resp, body = self.api.client.get(url)
+        # For compatibility, return Response object as a first return value
+        return resp, self.convert_into_with_meta(body, resp)
 
     def list(self, zone=None):
         url = '/os-hosts'

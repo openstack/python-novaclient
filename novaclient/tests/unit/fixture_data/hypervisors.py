@@ -27,7 +27,7 @@ class V1(base.Fixture):
             ]
         }
 
-        self.headers = {'Content-Type': 'application/json'}
+        self.headers = self.json_headers
 
         self.requests.register_uri('GET', self.url(),
                                    json=get_os_hypervisors,

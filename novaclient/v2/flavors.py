@@ -43,10 +43,14 @@ class Flavor(base.Resource):
         return self._info.get("os-flavor-access:is_public", 'N/A')
 
     def get_keys(self):
-        """Get extra specs from a flavor."""
-        _resp, body = self.manager.api.client.get(
+        """
+        Get extra specs from a flavor.
+
+        :returns: An instance of novaclient.base.DictWithMeta
+        """
+        resp, body = self.manager.api.client.get(
             "/flavors/%s/os-extra_specs" % base.getid(self))
-        return body["extra_specs"]
+        return self.manager.convert_into_with_meta(body["extra_specs"], resp)
 
     def set_keys(self, metadata):
         """Set extra specs on a flavor.
@@ -64,14 +68,23 @@ class Flavor(base.Resource):
         """Unset extra specs on a flavor.
 
         :param keys: A list of keys to be unset
+        :returns: An instance of novaclient.base.TupleWithMeta
         """
+        result = base.TupleWithMeta((), None)
         for k in keys:
-            self.manager._delete(
+            ret = self.manager._delete(
                 "/flavors/%s/os-extra_specs/%s" % (base.getid(self), k))
+            result.append_request_ids(ret.request_ids)
+
+        return result
 
     def delete(self):
-        """Delete this flavor."""
-        self.manager.delete(self)
+        """
+        Delete this flavor.
+
+        :returns: An instance of novaclient.base.TupleWithMeta
+        """
+        return self.manager.delete(self)
 
 
 class FlavorManager(base.ManagerWithFind):
@@ -130,8 +143,9 @@ class FlavorManager(base.ManagerWithFind):
         """Delete a specific flavor.
 
         :param flavor: The ID of the :class:`Flavor` to get.
+        :returns: An instance of novaclient.base.TupleWithMeta
         """
-        self._delete("/flavors/%s" % base.getid(flavor))
+        return self._delete("/flavors/%s" % base.getid(flavor))
 
     def _build_body(self, name, ram, vcpus, disk, id, swap,
                     ephemeral, rxtx_factor, is_public):

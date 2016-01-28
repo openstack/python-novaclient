@@ -30,21 +30,38 @@ def _quote_domain(domain):
 
 class FloatingIPDNSDomain(base.Resource):
     def delete(self):
-        self.manager.delete(self.domain)
+        """
+        Delete the own Floating IP DNS domain.
+
+        :returns: An instance of novaclient.base.TupleWithMeta
+        """
+        return self.manager.delete(self.domain)
 
     def create(self):
+        """
+        Create a Floating IP DNS domain.
+
+        :returns: An instance of novaclient.base.DictWithMeta
+        """
         if self.scope == 'public':
-            self.manager.create_public(self.domain, self.project)
+            return self.manager.create_public(self.domain, self.project)
         else:
-            self.manager.create_private(self.domain, self.availability_zone)
+            return self.manager.create_private(self.domain,
+                                               self.availability_zone)
 
     def get(self):
+        """
+        Get the own Floating IP DNS domain.
+
+        :returns: An instance of novaclient.base.TupleWithMeta or
+                  novaclient.base.ListWithMeta
+        """
         entries = self.manager.domains()
         for entry in entries:
             if entry.get('domain') == self.domain:
                 return entry
 
-        return None
+        return base.TupleWithMeta((), entries.request_ids)
 
 
 class FloatingIPDNSDomainManager(base.Manager):
@@ -70,16 +87,32 @@ class FloatingIPDNSDomainManager(base.Manager):
                             body, 'domain_entry')
 
     def delete(self, fqdomain):
-        """Delete the specified domain."""
-        self._delete("/os-floating-ip-dns/%s" % _quote_domain(fqdomain))
+        """
+        Delete the specified domain.
+
+        :param fqdomain: The domain to delete
+        :returns: An instance of novaclient.base.TupleWithMeta
+        """
+        return self._delete("/os-floating-ip-dns/%s" % _quote_domain(fqdomain))
 
 
 class FloatingIPDNSEntry(base.Resource):
     def delete(self):
-        self.manager.delete(self.name, self.domain)
+        """
+        Delete the own Floating IP DNS entry.
+
+        :returns: An instance of novaclient.base.TupleWithMeta
+        """
+        return self.manager.delete(self.name, self.domain)
 
     def create(self):
-        self.manager.create(self.domain, self.name, self.ip, self.dns_type)
+        """
+        Create a Floating IP DNS entry.
+
+        :returns: :class:`FloatingIPDNSEntry`
+        """
+        return self.manager.create(self.domain, self.name, self.ip,
+                                   self.dns_type)
 
     def get(self):
         return self.manager.get(self.domain, self.name)
@@ -116,6 +149,10 @@ class FloatingIPDNSEntryManager(base.Manager):
                             (_quote_domain(domain), name), body, "dns_entry")
 
     def delete(self, domain, name):
-        """Delete entry specified by name and domain."""
-        self._delete("/os-floating-ip-dns/%s/entries/%s" %
-                     (_quote_domain(domain), name))
+        """
+        Delete entry specified by name and domain.
+
+        :returns: An instance of novaclient.base.TupleWithMeta
+        """
+        return self._delete("/os-floating-ip-dns/%s/entries/%s" %
+                            (_quote_domain(domain), name))

@@ -49,4 +49,5 @@ class Fixture(base.Fixture):
                                        json=get_aggregates_1,
                                        headers=self.json_headers)
 
-        self.requests.register_uri('DELETE', self.url(1), status_code=202)
+        self.requests.register_uri('DELETE', self.url(1), status_code=202,
+                                   headers=self.json_headers)

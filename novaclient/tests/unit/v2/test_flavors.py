@@ -15,6 +15,7 @@
 
 import mock
 
+from novaclient import base
 from novaclient import exceptions
 from novaclient.tests.unit import utils
 from novaclient.tests.unit.v2 import fakes
@@ -35,45 +36,53 @@ class FlavorsTest(utils.TestCase):
 
     def test_list_flavors(self):
         fl = self.cs.flavors.list()
+        self.assert_request_id(fl, fakes.FAKE_REQUEST_ID_LIST)
         self.cs.assert_called('GET', '/flavors/detail')
         for flavor in fl:
             self.assertIsInstance(flavor, self.flavor_type)
 
     def test_list_flavors_undetailed(self):
         fl = self.cs.flavors.list(detailed=False)
+        self.assert_request_id(fl, fakes.FAKE_REQUEST_ID_LIST)
         self.cs.assert_called('GET', '/flavors')
         for flavor in fl:
             self.assertIsInstance(flavor, self.flavor_type)
 
     def test_list_flavors_with_marker_limit(self):
-        self.cs.flavors.list(marker=1234, limit=4)
+        fl = self.cs.flavors.list(marker=1234, limit=4)
+        self.assert_request_id(fl, fakes.FAKE_REQUEST_ID_LIST)
         self.cs.assert_called('GET', '/flavors/detail?limit=4&marker=1234')
 
     def test_list_flavors_with_sort_key_dir(self):
-        self.cs.flavors.list(sort_key='id', sort_dir='asc')
+        fl = self.cs.flavors.list(sort_key='id', sort_dir='asc')
+        self.assert_request_id(fl, fakes.FAKE_REQUEST_ID_LIST)
         self.cs.assert_called('GET',
                               '/flavors/detail?sort_dir=asc&sort_key=id')
 
     def test_list_flavors_is_public_none(self):
         fl = self.cs.flavors.list(is_public=None)
+        self.assert_request_id(fl, fakes.FAKE_REQUEST_ID_LIST)
         self.cs.assert_called('GET', '/flavors/detail?is_public=None')
         for flavor in fl:
             self.assertIsInstance(flavor, self.flavor_type)
 
     def test_list_flavors_is_public_false(self):
         fl = self.cs.flavors.list(is_public=False)
+        self.assert_request_id(fl, fakes.FAKE_REQUEST_ID_LIST)
         self.cs.assert_called('GET', '/flavors/detail?is_public=False')
         for flavor in fl:
             self.assertIsInstance(flavor, self.flavor_type)
 
     def test_list_flavors_is_public_true(self):
         fl = self.cs.flavors.list(is_public=True)
+        self.assert_request_id(fl, fakes.FAKE_REQUEST_ID_LIST)
         self.cs.assert_called('GET', '/flavors/detail')
         for flavor in fl:
             self.assertIsInstance(flavor, self.flavor_type)
 
     def test_get_flavor_details(self):
         f = self.cs.flavors.get(1)
+        self.assert_request_id(f, fakes.FAKE_REQUEST_ID_LIST)
         self.cs.assert_called('GET', '/flavors/1')
         self.assertIsInstance(f, self.flavor_type)
         self.assertEqual(256, f.ram)
@@ -83,6 +92,7 @@ class FlavorsTest(utils.TestCase):
 
     def test_get_flavor_details_alphanum_id(self):
         f = self.cs.flavors.get('aa1')
+        self.assert_request_id(f, fakes.FAKE_REQUEST_ID_LIST)
         self.cs.assert_called('GET', '/flavors/aa1')
         self.assertIsInstance(f, self.flavor_type)
         self.assertEqual(128, f.ram)
@@ -92,6 +102,7 @@ class FlavorsTest(utils.TestCase):
 
     def test_get_flavor_details_diablo(self):
         f = self.cs.flavors.get(3)
+        self.assert_request_id(f, fakes.FAKE_REQUEST_ID_LIST)
         self.cs.assert_called('GET', '/flavors/3')
         self.assertIsInstance(f, self.flavor_type)
         self.assertEqual(256, f.ram)
@@ -101,10 +112,12 @@ class FlavorsTest(utils.TestCase):
 
     def test_find(self):
         f = self.cs.flavors.find(ram=256)
+        self.assert_request_id(f, fakes.FAKE_REQUEST_ID_LIST)
         self.cs.assert_called('GET', '/flavors/detail')
         self.assertEqual('256 MB Server', f.name)
 
         f = self.cs.flavors.find(disk=0)
+        self.assert_request_id(f, fakes.FAKE_REQUEST_ID_LIST)
         self.assertEqual('128 MB Server', f.name)
 
         self.assertRaises(exceptions.NotFound, self.cs.flavors.find,
@@ -129,6 +142,7 @@ class FlavorsTest(utils.TestCase):
     def test_create(self):
         f = self.cs.flavors.create("flavorcreate", 512, 1, 10, 1234,
                                    ephemeral=10, is_public=False)
+        self.assert_request_id(f, fakes.FAKE_REQUEST_ID_LIST)
 
         body = self._create_body("flavorcreate", 512, 1, 10, 10, 1234, 0, 1.0,
                                  False)
@@ -141,6 +155,7 @@ class FlavorsTest(utils.TestCase):
         f = self.cs.flavors.create("flavorcreate", 512,
                                    1, 10, flavor_id, ephemeral=10,
                                    is_public=False)
+        self.assert_request_id(f, fakes.FAKE_REQUEST_ID_LIST)
 
         body = self._create_body("flavorcreate", 512, 1, 10, 10, flavor_id, 0,
                                  1.0, False)
@@ -150,6 +165,7 @@ class FlavorsTest(utils.TestCase):
 
     def test_create_ephemeral_ispublic_defaults(self):
         f = self.cs.flavors.create("flavorcreate", 512, 1, 10, 1234)
+        self.assert_request_id(f, fakes.FAKE_REQUEST_ID_LIST)
 
         body = self._create_body("flavorcreate", 512, 1, 10, 0, 1234, 0,
                                  1.0, True)
@@ -181,22 +197,26 @@ class FlavorsTest(utils.TestCase):
                           ephemeral=0, rxtx_factor=1.0, is_public='invalid')
 
     def test_delete(self):
-        self.cs.flavors.delete("flavordelete")
+        ret = self.cs.flavors.delete("flavordelete")
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.cs.assert_called('DELETE', '/flavors/flavordelete')
 
     def test_delete_with_flavor_instance(self):
         f = self.cs.flavors.get(2)
-        self.cs.flavors.delete(f)
+        ret = self.cs.flavors.delete(f)
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.cs.assert_called('DELETE', '/flavors/2')
 
     def test_delete_with_flavor_instance_method(self):
         f = self.cs.flavors.get(2)
-        f.delete()
+        ret = f.delete()
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.cs.assert_called('DELETE', '/flavors/2')
 
     def test_set_keys(self):
         f = self.cs.flavors.get(1)
-        f.set_keys({'k1': 'v1'})
+        fk = f.set_keys({'k1': 'v1'})
+        self.assert_request_id(fk, fakes.FAKE_REQUEST_ID_LIST)
         self.cs.assert_called('POST', '/flavors/1/os-extra_specs',
                               {"extra_specs": {'k1': 'v1'}})
 
@@ -206,7 +226,8 @@ class FlavorsTest(utils.TestCase):
 
         f = self.cs.flavors.get(4)
         for key in valid_keys:
-            f.set_keys({key: 'v4'})
+            fk = f.set_keys({key: 'v4'})
+            self.assert_request_id(fk, fakes.FAKE_REQUEST_ID_LIST)
             self.cs.assert_called('POST', '/flavors/4/os-extra_specs',
                                   {"extra_specs": {key: 'v4'}})
 
@@ -221,7 +242,10 @@ class FlavorsTest(utils.TestCase):
     def test_unset_keys(self, mock_delete):
         f = self.cs.flavors.get(1)
         keys = ['k1', 'k2']
-        f.unset_keys(keys)
+        mock_delete.return_value = base.TupleWithMeta(
+            (), fakes.FAKE_REQUEST_ID_LIST)
+        fu = f.unset_keys(keys)
+        self.assert_request_id(fu, fakes.FAKE_REQUEST_ID_LIST)
         mock_delete.assert_has_calls([
             mock.call("/flavors/1/os-extra_specs/k1"),
             mock.call("/flavors/1/os-extra_specs/k2")

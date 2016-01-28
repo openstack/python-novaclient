@@ -14,6 +14,7 @@
 from novaclient.tests.unit.fixture_data import client
 from novaclient.tests.unit.fixture_data import floatingips as data
 from novaclient.tests.unit import utils
+from novaclient.tests.unit.v2 import fakes
 from novaclient.v2 import floating_ip_dns
 
 
@@ -25,6 +26,7 @@ class FloatingIPDNSDomainTest(utils.FixturedTestCase):
 
     def test_dns_domains(self):
         domainlist = self.cs.dns_domains.domains()
+        self.assert_request_id(domainlist, fakes.FAKE_REQUEST_ID_LIST)
         self.assertEqual(2, len(domainlist))
 
         for entry in domainlist:
@@ -34,17 +36,20 @@ class FloatingIPDNSDomainTest(utils.FixturedTestCase):
         self.assertEqual('example.com', domainlist[1].domain)
 
     def test_create_private_domain(self):
-        self.cs.dns_domains.create_private(self.testdomain, 'test_avzone')
+        pd = self.cs.dns_domains.create_private(self.testdomain, 'test_avzone')
+        self.assert_request_id(pd, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('PUT', '/os-floating-ip-dns/%s' %
                            self.testdomain)
 
     def test_create_public_domain(self):
-        self.cs.dns_domains.create_public(self.testdomain, 'test_project')
+        pd = self.cs.dns_domains.create_public(self.testdomain, 'test_project')
+        self.assert_request_id(pd, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('PUT', '/os-floating-ip-dns/%s' %
                            self.testdomain)
 
     def test_delete_domain(self):
-        self.cs.dns_domains.delete(self.testdomain)
+        ret = self.cs.dns_domains.delete(self.testdomain)
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('DELETE', '/os-floating-ip-dns/%s' %
                            self.testdomain)
 
@@ -61,6 +66,7 @@ class FloatingIPDNSEntryTest(utils.FixturedTestCase):
     def test_get_dns_entries_by_ip(self):
         entries = self.cs.dns_entries.get_for_ip(self.testdomain,
                                                  ip=self.testip)
+        self.assert_request_id(entries, fakes.FAKE_REQUEST_ID_LIST)
         self.assertEqual(2, len(entries))
 
         for entry in entries:
@@ -73,19 +79,22 @@ class FloatingIPDNSEntryTest(utils.FixturedTestCase):
     def test_get_dns_entry_by_name(self):
         entry = self.cs.dns_entries.get(self.testdomain,
                                         self.testname)
+        self.assert_request_id(entry, fakes.FAKE_REQUEST_ID_LIST)
         self.assertIsInstance(entry, floating_ip_dns.FloatingIPDNSEntry)
         self.assertEqual(entry.name, self.testname)
 
     def test_create_entry(self):
-        self.cs.dns_entries.create(self.testdomain,
-                                   self.testname,
-                                   self.testip,
-                                   self.testtype)
+        entry = self.cs.dns_entries.create(self.testdomain,
+                                           self.testname,
+                                           self.testip,
+                                           self.testtype)
+        self.assert_request_id(entry, fakes.FAKE_REQUEST_ID_LIST)
 
         self.assert_called('PUT', '/os-floating-ip-dns/%s/entries/%s' %
                            (self.testdomain, self.testname))
 
     def test_delete_entry(self):
-        self.cs.dns_entries.delete(self.testdomain, self.testname)
+        ret = self.cs.dns_entries.delete(self.testdomain, self.testname)
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('DELETE', '/os-floating-ip-dns/%s/entries/%s' %
                            (self.testdomain, self.testname))

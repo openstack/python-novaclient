@@ -63,5 +63,10 @@ class AgentsManager(base.ManagerWithFind):
         return self._create('/os-agents', body, 'agent')
 
     def delete(self, id):
-        """Deletes an existing agent build."""
-        self._delete('/os-agents/%s' % id)
+        """
+        Deletes an existing agent build.
+
+        :param id: The agent's id to delete
+        :returns: An instance of novaclient.base.TupleWithMeta
+        """
+        return self._delete('/os-agents/%s' % id)
