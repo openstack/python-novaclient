@@ -21,6 +21,10 @@ places where actual behavior differs from the spec.
 
 from novaclient import base
 
+# fake request id
+FAKE_REQUEST_ID = 'req-3fdea7c2-e3e3-48b5-a656-6b12504c49a1'
+FAKE_REQUEST_ID_LIST = [FAKE_REQUEST_ID]
+
 
 def assert_has_keys(dict, required=None, optional=None):
     required = required or []

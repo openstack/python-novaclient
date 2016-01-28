@@ -14,6 +14,7 @@
 
 import mock
 
+from novaclient import base
 from novaclient import exceptions as exc
 from novaclient.tests.unit import utils
 from novaclient.tests.unit.v2 import fakes
@@ -47,7 +48,7 @@ class VersionsTest(utils.TestCase):
             None, {"links": [{"href": "http://nova-api:8774/v2.1"}]},
             loaded=True)
 
-        mock_list.return_value = [
+        all_versions = [
             versions.Version(
                 None, {"links": [{"href": "http://url/v1"}]}, loaded=True),
             versions.Version(
@@ -57,6 +58,7 @@ class VersionsTest(utils.TestCase):
             current_version,
             versions.Version(
                 None, {"links": [{"href": "http://url/v21"}]}, loaded=True)]
+        mock_list.return_value = base.ListWithMeta(all_versions, None)
         self.assertEqual(current_version, self.cs.versions.get_current())
 
     @mock.patch.object(versions.VersionManager, '_is_session_client',
