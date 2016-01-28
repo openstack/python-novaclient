@@ -1,0 +1,26 @@
+---
+prelude: >
+    Methods in manager classes and resource classes return wrapper classes
+    that wrap values returned originally.
+    For example, a wrapper class for list, a wrapper class for dict,
+    a wrapper class for str and so on.
+    The wrapper classes have a 'request_ids' property for request IDs
+    returned from Nova (nova-api). So the caller can get the
+    Nova's request IDs, then output them to logs with its own request ID.
+    The function to output them to the logs will be implemented
+    in other projects (cinder, heat, etc.).
+features:
+  - Methods in manager classes and resource classes return wrapper classes
+    that wrap values returned originally.
+    For example, a wrapper class for list, a wrapper class for dict,
+    a wrapper class for str and so on.
+    The wrapper classes have a 'request_ids' property for request IDs
+    returned from Nova (nova-api). So the caller can get the
+    Nova's request IDs, then output them to logs with its own request ID.
+    The function to output them to the logs will be implemented
+    in other projects (cinder, heat, etc.).
+upgrade:
+  - In case that methods return a response object and body originally and
+    body is None, the methods return the wrapper class for tuple as 'body'
+    instead of the wrapper class for None.
+    The wrapper class for None has not been added.
