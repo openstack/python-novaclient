@@ -48,6 +48,7 @@ FAKE_IMAGE_UUID_2 = 'f27f479a-ddda-419a-9bbc-d6b56b210161'
 # fake request id
 FAKE_REQUEST_ID = fakes.FAKE_REQUEST_ID
 FAKE_REQUEST_ID_LIST = fakes.FAKE_REQUEST_ID_LIST
+FAKE_RESPONSE_HEADERS = {'x-openstack-request-id': FAKE_REQUEST_ID}
 
 
 class FakeClient(fakes.FakeClient, client.Client):
@@ -724,7 +725,7 @@ class FakeHTTPClient(base_client.HTTPClient):
         return True
 
     def post_servers_1234_action(self, body, **kw):
-        _headers = None
+        _headers = dict()
         _body = None
         resp = 202
         assert len(body.keys()) == 1
@@ -770,6 +771,7 @@ class FakeHTTPClient(base_client.HTTPClient):
             assert set(keys) == set(['onSharedStorage'])
         else:
             raise AssertionError("Unexpected server action: %s" % action)
+        _headers.update(FAKE_RESPONSE_HEADERS)
         return (resp, _headers, _body)
 
     def post_servers_5678_action(self, body, **kw):

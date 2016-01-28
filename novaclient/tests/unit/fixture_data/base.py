@@ -13,13 +13,16 @@
 import fixtures
 from six.moves.urllib import parse
 
+from novaclient.tests.unit.v2 import fakes
+
 COMPUTE_URL = 'http://compute.host'
 
 
 class Fixture(fixtures.Fixture):
 
     base_url = None
-    json_headers = {'Content-Type': 'application/json'}
+    json_headers = {'Content-Type': 'application/json',
+                    'x-openstack-request-id': fakes.FAKE_REQUEST_ID}
 
     def __init__(self, requests, compute_url=COMPUTE_URL):
         super(Fixture, self).__init__()

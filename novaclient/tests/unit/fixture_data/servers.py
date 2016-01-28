@@ -180,12 +180,14 @@ class Base(base.Fixture):
                                        headers=self.json_headers)
 
         for s in (1234, 5678):
-            self.requests.register_uri('DELETE', self.url(s), status_code=202)
+            self.requests.register_uri('DELETE', self.url(s), status_code=202,
+                                       headers=self.json_headers)
 
         for k in ('test_key', 'key1', 'key2'):
             self.requests.register_uri('DELETE',
                                        self.url(1234, 'metadata', k),
-                                       status_code=204)
+                                       status_code=204,
+                                       headers=self.json_headers)
 
         metadata1 = {'metadata': {'test_key': 'test_value'}}
         self.requests.register_uri('POST', self.url(1234, 'metadata'),
@@ -218,7 +220,8 @@ class Base(base.Fixture):
 
         self.requests.register_uri('GET',
                                    self.url('1234', 'os-security-groups'),
-                                   json=get_security_groups)
+                                   json=get_security_groups,
+                                   headers=self.json_headers)
 
         self.requests.register_uri('POST', self.url(),
                                    json=self.post_servers,
@@ -311,7 +314,8 @@ class Base(base.Fixture):
 
         self.requests.register_uri('DELETE',
                                    self.url(1234, 'os-server-password'),
-                                   status_code=202)
+                                   status_code=202,
+                                   headers=self.json_headers)
 
 
 class V1(Base):
@@ -342,10 +346,12 @@ class V1(Base):
 
         self.requests.register_uri('GET',
                                    self.url('1234', 'diagnostics'),
-                                   json=self.diagnostic)
+                                   json=self.diagnostic,
+                                   headers=self.json_headers)
 
         self.requests.register_uri('DELETE',
-                                   self.url('1234', 'os-interface', 'port-id'))
+                                   self.url('1234', 'os-interface', 'port-id'),
+                                   headers=self.json_headers)
 
         # Testing with the following password and key
         #
@@ -371,7 +377,8 @@ class V1(Base):
             'Hi/fmZZNQQqj1Ijq0caOIw=='}
         self.requests.register_uri('GET',
                                    self.url(1234, 'os-server-password'),
-                                   json=get_server_password)
+                                   json=get_server_password,
+                                   headers=self.json_headers)
 
     def post_servers(self, request, context):
         body = jsonutils.loads(request.body)
