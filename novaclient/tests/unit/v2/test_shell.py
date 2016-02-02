@@ -571,6 +571,64 @@ class ShellTest(utils.TestCase):
                '--nic net-id=a=c,v6-fixed-ip=10.0.0.1 some-server')
         self.assertRaises(exceptions.CommandError, self.run_command, cmd)
 
+    def test_boot_nics_net_id_twice(self):
+        cmd = ('boot --image 1 --flavor 1 '
+               '--nic net-id=net-id1,net-id=net-id2 some-server')
+        self.assertRaises(exceptions.CommandError, self.run_command, cmd)
+
+    @mock.patch(
+        'novaclient.tests.unit.v2.fakes.FakeHTTPClient.get_os_networks')
+    def test_boot_nics_net_name(self, mock_networks_list):
+        mock_networks_list.return_value = (200, {}, {
+            'networks': [{"label": "some-net", 'id': '1'}]})
+
+        cmd = ('boot --image 1 --flavor 1 '
+               '--nic net-name=some-net some-server')
+        self.run_command(cmd)
+        self.assert_called_anytime(
+            'POST', '/servers',
+            {
+                'server': {
+                    'flavorRef': '1',
+                    'name': 'some-server',
+                    'imageRef': '1',
+                    'min_count': 1,
+                    'max_count': 1,
+                    'networks': [
+                        {'uuid': '1'},
+                    ],
+                },
+            },
+        )
+
+    def test_boot_nics_net_name_not_found(self):
+        cmd = ('boot --image 1 --flavor 1 '
+               '--nic net-name=some-net some-server')
+        self.assertRaises(exceptions.ResourceNotFound, self.run_command, cmd)
+
+    @mock.patch(
+        'novaclient.tests.unit.v2.fakes.FakeHTTPClient.get_os_networks')
+    def test_boot_nics_net_name_multiple_matches(self, mock_networks_list):
+        mock_networks_list.return_value = (200, {}, {
+            'networks': [{"label": "some-net", 'id': '1'},
+                         {"label": "some-net", 'id': '2'}]})
+
+        cmd = ('boot --image 1 --flavor 1 '
+               '--nic net-name=some-net some-server')
+        self.assertRaises(exceptions.NoUniqueMatch, self.run_command, cmd)
+
+    @mock.patch('novaclient.v2.shell._find_network_id', return_value='net-id')
+    def test_boot_nics_net_name_and_net_id(self, mock_find_network_id):
+        cmd = ('boot --image 1 --flavor 1 '
+               '--nic net-name=some-net,net-id=some-id some-server')
+        self.assertRaises(exceptions.CommandError, self.run_command, cmd)
+
+    @mock.patch('novaclient.v2.shell._find_network_id', return_value='net-id')
+    def test_boot_nics_net_name_and_port_id(self, mock_find_network_id):
+        cmd = ('boot --image 1 --flavor 1 '
+               '--nic net-name=some-net,port-id=some-id some-server')
+        self.assertRaises(exceptions.CommandError, self.run_command, cmd)
+
     def test_boot_files(self):
         testfile = os.path.join(os.path.dirname(__file__), 'testfile.txt')
         with open(testfile) as testfile_fd:
