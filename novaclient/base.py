@@ -143,8 +143,7 @@ class Resource(RequestIdMixin):
         reprkeys = sorted(k
                           for k in self.__dict__.keys()
                           if k[0] != '_' and
-                          k not in ['manager', 'request_ids',
-                                    'x_openstack_request_ids'])
+                          k not in ['manager', 'x_openstack_request_ids'])
         info = ", ".join("%s=%s" % (k, getattr(self, k)) for k in reprkeys)
         return "<%s %s>" % (self.__class__.__name__, info)
 
