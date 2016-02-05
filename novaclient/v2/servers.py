@@ -157,8 +157,7 @@ class Server(base.Resource):
         """
         Stop -- Stop the running server.
 
-        :returns: A Response object and an instance of
-                  novaclient.base.TupleWithMeta
+        :returns: An instance of novaclient.base.TupleWithMeta
         """
         return self.manager.stop(self)
 
@@ -166,8 +165,7 @@ class Server(base.Resource):
         """
         Force delete -- Force delete a server.
 
-        :returns: A Response object and an instance of
-                  novaclient.base.TupleWithMeta
+        :returns: An instance of novaclient.base.TupleWithMeta
         """
         return self.manager.force_delete(self)
 
@@ -175,8 +173,7 @@ class Server(base.Resource):
         """
         Restore -- Restore a server in 'soft-deleted' state.
 
-        :returns: A Response object and an instance of
-                  novaclient.base.TupleWithMeta
+        :returns: An instance of novaclient.base.TupleWithMeta
         """
         return self.manager.restore(self)
 
@@ -242,8 +239,7 @@ class Server(base.Resource):
 
         :param password: The admin password to be set in the rescue instance.
         :param image: The :class:`Image` to rescue with.
-        :returns: A Response object and an instance of
-                  novaclient.base.DictWithMeta
+        :returns: An instance of novaclient.base.TupleWithMeta
         """
         return self.manager.rescue(self, password, image)
 
@@ -462,8 +458,7 @@ class Server(base.Resource):
                         parameter must have its default value of None.
         :param password: string to set as admin password on the evacuated
                          server.
-        :returns: A Response object and an instance of
-                  novaclient.base.TupleWithMeta
+        :returns: An instance of novaclient.base.TupleWithMeta
         """
         if api_versions.APIVersion("2.14") <= self.manager.api_version:
             if on_shared_storage is not None:
@@ -938,34 +933,31 @@ class ServerManager(base.BootingManagerWithFind):
         Stop the server.
 
         :param server: The :class:`Server` (or its ID) to stop
-        :returns: A Response object and an instance of
-                  novaclient.base.TupleWithMeta
+        :returns: An instance of novaclient.base.TupleWithMeta
         """
         resp, body = self._action_return_resp_and_body('os-stop', server, None)
-        return resp, self.convert_into_with_meta(body, resp)
+        return base.TupleWithMeta((resp, body), resp)
 
     def force_delete(self, server):
         """
         Force delete the server.
 
         :param server: The :class:`Server` (or its ID) to force delete
-        :returns: A Response object and an instance of
-                  novaclient.base.TupleWithMeta
+        :returns: An instance of novaclient.base.TupleWithMeta
         """
         resp, body = self._action_return_resp_and_body('forceDelete', server,
                                                        None)
-        return resp, self.convert_into_with_meta(body, resp)
+        return base.TupleWithMeta((resp, body), resp)
 
     def restore(self, server):
         """
         Restore soft-deleted server.
 
         :param server: The :class:`Server` (or its ID) to restore
-        :returns: A Response object and an instance of
-                  novaclient.base.TupleWithMeta
+        :returns: An instance of novaclient.base.TupleWithMeta
         """
         resp, body = self._action_return_resp_and_body('restore', server, None)
-        return resp, self.convert_into_with_meta(body, resp)
+        return base.TupleWithMeta((resp, body), resp)
 
     def start(self, server):
         """
@@ -1037,8 +1029,7 @@ class ServerManager(base.BootingManagerWithFind):
         :param server: The :class:`Server` to rescue.
         :param password: The admin password to be set in the rescue instance.
         :param image: The :class:`Image` to rescue with.
-        :returns: A Response object and an instance of
-                  novaclient.base.DictWithMeta
+        :returns: An instance of novaclient.base.TupleWithMeta
         """
         info = {}
         if password:
@@ -1047,8 +1038,7 @@ class ServerManager(base.BootingManagerWithFind):
             info['rescue_image_ref'] = base.getid(image)
         resp, body = self._action_return_resp_and_body('rescue', server,
                                                        info or None)
-        # For compatibility, return Response object as a first return value
-        return resp, base.DictWithMeta(body, resp)
+        return base.TupleWithMeta((resp, body), resp)
 
     def unrescue(self, server):
         """
@@ -1106,13 +1096,11 @@ class ServerManager(base.BootingManagerWithFind):
 
         :param server: The :class:`Server` (or its ID) for which
                        diagnostics to be returned
-        :returns: A Respose object and an instance of
-                  novaclient.base.DictWithMeta
+        :returns: An instance of novaclient.base.TupleWithMeta
         """
         resp, body = self.api.client.get("/servers/%s/diagnostics" %
                                          base.getid(server))
-        # For compatibility, return Response object as a first return value
-        return resp, base.DictWithMeta(body, resp)
+        return base.TupleWithMeta((resp, body), resp)
 
     def create(self, name, image, flavor, meta=None, files=None,
                reservation_id=None, min_count=None,
@@ -1515,8 +1503,7 @@ class ServerManager(base.BootingManagerWithFind):
         :param on_shared_storage: Specifies whether instance files located
                         on shared storage
         :param password: string to set as password on the evacuated server.
-        :returns: A Response object and an instance of
-                  novaclient.base.TupleWithMeta
+        :returns: An instance of novaclient.base.TupleWithMeta
         """
 
         body = {'onSharedStorage': on_shared_storage}
@@ -1528,7 +1515,7 @@ class ServerManager(base.BootingManagerWithFind):
 
         resp, body = self._action_return_resp_and_body('evacuate', server,
                                                        body)
-        return resp, self.convert_into_with_meta(body, resp)
+        return base.TupleWithMeta((resp, body), resp)
 
     @api_versions.wraps("2.14")
     def evacuate(self, server, host=None, password=None):
@@ -1538,6 +1525,7 @@ class ServerManager(base.BootingManagerWithFind):
         :param server: The :class:`Server` (or its ID) to share onto.
         :param host: Name of the target host.
         :param password: string to set as password on the evacuated server.
+        :returns: An instance of novaclient.base.TupleWithMeta
         """
 
         body = {}
@@ -1549,7 +1537,7 @@ class ServerManager(base.BootingManagerWithFind):
 
         resp, body = self._action_return_resp_and_body('evacuate', server,
                                                        body)
-        return resp, self.convert_into_with_meta(body, resp)
+        return base.TupleWithMeta((resp, body), resp)
 
     def interface_list(self, server):
         """

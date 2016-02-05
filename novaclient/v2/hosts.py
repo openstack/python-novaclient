@@ -74,13 +74,11 @@ class HostManager(base.ManagerWithFind):
 
         :param host: The host to perform an action
         :param actiob: The action to perform
-        :returns: A Response object and an instance of
-                  novaclient.base.DictWithMeta
+        returns: An instance of novaclient.base.TupleWithMeta
         """
         url = '/os-hosts/{0}/{1}'.format(host, action)
         resp, body = self.api.client.get(url)
-        # For compatibility, return Response object as a first return value
-        return resp, self.convert_into_with_meta(body, resp)
+        return base.TupleWithMeta((resp, body), resp)
 
     def list(self, zone=None):
         url = '/os-hosts'
