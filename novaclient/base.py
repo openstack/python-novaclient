@@ -459,7 +459,9 @@ class ManagerWithFind(Manager):
                     if detailed:
                         found.append(obj)
                     else:
-                        found.append(self.get(obj.id))
+                        detail = self.get(obj.id)
+                        found.append(detail)
+                        found.append_request_ids(detail.request_ids)
             except AttributeError:
                 continue
 
