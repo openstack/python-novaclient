@@ -41,8 +41,8 @@ class SecurityGroupDefaultRuleManager(base.Manager):
         Create a security group default rule
 
         :param ip_protocol: IP protocol, one of 'tcp', 'udp' or 'icmp'
-        :param from_port: Source port
-        :param to_port: Destination port
+        :param from_port: Beginning of port range
+        :param to_port: End of port range
         :param cidr: Destination IP address(es) in CIDR notation
         """
 
