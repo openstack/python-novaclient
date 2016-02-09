@@ -29,6 +29,7 @@ from six.moves import builtins
 
 import novaclient
 from novaclient import api_versions
+from novaclient import base
 import novaclient.client
 from novaclient import exceptions
 import novaclient.shell
@@ -758,7 +759,7 @@ class ShellTest(utils.TestCase):
                        ['active'])])
 
     def test_boot_with_poll_to_check_VM_state_error(self):
-        self.assertRaises(exceptions.InstanceInErrorState, self.run_command,
+        self.assertRaises(exceptions.ResourceInErrorState, self.run_command,
                           'boot --flavor 1 --image 1 some-bad-server --poll')
 
     def test_boot_named_flavor(self):
@@ -2789,3 +2790,90 @@ class GetFirstEndpointTest(utils.TestCase):
         self.assertRaises(LookupError,
                           novaclient.v2.shell._get_first_endpoint,
                           [], "ORD")
+
+
+class PollForStatusTestCase(utils.TestCase):
+    @mock.patch("novaclient.v2.shell.time")
+    def test_simple_usage(self, mock_time):
+        poll_period = 3
+        some_id = "uuuuuuuuuuuiiiiiiiii"
+        updated_objects = (
+            base.Resource(None, info={"not_default_field": "INPROGRESS"}),
+            base.Resource(None, info={"not_default_field": "OK"}))
+        poll_fn = mock.MagicMock(side_effect=updated_objects)
+
+        novaclient.v2.shell._poll_for_status(
+            poll_fn=poll_fn,
+            obj_id=some_id,
+            status_field="not_default_field",
+            final_ok_states=["ok"],
+            poll_period=poll_period,
+            # just want to test printing in separate tests
+            action="some",
+            silent=True,
+            show_progress=False
+        )
+        self.assertEqual([mock.call(poll_period)],
+                         mock_time.sleep.call_args_list)
+        self.assertEqual([mock.call(some_id)] * 2, poll_fn.call_args_list)
+
+    @mock.patch("novaclient.v2.shell.sys.stdout")
+    @mock.patch("novaclient.v2.shell.time")
+    def test_print_progress(self, mock_time, mock_stdout):
+        updated_objects = (
+            base.Resource(None, info={"status": "INPROGRESS", "progress": 0}),
+            base.Resource(None, info={"status": "INPROGRESS", "progress": 50}),
+            base.Resource(None, info={"status": "OK", "progress": 100}))
+        poll_fn = mock.MagicMock(side_effect=updated_objects)
+        action = "some"
+
+        novaclient.v2.shell._poll_for_status(
+            poll_fn=poll_fn,
+            obj_id="uuuuuuuuuuuiiiiiiiii",
+            final_ok_states=["ok"],
+            poll_period="3",
+            action=action,
+            show_progress=True,
+            silent=False)
+
+        stdout_arg_list = [
+            mock.call("\n"),
+            mock.call("\rServer %s... 0%% complete" % action),
+            mock.call("\rServer %s... 50%% complete" % action),
+            mock.call("\rServer %s... 100%% complete" % action),
+            mock.call("\nFinished"),
+            mock.call("\n")]
+        self.assertEqual(
+            stdout_arg_list,
+            mock_stdout.write.call_args_list
+        )
+
+    @mock.patch("novaclient.v2.shell.time")
+    def test_error_state(self, mock_time):
+        fault_msg = "Oops"
+        updated_objects = (
+            base.Resource(None, info={"status": "error",
+                                      "fault": {"message": fault_msg}}),
+            base.Resource(None, info={"status": "error"}))
+        poll_fn = mock.MagicMock(side_effect=updated_objects)
+        action = "some"
+
+        self.assertRaises(exceptions.ResourceInErrorState,
+                          novaclient.v2.shell._poll_for_status,
+                          poll_fn=poll_fn,
+                          obj_id="uuuuuuuuuuuiiiiiiiii",
+                          final_ok_states=["ok"],
+                          poll_period="3",
+                          action=action,
+                          show_progress=True,
+                          silent=False)
+
+        self.assertRaises(exceptions.ResourceInErrorState,
+                          novaclient.v2.shell._poll_for_status,
+                          poll_fn=poll_fn,
+                          obj_id="uuuuuuuuuuuiiiiiiiii",
+                          final_ok_states=["ok"],
+                          poll_period="3",
+                          action=action,
+                          show_progress=True,
+                          silent=False)
