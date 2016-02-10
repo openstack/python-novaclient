@@ -945,6 +945,18 @@ class ServersTest(utils.FixturedTestCase):
         self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('DELETE', '/servers/1234/os-interface/port-id')
 
+    def test_create_server_with_description(self):
+        self.assertRaises(exceptions.UnsupportedAttribute,
+                          self.cs.servers.create,
+                          name="My server",
+                          description="descr",
+                          image=1,
+                          flavor=1,
+                          meta={'foo': 'bar'},
+                          userdata="hello moto",
+                          key_name="fakekey"
+                          )
+
 
 class ServersV26Test(ServersTest):
     def setUp(self):
@@ -1032,4 +1044,36 @@ class ServersV217Test(ServersV214Test):
         s.trigger_crash_dump()
         self.assert_called('POST', '/servers/1234/action')
         self.cs.servers.trigger_crash_dump(s)
+        self.assert_called('POST', '/servers/1234/action')
+
+
+class ServersV219Test(ServersV217Test):
+    def setUp(self):
+        super(ServersV219Test, self).setUp()
+        self.cs.api_version = api_versions.APIVersion("2.19")
+
+    def test_create_server_with_description(self):
+        self.cs.servers.create(
+            name="My server",
+            description="descr",
+            image=1,
+            flavor=1,
+            meta={'foo': 'bar'},
+            userdata="hello moto",
+            key_name="fakekey"
+        )
+        self.assert_called('POST', '/servers')
+
+    def test_update_server_with_description(self):
+        s = self.cs.servers.get(1234)
+
+        s.update(description='hi')
+        s.update(name='hi', description='hi')
+        self.assert_called('PUT', '/servers/1234')
+
+    def test_rebuild_with_description(self):
+        s = self.cs.servers.get(1234)
+
+        ret = s.rebuild(image="1", description="descr")
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')

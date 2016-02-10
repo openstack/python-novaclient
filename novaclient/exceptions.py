@@ -24,6 +24,24 @@ class UnsupportedVersion(Exception):
     pass
 
 
+class UnsupportedAttribute(AttributeError):
+    """Indicates that the user is trying to transmit the argument to a method,
+    which is not supported by selected version.
+    """
+
+    def __init__(self, argument_name, start_version, end_version=None):
+        if end_version:
+            self.message = (
+                "'%(name)s' argument is only allowed for microversions "
+                "%(start)s - %(end)s." % {"name": argument_name,
+                                          "start": start_version,
+                                          "end": end_version})
+        else:
+            self.message = (
+                "'%(name)s' argument is only allowed since microversion "
+                "%(start)s." % {"name": argument_name, "start": start_version})
+
+
 class CommandError(Exception):
     pass
 

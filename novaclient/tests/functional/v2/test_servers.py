@@ -53,3 +53,38 @@ class TestServerLockV29(base.ClientTestBase):
 
         self.nova("unlock %s" % server.id)
         self._show_server_and_check_lock_attr(server, False)
+
+
+class TestServersDescription(base.ClientTestBase):
+
+    COMPUTE_API_VERSION = "2.19"
+
+    def _boot_server_with_description(self):
+        name = str(uuid.uuid4())
+        network = self.client.networks.list()[0]
+        descr = "Some words about this test VM."
+        server = self.client.servers.create(
+            name, self.image, self.flavor, nics=[{"net-id": network.id}],
+            description=descr)
+        self.addCleanup(server.delete)
+
+        self.assertEqual(descr, server.description)
+
+        return server, descr
+
+    def test_create(self):
+        server, descr = self._boot_server_with_description()
+
+        output = self.nova("show %s" % server.id)
+        self.assertEqual(descr, self._get_value_from_the_table(output,
+                                                               "description"))
+
+    def test_update(self):
+        server, descr = self._boot_server_with_description()
+
+        # remove description
+        self.nova("update %s --description ''" % server.id)
+
+        output = self.nova("show %s" % server.id)
+        self.assertEqual("-", self._get_value_from_the_table(output,
+                                                             "description"))

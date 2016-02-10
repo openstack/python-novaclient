@@ -350,6 +350,9 @@ def _boot(cs, args):
         access_ip_v4=args.access_ip_v4,
         access_ip_v6=args.access_ip_v6)
 
+    if 'description' in args:
+        boot_kwargs["description"] = args.description
+
     return boot_args, boot_kwargs
 
 
@@ -569,6 +572,13 @@ def _boot(cs, args):
     metavar='<value>',
     default=None,
     help=_('Alternative access IPv6 of the instance.'))
+@cliutils.arg(
+    '--description',
+    metavar='<description>',
+    dest='description',
+    default=None,
+    help=_('Description for the server.'),
+    start_version="2.19")
 def do_boot(cs, args):
     """Boot a new server."""
     boot_args, boot_kwargs = _boot(cs, args)
@@ -1625,6 +1635,13 @@ def do_reboot(cs, args):
     default=None,
     help=_('Name for the new server.'))
 @cliutils.arg(
+    '--description',
+    metavar='<description>',
+    dest='description',
+    default=None,
+    help=_('New description for the server.'),
+    start_version="2.19")
+@cliutils.arg(
     '--meta',
     metavar="<key=value>",
     action='append',
@@ -1652,6 +1669,8 @@ def do_rebuild(cs, args):
     kwargs = utils.get_resource_manager_extra_kwargs(do_rebuild, args)
     kwargs['preserve_ephemeral'] = args.preserve_ephemeral
     kwargs['name'] = args.name
+    if 'description' in args:
+        kwargs['description'] = args.description
     meta = _meta_parsing(args.meta)
     kwargs['meta'] = meta
 
@@ -1682,8 +1701,39 @@ def do_rebuild(cs, args):
     help=_('Name (old name) or ID of server.'))
 @cliutils.arg('name', metavar='<name>', help=_('New name for the server.'))
 def do_rename(cs, args):
-    """Rename a server."""
-    _find_server(cs, args.server).update(name=args.name)
+    """DEPRECATED, use update instead."""
+    do_update(cs, args)
+
+
+@cliutils.arg(
+    'server', metavar='<server>',
+    help=_('Name (old name) or ID of server.'))
+@cliutils.arg(
+    '--name',
+    metavar='<name>',
+    dest='name',
+    default=None,
+    help=_('New name for the server.'))
+@cliutils.arg(
+    '--description',
+    metavar='<description>',
+    dest='description',
+    default=None,
+    help=_('New description for the server. If it equals to empty string '
+           '(i.g. ""), the server description will be removed.'),
+    start_version="2.19")
+def do_update(cs, args):
+    """Update the name or the description for a server."""
+    update_kwargs = {}
+    if args.name:
+        update_kwargs["name"] = args.name
+    # NOTE(andreykurilin): `do_update` method is used by `do_rename` method,
+    # which do not have description argument at all. When `do_rename` will be
+    # removed after deprecation period, feel free to change the check below to:
+    #     `if args.description:`
+    if "description" in args and args.description is not None:
+        update_kwargs["description"] = args.description
+    _find_server(cs, args.server).update(**update_kwargs)
 
 
 @cliutils.arg('server', metavar='<server>', help=_('Name or ID of server.'))

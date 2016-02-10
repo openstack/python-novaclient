@@ -28,6 +28,7 @@ from six.moves.urllib import parse
 from novaclient import api_versions
 from novaclient import base
 from novaclient import crypto
+from novaclient import exceptions
 from novaclient.i18n import _
 from novaclient.v2 import security_groups
 
@@ -49,14 +50,22 @@ class Server(base.Resource):
         """
         return self.manager.delete(self)
 
-    def update(self, name=None):
+    def update(self, name=None, description=None):
         """
-        Update the name for this server.
+        Update the name and the description for this server.
 
         :param name: Update the server's name.
+        :param description: Update the server's description(
+                            allowed for 2.19-latest).
         :returns: :class:`Server`
         """
-        return self.manager.update(self, name=name)
+        if (description is not None and
+                self.manager.api_version < api_versions.APIVersion("2.19")):
+            raise exceptions.UnsupportedAttribute("description", "2.19")
+        update_kwargs = {"name": name}
+        if description is not None:
+            update_kwargs["description"] = description
+        return self.manager.update(self, **update_kwargs)
 
     def get_console_output(self, length=None):
         """
@@ -510,7 +519,8 @@ class ServerManager(base.BootingManagerWithFind):
               availability_zone=None, block_device_mapping=None,
               block_device_mapping_v2=None, nics=None, scheduler_hints=None,
               config_drive=None, admin_pass=None, disk_config=None,
-              access_ip_v4=None, access_ip_v6=None, **kwargs):
+              access_ip_v4=None, access_ip_v6=None, description=None,
+              **kwargs):
         """
         Create (boot) a new server.
         """
@@ -631,6 +641,9 @@ class ServerManager(base.BootingManagerWithFind):
 
         if access_ip_v6 is not None:
             body['server']['accessIPv6'] = access_ip_v6
+
+        if description:
+            body['server']['description'] = description
 
         return self._create(resource_url, body, response_key,
                             return_raw=return_raw, **kwargs)
@@ -1168,6 +1181,8 @@ class ServerManager(base.BootingManagerWithFind):
                            password.
         :param access_ip_v4: (optional extension) add alternative access ip v4
         :param access_ip_v6: (optional extension) add alternative access ip v6
+        :param description: optional description of the server (allowed since
+                            microversion 2.19)
         """
         if not min_count:
             min_count = 1
@@ -1177,6 +1192,10 @@ class ServerManager(base.BootingManagerWithFind):
             min_count = max_count
 
         boot_args = [name, image, flavor]
+
+        descr_microversion = api_versions.APIVersion("2.19")
+        if "description" in kwargs and self.api_version < descr_microversion:
+            raise exceptions.UnsupportedAttribute("description", "2.19")
 
         boot_kwargs = dict(
             meta=meta, files=files, userdata=userdata,
@@ -1202,9 +1221,10 @@ class ServerManager(base.BootingManagerWithFind):
         return self._boot(resource_url, response_key, *boot_args,
                           **boot_kwargs)
 
+    @api_versions.wraps("2.0", "2.18")
     def update(self, server, name=None):
         """
-        Update the name or the password for a server.
+        Update the name for a server.
 
         :param server: The :class:`Server` (or its ID) to update.
         :param name: Update the server's name.
@@ -1217,6 +1237,29 @@ class ServerManager(base.BootingManagerWithFind):
                 "name": name,
             },
         }
+
+        return self._update("/servers/%s" % base.getid(server), body, "server")
+
+    @api_versions.wraps("2.19")
+    def update(self, server, name=None, description=None):
+        """
+        Update the name or the description for a server.
+
+        :param server: The :class:`Server` (or its ID) to update.
+        :param name: Update the server's name.
+        :param description: Update the server's description. If it equals to
+            empty string(i.g. ""), the server description will be removed.
+        """
+        if name is None and description is None:
+            return
+
+        body = {"server": {}}
+        if name:
+            body["server"]["name"] = name
+        if description == "":
+            body["server"]["description"] = None
+        elif description:
+            body["server"]["description"] = description
 
         return self._update("/servers/%s" % base.getid(server), body, "server")
 
@@ -1271,8 +1314,14 @@ class ServerManager(base.BootingManagerWithFind):
                       are the file contents (either as a string or as a
                       file-like object). A maximum of five entries is allowed,
                       and each file must be 10k or less.
+        :param description: optional description of the server (allowed since
+                            microversion 2.19)
         :returns: :class:`Server`
         """
+        descr_microversion = api_versions.APIVersion("2.19")
+        if "description" in kwargs and self.api_version < descr_microversion:
+            raise exceptions.UnsupportedAttribute("description", "2.19")
+
         body = {'imageRef': base.getid(image)}
         if password is not None:
             body['adminPass'] = password
@@ -1282,6 +1331,8 @@ class ServerManager(base.BootingManagerWithFind):
             body['preserve_ephemeral'] = True
         if name is not None:
             body['name'] = name
+        if "description" in kwargs:
+            body["description"] = kwargs["description"]
         if meta:
             body['metadata'] = meta
         if files:
