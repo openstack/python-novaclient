@@ -2685,6 +2685,7 @@ class ShellTest(utils.TestCase):
                  #   (we can do it, since nova-api change didn't actually add
                  #   new microversion, just an additional checks. See
                  #   https://review.openstack.org/#/c/233076/ for more details)
+            20,  # doesn't require any changes in novaclient
         ])
         versions_supported = set(range(0,
                                  novaclient.API_MAX_VERSION.ver_minor + 1))
