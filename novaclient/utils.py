@@ -273,7 +273,7 @@ def print_dict(d, dict_property="Property", dict_value="Value", wrap=0):
     print(result)
 
 
-def find_resource(manager, name_or_id, **find_args):
+def find_resource(manager, name_or_id, wrap_exception=True, **find_args):
     """Helper for the _find_* methods."""
     # for str id which is not uuid (for Flavor, Keypair and hypervsior in cells
     # environments search currently)
@@ -316,7 +316,9 @@ def find_resource(manager, name_or_id, **find_args):
                  "to be more specific.") %
                {'class': manager.resource_class.__name__.lower(),
                 'name': name_or_id})
-        raise exceptions.CommandError(msg)
+        if wrap_exception:
+            raise exceptions.CommandError(msg)
+        raise exceptions.NoUniqueMatch(msg)
 
     # finally try to get entity as integer id
     try:
@@ -325,7 +327,9 @@ def find_resource(manager, name_or_id, **find_args):
         msg = (_("No %(class)s with a name or ID of '%(name)s' exists.") %
                {'class': manager.resource_class.__name__.lower(),
                 'name': name_or_id})
-        raise exceptions.CommandError(msg)
+        if wrap_exception:
+            raise exceptions.CommandError(msg)
+        raise exceptions.NotFound(404, msg)
 
 
 def _format_servers_list_networks(server):
