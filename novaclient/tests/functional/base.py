@@ -147,6 +147,10 @@ class ClientTestBase(testtools.TestCase):
         passwd = auth_info['password']
         tenant = auth_info['project_name']
         auth_url = auth_info['auth_url']
+        if 'insecure' in cloud_config.config:
+            insecure = cloud_config.config['insecure']
+        else:
+            insecure = False
 
         if self.COMPUTE_API_VERSION == "2.latest":
             version = novaclient.API_MAX_VERSION.get_string()
@@ -154,7 +158,7 @@ class ClientTestBase(testtools.TestCase):
             version = self.COMPUTE_API_VERSION or "2"
         self.client = novaclient.client.Client(
             version, user, passwd, tenant,
-            auth_url=auth_url)
+            auth_url=auth_url, insecure=insecure)
 
         # pick some reasonable flavor / image combo
         self.flavor = pick_flavor(self.client.flavors.list())
@@ -174,7 +178,8 @@ class ClientTestBase(testtools.TestCase):
             password=passwd,
             tenant_name=tenant,
             uri=auth_url,
-            cli_dir=cli_dir)
+            cli_dir=cli_dir,
+            insecure=insecure)
 
     def nova(self, action, flags='', params='', fail_ok=False,
              endpoint_type='publicURL', merge_stderr=False):
