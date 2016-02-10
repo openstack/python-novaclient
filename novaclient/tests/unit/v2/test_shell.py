@@ -2677,6 +2677,14 @@ class ShellTest(utils.TestCase):
             9,   # doesn't require any changes in novaclient
             15,  # doesn't require any changes in novaclient
             16,  # doesn't require any changes in novaclient
+            18,  # NOTE(andreykurilin): this microversion requires changes in
+                 #   HttpClient and our SessionClient, which is based on
+                 #   keystoneauth1.session. Skipping this complicated change
+                 #   allows to unblock implementation further microversions
+                 #   before feature-freeze
+                 #   (we can do it, since nova-api change didn't actually add
+                 #   new microversion, just an additional checks. See
+                 #   https://review.openstack.org/#/c/233076/ for more details)
         ])
         versions_supported = set(range(0,
                                  novaclient.API_MAX_VERSION.ver_minor + 1))
