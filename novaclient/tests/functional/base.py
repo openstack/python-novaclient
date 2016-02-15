@@ -24,6 +24,9 @@ import novaclient
 import novaclient.api_versions
 import novaclient.client
 
+BOOT_IS_COMPLETE = ("login as 'cirros' user. default password: "
+                    "'cubswin:)'. use 'sudo' for root.")
+
 
 # The following are simple filter functions that filter our available
 # image / flavor list so that they can be used in standard testing.
@@ -201,6 +204,23 @@ class ClientTestBase(testtools.TestCase):
         else:
             self.fail("Volume %s did not reach status %s after %d s"
                       % (volume.id, status, timeout))
+
+    def wait_for_server_os_boot(self, server_id, timeout=60,
+                                poll_interval=1):
+        """Wait until instance's operating system  is completely booted.
+
+        :param server_id: uuid4 id of given instance
+        :param timeout: timeout in seconds
+        :param poll_interval: poll interval in seconds
+        """
+        start_time = time.time()
+        while time.time() - start_time < timeout:
+            if BOOT_IS_COMPLETE in self.nova('console-log %s ' % server_id):
+                break
+            time.sleep(poll_interval)
+        else:
+            self.fail("Server %s did not boot after %d s"
+                      % (server_id, timeout))
 
     def wait_for_resource_delete(self, resource, manager,
                                  timeout=60, poll_interval=1):
