@@ -1681,6 +1681,12 @@ class ShellTest(utils.TestCase):
                                                'block_migration': True,
                                                'disk_over_commit': True}})
 
+    def test_live_migration_force_complete(self):
+        self.run_command('live-migration-force-complete sample-server 1',
+                         api_version='2.22')
+        self.assert_called('POST', '/servers/1234/migrations/1/action',
+                           {'force_complete': None})
+
     def test_host_evacuate_live_with_no_target_host(self):
         self.run_command('host-evacuate-live hyper')
         self.assert_called('GET', '/os-hypervisors/hyper/servers', pos=0)
