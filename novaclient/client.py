@@ -723,19 +723,24 @@ def _construct_http_client(username=None, password=None, project_id=None,
                           api_version=api_version)
 
 
-def discover_extensions(version):
+def discover_extensions(version, only_contrib=False):
+    """Returns the list of extensions, which can be discovered by python path,
+    contrib path and by entry-point 'novaclient.extension'.
+
+    :param version: api version
+    :type version: str or novaclient.api_versions.APIVersion
+    :param only_contrib: search only in contrib directory or not
+    :type only_contrib: bool
+    """
     if not isinstance(version, api_versions.APIVersion):
         version = api_versions.get_api_version(version)
-    extensions = []
-    for name, module in itertools.chain(
-            _discover_via_python_path(),
-            _discover_via_contrib_path(version),
-            _discover_via_entry_points()):
-
-        extension = ext.Extension(name, module)
-        extensions.append(extension)
-
-    return extensions
+    if only_contrib:
+        chain = _discover_via_contrib_path(version)
+    else:
+        chain = itertools.chain(_discover_via_python_path(),
+                                _discover_via_contrib_path(version),
+                                _discover_via_entry_points())
+    return [ext.Extension(name, module) for name, module in chain]
 
 
 def _discover_via_python_path():
