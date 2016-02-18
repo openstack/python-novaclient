@@ -40,10 +40,9 @@ class TestInstanceCLI(base.ClientTestBase):
         name = self.name_generate('Instance')
 
         # Boot via the cli, as we're primarily testing the cli in this test
-        network = self.client.networks.list()[0]
         self.nova('boot',
                   params="--flavor %s --image %s %s --nic net-id=%s --poll" %
-                  (self.flavor.name, self.image.name, name, network.id))
+                  (self.flavor.name, self.image.name, name, self.network.id))
 
         # Be nice about cleaning up, however, use the API for this to avoid
         # parsing text.

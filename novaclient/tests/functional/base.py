@@ -45,6 +45,16 @@ def pick_image(images):
     raise NoImageException()
 
 
+def pick_network(networks):
+    network_name = os.environ.get('OS_NOVACLIENT_NETWORK')
+    if network_name:
+        for network in networks:
+            if network.label == network_name:
+                return network
+        raise NoNetworkException()
+    return networks[0]
+
+
 class NoImageException(Exception):
     """We couldn't find an acceptable image."""
     pass
@@ -52,6 +62,11 @@ class NoImageException(Exception):
 
 class NoFlavorException(Exception):
     """We couldn't find an acceptable flavor."""
+    pass
+
+
+class NoNetworkException(Exception):
+    """We couldn't find an acceptable network."""
     pass
 
 
@@ -163,6 +178,7 @@ class ClientTestBase(testtools.TestCase):
         # pick some reasonable flavor / image combo
         self.flavor = pick_flavor(self.client.flavors.list())
         self.image = pick_image(self.client.images.list())
+        self.network = pick_network(self.client.networks.list())
 
         # create a CLI client in case we'd like to do CLI
         # testing. tempest_lib does this really weird thing where it
