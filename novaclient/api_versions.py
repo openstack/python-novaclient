@@ -232,7 +232,7 @@ def get_api_version(version_string):
     if version_string in DEPRECATED_VERSIONS:
         LOG.warning(
             _LW("Version %(deprecated_version)s is deprecated, using "
-                "alternative version %(alternative)s instead.") %
+                "alternative version %(alternative)s instead."),
             {"deprecated_version": version_string,
              "alternative": DEPRECATED_VERSIONS[version_string]})
         version_string = DEPRECATED_VERSIONS[version_string]
