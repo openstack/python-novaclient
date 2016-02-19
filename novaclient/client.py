@@ -87,7 +87,9 @@ class SessionClient(adapter.LegacyJsonAdapter):
                                                             method,
                                                             raise_exc=False,
                                                             **kwargs)
-        api_versions.check_headers(resp, self.api_version)
+        # TODO(andreykurilin): uncomment this line, when we will be able to
+        #   check only nova-related calls
+        # api_versions.check_headers(resp, self.api_version)
         if raise_exc and resp.status_code >= 400:
             raise exceptions.from_response(resp, body, url, method)
 
@@ -365,7 +367,9 @@ class HTTPClient(object):
             url,
             **kwargs)
 
-        api_versions.check_headers(resp, self.api_version)
+        # TODO(andreykurilin): uncomment this line, when we will be able to
+        #   check only nova-related calls
+        # api_versions.check_headers(resp, self.api_version)
 
         self.http_log_resp(resp)
 
