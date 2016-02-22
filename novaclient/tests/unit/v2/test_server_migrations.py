@@ -80,3 +80,13 @@ class ServerMigrationsTestV223(ServerMigrationsTest):
         self.assert_request_id(migration, fakes.FAKE_REQUEST_ID_LIST)
 
         self.assert_called('GET', '/servers/1234/migrations/1')
+
+
+class ServerMigrationsTestV224(ServerMigrationsTest):
+    def setUp(self):
+        super(ServerMigrationsTestV224, self).setUp()
+        self.cs.api_version = api_versions.APIVersion("2.24")
+
+    def test_live_migration_abort(self):
+        self.cs.server_migrations.live_migration_abort(1234, 1)
+        self.assert_called('DELETE', '/servers/1234/migrations/1')

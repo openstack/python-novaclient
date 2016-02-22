@@ -1697,6 +1697,11 @@ class ShellTest(utils.TestCase):
                          api_version='2.23')
         self.assert_called('GET', '/servers/1234/migrations/1')
 
+    def test_live_migration_abort(self):
+        self.run_command('live-migration-abort sample-server 1',
+                         api_version='2.24')
+        self.assert_called('DELETE', '/servers/1234/migrations/1')
+
     def test_host_evacuate_live_with_no_target_host(self):
         self.run_command('host-evacuate-live hyper')
         self.assert_called('GET', '/os-hypervisors/hyper/servers', pos=0)

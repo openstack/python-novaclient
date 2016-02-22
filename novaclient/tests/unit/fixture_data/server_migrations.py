@@ -76,3 +76,7 @@ class Fixture(base.Fixture):
                                    status_code=200,
                                    json=get_migration,
                                    headers=self.json_headers)
+        url = self.url('1234', 'migrations', '1')
+        self.requests.register_uri('DELETE', url,
+                                   status_code=202,
+                                   headers=self.json_headers)

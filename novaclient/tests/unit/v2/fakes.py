@@ -2495,6 +2495,9 @@ class FakeHTTPClient(base_client.HTTPClient):
             }]}
         return (200, FAKE_RESPONSE_HEADERS, migrations)
 
+    def delete_servers_1234_migrations_1(self):
+        return (202, {}, None)
+
 
 class FakeSessionClient(fakes.FakeClient, client.Client):
 

@@ -3883,6 +3883,15 @@ def do_server_migration_show(cs, args):
     utils.print_dict(migration._info)
 
 
+@api_versions.wraps("2.24")
+@cliutils.arg('server', metavar='<server>', help=_('Name or ID of server.'))
+@cliutils.arg('migration', metavar='<migration>', help=_('ID of migration.'))
+def do_live_migration_abort(cs, args):
+    """Abort an on-going live migration."""
+    server = _find_server(cs, args.server)
+    cs.server_migrations.live_migration_abort(server, args.migration)
+
+
 @cliutils.arg(
     '--all-tenants',
     action='store_const',
