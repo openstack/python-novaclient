@@ -84,11 +84,11 @@ class DeprecatedActionTest(utils.TestCase):
             'option_strings', 'dest', a=1, b=2, c=3)
 
         self.assertEqual(result.emitted, set())
-        self.assertEqual(result.use, None)
+        self.assertIsNone(result.use)
         self.assertEqual(result.real_action_args,
                          ('option_strings', 'dest', 'Deprecated',
                           {'a': 1, 'b': 2, 'c': 3}))
-        self.assertEqual(result.real_action, None)
+        self.assertIsNone(result.real_action)
         mock_init.assert_called_once_with(
             'option_strings', 'dest', help='Deprecated', a=1, b=2, c=3)
 
@@ -104,7 +104,7 @@ class DeprecatedActionTest(utils.TestCase):
                          ('option_strings', 'dest',
                           'Deprecated; use this instead',
                           {'a': 1, 'b': 2, 'c': 3}))
-        self.assertEqual(result.real_action, None)
+        self.assertIsNone(result.real_action)
         mock_init.assert_called_once_with(
             'option_strings', 'dest', help='Deprecated; use this instead',
             a=1, b=2, c=3)
@@ -115,12 +115,12 @@ class DeprecatedActionTest(utils.TestCase):
             'option_strings', 'dest', help='some help', a=1, b=2, c=3)
 
         self.assertEqual(result.emitted, set())
-        self.assertEqual(result.use, None)
+        self.assertIsNone(result.use)
         self.assertEqual(result.real_action_args,
                          ('option_strings', 'dest',
                           'some help (Deprecated)',
                           {'a': 1, 'b': 2, 'c': 3}))
-        self.assertEqual(result.real_action, None)
+        self.assertIsNone(result.real_action)
         mock_init.assert_called_once_with(
             'option_strings', 'dest', help='some help (Deprecated)',
             a=1, b=2, c=3)
@@ -138,7 +138,7 @@ class DeprecatedActionTest(utils.TestCase):
                          ('option_strings', 'dest',
                           'some help (Deprecated; use this instead)',
                           {'a': 1, 'b': 2, 'c': 3}))
-        self.assertEqual(result.real_action, None)
+        self.assertIsNone(result.real_action)
         mock_init.assert_called_once_with(
             'option_strings', 'dest',
             help='some help (Deprecated; use this instead)',
@@ -150,11 +150,11 @@ class DeprecatedActionTest(utils.TestCase):
             'option_strings', 'dest', help=argparse.SUPPRESS, a=1, b=2, c=3)
 
         self.assertEqual(result.emitted, set())
-        self.assertEqual(result.use, None)
+        self.assertIsNone(result.use)
         self.assertEqual(result.real_action_args,
                          ('option_strings', 'dest', argparse.SUPPRESS,
                           {'a': 1, 'b': 2, 'c': 3}))
-        self.assertEqual(result.real_action, None)
+        self.assertIsNone(result.real_action)
         mock_init.assert_called_once_with(
             'option_strings', 'dest', help=argparse.SUPPRESS, a=1, b=2, c=3)
 
@@ -170,7 +170,7 @@ class DeprecatedActionTest(utils.TestCase):
         self.assertEqual(result.real_action_args,
                          ('option_strings', 'dest', argparse.SUPPRESS,
                           {'a': 1, 'b': 2, 'c': 3}))
-        self.assertEqual(result.real_action, None)
+        self.assertIsNone(result.real_action)
         mock_init.assert_called_once_with(
             'option_strings', 'dest', help=argparse.SUPPRESS, a=1, b=2, c=3)
 
@@ -180,9 +180,9 @@ class DeprecatedActionTest(utils.TestCase):
             'option_strings', 'dest', real_action='nothing', a=1, b=2, c=3)
 
         self.assertEqual(result.emitted, set())
-        self.assertEqual(result.use, None)
+        self.assertIsNone(result.use)
         self.assertEqual(result.real_action_args, False)
-        self.assertEqual(result.real_action, None)
+        self.assertIsNone(result.real_action)
         mock_init.assert_called_once_with(
             'option_strings', 'dest', help='Deprecated', a=1, b=2, c=3)
 
@@ -192,7 +192,7 @@ class DeprecatedActionTest(utils.TestCase):
             'option_strings', 'dest', real_action='store', a=1, b=2, c=3)
 
         self.assertEqual(result.emitted, set())
-        self.assertEqual(result.use, None)
+        self.assertIsNone(result.use)
         self.assertEqual(result.real_action_args,
                          ('option_strings', 'dest', 'Deprecated',
                           {'a': 1, 'b': 2, 'c': 3}))
@@ -207,7 +207,7 @@ class DeprecatedActionTest(utils.TestCase):
             'option_strings', 'dest', real_action=action, a=1, b=2, c=3)
 
         self.assertEqual(result.emitted, set())
-        self.assertEqual(result.use, None)
+        self.assertIsNone(result.use)
         self.assertEqual(result.real_action_args, False)
         self.assertEqual(result.real_action, action.return_value)
         mock_init.assert_called_once_with(
@@ -243,8 +243,8 @@ class DeprecatedActionTest(utils.TestCase):
 
         result = obj._get_action(parser)
 
-        self.assertEqual(result, None)
-        self.assertEqual(obj.real_action, None)
+        self.assertIsNone(result)
+        self.assertIsNone(obj.real_action)
         parser._registry_get.assert_called_once_with(
             'action', 'store')
         self.assertEqual(sys.stderr.getvalue(),
