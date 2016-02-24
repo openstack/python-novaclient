@@ -694,9 +694,8 @@ class OpenStackComputeShell(object):
                         kwargs["help"] = kwargs.get("help", "") + (msg % {
                             "start": start_version.get_string(),
                             "end": end_version.get_string()})
-                    else:
-                        if not version.matches(start_version, end_version):
-                            continue
+                    if not version.matches(start_version, end_version):
+                        continue
                 kw = kwargs.copy()
                 kw.pop("start_version", None)
                 kw.pop("end_version", None)
