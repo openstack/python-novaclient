@@ -54,6 +54,12 @@ from novaclient import service_catalog
 from novaclient import utils
 
 
+# TODO(jichenjc): when an extension in contrib is moved to core extension,
+# Add the name into the following list, then after last patch merged,
+# remove the whole function
+extensions_ignored_name = ["__init__"]
+
+
 class _ClientConnectionPool(object):
 
     def __init__(self):
@@ -768,7 +774,7 @@ def _discover_via_contrib_path(version):
     for ext_path in glob.iglob(ext_glob):
         name = os.path.basename(ext_path)[:-3]
 
-        if name == "__init__":
+        if name in extensions_ignored_name:
             continue
 
         module = imp.load_source(name, ext_path)
