@@ -748,18 +748,18 @@ def _print_flavor_list(flavors, show_extra_specs=False):
     dest='marker',
     metavar='<marker>',
     default=None,
-    help=('The last flavor ID of the previous page; displays list of flavors'
-          ' after "marker".'))
+    help=_('The last flavor ID of the previous page; displays list of flavors'
+           ' after "marker".'))
 @cliutils.arg(
     '--limit',
     dest='limit',
     metavar='<limit>',
     type=int,
     default=None,
-    help=("Maximum number of flavors to display. If limit == -1, all flavors "
-          "will be displayed. If limit is bigger than "
-          "'osapi_max_limit' option of Nova API, limit 'osapi_max_limit' will "
-          "be used instead."))
+    help=_("Maximum number of flavors to display. If limit == -1, all flavors "
+           "will be displayed. If limit is bigger than 'osapi_max_limit' "
+           "option of Nova API, limit 'osapi_max_limit' will be used "
+           "instead."))
 def do_flavor_list(cs, args):
     """Print a list of available 'flavors' (sizes of servers)."""
     if args.all:
@@ -1439,26 +1439,26 @@ def do_image_delete(cs, args):
     '--sort',
     dest='sort',
     metavar='<key>[:<direction>]',
-    help=('Comma-separated list of sort keys and directions in the form'
-          ' of <key>[:<asc|desc>]. The direction defaults to descending if'
-          ' not specified.'))
+    help=_('Comma-separated list of sort keys and directions in the form '
+           'of <key>[:<asc|desc>]. The direction defaults to descending if '
+           'not specified.'))
 @cliutils.arg(
     '--marker',
     dest='marker',
     metavar='<marker>',
     default=None,
-    help=('The last server UUID of the previous page; displays list of servers'
-          ' after "marker".'))
+    help=_('The last server UUID of the previous page; displays list of '
+           'servers after "marker".'))
 @cliutils.arg(
     '--limit',
     dest='limit',
     metavar='<limit>',
     type=int,
     default=None,
-    help=("Maximum number of servers to display. If limit == -1, all servers "
-          "will be displayed. If limit is bigger than "
-          "'osapi_max_limit' option of Nova API, limit 'osapi_max_limit' will "
-          "be used instead."))
+    help=_("Maximum number of servers to display. If limit == -1, all servers "
+           "will be displayed. If limit is bigger than 'osapi_max_limit' "
+           "option of Nova API, limit 'osapi_max_limit' will be used "
+           "instead."))
 def do_list(cs, args):
     """List active servers."""
     imageid = None
