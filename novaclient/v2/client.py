@@ -41,6 +41,7 @@ from novaclient.v2 import security_group_default_rules
 from novaclient.v2 import security_group_rules
 from novaclient.v2 import security_groups
 from novaclient.v2 import server_groups
+from novaclient.v2 import server_migrations
 from novaclient.v2 import servers
 from novaclient.v2 import services
 from novaclient.v2 import usage
@@ -167,6 +168,8 @@ class Client(object):
         self.availability_zones = \
             availability_zones.AvailabilityZoneManager(self)
         self.server_groups = server_groups.ServerGroupsManager(self)
+        self.server_migrations = \
+            server_migrations.ServerMigrationsManager(self)
 
         # Add in any extensions...
         if extensions:

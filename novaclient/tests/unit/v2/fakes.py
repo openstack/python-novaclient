@@ -2432,6 +2432,9 @@ class FakeHTTPClient(base_client.HTTPClient):
             self, **kw):
         return (202, {}, None)
 
+    def post_servers_1234_migrations_1_action(self, body):
+        return (202, {}, None)
+
 
 class FakeSessionClient(fakes.FakeClient, client.Client):
 

@@ -3838,6 +3838,15 @@ def do_live_migration(cs, args):
                                                args.disk_over_commit)
 
 
+@api_versions.wraps("2.22")
+@cliutils.arg('server', metavar='<server>', help=_('Name or ID of server.'))
+@cliutils.arg('migration', metavar='<migration>', help=_('ID of migration.'))
+def do_live_migration_force_complete(cs, args):
+    """Force on-going live migration to complete."""
+    server = _find_server(cs, args.server)
+    cs.server_migrations.live_migrate_force_complete(server, args.migration)
+
+
 @cliutils.arg(
     '--all-tenants',
     action='store_const',
