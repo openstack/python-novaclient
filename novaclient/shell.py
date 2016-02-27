@@ -592,8 +592,8 @@ class OpenStackComputeShell(object):
             metavar='<bypass-url>',
             dest='bypass_url',
             default=utils.env('NOVACLIENT_BYPASS_URL'),
-            help="Use this API endpoint instead of the Service Catalog. "
-                 "Defaults to env[NOVACLIENT_BYPASS_URL].")
+            help=_("Use this API endpoint instead of the Service Catalog. "
+                   "Defaults to env[NOVACLIENT_BYPASS_URL]."))
         parser.add_argument(
             '--bypass_url',
             action=DeprecatedAction,
@@ -1046,7 +1046,7 @@ class OpenStackComputeShell(object):
         'command',
         metavar='<subcommand>',
         nargs='?',
-        help='Display help for <subcommand>.')
+        help=_('Display help for <subcommand>.'))
     def do_help(self, args):
         """
         Display help about this program or one of its subcommands.
@@ -1080,13 +1080,13 @@ def main():
         OpenStackComputeShell().main(argv)
     except Exception as exc:
         logger.debug(exc, exc_info=1)
-        print("ERROR (%s): %s"
-              % (exc.__class__.__name__,
-                 encodeutils.exception_to_unicode(exc)),
+        print(_("ERROR (%(type)s): %(msg)s") % {
+              'type': exc.__class__.__name__,
+              'msg': encodeutils.exception_to_unicode(exc)},
               file=sys.stderr)
         sys.exit(1)
     except KeyboardInterrupt:
-        print("... terminating nova client", file=sys.stderr)
+        print(_("... terminating nova client"), file=sys.stderr)
         sys.exit(130)
 
 
