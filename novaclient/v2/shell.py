@@ -3810,7 +3810,15 @@ def _print_aggregate_details(aggregate):
     action='store_true',
     dest='block_migrate',
     default=False,
-    help=_('True in case of block_migration. (Default=False:live_migration)'))
+    help=_('True in case of block_migration. (Default=False:live_migration)'),
+    start_version="2.0", end_version="2.24")
+@cliutils.arg(
+    '--block-migrate',
+    action='store_true',
+    dest='block_migrate',
+    default="auto",
+    help=_('True in case of block_migration. (Default=auto:live_migration)'),
+    start_version="2.25")
 @cliutils.arg(
     '--block_migrate',
     real_action='store_true',
@@ -3823,19 +3831,26 @@ def _print_aggregate_details(aggregate):
     action='store_true',
     dest='disk_over_commit',
     default=False,
-    help=_('Allow overcommit. (Default=False)'))
+    help=_('Allow overcommit. (Default=False)'),
+    start_version="2.0", end_version="2.24")
 @cliutils.arg(
     '--disk_over_commit',
     real_action='store_true',
     action=shell.DeprecatedAction,
     use=_('use "%s"; this option will be removed in '
           'novaclient 3.3.0.') % '--disk-over-commit',
-    help=argparse.SUPPRESS)
+    help=argparse.SUPPRESS,
+    start_version="2.0", end_version="2.24")
 def do_live_migration(cs, args):
     """Migrate running server to a new machine."""
-    _find_server(cs, args.server).live_migrate(args.host,
-                                               args.block_migrate,
-                                               args.disk_over_commit)
+
+    if 'disk_over_commit' in args:
+        _find_server(cs, args.server).live_migrate(args.host,
+                                                   args.block_migrate,
+                                                   args.disk_over_commit)
+    else:
+        _find_server(cs, args.server).live_migrate(args.host,
+                                                   args.block_migrate)
 
 
 @api_versions.wraps("2.22")

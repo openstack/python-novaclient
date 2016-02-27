@@ -1681,6 +1681,22 @@ class ShellTest(utils.TestCase):
                                                'block_migration': True,
                                                'disk_over_commit': True}})
 
+    def test_live_migration_v225(self):
+        self.run_command('live-migration sample-server hostname',
+                         api_version='2.25')
+        self.assert_called('POST', '/servers/1234/action',
+                           {'os-migrateLive': {'host': 'hostname',
+                                               'block_migration': 'auto'}})
+        self.run_command('live-migration sample-server hostname'
+                         ' --block-migrate', api_version='2.25')
+        self.assert_called('POST', '/servers/1234/action',
+                           {'os-migrateLive': {'host': 'hostname',
+                                               'block_migration': True}})
+        self.run_command('live-migration sample-server', api_version='2.25')
+        self.assert_called('POST', '/servers/1234/action',
+                           {'os-migrateLive': {'host': None,
+                                               'block_migration': 'auto'}})
+
     def test_live_migration_force_complete(self):
         self.run_command('live-migration-force-complete sample-server 1',
                          api_version='2.22')

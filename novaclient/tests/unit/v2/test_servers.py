@@ -841,12 +841,28 @@ class ServersTest(utils.FixturedTestCase):
         ret = s.live_migrate(host='hostname', block_migration=False,
                              disk_over_commit=False)
         self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
-        self.assert_called('POST', '/servers/1234/action')
+        self.assert_called('POST', '/servers/1234/action',
+                           {'os-migrateLive': {'host': 'hostname',
+                                               'block_migration': False,
+                                               'disk_over_commit': False}})
         ret = self.cs.servers.live_migrate(s, host='hostname',
                                            block_migration=False,
                                            disk_over_commit=False)
         self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
-        self.assert_called('POST', '/servers/1234/action')
+        self.assert_called('POST', '/servers/1234/action',
+                           {'os-migrateLive': {'host': 'hostname',
+                                               'block_migration': False,
+                                               'disk_over_commit': False}})
+
+    def test_live_migrate_server_block_migration_none(self):
+        s = self.cs.servers.get(1234)
+        ret = s.live_migrate(host='hostname', block_migration=None,
+                             disk_over_commit=None)
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
+        self.assert_called('POST', '/servers/1234/action',
+                           {'os-migrateLive': {'host': 'hostname',
+                                               'block_migration': False,
+                                               'disk_over_commit': False}})
 
     def test_reset_state(self):
         s = self.cs.servers.get(1234)
@@ -1077,3 +1093,58 @@ class ServersV219Test(ServersV217Test):
         ret = s.rebuild(image="1", description="descr")
         self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
+
+
+class ServersV225Test(ServersV219Test):
+    def setUp(self):
+        super(ServersV219Test, self).setUp()
+        self.cs.api_version = api_versions.APIVersion("2.25")
+
+    def test_live_migrate_server(self):
+        s = self.cs.servers.get(1234)
+        ret = s.live_migrate(host='hostname', block_migration='auto')
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
+        self.assert_called('POST', '/servers/1234/action',
+                           {'os-migrateLive': {'host': 'hostname',
+                                               'block_migration': 'auto'}})
+        ret = self.cs.servers.live_migrate(s, host='hostname',
+                                           block_migration='auto')
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
+        self.assert_called('POST', '/servers/1234/action',
+                           {'os-migrateLive': {'host': 'hostname',
+                                               'block_migration': 'auto'}})
+
+    def test_live_migrate_server_block_migration_true(self):
+        s = self.cs.servers.get(1234)
+        ret = s.live_migrate(host='hostname', block_migration=True)
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
+        self.assert_called('POST', '/servers/1234/action',
+                           {'os-migrateLive': {'host': 'hostname',
+                                               'block_migration': True}})
+
+        ret = self.cs.servers.live_migrate(s, host='hostname',
+                                           block_migration=True)
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
+        self.assert_called('POST', '/servers/1234/action',
+                           {'os-migrateLive': {'host': 'hostname',
+                                               'block_migration': True}})
+
+    def test_live_migrate_server_block_migration_none(self):
+        s = self.cs.servers.get(1234)
+        ret = s.live_migrate(host='hostname', block_migration=None)
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
+        self.assert_called('POST', '/servers/1234/action',
+                           {'os-migrateLive': {'host': 'hostname',
+                                               'block_migration': 'auto'}})
+
+        ret = self.cs.servers.live_migrate(s, host='hostname',
+                                           block_migration='auto')
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
+        self.assert_called('POST', '/servers/1234/action',
+                           {'os-migrateLive': {'host': 'hostname',
+                                               'block_migration': 'auto'}})
+
+    def test_live_migrate_server_with_disk_over_commit(self):
+        s = self.cs.servers.get(1234)
+        self.assertRaises(ValueError, s.live_migrate, 'hostname',
+                          'auto', 'True')

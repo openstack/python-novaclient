@@ -425,6 +425,11 @@ class V1(Base):
             # if we found 'action' in method check_server_actions and
             # raise AssertionError if we didn't find 'action' at all.
             pass
+        elif action == 'os-migrateLive':
+            # Fixme(eliqiao): body of os-migrateLive changes from v2.25
+            # but we can not specify version in data_fixture now and this is
+            # V1 data, so just let it pass
+            pass
         elif action == 'rebuild':
             body = body[action]
             adminPass = body.get('adminPass', 'randompassword')
