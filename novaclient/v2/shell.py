@@ -4698,7 +4698,7 @@ def do_evacuate(cs, args):
     server = _find_server(cs, args.server)
     on_shared_storage = getattr(args, 'on_shared_storage', None)
     res = server.evacuate(args.host, on_shared_storage, args.password)[1]
-    if type(res) is dict:
+    if isinstance(res, dict):
         utils.print_dict(res)
 
 
@@ -4723,7 +4723,7 @@ def do_interface_list(cs, args):
     server = _find_server(cs, args.server)
 
     res = server.interface_list()
-    if type(res) is list:
+    if isinstance(res, list):
         _print_interfaces(res)
 
 
@@ -4748,7 +4748,7 @@ def do_interface_attach(cs, args):
     server = _find_server(cs, args.server)
 
     res = server.interface_attach(args.port_id, args.net_id, args.fixed_ip)
-    if type(res) is dict:
+    if isinstance(res, dict):
         utils.print_dict(res)
 
 
@@ -4759,7 +4759,7 @@ def do_interface_detach(cs, args):
     server = _find_server(cs, args.server)
 
     res = server.interface_detach(args.port_id)
-    if type(res) is dict:
+    if isinstance(res, dict):
         utils.print_dict(res)
 
 
