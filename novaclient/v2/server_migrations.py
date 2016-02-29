@@ -22,7 +22,7 @@ class ServerMigration(base.Resource):
         return "<ServerMigration>"
 
 
-class ServerMigrationsManager(base.Manager):
+class ServerMigrationsManager(base.ManagerWithFind):
     resource_class = ServerMigration
 
     @api_versions.wraps("2.22")
@@ -40,3 +40,28 @@ class ServerMigrationsManager(base.Manager):
                                                   base.getid(migration)),
             body=body)
         return self.convert_into_with_meta(body, resp)
+
+    @api_versions.wraps("2.23")
+    def get(self, server, migration):
+        """
+        Get a migration of a specified server
+
+        :param server: The :class:`Server` (or its ID)
+        :param migration: Migration id that will be gotten.
+        :returns: An instance of
+                  novaclient.v2.server_migrations.ServerMigration
+        """
+        return self._get('/servers/%s/migrations/%s' %
+                         (base.getid(server), base.getid(migration)),
+                         'migration')
+
+    @api_versions.wraps("2.23")
+    def list(self, server):
+        """
+        Get a migrations list of a specified server
+
+        :param server: The :class:`Server` (or its ID)
+        :returns: An instance of novaclient.base.ListWithMeta
+        """
+        return self._list(
+            '/servers/%s/migrations' % base.getid(server), "migrations")

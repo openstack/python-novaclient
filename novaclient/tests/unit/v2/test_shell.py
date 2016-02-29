@@ -1687,6 +1687,16 @@ class ShellTest(utils.TestCase):
         self.assert_called('POST', '/servers/1234/migrations/1/action',
                            {'force_complete': None})
 
+    def test_list_migrations(self):
+        self.run_command('server-migration-list sample-server',
+                         api_version='2.23')
+        self.assert_called('GET', '/servers/1234/migrations')
+
+    def test_get_migration(self):
+        self.run_command('server-migration-show sample-server 1',
+                         api_version='2.23')
+        self.assert_called('GET', '/servers/1234/migrations/1')
+
     def test_host_evacuate_live_with_no_target_host(self):
         self.run_command('host-evacuate-live hyper')
         self.assert_called('GET', '/os-hypervisors/hyper/servers', pos=0)
@@ -2499,6 +2509,10 @@ class ShellTest(utils.TestCase):
 
     def test_migration_list(self):
         self.run_command('migration-list')
+        self.assert_called('GET', '/os-migrations')
+
+    def test_migration_list_v223(self):
+        self.run_command('migration-list', api_version="2.23")
         self.assert_called('GET', '/os-migrations')
 
     def test_migration_list_with_filters(self):
