@@ -14,7 +14,7 @@
 #    under the License.
 
 from novaclient import api_versions
-from novaclient.openstack.common import cliutils
+from novaclient import utils
 
 
 @api_versions.wraps("2.10", "2.20")
@@ -32,11 +32,11 @@ def do_another_fake_action():
     return 0
 
 
-@cliutils.arg(
+@utils.arg(
     '--foo',
     start_version='2.1',
     end_version='2.2')
-@cliutils.arg(
+@utils.arg(
     '--bar',
     start_version='2.3',
     end_version='2.4')
@@ -44,12 +44,12 @@ def do_fake_action2():
     return 3
 
 
-@cliutils.arg(
+@utils.arg(
     '--foo',
     help='first foo',
     start_version='2.10',
     end_version='2.20')
-@cliutils.arg(
+@utils.arg(
     '--foo',
     help='second foo',
     start_version='2.21')

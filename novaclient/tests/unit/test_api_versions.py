@@ -18,7 +18,6 @@ import mock
 import novaclient
 from novaclient import api_versions
 from novaclient import exceptions
-from novaclient.openstack.common import cliutils
 from novaclient.tests.unit import utils
 from novaclient import utils as nutils
 from novaclient.v2 import versions
@@ -279,9 +278,9 @@ class WrapsTestCase(utils.TestCase):
         checker.assert_called_once_with(*((obj,) + some_args), **some_kwargs)
 
     def test_arguments_property_is_copied(self):
-        @cliutils.arg("argument_1")
+        @nutils.arg("argument_1")
         @api_versions.wraps("2.666", "2.777")
-        @cliutils.arg("argument_2")
+        @nutils.arg("argument_2")
         def some_func():
             pass
 

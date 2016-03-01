@@ -14,7 +14,6 @@
 #    under the License.
 
 from novaclient.i18n import _
-from novaclient.openstack.common import cliutils
 from novaclient import utils
 
 
@@ -38,23 +37,23 @@ def _server_live_migrate(cs, server, args):
                                     error_message)
 
 
-@cliutils.arg('host', metavar='<host>', help='Name of host.')
-@cliutils.arg(
+@utils.arg('host', metavar='<host>', help='Name of host.')
+@utils.arg(
     '--target-host',
     metavar='<target_host>',
     default=None,
     help=_('Name of target host.'))
-@cliutils.arg(
+@utils.arg(
     '--block-migrate',
     action='store_true',
     default=False,
     help=_('Enable block migration.'))
-@cliutils.arg(
+@utils.arg(
     '--disk-over-commit',
     action='store_true',
     default=False,
     help=_('Enable disk overcommit.'))
-@cliutils.arg(
+@utils.arg(
     '--max-servers',
     type=int,
     dest='max_servers',
