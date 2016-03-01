@@ -1063,6 +1063,15 @@ class ShellTest(utils.TestCase):
         self.run_command('list --limit 3')
         self.assert_called('GET', '/servers/detail?limit=3')
 
+    def test_list_with_changes_since(self):
+        self.run_command('list --changes-since 2016-02-29T06:23:22')
+        self.assert_called(
+            'GET', '/servers/detail?changes-since=2016-02-29T06%3A23%3A22')
+
+    def test_list_with_changes_since_invalid_value(self):
+        self.assertRaises(exceptions.CommandError,
+                          self.run_command, 'list --changes-since 0123456789')
+
     def test_meta_parsing(self):
         meta = ['key1=meta1', 'key2=meta2']
         ref = {'key1': 'meta1', 'key2': 'meta2'}
