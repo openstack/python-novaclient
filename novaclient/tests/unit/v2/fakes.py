@@ -23,8 +23,10 @@ import six
 from six.moves.urllib import parse
 
 import novaclient
+from novaclient import api_versions
 from novaclient import client as base_client
 from novaclient import exceptions
+from novaclient.i18n import _
 from novaclient.tests.unit import fakes
 from novaclient.tests.unit import utils
 from novaclient.v2 import client
@@ -58,7 +60,8 @@ class FakeClient(fakes.FakeClient, client.Client):
                                'project_id', 'auth_url',
                                extensions=kwargs.get('extensions'),
                                direct_use=False)
-        self.api_version = api_version
+        self.api_version = api_version or api_versions.APIVersion("2.1")
+        kwargs["api_version"] = self.api_version
         self.client = FakeHTTPClient(**kwargs)
 
 
@@ -91,6 +94,7 @@ class FakeHTTPClient(base_client.HTTPClient):
         self.http_log_debug = 'http_log_debug'
         self.last_request_id = None
         self.management_url = self.get_endpoint()
+        self.api_version = kwargs.get("api_version")
 
     def _cs_request(self, url, method, **kwargs):
         # Check that certain things are called correctly
@@ -2367,21 +2371,26 @@ class FakeHTTPClient(base_client.HTTPClient):
         return self.get_os_cells_capacities()
 
     def get_os_migrations(self, **kw):
-        migrations = {'migrations': [
-            {
-                "created_at": "2012-10-29T13:42:02.000000",
-                "dest_compute": "compute2",
-                "dest_host": "1.2.3.4",
-                "dest_node": "node2",
-                "id": 1234,
-                "instance_uuid": "instance_id_123",
-                "new_instance_type_id": 2,
-                "old_instance_type_id": 1,
-                "source_compute": "compute1",
-                "source_node": "node1",
-                "status": "Done",
-                "updated_at": "2012-10-29T13:42:02.000000"
-            }]}
+        migration = {
+            "created_at": "2012-10-29T13:42:02.000000",
+            "dest_compute": "compute2",
+            "dest_host": "1.2.3.4",
+            "dest_node": "node2",
+            "id": 1234,
+            "instance_uuid": "instance_id_123",
+            "new_instance_type_id": 2,
+            "old_instance_type_id": 1,
+            "source_compute": "compute1",
+            "source_node": "node1",
+            "status": "Done",
+            "updated_at": "2012-10-29T13:42:02.000000"
+        }
+
+        if self.api_version >= api_versions.APIVersion("2.23"):
+            migration.update({"migration_type": "live-migration"})
+
+        migrations = {'migrations': [migration]}
+
         return (200, FAKE_RESPONSE_HEADERS, migrations)
 
     def post_os_server_external_events(self, **kw):
@@ -2435,6 +2444,57 @@ class FakeHTTPClient(base_client.HTTPClient):
     def post_servers_1234_migrations_1_action(self, body):
         return (202, {}, None)
 
+    def get_servers_1234_migrations_1(self, **kw):
+        # TODO(Shaohe Feng) this condition check can be a decorator
+        if self.api_version < api_versions.APIVersion("2.23"):
+            raise exceptions.UnsupportedVersion(_("Unsupport version %s")
+                                                % self.api_version)
+        migration = {"migration": {
+            "created_at": "2016-01-29T13:42:02.000000",
+            "dest_compute": "compute2",
+            "dest_host": "1.2.3.4",
+            "dest_node": "node2",
+            "id": 1,
+            "server_uuid": "4cfba335-03d8-49b2-8c52-e69043d1e8fe",
+            "source_compute": "compute1",
+            "source_node": "node1",
+            "status": "running",
+            "memory_total_bytes": 123456,
+            "memory_processed_bytes": 12345,
+            "memory_remaining_bytes": 120000,
+            "disk_total_bytes": 234567,
+            "disk_processed_bytes": 23456,
+            "disk_remaining_bytes": 230000,
+            "updated_at": "2016-01-29T13:42:02.000000"
+        }}
+        return (200, FAKE_RESPONSE_HEADERS, migration)
+
+    def get_servers_1234_migrations(self, **kw):
+        # TODO(Shaohe Feng) this condition check can be a decorator
+        if self.api_version < api_versions.APIVersion("2.23"):
+            raise exceptions.UnsupportedVersion(_("Unsupport version %s")
+                                                % self.api_version)
+        migrations = {'migrations': [
+            {
+                "created_at": "2016-01-29T13:42:02.000000",
+                "dest_compute": "compute2",
+                "dest_host": "1.2.3.4",
+                "dest_node": "node2",
+                "id": 1,
+                "server_uuid": "4cfba335-03d8-49b2-8c52-e69043d1e8fe",
+                "source_compute": "compute1",
+                "source_node": "node1",
+                "status": "running",
+                "memory_total_bytes": 123456,
+                "memory_processed_bytes": 12345,
+                "memory_remaining_bytes": 120000,
+                "disk_total_bytes": 234567,
+                "disk_processed_bytes": 23456,
+                "disk_remaining_bytes": 230000,
+                "updated_at": "2016-01-29T13:42:02.000000"
+            }]}
+        return (200, FAKE_RESPONSE_HEADERS, migrations)
+
 
 class FakeSessionClient(fakes.FakeClient, client.Client):
 
@@ -2443,6 +2503,7 @@ class FakeSessionClient(fakes.FakeClient, client.Client):
                                'project_id', 'auth_url',
                                extensions=kwargs.get('extensions'),
                                api_version=api_version, direct_use=False)
+        kwargs['api_version'] = api_version
         self.client = FakeSessionMockClient(**kwargs)
 
 
@@ -2461,7 +2522,7 @@ class FakeSessionMockClient(base_client.SessionClient, FakeHTTPClient):
         self.interface = None
         self.region_name = None
         self.version = None
-
+        self.api_version = kwargs.get('api_version')
         self.auth.get_auth_ref.return_value.project_id = 'tenant_id'
 
     def request(self, url, method, **kwargs):

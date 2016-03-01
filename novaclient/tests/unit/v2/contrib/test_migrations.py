@@ -10,6 +10,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from novaclient import api_versions
 from novaclient import extension
 from novaclient.tests.unit import utils
 from novaclient.tests.unit.v2 import fakes
@@ -30,6 +31,17 @@ class MigrationsTest(utils.TestCase):
         cs.assert_called('GET', '/os-migrations')
         for m in ml:
             self.assertIsInstance(m, migrations.Migration)
+            self.assertRaises(AttributeError, getattr, m, "migration_type")
+
+    def test_list_migrations_v223(self):
+        cs = fakes.FakeClient(extensions=extensions,
+                              api_version=api_versions.APIVersion("2.23"))
+        ml = cs.migrations.list()
+        self.assert_request_id(ml, fakes.FAKE_REQUEST_ID_LIST)
+        cs.assert_called('GET', '/os-migrations')
+        for m in ml:
+            self.assertIsInstance(m, migrations.Migration)
+            self.assertEqual(m.migration_type, 'live-migration')
 
     def test_list_migrations_with_filters(self):
         ml = cs.migrations.list('host1', 'finished', 'child1')
