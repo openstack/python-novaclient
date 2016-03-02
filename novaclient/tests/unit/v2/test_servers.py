@@ -597,28 +597,28 @@ class ServersTest(utils.FixturedTestCase):
 
     def test_stop(self):
         s = self.cs.servers.get(1234)
-        resp, ret = s.stop()
+        ret = s.stop()
         self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
-        resp, ret = self.cs.servers.stop(s)
+        ret = self.cs.servers.stop(s)
         self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
 
     def test_force_delete(self):
         s = self.cs.servers.get(1234)
-        resp, ret = s.force_delete()
+        ret = s.force_delete()
         self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
-        resp, ret = self.cs.servers.force_delete(s)
+        ret = self.cs.servers.force_delete(s)
         self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
 
     def test_restore(self):
         s = self.cs.servers.get(1234)
-        resp, ret = s.restore()
+        ret = s.restore()
         self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
-        resp, ret = self.cs.servers.restore(s)
+        ret = self.cs.servers.restore(s)
         self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
 
@@ -633,31 +633,31 @@ class ServersTest(utils.FixturedTestCase):
 
     def test_rescue(self):
         s = self.cs.servers.get(1234)
-        resp, ret = s.rescue()
+        ret = s.rescue()
         self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
-        resp, ret = self.cs.servers.rescue(s)
+        ret = self.cs.servers.rescue(s)
         self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
 
     def test_rescue_password(self):
         s = self.cs.servers.get(1234)
-        resp, ret = s.rescue(password='asdf')
+        ret = s.rescue(password='asdf')
         self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action',
                            {'rescue': {'adminPass': 'asdf'}})
-        resp, ret = self.cs.servers.rescue(s, password='asdf')
+        ret = self.cs.servers.rescue(s, password='asdf')
         self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action',
                            {'rescue': {'adminPass': 'asdf'}})
 
     def test_rescue_image(self):
         s = self.cs.servers.get(1234)
-        resp, ret = s.rescue(image=1)
+        ret = s.rescue(image=1)
         self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action',
                            {'rescue': {'rescue_image_ref': 1}})
-        resp, ret = self.cs.servers.rescue(s, image=1)
+        ret = self.cs.servers.rescue(s, image=1)
         self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action',
                            {'rescue': {'rescue_image_ref': 1}})
@@ -768,18 +768,18 @@ class ServersTest(utils.FixturedTestCase):
 
     def test_get_server_diagnostics(self):
         s = self.cs.servers.get(1234)
-        resp, diagnostics = s.diagnostics()
+        diagnostics = s.diagnostics()
         self.assert_request_id(diagnostics, fakes.FAKE_REQUEST_ID_LIST)
         self.assertIsNotNone(diagnostics)
         self.assert_called('GET', '/servers/1234/diagnostics')
 
-        resp, diagnostics_from_manager = self.cs.servers.diagnostics(1234)
+        diagnostics_from_manager = self.cs.servers.diagnostics(1234)
         self.assert_request_id(diagnostics_from_manager,
                                fakes.FAKE_REQUEST_ID_LIST)
         self.assertIsNotNone(diagnostics_from_manager)
         self.assert_called('GET', '/servers/1234/diagnostics')
 
-        self.assertEqual(diagnostics, diagnostics_from_manager)
+        self.assertEqual(diagnostics[1], diagnostics_from_manager[1])
 
     def test_get_vnc_console(self):
         s = self.cs.servers.get(1234)
@@ -908,11 +908,11 @@ class ServersTest(utils.FixturedTestCase):
 
     def test_evacuate(self):
         s = self.cs.servers.get(1234)
-        resp, ret = s.evacuate('fake_target_host', 'True')
+        ret = s.evacuate('fake_target_host', 'True')
         self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
-        resp, ret = self.cs.servers.evacuate(s, 'fake_target_host',
-                                             'False', 'NewAdminPassword')
+        ret = self.cs.servers.evacuate(s, 'fake_target_host',
+                                          'False', 'NewAdminPassword')
         self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
 

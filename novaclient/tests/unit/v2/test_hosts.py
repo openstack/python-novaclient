@@ -73,21 +73,21 @@ class HostsTest(utils.FixturedTestCase):
 
     def test_host_startup(self):
         host = self.cs.hosts.get('sample_host')[0]
-        resp, result = host.startup()
+        result = host.startup()
         self.assert_request_id(result, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called(
             'GET', '/os-hosts/sample_host/startup')
 
     def test_host_reboot(self):
         host = self.cs.hosts.get('sample_host')[0]
-        resp, result = host.reboot()
+        result = host.reboot()
         self.assert_request_id(result, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called(
             'GET', '/os-hosts/sample_host/reboot')
 
     def test_host_shutdown(self):
         host = self.cs.hosts.get('sample_host')[0]
-        resp, result = host.shutdown()
+        result = host.shutdown()
         self.assert_request_id(result, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called(
             'GET', '/os-hosts/sample_host/shutdown')
