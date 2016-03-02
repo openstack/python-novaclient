@@ -710,9 +710,6 @@ class FakeHTTPClient(base_client.HTTPClient):
             assert list(body[action]) == ['adminPass']
         elif action in cls.type_actions:
             assert list(body[action]) == ['type']
-        elif action == 'os-migrateLive':
-            assert set(body[action].keys()) == set(['host', 'block_migration',
-                                                    'disk_over_commit'])
         elif action == 'os-resetState':
             assert list(body[action]) == ['state']
         elif action == 'resetNetwork':
@@ -741,6 +738,14 @@ class FakeHTTPClient(base_client.HTTPClient):
             # if we found 'action' in method check_server_actions and
             # raise AssertionError if we didn't find 'action' at all.
             pass
+        elif action == 'os-migrateLive':
+            if self.api_version < api_versions.APIVersion("2.25"):
+                assert set(body[action].keys()) == set(['host',
+                                                        'block_migration',
+                                                        'disk_over_commit'])
+            else:
+                assert set(body[action].keys()) == set(['host',
+                                                        'block_migration'])
         elif action == 'rebuild':
             body = body[action]
             adminPass = body.get('adminPass', 'randompassword')

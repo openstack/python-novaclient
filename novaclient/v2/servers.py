@@ -408,19 +408,42 @@ class Server(base.Resource):
             return {}
 
     def live_migrate(self, host=None,
-                     block_migration=False,
-                     disk_over_commit=False):
+                     block_migration=None,
+                     disk_over_commit=None):
         """
         Migrates a running instance to a new machine.
 
         :param host: destination host name.
-        :param block_migration: if True, do block_migration.
-        :param disk_over_commit: if True, Allow overcommit.
+        :param block_migration: if True, do block_migration, the default
+                                value None will be mapped to False for 2.0 -
+                                2.24, 'auto' for higher than 2.25
+        :param disk_over_commit: if True, allow disk over commit, the default
+                                 value None will be mapped to False. It will
+                                 not be supported since 2.25
         :returns: An instance of novaclient.base.TupleWithMeta
         """
-        return self.manager.live_migrate(self, host,
-                                         block_migration,
-                                         disk_over_commit)
+
+        if (self.manager.api_version < api_versions.APIVersion("2.25")):
+            # NOTE(eliqiao): We do this to keep old version api has same
+            # default value if user don't pass these parameters when using
+            # SDK
+            if block_migration is None:
+                block_migration = False
+            if disk_over_commit is None:
+                disk_over_commit = False
+
+            return self.manager.live_migrate(self, host,
+                                             block_migration,
+                                             disk_over_commit)
+        else:
+            if block_migration is None:
+                block_migration = 'auto'
+            if disk_over_commit is not None:
+                raise ValueError("Setting 'disk_over_commit' argument is "
+                                 "prohibited after microversion 2.25.")
+
+            return self.manager.live_migrate(self, host,
+                                             block_migration)
 
     def reset_state(self, state='error'):
         """
@@ -1487,6 +1510,7 @@ class ServerManager(base.BootingManagerWithFind):
 
         return result
 
+    @api_versions.wraps('2.0', '2.24')
     def live_migrate(self, server, host, block_migration, disk_over_commit):
         """
         Migrates a running instance to a new machine.
@@ -1494,13 +1518,28 @@ class ServerManager(base.BootingManagerWithFind):
         :param server: instance id which comes from nova list.
         :param host: destination host name.
         :param block_migration: if True, do block_migration.
-        :param disk_over_commit: if True, Allow overcommit.
+        :param disk_over_commit: if True, allow disk overcommit.
         :returns: An instance of novaclient.base.TupleWithMeta
         """
         return self._action('os-migrateLive', server,
                             {'host': host,
                              'block_migration': block_migration,
                              'disk_over_commit': disk_over_commit})
+
+    @api_versions.wraps('2.25')
+    def live_migrate(self, server, host, block_migration):
+        """
+        Migrates a running instance to a new machine.
+
+        :param server: instance id which comes from nova list.
+        :param host: destination host name.
+        :param block_migration: if True, do block_migration, can be set as
+                                'auto'
+        :returns: An instance of novaclient.base.TupleWithMeta
+        """
+        return self._action('os-migrateLive', server,
+                            {'host': host,
+                             'block_migration': block_migration})
 
     def reset_state(self, server, state='error'):
         """
