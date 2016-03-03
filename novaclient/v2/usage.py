@@ -15,6 +15,8 @@
 Usage interface.
 """
 
+import oslo_utils
+
 from novaclient import base
 
 
@@ -24,6 +26,19 @@ class Usage(base.Resource):
     """
     def __repr__(self):
         return "<ComputeUsage>"
+
+    def get(self):
+        fmt = '%Y-%m-%dT%H:%M:%S.%f'
+        if self.start and self.stop and self.tenant_id:
+            # set_loaded() first ... so if we have to bail, we know we tried.
+            self.set_loaded(True)
+            start = oslo_utils.timeutils.parse_strtime(self.start, fmt=fmt)
+            stop = oslo_utils.timeutils.parse_strtime(self.stop, fmt=fmt)
+
+            new = self.manager.get(self.tenant_id, start, stop)
+            if new:
+                self._add_details(new._info)
+                self.append_request_ids(new.request_ids)
 
 
 class UsageManager(base.ManagerWithFind):
