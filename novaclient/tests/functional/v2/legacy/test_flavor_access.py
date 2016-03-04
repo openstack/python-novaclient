@@ -54,13 +54,11 @@ class TestFlvAccessNovaClient(base.TenantTestBase):
         # For microversion < 2.7 the 'flavor-access-add' operation is executed
         # successfully for public flavor, but the next operation,
         # 'flavor-access-list --flavor %(name_of_public_flavor)' returns
-        # CommandError: Failed to get access list for public flavor type.
+        # a CommandError
         flv_name = self.name_generate(prefix='flv')
         self.nova('flavor-create %s auto 512 1 1' % flv_name)
         self.addCleanup(self.nova, 'flavor-delete %s' % flv_name)
         self.nova('flavor-access-add %s %s' % (flv_name, self.tenant_id))
         output = self.nova('flavor-access-list --flavor %s' % flv_name,
                            fail_ok=True, merge_stderr=True)
-        self.assertIn("ERROR (CommandError): "
-                      "Failed to get access list for public flavor type.\n",
-                      output)
+        self.assertIn("CommandError", output)

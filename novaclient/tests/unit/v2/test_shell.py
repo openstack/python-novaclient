@@ -851,6 +851,10 @@ class ShellTest(utils.TestCase):
         cmd = 'flavor-access-list'
         self.assertRaises(exceptions.CommandError, self.run_command, cmd)
 
+    def test_flavor_access_list_public(self):
+        cmd = 'flavor-access-list --flavor 1'
+        self.assertRaises(exceptions.CommandError, self.run_command, cmd)
+
     def test_flavor_access_add_by_id(self):
         self.run_command('flavor-access-add 2 proj2')
         self.assert_called('POST', '/flavors/2/action',
