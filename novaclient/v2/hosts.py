@@ -73,7 +73,7 @@ class HostManager(base.ManagerWithFind):
         Perform an action on a host.
 
         :param host: The host to perform an action
-        :param actiob: The action to perform
+        :param action: The action to perform
         returns: An instance of novaclient.base.TupleWithMeta
         """
         url = '/os-hosts/{0}/{1}'.format(host, action)
