@@ -51,8 +51,6 @@ class TestTriggerCrashDumpNovaClientV217(base.TenantTestBase):
         self.wait_for_server_os_boot(server.id)
         self.nova('trigger-crash-dump %s ' % server.id)
         self._wait_for_nmi(server.id)
-        output = self.nova('console-log %s ' % server.id)
-        self.assertIn("Uhhuh. NMI received for unknown reason ", output)
 
     def test_trigger_crash_dump_in_error_state(self):
         server = self._create_server()
@@ -63,8 +61,6 @@ class TestTriggerCrashDumpNovaClientV217(base.TenantTestBase):
             'active', ['error'])
         self.nova('trigger-crash-dump %s ' % server.id)
         self._wait_for_nmi(server.id)
-        output = self.nova('console-log %s ' % server.id)
-        self.assertIn("Uhhuh. NMI received for unknown reason ", output)
 
     def test_trigger_crash_dump_in_paused_state(self):
         server = self._create_server()
@@ -75,9 +71,6 @@ class TestTriggerCrashDumpNovaClientV217(base.TenantTestBase):
             'active', ['paused'])
         self.nova('trigger-crash-dump %s ' % server.id)
         self._wait_for_nmi(server.id)
-        output = self.nova('console-log %s ' % server.id)
-        # In PAUSED state a server's kernel shouldn't react onto NMI
-        self.assertNotIn("Uhhuh. NMI received for unknown reason ", output)
 
     def test_trigger_crash_dump_in_rescued_state(self):
         server = self._create_server()
@@ -89,8 +82,6 @@ class TestTriggerCrashDumpNovaClientV217(base.TenantTestBase):
         self.wait_for_server_os_boot(server.id)
         self.nova('trigger-crash-dump %s ' % server.id)
         self._wait_for_nmi(server.id)
-        output = self.nova('console-log %s ' % server.id)
-        self.assertIn("Uhhuh. NMI received for unknown reason ", output)
 
     def test_trigger_crash_dump_in_resized_state(self):
         server = self._create_server()
@@ -101,8 +92,6 @@ class TestTriggerCrashDumpNovaClientV217(base.TenantTestBase):
             'active', ['verify_resize'])
         self.nova('trigger-crash-dump %s ' % server.id)
         self._wait_for_nmi(server.id)
-        output = self.nova('console-log %s ' % server.id)
-        self.assertIn("Uhhuh. NMI received for unknown reason ", output)
 
     def test_trigger_crash_dump_in_shutoff_state(self):
         server = self._create_server()
@@ -126,8 +115,6 @@ class TestTriggerCrashDumpNovaClientV217(base.TenantTestBase):
         self.nova('lock %s ' % server.id)
         self.nova('trigger-crash-dump %s ' % server.id)
         self._wait_for_nmi(server.id)
-        output = self.nova('console-log %s ' % server.id)
-        self.assertIn("Uhhuh. NMI received for unknown reason ", output)
 
     def test_trigger_crash_dump_in_locked_state_nonadmin(self):
         name = self.name_generate(prefix='server')
