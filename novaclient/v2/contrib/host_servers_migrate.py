@@ -38,7 +38,9 @@ def _server_migrate(cs, server):
 
 @utils.arg('host', metavar='<host>', help='Name of host.')
 def do_host_servers_migrate(cs, args):
-    """Migrate all instances of the specified host to other available hosts."""
+    """Cold migrate all instances off the specified host to other available
+    hosts.
+    """
     hypervisors = cs.hypervisors.search(args.host, servers=True)
     response = []
     for hyper in hypervisors:
