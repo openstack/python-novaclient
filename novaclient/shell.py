@@ -211,20 +211,6 @@ class DeprecatedAction(argparse.Action):
             action(parser, namespace, values, option_string)
 
 
-def positive_non_zero_float(text):
-    if text is None:
-        return None
-    try:
-        value = float(text)
-    except ValueError:
-        msg = _("%s must be a float") % text
-        raise argparse.ArgumentTypeError(msg)
-    if value <= 0:
-        msg = _("%s must be greater than 0") % text
-        raise argparse.ArgumentTypeError(msg)
-    return value
-
-
 class SecretsHelper(object):
     def __init__(self, args, client):
         self.args = args
