@@ -21,7 +21,6 @@ from novaclient import api_versions
 from novaclient import base
 from novaclient import exceptions
 from novaclient.i18n import _
-from novaclient.openstack.common import cliutils
 from novaclient import utils
 
 
@@ -62,18 +61,18 @@ def _find_server(cs, args):
         return args.server
 
 
-@cliutils.arg(
+@utils.arg(
     'server',
     metavar='<server>',
     help=_('Name or UUID of the server to show actions for.'),
     start_version="2.0", end_version="2.20")
-@cliutils.arg(
+@utils.arg(
     'server',
     metavar='<server>',
     help=_('Name or UUID of the server to show actions for. Only UUID can be '
            'used to show actions for a deleted server.'),
     start_version="2.21")
-@cliutils.arg(
+@utils.arg(
     'request_id',
     metavar='<request_id>',
     help=_('Request ID of the action to get.'))
@@ -87,12 +86,12 @@ def do_instance_action(cs, args):
     utils.print_dict(action)
 
 
-@cliutils.arg(
+@utils.arg(
     'server',
     metavar='<server>',
     help=_('Name or UUID of the server to list actions for.'),
     start_version="2.0", end_version="2.20")
-@cliutils.arg(
+@utils.arg(
     'server',
     metavar='<server>',
     help=_('Name or UUID of the server to list actions for. Only UUID can be '

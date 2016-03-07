@@ -15,7 +15,6 @@
 
 from novaclient import base
 from novaclient.i18n import _
-from novaclient.openstack.common import cliutils
 from novaclient import utils
 
 
@@ -38,14 +37,14 @@ def _server_evacuate(cs, server, args):
                                  "error_message": error_message})
 
 
-@cliutils.arg('host', metavar='<host>', help='Name of host.')
-@cliutils.arg(
+@utils.arg('host', metavar='<host>', help='Name of host.')
+@utils.arg(
     '--target_host',
     metavar='<target_host>',
     default=None,
     help=_('Name of target host. If no host is specified the scheduler will '
            'select a target.'))
-@cliutils.arg(
+@utils.arg(
     '--on-shared-storage',
     dest='on_shared_storage',
     action="store_true",

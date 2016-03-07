@@ -46,7 +46,6 @@ from novaclient import client
 from novaclient import exceptions as exc
 import novaclient.extension
 from novaclient.i18n import _
-from novaclient.openstack.common import cliutils
 from novaclient import utils
 
 DEFAULT_MAJOR_OS_COMPUTE_API_VERSION = "2.0"
@@ -1042,7 +1041,7 @@ class OpenStackComputeShell(object):
         commands.remove('bash_completion')
         print(' '.join(commands | options))
 
-    @cliutils.arg(
+    @utils.arg(
         'command',
         metavar='<subcommand>',
         nargs='?',

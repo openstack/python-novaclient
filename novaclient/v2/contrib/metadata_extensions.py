@@ -14,20 +14,20 @@
 #    under the License.
 
 from novaclient.i18n import _
-from novaclient.openstack.common import cliutils
+from novaclient import utils
 from novaclient.v2 import shell
 
 
-@cliutils.arg(
+@utils.arg(
     'host',
     metavar='<host>',
     help=_('Name of host.'))
-@cliutils.arg(
+@utils.arg(
     'action',
     metavar='<action>',
     choices=['set', 'delete'],
     help=_("Actions: 'set' or 'delete'"))
-@cliutils.arg(
+@utils.arg(
     'metadata',
     metavar='<key=value>',
     nargs='+',
