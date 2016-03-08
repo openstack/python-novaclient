@@ -34,8 +34,7 @@ class TestTriggerCrashDumpNovaClientV217(base.TenantTestBase):
     # The server status must be ACTIVE, PAUSED, RESCUED, RESIZED or ERROR.
     # If not, the conflictingRequest(409) code is returned
 
-    def _wait_for_nmi(self, server_id, timeout=60,
-                      poll_interval=1):
+    def _assert_nmi(self, server_id, timeout=60, poll_interval=1):
         start_time = time.time()
         while time.time() - start_time < timeout:
             if 'trigger_crash_dump' in self.nova('instance-action-list %s ' %
@@ -44,13 +43,13 @@ class TestTriggerCrashDumpNovaClientV217(base.TenantTestBase):
             time.sleep(poll_interval)
         else:
             self.fail("Trigger crash dump hasn't been executed for server %s"
-                      % (server_id, timeout))
+                      % server_id)
 
     def test_trigger_crash_dump_in_active_state(self):
         server = self._create_server()
         self.wait_for_server_os_boot(server.id)
         self.nova('trigger-crash-dump %s ' % server.id)
-        self._wait_for_nmi(server.id)
+        self._assert_nmi(server.id)
 
     def test_trigger_crash_dump_in_error_state(self):
         server = self._create_server()
@@ -60,7 +59,7 @@ class TestTriggerCrashDumpNovaClientV217(base.TenantTestBase):
             self.client.servers.get, server.id,
             'active', ['error'])
         self.nova('trigger-crash-dump %s ' % server.id)
-        self._wait_for_nmi(server.id)
+        self._assert_nmi(server.id)
 
     def test_trigger_crash_dump_in_paused_state(self):
         server = self._create_server()
@@ -70,7 +69,7 @@ class TestTriggerCrashDumpNovaClientV217(base.TenantTestBase):
             self.client.servers.get, server.id,
             'active', ['paused'])
         self.nova('trigger-crash-dump %s ' % server.id)
-        self._wait_for_nmi(server.id)
+        self._assert_nmi(server.id)
 
     def test_trigger_crash_dump_in_rescued_state(self):
         server = self._create_server()
@@ -81,7 +80,7 @@ class TestTriggerCrashDumpNovaClientV217(base.TenantTestBase):
             'active', ['rescue'])
         self.wait_for_server_os_boot(server.id)
         self.nova('trigger-crash-dump %s ' % server.id)
-        self._wait_for_nmi(server.id)
+        self._assert_nmi(server.id)
 
     def test_trigger_crash_dump_in_resized_state(self):
         server = self._create_server()
@@ -91,7 +90,7 @@ class TestTriggerCrashDumpNovaClientV217(base.TenantTestBase):
             self.client.servers.get, server.id,
             'active', ['verify_resize'])
         self.nova('trigger-crash-dump %s ' % server.id)
-        self._wait_for_nmi(server.id)
+        self._assert_nmi(server.id)
 
     def test_trigger_crash_dump_in_shutoff_state(self):
         server = self._create_server()
@@ -114,7 +113,7 @@ class TestTriggerCrashDumpNovaClientV217(base.TenantTestBase):
         self.wait_for_server_os_boot(server.id)
         self.nova('lock %s ' % server.id)
         self.nova('trigger-crash-dump %s ' % server.id)
-        self._wait_for_nmi(server.id)
+        self._assert_nmi(server.id)
 
     def test_trigger_crash_dump_in_locked_state_nonadmin(self):
         name = self.name_generate(prefix='server')
