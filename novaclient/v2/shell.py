@@ -881,8 +881,8 @@ def do_flavor_access_list(cs, args):
     elif args.flavor:
         flavor = _find_flavor(cs, args.flavor)
         if flavor.is_public:
-            raise exceptions.CommandError(_("Failed to get access list "
-                                            "for public flavor type."))
+            raise exceptions.CommandError(_("Access list not available "
+                                            "for public flavors."))
         kwargs = {'flavor': flavor}
     elif args.tenant:
         kwargs = {'tenant': args.tenant}
