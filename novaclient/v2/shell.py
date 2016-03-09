@@ -2721,7 +2721,7 @@ def _disassociate_floating_ip(cs, args):
 @utils.arg(
     'secgroup',
     metavar='<secgroup>',
-    help=_('Name of Security Group.'))
+    help=_('Name or ID of Security Group.'))
 def do_add_secgroup(cs, args):
     """Add a Security Group to a server."""
     server = _find_server(cs, args.server)
