@@ -42,17 +42,18 @@ class ClientConnectionPoolTest(utils.TestCase):
 class ClientTest(utils.TestCase):
 
     def test_client_with_timeout(self):
+        auth_url = "http://example.com"
         instance = novaclient.client.HTTPClient(user='user',
                                                 password='password',
                                                 projectid='project',
                                                 timeout=2,
-                                                auth_url="http://www.blah.com")
+                                                auth_url=auth_url)
         self.assertEqual(2, instance.timeout)
         mock_request = mock.Mock()
         mock_request.return_value = requests.Response()
         mock_request.return_value.status_code = 200
         mock_request.return_value.headers = {
-            'x-server-management-url': 'blah.com',
+            'x-server-management-url': 'example.com',
             'x-auth-token': 'blah',
         }
         with mock.patch('requests.request', mock_request):
@@ -62,14 +63,16 @@ class ClientTest(utils.TestCase):
                 verify=mock.ANY)
 
     def test_client_reauth(self):
+        auth_url = "http://www.example.com"
         instance = novaclient.client.HTTPClient(user='user',
                                                 password='password',
                                                 projectid='project',
                                                 timeout=2,
-                                                auth_url="http://www.blah.com")
+                                                auth_url=auth_url)
         instance.auth_token = 'foobar'
-        instance.management_url = 'http://example.com'
-        instance.get_service_url = mock.Mock(return_value='http://example.com')
+        mgmt_url = "http://mgmt.example.com"
+        instance.management_url = mgmt_url
+        instance.get_service_url = mock.Mock(return_value=mgmt_url)
         instance.version = 'v2.0'
         mock_request = mock.Mock()
         mock_request.side_effect = novaclient.exceptions.Unauthorized(401)
@@ -96,11 +99,11 @@ class ClientTest(utils.TestCase):
             }
 
             expected = [mock.call('GET',
-                                  'http://example.com/servers/detail',
+                                  'http://mgmt.example.com/servers/detail',
                                   timeout=mock.ANY,
                                   headers=get_headers,
                                   verify=mock.ANY),
-                        mock.call('POST', 'http://www.blah.com/tokens',
+                        mock.call('POST', 'http://www.example.com/tokens',
                                   timeout=mock.ANY,
                                   headers=reauth_headers,
                                   allow_redirects=mock.ANY,
@@ -114,10 +117,11 @@ class ClientTest(utils.TestCase):
                        return_value=(200, "{'versions':[]}"))
     def _check_version_url(self, management_url, version_url, mock_request):
         projectid = '25e469aa1848471b875e68cde6531bc5'
+        auth_url = "http://example.com"
         instance = novaclient.client.HTTPClient(user='user',
                                                 password='password',
                                                 projectid=projectid,
-                                                auth_url="http://www.blah.com")
+                                                auth_url=auth_url)
         instance.auth_token = 'foobar'
         instance.management_url = management_url % projectid
         mock_get_service_url = mock.Mock(return_value=instance.management_url)
@@ -137,17 +141,20 @@ class ClientTest(utils.TestCase):
         mock_request.assert_called_once_with(url, 'GET', headers=mock.ANY)
 
     def test_client_version_url(self):
-        self._check_version_url('http://foo.com/v2/%s', 'http://foo.com/')
-        self._check_version_url('http://foo.com/v2.1/%s', 'http://foo.com/')
-        self._check_version_url('http://foo.com/v3.785/%s', 'http://foo.com/')
+        self._check_version_url('http://example.com/v2/%s',
+                                'http://example.com/')
+        self._check_version_url('http://example.com/v2.1/%s',
+                                'http://example.com/')
+        self._check_version_url('http://example.com/v3.785/%s',
+                                'http://example.com/')
 
     def test_client_version_url_with_project_name(self):
-        self._check_version_url('http://foo.com/nova/v2/%s',
-                                'http://foo.com/nova/')
-        self._check_version_url('http://foo.com/nova/v2.1/%s',
-                                'http://foo.com/nova/')
-        self._check_version_url('http://foo.com/nova/v3.785/%s',
-                                'http://foo.com/nova/')
+        self._check_version_url('http://example.com/nova/v2/%s',
+                                'http://example.com/nova/')
+        self._check_version_url('http://example.com/nova/v2.1/%s',
+                                'http://example.com/nova/')
+        self._check_version_url('http://example.com/nova/v3.785/%s',
+                                'http://example.com/nova/')
 
     def test_get_client_class_v2(self):
         output = novaclient.client.get_client_class('2')
@@ -315,7 +322,7 @@ class ClientTest(utils.TestCase):
 
     def test_get_session(self):
         cs = novaclient.client.HTTPClient("user", None, "", "")
-        self.assertIsNone(cs._get_session("http://nooooooooo.com"))
+        self.assertIsNone(cs._get_session("http://example.com"))
 
     @mock.patch("novaclient.client.requests.Session")
     def test_get_session_open_session(self, mock_session):
@@ -328,14 +335,14 @@ class ClientTest(utils.TestCase):
     @mock.patch("novaclient.client.requests.Session")
     @mock.patch("novaclient.client._ClientConnectionPool")
     def test_get_session_connection_pool(self, mock_pool, mock_session):
-        service_url = "http://example.com"
+        service_url = "http://service.example.com"
 
         pool = mock.MagicMock()
         pool.get.return_value = "http_adapter"
         mock_pool.return_value = pool
         cs = novaclient.client.HTTPClient("user", None, "",
                                           "", connection_pool=True)
-        cs._current_url = "http://another.com"
+        cs._current_url = "http://current.example.com"
 
         session = cs._get_session(service_url)
         self.assertEqual(session, mock_session.return_value)
