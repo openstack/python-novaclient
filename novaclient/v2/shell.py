@@ -3779,6 +3779,14 @@ def do_aggregate_remove_host(cs, args):
     'aggregate', metavar='<aggregate>',
     help=_('Name or ID of aggregate.'))
 def do_aggregate_details(cs, args):
+    """DEPRECATED, use aggregate-show instead."""
+    do_aggregate_show(cs, args)
+
+
+@utils.arg(
+    'aggregate', metavar='<aggregate>',
+    help=_('Name or ID of aggregate.'))
+def do_aggregate_show(cs, args):
     """Show details of the specified aggregate."""
     aggregate = _find_aggregate(cs, args.aggregate)
     _print_aggregate_details(aggregate)
