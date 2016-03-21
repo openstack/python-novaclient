@@ -527,6 +527,15 @@ class Server(base.Resource):
         return self.manager.trigger_crash_dump(self)
 
 
+class NetworkInterface(base.Resource):
+    @property
+    def id(self):
+        return self.port_id
+
+    def __repr__(self):
+        return '<NetworkInterface: %s>' % self.id
+
+
 class ServerManager(base.BootingManagerWithFind):
     resource_class = Server
 
@@ -1636,7 +1645,7 @@ class ServerManager(base.BootingManagerWithFind):
         :param server: The :class:`Server` (or its ID) to query.
         """
         return self._list('/servers/%s/os-interface' % base.getid(server),
-                          'interfaceAttachments')
+                          'interfaceAttachments', obj_class=NetworkInterface)
 
     def interface_attach(self, server, port_id, net_id, fixed_ip):
         """
