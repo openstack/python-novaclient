@@ -13,6 +13,7 @@
 import uuid
 
 from novaclient.tests.functional import base
+from oslo_utils import timeutils
 
 
 class TestServersBootNovaClient(base.ClientTestBase):
@@ -83,6 +84,16 @@ class TestServersListNovaClient(base.ClientTestBase):
         # Cut header and footer of the table
         servers = output.split("\n")[3:-2]
         self.assertEqual(1, len(servers), output)
+
+    def test_list_with_changes_since(self):
+        now = timeutils.isotime()
+        name = str(uuid.uuid4())
+        self._create_servers(name, 1)
+        output = self.nova("list", params="--changes-since %s" % now)
+        self.assertIn(name, output, output)
+        now = timeutils.isotime()
+        output = self.nova("list", params="--changes-since %s" % now)
+        self.assertNotIn(name, output, output)
 
     def test_list_all_servers(self):
         name = str(uuid.uuid4())

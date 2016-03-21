@@ -1464,6 +1464,14 @@ def do_image_delete(cs, args):
            "will be displayed. If limit is bigger than 'osapi_max_limit' "
            "option of Nova API, limit 'osapi_max_limit' will be used "
            "instead."))
+@utils.arg(
+    '--changes-since',
+    dest='changes_since',
+    metavar='<changes_since>',
+    default=None,
+    help=_("List only servers changed after a certain point of time."
+           "The provided time should be an ISO 8061 formated time."
+           "ex 2016-03-04T06:27:59Z ."))
 def do_list(cs, args):
     """List active servers."""
     imageid = None
@@ -1488,7 +1496,8 @@ def do_list(cs, args):
         'user_id': args.user,
         'host': args.host,
         'deleted': args.deleted,
-        'instance_name': args.instance_name}
+        'instance_name': args.instance_name,
+        'changes-since': args.changes_since}
 
     filters = {'flavor': lambda f: f['id'],
                'security_groups': utils._format_security_groups}
@@ -1509,6 +1518,13 @@ def do_list(cs, args):
                     'Unknown sort direction: %s') % sort_dir)
             sort_keys.append(sort_key)
             sort_dirs.append(sort_dir)
+
+    if search_opts['changes-since']:
+        try:
+            timeutils.parse_isotime(search_opts['changes-since'])
+        except ValueError:
+            raise exceptions.CommandError(_('Invalid changes-since value: %s')
+                                          % search_opts['changes-since'])
 
     servers = cs.servers.list(detailed=detailed,
                               search_opts=search_opts,
@@ -1560,6 +1576,8 @@ def do_list(cs, args):
         # Tenant ID as well
         if search_opts['all_tenants']:
             columns.insert(2, 'Tenant ID')
+        if search_opts['changes-since']:
+            columns.append('Updated')
     formatters['Networks'] = utils._format_servers_list_networks
     sortby_index = 1
     if args.sort:
