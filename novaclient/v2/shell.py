@@ -126,6 +126,12 @@ def _parse_block_device_mapping_v2(args, image):
         # default for local block devices when not specified.
         if 'delete_on_termination' in bdm_dict:
             action = bdm_dict['delete_on_termination']
+            if action not in ['remove', 'preserve']:
+                raise exceptions.CommandError(
+                    _("The value of shutdown key of --block-device shall be "
+                      "either 'remove' or 'preserve' but it was '%(action)s'")
+                    % {'action': action})
+
             bdm_dict['delete_on_termination'] = (action == 'remove')
         elif bdm_dict.get('destination_type') == 'local':
             bdm_dict['delete_on_termination'] = True

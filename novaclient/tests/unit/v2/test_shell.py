@@ -464,6 +464,13 @@ class ShellTest(utils.TestCase):
             }},
         )
 
+    def test_boot_bdms_v2_invalid_shutdown_value(self):
+        self.assertRaises(exceptions.CommandError, self.run_command,
+                          ('boot --flavor 1 --image 1 --block-device '
+                           'id=fake-id,source=volume,dest=volume,device=vda,'
+                           'size=1,format=ext4,type=disk,shutdown=foobar '
+                           'some-server'))
+
     def test_boot_metadata(self):
         self.run_command('boot --image 1 --flavor 1 --meta foo=bar=pants'
                          ' --meta spam=eggs some-server ')
