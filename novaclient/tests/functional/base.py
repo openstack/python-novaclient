@@ -15,6 +15,7 @@ import time
 import uuid
 
 import fixtures
+from keystoneclient.v2_0 import client as keystoneclient
 import os_client_config
 import six
 import tempest_lib.cli.base
@@ -201,6 +202,11 @@ class ClientTestBase(testtools.TestCase):
             cli_dir=cli_dir,
             insecure=insecure)
 
+        self.keystone = keystoneclient.Client(username=user,
+                                              password=passwd,
+                                              tenant_name=tenant,
+                                              auth_url=auth_url)
+
     def nova(self, action, flags='', params='', fail_ok=False,
              endpoint_type='publicURL', merge_stderr=False):
         if self.COMPUTE_API_VERSION:
@@ -352,27 +358,19 @@ class TenantTestBase(ClientTestBase):
 
     def setUp(self):
         super(TenantTestBase, self).setUp()
-        tenant = self.cli_clients.keystone(
-            'tenant-create --name %s --enabled True' %
+        tenant = self.keystone.tenants.create(
             self.name_generate('v' + self.COMPUTE_API_VERSION))
-        self.tenant_name = self._get_value_from_the_table(tenant, "name")
-        self.tenant_id = self._get_value_from_the_table(
-            self.cli_clients.keystone(
-                'tenant-get %s' % self.tenant_name), 'id')
-        self.addCleanup(self.cli_clients.keystone,
-                        "tenant-delete %s" % self.tenant_name)
+        self.tenant_id = tenant.id
+        self.addCleanup(self.keystone.tenants.delete, self.tenant_id)
         user_name = self.name_generate('v' + self.COMPUTE_API_VERSION)
         password = 'password'
-        user = self.cli_clients.keystone(
-            "user-create --name %(name)s --pass %(pass)s --tenant %(tenant)s" %
-            {"name": user_name, "pass": password, "tenant": self.tenant_name})
-        self.user_id = self._get_value_from_the_table(user, "id")
-        self.addCleanup(self.cli_clients.keystone,
-                        "user-delete %s" % self.user_id)
+        self.user_id = self.keystone.users.create(
+            user_name, password, tenant_id=self.tenant_id).id
+        self.addCleanup(self.keystone.users.delete, self.user_id)
         self.cli_clients_2 = tempest_lib.cli.base.CLIClient(
             username=user_name,
             password=password,
-            tenant_name=self.tenant_name,
+            tenant_name=tenant.name,
             uri=self.cli_clients.uri,
             cli_dir=self.cli_clients.cli_dir)
 
