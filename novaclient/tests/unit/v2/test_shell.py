@@ -1682,6 +1682,14 @@ class ShellTest(utils.TestCase):
         self.run_command('aggregate-details test')
         self.assert_called('GET', '/os-aggregates')
 
+    def test_aggregate_show_by_id(self):
+        self.run_command('aggregate-show 1')
+        self.assert_called('GET', '/os-aggregates/1')
+
+    def test_aggregate_show_by_name(self):
+        self.run_command('aggregate-show test')
+        self.assert_called('GET', '/os-aggregates')
+
     def test_live_migration(self):
         self.run_command('live-migration sample-server hostname')
         self.assert_called('POST', '/servers/1234/action',
