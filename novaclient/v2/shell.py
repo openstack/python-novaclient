@@ -370,14 +370,14 @@ def _boot(cs, args):
     '--image',
     default=None,
     metavar='<image>',
-    help=_("Name or ID of image (see 'nova image-list'). "))
+    help=_("Name or ID of image (see 'glance image-list'). "))
 @utils.arg(
     '--image-with',
     default=[],
     type=_key_value_pairing,
     action='append',
     metavar='<key=value>',
-    help=_("Image metadata property (see 'nova image-show'). "))
+    help=_("Image metadata property (see 'glance image-show'). "))
 @utils.arg(
     '--boot-volume',
     default=None,
