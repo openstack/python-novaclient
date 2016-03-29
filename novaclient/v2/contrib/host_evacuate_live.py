@@ -27,8 +27,13 @@ def _server_live_migrate(cs, server, args):
     success = True
     error_message = ""
     try:
-        cs.servers.live_migrate(server['uuid'], args.target_host,
-                                args.block_migrate, args.disk_over_commit)
+        # API 2.0->2.24
+        if 'disk_over_commit' in args:
+            cs.servers.live_migrate(server['uuid'], args.target_host,
+                                    args.block_migrate, args.disk_over_commit)
+        else:   # API 2.25+
+            cs.servers.live_migrate(server['uuid'], args.target_host,
+                                    args.block_migrate)
     except Exception as e:
         success = False
         error_message = _("Error while live migrating instance: %s") % e
@@ -47,12 +52,20 @@ def _server_live_migrate(cs, server, args):
     '--block-migrate',
     action='store_true',
     default=False,
-    help=_('Enable block migration.'))
+    help=_('Enable block migration. (Default=False)'),
+    start_version="2.0", end_version="2.24")
+@utils.arg(
+    '--block-migrate',
+    action='store_true',
+    default="auto",
+    help=_('Enable block migration. (Default=auto)'),
+    start_version="2.25")
 @utils.arg(
     '--disk-over-commit',
     action='store_true',
     default=False,
-    help=_('Enable disk overcommit.'))
+    help=_('Enable disk overcommit.'),
+    start_version="2.0", end_version="2.24")
 @utils.arg(
     '--max-servers',
     type=int,

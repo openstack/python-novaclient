@@ -1757,6 +1757,15 @@ class ShellTest(utils.TestCase):
         self.assert_called('POST', '/servers/uuid3/action', body, pos=3)
         self.assert_called('POST', '/servers/uuid4/action', body, pos=4)
 
+    def test_host_evacuate_live_2_25(self):
+        self.run_command('host-evacuate-live hyper', api_version='2.25')
+        self.assert_called('GET', '/os-hypervisors/hyper/servers', pos=0)
+        body = {'os-migrateLive': {'host': None, 'block_migration': 'auto'}}
+        self.assert_called('POST', '/servers/uuid1/action', body, pos=1)
+        self.assert_called('POST', '/servers/uuid2/action', body, pos=2)
+        self.assert_called('POST', '/servers/uuid3/action', body, pos=3)
+        self.assert_called('POST', '/servers/uuid4/action', body, pos=4)
+
     def test_host_evacuate_live_with_target_host(self):
         self.run_command('host-evacuate-live hyper '
                          '--target-host hostname')
@@ -1780,6 +1789,16 @@ class ShellTest(utils.TestCase):
         self.assert_called('POST', '/servers/uuid3/action', body, pos=3)
         self.assert_called('POST', '/servers/uuid4/action', body, pos=4)
 
+    def test_host_evacuate_live_with_block_migration_2_25(self):
+        self.run_command('host-evacuate-live --block-migrate hyper',
+                         api_version='2.25')
+        self.assert_called('GET', '/os-hypervisors/hyper/servers', pos=0)
+        body = {'os-migrateLive': {'host': None, 'block_migration': True}}
+        self.assert_called('POST', '/servers/uuid1/action', body, pos=1)
+        self.assert_called('POST', '/servers/uuid2/action', body, pos=2)
+        self.assert_called('POST', '/servers/uuid3/action', body, pos=3)
+        self.assert_called('POST', '/servers/uuid4/action', body, pos=4)
+
     def test_host_evacuate_live_with_disk_over_commit(self):
         self.run_command('host-evacuate-live --disk-over-commit hyper')
         self.assert_called('GET', '/os-hypervisors/hyper/servers', pos=0)
@@ -1790,6 +1809,11 @@ class ShellTest(utils.TestCase):
         self.assert_called('POST', '/servers/uuid2/action', body, pos=2)
         self.assert_called('POST', '/servers/uuid3/action', body, pos=3)
         self.assert_called('POST', '/servers/uuid4/action', body, pos=4)
+
+    def test_host_evacuate_live_with_disk_over_commit_2_25(self):
+        self.assertRaises(SystemExit, self.run_command,
+                          'host-evacuate-live --disk-over-commit hyper',
+                          api_version='2.25')
 
     def test_host_evacuate_list_with_max_servers(self):
         self.run_command('host-evacuate-live --max-servers 1 hyper')
