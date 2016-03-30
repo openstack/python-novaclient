@@ -24,7 +24,6 @@ class ServerGroup(base.Resource):
     """
     A server group.
     """
-    NAME_ATTR = 'server_group_name'
 
     def __repr__(self):
         return '<ServerGroup: %s>' % self.id
