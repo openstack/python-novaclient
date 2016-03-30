@@ -63,6 +63,7 @@ CLIENT_BDM2_KEYS = {
     'bootindex': 'boot_index',
     'type': 'device_type',
     'shutdown': 'delete_on_termination',
+    'tag': 'tag',
 }
 
 
@@ -269,10 +270,10 @@ def _boot(cs, args):
         err_msg = (_("Invalid nic argument '%s'. Nic arguments must be of "
                      "the form --nic <net-id=net-uuid,net-name=network-name,"
                      "v4-fixed-ip=ip-addr,v6-fixed-ip=ip-addr,"
-                     "port-id=port-uuid>, with only one of net-id, net-name "
-                     "or port-id specified.") % nic_str)
+                     "port-id=port-uuid,tag=tag>, with only one of net-id, "
+                     "net-name or port-id specified.") % nic_str)
         nic_info = {"net-id": "", "v4-fixed-ip": "", "v6-fixed-ip": "",
-                    "port-id": "", "net-name": ""}
+                    "port-id": "", "net-name": "", "tag": ""}
 
         for kv_str in nic_str.split(","):
             try:
@@ -438,6 +439,8 @@ def _boot(cs, args):
     metavar="key1=value1[,key2=value2...]",
     action='append',
     default=[],
+    start_version='2.0',
+    end_version='2.31',
     help=_("Block device mapping with the keys: "
            "id=UUID (image_id, snapshot_id or volume_id only if using source "
            "image, snapshot or volume) "
@@ -448,6 +451,35 @@ def _boot(cs, args):
            "honoured only if device type is supplied) "
            "type=device type (e.g. disk, cdrom, ...; defaults to 'disk') "
            "device=name of the device (e.g. vda, xda, ...; "
+           "if omitted, hypervisor driver chooses suitable device "
+           "depending on selected bus; note the libvirt driver always "
+           "uses default device names), "
+           "size=size of the block device in MB(for swap) and in "
+           "GB(for other formats) "
+           "(if omitted, hypervisor driver calculates size), "
+           "format=device will be formatted (e.g. swap, ntfs, ...; optional), "
+           "bootindex=integer used for ordering the boot disks "
+           "(for image backed instances it is equal to 0, "
+           "for others need to be specified) and "
+           "shutdown=shutdown behaviour (either preserve or remove, "
+           "for local destination set to remove)."))
+@utils.arg(
+    '--block-device',
+    metavar="key1=value1[,key2=value2...]",
+    action='append',
+    default=[],
+    start_version='2.32',
+    help=_("Block device mapping with the keys: "
+           "id=UUID (image_id, snapshot_id or volume_id only if using source "
+           "image, snapshot or volume) "
+           "source=source type (image, snapshot, volume or blank), "
+           "dest=destination type of the block device (volume or local), "
+           "bus=device's bus (e.g. uml, lxc, virtio, ...; if omitted, "
+           "hypervisor driver chooses a suitable default, "
+           "honoured only if device type is supplied) "
+           "type=device type (e.g. disk, cdrom, ...; defaults to 'disk') "
+           "device=name of the device (e.g. vda, xda, ...; "
+           "tag=device metadata tag (optional) "
            "if omitted, hypervisor driver chooses suitable device "
            "depending on selected bus; note the libvirt driver always "
            "uses default device names), "
@@ -487,6 +519,8 @@ def _boot(cs, args):
     action='append',
     dest='nics',
     default=[],
+    start_version='2.0',
+    end_version='2.31',
     help=_("Create a NIC on the server. "
            "Specify option multiple times to create multiple NICs. "
            "net-id: attach NIC to network with this UUID "
@@ -495,6 +529,24 @@ def _boot(cs, args):
            "v4-fixed-ip: IPv4 fixed address for NIC (optional), "
            "v6-fixed-ip: IPv6 fixed address for NIC (optional), "
            "port-id: attach NIC to port with this UUID "
+           "(either port-id or net-id must be provided)."))
+@utils.arg(
+    '--nic',
+    metavar="<net-id=net-uuid,net-name=network-name,v4-fixed-ip=ip-addr,"
+            "v6-fixed-ip=ip-addr,port-id=port-uuid>",
+    action='append',
+    dest='nics',
+    default=[],
+    start_version='2.32',
+    help=_("Create a NIC on the server. "
+           "Specify option multiple times to create multiple nics. "
+           "net-id: attach NIC to network with this UUID "
+           "net-name: attach NIC to network with this name "
+           "(either port-id or net-id or net-name must be provided), "
+           "v4-fixed-ip: IPv4 fixed address for NIC (optional), "
+           "v6-fixed-ip: IPv6 fixed address for NIC (optional), "
+           "port-id: attach NIC to port with this UUID "
+           "tag: interface metadata tag (optional) "
            "(either port-id or net-id must be provided)."))
 @utils.arg(
     '--config-drive',

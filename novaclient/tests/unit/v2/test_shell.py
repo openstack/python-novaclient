@@ -343,6 +343,44 @@ class ShellTest(utils.TestCase):
             }},
         )
 
+    def test_boot_image_bdms_v2_with_tag(self):
+        self.run_command(
+            'boot --flavor 1 --image 1 --block-device id=fake-id,'
+            'source=volume,dest=volume,device=vda,size=1,format=ext4,'
+            'type=disk,shutdown=preserve,tag=foo some-server',
+            api_version='2.32'
+        )
+        self.assert_called_anytime(
+            'POST', '/os-volumes_boot',
+            {'server': {
+                'flavorRef': '1',
+                'name': 'some-server',
+                'block_device_mapping_v2': [
+                    {
+                        'uuid': 1,
+                        'source_type': 'image',
+                        'destination_type': 'local',
+                        'boot_index': 0,
+                        'delete_on_termination': True,
+                    },
+                    {
+                        'uuid': 'fake-id',
+                        'source_type': 'volume',
+                        'destination_type': 'volume',
+                        'device_name': 'vda',
+                        'volume_size': '1',
+                        'guest_format': 'ext4',
+                        'device_type': 'disk',
+                        'delete_on_termination': False,
+                        'tag': 'foo',
+                    },
+                ],
+                'imageRef': '1',
+                'min_count': 1,
+                'max_count': 1,
+            }},
+        )
+
     def test_boot_no_image_bdms_v2(self):
         self.run_command(
             'boot --flavor 1 --block-device id=fake-id,source=volume,'
@@ -518,6 +556,26 @@ class ShellTest(utils.TestCase):
                     'max_count': 1,
                     'networks': [
                         {'uuid': 'a=c', 'fixed_ip': '10.0.0.1'},
+                    ],
+                },
+            },
+        )
+
+    def test_boot_nics_with_tag(self):
+        cmd = ('boot --image 1 --flavor 1 '
+               '--nic net-id=a=c,v4-fixed-ip=10.0.0.1,tag=foo some-server')
+        self.run_command(cmd, api_version='2.32')
+        self.assert_called_anytime(
+            'POST', '/servers',
+            {
+                'server': {
+                    'flavorRef': '1',
+                    'name': 'some-server',
+                    'imageRef': '1',
+                    'min_count': 1,
+                    'max_count': 1,
+                    'networks': [
+                        {'uuid': 'a=c', 'fixed_ip': '10.0.0.1', 'tag': 'foo'},
                     ],
                 },
             },
@@ -2864,6 +2922,8 @@ class ShellTest(utils.TestCase):
                  #   not explicitly tested via wraps and _SUBSTITUTIONS.
             28,  # doesn't require any changes in novaclient
             31,  # doesn't require any changes in novaclient
+            32,  # doesn't require separate version-wrapped methods in
+                 # novaclient
         ])
         versions_supported = set(range(0,
                                  novaclient.API_MAX_VERSION.ver_minor + 1))
