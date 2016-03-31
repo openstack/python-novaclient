@@ -19,27 +19,28 @@ from novaclient.tests.unit.v2.contrib import fakes
 from novaclient.v2.contrib import cells
 
 
-extensions = [
-    extension.Extension(cells.__name__.split(".")[-1],
-                        cells),
-]
-cs = fakes.FakeClient(extensions=extensions)
-
-
 class CellsExtensionTests(utils.TestCase):
+    def setUp(self):
+        super(CellsExtensionTests, self).setUp()
+        extensions = [
+            extension.Extension(cells.__name__.split(".")[-1],
+                                cells),
+        ]
+        self.cs = fakes.FakeClient(extensions=extensions)
+
     def test_get_cells(self):
         cell_name = 'child_cell'
-        cell = cs.cells.get(cell_name)
+        cell = self.cs.cells.get(cell_name)
         self.assert_request_id(cell, fakes.FAKE_REQUEST_ID_LIST)
-        cs.assert_called('GET', '/os-cells/%s' % cell_name)
+        self.cs.assert_called('GET', '/os-cells/%s' % cell_name)
 
     def test_get_capacities_for_a_given_cell(self):
         cell_name = 'child_cell'
-        ca = cs.cells.capacities(cell_name)
+        ca = self.cs.cells.capacities(cell_name)
         self.assert_request_id(ca, fakes.FAKE_REQUEST_ID_LIST)
-        cs.assert_called('GET', '/os-cells/%s/capacities' % cell_name)
+        self.cs.assert_called('GET', '/os-cells/%s/capacities' % cell_name)
 
     def test_get_capacities_for_all_cells(self):
-        ca = cs.cells.capacities()
+        ca = self.cs.cells.capacities()
         self.assert_request_id(ca, fakes.FAKE_REQUEST_ID_LIST)
-        cs.assert_called('GET', '/os-cells/capacities')
+        self.cs.assert_called('GET', '/os-cells/capacities')

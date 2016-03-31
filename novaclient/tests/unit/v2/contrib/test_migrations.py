@@ -16,25 +16,26 @@ from novaclient.tests.unit import utils
 from novaclient.tests.unit.v2 import fakes
 from novaclient.v2.contrib import migrations
 
-extensions = [
-    extension.Extension(migrations.__name__.split(".")[-1],
-                        migrations),
-]
-cs = fakes.FakeClient(extensions=extensions)
-
 
 class MigrationsTest(utils.TestCase):
+    def setUp(self):
+        super(MigrationsTest, self).setUp()
+        self.extensions = [
+            extension.Extension(migrations.__name__.split(".")[-1],
+                                migrations),
+        ]
+        self.cs = fakes.FakeClient(extensions=self.extensions)
 
     def test_list_migrations(self):
-        ml = cs.migrations.list()
+        ml = self.cs.migrations.list()
         self.assert_request_id(ml, fakes.FAKE_REQUEST_ID_LIST)
-        cs.assert_called('GET', '/os-migrations')
+        self.cs.assert_called('GET', '/os-migrations')
         for m in ml:
             self.assertIsInstance(m, migrations.Migration)
             self.assertRaises(AttributeError, getattr, m, "migration_type")
 
     def test_list_migrations_v223(self):
-        cs = fakes.FakeClient(extensions=extensions,
+        cs = fakes.FakeClient(extensions=self.extensions,
                               api_version=api_versions.APIVersion("2.23"))
         ml = cs.migrations.list()
         self.assert_request_id(ml, fakes.FAKE_REQUEST_ID_LIST)
@@ -44,11 +45,11 @@ class MigrationsTest(utils.TestCase):
             self.assertEqual(m.migration_type, 'live-migration')
 
     def test_list_migrations_with_filters(self):
-        ml = cs.migrations.list('host1', 'finished', 'child1')
+        ml = self.cs.migrations.list('host1', 'finished', 'child1')
         self.assert_request_id(ml, fakes.FAKE_REQUEST_ID_LIST)
 
-        cs.assert_called('GET',
-                         '/os-migrations?cell_name=child1&host=host1'
-                         '&status=finished')
+        self.cs.assert_called(
+            'GET',
+            '/os-migrations?cell_name=child1&host=host1&status=finished')
         for m in ml:
             self.assertIsInstance(m, migrations.Migration)

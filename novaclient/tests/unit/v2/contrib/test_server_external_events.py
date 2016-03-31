@@ -22,14 +22,15 @@ from novaclient.tests.unit.v2.contrib import fakes
 from novaclient.v2.contrib import server_external_events as ext_events
 
 
-extensions = [
-    extension.Extension(ext_events.__name__.split(".")[-1],
-                        ext_events),
-]
-cs = fakes.FakeClient(extensions=extensions)
-
-
 class ServerExternalEventsTestCase(utils.TestCase):
+    def setUp(self):
+        super(ServerExternalEventsTestCase, self).setUp()
+        extensions = [
+            extension.Extension(ext_events.__name__.split(".")[-1],
+                                ext_events),
+        ]
+        self.cs = fakes.FakeClient(extensions=extensions)
+
     def test_external_event(self):
         events = [{'server_uuid': 'fake-uuid1',
                    'name': 'test-event',
@@ -39,7 +40,7 @@ class ServerExternalEventsTestCase(utils.TestCase):
                    'name': 'test-event',
                    'status': 'completed',
                    'tag': 'tag'}]
-        result = cs.server_external_events.create(events)
+        result = self.cs.server_external_events.create(events)
         self.assert_request_id(result, fakes.FAKE_REQUEST_ID_LIST)
         self.assertEqual(events, result)
-        cs.assert_called('POST', '/os-server-external-events')
+        self.cs.assert_called('POST', '/os-server-external-events')

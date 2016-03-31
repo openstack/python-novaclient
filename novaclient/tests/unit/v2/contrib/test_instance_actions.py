@@ -19,27 +19,28 @@ from novaclient.tests.unit.v2.contrib import fakes
 from novaclient.v2.contrib import instance_action
 
 
-extensions = [
-    extension.Extension(instance_action.__name__.split(".")[-1],
-                        instance_action),
-]
-cs = fakes.FakeClient(extensions=extensions)
-
-
 class InstanceActionExtensionTests(utils.TestCase):
+    def setUp(self):
+        super(InstanceActionExtensionTests, self).setUp()
+        extensions = [
+            extension.Extension(instance_action.__name__.split(".")[-1],
+                                instance_action),
+        ]
+        self.cs = fakes.FakeClient(extensions=extensions)
+
     def test_list_instance_actions(self):
         server_uuid = '1234'
-        ial = cs.instance_action.list(server_uuid)
+        ial = self.cs.instance_action.list(server_uuid)
         self.assert_request_id(ial, fakes.FAKE_REQUEST_ID_LIST)
-        cs.assert_called(
+        self.cs.assert_called(
             'GET', '/servers/%s/os-instance-actions' %
             server_uuid)
 
     def test_get_instance_action(self):
         server_uuid = '1234'
         request_id = 'req-abcde12345'
-        ia = cs.instance_action.get(server_uuid, request_id)
+        ia = self.cs.instance_action.get(server_uuid, request_id)
         self.assert_request_id(ia, fakes.FAKE_REQUEST_ID_LIST)
-        cs.assert_called(
+        self.cs.assert_called(
             'GET', '/servers/%s/os-instance-actions/%s'
             % (server_uuid, request_id))
