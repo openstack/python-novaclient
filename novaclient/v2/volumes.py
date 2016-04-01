@@ -17,17 +17,12 @@
 Volume interface (1.1 extension).
 """
 
-import warnings
-
-import six
-from six.moves.urllib import parse
-
 from novaclient import base
 
 
 class Volume(base.Resource):
     """
-    DEPRECATED: A volume is an extra block level storage to the OpenStack
+    A volume is an extra block level storage to the OpenStack
     instances.
     """
     NAME_ATTR = 'display_name'
@@ -35,108 +30,12 @@ class Volume(base.Resource):
     def __repr__(self):
         return "<Volume: %s>" % self.id
 
-    def delete(self):
-        """
-        DEPRECATED: Delete this volume.
 
-        :returns: An instance of novaclient.base.TupleWithMeta
-        """
-        return self.manager.delete(self)
-
-
-class VolumeManager(base.ManagerWithFind):
+class VolumeManager(base.Manager):
     """
-    DEPRECATED: Manage :class:`Volume` resources.
+    Manage :class:`Volume` resources. This is really about volume attachments.
     """
     resource_class = Volume
-
-    def create(self, size, snapshot_id=None, display_name=None,
-               display_description=None, volume_type=None,
-               availability_zone=None, imageRef=None):
-        """
-        DEPRECATED: Create a volume.
-
-        :param size: Size of volume in GB
-        :param snapshot_id: ID of the snapshot
-        :param display_name: Name of the volume
-        :param display_description: Description of the volume
-        :param volume_type: Type of volume
-        :param availability_zone: Availability Zone for volume
-        :rtype: :class:`Volume`
-        :param imageRef: reference to an image stored in glance
-        """
-        warnings.warn('The novaclient.v2.volumes.VolumeManager.create() '
-                      'method is deprecated and will be removed after Nova '
-                      '13.0.0 is released. Use python-cinderclient or '
-                      'python-openstacksdk instead.', DeprecationWarning)
-        # NOTE(melwitt): Ensure we use the volume endpoint for this call
-        with self.alternate_service_type(
-                'volumev2', allowed_types=('volume', 'volumev2')):
-            body = {'volume': {'size': size,
-                               'snapshot_id': snapshot_id,
-                               'display_name': display_name,
-                               'display_description': display_description,
-                               'volume_type': volume_type,
-                               'availability_zone': availability_zone,
-                               'imageRef': imageRef}}
-            return self._create('/volumes', body, 'volume')
-
-    def get(self, volume_id):
-        """
-        DEPRECATED: Get a volume.
-
-        :param volume_id: The ID of the volume to get.
-        :rtype: :class:`Volume`
-        """
-        warnings.warn('The novaclient.v2.volumes.VolumeManager.get() '
-                      'method is deprecated and will be removed after Nova '
-                      '13.0.0 is released. Use python-cinderclient or '
-                      'python-openstacksdk instead.', DeprecationWarning)
-        with self.alternate_service_type(
-                'volumev2', allowed_types=('volume', 'volumev2')):
-            return self._get("/volumes/%s" % volume_id, "volume")
-
-    def list(self, detailed=True, search_opts=None):
-        """
-        DEPRECATED: Get a list of all volumes.
-
-        :rtype: list of :class:`Volume`
-        """
-        warnings.warn('The novaclient.v2.volumes.VolumeManager.list() '
-                      'method is deprecated and will be removed after Nova '
-                      '13.0.0 is released. Use python-cinderclient or '
-                      'python-openstacksdk instead.', DeprecationWarning)
-        with self.alternate_service_type(
-                'volumev2', allowed_types=('volume', 'volumev2')):
-            search_opts = search_opts or {}
-
-            if 'name' in search_opts.keys():
-                search_opts['display_name'] = search_opts.pop('name')
-
-            qparams = dict((k, v) for (k, v) in
-                           six.iteritems(search_opts) if v)
-
-            query_str = '?%s' % parse.urlencode(qparams) if qparams else ''
-
-            if detailed is True:
-                return self._list("/volumes/detail%s" % query_str, "volumes")
-            else:
-                return self._list("/volumes%s" % query_str, "volumes")
-
-    def delete(self, volume):
-        """
-        DEPRECATED: Delete a volume.
-
-        :param volume: The :class:`Volume` to delete.
-        :returns: An instance of novaclient.base.TupleWithMeta
-        """
-        warnings.warn('The novaclient.v2.volumes.VolumeManager.delete() '
-                      'method is deprecated and will be removed after Nova '
-                      '13.0.0 is released. Use python-cinderclient or '
-                      'python-openstacksdk instead.', DeprecationWarning)
-        with self.alternate_service_type(
-                'volumev2', allowed_types=('volume', 'volumev2')):
-            return self._delete("/volumes/%s" % base.getid(volume))
 
     def create_server_volume(self, server_id, volume_id, device=None):
         """

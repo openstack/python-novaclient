@@ -1,0 +1,6 @@
+---
+upgrade:
+  - Volume, volume-type and volume-snapshot create/update/delete/list CLIs
+    and python API bindings are removed. Use python-cinderclient or
+    python-openstackclient for CLIs instead. Use python-cinderclient or
+    python-openstacksdk for python API bindings instead.

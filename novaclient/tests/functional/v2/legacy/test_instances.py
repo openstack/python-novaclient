@@ -52,10 +52,9 @@ class TestInstanceCLI(base.ClientTestBase):
         server = servers[0]
         self.addCleanup(server.delete)
 
-        # create a volume for attachment. We use the CLI because it
-        # magic routes to cinder, however the low level API does not.
-        volume = self.client.volumes.create(1)
-        self.addCleanup(self.nova, 'volume-delete', params=volume.id)
+        # create a volume for attachment
+        volume = self.cinder.volumes.create(1)
+        self.addCleanup(volume.delete)
 
         # allow volume to become available
         self.wait_for_volume_status(volume, 'available')
@@ -69,4 +68,3 @@ class TestInstanceCLI(base.ClientTestBase):
         # clean up on success
         self.nova('volume-detach', params="%s %s" % (name, volume.id))
         self.wait_for_volume_status(volume, 'available')
-        self.nova('volume-delete', params=volume.id)

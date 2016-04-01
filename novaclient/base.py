@@ -260,18 +260,6 @@ class Manager(HookableMixin):
                 return ListWithMeta(items, resp)
 
     @contextlib.contextmanager
-    def alternate_service_type(self, default, allowed_types=()):
-        original_service_type = self.api.client.service_type
-        if original_service_type in allowed_types:
-            yield
-        else:
-            self.api.client.service_type = default
-            try:
-                yield
-            finally:
-                self.api.client.service_type = original_service_type
-
-    @contextlib.contextmanager
     def completion_cache(self, cache_type, obj_class, mode):
         """The completion cache for bash autocompletion.
 
