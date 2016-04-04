@@ -753,6 +753,16 @@ class OpenStackComputeShell(object):
         os_auth_url = args.os_auth_url
         os_region_name = args.os_region_name
         os_auth_system = args.os_auth_system
+
+        if "v2.0" not in os_auth_url:
+            # NOTE(andreykurilin): assume that keystone V3 is used and try to
+            # be more user-friendly, i.e provide default values for domains
+            if (not args.os_project_domain_id and
+                    not args.os_project_domain_name):
+                setattr(args, "os_project_domain_id", "default")
+            if not args.os_user_domain_id and not args.os_user_domain_name:
+                setattr(args, "os_user_domain_id", "default")
+
         endpoint_type = args.endpoint_type
         insecure = args.insecure
         service_type = args.service_type
