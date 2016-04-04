@@ -14,6 +14,7 @@ import os
 import time
 import uuid
 
+from cinderclient.v2 import client as cinderclient
 import fixtures
 from keystoneclient.v2_0 import client as keystoneclient
 import os_client_config
@@ -206,6 +207,7 @@ class ClientTestBase(testtools.TestCase):
                                               password=passwd,
                                               tenant_name=tenant,
                                               auth_url=auth_url)
+        self.cinder = cinderclient.Client(user, passwd, tenant, auth_url)
 
     def nova(self, action, flags='', params='', fail_ok=False,
              endpoint_type='publicURL', merge_stderr=False):
@@ -218,14 +220,14 @@ class ClientTestBase(testtools.TestCase):
                                poll_interval=1):
         """Wait until volume reaches given status.
 
-        :param volume_id: uuid4 id of given volume
+        :param volume: volume resource
         :param status: expected status of volume
         :param timeout: timeout in seconds
         :param poll_interval: poll interval in seconds
         """
         start_time = time.time()
         while time.time() - start_time < timeout:
-            volume = self.client.volumes.get(volume.id)
+            volume = self.cinder.volumes.get(volume.id)
             if volume.status == status:
                 break
             time.sleep(poll_interval)

@@ -24,8 +24,8 @@ class TestServersBootNovaClient(base.ClientTestBase):
     def _boot_server_with_legacy_bdm(self, bdm_params=()):
         volume_size = 1
         volume_name = str(uuid.uuid4())
-        volume = self.client.volumes.create(size=volume_size,
-                                            display_name=volume_name,
+        volume = self.cinder.volumes.create(size=volume_size,
+                                            name=volume_name,
                                             imageRef=self.image.id)
         self.wait_for_volume_status(volume, "available")
 

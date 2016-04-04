@@ -47,8 +47,6 @@ from novaclient.v2 import services
 from novaclient.v2 import usage
 from novaclient.v2 import versions
 from novaclient.v2 import virtual_interfaces
-from novaclient.v2 import volume_snapshots
-from novaclient.v2 import volume_types
 from novaclient.v2 import volumes
 
 
@@ -143,8 +141,6 @@ class Client(object):
         self.floating_ip_pools = floating_ip_pools.FloatingIPPoolManager(self)
         self.fping = fping.FpingManager(self)
         self.volumes = volumes.VolumeManager(self)
-        self.volume_snapshots = volume_snapshots.SnapshotManager(self)
-        self.volume_types = volume_types.VolumeTypeManager(self)
         self.keypairs = keypairs.KeypairManager(self)
         self.networks = networks.NetworkManager(self)
         self.quota_classes = quota_classes.QuotaClassSetManager(self)

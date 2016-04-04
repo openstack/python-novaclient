@@ -131,17 +131,6 @@ class SimpleReadOnlyNovaClientTest(base.ClientTestBase):
     def test_admin_usage_list(self):
         self.nova('usage-list')
 
-    def test_admin_volume_list(self):
-        self.nova('volume-list')
-
-    def test_admin_volume_snapshot_list(self):
-        out = self.nova('volume-snapshot-list', merge_stderr=True)
-        self.assertIn('Command volume-snapshot-list is deprecated', out)
-
-    def test_admin_volume_type_list(self):
-        out = self.nova('volume-type-list', merge_stderr=True)
-        self.assertIn('Command volume-type-list is deprecated', out)
-
     def test_admin_help(self):
         self.nova('help')
 

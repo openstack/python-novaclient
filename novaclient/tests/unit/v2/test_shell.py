@@ -2488,52 +2488,9 @@ class ShellTest(utils.TestCase):
         self.run_command('interface-detach 1234 port_id')
         self.assert_called('DELETE', '/servers/1234/os-interface/port_id')
 
-    def test_volume_list(self):
-        _, err = self.run_command('volume-list')
-        self.assertIn('Command volume-list is deprecated', err)
-        self.assert_called('GET', '/volumes/detail')
-
-    def test_volume_show(self):
-        _, err = self.run_command('volume-show Work')
-        self.assertIn('Command volume-show is deprecated', err)
-        self.assert_called('GET', '/volumes?display_name=Work', pos=-2)
-        self.assert_called(
-            'GET',
-            '/volumes/15e59938-07d5-11e1-90e3-e3dffe0c5983',
-            pos=-1
-        )
-
     def test_volume_attachments(self):
         self.run_command('volume-attachments 1234')
         self.assert_called('GET', '/servers/1234/os-volume_attachments')
-
-    def test_volume_create(self):
-        _, err = self.run_command('volume-create 2 --display-name Work')
-        self.assertIn('Command volume-create is deprecated', err)
-        self.assert_called('POST', '/volumes',
-                           {'volume':
-                               {'display_name': 'Work',
-                                'imageRef': None,
-                                'availability_zone': None,
-                                'volume_type': None,
-                                'display_description': None,
-                                'snapshot_id': None,
-                                'size': 2}})
-
-    def test_volume_delete(self):
-        _, err = self.run_command('volume-delete Work')
-        self.assertIn('Command volume-delete is deprecated', err)
-        self.assert_called('DELETE',
-                           '/volumes/15e59938-07d5-11e1-90e3-e3dffe0c5983')
-
-    def test_volume_delete_multiple(self):
-        self.run_command('volume-delete Work Work2')
-        self.assert_called('DELETE',
-                           '/volumes/15e59938-07d5-11e1-90e3-e3dffe0c5983',
-                           pos=-4)
-        self.assert_called('DELETE',
-                           '/volumes/15e59938-07d5-11e1-90e3-ee32ba30feaa',
-                           pos=-1)
 
     def test_volume_attach(self):
         self.run_command('volume-attach sample-server Work /dev/vdb')
