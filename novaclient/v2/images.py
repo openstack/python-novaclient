@@ -13,8 +13,10 @@
 #    under the License.
 
 """
-Image interface.
+DEPRECATED: Image interface.
 """
+
+import warnings
 
 from six.moves.urllib import parse
 
@@ -23,7 +25,8 @@ from novaclient import base
 
 class Image(base.Resource):
     """
-    An image is a collection of files used to create or rebuild a server.
+    DEPRECATED: An image is a collection of files used to create or rebuild a
+    server.
     """
     HUMAN_ID = True
 
@@ -32,7 +35,7 @@ class Image(base.Resource):
 
     def delete(self):
         """
-        Delete this image.
+        DEPRECATED: Delete this image.
 
         :returns: An instance of novaclient.base.TupleWithMeta
         """
@@ -41,28 +44,36 @@ class Image(base.Resource):
 
 class ImageManager(base.ManagerWithFind):
     """
-    Manage :class:`Image` resources.
+    DEPRECATED: Manage :class:`Image` resources.
     """
     resource_class = Image
 
     def get(self, image):
         """
-        Get an image.
+        DEPRECATED: Get an image.
 
         :param image: The ID of the image to get.
         :rtype: :class:`Image`
         """
+        warnings.warn(
+            'The novaclient.v2.images module is deprecated and will be '
+            'removed after Nova 15.0.0 is released. Use python-glanceclient '
+            'or python-openstacksdk instead.', DeprecationWarning)
         return self._get("/images/%s" % base.getid(image), "image")
 
     def list(self, detailed=True, limit=None, marker=None):
         """
-        Get a list of all images.
+        DEPRECATED: Get a list of all images.
 
         :rtype: list of :class:`Image`
         :param limit: maximum number of images to return.
         :param marker: Begin returning images that appear later in the image
                        list than that represented by this image id (optional).
         """
+        warnings.warn(
+            'The novaclient.v2.images module is deprecated and will be '
+            'removed after Nova 15.0.0 is released. Use python-glanceclient '
+            'or python-openstacksdk instead.', DeprecationWarning)
         params = {}
         detail = ''
         if detailed:
@@ -77,7 +88,7 @@ class ImageManager(base.ManagerWithFind):
 
     def delete(self, image):
         """
-        Delete an image.
+        DEPRECATED: Delete an image.
 
         It should go without saying that you can't delete an image
         that you didn't create.
@@ -85,27 +96,39 @@ class ImageManager(base.ManagerWithFind):
         :param image: The :class:`Image` (or its ID) to delete.
         :returns: An instance of novaclient.base.TupleWithMeta
         """
+        warnings.warn(
+            'The novaclient.v2.images module is deprecated and will be '
+            'removed after Nova 15.0.0 is released. Use python-glanceclient '
+            'or python-openstacksdk instead.', DeprecationWarning)
         return self._delete("/images/%s" % base.getid(image))
 
     def set_meta(self, image, metadata):
         """
-        Set an images metadata
+        DEPRECATED: Set an images metadata
 
         :param image: The :class:`Image` to add metadata to
         :param metadata: A dict of metadata to add to the image
         """
+        warnings.warn(
+            'The novaclient.v2.images module is deprecated and will be '
+            'removed after Nova 15.0.0 is released. Use python-glanceclient '
+            'or python-openstacksdk instead.', DeprecationWarning)
         body = {'metadata': metadata}
         return self._create("/images/%s/metadata" % base.getid(image),
                             body, "metadata")
 
     def delete_meta(self, image, keys):
         """
-        Delete metadata from an image
+        DEPRECATED: Delete metadata from an image
 
         :param image: The :class:`Image` to delete metadata
         :param keys: A list of metadata keys to delete from the image
         :returns: An instance of novaclient.base.TupleWithMeta
         """
+        warnings.warn(
+            'The novaclient.v2.images module is deprecated and will be '
+            'removed after Nova 15.0.0 is released. Use python-glanceclient '
+            'or python-openstacksdk instead.', DeprecationWarning)
         result = base.TupleWithMeta((), None)
         for k in keys:
             ret = self._delete("/images/%s/metadata/%s" %

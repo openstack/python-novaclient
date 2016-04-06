@@ -883,11 +883,13 @@ class ShellTest(utils.TestCase):
                            {'removeTenantAccess': {'tenant': 'proj2'}})
 
     def test_image_show(self):
-        self.run_command('image-show 1')
+        _, err = self.run_command('image-show 1')
+        self.assertIn('Command image-show is deprecated', err)
         self.assert_called('GET', '/images/1')
 
     def test_image_meta_set(self):
-        self.run_command('image-meta 1 set test_key=test_value')
+        _, err = self.run_command('image-meta 1 set test_key=test_value')
+        self.assertIn('Command image-meta is deprecated', err)
         self.assert_called('POST', '/images/1/metadata',
                            {'metadata': {'test_key': 'test_value'}})
 
@@ -950,7 +952,8 @@ class ShellTest(utils.TestCase):
             'image-create sample-server mysnapshot_deleted --poll')
 
     def test_image_delete(self):
-        self.run_command('image-delete 1')
+        _, err = self.run_command('image-delete 1')
+        self.assertIn('Command image-delete is deprecated', err)
         self.assert_called('DELETE', '/images/1')
 
     def test_image_delete_multiple(self):

@@ -66,6 +66,14 @@ CLIENT_BDM2_KEYS = {
 }
 
 
+# NOTE(mriedem): Remove this along with the deprecated commands in the first
+# python-novaclient release AFTER the nova server 15.0.0 'O' release.
+def emit_image_deprecation_warning(command_name):
+    print('WARNING: Command %s is deprecated and will be removed after Nova '
+          '15.0.0 is released. Use python-glanceclient or openstackclient '
+          'instead.' % command_name, file=sys.stderr)
+
+
 def _key_value_pairing(text):
     try:
         (k, v) = text.split('=', 1)
@@ -1201,7 +1209,8 @@ def do_network_create(cs, args):
     metavar="<limit>",
     help=_('Number of images to return per request.'))
 def do_image_list(cs, _args):
-    """Print a list of available images to boot from."""
+    """DEPRECATED: Print a list of available images to boot from."""
+    emit_image_deprecation_warning('image-list')
     limit = _args.limit
     image_list = cs.images.list(limit=limit)
 
@@ -1234,7 +1243,8 @@ def do_image_list(cs, _args):
     help=_('Metadata to add/update or delete (only key is necessary on '
            'delete).'))
 def do_image_meta(cs, args):
-    """Set or delete metadata on an image."""
+    """DEPRECATED: Set or delete metadata on an image."""
+    emit_image_deprecation_warning('image-meta')
     image = _find_image(cs, args.image)
     metadata = _extract_metadata(args)
 
@@ -1297,7 +1307,8 @@ def _print_flavor(flavor):
     metavar='<image>',
     help=_("Name or ID of image."))
 def do_image_show(cs, args):
-    """Show details about the given image."""
+    """DEPRECATED: Show details about the given image."""
+    emit_image_deprecation_warning('image-show')
     image = _find_image(cs, args.image)
     _print_image(image)
 
@@ -1306,7 +1317,8 @@ def do_image_show(cs, args):
     'image', metavar='<image>', nargs='+',
     help=_('Name or ID of image(s).'))
 def do_image_delete(cs, args):
-    """Delete specified image(s)."""
+    """DEPRECATED: Delete specified image(s)."""
+    emit_image_deprecation_warning('image-delete')
     for image in args.image:
         try:
             _find_image(cs, image).delete()

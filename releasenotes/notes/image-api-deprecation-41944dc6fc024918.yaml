@@ -1,0 +1,14 @@
+---
+deprecations:
+  - |
+    The following CLIs and python API bindings are now deprecated for removal:
+
+    * nova image-delete
+    * nova image-list
+    * nova image-meta
+    * nova image-show
+
+    These will be removed in the first major python-novaclient release after
+    the Nova 15.0.0 Ocata release. Use python-glanceclient or
+    python-openstackclient for CLI and python-glanceclient or openstacksdk
+    for python API bindings.
