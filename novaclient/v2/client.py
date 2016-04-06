@@ -80,7 +80,7 @@ class Client(object):
         :param str proxy_token: Proxy Token
         :param str region_name: Region Name
         :param str endpoint_type: Endpoint Type
-        :param str extensions: Exensions
+        :param str extensions: Extensions
         :param str service_type: Service Type
         :param str service_name: Service Name
         :param str volume_service_name: Volume Service Name

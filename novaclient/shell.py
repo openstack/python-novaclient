@@ -729,7 +729,7 @@ class OpenStackComputeShell(object):
         do_help = ('help' in argv) or (
             '--help' in argv) or ('-h' in argv) or not argv
 
-        # bash-completion should not require authentification
+        # bash-completion should not require authentication
         skip_auth = do_help or (
             'bash-completion' in argv)
 
@@ -938,7 +938,7 @@ class OpenStackComputeShell(object):
         if utils.isunauthenticated(args.func):
             # NOTE(alex_xu): We need authentication for discover microversion.
             # But the subcommands may needn't it. If the subcommand needn't,
-            # we clear the session arguements.
+            # we clear the session arguments.
             keystone_session = None
             keystone_auth = None
 

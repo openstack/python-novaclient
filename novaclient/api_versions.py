@@ -49,11 +49,11 @@ class APIVersion(object):
     def __init__(self, version_str=None):
         """Create an API version object.
 
-        :param version_string: String representation of APIVersionRequest.
-                               Correct format is 'X.Y', where 'X' and 'Y'
-                               are int values. None value should be used
-                               to create Null APIVersionRequest, which is
-                               equal to 0.0
+        :param version_str: String representation of APIVersionRequest.
+                            Correct format is 'X.Y', where 'X' and 'Y'
+                            are int values. None value should be used
+                            to create Null APIVersionRequest, which is
+                            equal to 0.0
         """
         self.ver_major = 0
         self.ver_minor = 0
