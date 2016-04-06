@@ -41,30 +41,6 @@ class BaremetalExtensionTest(utils.TestCase):
         self.cs.assert_called('GET', '/os-baremetal-nodes/1')
         self.assertIsInstance(n, baremetal.BareMetalNode)
 
-    def test_create_node(self):
-        n = self.cs.baremetal.create("service_host", 1, 1024, 2048,
-                                     "aa:bb:cc:dd:ee:ff")
-        self.assert_request_id(n, fakes.FAKE_REQUEST_ID_LIST)
-        self.cs.assert_called('POST', '/os-baremetal-nodes')
-        self.assertIsInstance(n, baremetal.BareMetalNode)
-
-    def test_delete_node(self):
-        n = self.cs.baremetal.get(1)
-        ret = self.cs.baremetal.delete(n)
-        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
-        self.cs.assert_called('DELETE', '/os-baremetal-nodes/1')
-
-    def test_node_add_interface(self):
-        i = self.cs.baremetal.add_interface(1, "bb:cc:dd:ee:ff:aa", 1, 2)
-        self.assert_request_id(i, fakes.FAKE_REQUEST_ID_LIST)
-        self.cs.assert_called('POST', '/os-baremetal-nodes/1/action')
-        self.assertIsInstance(i, baremetal.BareMetalNodeInterface)
-
-    def test_node_remove_interface(self):
-        ret = self.cs.baremetal.remove_interface(1, "bb:cc:dd:ee:ff:aa")
-        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
-        self.cs.assert_called('POST', '/os-baremetal-nodes/1/action')
-
     def test_node_list_interfaces(self):
         il = self.cs.baremetal.list_interfaces(1)
         self.assert_request_id(il, fakes.FAKE_REQUEST_ID_LIST)
