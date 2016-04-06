@@ -129,7 +129,7 @@ class Client(object):
         self.limits = limits.LimitsManager(self)
         self.servers = servers.ServerManager(self)
         self.versions = versions.VersionManager(self)
-        self.api_version = api_version or api_versions.APIVersion("2.0")
+        self.api_version = api_version or api_versions.APIVersion("2.1")
 
         # extensions
         self.agents = agents.AgentsManager(self)
