@@ -1462,7 +1462,7 @@ def do_image_delete(cs, args):
     metavar='<changes_since>',
     default=None,
     help=_("List only servers changed after a certain point of time."
-           "The provided time should be an ISO 8061 formated time."
+           "The provided time should be an ISO 8061 formatted time."
            "ex 2016-03-04T06:27:59Z ."))
 def do_list(cs, args):
     """List active servers."""
@@ -2064,7 +2064,7 @@ def _print_server(cs, args, server=None):
     # findall(name=blah) and due a REST /details which is not the same
     # as a .get() and doesn't get the information about flavors and
     # images. This fix it as we redo the call with the id which does a
-    # .get() to get all informations.
+    # .get() to get all information.
     if not server:
         server = _find_server(cs, args.server)
 
@@ -4199,7 +4199,7 @@ def _quota_update(manager, identifier, args):
 
     if updates:
         # default value of force is None to make sure this client
-        # will be compatibile with old nova server
+        # will be compatible with old nova server
         force_update = getattr(args, 'force', None)
         user_id = getattr(args, 'user', None)
         if isinstance(manager, quotas.QuotaSetManager):
