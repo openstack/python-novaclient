@@ -26,7 +26,7 @@ class TestFlvAccessNovaClientV27(test_flavor_access.TestFlvAccessNovaClient):
         self.nova('flavor-create %s auto 512 1 1' % flv_name)
         self.addCleanup(self.nova, 'flavor-delete %s' % flv_name)
         output = self.nova('flavor-access-add %s %s' %
-                           (flv_name, self.tenant_id),
+                           (flv_name, self.project_id),
                            fail_ok=True, merge_stderr=True)
         self.assertIn("ERROR (Conflict): "
                       "Can not add access to a public flavor. (HTTP 409) ",

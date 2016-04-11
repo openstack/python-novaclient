@@ -27,9 +27,7 @@ class TestQuotasNovaClient(test_quotas.TestQuotasNovaClient):
 
     def test_quotas_update(self):
         # `nova quota-update` requires tenant-id.
-        tenant_info = self.cli_clients.keystone(
-            "tenant-get", params=self.cli_clients.tenant_name)
-        tenant_id = self._get_value_from_the_table(tenant_info, "id")
+        tenant_id = self._get_project_id(self.cli_clients.tenant_name)
 
         self.addCleanup(self.client.quotas.delete, tenant_id)
 
