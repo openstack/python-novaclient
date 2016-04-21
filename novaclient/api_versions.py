@@ -16,13 +16,13 @@ import logging
 import os
 import pkgutil
 import re
+import traceback
 
 from oslo_utils import strutils
 
 import novaclient
 from novaclient import exceptions
 from novaclient.i18n import _, _LW
-from novaclient import utils
 
 LOG = logging.getLogger(__name__)
 if not LOG.handlers:
@@ -340,12 +340,32 @@ def check_headers(response, api_version):
             _warn_missing_microversion_header(HEADER_NAME)
 
 
-def add_substitution(versioned_method):
+def _add_substitution(versioned_method):
     _SUBSTITUTIONS.setdefault(versioned_method.name, [])
     _SUBSTITUTIONS[versioned_method.name].append(versioned_method)
 
 
+def _get_function_name(func):
+    # NOTE(andreykurilin): Based on the facts:
+    #  - Python 2 does not have __qualname__ property as Python 3 has;
+    #  - we cannot use im_class here, since we need to obtain name of
+    #    function in `wraps` decorator during class initialization
+    #    ("im_class" property does not exist at that moment)
+    #  we need to write own logic to obtain the full function name which
+    #  include module name, owner name(optional) and just function name.
+    filename, _lineno, _name, line = traceback.extract_stack()[-4]
+    module, _file_extension = os.path.splitext(filename)
+    module = module.replace("/", ".")
+    if module.endswith(func.__module__):
+        return "%s.[%s].%s" % (func.__module__, line, func.__name__)
+    else:
+        return "%s.%s" % (func.__module__, func.__name__)
+
+
 def get_substitutions(func_name, api_version=None):
+    if hasattr(func_name, "__id__"):
+        func_name = func_name.__id__
+
     substitutions = _SUBSTITUTIONS.get(func_name, [])
     if api_version and not api_version.is_null():
         return [m for m in substitutions
@@ -362,10 +382,11 @@ def wraps(start_version, end_version=None):
 
     def decor(func):
         func.versioned = True
-        name = utils.get_function_name(func)
+        name = _get_function_name(func)
+
         versioned_method = VersionedMethod(name, start_version,
                                            end_version, func)
-        add_substitution(versioned_method)
+        _add_substitution(versioned_method)
 
         @functools.wraps(func)
         def substitution(obj, *args, **kwargs):
@@ -374,7 +395,6 @@ def wraps(start_version, end_version=None):
             if not methods:
                 raise exceptions.VersionNotFoundForAPIMethod(
                     obj.api_version.get_string(), name)
-
             return methods[-1].func(obj, *args, **kwargs)
 
         # Let's share "arguments" with original method and substitution to
@@ -382,6 +402,13 @@ def wraps(start_version, end_version=None):
         if not hasattr(func, 'arguments'):
             func.arguments = []
         substitution.arguments = func.arguments
+
+        # NOTE(andreykurilin): The way to obtain function's name in Python 2
+        #   bases on traceback(see _get_function_name for details). Since the
+        #   right versioned method method is used in several places, one object
+        #   can have different names. Let's generate name of function one time
+        #   and use __id__ property in all other places.
+        substitution.__id__ = name
 
         return substitution
 

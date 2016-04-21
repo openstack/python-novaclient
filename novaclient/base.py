@@ -148,6 +148,10 @@ class Resource(RequestIdMixin):
         return "<%s %s>" % (self.__class__.__name__, info)
 
     @property
+    def api_version(self):
+        return self.manager.api_version
+
+    @property
     def human_id(self):
         """Human-readable ID which can be used for bash completion.
         """

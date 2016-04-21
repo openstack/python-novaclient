@@ -50,18 +50,25 @@ class Server(base.Resource):
         """
         return self.manager.delete(self)
 
+    @api_versions.wraps("2.0", "2.18")
+    def update(self, name=None):
+        """
+        Update the name and the description for this server.
+
+        :param name: Update the server's name.
+        :returns: :class:`Server`
+        """
+        return self.manager.update(self, name=name)
+
+    @api_versions.wraps("2.19")
     def update(self, name=None, description=None):
         """
         Update the name and the description for this server.
 
         :param name: Update the server's name.
-        :param description: Update the server's description(
-                            allowed for 2.19-latest).
+        :param description: Update the server's description.
         :returns: :class:`Server`
         """
-        if (description is not None and
-                self.manager.api_version < api_versions.APIVersion("2.19")):
-            raise exceptions.UnsupportedAttribute("description", "2.19")
         update_kwargs = {"name": name}
         if description is not None:
             update_kwargs["description"] = description
@@ -403,43 +410,41 @@ class Server(base.Resource):
         except Exception:
             return {}
 
+    @api_versions.wraps("2.0", "2.24")
     def live_migrate(self, host=None,
-                     block_migration=None,
+                     block_migration=False,
                      disk_over_commit=None):
         """
         Migrates a running instance to a new machine.
 
         :param host: destination host name.
         :param block_migration: if True, do block_migration, the default
-                                value None will be mapped to False for 2.0 -
-                                2.24, 'auto' for higher than 2.25
+                                value is False and None will be mapped to False
         :param disk_over_commit: if True, allow disk over commit, the default
-                                 value None will be mapped to False. It will
-                                 not be supported since 2.25
+                                 value is None which is mapped to False
         :returns: An instance of novaclient.base.TupleWithMeta
         """
+        if block_migration is None:
+            block_migration = False
+        if disk_over_commit is None:
+            disk_over_commit = False
+        return self.manager.live_migrate(self, host,
+                                         block_migration,
+                                         disk_over_commit)
 
-        if (self.manager.api_version < api_versions.APIVersion("2.25")):
-            # NOTE(eliqiao): We do this to keep old version api has same
-            # default value if user don't pass these parameters when using
-            # SDK
-            if block_migration is None:
-                block_migration = False
-            if disk_over_commit is None:
-                disk_over_commit = False
+    @api_versions.wraps("2.25")
+    def live_migrate(self, host=None, block_migration=None):
+        """
+        Migrates a running instance to a new machine.
 
-            return self.manager.live_migrate(self, host,
-                                             block_migration,
-                                             disk_over_commit)
-        else:
-            if block_migration is None:
-                block_migration = 'auto'
-            if disk_over_commit is not None:
-                raise ValueError("Setting 'disk_over_commit' argument is "
-                                 "prohibited after microversion 2.25.")
-
-            return self.manager.live_migrate(self, host,
-                                             block_migration)
+        :param host: destination host name.
+        :param block_migration: if True, do block_migration, the default
+                                value is None which is mapped to 'auto'.
+        :returns: An instance of novaclient.base.TupleWithMeta
+        """
+        if block_migration is None:
+            block_migration = "auto"
+        return self.manager.live_migrate(self, host, block_migration)
 
     def reset_state(self, state='error'):
         """
@@ -480,29 +485,31 @@ class Server(base.Resource):
         """
         return self.manager.list_security_group(self)
 
-    def evacuate(self, host=None, on_shared_storage=None, password=None):
+    @api_versions.wraps("2.0", "2.13")
+    def evacuate(self, host=None, on_shared_storage=True, password=None):
         """
         Evacuate an instance from failed host to specified host.
 
         :param host: Name of the target host
         :param on_shared_storage: Specifies whether instance files located
-                        on shared storage. After microversion 2.14, this
-                        parameter must have its default value of None.
+                        on shared storage.
         :param password: string to set as admin password on the evacuated
                          server.
         :returns: An instance of novaclient.base.TupleWithMeta
         """
-        if api_versions.APIVersion("2.14") <= self.manager.api_version:
-            if on_shared_storage is not None:
-                raise ValueError("Setting 'on_shared_storage' argument is "
-                                 "prohibited after microversion 2.14.")
-            return self.manager.evacuate(self, host, password)
-        else:
-            # microversions 2.0 - 2.13
-            if on_shared_storage is None:
-                on_shared_storage = True
-            return self.manager.evacuate(self, host, on_shared_storage,
-                                         password)
+        return self.manager.evacuate(self, host, on_shared_storage, password)
+
+    @api_versions.wraps("2.14")
+    def evacuate(self, host=None, password=None):
+        """
+        Evacuate an instance from failed host to specified host.
+
+        :param host: Name of the target host
+        :param password: string to set as admin password on the evacuated
+                         server.
+        :returns: An instance of novaclient.base.TupleWithMeta
+        """
+        return self.manager.evacuate(self, host, password)
 
     def interface_list(self):
         """
@@ -526,30 +533,35 @@ class Server(base.Resource):
         """Trigger crash dump in an instance"""
         return self.manager.trigger_crash_dump(self)
 
+    @api_versions.wraps('2.26')
     def tag_list(self):
         """
         Get list of tags from an instance.
         """
         return self.manager.tag_list(self)
 
+    @api_versions.wraps('2.26')
     def delete_tag(self, tag):
         """
         Remove single tag from an instance.
         """
         return self.manager.delete_tag(self, tag)
 
+    @api_versions.wraps('2.26')
     def delete_all_tags(self):
         """
         Remove all tags from an instance.
         """
         return self.manager.delete_all_tags(self)
 
+    @api_versions.wraps('2.26')
     def set_tags(self, tags):
         """
         Set list of tags to an instance.
         """
         return self.manager.set_tags(self, tags)
 
+    @api_versions.wraps('2.26')
     def add_tag(self, tag):
         """
         Add single tag to an instance.

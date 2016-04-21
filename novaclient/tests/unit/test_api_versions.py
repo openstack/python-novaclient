@@ -233,11 +233,9 @@ class WrapsTestCase(utils.TestCase):
         m.name = args[0]
         return m
 
-    @mock.patch("novaclient.utils.get_function_name")
+    @mock.patch("novaclient.api_versions._get_function_name")
     @mock.patch("novaclient.api_versions.VersionedMethod")
     def test_end_version_is_none(self, mock_versioned_method, mock_name):
-        func_name = "foo"
-        mock_name.return_value = func_name
         mock_versioned_method.side_effect = self._side_effect_of_vers_method
 
         @api_versions.wraps("2.2")
@@ -247,15 +245,13 @@ class WrapsTestCase(utils.TestCase):
         foo(self._get_obj_with_vers("2.4"))
 
         mock_versioned_method.assert_called_once_with(
-            func_name, api_versions.APIVersion("2.2"),
+            mock_name.return_value, api_versions.APIVersion("2.2"),
             api_versions.APIVersion("2.latest"), mock.ANY)
 
-    @mock.patch("novaclient.utils.get_function_name")
+    @mock.patch("novaclient.api_versions._get_function_name")
     @mock.patch("novaclient.api_versions.VersionedMethod")
     def test_start_and_end_version_are_presented(self, mock_versioned_method,
                                                  mock_name):
-        func_name = "foo"
-        mock_name.return_value = func_name
         mock_versioned_method.side_effect = self._side_effect_of_vers_method
 
         @api_versions.wraps("2.2", "2.6")
@@ -265,14 +261,12 @@ class WrapsTestCase(utils.TestCase):
         foo(self._get_obj_with_vers("2.4"))
 
         mock_versioned_method.assert_called_once_with(
-            func_name, api_versions.APIVersion("2.2"),
+            mock_name.return_value, api_versions.APIVersion("2.2"),
             api_versions.APIVersion("2.6"), mock.ANY)
 
-    @mock.patch("novaclient.utils.get_function_name")
+    @mock.patch("novaclient.api_versions._get_function_name")
     @mock.patch("novaclient.api_versions.VersionedMethod")
     def test_api_version_doesnt_match(self, mock_versioned_method, mock_name):
-        func_name = "foo"
-        mock_name.return_value = func_name
         mock_versioned_method.side_effect = self._side_effect_of_vers_method
 
         @api_versions.wraps("2.2", "2.6")
@@ -283,7 +277,7 @@ class WrapsTestCase(utils.TestCase):
                           foo, self._get_obj_with_vers("2.1"))
 
         mock_versioned_method.assert_called_once_with(
-            func_name, api_versions.APIVersion("2.2"),
+            mock_name.return_value, api_versions.APIVersion("2.2"),
             api_versions.APIVersion("2.6"), mock.ANY)
 
     def test_define_method_is_actually_called(self):
@@ -301,7 +295,8 @@ class WrapsTestCase(utils.TestCase):
 
         checker.assert_called_once_with(*((obj,) + some_args), **some_kwargs)
 
-    def test_arguments_property_is_copied(self):
+    @mock.patch("novaclient.api_versions._get_function_name")
+    def test_arguments_property_is_copied(self, mock_name):
         @nutils.arg("argument_1")
         @api_versions.wraps("2.666", "2.777")
         @nutils.arg("argument_2")
@@ -309,13 +304,43 @@ class WrapsTestCase(utils.TestCase):
             pass
 
         versioned_method = api_versions.get_substitutions(
-            nutils.get_function_name(some_func),
-            api_versions.APIVersion("2.700"))[0]
+            mock_name.return_value, api_versions.APIVersion("2.700"))[0]
 
         self.assertEqual(some_func.arguments,
                          versioned_method.func.arguments)
         self.assertIn((("argument_1",), {}), versioned_method.func.arguments)
         self.assertIn((("argument_2",), {}), versioned_method.func.arguments)
+
+    def test_several_methods_with_same_name_in_one_module(self):
+
+        class A(object):
+            api_version = api_versions.APIVersion("777.777")
+
+            @api_versions.wraps("777.777")
+            def f(self):
+                return 1
+
+        class B(object):
+            api_version = api_versions.APIVersion("777.777")
+
+            @api_versions.wraps("777.777")
+            def f(self):
+                return 2
+
+        self.assertEqual(1, A().f())
+        self.assertEqual(2, B().f())
+
+    def test_generate_function_name(self):
+        expected_name = "novaclient.tests.unit.test_api_versions.fake_func"
+
+        self.assertNotIn(expected_name, api_versions._SUBSTITUTIONS)
+
+        @api_versions.wraps("7777777.7777777")
+        def fake_func():
+            pass
+
+        self.assertIn(expected_name, api_versions._SUBSTITUTIONS)
+        self.assertEqual(expected_name, fake_func.__id__)
 
 
 class DiscoverVersionTestCase(utils.TestCase):

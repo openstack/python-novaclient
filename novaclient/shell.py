@@ -633,8 +633,7 @@ class OpenStackComputeShell(object):
             desc = callback.__doc__ or ''
             if hasattr(callback, "versioned"):
                 additional_msg = ""
-                subs = api_versions.get_substitutions(
-                    utils.get_function_name(callback))
+                subs = api_versions.get_substitutions(callback)
                 if do_help:
                     additional_msg = msg % {
                         'start': subs[0].start_version.get_string(),

@@ -1144,11 +1144,6 @@ class ServersV225Test(ServersV219Test):
                            {'os-migrateLive': {'host': 'hostname',
                                                'block_migration': 'auto'}})
 
-    def test_live_migrate_server_with_disk_over_commit(self):
-        s = self.cs.servers.get(1234)
-        self.assertRaises(ValueError, s.live_migrate, 'hostname',
-                          'auto', 'True')
-
 
 class ServersV226Test(ServersV225Test):
     def setUp(self):
