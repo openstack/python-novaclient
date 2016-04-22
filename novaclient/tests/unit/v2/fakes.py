@@ -26,7 +26,6 @@ import novaclient
 from novaclient import api_versions
 from novaclient import client as base_client
 from novaclient import exceptions
-from novaclient.i18n import _
 from novaclient.tests.unit import fakes
 from novaclient.tests.unit import utils
 from novaclient.v2 import client
@@ -2174,11 +2173,8 @@ class FakeHTTPClient(base_client.HTTPClient):
     def post_servers_1234_migrations_1_action(self, body):
         return (202, {}, None)
 
+    @api_versions.wraps(start_version="2.23")
     def get_servers_1234_migrations_1(self, **kw):
-        # TODO(Shaohe Feng) this condition check can be a decorator
-        if self.api_version < api_versions.APIVersion("2.23"):
-            raise exceptions.UnsupportedVersion(_("Unsupport version %s")
-                                                % self.api_version)
         migration = {"migration": {
             "created_at": "2016-01-29T13:42:02.000000",
             "dest_compute": "compute2",
@@ -2199,11 +2195,8 @@ class FakeHTTPClient(base_client.HTTPClient):
         }}
         return (200, FAKE_RESPONSE_HEADERS, migration)
 
+    @api_versions.wraps(start_version="2.23")
     def get_servers_1234_migrations(self, **kw):
-        # TODO(Shaohe Feng) this condition check can be a decorator
-        if self.api_version < api_versions.APIVersion("2.23"):
-            raise exceptions.UnsupportedVersion(_("Unsupport version %s")
-                                                % self.api_version)
         migrations = {'migrations': [
             {
                 "created_at": "2016-01-29T13:42:02.000000",
