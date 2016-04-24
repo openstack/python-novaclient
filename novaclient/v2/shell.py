@@ -2446,7 +2446,10 @@ def do_get_mks_console(cs, args):
     nargs='?',
     default=None)
 def do_get_password(cs, args):
-    """Get the admin password for a server."""
+    """Get the admin password for a server. This operation calls the metadata
+    service to query metadata information and does not read password
+    information from the server itself.
+    """
     server = _find_server(cs, args.server)
     data = server.get_password(args.private_key)
     print(data)
@@ -2454,7 +2457,9 @@ def do_get_password(cs, args):
 
 @utils.arg('server', metavar='<server>', help=_('Name or ID of server.'))
 def do_clear_password(cs, args):
-    """Clear the admin password for a server."""
+    """Clear the admin password for a server from the metadata server.
+    This action does not actually change the instance server password.
+    """
     server = _find_server(cs, args.server)
     server.clear_password()
 
