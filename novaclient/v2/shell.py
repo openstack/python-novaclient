@@ -1596,7 +1596,10 @@ def do_list(cs, args):
     action='store_const',
     const=servers.REBOOT_HARD,
     default=servers.REBOOT_SOFT,
-    help=_('Perform a hard reboot (instead of a soft one).'))
+    help=_('Perform a hard reboot (instead of a soft one). '
+           'Note: Ironic does not currently support soft reboot; '
+           'consequently, bare metal nodes will always do a hard '
+           'reboot, regardless of the use of this option.'))
 @utils.arg(
     'server',
     metavar='<server>', nargs='+',
