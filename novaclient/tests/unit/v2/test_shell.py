@@ -1082,6 +1082,13 @@ class ShellTest(utils.TestCase):
         self.assertRaises(exceptions.CommandError,
                           self.run_command, 'list --changes-since 0123456789')
 
+    def test_list_fields_redundant(self):
+        output, __ = self.run_command('list --fields id,status,status')
+        header = output.splitlines()[1]
+        self.assertEqual(1, header.count('ID'))
+        self.assertEqual(0, header.count('Id'))
+        self.assertEqual(1, header.count('Status'))
+
     def test_meta_parsing(self):
         meta = ['key1=meta1', 'key2=meta2']
         ref = {'key1': 'meta1', 'key2': 'meta2'}
@@ -2168,6 +2175,13 @@ class ShellTest(utils.TestCase):
         self.assertRaises(exceptions.CommandError,
                           self.run_command,
                           'network-list --fields vlan,project_id,invalid')
+
+    def test_network_list_redundant_fields(self):
+        output, __ = self.run_command(
+            'network-list --fields label,project_id,project_id')
+        header = output.splitlines()[1]
+        self.assertEqual(1, header.count('Label'))
+        self.assertEqual(1, header.count('Project Id'))
 
     def test_network_show(self):
         self.run_command('network-show 1')
