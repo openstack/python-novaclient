@@ -15,13 +15,11 @@
 
 import pprint
 
-import six
-
 from novaclient import api_versions
 from novaclient import base
-from novaclient import exceptions
 from novaclient.i18n import _
 from novaclient import utils
+from novaclient.v2 import shell
 
 
 class InstanceActionManager(base.ManagerWithFind):
@@ -44,23 +42,6 @@ class InstanceActionManager(base.ManagerWithFind):
                           base.getid(server), 'instanceActions')
 
 
-@api_versions.wraps("2.0", "2.20")
-def _find_server(cs, args):
-    return utils.find_resource(cs.servers, args.server)
-
-
-@api_versions.wraps("2.21")
-def _find_server(cs, args):
-    try:
-        return utils.find_resource(cs.servers, args.server,
-                                   wrap_exception=False)
-    except exceptions.NoUniqueMatch as e:
-        raise exceptions.CommandError(six.text_type(e))
-    except exceptions.NotFound:
-        # The server can be deleted
-        return args.server
-
-
 @utils.arg(
     'server',
     metavar='<server>',
@@ -78,7 +59,10 @@ def _find_server(cs, args):
     help=_('Request ID of the action to get.'))
 def do_instance_action(cs, args):
     """Show an action."""
-    server = _find_server(cs, args)
+    if cs.api_version < api_versions.APIVersion("2.21"):
+        server = shell._find_server(cs, args.server)
+    else:
+        server = shell._find_server(cs, args.server, raise_if_notfound=False)
     action_resource = cs.instance_action.get(server, args.request_id)
     action = action_resource._info
     if 'events' in action:
@@ -99,7 +83,10 @@ def do_instance_action(cs, args):
     start_version="2.21")
 def do_instance_action_list(cs, args):
     """List actions on a server."""
-    server = _find_server(cs, args)
+    if cs.api_version < api_versions.APIVersion("2.21"):
+        server = shell._find_server(cs, args.server)
+    else:
+        server = shell._find_server(cs, args.server, raise_if_notfound=False)
     actions = cs.instance_action.list(server)
     utils.print_list(actions,
                      ['Action', 'Request_ID', 'Message', 'Start_Time'],

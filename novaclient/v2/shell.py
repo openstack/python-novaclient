@@ -2159,9 +2159,25 @@ def do_delete(cs, args):
         _("Unable to delete the specified server(s)."))
 
 
-def _find_server(cs, server, **find_args):
-    """Get a server by name or ID."""
-    return utils.find_resource(cs.servers, server, **find_args)
+def _find_server(cs, server, raise_if_notfound=True, **find_args):
+    """Get a server by name or ID.
+
+    :param cs: NovaClient's instance
+    :param server: identifier of server
+    :param raise_if_notfound: raise an exception if server is not found
+    :param find_args: argument to search server
+    """
+    if raise_if_notfound:
+        return utils.find_resource(cs.servers, server, **find_args)
+    else:
+        try:
+            return utils.find_resource(cs.servers, server,
+                                       wrap_exception=False)
+        except exceptions.NoUniqueMatch as e:
+            raise exceptions.CommandError(six.text_type(e))
+        except exceptions.NotFound:
+            # The server can be deleted
+            return server
 
 
 def _find_image(cs, image):
