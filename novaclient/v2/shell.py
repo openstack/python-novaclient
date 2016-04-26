@@ -3106,7 +3106,8 @@ def do_keypair_delete(cs, args):
     '--user',
     metavar='<user-id>',
     default=None,
-    help=_('ID of key-pair owner (Admin only).'))
+    help=_('ID of key-pair owner (Admin only).'),
+    start_version="2.10")
 def do_keypair_delete(cs, args):
     """Delete keypair given by its name."""
     cs.keypairs.delete(args.name, args.user)
@@ -3135,7 +3136,8 @@ def do_keypair_list(cs, args):
     '--user',
     metavar='<user-id>',
     default=None,
-    help=_('List key-pairs of specified user ID (Admin only).'))
+    help=_('List key-pairs of specified user ID (Admin only).'),
+    start_version="2.10")
 def do_keypair_list(cs, args):
     """Print a list of keypairs for a user"""
     keypairs = cs.keypairs.list(args.user)
@@ -3170,7 +3172,8 @@ def do_keypair_show(cs, args):
     '--user',
     metavar='<user-id>',
     default=None,
-    help=_('ID of key-pair owner (Admin only).'))
+    help=_('ID of key-pair owner (Admin only).'),
+    start_version="2.10")
 def do_keypair_show(cs, args):
     """Show details about the given keypair."""
     keypair = cs.keypairs.get(args.keypair, args.user)
