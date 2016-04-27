@@ -332,7 +332,7 @@ def find_resource(manager, name_or_id, wrap_exception=True, **find_args):
         raise exceptions.NotFound(404, msg)
 
 
-def _format_servers_list_networks(server):
+def format_servers_list_networks(server):
     output = []
     for (network, addresses) in server.networks.items():
         if len(addresses) == 0:
@@ -344,7 +344,7 @@ def _format_servers_list_networks(server):
     return '; '.join(output)
 
 
-def _format_security_groups(groups):
+def format_security_groups(groups):
     return ', '.join(group['name'] for group in groups)
 
 
@@ -360,7 +360,7 @@ def _format_field_name(attr):
     return ': '.join(parts)
 
 
-def _make_field_formatter(attr, filters=None):
+def make_field_formatter(attr, filters=None):
     """
     Given an object attribute, return a formatted field name and a
     formatter suitable for passing to print_list.
@@ -412,7 +412,7 @@ def do_action_on_many(action, resources, success_msg, error_msg):
         raise exceptions.CommandError(error_msg)
 
 
-def _load_entry_point(ep_name, name=None):
+def load_entry_point(ep_name, name=None):
     """Try to load the entry point ep_name that matches name."""
     for ep in pkg_resources.iter_entry_points(ep_name, name=name):
         try:

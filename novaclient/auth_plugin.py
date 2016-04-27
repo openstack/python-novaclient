@@ -137,12 +137,12 @@ class DeprecatedAuthPlugin(object):
 
     def _load_endpoints(self):
         ep_name = 'openstack.client.auth_url'
-        fn = utils._load_entry_point(ep_name, name=self.auth_system)
+        fn = utils.load_entry_point(ep_name, name=self.auth_system)
         if fn:
             self.get_auth_url = fn
 
         ep_name = 'openstack.client.authenticate'
-        fn = utils._load_entry_point(ep_name, name=self.auth_system)
+        fn = utils.load_entry_point(ep_name, name=self.auth_system)
         if fn:
             self.authenticate = fn
 

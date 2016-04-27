@@ -972,7 +972,7 @@ def do_network_list(cs, args):
             if network_list and not hasattr(network_list[0], field):
                 non_existent_fields.append(field)
                 continue
-            field_title, formatter = utils._make_field_formatter(field, {})
+            field_title, formatter = utils.make_field_formatter(field, {})
             field_titles.append(field_title)
             formatters[field_title] = formatter
         if non_existent_fields:
@@ -1504,7 +1504,7 @@ def do_list(cs, args):
         'changes-since': args.changes_since}
 
     filters = {'flavor': lambda f: f['id'],
-               'security_groups': utils._format_security_groups}
+               'security_groups': utils.format_security_groups}
 
     id_col = 'ID'
 
@@ -1552,8 +1552,8 @@ def do_list(cs, args):
             if servers and not hasattr(servers[0], field):
                 non_existent_fields.append(field)
                 continue
-            field_title, formatter = utils._make_field_formatter(field,
-                                                                 filters)
+            field_title, formatter = utils.make_field_formatter(field,
+                                                                filters)
             field_titles.append(field_title)
             formatters[field_title] = formatter
         if non_existent_fields:
@@ -1582,7 +1582,7 @@ def do_list(cs, args):
             columns.insert(2, 'Tenant ID')
         if search_opts['changes-since']:
             columns.append('Updated')
-    formatters['Networks'] = utils._format_servers_list_networks
+    formatters['Networks'] = utils.format_servers_list_networks
     sortby_index = 1
     if args.sort:
         sortby_index = None
@@ -3699,7 +3699,7 @@ def do_server_migration_list(cs, args):
                   "memory_remaining_bytes", "disk_total_bytes",
                   "disk_processed_bytes", "disk_remaining_bytes"]
 
-    formatters = map(lambda field: utils._make_field_formatter(field)[1],
+    formatters = map(lambda field: utils.make_field_formatter(field)[1],
                      format_key)
     formatters = dict(zip(format_name, formatters))
 
