@@ -963,24 +963,9 @@ def do_network_list(cs, args):
     """Print a list of available networks."""
     network_list = cs.networks.list()
     columns = ['ID', 'Label', 'Cidr']
-
-    formatters = {}
-    field_titles = []
-    non_existent_fields = []
-    if args.fields:
-        for field in args.fields.split(','):
-            if network_list and not hasattr(network_list[0], field):
-                non_existent_fields.append(field)
-                continue
-            field_title, formatter = utils.make_field_formatter(field, {})
-            field_titles.append(field_title)
-            formatters[field_title] = formatter
-        if non_existent_fields:
-            raise exceptions.CommandError(
-                _("Non-existent fields are specified: %s")
-                % non_existent_fields)
-
-    columns = columns + field_titles
+    columns += _get_list_table_columns_and_formatters(
+        args.fields, network_list,
+        exclude_fields=(c.lower() for c in columns))[0]
     utils.print_list(network_list, columns)
 
 
@@ -1545,28 +1530,17 @@ def do_list(cs, args):
     _translate_extended_states(servers)
 
     formatters = {}
-    field_titles = []
-    non_existent_fields = []
-    if args.fields:
-        for field in args.fields.split(','):
-            if servers and not hasattr(servers[0], field):
-                non_existent_fields.append(field)
-                continue
-            field_title, formatter = utils.make_field_formatter(field,
-                                                                filters)
-            field_titles.append(field_title)
-            formatters[field_title] = formatter
-        if non_existent_fields:
-            raise exceptions.CommandError(
-                _("Non-existent fields are specified: %s")
-                % non_existent_fields)
+
+    cols, fmts = _get_list_table_columns_and_formatters(
+        args.fields, servers, exclude_fields=('id',), filters=filters)
 
     if args.minimal:
         columns = [
             id_col,
             'Name']
-    elif field_titles:
-        columns = [id_col] + field_titles
+    elif cols:
+        columns = [id_col] + cols
+        formatters.update(fmts)
     else:
         columns = [
             id_col,
@@ -1588,6 +1562,71 @@ def do_list(cs, args):
         sortby_index = None
     utils.print_list(servers, columns,
                      formatters, sortby_index=sortby_index)
+
+
+def _get_list_table_columns_and_formatters(fields, objs, exclude_fields=(),
+                                           filters=None):
+    """Check and add fields to output columns.
+
+    If there is any value in fields that not an attribute of obj,
+    CommandError will be raised.
+
+    If fields has duplicate values (case sensitive), we will make them unique
+    and ignore duplicate ones.
+
+    If exclude_fields is specified, any field both in fields and
+    exclude_fields will be ignored.
+
+    :param fields: A list of string contains the fields to be printed.
+    :param objs: An list of object which will be used to check if field is
+                 valid or not. Note, we don't check fields if obj is None or
+                 empty.
+    :param exclude_fields: A tuple of string which contains the fields to be
+                           excluded.
+    :param filters: A dictionary defines how to get value from fields, this
+                    is useful when field's value is a complex object such as
+                    dictionary.
+
+    :return: columns, formatters.
+             columns is a list of string which will be used as table header.
+             formatters is a dictionary specifies how to display the value
+             of the field.
+             They can be [], {}.
+    :raise: novaclient.exceptions.CommandError
+    """
+    if not fields:
+        return [], {}
+
+    if not objs:
+        obj = None
+    elif isinstance(objs, list):
+        obj = objs[0]
+    else:
+        obj = objs
+
+    columns = []
+    formatters = {}
+
+    non_existent_fields = []
+    exclude_fields = set(exclude_fields)
+
+    for field in fields.split(','):
+        if not hasattr(obj, field):
+            non_existent_fields.append(field)
+            continue
+        if field in exclude_fields:
+            continue
+        field_title, formatter = utils.make_field_formatter(field,
+                                                            filters)
+        columns.append(field_title)
+        formatters[field_title] = formatter
+        exclude_fields.add(field)
+
+    if non_existent_fields:
+        raise exceptions.CommandError(
+            _("Non-existent fields are specified: %s") % non_existent_fields)
+
+    return columns, formatters
 
 
 @utils.arg(
