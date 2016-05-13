@@ -3550,17 +3550,37 @@ def do_aggregate_delete(cs, args):
     'aggregate',
     metavar='<aggregate>',
     help=_('Name or ID of aggregate to update.'))
-@utils.arg('name', metavar='<name>', help=_('Name of aggregate.'))
+@utils.arg(
+    'name',
+    nargs='?',
+    action=shell.DeprecatedAction,
+    use=_('use "%s"; this option will be removed in '
+          'novaclient 5.0.0.') % '--name',
+    help=argparse.SUPPRESS)
+@utils.arg(
+    '--name',
+    dest='name',
+    help=_('Name of aggregate.'))
 @utils.arg(
     'availability_zone',
     metavar='<availability-zone>',
     nargs='?',
     default=None,
+    action=shell.DeprecatedAction,
+    use=_('use "%s"; this option will be removed in '
+          'novaclient 5.0.0.') % '--availability_zone',
+    help=argparse.SUPPRESS)
+@utils.arg(
+    '--availability-zone',
+    metavar='<availability-zone>',
+    dest='availability_zone',
     help=_('The availability zone of the aggregate.'))
 def do_aggregate_update(cs, args):
     """Update the aggregate's name and optionally availability zone."""
     aggregate = _find_aggregate(cs, args.aggregate)
-    updates = {"name": args.name}
+    updates = {}
+    if args.name:
+        updates["name"] = args.name
     if args.availability_zone:
         updates["availability_zone"] = args.availability_zone
 
