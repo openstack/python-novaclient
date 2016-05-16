@@ -30,22 +30,15 @@ class FlavorAccessManager(base.ManagerWithFind):
     resource_class = FlavorAccess
 
     def list(self, **kwargs):
+        # NOTE(mriedem): This looks a bit weird, you would normally expect this
+        # method to just take a flavor arg, but it used to erroneously accept
+        # flavor or tenant, but never actually implemented support for listing
+        # flavor access by tenant. We leave the interface unchanged though for
+        # backward compatibility.
         if kwargs.get('flavor'):
-            return self._list_by_flavor(kwargs['flavor'])
-        elif kwargs.get('tenant'):
-            return self._list_by_tenant(kwargs['tenant'])
-        else:
-            raise NotImplementedError(_('Unknown list options.'))
-
-    def _list_by_flavor(self, flavor):
-        return self._list('/flavors/%s/os-flavor-access' % base.getid(flavor),
-                          'flavor_access')
-
-    def _list_by_tenant(self, tenant):
-        """Print flavor list shared with the given tenant."""
-        # TODO(uni): need to figure out a proper URI for list_by_tenant
-        # since current API already provided current tenant_id information
-        raise NotImplementedError(_('Sorry, query by tenant not supported.'))
+            return self._list('/flavors/%s/os-flavor-access' %
+                              base.getid(kwargs['flavor']), 'flavor_access')
+        raise NotImplementedError(_('Unknown list options.'))
 
     def add_tenant_access(self, flavor, tenant):
         """Add a tenant to the given flavor access list."""

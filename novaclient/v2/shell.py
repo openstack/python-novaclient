@@ -878,20 +878,19 @@ def do_flavor_key(cs, args):
     help=_("Filter results by flavor name or ID."))
 @utils.arg(
     '--tenant', metavar='<tenant_id>',
-    help=_('Filter results by tenant ID.'))
+    help=_('Filter results by tenant ID.'),
+    action=shell.DeprecatedAction,
+    real_action='nothing',
+    use=_('this option is not supported, and will be '
+          'removed in version 5.0.0.'))
 def do_flavor_access_list(cs, args):
     """Print access information about the given flavor."""
-    if args.flavor and args.tenant:
-        raise exceptions.CommandError(_("Unable to filter results by "
-                                        "both --flavor and --tenant."))
-    elif args.flavor:
+    if args.flavor:
         flavor = _find_flavor(cs, args.flavor)
         if flavor.is_public:
             raise exceptions.CommandError(_("Access list not available "
                                             "for public flavors."))
         kwargs = {'flavor': flavor}
-    elif args.tenant:
-        kwargs = {'tenant': args.tenant}
     else:
         raise exceptions.CommandError(_("Unable to get all access lists. "
                                         "Specify --flavor"))

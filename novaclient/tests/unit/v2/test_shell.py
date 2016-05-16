@@ -845,14 +845,11 @@ class ShellTest(utils.TestCase):
         self.run_command('flavor-access-list --flavor 2')
         self.assert_called('GET', '/flavors/2/os-flavor-access')
 
-    # FIXME: flavor-access-list is not implemented yet
-    #    def test_flavor_access_list_tenant(self):
-    #        self.run_command('flavor-access-list --tenant proj2')
-    #        self.assert_called('GET', '/flavors/2/os-flavor-access')
-
     def test_flavor_access_list_bad_filter(self):
         cmd = 'flavor-access-list --flavor 2 --tenant proj2'
-        self.assertRaises(exceptions.CommandError, self.run_command, cmd)
+        _, err = self.run_command(cmd)
+        # assert the deprecation warning for using --tenant
+        self.assertIn('WARNING: Option "--tenant" is deprecated', err)
 
     def test_flavor_access_list_no_filter(self):
         cmd = 'flavor-access-list'
