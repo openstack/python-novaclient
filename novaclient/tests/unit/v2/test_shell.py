@@ -2775,6 +2775,52 @@ class ShellTest(utils.TestCase):
         self.run_command('list', api_version='2.10')
         self.assert_called('GET', '/servers/detail')
 
+    def test_server_tag_add(self):
+        self.run_command('server-tag-add sample-server tag',
+                         api_version='2.26')
+        self.assert_called('PUT', '/servers/1234/tags/tag', None)
+
+    def test_server_tag_set(self):
+        self.run_command('server-tag-set sample-server tag1 tag2',
+                         api_version='2.26')
+        self.assert_called('PUT', '/servers/1234/tags',
+                           {'tags': ['tag1', 'tag2']})
+
+    def test_server_tag_list(self):
+        self.run_command('server-tag-list sample-server', api_version='2.26')
+        self.assert_called('GET', '/servers/1234/tags')
+
+    def test_server_tag_delete(self):
+        self.run_command('server-tag-delete sample-server tag',
+                         api_version='2.26')
+        self.assert_called('DELETE', '/servers/1234/tags/tag')
+
+    def test_server_tag_delete_all(self):
+        self.run_command('server-tag-delete-all sample-server',
+                         api_version='2.26')
+        self.assert_called('DELETE', '/servers/1234/tags')
+
+    def test_server_tag_exists(self):
+        self.run_command('server-tag-exists sample-server tag',
+                         api_version='2.26')
+        self.assert_called('GET', '/servers/1234/tags/tag')
+
+    def test_list_v2_26_tags(self):
+        self.run_command('list --tags tag1,tag2', api_version='2.26')
+        self.assert_called('GET', '/servers/detail?tags=tag1%2Ctag2')
+
+    def test_list_v2_26_tags_any(self):
+        self.run_command('list --tags-any tag1,tag2', api_version='2.26')
+        self.assert_called('GET', '/servers/detail?tags-any=tag1%2Ctag2')
+
+    def test_list_v2_26_not_tags(self):
+        self.run_command('list --not-tags tag1,tag2', api_version='2.26')
+        self.assert_called('GET', '/servers/detail?not-tags=tag1%2Ctag2')
+
+    def test_list_v2_26_not_tags_any(self):
+        self.run_command('list --not-tags-any tag1,tag2', api_version='2.26')
+        self.assert_called('GET', '/servers/detail?not-tags-any=tag1%2Ctag2')
+
 
 class ShellWithSessionClientTest(ShellTest):
 

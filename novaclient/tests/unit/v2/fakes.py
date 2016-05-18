@@ -2221,6 +2221,24 @@ class FakeHTTPClient(base_client.HTTPClient):
     def delete_servers_1234_migrations_1(self):
         return (202, {}, None)
 
+    def put_servers_1234_tags_tag(self, **kw):
+        return (201, {}, None)
+
+    def put_servers_1234_tags(self, **kw):
+        return (201, {}, None)
+
+    def get_servers_1234_tags(self, **kw):
+        return (200, {}, {'tags': ['tag1', 'tag2']})
+
+    def delete_servers_1234_tags_tag(self, **kw):
+        return (204, {}, None)
+
+    def delete_servers_1234_tags(self, **kw):
+        return (204, {}, None)
+
+    def get_servers_1234_tags_tag(self, **kw):
+        return (204, {}, None)
+
 
 class FakeSessionClient(fakes.FakeClient, client.Client):
 
