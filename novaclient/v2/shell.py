@@ -181,17 +181,6 @@ def _boot(cs, args):
 
     min_count = 1
     max_count = 1
-    # Don't let user mix num_instances and max_count/min_count.
-    if (args.num_instances is not None and
-            args.min_count is None and
-            args.max_count is None):
-        if args.num_instances < 1:
-            raise exceptions.CommandError(_("num_instances should be >= 1"))
-        max_count = args.num_instances
-    elif (args.num_instances is not None and
-          (args.min_count is not None or args.max_count is not None)):
-        raise exceptions.CommandError(_("Don't mix num-instances and "
-                                        "max/min-count"))
     if args.min_count is not None:
         if args.min_count < 1:
             raise exceptions.CommandError(_("min_count should be >= 1"))
@@ -389,15 +378,6 @@ def _boot(cs, args):
     metavar="<snapshot_id>",
     help=_("Snapshot ID to boot from (will create a volume)."))
 @utils.arg(
-    '--num-instances',
-    default=None,
-    type=int,
-    metavar='<number>',
-    action=shell.DeprecatedAction,
-    use=_('use "--min-count" and "--max-count"; this option will be removed '
-          'in novaclient 3.3.0.'),
-    help=argparse.SUPPRESS)
-@utils.arg(
     '--min-count',
     default=None,
     type=int,
@@ -430,12 +410,6 @@ def _boot(cs, args):
     metavar='<key-name>',
     help=_("Key name of keypair that should be created earlier with \
            the command keypair-add."))
-@utils.arg(
-    '--key_name',
-    action=shell.DeprecatedAction,
-    use=_('use "%s"; this option will be removed in '
-          'novaclient 3.3.0.') % '--key-name',
-    help=argparse.SUPPRESS)
 @utils.arg('name', metavar='<name>', help=_('Name for the new server.'))
 @utils.arg(
     '--user-data',
@@ -443,33 +417,15 @@ def _boot(cs, args):
     metavar='<user-data>',
     help=_("user data file to pass to be exposed by the metadata server."))
 @utils.arg(
-    '--user_data',
-    action=shell.DeprecatedAction,
-    use=_('use "%s"; this option will be removed in '
-          'novaclient 3.3.0.') % '--user-data',
-    help=argparse.SUPPRESS)
-@utils.arg(
     '--availability-zone',
     default=None,
     metavar='<availability-zone>',
     help=_("The availability zone for server placement."))
 @utils.arg(
-    '--availability_zone',
-    action=shell.DeprecatedAction,
-    use=_('use "%s"; this option will be removed in '
-          'novaclient 3.3.0.') % '--availability-zone',
-    help=argparse.SUPPRESS)
-@utils.arg(
     '--security-groups',
     default=None,
     metavar='<security-groups>',
     help=_("Comma separated list of security group names."))
-@utils.arg(
-    '--security_groups',
-    action=shell.DeprecatedAction,
-    use=_('use "%s"; this option will be removed in '
-          'novaclient 3.3.0.') % '--security-groups',
-    help=argparse.SUPPRESS)
 @utils.arg(
     '--block-device-mapping',
     metavar="<dev-name=mapping>",
@@ -477,13 +433,6 @@ def _boot(cs, args):
     default=[],
     help=_("Block device mapping in the format "
            "<dev-name>=<id>:<type>:<size(GB)>:<delete-on-terminate>."))
-@utils.arg(
-    '--block_device_mapping',
-    real_action='append',
-    action=shell.DeprecatedAction,
-    use=_('use "%s"; this option will be removed in '
-          'novaclient 3.3.0.') % '--block-device-mapping',
-    help=argparse.SUPPRESS)
 @utils.arg(
     '--block-device',
     metavar="key1=value1[,key2=value2...]",
@@ -1318,12 +1267,6 @@ def do_image_delete(cs, args):
     default=None,
     help=_('Only return servers that match reservation-id.'))
 @utils.arg(
-    '--reservation_id',
-    action=shell.DeprecatedAction,
-    use=_('use "%s"; this option will be removed in '
-          'novaclient 3.3.0.') % '--reservation-id',
-    help=argparse.SUPPRESS)
-@utils.arg(
     '--ip',
     dest='ip',
     metavar='<ip-regexp>',
@@ -1347,12 +1290,6 @@ def do_image_delete(cs, args):
     metavar='<name-regexp>',
     default=None,
     help=_('Search with regular expression match by server name.'))
-@utils.arg(
-    '--instance_name',
-    action=shell.DeprecatedAction,
-    use=_('use "%s"; this option will be removed in '
-          'novaclient 3.3.0.') % '--instance-name',
-    help=argparse.SUPPRESS)
 @utils.arg(
     '--status',
     dest='status',
@@ -1388,15 +1325,6 @@ def do_image_delete(cs, args):
     default=int(strutils.bool_from_string(
         os.environ.get("ALL_TENANTS", 'false'), True)),
     help=_('Display information from all tenants (Admin only).'))
-@utils.arg(
-    '--all_tenants',
-    nargs='?',
-    type=int,
-    const=1,
-    action=shell.DeprecatedAction,
-    use=_('use "%s"; this option will be removed in '
-          'novaclient 3.3.0.') % '--all-tenants',
-    help=argparse.SUPPRESS)
 @utils.arg(
     '--tenant',
     # nova db searches by project_id
@@ -1717,12 +1645,6 @@ def do_reboot(cs, args):
     metavar='<rebuild-password>',
     default=False,
     help=_("Set the provided admin password on the rebuilt server."))
-@utils.arg(
-    '--rebuild_password',
-    action=shell.DeprecatedAction,
-    use=_('use "%s"; this option will be removed in '
-          'novaclient 3.3.0.') % '--rebuild-password',
-    help=argparse.SUPPRESS)
 @utils.arg(
     '--poll',
     dest='poll',
@@ -2486,13 +2408,6 @@ def do_get_rdp_console(cs, args):
     '--console-type',
     default='serial',
     help=_('Type of serial console, default="serial".'))
-@utils.arg(
-    '--console_type',
-    default='serial',
-    action=shell.DeprecatedAction,
-    use=_('use "%s"; this option will be removed in '
-          'novaclient 3.3.0.') % '--console-type',
-    help=argparse.SUPPRESS)
 def do_get_serial_console(cs, args):
     """Get a serial console to a server."""
     if args.console_type not in ('serial',):
@@ -2773,12 +2688,6 @@ def do_dns_delete_domain(cs, args):
     default=None,
     help=_('Limit access to this domain to servers '
            'in the specified availability zone.'))
-@utils.arg(
-    '--availability_zone',
-    action=shell.DeprecatedAction,
-    use=_('use "%s"; this option will be removed in '
-          'novaclient 3.3.0.') % '--availability-zone',
-    help=argparse.SUPPRESS)
 def do_dns_create_private_domain(cs, args):
     """Create the specified DNS domain."""
     cs.dns_domains.create_private(args.domain,
@@ -2957,15 +2866,6 @@ def do_secgroup_delete(cs, args):
     default=int(strutils.bool_from_string(
         os.environ.get("ALL_TENANTS", 'false'), True)),
     help=_('Display information from all tenants (Admin only).'))
-@utils.arg(
-    '--all_tenants',
-    nargs='?',
-    type=int,
-    const=1,
-    action=shell.DeprecatedAction,
-    use=_('use "%s"; this option will be removed in '
-          'novaclient 3.3.0.') % '--all-tenants',
-    help=argparse.SUPPRESS)
 def do_secgroup_list(cs, args):
     """List security groups for the current tenant."""
     search_opts = {'all_tenants': args.all_tenants}
@@ -3092,12 +2992,6 @@ def _keypair_create(cs, args, name, pub_key):
     metavar='<pub-key>',
     default=None,
     help=_('Path to a public ssh key.'))
-@utils.arg(
-    '--pub_key',
-    action=shell.DeprecatedAction,
-    use=_('use "%s"; this option will be removed in '
-          'novaclient 3.3.0.') % '--pub-key',
-    help=argparse.SUPPRESS)
 @utils.arg(
     '--key-type',
     metavar='<key-type>',
@@ -3747,26 +3641,11 @@ def _print_aggregate_details(aggregate):
     help=_('True in case of block_migration. (Default=auto:live_migration)'),
     start_version="2.25")
 @utils.arg(
-    '--block_migrate',
-    real_action='store_true',
-    action=shell.DeprecatedAction,
-    use=_('use "%s"; this option will be removed in '
-          'novaclient 3.3.0.') % '--block-migrate',
-    help=argparse.SUPPRESS)
-@utils.arg(
     '--disk-over-commit',
     action='store_true',
     dest='disk_over_commit',
     default=False,
     help=_('Allow overcommit. (Default=False)'),
-    start_version="2.0", end_version="2.24")
-@utils.arg(
-    '--disk_over_commit',
-    real_action='store_true',
-    action=shell.DeprecatedAction,
-    use=_('use "%s"; this option will be removed in '
-          'novaclient 3.3.0.') % '--disk-over-commit',
-    help=argparse.SUPPRESS,
     start_version="2.0", end_version="2.24")
 @utils.arg(
     '--force',
@@ -4437,13 +4316,6 @@ def do_quota_defaults(cs, args):
     default=None,
     help=_('New value for the "floating-ips" quota.'))
 @utils.arg(
-    '--floating_ips',
-    type=int,
-    action=shell.DeprecatedAction,
-    use=_('use "%s"; this option will be removed in '
-          'novaclient 3.3.0.') % '--floating-ips',
-    help=argparse.SUPPRESS)
-@utils.arg(
     '--fixed-ips',
     metavar='<fixed-ips>',
     type=int,
@@ -4456,38 +4328,17 @@ def do_quota_defaults(cs, args):
     default=None,
     help=_('New value for the "metadata-items" quota.'))
 @utils.arg(
-    '--metadata_items',
-    type=int,
-    action=shell.DeprecatedAction,
-    use=_('use "%s"; this option will be removed in '
-          'novaclient 3.3.0.') % '--metadata-items',
-    help=argparse.SUPPRESS)
-@utils.arg(
     '--injected-files',
     metavar='<injected-files>',
     type=int,
     default=None,
     help=_('New value for the "injected-files" quota.'))
 @utils.arg(
-    '--injected_files',
-    type=int,
-    action=shell.DeprecatedAction,
-    use=_('use "%s"; this option will be removed in '
-          'novaclient 3.3.0.') % '--injected-files',
-    help=argparse.SUPPRESS)
-@utils.arg(
     '--injected-file-content-bytes',
     metavar='<injected-file-content-bytes>',
     type=int,
     default=None,
     help=_('New value for the "injected-file-content-bytes" quota.'))
-@utils.arg(
-    '--injected_file_content_bytes',
-    type=int,
-    action=shell.DeprecatedAction,
-    use=_('use "%s"; this option will be removed in '
-          'novaclient 3.3.0.') % '--injected-file-content-bytes',
-    help=argparse.SUPPRESS)
 @utils.arg(
     '--injected-file-path-bytes',
     metavar='<injected-file-path-bytes>',
@@ -4590,13 +4441,6 @@ def do_quota_class_show(cs, args):
     default=None,
     help=_('New value for the "floating-ips" quota.'))
 @utils.arg(
-    '--floating_ips',
-    type=int,
-    action=shell.DeprecatedAction,
-    use=_('use "%s"; this option will be removed in '
-          'novaclient 3.3.0.') % '--floating-ips',
-    help=argparse.SUPPRESS)
-@utils.arg(
     '--fixed-ips',
     metavar='<fixed-ips>',
     type=int,
@@ -4609,38 +4453,17 @@ def do_quota_class_show(cs, args):
     default=None,
     help=_('New value for the "metadata-items" quota.'))
 @utils.arg(
-    '--metadata_items',
-    type=int,
-    action=shell.DeprecatedAction,
-    use=_('use "%s"; this option will be removed in '
-          'novaclient 3.3.0.') % '--metadata-items',
-    help=argparse.SUPPRESS)
-@utils.arg(
     '--injected-files',
     metavar='<injected-files>',
     type=int,
     default=None,
     help=_('New value for the "injected-files" quota.'))
 @utils.arg(
-    '--injected_files',
-    type=int,
-    action=shell.DeprecatedAction,
-    use=_('use "%s"; this option will be removed in '
-          'novaclient 3.3.0.') % '--injected-files',
-    help=argparse.SUPPRESS)
-@utils.arg(
     '--injected-file-content-bytes',
     metavar='<injected-file-content-bytes>',
     type=int,
     default=None,
     help=_('New value for the "injected-file-content-bytes" quota.'))
-@utils.arg(
-    '--injected_file_content_bytes',
-    type=int,
-    action=shell.DeprecatedAction,
-    use=_('use "%s"; this option will be removed in '
-          'novaclient 3.3.0.') % '--injected-file-content-bytes',
-    help=argparse.SUPPRESS)
 @utils.arg(
     '--injected-file-path-bytes',
     metavar='<injected-file-path-bytes>',
@@ -4961,14 +4784,6 @@ def do_secgroup_delete_default_rule(cs, args):
     default=argparse.SUPPRESS,
     nargs='*',
     help=_('Policies for the server groups.'))
-@utils.arg(
-    '--policy',
-    default=[],
-    real_action='append',
-    action=shell.DeprecatedAction,
-    use=_('use positional parameters; this option will be removed in '
-          'novaclient 3.3.0.'),
-    help=argparse.SUPPRESS)
 def do_server_group_create(cs, args):
     """Create a new server group with the specified details."""
     if not args.policy:

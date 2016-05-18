@@ -158,7 +158,7 @@ class ShellTest(utils.TestCase):
         )
 
     def test_boot_key(self):
-        self.run_command('boot --flavor 1 --image 1 --key_name 1 some-server')
+        self.run_command('boot --flavor 1 --image 1 --key-name 1 some-server')
         self.assert_called_anytime(
             'POST', '/servers',
             {'server': {
@@ -177,7 +177,7 @@ class ShellTest(utils.TestCase):
             data = testfile_fd.read().encode('utf-8')
         expected_file_data = base64.b64encode(data).decode('utf-8')
         self.run_command(
-            'boot --flavor 1 --image 1 --user_data %s some-server' % testfile)
+            'boot --flavor 1 --image 1 --user-data %s some-server' % testfile)
         self.assert_called_anytime(
             'POST', '/servers',
             {'server': {
@@ -274,7 +274,7 @@ class ShellTest(utils.TestCase):
         invalid_file = os.path.join(os.path.dirname(__file__),
                                     'no_such_file')
         cmd = ('boot some-server --flavor 1 --image 1'
-               ' --user_data %s' % invalid_file)
+               ' --user-data %s' % invalid_file)
         self.assertRaises(exceptions.CommandError, self.run_command, cmd)
 
     def test_boot_no_image_no_bdms(self):
@@ -287,7 +287,7 @@ class ShellTest(utils.TestCase):
 
     def test_boot_no_image_bdms(self):
         self.run_command(
-            'boot --flavor 1 --block_device_mapping vda=blah:::0 some-server'
+            'boot --flavor 1 --block-device-mapping vda=blah:::0 some-server'
         )
         self.assert_called_anytime(
             'POST', '/os-volumes_boot',
@@ -669,8 +669,9 @@ class ShellTest(utils.TestCase):
                ' --file /foo=%s' % invalid_file)
         self.assertRaises(exceptions.CommandError, self.run_command, cmd)
 
-    def test_boot_num_instances(self):
-        self.run_command('boot --image 1 --flavor 1 --num-instances 3 server')
+    def test_boot_max_min_count(self):
+        self.run_command('boot --image 1 --flavor 1 --min-count 1'
+                         ' --max-count 3 server')
         self.assert_called_anytime(
             'POST', '/servers',
             {
@@ -683,14 +684,8 @@ class ShellTest(utils.TestCase):
                 }
             })
 
-    def test_boot_invalid_num_instances(self):
-        cmd = 'boot --image 1 --flavor 1 --num-instances 0  server'
-        self.assertRaises(exceptions.CommandError, self.run_command, cmd)
-
-    def test_boot_num_instances_and_count(self):
-        cmd = 'boot --image 1 --flavor 1 --num-instances 3 --min-count 3 serv'
-        self.assertRaises(exceptions.CommandError, self.run_command, cmd)
-        cmd = 'boot --image 1 --flavor 1 --num-instances 3 --max-count 3 serv'
+    def test_boot_invalid_min_count(self):
+        cmd = 'boot --image 1 --flavor 1 --min-count 0  server'
         self.assertRaises(exceptions.CommandError, self.run_command, cmd)
 
     def test_boot_min_max_count(self):

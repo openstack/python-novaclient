@@ -607,7 +607,7 @@ class ShellTest(utils.TestCase):
         if version is None:
             cmd = 'list'
         else:
-            cmd = ('--service_type %s --os-compute-api-version %s list' %
+            cmd = ('--service-type %s --os-compute-api-version %s list' %
                    (service_type, version))
         self.make_env()
         self.shell(cmd)

@@ -1,0 +1,53 @@
+---
+update:
+   - The following deprecated options have been removed:
+     - create instances:
+       - --num-instance replaced by --min-count and --max-count
+       - --key_name replaced by --key-name
+       - --user_data replaced by --user-data
+       - --availability_zone replaced by -- availability-zone
+       - --security_groups replaced by --sercurity-groups
+       - --block_device_mapping replaced by --block-device-mapping
+     - list servers:
+       - --reservation_id replaced by --reservation-id
+       - --instance_name replaced by --instance-name
+       - --all_tenants replaced by --all-tenants
+     - rebuild instance:
+       - --rebuild_password replaced by --rebuild-password
+     - get serial console:
+       - --console_type replaced by --console-type
+     - create dns private domain:
+       - --availability_zone replaced by --availability-zone
+     - list security groups:
+       - --all_tenants replaced by --all-tenants
+     - add key pairs:
+       - --pub_key replaced by --pub-key
+     - live-migrate servers:
+       - --block_migrate replaced by --block-migrate
+       - --disk_over_commit replaced by --disk-over-commit
+     - update quotas:
+       - --floating_ips replaced by --floating-ips
+       - --metadata_items replaced by --metadata-items
+       - --injected_files replaced by --injected-files
+       - --injected_file_content_bytes replaced by --injected-file-content-bytes
+     - update quota classes:
+       - --floating_ips replaced by --floating-ips
+       - --metadata_items replaced by --metadata-items
+       - --injected_files replaced by --injected-files
+       - --injected_file_content_bytes replaced by --injected-file-content-bytes
+     - create server groups:
+       - --policy
+     - Authentication Options:
+       - --os_username replaced by --os-username
+       - --os_password replaced by --os-password
+       - --os_tenant_name replaced by --os-tenant-name
+       - --os_auth_url replaced by --os-auth-url
+       - --os_region_name replaced by --os-region-name
+       - --os_auth_system replaced by --os-auth-system
+       - --endpoint-type replaced by --os-endpoint-type
+     - Optional arguments:
+       - --service_type replaced by --service-type
+       - --service_name replaced by --service-name
+       - --volume_service_name replaced by --volume-service-name
+       - --os_compute_api_version replaced by --os-compute-api-version
+       - --bypass_url replaced by --bypass-url
