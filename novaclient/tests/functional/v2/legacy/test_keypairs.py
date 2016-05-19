@@ -13,7 +13,7 @@
 import tempfile
 import uuid
 
-from tempest_lib import exceptions
+from tempest.lib import exceptions
 
 from novaclient.tests.functional import base
 from novaclient.tests.functional.v2 import fake_crypto

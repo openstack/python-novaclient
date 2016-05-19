@@ -10,8 +10,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from tempest_lib import decorators
-from tempest_lib import exceptions
+from tempest.lib import decorators
+from tempest.lib import exceptions
 
 from novaclient.tests.functional import base
 

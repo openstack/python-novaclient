@@ -21,7 +21,7 @@ from keystoneauth1 import session as ksession
 from keystoneclient import client as keystoneclient
 import os_client_config
 import six
-import tempest_lib.cli.base
+import tempest.lib.cli.base
 import testtools
 
 import novaclient
@@ -196,7 +196,7 @@ class ClientTestBase(testtools.TestCase):
         self.network = pick_network(self.client.networks.list())
 
         # create a CLI client in case we'd like to do CLI
-        # testing. tempest_lib does this really weird thing where it
+        # testing. tempest.lib does this really weird thing where it
         # builds a giant factory of all the CLIs that it knows
         # about. Eventually that should really be unwound into
         # something more sensible.
@@ -204,7 +204,7 @@ class ClientTestBase(testtools.TestCase):
             'OS_NOVACLIENT_EXEC_DIR',
             os.path.join(os.path.abspath('.'), '.tox/functional/bin'))
 
-        self.cli_clients = tempest_lib.cli.base.CLIClient(
+        self.cli_clients = tempest.lib.cli.base.CLIClient(
             username=user,
             password=passwd,
             tenant_name=tenant,
@@ -404,7 +404,7 @@ class TenantTestBase(ClientTestBase):
                 user_name, password, tenant_id=self.project_id).id
 
         self.addCleanup(self.keystone.users.delete, self.user_id)
-        self.cli_clients_2 = tempest_lib.cli.base.CLIClient(
+        self.cli_clients_2 = tempest.lib.cli.base.CLIClient(
             username=user_name,
             password=password,
             tenant_name=project_name,
