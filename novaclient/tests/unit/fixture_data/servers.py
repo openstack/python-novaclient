@@ -316,6 +316,50 @@ class Base(base.Fixture):
                                    self.url(1234, 'os-server-password'),
                                    status_code=202,
                                    headers=self.json_headers)
+        #
+        # Server tags
+        #
+
+        self.requests.register_uri('GET',
+                                   self.url(1234, 'tags'),
+                                   json={'tags': ['tag1', 'tag2']},
+                                   headers=self.json_headers)
+
+        self.requests.register_uri('GET',
+                                   self.url(1234, 'tags', 'tag'),
+                                   status_code=204,
+                                   headers=self.json_headers)
+
+        self.requests.register_uri('DELETE',
+                                   self.url(1234, 'tags', 'tag'),
+                                   status_code=204,
+                                   headers=self.json_headers)
+
+        self.requests.register_uri('DELETE',
+                                   self.url(1234, 'tags'),
+                                   status_code=204,
+                                   headers=self.json_headers)
+
+        def put_server_tag(request, context):
+            body = jsonutils.loads(request.body)
+            assert body is None
+            context.status_code = 201
+            return None
+
+        self.requests.register_uri('PUT',
+                                   self.url(1234, 'tags', 'tag'),
+                                   json=put_server_tag,
+                                   headers=self.json_headers)
+
+        def put_server_tags(request, context):
+            body = jsonutils.loads(request.body)
+            assert list(body) == ['tags']
+            return body
+
+        self.requests.register_uri('PUT',
+                                   self.url(1234, 'tags'),
+                                   json=put_server_tags,
+                                   headers=self.json_headers)
 
 
 class V1(Base):

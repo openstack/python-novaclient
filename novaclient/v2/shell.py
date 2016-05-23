@@ -1460,6 +1460,45 @@ def do_image_delete(cs, args):
     help=_("List only servers changed after a certain point of time."
            "The provided time should be an ISO 8061 formatted time."
            "ex 2016-03-04T06:27:59Z ."))
+@utils.arg(
+    '--tags',
+    dest='tags',
+    metavar='<tags>',
+    default=None,
+    help=_("The given tags must all be present for a server to be included in "
+           "the list result. Boolean expression in this case is 't1 AND t2'. "
+           "Tags must be separated by commas: --tags <tag1,tag2>"),
+    start_version="2.26")
+@utils.arg(
+    '--tags-any',
+    dest='tags-any',
+    metavar='<tags-any>',
+    default=None,
+    help=_("If one of the given tags is present the server will be included "
+           "in the list result. Boolean expression in this case is "
+           "'t1 OR t2'. Tags must be separated by commas: "
+           "--tags-any <tag1,tag2>"),
+    start_version="2.26")
+@utils.arg(
+    '--not-tags',
+    dest='not-tags',
+    metavar='<not-tags>',
+    default=None,
+    help=_("Only the servers that do not have any of the given tags will"
+           "be included in the list results. Boolean expression in this case "
+           "is 'NOT(t1 AND t2)'. Tags must be separated by commas: "
+           "--not-tags <tag1,tag2>"),
+    start_version="2.26")
+@utils.arg(
+    '--not-tags-any',
+    dest='not-tags-any',
+    metavar='<not-tags-any>',
+    default=None,
+    help=_("Only the servers that do not have at least one of the given tags"
+           "will be included in the list result. Boolean expression in this "
+           "case is 'NOT(t1 OR t2)'. Tags must be separated by commas: "
+           "--not-tags-any <tag1,tag2>"),
+    start_version="2.26")
 def do_list(cs, args):
     """List active servers."""
     imageid = None
@@ -1486,6 +1525,10 @@ def do_list(cs, args):
         'deleted': args.deleted,
         'instance_name': args.instance_name,
         'changes-since': args.changes_since}
+
+    for arg in ('tags', "tags-any", 'not-tags', 'not-tags-any'):
+        if arg in args:
+            search_opts[arg] = getattr(args, arg)
 
     filters = {'flavor': lambda f: f['id'],
                'security_groups': utils.format_security_groups}
@@ -4975,3 +5018,56 @@ def do_virtual_interface_list(cs, args):
     server = _find_server(cs, args.server)
     interface_list = cs.virtual_interfaces.list(base.getid(server))
     _print_virtual_interface_list(cs, interface_list)
+
+
+@api_versions.wraps("2.26")
+@utils.arg('server', metavar='<server>', help=_('Name or ID of server.'))
+def do_server_tag_list(cs, args):
+    """Get list of tags from a server."""
+    server = _find_server(cs, args.server)
+    tags = server.tag_list()
+    utils.print_list(tags, 'name')
+
+
+@api_versions.wraps("2.26")
+@utils.arg('server', metavar='<server>', help=_('Name or ID of server.'))
+@utils.arg('tag', metavar='<tag>', help=_('Tag to add.'))
+def do_server_tag_add(cs, args):
+    """Add single tag to a server."""
+    server = _find_server(cs, args.server)
+    server.add_tag(args.tag)
+
+
+@api_versions.wraps("2.26")
+@utils.arg('server', metavar='<server>', help=_('Name or ID of server.'))
+@utils.arg('tags', metavar='<tags>', nargs='+', help=_('Tag(s) to set.'))
+def do_server_tag_set(cs, args):
+    """Set list of tags to a server."""
+    server = _find_server(cs, args.server)
+    server.set_tags(args.tags)
+
+
+@api_versions.wraps("2.26")
+@utils.arg('server', metavar='<server>', help=_('Name or ID of server.'))
+@utils.arg('tag', metavar='<tag>', help=_('Tag to delete.'))
+def do_server_tag_delete(cs, args):
+    """Delete single tag from a server."""
+    server = _find_server(cs, args.server)
+    server.delete_tag(args.tag)
+
+
+@api_versions.wraps("2.26")
+@utils.arg('server', metavar='<server>', help=_('Name or ID of server.'))
+def do_server_tag_delete_all(cs, args):
+    """Delete all tags from a server."""
+    server = _find_server(cs, args.server)
+    server.delete_all_tags()
+
+
+@api_versions.wraps("2.26")
+@utils.arg('server', metavar='<server>', help=_('Name or ID of server.'))
+@utils.arg('tag', metavar='<tag>', help=_('Tag to check if it exists or not.'))
+def do_server_tag_exists(cs, args):
+    """Check if a server has specified tag."""
+    server = _find_server(cs, args.server)
+    server.tag_exists(args.tag)

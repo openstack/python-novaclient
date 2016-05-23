@@ -526,6 +526,42 @@ class Server(base.Resource):
         """Trigger crash dump in an instance"""
         return self.manager.trigger_crash_dump(self)
 
+    def tag_list(self):
+        """
+        Get list of tags from an instance.
+        """
+        return self.manager.tag_list(self)
+
+    def delete_tag(self, tag):
+        """
+        Remove single tag from an instance.
+        """
+        return self.manager.delete_tag(self, tag)
+
+    def delete_all_tags(self):
+        """
+        Remove all tags from an instance.
+        """
+        return self.manager.delete_all_tags(self)
+
+    def set_tags(self, tags):
+        """
+        Set list of tags to an instance.
+        """
+        return self.manager.set_tags(self, tags)
+
+    def add_tag(self, tag):
+        """
+        Add single tag to an instance.
+        """
+        return self.manager.add_tag(self, tag)
+
+    def tag_exists(self, tag):
+        """
+        Check if an instance has specified tag.
+        """
+        return self.manager.tag_exists(self, tag)
+
 
 class NetworkInterface(base.Resource):
     @property
@@ -1708,4 +1744,52 @@ class ServerManager(base.BootingManagerWithFind):
         body = {'remote_console': info}
         url = '/servers/%s/remote-consoles' % base.getid(server)
         resp, body = self.api.client.post(url, body=body)
+        return self.convert_into_with_meta(body, resp)
+
+    @api_versions.wraps('2.26')
+    def tag_list(self, server):
+        """
+        Get list of tags from an instance.
+        """
+        resp, body = self.api.client.get(
+            "/servers/%s/tags" % base.getid(server))
+        return base.ListWithMeta(body['tags'], resp)
+
+    @api_versions.wraps('2.26')
+    def delete_tag(self, server, tag):
+        """
+        Remove single tag from an instance.
+        """
+        return self._delete("/servers/%s/tags/%s" % (base.getid(server), tag))
+
+    @api_versions.wraps('2.26')
+    def delete_all_tags(self, server):
+        """
+        Remove all tags from an instance.
+        """
+        return self._delete("/servers/%s/tags" % base.getid(server))
+
+    @api_versions.wraps('2.26')
+    def set_tags(self, server, tags):
+        """
+        Set list of tags to an instance.
+        """
+        body = {"tags": tags}
+        return self._update("/servers/%s/tags" % base.getid(server), body)
+
+    @api_versions.wraps('2.26')
+    def add_tag(self, server, tag):
+        """
+        Add single tag to an instance.
+        """
+        return self._update(
+            "/servers/%s/tags/%s" % (base.getid(server), tag), None)
+
+    @api_versions.wraps('2.26')
+    def tag_exists(self, server, tag):
+        """
+        Check if an instance has specified tag.
+        """
+        resp, body = self.api.client.get(
+            "/servers/%s/tags/%s" % (base.getid(server), tag))
         return self.convert_into_with_meta(body, resp)

@@ -1148,3 +1148,45 @@ class ServersV225Test(ServersV219Test):
         s = self.cs.servers.get(1234)
         self.assertRaises(ValueError, s.live_migrate, 'hostname',
                           'auto', 'True')
+
+
+class ServersV226Test(ServersV225Test):
+    def setUp(self):
+        super(ServersV219Test, self).setUp()
+        self.cs.api_version = api_versions.APIVersion("2.26")
+
+    def test_tag_list(self):
+        s = self.cs.servers.get(1234)
+        ret = s.tag_list()
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
+        self.assert_called('GET', '/servers/1234/tags')
+
+    def test_tag_delete(self):
+        s = self.cs.servers.get(1234)
+        ret = s.delete_tag('tag')
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
+        self.assert_called('DELETE', '/servers/1234/tags/tag')
+
+    def test_tag_delete_all(self):
+        s = self.cs.servers.get(1234)
+        ret = s.delete_all_tags()
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
+        self.assert_called('DELETE', '/servers/1234/tags')
+
+    def test_tag_add(self):
+        s = self.cs.servers.get(1234)
+        ret = s.add_tag('tag')
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
+        self.assert_called('PUT', '/servers/1234/tags/tag')
+
+    def test_tags_set(self):
+        s = self.cs.servers.get(1234)
+        ret = s.set_tags(['tag1', 'tag2'])
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
+        self.assert_called('PUT', '/servers/1234/tags')
+
+    def test_tag_exists(self):
+        s = self.cs.servers.get(1234)
+        ret = s.tag_exists('tag')
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
+        self.assert_called('GET', '/servers/1234/tags/tag')
