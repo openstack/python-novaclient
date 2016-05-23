@@ -11,7 +11,7 @@
 # under the License.
 
 from six.moves.urllib import parse
-import tempest_lib.cli.base
+import tempest.lib.cli.base
 
 from novaclient.tests.functional import base
 
@@ -32,7 +32,7 @@ class TestAuthentication(base.ClientTestBase):
         if self.cli_clients.insecure:
             flags += ' --insecure '
 
-        return tempest_lib.cli.base.execute(
+        return tempest.lib.cli.base.execute(
             "nova", action, flags, cli_dir=self.cli_clients.cli_dir)
 
     def test_auth_via_keystone_v2(self):

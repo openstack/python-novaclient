@@ -13,7 +13,7 @@
 import uuid
 
 import six
-from tempest_lib import exceptions
+from tempest.lib import exceptions
 
 from novaclient.tests.functional import base
 
