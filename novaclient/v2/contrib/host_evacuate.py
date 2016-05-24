@@ -13,6 +13,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from novaclient import api_versions
 from novaclient import base
 from novaclient.i18n import _
 from novaclient.openstack.common import cliutils
@@ -27,8 +28,15 @@ def _server_evacuate(cs, server, args):
     success = True
     error_message = ""
     try:
-        cs.servers.evacuate(server=server['uuid'], host=args.target_host,
-                            on_shared_storage=args.on_shared_storage)
+        on_shared_storage = getattr(args, 'on_shared_storage', None)
+        if api_versions.APIVersion("2.14") <= cs.api_version:
+            # if microversion >= 2.14
+            cs.servers.evacuate(server=server['uuid'], host=args.target_host)
+        else:
+            # else microversion 2.0 - 2.13
+            cs.servers.evacuate(server=server['uuid'],
+                                host=args.target_host,
+                                on_shared_storage=on_shared_storage)
     except Exception as e:
         success = False
         error_message = _("Error while evacuating instance: %s") % e
@@ -50,7 +58,9 @@ def _server_evacuate(cs, server, args):
     dest='on_shared_storage',
     action="store_true",
     default=False,
-    help=_('Specifies whether all instances files are on shared storage'))
+    help=_('Specifies whether all instances files are on shared storage'),
+    start_version='2.0',
+    end_version='2.13')
 def do_host_evacuate(cs, args):
     """Evacuate all instances from failed host."""
     hypervisors = cs.hypervisors.search(args.host, servers=True)

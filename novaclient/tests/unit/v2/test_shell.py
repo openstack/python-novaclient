@@ -1919,6 +1919,19 @@ class ShellTest(utils.TestCase):
         self.assert_called(
             'GET', '/os-hosts/sample-host/reboot')
 
+    def test_host_evacuate_v2_14(self):
+        self.run_command('host-evacuate hyper --target target_hyper',
+                         api_version='2.14')
+        self.assert_called('GET', '/os-hypervisors/hyper/servers', pos=0)
+        self.assert_called('POST', '/servers/uuid1/action',
+                           {'evacuate': {'host': 'target_hyper'}}, pos=1)
+        self.assert_called('POST', '/servers/uuid2/action',
+                           {'evacuate': {'host': 'target_hyper'}}, pos=2)
+        self.assert_called('POST', '/servers/uuid3/action',
+                           {'evacuate': {'host': 'target_hyper'}}, pos=3)
+        self.assert_called('POST', '/servers/uuid4/action',
+                           {'evacuate': {'host': 'target_hyper'}}, pos=4)
+
     def test_host_evacuate(self):
         self.run_command('host-evacuate hyper --target target_hyper')
         self.assert_called('GET', '/os-hypervisors/hyper/servers', pos=0)
