@@ -20,7 +20,7 @@ class TestAuthentication(base.ClientTestBase):
     def nova(self, action, identity_api_version):
         url = parse.urlparse(self.cli_clients.uri)
         url = parse.urlunparse((url.scheme, url.netloc,
-                                '/v%s' % identity_api_version,
+                                '/identity/v%s' % identity_api_version,
                                 url.params, url.query,
                                 url.fragment))
         flags = ('--os-username %s --os-tenant-name %s --os-password %s '
