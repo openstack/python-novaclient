@@ -73,6 +73,18 @@ class _ClientConnectionPool(object):
         return self._adapters[url]
 
 
+def _log_request_id(logger, resp, service_name):
+    request_id = (resp.headers.get('x-openstack-request-id') or
+                  resp.headers.get('x-compute-request-id'))
+    if request_id:
+        logger.debug('%(method)s call to %(service_name)s for %(url)s '
+                     'used request id %(response_request_id)s',
+                     {'method': resp.request.method,
+                      'service_name': service_name,
+                      'url': resp.url,
+                      'response_request_id': request_id})
+
+
 class SessionClient(adapter.LegacyJsonAdapter):
 
     def __init__(self, *args, **kwargs):
@@ -93,6 +105,11 @@ class SessionClient(adapter.LegacyJsonAdapter):
                                                             method,
                                                             raise_exc=False,
                                                             **kwargs)
+
+        # if service name is None then use service_type for logging
+        service = self.service_name or self.service_type
+        _log_request_id(self.logger, resp, service)
+
         # TODO(andreykurilin): uncomment this line, when we will be able to
         #   check only nova-related calls
         # api_versions.check_headers(resp, self.api_version)
@@ -142,7 +159,8 @@ class HTTPClient(object):
                  http_log_debug=False, auth_system='keystone',
                  auth_plugin=None, auth_token=None,
                  cacert=None, tenant_id=None, user_id=None,
-                 connection_pool=False, api_version=None):
+                 connection_pool=False, api_version=None,
+                 logger=None):
         self.user = user
         self.user_id = user_id
         self.password = password
@@ -203,9 +221,10 @@ class HTTPClient(object):
         self.auth_plugin = auth_plugin
         self._session = None
         self._current_url = None
-        self._logger = logging.getLogger(__name__)
+        self._logger = logger or logging.getLogger(__name__)
 
-        if self.http_log_debug and not self._logger.handlers:
+        if (self.http_log_debug and logger is None and
+                not self._logger.handlers):
             # Logging level is already set on the root logger
             ch = logging.StreamHandler()
             self._logger.addHandler(ch)
@@ -319,6 +338,10 @@ class HTTPClient(object):
                            "%(text)s\n", {'status': resp.status_code,
                                           'headers': resp.headers,
                                           'text': json.dumps(body)})
+
+        # if service name is None then use service_type for logging
+        service = self.service_name or self.service_type
+        _log_request_id(self._logger, resp, service)
 
     def open_session(self):
         if not self._connection_pool:
@@ -706,6 +729,7 @@ def _construct_http_client(username=None, password=None, project_id=None,
     else:
         # FIXME(jamielennox): username and password are now optional. Need
         # to test that they were provided in this mode.
+        logger = kwargs.get('logger')
         return HTTPClient(username,
                           password,
                           user_id=user_id,
@@ -730,7 +754,8 @@ def _construct_http_client(username=None, password=None, project_id=None,
                           http_log_debug=http_log_debug,
                           cacert=cacert,
                           connection_pool=connection_pool,
-                          api_version=api_version)
+                          api_version=api_version,
+                          logger=logger)
 
 
 def discover_extensions(version, only_contrib=False):

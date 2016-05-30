@@ -13,6 +13,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import logging
+
 from novaclient import api_versions
 from novaclient import client
 from novaclient.i18n import _LW
@@ -67,7 +69,7 @@ class Client(object):
                  auth_system='keystone', auth_plugin=None, auth_token=None,
                  cacert=None, tenant_id=None, user_id=None,
                  connection_pool=False, session=None, auth=None,
-                 api_version=None, direct_use=True, **kwargs):
+                 api_version=None, direct_use=True, logger=None, **kwargs):
         """Initialization of Client object.
 
         :param str username: Username
@@ -99,6 +101,8 @@ class Client(object):
         :param str session: Session
         :param str auth: Auth
         :param api_version: Compute API version
+        :param direct_use: Direct use
+        :param logger: Logger
         :type api_version: novaclient.api_versions.APIVersion
         """
         if direct_use:
@@ -174,6 +178,9 @@ class Client(object):
                     setattr(self, extension.name,
                             extension.manager_class(self))
 
+        if not logger:
+            logger = logging.getLogger(__name__)
+
         self.client = client._construct_http_client(
             username=username,
             password=password,
@@ -202,6 +209,7 @@ class Client(object):
             session=session,
             auth=auth,
             api_version=api_version,
+            logger=logger,
             **kwargs)
 
     @client._original_only

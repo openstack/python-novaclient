@@ -71,15 +71,16 @@ retry_after_non_supporting_mock_request = mock.Mock(
     return_value=retry_after_non_supporting_response)
 
 
-def get_client():
+def get_client(**kwargs):
     cl = client.HTTPClient("username", "password",
                            "project_id",
-                           utils.AUTH_URL_V2)
+                           utils.AUTH_URL_V2,
+                           **kwargs)
     return cl
 
 
-def get_authed_client():
-    cl = get_client()
+def get_authed_client(**kwargs):
+    cl = get_client(**kwargs)
     cl.management_url = "http://example.com"
     cl.auth_token = "token"
     cl.get_service_url = mock.Mock(return_value="http://example.com")
@@ -164,14 +165,16 @@ class ClientTest(utils.TestCase):
 
         test_refused_call()
 
-    def test_client_logger(self):
-        cl1 = client.HTTPClient("username", "password", "project_id",
-                                "auth_test", http_log_debug=True)
-        self.assertEqual(1, len(cl1._logger.handlers))
+    @mock.patch.object(requests, "request", mock_request)
+    @mock.patch.object(client, '_log_request_id')
+    @mock.patch.object(client.HTTPClient, 'http_log_req')
+    def test_client_logger(self, mock_http_log_req, mock_log_request_id):
+        cl = get_authed_client(service_name='compute', http_log_debug=True)
+        self.assertIsNotNone(cl._logger)
 
-        cl2 = client.HTTPClient("username", "password", "project_id",
-                                "auth_test", http_log_debug=True)
-        self.assertEqual(1, len(cl2._logger.handlers))
+        cl.post("/hi", body=[1, 2, 3])
+        mock_log_request_id.assert_called_once_with(cl._logger, fake_response,
+                                                    'compute')
 
     @mock.patch.object(requests, 'request', unknown_error_mock_request)
     def test_unknown_server_error(self):
