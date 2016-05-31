@@ -29,7 +29,9 @@ if not LOG.handlers:
     LOG.addHandler(logging.StreamHandler())
 
 
-HEADER_NAME = "X-OpenStack-Nova-API-Version"
+LEGACY_HEADER_NAME = "X-OpenStack-Nova-API-Version"
+HEADER_NAME = "OpenStack-API-Version"
+SERVICE_TYPE = "compute"
 # key is a deprecated version and value is an alternative version.
 DEPRECATED_VERSIONS = {"1.1": "2"}
 
@@ -317,19 +319,25 @@ def discover_version(client, requested_version):
 
 
 def update_headers(headers, api_version):
-    """Set 'X-OpenStack-Nova-API-Version' header if api_version is not null"""
+    """Set microversion headers if api_version is not null"""
 
-    if not api_version.is_null() and api_version.ver_minor != 0:
-        headers[HEADER_NAME] = api_version.get_string()
+    if not api_version.is_null():
+        version_string = api_version.get_string()
+        if api_version.ver_minor != 0:
+            headers[LEGACY_HEADER_NAME] = version_string
+        if api_version.ver_minor >= 27:
+            headers[HEADER_NAME] = '%s %s' % (SERVICE_TYPE, version_string)
 
 
 def check_headers(response, api_version):
-    """Checks that 'X-OpenStack-Nova-API-Version' header in response."""
-    if api_version.ver_minor > 0 and HEADER_NAME not in response.headers:
-        LOG.warning(_LW(
-            "Your request was processed by a Nova API which does not support "
-            "microversions (%s header is missing from response). "
-            "Warning: Response may be incorrect."), HEADER_NAME)
+    """Checks that microversion header is in response."""
+    if api_version.ver_minor > 0:
+        if (api_version.ver_minor < 27
+                and LEGACY_HEADER_NAME not in response.headers):
+            _warn_missing_microversion_header(LEGACY_HEADER_NAME)
+        elif (api_version.ver_minor >= 27
+                and HEADER_NAME not in response.headers):
+            _warn_missing_microversion_header(HEADER_NAME)
 
 
 def add_substitution(versioned_method):
@@ -378,3 +386,11 @@ def wraps(start_version, end_version=None):
         return substitution
 
     return decor
+
+
+def _warn_missing_microversion_header(header_name):
+    """Log a warning about missing microversion response header."""
+    LOG.warning(_LW(
+        "Your request was processed by a Nova API which does not support "
+        "microversions (%s header is missing from response). "
+        "Warning: Response may be incorrect."), header_name)

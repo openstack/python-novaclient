@@ -2776,6 +2776,9 @@ class ShellTest(utils.TestCase):
                  #   new microversion, just an additional checks. See
                  #   https://review.openstack.org/#/c/233076/ for more details)
             20,  # doesn't require any changes in novaclient
+            27,  # NOTE(cdent): 27 adds support for updated microversion
+                 #   headers, and is tested in test_api_versions, but is
+                 #   not explicitly tested via wraps and _SUBSTITUTIONS.
         ])
         versions_supported = set(range(0,
                                  novaclient.API_MAX_VERSION.ver_minor + 1))

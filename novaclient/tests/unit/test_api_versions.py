@@ -144,6 +144,18 @@ class UpdateHeadersTestCase(utils.TestCase):
             {"X-OpenStack-Nova-API-Version": api_version.get_string()},
             headers)
 
+    def test_api_version_is_gte_27(self):
+        api_version = api_versions.APIVersion("2.27")
+        headers = {}
+        api_versions.update_headers(headers, api_version)
+        self.assertIn('X-OpenStack-Nova-API-Version', headers)
+        self.assertIn('OpenStack-API-Version', headers)
+        self.assertEqual(api_version.get_string(),
+                         headers['X-OpenStack-Nova-API-Version'])
+        self.assertEqual('%s %s' % (api_versions.SERVICE_TYPE,
+                                    api_version.get_string()),
+                         headers['OpenStack-API-Version'])
+
 
 class CheckHeadersTestCase(utils.TestCase):
     def setUp(self):
@@ -152,8 +164,9 @@ class CheckHeadersTestCase(utils.TestCase):
         self.mock_log = mock_log_patch.start()
         self.addCleanup(mock_log_patch.stop)
 
-    def test_microversion_is_specified(self):
-        response = mock.MagicMock(headers={api_versions.HEADER_NAME: ""})
+    def test_legacy_microversion_is_specified(self):
+        response = mock.MagicMock(
+            headers={api_versions.LEGACY_HEADER_NAME: ""})
         api_versions.check_headers(response, api_versions.APIVersion("2.2"))
         self.assertFalse(self.mock_log.warning.called)
 
@@ -161,8 +174,19 @@ class CheckHeadersTestCase(utils.TestCase):
         api_versions.check_headers(response, api_versions.APIVersion("2.2"))
         self.assertTrue(self.mock_log.warning.called)
 
+    def test_generic_microversion_is_specified(self):
+        response = mock.MagicMock(
+            headers={api_versions.HEADER_NAME: ""})
+        api_versions.check_headers(response, api_versions.APIVersion("2.27"))
+        self.assertFalse(self.mock_log.warning.called)
+
+        response = mock.MagicMock(headers={})
+        api_versions.check_headers(response, api_versions.APIVersion("2.27"))
+        self.assertTrue(self.mock_log.warning.called)
+
     def test_microversion_is_not_specified(self):
-        response = mock.MagicMock(headers={api_versions.HEADER_NAME: ""})
+        response = mock.MagicMock(
+            headers={api_versions.LEGACY_HEADER_NAME: ""})
         api_versions.check_headers(response, api_versions.APIVersion("2.2"))
         self.assertFalse(self.mock_log.warning.called)
 
