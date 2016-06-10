@@ -1,0 +1,5 @@
+---
+upgrade:
+- Support v2.28 microversion
+- cpu_info property of hypervisor resource is a json now (previously it was
+  text).
