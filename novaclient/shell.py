@@ -380,6 +380,9 @@ class NovaClientArgumentParser(argparse.ArgumentParser):
 class OpenStackComputeShell(object):
     times = []
 
+    def __init__(self):
+        self.client_logger = None
+
     def _append_global_identity_args(self, parser, argv):
         # Register the CLI arguments that have moved to the session object.
         loading.register_session_argparse_arguments(parser)
@@ -698,6 +701,11 @@ class OpenStackComputeShell(object):
                             format=streamformat)
         logging.getLogger('iso8601').setLevel(logging.WARNING)
 
+        self.client_logger = logging.getLogger(client.__name__)
+        ch = logging.StreamHandler()
+        self.client_logger.setLevel(logging.DEBUG)
+        self.client_logger.addHandler(ch)
+
     def main(self, argv):
         # Parse args once to find version and debug settings
         parser = self.get_base_parser(argv)
@@ -892,7 +900,8 @@ class OpenStackComputeShell(object):
             timings=args.timings, bypass_url=bypass_url,
             os_cache=os_cache, http_log_debug=args.debug,
             cacert=cacert, timeout=timeout,
-            session=keystone_session, auth=keystone_auth)
+            session=keystone_session, auth=keystone_auth,
+            logger=self.client_logger)
 
         if not skip_auth:
             if not api_version.is_latest():

@@ -443,7 +443,8 @@ class ClientTest(utils.TestCase):
 class SessionClientTest(utils.TestCase):
 
     @mock.patch.object(adapter.LegacyJsonAdapter, 'request')
-    def test_timings(self, m_request):
+    @mock.patch.object(novaclient.client, '_log_request_id')
+    def test_timings(self, mock_log_request_id, m_request):
         m_request.return_value = (mock.MagicMock(status_code=200), None)
 
         client = novaclient.client.SessionClient(session=mock.MagicMock())
@@ -455,6 +456,17 @@ class SessionClientTest(utils.TestCase):
         client.request("http://no.where", 'GET')
         self.assertEqual(1, len(client.times))
         self.assertEqual('GET http://no.where', client.times[0][0])
+
+    @mock.patch.object(adapter.LegacyJsonAdapter, 'request')
+    @mock.patch.object(novaclient.client, '_log_request_id')
+    def test_log_request_id(self, mock_log_request_id, mock_request):
+        response = mock.MagicMock(status_code=200)
+        mock_request.return_value = (response, None)
+        client = novaclient.client.SessionClient(session=mock.MagicMock(),
+                                                 service_name='compute')
+        client.request("http://no.where", 'GET')
+        mock_log_request_id.assert_called_once_with(client.logger, response,
+                                                    'compute')
 
 
 class DiscoverExtensionTest(utils.TestCase):

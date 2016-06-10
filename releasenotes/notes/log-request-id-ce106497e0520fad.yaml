@@ -1,0 +1,11 @@
+---
+prelude: >
+  - Log 'x-openstack-request-id' or 'x-compute-request-id'
+    in each API call. If the caller (e.g. heat) uses oslo.log,
+    the caller's request id in oslo.context and the callee's
+    request id can be output in the same log message (same line).
+features:
+  - Log 'x-openstack-request-id' or 'x-compute-request-id'
+    in each API call. If the caller (e.g. heat) uses oslo.log,
+    the caller's request id in oslo.context and the callee's
+    request id can be output in the same log message (same line).
