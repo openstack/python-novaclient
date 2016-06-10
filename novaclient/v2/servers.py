@@ -556,12 +556,6 @@ class Server(base.Resource):
         """
         return self.manager.add_tag(self, tag)
 
-    def tag_exists(self, tag):
-        """
-        Check if an instance has specified tag.
-        """
-        return self.manager.tag_exists(self, tag)
-
 
 class NetworkInterface(base.Resource):
     @property
@@ -1784,12 +1778,3 @@ class ServerManager(base.BootingManagerWithFind):
         """
         return self._update(
             "/servers/%s/tags/%s" % (base.getid(server), tag), None)
-
-    @api_versions.wraps('2.26')
-    def tag_exists(self, server, tag):
-        """
-        Check if an instance has specified tag.
-        """
-        resp, body = self.api.client.get(
-            "/servers/%s/tags/%s" % (base.getid(server), tag))
-        return self.convert_into_with_meta(body, resp)

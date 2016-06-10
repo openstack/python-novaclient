@@ -5029,7 +5029,8 @@ def do_server_tag_list(cs, args):
     """Get list of tags from a server."""
     server = _find_server(cs, args.server)
     tags = server.tag_list()
-    utils.print_list(tags, 'name')
+    formatters = {'Tag': lambda o: o}
+    utils.print_list(tags, ['Tag'], formatters=formatters)
 
 
 @api_versions.wraps("2.26")
@@ -5065,12 +5066,3 @@ def do_server_tag_delete_all(cs, args):
     """Delete all tags from a server."""
     server = _find_server(cs, args.server)
     server.delete_all_tags()
-
-
-@api_versions.wraps("2.26")
-@utils.arg('server', metavar='<server>', help=_('Name or ID of server.'))
-@utils.arg('tag', metavar='<tag>', help=_('Tag to check if it exists or not.'))
-def do_server_tag_exists(cs, args):
-    """Check if a server has specified tag."""
-    server = _find_server(cs, args.server)
-    server.tag_exists(args.tag)

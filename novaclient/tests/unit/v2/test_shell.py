@@ -2840,11 +2840,6 @@ class ShellTest(utils.TestCase):
                          api_version='2.26')
         self.assert_called('DELETE', '/servers/1234/tags')
 
-    def test_server_tag_exists(self):
-        self.run_command('server-tag-exists sample-server tag',
-                         api_version='2.26')
-        self.assert_called('GET', '/servers/1234/tags/tag')
-
     def test_list_v2_26_tags(self):
         self.run_command('list --tags tag1,tag2', api_version='2.26')
         self.assert_called('GET', '/servers/detail?tags=tag1%2Ctag2')

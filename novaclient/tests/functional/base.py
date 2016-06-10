@@ -344,6 +344,38 @@ class ClientTestBase(testtools.TestCase):
 
         raise ValueError("Unable to find value for column '%s'." % column)
 
+    def _get_list_of_values_from_single_column_table(self, table, column):
+        """Get the list of values for the column in the single-column table
+
+        Example table:
+
+        +------+
+        | Tags |
+        +------+
+        | tag1 |
+        | tag2 |
+        +------+
+
+        :param table: newline-separated table with |-separated cells
+        :param column: name of the column to look for
+        :raises: ValueError if the single column has some other name
+        """
+        lines = table.split("\n")
+        column_name = None
+        values = []
+        for line in lines:
+            if "|" in line:
+                if not column_name:
+                    column_name = line.split("|")[1].strip()
+                    if column_name != column:
+                        raise ValueError(
+                            "The table has no column %(expected)s "
+                            "but has column %(actual)s." % {
+                                'expected': column, 'actual': column_name})
+                else:
+                    values.append(line.split("|")[1].strip())
+        return values
+
     def _create_server(self, name=None, with_network=True, add_cleanup=True,
                        **kwargs):
         name = name or self.name_generate(prefix='server')

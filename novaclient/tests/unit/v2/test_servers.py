@@ -1184,9 +1184,3 @@ class ServersV226Test(ServersV225Test):
         ret = s.set_tags(['tag1', 'tag2'])
         self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('PUT', '/servers/1234/tags')
-
-    def test_tag_exists(self):
-        s = self.cs.servers.get(1234)
-        ret = s.tag_exists('tag')
-        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
-        self.assert_called('GET', '/servers/1234/tags/tag')
