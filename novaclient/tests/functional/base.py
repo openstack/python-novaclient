@@ -342,7 +342,7 @@ class ClientTestBase(testtools.TestCase):
                     # the value now using the column index.
                     return line.split("|")[1:-1][column_index].strip()
 
-        raise ValueError("Unable to find value for column '%s'.")
+        raise ValueError("Unable to find value for column '%s'." % column)
 
     def _create_server(self, name=None, with_network=True, add_cleanup=True,
                        **kwargs):
