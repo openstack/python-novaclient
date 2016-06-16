@@ -51,24 +51,21 @@ Installing this package gets you a shell command, ``nova``, that you
 can use to interact with any OpenStack cloud.
 
 You'll need to provide your OpenStack username and password. You can do this
-with the ``--os-username``, ``--os-password`` and  ``--os-tenant-name``
+with the ``--os-username``, ``--os-password`` and  ``--os-project-name``
 params, but it's easier to just set them as environment variables::
 
-    export OS_USERNAME=openstack
-    export OS_PASSWORD=yadayada
-    export OS_TENANT_NAME=myproject
+    export OS_USERNAME=<username>
+    export OS_PASSWORD=<password>
+    export OS_PROJECT_NAME=<project-name>
+
 
 You will also need to define the authentication url with ``--os-auth-url``
 and the version of the API with ``--os-compute-api-version``.  Or set them as
-an environment variables as well::
+environment variables as well and set the OS_AUTH_URL to the keystone endpoint::
 
-    export OS_AUTH_URL=http://example.com:8774/v2/
-    export OS_COMPUTE_API_VERSION=2
+    export OS_AUTH_URL=http://<url-to-openstack-keystone>:5000/v3/
+    export OS_COMPUTE_API_VERSION=2.1
 
-If you are using Keystone, you need to set the OS_AUTH_URL to the keystone
-endpoint::
-
-    export OS_AUTH_URL=http://example.com:5000/v2.0/
 
 Since Keystone can return multiple regions in the Service Catalog, you
 can specify the one you want with ``--os-region-name`` (or
@@ -85,13 +82,22 @@ There's also a complete Python API, with documentation linked below.
 
 To use with keystone as the authentication system::
 
+    >>> from keystoneauth1.identity import v3
+    >>> from keystoneauth1 import session
     >>> from novaclient import client
-    >>> nt = client.Client(VERSION, USER, PASSWORD, TENANT, AUTH_URL)
-    >>> nt.flavors.list()
+    >>> auth = v3.Password(auth_url='http://example.com:5000/v3',
+    ...                    username='username',
+    ...                    password='password',
+    ...                    project_name='project-name',
+    ...                    user_domain_id='default',
+    ...                    project_domain_id='default')
+    >>> sess = session.Session(auth=auth)
+    >>> nova = client.Client("2.1", session=sess)
+    >>> nova.flavors.list()
     [...]
-    >>> nt.servers.list()
+    >>> nova.servers.list()
     [...]
-    >>> nt.keypairs.list()
+    >>> nova.keypairs.list()
     [...]
 
 
