@@ -2009,6 +2009,23 @@ class ShellTest(utils.TestCase):
                            {'evacuate': {'host': 'target_hyper',
                                          'onSharedStorage': False}}, pos=4)
 
+    def test_host_evacuate_v2_29(self):
+        self.run_command('host-evacuate hyper --target target_hyper --force',
+                         api_version='2.29')
+        self.assert_called('GET', '/os-hypervisors/hyper/servers', pos=0)
+        self.assert_called('POST', '/servers/uuid1/action',
+                           {'evacuate': {'host': 'target_hyper', 'force': True}
+                            }, pos=1)
+        self.assert_called('POST', '/servers/uuid2/action',
+                           {'evacuate': {'host': 'target_hyper', 'force': True}
+                            }, pos=2)
+        self.assert_called('POST', '/servers/uuid3/action',
+                           {'evacuate': {'host': 'target_hyper', 'force': True}
+                            }, pos=3)
+        self.assert_called('POST', '/servers/uuid4/action',
+                           {'evacuate': {'host': 'target_hyper', 'force': True}
+                            }, pos=4)
+
     def test_host_evacuate_with_shared_storage(self):
         self.run_command(
             'host-evacuate --on-shared-storage hyper --target target_hyper')
@@ -2409,6 +2426,21 @@ class ShellTest(utils.TestCase):
         self.assert_called('POST', '/servers/1234/action',
                            {'evacuate': {'host': 'new_host',
                                          'onSharedStorage': True}})
+
+    def test_evacuate_v2_29(self):
+        self.run_command('evacuate sample-server new_host', api_version="2.29")
+        self.assert_called('POST', '/servers/1234/action',
+                           {'evacuate': {'host': 'new_host'}})
+        self.run_command('evacuate sample-server new_host '
+                         '--password NewAdminPass', api_version="2.29")
+        self.assert_called('POST', '/servers/1234/action',
+                           {'evacuate': {'host': 'new_host',
+                                         'adminPass': 'NewAdminPass'}})
+        self.run_command('evacuate --force sample-server new_host',
+                         api_version="2.29")
+        self.assert_called('POST', '/servers/1234/action',
+                           {'evacuate': {'host': 'new_host',
+                                         'force': True}})
 
     def test_evacuate_with_no_target_host(self):
         self.run_command('evacuate sample-server')

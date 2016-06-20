@@ -27,12 +27,17 @@ def _server_evacuate(cs, server, args):
     success = True
     error_message = ""
     try:
-        on_shared_storage = getattr(args, 'on_shared_storage', None)
-        if api_versions.APIVersion("2.14") <= cs.api_version:
-            # if microversion >= 2.14
+        if api_versions.APIVersion("2.29") <= cs.api_version:
+            # if microversion >= 2.29
+            force = getattr(args, 'force', None)
+            cs.servers.evacuate(server=server['uuid'], host=args.target_host,
+                                force=force)
+        elif api_versions.APIVersion("2.14") <= cs.api_version:
+            # if microversion 2.14 - 2.28
             cs.servers.evacuate(server=server['uuid'], host=args.target_host)
         else:
             # else microversion 2.0 - 2.13
+            on_shared_storage = getattr(args, 'on_shared_storage', None)
             cs.servers.evacuate(server=server['uuid'],
                                 host=args.target_host,
                                 on_shared_storage=on_shared_storage)
@@ -60,6 +65,13 @@ def _server_evacuate(cs, server, args):
     help=_('Specifies whether all instances files are on shared storage'),
     start_version='2.0',
     end_version='2.13')
+@utils.arg(
+    '--force',
+    dest='force',
+    action='store_true',
+    default=False,
+    help=_('Force to not verify the scheduler if a host is provided.'),
+    start_version='2.29')
 def do_host_evacuate(cs, args):
     """Evacuate all instances from failed host."""
     hypervisors = cs.hypervisors.search(args.host, servers=True)

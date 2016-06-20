@@ -753,7 +753,11 @@ class FakeHTTPClient(base_client.HTTPClient):
                 keys.remove('adminPass')
             if 'host' in keys:
                 keys.remove('host')
-            assert set(keys) == set(['onSharedStorage'])
+            if 'onSharedStorage' in keys:
+                keys.remove('onSharedStorage')
+            if 'force' in keys:
+                keys.remove('force')
+            assert set(keys) == set()
         else:
             raise AssertionError("Unexpected server action: %s" % action)
         _headers.update(FAKE_RESPONSE_HEADERS)
