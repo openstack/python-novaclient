@@ -715,13 +715,14 @@ class FakeHTTPClient(base_client.HTTPClient):
             # raise AssertionError if we didn't find 'action' at all.
             pass
         elif action == 'os-migrateLive':
+            expected = set(['host', 'block_migration'])
+            if self.api_version >= api_versions.APIVersion("2.30"):
+                if 'force' in body[action].keys():
+                    # force can be optional
+                    expected.add('force')
             if self.api_version < api_versions.APIVersion("2.25"):
-                assert set(body[action].keys()) == set(['host',
-                                                        'block_migration',
-                                                        'disk_over_commit'])
-            else:
-                assert set(body[action].keys()) == set(['host',
-                                                        'block_migration'])
+                expected.add('disk_over_commit')
+            assert set(body[action].keys()) == expected
         elif action == 'rebuild':
             body = body[action]
             adminPass = body.get('adminPass', 'randompassword')

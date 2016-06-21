@@ -3768,16 +3768,24 @@ def _print_aggregate_details(aggregate):
           'novaclient 3.3.0.') % '--disk-over-commit',
     help=argparse.SUPPRESS,
     start_version="2.0", end_version="2.24")
+@utils.arg(
+    '--force',
+    dest='force',
+    action='store_true',
+    default=False,
+    help=_('Force to not verify the scheduler if a host is provided.'),
+    start_version='2.30')
 def do_live_migration(cs, args):
     """Migrate running server to a new machine."""
 
+    update_kwargs = {}
     if 'disk_over_commit' in args:
-        _find_server(cs, args.server).live_migrate(args.host,
-                                                   args.block_migrate,
-                                                   args.disk_over_commit)
-    else:
-        _find_server(cs, args.server).live_migrate(args.host,
-                                                   args.block_migrate)
+        update_kwargs['disk_over_commit'] = args.disk_over_commit
+    if 'force' in args and args.force:
+        update_kwargs['force'] = args.force
+
+    _find_server(cs, args.server).live_migrate(args.host, args.block_migrate,
+                                               **update_kwargs)
 
 
 @api_versions.wraps("2.22")

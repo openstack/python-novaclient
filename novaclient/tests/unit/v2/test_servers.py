@@ -1195,3 +1195,25 @@ class ServersV229Test(ServersV226Test):
         self.assert_called('POST', '/servers/1234/action',
                            {'evacuate': {'host': 'fake_target_host',
                                          'force': True}})
+
+
+class ServersV230Test(ServersV229Test):
+    def setUp(self):
+        super(ServersV230Test, self).setUp()
+        self.cs.api_version = api_versions.APIVersion("2.30")
+
+    def test_live_migrate_server(self):
+        s = self.cs.servers.get(1234)
+        ret = s.live_migrate(host='hostname', block_migration='auto')
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
+        self.assert_called('POST', '/servers/1234/action',
+                           {'os-migrateLive': {'host': 'hostname',
+                                               'block_migration': 'auto'}})
+        ret = self.cs.servers.live_migrate(s, host='hostname',
+                                           block_migration='auto',
+                                           force=True)
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
+        self.assert_called('POST', '/servers/1234/action',
+                           {'os-migrateLive': {'host': 'hostname',
+                                               'block_migration': 'auto',
+                                               'force': True}})
