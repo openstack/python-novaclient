@@ -2509,7 +2509,7 @@ def do_get_serial_console(cs, args):
 @api_versions.wraps('2.8')
 @utils.arg('server', metavar='<server>', help=_('Name or ID of server.'))
 def do_get_mks_console(cs, args):
-    """Get a serial console to a server."""
+    """Get an MKS console to a server."""
     server = _find_server(cs, args.server)
     data = server.get_mks_console()
 
