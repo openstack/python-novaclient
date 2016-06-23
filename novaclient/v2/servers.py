@@ -499,7 +499,7 @@ class Server(base.Resource):
         """
         return self.manager.evacuate(self, host, on_shared_storage, password)
 
-    @api_versions.wraps("2.14")
+    @api_versions.wraps("2.14", "2.28")
     def evacuate(self, host=None, password=None):
         """
         Evacuate an instance from failed host to specified host.
@@ -510,6 +510,19 @@ class Server(base.Resource):
         :returns: An instance of novaclient.base.TupleWithMeta
         """
         return self.manager.evacuate(self, host, password)
+
+    @api_versions.wraps("2.29")
+    def evacuate(self, host=None, password=None, force=None):
+        """
+        Evacuate an instance from failed host to specified host.
+
+        :param host: Name of the target host
+        :param password: string to set as admin password on the evacuated
+                         server.
+        :param force: forces to bypass the scheduler if host is provided.
+        :returns: An instance of novaclient.base.TupleWithMeta
+        """
+        return self.manager.evacuate(self, host, password, force)
 
     def interface_list(self):
         """
@@ -1658,7 +1671,7 @@ class ServerManager(base.BootingManagerWithFind):
                                                        body)
         return base.TupleWithMeta((resp, body), resp)
 
-    @api_versions.wraps("2.14")
+    @api_versions.wraps("2.14", "2.28")
     def evacuate(self, server, host=None, password=None):
         """
         Evacuate a server instance.
@@ -1675,6 +1688,32 @@ class ServerManager(base.BootingManagerWithFind):
 
         if password is not None:
             body['adminPass'] = password
+
+        resp, body = self._action_return_resp_and_body('evacuate', server,
+                                                       body)
+        return base.TupleWithMeta((resp, body), resp)
+
+    @api_versions.wraps("2.29")
+    def evacuate(self, server, host=None, password=None, force=None):
+        """
+        Evacuate a server instance.
+
+        :param server: The :class:`Server` (or its ID) to share onto.
+        :param host: Name of the target host.
+        :param password: string to set as password on the evacuated server.
+        :param force: forces to bypass the scheduler if host is provided.
+        :returns: An instance of novaclient.base.TupleWithMeta
+        """
+
+        body = {}
+        if host is not None:
+            body['host'] = host
+
+        if password is not None:
+            body['adminPass'] = password
+
+        if force:
+            body['force'] = force
 
         resp, body = self._action_return_resp_and_body('evacuate', server,
                                                        body)

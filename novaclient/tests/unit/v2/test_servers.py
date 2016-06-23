@@ -1179,3 +1179,19 @@ class ServersV226Test(ServersV225Test):
         ret = s.set_tags(['tag1', 'tag2'])
         self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('PUT', '/servers/1234/tags')
+
+
+class ServersV229Test(ServersV226Test):
+    def setUp(self):
+        super(ServersV229Test, self).setUp()
+        self.cs.api_version = api_versions.APIVersion("2.29")
+
+    def test_evacuate(self):
+        s = self.cs.servers.get(1234)
+        s.evacuate('fake_target_host')
+        self.assert_called('POST', '/servers/1234/action',
+                           {'evacuate': {'host': 'fake_target_host'}})
+        self.cs.servers.evacuate(s, 'fake_target_host', force=True)
+        self.assert_called('POST', '/servers/1234/action',
+                           {'evacuate': {'host': 'fake_target_host',
+                                         'force': True}})

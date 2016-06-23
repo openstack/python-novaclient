@@ -4688,12 +4688,26 @@ def do_quota_class_update(cs, args):
     help=_('Specifies whether server files are located on shared storage.'),
     start_version='2.0',
     end_version='2.13')
+@utils.arg(
+    '--force',
+    dest='force',
+    action='store_true',
+    default=False,
+    help=_('Force to not verify the scheduler if a host is provided.'),
+    start_version='2.29')
 def do_evacuate(cs, args):
     """Evacuate server from failed host."""
 
     server = _find_server(cs, args.server)
     on_shared_storage = getattr(args, 'on_shared_storage', None)
-    res = server.evacuate(args.host, on_shared_storage, args.password)[1]
+    force = getattr(args, 'force', None)
+    update_kwargs = {}
+    if on_shared_storage is not None:
+        update_kwargs['on_shared_storage'] = on_shared_storage
+    if force:
+        update_kwargs['force'] = force
+    res = server.evacuate(host=args.host, password=args.password,
+                          **update_kwargs)[1]
     if isinstance(res, dict):
         utils.print_dict(res)
 
