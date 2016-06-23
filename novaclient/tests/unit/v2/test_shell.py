@@ -1758,6 +1758,19 @@ class ShellTest(utils.TestCase):
                            {'os-migrateLive': {'host': None,
                                                'block_migration': 'auto'}})
 
+    def test_live_migration_v2_30(self):
+        self.run_command('live-migration sample-server hostname',
+                         api_version='2.30')
+        self.assert_called('POST', '/servers/1234/action',
+                           {'os-migrateLive': {'host': 'hostname',
+                                               'block_migration': 'auto'}})
+        self.run_command('live-migration --force sample-server hostname',
+                         api_version='2.30')
+        self.assert_called('POST', '/servers/1234/action',
+                           {'os-migrateLive': {'host': 'hostname',
+                                               'block_migration': 'auto',
+                                               'force': True}})
+
     def test_live_migration_force_complete(self):
         self.run_command('live-migration-force-complete sample-server 1',
                          api_version='2.22')
@@ -1806,6 +1819,19 @@ class ShellTest(utils.TestCase):
         body = {'os-migrateLive': {'host': 'hostname',
                                    'block_migration': False,
                                    'disk_over_commit': False}}
+        self.assert_called('POST', '/servers/uuid1/action', body, pos=1)
+        self.assert_called('POST', '/servers/uuid2/action', body, pos=2)
+        self.assert_called('POST', '/servers/uuid3/action', body, pos=3)
+        self.assert_called('POST', '/servers/uuid4/action', body, pos=4)
+
+    def test_host_evacuate_live_2_30(self):
+        self.run_command('host-evacuate-live --force hyper '
+                         '--target-host hostname',
+                         api_version='2.30')
+        self.assert_called('GET', '/os-hypervisors/hyper/servers', pos=0)
+        body = {'os-migrateLive': {'host': 'hostname',
+                                   'block_migration': 'auto',
+                                   'force': True}}
         self.assert_called('POST', '/servers/uuid1/action', body, pos=1)
         self.assert_called('POST', '/servers/uuid2/action', body, pos=2)
         self.assert_called('POST', '/servers/uuid3/action', body, pos=3)

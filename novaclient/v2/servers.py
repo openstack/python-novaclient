@@ -432,7 +432,7 @@ class Server(base.Resource):
                                          block_migration,
                                          disk_over_commit)
 
-    @api_versions.wraps("2.25")
+    @api_versions.wraps("2.25", "2.29")
     def live_migrate(self, host=None, block_migration=None):
         """
         Migrates a running instance to a new machine.
@@ -445,6 +445,21 @@ class Server(base.Resource):
         if block_migration is None:
             block_migration = "auto"
         return self.manager.live_migrate(self, host, block_migration)
+
+    @api_versions.wraps("2.30")
+    def live_migrate(self, host=None, block_migration=None, force=None):
+        """
+        Migrates a running instance to a new machine.
+
+        :param host: destination host name.
+        :param block_migration: if True, do block_migration, the default
+                                value is None which is mapped to 'auto'.
+        :param force: force to bypass the scheduler if host is provided.
+        :returns: An instance of novaclient.base.TupleWithMeta
+        """
+        if block_migration is None:
+            block_migration = "auto"
+        return self.manager.live_migrate(self, host, block_migration, force)
 
     def reset_state(self, state='error'):
         """
@@ -1578,7 +1593,7 @@ class ServerManager(base.BootingManagerWithFind):
                              'block_migration': block_migration,
                              'disk_over_commit': disk_over_commit})
 
-    @api_versions.wraps('2.25')
+    @api_versions.wraps('2.25', '2.29')
     def live_migrate(self, server, host, block_migration):
         """
         Migrates a running instance to a new machine.
@@ -1592,6 +1607,23 @@ class ServerManager(base.BootingManagerWithFind):
         return self._action('os-migrateLive', server,
                             {'host': host,
                              'block_migration': block_migration})
+
+    @api_versions.wraps('2.30')
+    def live_migrate(self, server, host, block_migration, force=None):
+        """
+        Migrates a running instance to a new machine.
+
+        :param server: instance id which comes from nova list.
+        :param host: destination host name.
+        :param block_migration: if True, do block_migration, can be set as
+                                'auto'
+        :param force: forces to bypass the scheduler if host is provided.
+        :returns: An instance of novaclient.base.TupleWithMeta
+        """
+        body = {'host': host, 'block_migration': block_migration}
+        if force:
+            body['force'] = force
+        return self._action('os-migrateLive', server, body)
 
     def reset_state(self, server, state='error'):
         """
