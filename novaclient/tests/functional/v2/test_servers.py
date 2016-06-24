@@ -121,7 +121,8 @@ class TestServersDescription(base.ClientTestBase):
     def test_update_with_description_longer_than_255_symbols(self):
         # Negative case for description longer than 255 characters
         server = self._create_server()
-        descr = ''.join(random.choice(string.letters) for i in range(256))
+        descr = ''.join(random.choice(string.ascii_letters)
+                        for i in range(256))
         output = self.nova("update %s --description '%s'" % (server.id, descr),
                            fail_ok=True, merge_stderr=True)
         self.assertIn("\nERROR (BadRequest): Invalid input for field/attribute"
