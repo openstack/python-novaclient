@@ -1,0 +1,13 @@
+---
+deprecations:
+  - |
+    The following CLIs and python API bindings are now deprecated for removal:
+
+    * nova baremetal-node-list
+    * nova baremetal-node-show
+    * nova baremetal-interface-list
+
+    These will be removed in the first major python-novaclient release after
+    the Nova 15.0.0 Ocata release. Use python-ironicclient or
+    python-openstackclient for CLI and python-ironicclient or openstacksdk
+    for python API bindings.

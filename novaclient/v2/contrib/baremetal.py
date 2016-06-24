@@ -17,14 +17,32 @@
 Baremetal interface (v2 extension).
 """
 
+from __future__ import print_function
+
+import sys
+import warnings
+
 from novaclient import base
 from novaclient.i18n import _
 from novaclient import utils
 
 
+DEPRECATION_WARNING = (
+    'The novaclient.v2.contrib.baremetal module is deprecated and '
+    'will be removed after Nova 15.0.0 is released. Use '
+    'python-ironicclient or openstacksdk instead.')
+
+
+def _emit_deprecation_warning(command_name):
+    print('WARNING: Command %s is deprecated and will be removed after Nova '
+          '15.0.0 is released. Use python-ironicclient or '
+          'python-openstackclient instead.' % command_name, file=sys.stderr)
+
+
 class BareMetalNode(base.Resource):
     """
-    A baremetal node (typically a physical server or an empty VM).
+    DEPRECATED: A baremetal node (typically a physical server or an
+    empty VM).
     """
 
     def __repr__(self):
@@ -42,34 +60,37 @@ class BareMetalNodeInterface(base.Resource):
 
 class BareMetalNodeManager(base.ManagerWithFind):
     """
-    Manage :class:`BareMetalNode` resources.
+    DEPRECATED: Manage :class:`BareMetalNode` resources.
     """
     resource_class = BareMetalNode
 
     def get(self, node_id):
         """
-        Get a baremetal node.
+        DEPRECATED: Get a baremetal node.
 
         :param node_id: The ID of the node to delete.
         :rtype: :class:`BareMetalNode`
         """
+        warnings.warn(DEPRECATION_WARNING, DeprecationWarning)
         return self._get("/os-baremetal-nodes/%s" % node_id, 'node')
 
     def list(self):
         """
-        Get a list of all baremetal nodes.
+        DEPRECATED: Get a list of all baremetal nodes.
 
         :rtype: list of :class:`BareMetalNode`
         """
+        warnings.warn(DEPRECATION_WARNING, DeprecationWarning)
         return self._list('/os-baremetal-nodes', 'nodes')
 
     def list_interfaces(self, node_id):
         """
-        List the interfaces on a baremetal node.
+        DEPRECATED: List the interfaces on a baremetal node.
 
         :param node_id: The ID of the node to list.
         :rtype: novaclient.base.ListWithMeta
         """
+        warnings.warn(DEPRECATION_WARNING, DeprecationWarning)
         interfaces = base.ListWithMeta([], None)
         node = self._get("/os-baremetal-nodes/%s" % node_id, 'node')
         interfaces.append_request_ids(node.request_ids)
@@ -125,7 +146,8 @@ def _print_baremetal_nodes_list(nodes):
 
 
 def do_baremetal_node_list(cs, _args):
-    """Print list of available baremetal nodes."""
+    """DEPRECATED: Print list of available baremetal nodes."""
+    _emit_deprecation_warning('baremetal-node-list')
     nodes = cs.baremetal.list()
     _print_baremetal_nodes_list(nodes)
 
@@ -156,13 +178,15 @@ def _print_baremetal_node_interfaces(interfaces):
     metavar='<node>',
     help=_("ID of node"))
 def do_baremetal_node_show(cs, args):
-    """Show information about a baremetal node."""
+    """DEPRECATED: Show information about a baremetal node."""
+    _emit_deprecation_warning('baremetal-node-show')
     node = _find_baremetal_node(cs, args.node)
     _print_baremetal_resource(node)
 
 
 @utils.arg('node', metavar='<node>', help=_("ID of node"))
 def do_baremetal_interface_list(cs, args):
-    """List network interfaces associated with a baremetal node."""
+    """DEPRECATED: List network interfaces associated with a baremetal node."""
+    _emit_deprecation_warning('baremetal-interface-list')
     interfaces = cs.baremetal.list_interfaces(args.node)
     _print_baremetal_node_interfaces(interfaces)
