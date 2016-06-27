@@ -1,0 +1,4 @@
+---
+upgrade:
+  - Support for microversion 2.31 which fixes a bug in the
+    os-console-auth-tokens API
