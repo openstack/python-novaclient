@@ -1,0 +1,23 @@
+# This is a cross-platform list tracking distribution packages needed by tests;
+# see http://docs.openstack.org/infra/bindep/ for additional information.
+
+build-essential [platform:dpkg]
+dbus-devel [platform:rpm]
+dbus-glib-devel [platform:rpm]
+gettext
+language-pack-en [platform:ubuntu]
+libdbus-1-dev [platform:dpkg]
+libdbus-glib-1-dev [platform:dpkg]
+libffi-dev [platform:dpkg]
+libffi-devel [platform:rpm]
+libuuid-devel [platform:rpm]
+locales [platform:debian]
+python-dev [platform:dpkg]
+python-devel [platform:rpm]
+python3-all-dev [platform:ubuntu !platform:ubuntu-precise]
+python3-dev [platform:dpkg]
+python3-devel [platform:fedora]
+python3.4 [platform:ubuntu-trusty]
+python3.5 [platform:ubuntu-xenial]
+python34-devel [platform:centos]
+uuid-dev [platform:dpkg]
