@@ -26,7 +26,7 @@ class V1(base.Fixture):
         self.headers = self.json_headers
 
         for u in ('test', 'tenant-id', 'tenant-id/defaults',
-                  '%s/defaults' % uuid2):
+                  '%s/defaults' % uuid2, 'test/detail'):
             self.requests.register_uri('GET', self.url(u),
                                        json=test_json,
                                        headers=self.headers)

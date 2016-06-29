@@ -38,6 +38,20 @@ class QuotaSetsTest(utils.FixturedTestCase):
         url = '/os-quota-sets/%s?user_id=%s' % (tenant_id, user_id)
         self.assert_called('GET', url)
 
+    def test_tenant_quotas_get_detail(self):
+        tenant_id = 'test'
+        q = self.cs.quotas.get(tenant_id, detail=True)
+        self.assert_request_id(q, fakes.FAKE_REQUEST_ID_LIST)
+        self.assert_called('GET', '/os-quota-sets/%s/detail' % tenant_id)
+
+    def test_user_quotas_get_detail(self):
+        tenant_id = 'test'
+        user_id = 'fake_user'
+        q = self.cs.quotas.get(tenant_id, user_id=user_id, detail=True)
+        self.assert_request_id(q, fakes.FAKE_REQUEST_ID_LIST)
+        url = '/os-quota-sets/%s/detail?user_id=%s' % (tenant_id, user_id)
+        self.assert_called('GET', url)
+
     def test_tenant_quotas_defaults(self):
         tenant_id = '97f4c221bff44578b0300df4ef119353'
         q = self.cs.quotas.defaults(tenant_id)

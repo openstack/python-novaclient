@@ -32,14 +32,20 @@ class QuotaSet(base.Resource):
 class QuotaSetManager(base.Manager):
     resource_class = QuotaSet
 
-    def get(self, tenant_id, user_id=None):
+    def get(self, tenant_id, user_id=None, detail=False):
+        url = '/os-quota-sets/%(tenant_id)s'
+        if detail:
+            url += '/detail'
+
         if hasattr(tenant_id, 'tenant_id'):
             tenant_id = tenant_id.tenant_id
         if user_id:
-            url = '/os-quota-sets/%s?user_id=%s' % (tenant_id, user_id)
+            params = {'tenant_id': tenant_id, 'user_id': user_id}
+            url += '?user_id=%(user_id)s'
         else:
-            url = '/os-quota-sets/%s' % tenant_id
-        return self._get(url, "quota_set")
+            params = {'tenant_id': tenant_id}
+
+        return self._get(url % params, "quota_set")
 
     def update(self, tenant_id, **kwargs):
 

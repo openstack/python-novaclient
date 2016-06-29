@@ -4367,6 +4367,11 @@ def _quota_update(manager, identifier, args):
     metavar='<user-id>',
     default=None,
     help=_('ID of user to list the quotas for.'))
+@utils.arg(
+    '--detail',
+    action='store_true',
+    default=False,
+    help=_('Show detailed info (limit, reserved, in-use).'))
 def do_quota_show(cs, args):
     """List the quotas for a tenant/user."""
 
@@ -4378,7 +4383,8 @@ def do_quota_show(cs, args):
     else:
         project_id = cs.client.tenant_id
 
-    _quota_show(cs.quotas.get(project_id, user_id=args.user))
+    _quota_show(cs.quotas.get(project_id, user_id=args.user,
+                              detail=args.detail))
 
 
 @utils.arg(
