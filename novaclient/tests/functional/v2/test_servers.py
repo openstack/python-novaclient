@@ -125,7 +125,7 @@ class TestServersDescription(base.ClientTestBase):
                         for i in range(256))
         output = self.nova("update %s --description '%s'" % (server.id, descr),
                            fail_ok=True, merge_stderr=True)
-        self.assertIn("\nERROR (BadRequest): Invalid input for field/attribute"
+        self.assertIn("ERROR (BadRequest): Invalid input for field/attribute"
                       " description. Value: %s. u\'%s\' is too long (HTTP 400)"
                       % (descr, descr), output)
 
