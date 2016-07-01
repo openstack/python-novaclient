@@ -16,9 +16,11 @@ import uuid
 
 from cinderclient.v2 import client as cinderclient
 import fixtures
+from keystoneauth1.exceptions import discovery as discovery_exc
 from keystoneauth1 import identity
 from keystoneauth1 import session as ksession
 from keystoneclient import client as keystoneclient
+from keystoneclient import discover as keystone_discover
 import os_client_config
 import six
 import tempest.lib.cli.base
@@ -31,6 +33,18 @@ import novaclient.v2.shell
 
 BOOT_IS_COMPLETE = ("login as 'cirros' user. default password: "
                     "'cubswin:)'. use 'sudo' for root.")
+
+
+def is_keystone_version_available(session, version):
+    """Given a (major, minor) pair, check if the API version is enabled."""
+
+    d = keystone_discover.Discover(session)
+    try:
+        d.create_client(version)
+    except (discovery_exc.DiscoveryFailure, discovery_exc.VersionNotAvailable):
+        return False
+    else:
+        return True
 
 
 # The following are simple filter functions that filter our available
