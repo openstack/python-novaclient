@@ -17,7 +17,8 @@ import logging
 
 from novaclient import api_versions
 from novaclient import client
-from novaclient.i18n import _LW
+from novaclient import exceptions
+from novaclient.i18n import _LE
 from novaclient.v2 import agents
 from novaclient.v2 import aggregates
 from novaclient.v2 import availability_zones
@@ -101,18 +102,18 @@ class Client(object):
         :param str session: Session
         :param str auth: Auth
         :param api_version: Compute API version
-        :param direct_use: Direct use
+        :param direct_use: Inner variable of novaclient. Do not use it outside
+            novaclient. It's restricted.
         :param logger: Logger
         :type api_version: novaclient.api_versions.APIVersion
         """
         if direct_use:
-            import warnings
-
-            warnings.warn(
-                _LW("'novaclient.v2.client.Client' is not designed to be "
-                    "initialized directly. It is inner class of novaclient. "
-                    "Please, use 'novaclient.client.Client' instead. "
-                    "Related lp bug-report: 1493576"))
+            raise exceptions.Forbidden(
+                403, _LE("'novaclient.v2.client.Client' is not designed to be "
+                         "initialized directly. It is inner class of "
+                         "novaclient. You should use "
+                         "'novaclient.client.Client' instead. Related lp "
+                         "bug-report: 1493576"))
 
         # FIXME(comstud): Rename the api_key argument above when we
         # know it's not being used as keyword argument

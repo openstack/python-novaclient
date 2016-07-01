@@ -1,0 +1,5 @@
+---
+upgrade:
+  - novaclient.v2.client.Client raises an exception in case of direct usage
+    instead of warning message. novaclient.client.Client is a primary
+    interface to initialize the python client for Nova.
