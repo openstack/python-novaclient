@@ -2141,6 +2141,14 @@ class ShellTest(utils.TestCase):
             'GET',
             '/os-quota-sets/97f4c221bff44578b0300df4ef119353')
 
+    def test_quota_show_detail(self):
+        self.run_command(
+            'quota-show --tenant '
+            '97f4c221bff44578b0300df4ef119353 --detail')
+        self.assert_called(
+            'GET',
+            '/os-quota-sets/97f4c221bff44578b0300df4ef119353/detail')
+
     def test_user_quota_show(self):
         self.run_command(
             'quota-show --tenant '
@@ -2148,6 +2156,15 @@ class ShellTest(utils.TestCase):
         self.assert_called(
             'GET',
             '/os-quota-sets/97f4c221bff44578b0300df4ef119353?user_id=u1')
+
+    def test_user_quota_show_detail(self):
+        self.run_command(
+            'quota-show --tenant '
+            '97f4c221bff44578b0300df4ef119353 --user u1 --detail')
+        self.assert_called(
+            'GET',
+            '/os-quota-sets/97f4c221bff44578b0300df4ef119353/detail'
+            '?user_id=u1')
 
     def test_quota_show_no_tenant(self):
         self.run_command('quota-show')
