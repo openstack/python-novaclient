@@ -24,7 +24,7 @@ class TestAuthentication(base.ClientTestBase):
                                 url.params, url.query,
                                 url.fragment))
         flags = ('--os-username %s --os-tenant-name %s --os-password %s '
-                 '--os-auth-url %s --endpoint-type publicURL' % (
+                 '--os-auth-url %s --os-endpoint-type publicURL' % (
                      self.cli_clients.username,
                      self.cli_clients.tenant_name,
                      self.cli_clients.password,
