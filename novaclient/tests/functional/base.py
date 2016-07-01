@@ -16,7 +16,7 @@ import uuid
 
 from cinderclient.v2 import client as cinderclient
 import fixtures
-from keystoneauth1 import loading
+from keystoneauth1 import identity
 from keystoneauth1 import session as ksession
 from keystoneclient import client as keystoneclient
 import os_client_config
@@ -170,7 +170,9 @@ class ClientTestBase(testtools.TestCase):
         passwd = auth_info['password']
         tenant = auth_info['project_name']
         auth_url = auth_info['auth_url']
+        user_domain_id = auth_info['user_domain_id']
         self.project_domain_id = auth_info['project_domain_id']
+
         if 'insecure' in cloud_config.config:
             self.insecure = cloud_config.config['insecure']
         else:
@@ -181,11 +183,12 @@ class ClientTestBase(testtools.TestCase):
         else:
             version = self.COMPUTE_API_VERSION or "2"
 
-        loader = loading.get_plugin_loader("password")
-        auth = loader.load_from_options(username=user,
-                                        password=passwd,
-                                        project_name=tenant,
-                                        auth_url=auth_url)
+        auth = identity.Password(username=user,
+                                 password=passwd,
+                                 project_name=tenant,
+                                 auth_url=auth_url,
+                                 project_domain_id=self.project_domain_id,
+                                 user_domain_id=user_domain_id)
         session = ksession.Session(auth=auth, verify=(not self.insecure))
 
         self.client = novaclient.client.Client(version, session=session)
