@@ -36,7 +36,17 @@ class TestAuthentication(base.ClientTestBase):
             "nova", action, flags, cli_dir=self.cli_clients.cli_dir)
 
     def test_auth_via_keystone_v2(self):
+        session = self.keystone.session
+        version = (2, 0)
+        if not base.is_keystone_version_available(session, version):
+            self.skip("Identity API version 2.0 is not available.")
+
         self.nova("list", identity_api_version="2.0")
 
     def test_auth_via_keystone_v3(self):
+        session = self.keystone.session
+        version = (3, 0)
+        if not base.is_keystone_version_available(session, version):
+            self.skip("Identity API version 3.0 is not available.")
+
         self.nova("list", identity_api_version="3")
