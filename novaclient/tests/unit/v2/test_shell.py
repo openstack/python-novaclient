@@ -2929,6 +2929,7 @@ class ShellTest(utils.TestCase):
             31,  # doesn't require any changes in novaclient
             32,  # doesn't require separate version-wrapped methods in
                  # novaclient
+            34,  # doesn't require any changes in novaclient
         ])
         versions_supported = set(range(0,
                                  novaclient.API_MAX_VERSION.ver_minor + 1))
