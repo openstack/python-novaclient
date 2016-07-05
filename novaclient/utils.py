@@ -407,7 +407,7 @@ def do_action_on_many(action, resources, success_msg, error_msg):
             print(success_msg % resource)
         except Exception as e:
             failure_flag = True
-            print(e)
+            print(encodeutils.safe_encode(six.text_type(e)))
 
     if failure_flag:
         raise exceptions.CommandError(error_msg)
