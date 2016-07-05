@@ -5026,7 +5026,7 @@ def do_version_list(cs, args):
     print(_("Maximum version %(v)s") %
           {'v': novaclient.API_MAX_VERSION.get_string()})
 
-    print (_("\nServer supported API versions:"))
+    print(_("\nServer supported API versions:"))
     utils.print_list(result, columns)
 
 
