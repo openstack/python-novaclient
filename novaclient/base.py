@@ -209,6 +209,9 @@ class Resource(RequestIdMixin):
             return self.id == other.id
         return self._info == other._info
 
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
     def is_loaded(self):
         return self._loaded
 
