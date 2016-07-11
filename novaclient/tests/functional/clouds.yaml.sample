@@ -2,6 +2,8 @@ clouds:
   devstack:
     auth:
       username: admin
-      password: a
+      password: change_me
       project_name: admin
-      auth_url: http://localhost:5000/v2.0
+      auth_url: http://localhost:5000/v3
+      user_domain_id: default
+      project_domain_id: default
