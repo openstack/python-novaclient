@@ -727,6 +727,8 @@ class ServerManager(base.BootingManagerWithFind):
                     net_data['fixed_ip'] = nic_info['v6-fixed-ip']
                 if nic_info.get('port-id'):
                     net_data['port'] = nic_info['port-id']
+                if nic_info.get('tag'):
+                    net_data['tag'] = nic_info['tag']
                 all_net_data.append(net_data)
             body['server']['networks'] = all_net_data
 
@@ -1286,6 +1288,22 @@ class ServerManager(base.BootingManagerWithFind):
         descr_microversion = api_versions.APIVersion("2.19")
         if "description" in kwargs and self.api_version < descr_microversion:
             raise exceptions.UnsupportedAttribute("description", "2.19")
+
+        tags_microversion = api_versions.APIVersion("2.32")
+        if self.api_version < tags_microversion:
+            if nics:
+                for nic_info in nics:
+                    if nic_info.get("tag"):
+                        raise ValueError("Setting interface tags is "
+                                         "unsupported before microversion "
+                                         "2.32")
+
+            if block_device_mapping_v2:
+                for bdm in block_device_mapping_v2:
+                    if bdm.get("tag"):
+                        raise ValueError("Setting block device tags is "
+                                         "unsupported before microversion "
+                                         "2.32")
 
         boot_kwargs = dict(
             meta=meta, files=files, userdata=userdata,
