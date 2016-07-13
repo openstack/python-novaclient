@@ -42,6 +42,7 @@ from novaclient import base
 from novaclient import client
 from novaclient import exceptions
 from novaclient.i18n import _
+from novaclient.i18n import _LE
 from novaclient import shell
 from novaclient import utils
 from novaclient.v2 import availability_zones
@@ -80,7 +81,7 @@ def _key_value_pairing(text):
         (k, v) = text.split('=', 1)
         return (k, v)
     except ValueError:
-        msg = "%r is not in the format of key=value" % text
+        msg = _LE("'%s' is not in the format of 'key=value'") % text
         raise argparse.ArgumentTypeError(msg)
 
 
