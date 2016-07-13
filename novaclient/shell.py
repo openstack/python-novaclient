@@ -395,8 +395,8 @@ class OpenStackComputeShell(object):
         loading.register_auth_argparse_arguments(
             parser, argv, default=default_auth_plugin)
 
-        parser.set_defaults(insecure=utils.env('NOVACLIENT_INSECURE',
-                            default=False))
+        parser.set_defaults(insecure=strutils.bool_from_string(
+            utils.env('NOVACLIENT_INSECURE', default=False)))
         parser.set_defaults(os_auth_url=utils.env('OS_AUTH_URL', 'NOVA_URL'))
 
         parser.set_defaults(os_username=utils.env('OS_USERNAME',
