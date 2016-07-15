@@ -14,12 +14,16 @@
 #    under the License.
 
 
+import mock
+import warnings
+
 from novaclient import extension
 from novaclient.tests.unit import utils
 from novaclient.tests.unit.v2.contrib import fakes
 from novaclient.v2.contrib import baremetal
 
 
+@mock.patch.object(warnings, 'warn')
 class BaremetalExtensionTest(utils.TestCase):
     def setUp(self):
         super(BaremetalExtensionTest, self).setUp()
@@ -28,20 +32,23 @@ class BaremetalExtensionTest(utils.TestCase):
         ]
         self.cs = fakes.FakeClient(extensions=extensions)
 
-    def test_list_nodes(self):
+    def test_list_nodes(self, mock_warn):
         nl = self.cs.baremetal.list()
         self.assert_request_id(nl, fakes.FAKE_REQUEST_ID_LIST)
         self.cs.assert_called('GET', '/os-baremetal-nodes')
         for n in nl:
             self.assertIsInstance(n, baremetal.BareMetalNode)
+        self.assertEqual(1, mock_warn.call_count)
 
-    def test_get_node(self):
+    def test_get_node(self, mock_warn):
         n = self.cs.baremetal.get(1)
         self.assert_request_id(n, fakes.FAKE_REQUEST_ID_LIST)
         self.cs.assert_called('GET', '/os-baremetal-nodes/1')
         self.assertIsInstance(n, baremetal.BareMetalNode)
+        self.assertEqual(1, mock_warn.call_count)
 
-    def test_node_list_interfaces(self):
+    def test_node_list_interfaces(self, mock_warn):
         il = self.cs.baremetal.list_interfaces(1)
         self.assert_request_id(il, fakes.FAKE_REQUEST_ID_LIST)
         self.cs.assert_called('GET', '/os-baremetal-nodes/1')
+        self.assertEqual(1, mock_warn.call_count)
