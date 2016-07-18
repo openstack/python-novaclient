@@ -2873,6 +2873,21 @@ class ShellTest(utils.TestCase):
         self.run_command('keypair-list')
         self.assert_called('GET', '/os-keypairs')
 
+    def test_keypair_list_with_user_id(self):
+        self.run_command('keypair-list --user test_user', api_version='2.10')
+        self.assert_called('GET', '/os-keypairs?user_id=test_user')
+
+    def test_keypair_list_with_limit_and_marker(self):
+        self.run_command('keypair-list --marker test_kp --limit 3',
+                         api_version='2.35')
+        self.assert_called('GET', '/os-keypairs?limit=3&marker=test_kp')
+
+    def test_keypair_list_with_user_id_limit_and_marker(self):
+        self.run_command('keypair-list --user test_user --marker test_kp '
+                         '--limit 3', api_version='2.35')
+        self.assert_called(
+            'GET', '/os-keypairs?limit=3&marker=test_kp&user_id=test_user')
+
     def test_keypair_show(self):
         self.run_command('keypair-show test')
         self.assert_called('GET', '/os-keypairs/test')

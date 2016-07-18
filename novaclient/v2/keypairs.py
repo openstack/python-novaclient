@@ -19,6 +19,7 @@ Keypair interface (1.1 extension).
 
 from novaclient import api_versions
 from novaclient import base
+from novaclient import utils
 
 
 class Keypair(base.Resource):
@@ -162,7 +163,7 @@ class KeypairManager(base.ManagerWithFind):
         """
         return self._list('/%s' % self.keypair_prefix, 'keypairs')
 
-    @api_versions.wraps("2.10")
+    @api_versions.wraps("2.10", "2.34")
     def list(self, user_id=None):
         """
         Get a list of keypairs.
@@ -170,5 +171,27 @@ class KeypairManager(base.ManagerWithFind):
         :param user_id: Id of key-pairs owner (Admin only).
         """
         query_string = "?user_id=%s" % user_id if user_id else ""
+        url = '/%s%s' % (self.keypair_prefix, query_string)
+        return self._list(url, 'keypairs')
+
+    @api_versions.wraps("2.35")
+    def list(self, user_id=None, marker=None, limit=None):
+        """
+        Get a list of keypairs.
+
+        :param user_id: Id of key-pairs owner (Admin only).
+        :param marker: Begin returning keypairs that appear later in the
+                       keypair list than that represented by this keypair name
+                       (optional).
+        :param limit: maximum number of keypairs to return (optional).
+        """
+        params = {}
+        if user_id:
+            params['user_id'] = user_id
+        if limit:
+            params['limit'] = int(limit)
+        if marker:
+            params['marker'] = str(marker)
+        query_string = utils.prepare_query_string(params)
         url = '/%s%s' % (self.keypair_prefix, query_string)
         return self._list(url, 'keypairs')

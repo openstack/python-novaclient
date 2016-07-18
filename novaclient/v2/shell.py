@@ -3119,7 +3119,7 @@ def do_keypair_list(cs, args):
     utils.print_list(keypairs, columns)
 
 
-@api_versions.wraps("2.10")
+@api_versions.wraps("2.10", "2.34")
 @utils.arg(
     '--user',
     metavar='<user-id>',
@@ -3128,6 +3128,36 @@ def do_keypair_list(cs, args):
 def do_keypair_list(cs, args):
     """Print a list of keypairs for a user"""
     keypairs = cs.keypairs.list(args.user)
+    columns = _get_keypairs_list_columns(cs, args)
+    utils.print_list(keypairs, columns)
+
+
+@api_versions.wraps("2.35")
+@utils.arg(
+    '--user',
+    metavar='<user-id>',
+    default=None,
+    help=_('List key-pairs of specified user ID (Admin only).'))
+@utils.arg(
+    '--marker',
+    dest='marker',
+    metavar='<marker>',
+    default=None,
+    help=_('The last keypair of the previous page; displays list of keypairs '
+           'after "marker".'))
+@utils.arg(
+    '--limit',
+    dest='limit',
+    metavar='<limit>',
+    type=int,
+    default=None,
+    help=_("Maximum number of keypairs to display. If limit == -1, all "
+           "keypairs will be displayed. If limit is bigger than "
+           "'osapi_max_limit' option of Nova API, limit 'osapi_max_limit' "
+           "will be used instead."))
+def do_keypair_list(cs, args):
+    """Print a list of keypairs for a user"""
+    keypairs = cs.keypairs.list(args.user, args.marker, args.limit)
     columns = _get_keypairs_list_columns(cs, args)
     utils.print_list(keypairs, columns)
 
