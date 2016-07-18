@@ -477,7 +477,8 @@ class OpenStackComputeShell(object):
             action=DeprecatedAction,
             metavar='<volume-service-name>',
             default=utils.env('NOVA_VOLUME_SERVICE_NAME'),
-            use=_('This option will be removed in novaclient 4.3.0.'),
+            use=_('This option will be removed after Nova 15.0.0 is '
+                  'released.'),
             help=argparse.SUPPRESS)
 
         parser.add_argument(
