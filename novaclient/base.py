@@ -23,10 +23,10 @@ import abc
 import contextlib
 import copy
 import hashlib
-import inspect
 import os
 import threading
 
+from oslo_utils import reflection
 from oslo_utils import strutils
 from requests import Response
 import six
@@ -407,14 +407,14 @@ class ManagerWithFind(Manager):
         detailed = True
         list_kwargs = {}
 
-        list_argspec = inspect.getargspec(self.list)
-        if 'detailed' in list_argspec.args:
+        list_argspec = reflection.get_callable_args(self.list)
+        if 'detailed' in list_argspec:
             detailed = ("human_id" not in kwargs and
                         "name" not in kwargs and
                         "display_name" not in kwargs)
             list_kwargs['detailed'] = detailed
 
-        if 'is_public' in list_argspec.args and 'is_public' in kwargs:
+        if 'is_public' in list_argspec and 'is_public' in kwargs:
             is_public = kwargs['is_public']
             list_kwargs['is_public'] = is_public
             if is_public is None:
@@ -422,7 +422,7 @@ class ManagerWithFind(Manager):
                 del tmp_kwargs['is_public']
                 searches = tmp_kwargs.items()
 
-        if 'search_opts' in list_argspec.args:
+        if 'search_opts' in list_argspec:
             # pass search_opts in to do server side based filtering.
             # TODO(jogo) not all search_opts support regex, find way to
             # identify when to use regex and when to use string matching.
