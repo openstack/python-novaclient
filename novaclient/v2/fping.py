@@ -18,11 +18,12 @@ Fping interface.
 """
 from six.moves import urllib
 
+from novaclient import api_versions
 from novaclient import base
 
 
 class Fping(base.Resource):
-    """A server to fping."""
+    """DEPRECATED: A server to fping."""
     HUMAN_ID = True
 
     def __repr__(self):
@@ -30,11 +31,12 @@ class Fping(base.Resource):
 
 
 class FpingManager(base.ManagerWithFind):
-    """Manage :class:`Fping` resources."""
+    """DEPRECATED: Manage :class:`Fping` resources."""
     resource_class = Fping
 
+    @api_versions.deprecated_after('2.35')
     def list(self, all_tenants=False, include=None, exclude=None):
-        """Fping all servers.
+        """DEPRECATED: Fping all servers.
 
         :returns: list of :class:`Fping`.
         """
@@ -52,8 +54,9 @@ class FpingManager(base.ManagerWithFind):
             uri = "%s?%s" % (uri, urllib.parse.urlencode(params))
         return self._list(uri, "servers")
 
+    @api_versions.deprecated_after('2.35')
     def get(self, server):
-        """Fping a specific server.
+        """DEPRECATED: Fping a specific server.
 
         :param server: ID of the server to fping.
         :returns: :class:`Fping`

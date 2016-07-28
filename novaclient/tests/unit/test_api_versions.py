@@ -438,3 +438,20 @@ class DiscoverVersionTestCase(utils.TestCase):
             api_versions.discover_version(
                 fake_client,
                 api_versions.APIVersion('2.latest')).get_string())
+
+
+class DecoratedAfterTestCase(utils.TestCase):
+    def test_decorated_after(self):
+
+        class Fake(object):
+            api_version = api_versions.APIVersion('2.123')
+
+            @api_versions.deprecated_after('2.123')
+            def foo(self):
+                pass
+
+        with mock.patch('warnings.warn') as mock_warn:
+            Fake().foo()
+            msg = ('The novaclient.tests.unit.test_api_versions module '
+                   'is deprecated and will be removed.')
+            mock_warn.assert_called_once_with(msg, mock.ANY)

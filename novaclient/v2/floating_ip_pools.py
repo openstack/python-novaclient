@@ -14,17 +14,22 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from novaclient import api_versions
 from novaclient import base
 
 
 class FloatingIPPool(base.Resource):
+    """DEPRECATED"""
+
     def __repr__(self):
         return "<FloatingIPPool: name=%s>" % self.name
 
 
 class FloatingIPPoolManager(base.ManagerWithFind):
+    """DEPRECATED"""
     resource_class = FloatingIPPool
 
+    @api_versions.deprecated_after('2.35')
     def list(self):
-        """Retrieve a list of all floating ip pools."""
+        """DEPRECATED: Retrieve a list of all floating ip pools."""
         return self._list('/os-floating-ip-pools', 'floating_ip_pools')

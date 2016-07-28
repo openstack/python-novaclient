@@ -14,13 +14,16 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from novaclient import api_versions
 from novaclient import base
 
 
 class FloatingIP(base.Resource):
+    """DEPRECATED"""
+
     def delete(self):
         """
-        Delete this floating IP
+        DEPRECATED: Delete this floating IP
 
         :returns: An instance of novaclient.base.TupleWithMeta
         """
@@ -28,25 +31,30 @@ class FloatingIP(base.Resource):
 
 
 class FloatingIPManager(base.ManagerWithFind):
+    """DEPRECATED"""
     resource_class = FloatingIP
 
+    @api_versions.deprecated_after('2.35')
     def list(self):
-        """List floating IPs"""
+        """DEPRECATED: List floating IPs"""
         return self._list("/os-floating-ips", "floating_ips")
 
+    @api_versions.deprecated_after('2.35')
     def create(self, pool=None):
-        """Create (allocate) a  floating IP for a tenant"""
+        """DEPRECATED: Create (allocate) a  floating IP for a tenant"""
         return self._create("/os-floating-ips", {'pool': pool}, "floating_ip")
 
+    @api_versions.deprecated_after('2.35')
     def delete(self, floating_ip):
-        """Delete (deallocate) a  floating IP for a tenant
+        """DEPRECATED: Delete (deallocate) a  floating IP for a tenant
 
         :param floating_ip: The floating IP address to delete.
         :returns: An instance of novaclient.base.TupleWithMeta
         """
         return self._delete("/os-floating-ips/%s" % base.getid(floating_ip))
 
+    @api_versions.deprecated_after('2.35')
     def get(self, floating_ip):
-        """Retrieve a floating IP"""
+        """DEPRECATED: Retrieve a floating IP"""
         return self._get("/os-floating-ips/%s" % base.getid(floating_ip),
                          "floating_ip")
