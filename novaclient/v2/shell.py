@@ -3980,6 +3980,22 @@ def _find_hypervisor(cs, hypervisor):
     return utils.find_resource(cs.hypervisors, hypervisor)
 
 
+def _do_hypervisor_list(cs, matching=None, limit=None, marker=None):
+    columns = ['ID', 'Hypervisor hostname', 'State', 'Status']
+    if matching:
+        utils.print_list(cs.hypervisors.search(matching), columns)
+    else:
+        params = {}
+        if limit is not None:
+            params['limit'] = limit
+        if marker is not None:
+            params['marker'] = marker
+        # Since we're not outputting detail data, choose
+        # detailed=False for server-side efficiency
+        utils.print_list(cs.hypervisors.list(False, **params), columns)
+
+
+@api_versions.wraps("2.0", "2.32")
 @utils.arg(
     '--matching',
     metavar='<hostname>',
@@ -3987,13 +4003,37 @@ def _find_hypervisor(cs, hypervisor):
     help=_('List hypervisors matching the given <hostname>.'))
 def do_hypervisor_list(cs, args):
     """List hypervisors."""
-    columns = ['ID', 'Hypervisor hostname', 'State', 'Status']
-    if args.matching:
-        utils.print_list(cs.hypervisors.search(args.matching), columns)
-    else:
-        # Since we're not outputting detail data, choose
-        # detailed=False for server-side efficiency
-        utils.print_list(cs.hypervisors.list(False), columns)
+    _do_hypervisor_list(cs, matching=args.matching)
+
+
+@api_versions.wraps("2.33")
+@utils.arg(
+    '--matching',
+    metavar='<hostname>',
+    default=None,
+    help=_('List hypervisors matching the given <hostname>. '
+           'If matching is used limit and marker options will be ignored.'))
+@utils.arg(
+    '--marker',
+    dest='marker',
+    metavar='<marker>',
+    default=None,
+    help=_('The last hypervisor of the previous page; displays list of '
+           'hypervisors after "marker".'))
+@utils.arg(
+    '--limit',
+    dest='limit',
+    metavar='<limit>',
+    type=int,
+    default=None,
+    help=_("Maximum number of hypervisors to display. If limit == -1, all "
+           "hypervisors will be displayed. If limit is bigger than "
+           "'osapi_max_limit' option of Nova API, limit 'osapi_max_limit' "
+           "will be used instead."))
+def do_hypervisor_list(cs, args):
+    """List hypervisors."""
+    _do_hypervisor_list(
+        cs, matching=args.matching, limit=args.limit, marker=args.marker)
 
 
 @utils.arg(

@@ -2154,6 +2154,11 @@ class ShellTest(utils.TestCase):
         self.run_command('hypervisor-list --matching hyper')
         self.assert_called('GET', '/os-hypervisors/hyper/search')
 
+    def test_hypervisor_list_limit_marker(self):
+        self.run_command('hypervisor-list --limit 10 --marker hyper1',
+                         api_version='2.33')
+        self.assert_called('GET', '/os-hypervisors?limit=10&marker=hyper1')
+
     def test_hypervisor_servers(self):
         self.run_command('hypervisor-servers hyper')
         self.assert_called('GET', '/os-hypervisors/hyper/servers')

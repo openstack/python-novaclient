@@ -1,0 +1,5 @@
+---
+features:
+  - Added microversion v2.33 that adds pagination support for hypervisors with
+    the help of new optional parameters 'limit' and 'marker' which were added
+    to hypervisor-list command.
