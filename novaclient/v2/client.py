@@ -279,17 +279,22 @@ class Client(object):
                                 "Ocata. Use 'project_id' instead."))
         return self.project_id
 
-    @client._original_only
     def __enter__(self):
-        self.client.open_session()
+        self.logger.warning(_LW("NovaClient instance can't be used as a "
+                                "context manager since Ocata (deprecated "
+                                "behaviour) since it is redundant in case of "
+                                "SessionClient."))
         return self
 
-    @client._original_only
     def __exit__(self, t, v, tb):
-        self.client.close_session()
+        # do not do anything
+        pass
 
-    @client._original_only
     def set_management_url(self, url):
+        self.logger.warning(
+            _LW("Method `set_management_url` is deprecated since Ocata. "
+                "Use `endpoint_override` argument instead while initializing "
+                "novaclient's instance."))
         self.client.set_management_url(url)
 
     def get_timings(self):
@@ -315,7 +320,6 @@ class Client(object):
         except key_ex.EndpointNotFound:
             return False
 
-    @client._original_only
     def authenticate(self):
         """Authenticate against the server.
 
@@ -325,4 +329,5 @@ class Client(object):
         Returns on success; raises :exc:`exceptions.Unauthorized` if the
         credentials are wrong.
         """
-        self.client.authenticate()
+        self.logger.warning(_LW(
+            "Method 'authenticate' is deprecated since Ocata."))
