@@ -13,6 +13,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from novaclient import api_versions
 from novaclient.tests.unit.fixture_data import client
 from novaclient.tests.unit.fixture_data import hypervisors as data
 from novaclient.tests.unit import utils
@@ -185,3 +186,16 @@ class HypervisorsTest(utils.FixturedTestCase):
         # Test for Bug #1370415, the line below used to raise AttributeError
         self.assertEqual("<HypervisorStats: 2 Hypervisors>",
                          result.__repr__())
+
+
+class HypervisorsV233Test(HypervisorsTest):
+    def setUp(self):
+        super(HypervisorsV233Test, self).setUp()
+        self.cs.api_version = api_versions.APIVersion("2.33")
+
+    def test_use_limit_marker_params(self):
+        params = {'limit': 10, 'marker': 'fake-marker'}
+        self.cs.hypervisors.list(**params)
+        for k, v in params.items():
+            self.assertIn('%s=%s' % (k, v),
+                          self.requests.last_request.path_url)

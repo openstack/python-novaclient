@@ -24,6 +24,7 @@ from oslo_utils import encodeutils
 import pkg_resources
 import prettytable
 import six
+from six.moves.urllib import parse
 
 from novaclient import exceptions
 from novaclient.i18n import _
@@ -465,3 +466,9 @@ def record_time(times, enabled, *args):
         yield
         end = time.time()
         times.append((' '.join(args), start, end))
+
+
+def prepare_query_string(params):
+    """Convert dict params to query string"""
+    params = sorted(params.items(), key=lambda x: x[0])
+    return '?%s' % parse.urlencode(params) if params else ''

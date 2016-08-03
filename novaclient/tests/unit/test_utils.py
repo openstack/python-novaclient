@@ -16,6 +16,7 @@ import sys
 import mock
 from oslo_utils import encodeutils
 import six
+from six.moves.urllib import parse
 
 from novaclient import base
 from novaclient import exceptions
@@ -437,3 +438,22 @@ class RecordTimeTestCase(test_utils.TestCase):
         with utils.record_time(times, False, 'x'):
             pass
         self.assertEqual(0, len(times))
+
+
+class PrepareQueryStringTestCase(test_utils.TestCase):
+    def test_convert_dict_to_string(self):
+        ustr = b'?\xd0\xbf=1&\xd1\x80=2'
+        if six.PY3:
+            # in py3 real unicode symbols will be urlencoded
+            ustr = ustr.decode('utf8')
+        cases = (
+            ({}, ''),
+            ({'2': 2, '10': 1}, '?10=1&2=2'),
+            ({'abc': 1, 'abc1': 2}, '?abc=1&abc1=2'),
+            ({b'\xd0\xbf': 1, b'\xd1\x80': 2}, ustr),
+            ({(1, 2): '1', (3, 4): '2'}, '?(1, 2)=1&(3, 4)=2')
+        )
+        for case in cases:
+            self.assertEqual(
+                case[1],
+                parse.unquote_plus(utils.prepare_query_string(case[0])))

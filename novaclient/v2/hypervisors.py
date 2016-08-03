@@ -19,7 +19,9 @@ Hypervisors interface (1.1 extension).
 
 from six.moves.urllib import parse
 
+from novaclient import api_versions
 from novaclient import base
+from novaclient import utils
 
 
 class Hypervisor(base.Resource):
@@ -33,14 +35,35 @@ class HypervisorManager(base.ManagerWithFind):
     resource_class = Hypervisor
     is_alphanum_id_allowed = True
 
+    def _list_base(self, detailed=True, marker=None, limit=None):
+        path = '/os-hypervisors'
+        if detailed:
+            path += '/detail'
+        params = {}
+        if limit is not None:
+            params['limit'] = int(limit)
+        if marker is not None:
+            params['marker'] = str(marker)
+        path += utils.prepare_query_string(params)
+        return self._list(path, 'hypervisors')
+
+    @api_versions.wraps("2.0", "2.32")
     def list(self, detailed=True):
         """
         Get a list of hypervisors.
         """
-        detail = ""
-        if detailed:
-            detail = "/detail"
-        return self._list('/os-hypervisors%s' % detail, 'hypervisors')
+        return self._list_base(detailed=detailed)
+
+    @api_versions.wraps("2.33")
+    def list(self, detailed=True, marker=None, limit=None):
+        """
+        Get a list of hypervisors.
+        :param marker: Begin returning hypervisor that appear later in the
+                       keypair list than that represented by this keypair name
+                       (optional).
+        :param limit: maximum number of keypairs to return (optional).
+        """
+        return self._list_base(detailed=detailed, marker=marker, limit=limit)
 
     def search(self, hypervisor_match, servers=False):
         """
