@@ -210,7 +210,7 @@ def _flatten(data, prefix=None):
     if isinstance(data, dict):
         for key, value in six.iteritems(data):
             new_key = '%s_%s' % (prefix, key) if prefix else key
-            if isinstance(value, (dict, list)):
+            if isinstance(value, (dict, list)) and value:
                 for item in _flatten(value, new_key):
                     yield item
             else:

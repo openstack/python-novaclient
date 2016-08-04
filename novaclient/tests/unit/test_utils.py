@@ -340,7 +340,8 @@ class FlattenTestCase(test_utils.TestCase):
                     'b4': {'c1': ['l', 'l', ['l']],
                            'c2': 'string'}},
              'a2': ['l'],
-             'a3': ('t',)})
+             'a3': ('t',),
+             'a4': {}})
 
         self.assertEqual({'a1_b1': 1234,
                           'a1_b2': 'string',
@@ -348,7 +349,8 @@ class FlattenTestCase(test_utils.TestCase):
                           'a1_b4_c1': ['l', 'l', ['l']],
                           'a1_b4_c2': 'string',
                           'a2': ['l'],
-                          'a3': ('t',)},
+                          'a3': ('t',),
+                          'a4': {}},
                          squashed)
 
     def test_pretty_choice_dict(self):
