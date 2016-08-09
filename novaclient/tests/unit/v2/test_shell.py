@@ -581,6 +581,22 @@ class ShellTest(utils.TestCase):
             },
         )
 
+    def test_boot_invalid_nics_pre_v2_32(self):
+        # This is a negative test to make sure we fail with the correct message
+        cmd = ('boot --image 1 --flavor 1 '
+               '--nic net-id=1,port-id=2 some-server')
+        ex = self.assertRaises(exceptions.CommandError, self.run_command,
+                               cmd, api_version='2.1')
+        self.assertNotIn('tag=tag', six.text_type(ex))
+
+    def test_boot_invalid_nics_v2_32(self):
+        # This is a negative test to make sure we fail with the correct message
+        cmd = ('boot --image 1 --flavor 1 '
+               '--nic net-id=1,port-id=2 some-server')
+        ex = self.assertRaises(exceptions.CommandError, self.run_command,
+                               cmd, api_version='2.32')
+        self.assertIn('tag=tag', six.text_type(ex))
+
     def test_boot_nics_ipv6(self):
         cmd = ('boot --image 1 --flavor 1 '
                '--nic net-id=a=c,v6-fixed-ip=2001:db9:0:1::10 some-server')

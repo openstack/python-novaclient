@@ -266,13 +266,22 @@ def _boot(cs, args):
               "with the new ones (--block-device, --boot-volume, --snapshot, "
               "--ephemeral, --swap)"))
 
+    if cs.api_version >= api_versions.APIVersion('2.32'):
+        err_msg = (_("Invalid nic argument '%s'. Nic arguments must be of "
+                     "the form --nic <net-id=net-uuid,"
+                     "net-name=network-name,v4-fixed-ip=ip-addr,"
+                     "v6-fixed-ip=ip-addr,port-id=port-uuid,tag=tag>, "
+                     "with only one of net-id, net-name or port-id "
+                     "specified."))
+    else:
+        err_msg = (_("Invalid nic argument '%s'. Nic arguments must be of "
+                     "the form --nic <net-id=net-uuid,"
+                     "net-name=network-name,v4-fixed-ip=ip-addr,"
+                     "v6-fixed-ip=ip-addr,port-id=port-uuid>, "
+                     "with only one of net-id, net-name or port-id "
+                     "specified."))
     nics = []
     for nic_str in args.nics:
-        err_msg = (_("Invalid nic argument '%s'. Nic arguments must be of "
-                     "the form --nic <net-id=net-uuid,net-name=network-name,"
-                     "v4-fixed-ip=ip-addr,v6-fixed-ip=ip-addr,"
-                     "port-id=port-uuid,tag=tag>, with only one of net-id, "
-                     "net-name or port-id specified.") % nic_str)
         nic_info = {"net-id": "", "v4-fixed-ip": "", "v6-fixed-ip": "",
                     "port-id": "", "net-name": "", "tag": ""}
 
@@ -280,7 +289,7 @@ def _boot(cs, args):
             try:
                 k, v = kv_str.split("=", 1)
             except ValueError:
-                raise exceptions.CommandError(err_msg)
+                raise exceptions.CommandError(err_msg % nic_str)
 
             if k in nic_info:
                 # if user has given a net-name resolve it to network ID
@@ -289,10 +298,10 @@ def _boot(cs, args):
                     v = _find_network_id(cs, v)
                 # if some argument was given multiple times
                 if nic_info[k]:
-                    raise exceptions.CommandError(err_msg)
+                    raise exceptions.CommandError(err_msg % nic_str)
                 nic_info[k] = v
             else:
-                raise exceptions.CommandError(err_msg)
+                raise exceptions.CommandError(err_msg % nic_str)
 
         if nic_info['v4-fixed-ip'] and not netutils.is_valid_ipv4(
                 nic_info['v4-fixed-ip']):
@@ -303,7 +312,7 @@ def _boot(cs, args):
             raise exceptions.CommandError(_("Invalid ipv6 address."))
 
         if bool(nic_info['net-id']) == bool(nic_info['port-id']):
-            raise exceptions.CommandError(err_msg)
+            raise exceptions.CommandError(err_msg % nic_str)
 
         nics.append(nic_info)
 
