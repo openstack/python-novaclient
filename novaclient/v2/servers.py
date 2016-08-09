@@ -709,27 +709,32 @@ class ServerManager(base.BootingManagerWithFind):
             body['server']['block_device_mapping_v2'] = block_device_mapping_v2
 
         if nics is not None:
-            # NOTE(tr3buchet): nics can be an empty list
-            all_net_data = []
-            for nic_info in nics:
-                net_data = {}
-                # if value is empty string, do not send value in body
-                if nic_info.get('net-id'):
-                    net_data['uuid'] = nic_info['net-id']
-                if (nic_info.get('v4-fixed-ip') and
-                        nic_info.get('v6-fixed-ip')):
-                    raise base.exceptions.CommandError(_(
-                        "Only one of 'v4-fixed-ip' and 'v6-fixed-ip' may be"
-                        " provided."))
-                elif nic_info.get('v4-fixed-ip'):
-                    net_data['fixed_ip'] = nic_info['v4-fixed-ip']
-                elif nic_info.get('v6-fixed-ip'):
-                    net_data['fixed_ip'] = nic_info['v6-fixed-ip']
-                if nic_info.get('port-id'):
-                    net_data['port'] = nic_info['port-id']
-                if nic_info.get('tag'):
-                    net_data['tag'] = nic_info['tag']
-                all_net_data.append(net_data)
+            # With microversion 2.37+ nics can be an enum of 'auto' or 'none'
+            # or a list of dicts.
+            if isinstance(nics, six.string_types):
+                all_net_data = nics
+            else:
+                # NOTE(tr3buchet): nics can be an empty list
+                all_net_data = []
+                for nic_info in nics:
+                    net_data = {}
+                    # if value is empty string, do not send value in body
+                    if nic_info.get('net-id'):
+                        net_data['uuid'] = nic_info['net-id']
+                    if (nic_info.get('v4-fixed-ip') and
+                            nic_info.get('v6-fixed-ip')):
+                        raise base.exceptions.CommandError(_(
+                            "Only one of 'v4-fixed-ip' and 'v6-fixed-ip' "
+                            "may be provided."))
+                    elif nic_info.get('v4-fixed-ip'):
+                        net_data['fixed_ip'] = nic_info['v4-fixed-ip']
+                    elif nic_info.get('v6-fixed-ip'):
+                        net_data['fixed_ip'] = nic_info['v6-fixed-ip']
+                    if nic_info.get('port-id'):
+                        net_data['port'] = nic_info['port-id']
+                    if nic_info.get('tag'):
+                        net_data['tag'] = nic_info['tag']
+                    all_net_data.append(net_data)
             body['server']['networks'] = all_net_data
 
         if disk_config is not None:
@@ -1219,6 +1224,14 @@ class ServerManager(base.BootingManagerWithFind):
                                          base.getid(server))
         return base.TupleWithMeta((resp, body), resp)
 
+    def _validate_create_nics(self, nics):
+        # nics are required with microversion 2.37+ and can be a string or list
+        if self.api_version > api_versions.APIVersion('2.36'):
+            if not nics:
+                raise ValueError('nics are required after microversion 2.36')
+        elif nics and not isinstance(nics, list):
+            raise ValueError('nics must be a list')
+
     def create(self, name, image, flavor, meta=None, files=None,
                reservation_id=None, min_count=None,
                max_count=None, security_groups=None, userdata=None,
@@ -1259,9 +1272,17 @@ class ServerManager(base.BootingManagerWithFind):
                       device mappings for this server.
         :param block_device_mapping_v2: (optional extension) A dict of block
                       device mappings for this server.
-        :param nics:  (optional extension) an ordered list of nics to be
-                      added to this server, with information about
-                      connected networks, fixed IPs, port etc.
+        :param nics:  An ordered list of nics (dicts) to be added to this
+                      server, with information about connected networks,
+                      fixed IPs, port etc.
+                      Beginning in microversion 2.37 this field is required and
+                      also supports a single string value of 'auto' or 'none'.
+                      The 'auto' value means the Compute service will
+                      automatically allocate a network for the project if one
+                      is not available. This is the same behavior as not
+                      passing anything for nics before microversion 2.37. The
+                      'none' value tells the Compute service to not allocate
+                      any networking for the server.
         :param scheduler_hints: (optional extension) arbitrary key-value pairs
                             specified by the client to help boot an instance
         :param config_drive: (optional extension) value for config drive
@@ -1288,6 +1309,8 @@ class ServerManager(base.BootingManagerWithFind):
         descr_microversion = api_versions.APIVersion("2.19")
         if "description" in kwargs and self.api_version < descr_microversion:
             raise exceptions.UnsupportedAttribute("description", "2.19")
+
+        self._validate_create_nics(nics)
 
         tags_microversion = api_versions.APIVersion("2.32")
         if self.api_version < tags_microversion:

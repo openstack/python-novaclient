@@ -606,6 +606,64 @@ class ShellTest(utils.TestCase):
                                cmd, api_version='2.32')
         self.assertIn('tag=tag', six.text_type(ex))
 
+    def test_boot_invalid_nics_v2_36_auto(self):
+        """This is a negative test to make sure we fail with the correct
+        message. --nic auto isn't allowed before 2.37.
+        """
+        cmd = ('boot --image %s --flavor 1 --nic auto test' % FAKE_UUID_1)
+        ex = self.assertRaises(exceptions.CommandError, self.run_command,
+                               cmd, api_version='2.36')
+        self.assertNotIn('auto,none', six.text_type(ex))
+
+    def test_boot_invalid_nics_v2_37(self):
+        """This is a negative test to make sure we fail with the correct
+        message.
+        """
+        cmd = ('boot --image %s --flavor 1 '
+               '--nic net-id=1 --nic auto some-server' % FAKE_UUID_1)
+        ex = self.assertRaises(exceptions.CommandError, self.run_command,
+                               cmd, api_version='2.37')
+        self.assertIn('auto,none', six.text_type(ex))
+
+    def test_boot_nics_auto_allocate_default(self):
+        """Tests that if microversion>=2.37 is specified and no --nics are
+        specified that a single --nic with net-id=auto is used.
+        """
+        cmd = 'boot --image %s --flavor 1 some-server' % FAKE_UUID_1
+        self.run_command(cmd, api_version='2.37')
+        self.assert_called_anytime(
+            'POST', '/servers',
+            {
+                'server': {
+                    'flavorRef': '1',
+                    'name': 'some-server',
+                    'imageRef': FAKE_UUID_1,
+                    'min_count': 1,
+                    'max_count': 1,
+                    'networks': 'auto',
+                },
+            },
+        )
+
+    def test_boot_nics_auto_allocate_none(self):
+        """Tests specifying '--nic none' with microversion 2.37
+        """
+        cmd = 'boot --image %s --flavor 1 --nic none some-server' % FAKE_UUID_1
+        self.run_command(cmd, api_version='2.37')
+        self.assert_called_anytime(
+            'POST', '/servers',
+            {
+                'server': {
+                    'flavorRef': '1',
+                    'name': 'some-server',
+                    'imageRef': FAKE_UUID_1,
+                    'min_count': 1,
+                    'max_count': 1,
+                    'networks': 'none',
+                },
+            },
+        )
+
     def test_boot_nics_ipv6(self):
         cmd = ('boot --image %s --flavor 1 '
                '--nic net-id=a=c,v6-fixed-ip=2001:db9:0:1::10 some-server' %
@@ -3062,6 +3120,7 @@ class ShellTest(utils.TestCase):
             32,  # doesn't require separate version-wrapped methods in
                  # novaclient
             34,  # doesn't require any changes in novaclient
+            37,  # There are no versioned wrapped shell method changes for this
         ])
         versions_supported = set(range(0,
                                  novaclient.API_MAX_VERSION.ver_minor + 1))

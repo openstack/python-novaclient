@@ -42,6 +42,11 @@ class ServersTest(utils.FixturedTestCase):
         if self.api_version:
             self.cs.api_version = api_versions.APIVersion(self.api_version)
 
+    def _get_server_create_default_nics(self):
+        """Callback for default nics kwarg when creating a server.
+        """
+        return None
+
     def test_list_servers(self):
         sl = self.cs.servers.list()
         self.assert_request_id(sl, fakes.FAKE_REQUEST_ID_LIST)
@@ -132,7 +137,8 @@ class ServersTest(utils.FixturedTestCase):
             files={
                 '/etc/passwd': 'some data',                 # a file
                 '/tmp/foo.txt': six.StringIO('data'),   # a stream
-            }
+            },
+            nics=self._get_server_create_default_nics()
         )
         self.assert_request_id(s, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers')
@@ -191,7 +197,8 @@ class ServersTest(utils.FixturedTestCase):
                 meta={'foo': 'bar'},
                 userdata="hello moto",
                 key_name="fakekey",
-                block_device_mapping_v2=bdm
+                block_device_mapping_v2=bdm,
+                nics=self._get_server_create_default_nics()
             )
             self.assert_request_id(s, fakes.FAKE_REQUEST_ID_LIST)
             self.assert_called('POST', '/os-volumes_boot')
@@ -239,7 +246,8 @@ class ServersTest(utils.FixturedTestCase):
                 userdata="hello moto",
                 key_name="fakekey",
                 access_ip_v6=access_ip_v6,
-                access_ip_v4=access_ip_v4
+                access_ip_v4=access_ip_v4,
+                nics=self._get_server_create_default_nics()
             )
             self.assert_request_id(s, fakes.FAKE_REQUEST_ID_LIST)
             self.assert_called('POST', '/servers')
@@ -256,6 +264,7 @@ class ServersTest(utils.FixturedTestCase):
                 '/etc/passwd': 'some data',                 # a file
                 '/tmp/foo.txt': six.StringIO('data'),   # a stream
             },
+            nics=self._get_server_create_default_nics(),
         )
         self.assert_request_id(s, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers')
@@ -273,6 +282,7 @@ class ServersTest(utils.FixturedTestCase):
                 '/etc/passwd': 'some data',                 # a file
                 '/tmp/foo.txt': six.StringIO('data'),   # a stream
             },
+            nics=self._get_server_create_default_nics(),
         )
         self.assert_request_id(s, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers')
@@ -290,6 +300,7 @@ class ServersTest(utils.FixturedTestCase):
                 '/etc/passwd': 'some data',                 # a file
                 '/tmp/foo.txt': six.StringIO('data'),   # a stream
             },
+            nics=self._get_server_create_default_nics(),
         )
         self.assert_request_id(s, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers')
@@ -303,7 +314,8 @@ class ServersTest(utils.FixturedTestCase):
             image=1,
             flavor=1,
             admin_pass=test_password,
-            key_name=test_key
+            key_name=test_key,
+            nics=self._get_server_create_default_nics()
         )
         self.assert_request_id(s, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers')
@@ -328,6 +340,7 @@ class ServersTest(utils.FixturedTestCase):
                     '/etc/passwd': 'some data',                 # a file
                     '/tmp/foo.txt': six.StringIO('data'),   # a stream
                 },
+                nics=self._get_server_create_default_nics(),
             )
             self.assert_request_id(s, fakes.FAKE_REQUEST_ID_LIST)
             self.assert_called('POST', '/servers')
@@ -343,7 +356,8 @@ class ServersTest(utils.FixturedTestCase):
             name="My server",
             image=1,
             flavor=1,
-            disk_config=disk_config
+            disk_config=disk_config,
+            nics=self._get_server_create_default_nics(),
         )
         self.assert_request_id(s, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers')
@@ -976,6 +990,16 @@ class ServersTest(utils.FixturedTestCase):
                           key_name="fakekey"
                           )
 
+    def test_create_server_with_nics_auto(self):
+        """Negative test for specifying nics='auto' before 2.37
+        """
+        self.assertRaises(ValueError,
+                          self.cs.servers.create,
+                          name='test',
+                          image='d9d8d53c-4b4a-4144-a5e5-b30d9f1fe46a',
+                          flavor='1',
+                          nics='auto')
+
 
 class ServersV26Test(ServersTest):
 
@@ -1074,7 +1098,8 @@ class ServersV219Test(ServersV217Test):
             flavor=1,
             meta={'foo': 'bar'},
             userdata="hello moto",
-            key_name="fakekey"
+            key_name="fakekey",
+            nics=self._get_server_create_default_nics()
         )
         self.assert_called('POST', '/servers')
 
@@ -1260,3 +1285,39 @@ class ServersV232Test(ServersV226Test):
                           image=1, flavor=1, meta={'foo': 'bar'},
                           userdata="hello moto", key_name="fakekey",
                           block_device_mapping_v2=bdm)
+
+
+class ServersV2_37Test(ServersV226Test):
+
+    api_version = "2.37"
+
+    def _get_server_create_default_nics(self):
+        return 'auto'
+
+    def test_create_server_no_nics(self):
+        """Tests that nics are required in microversion 2.37+
+        """
+        self.assertRaises(ValueError, self.cs.servers.create,
+                          name='test',
+                          image='d9d8d53c-4b4a-4144-a5e5-b30d9f1fe46a',
+                          flavor='1')
+
+    def test_create_server_with_nics_auto(self):
+        s = self.cs.servers.create(
+            name='test', image='d9d8d53c-4b4a-4144-a5e5-b30d9f1fe46a',
+            flavor='1', nics=self._get_server_create_default_nics())
+        self.assert_request_id(s, fakes.FAKE_REQUEST_ID_LIST)
+        self.assert_called('POST', '/servers')
+        self.assertIsInstance(s, servers.Server)
+
+    def test_add_floating_ip(self):
+        # self.cs.floating_ips.list() is not available after 2.35
+        pass
+
+    def test_add_floating_ip_to_fixed(self):
+        # self.cs.floating_ips.list() is not available after 2.35
+        pass
+
+    def test_remove_floating_ip(self):
+        # self.cs.floating_ips.list() is not available after 2.35
+        pass
