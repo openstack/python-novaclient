@@ -51,12 +51,10 @@ def is_keystone_version_available(session, version):
 # image / flavor list so that they can be used in standard testing.
 def pick_flavor(flavors):
     """Given a flavor list pick a reasonable one."""
-    for flavor in flavors:
-        if flavor.name == 'm1.tiny':
-            return flavor
-    for flavor in flavors:
-        if flavor.name == 'm1.small':
-            return flavor
+    for flavor_priority in ('m1.nano', 'm1.micro', 'm1.tiny', 'm1.small'):
+        for flavor in flavors:
+            if flavor.name == flavor_priority:
+                return flavor
     raise NoFlavorException()
 
 
