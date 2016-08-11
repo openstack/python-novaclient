@@ -1,0 +1,10 @@
+---
+upgrade:
+  - |
+    The 2.36 microversion deprecated the image proxy API. As such, CLI calls
+    now directly call the image service to get image details, for example,
+    as a convenience to boot a server with an image name rather than the image
+    id. To do this the following is assumed:
+
+    #. There is an **image** entry in the service catalog.
+    #. The image v2 API is available.

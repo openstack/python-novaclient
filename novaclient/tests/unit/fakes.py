@@ -78,13 +78,19 @@ class FakeClient(object):
                     }, pos=4)
         """
         expected = (method, url)
-        called = self.client.callstack[pos][0:2]
 
         assert self.client.callstack, \
             "Expected %s %s but no calls were made." % expected
 
+        called = self.client.callstack[pos][0:2]
+
         assert expected == called, \
-            'Expected %s %s; got %s %s' % (expected + called)
+            ('\nExpected: %(expected)s'
+             '\nActual: %(called)s'
+             '\nCall position: %(pos)s'
+             '\nCalls:\n%(calls)s' %
+             {'expected': expected, 'called': called, 'pos': pos,
+              'calls': '\n'.join(str(c) for c in self.client.callstack)})
 
         if body is not None:
             if self.client.callstack[pos][2] != body:
