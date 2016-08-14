@@ -50,10 +50,12 @@ class SimpleReadOnlyNovaClientTest(base.ClientTestBase):
 
     # "Neutron does not provide this feature"
     def test_admin_dns_domains(self):
+        self.skip_if_neutron()
         self.nova('dns-domains')
 
     @decorators.skip_because(bug="1157349")
     def test_admin_dns_list(self):
+        self.skip_if_neutron()
         self.nova('dns-list')
 
     def test_admin_endpoints(self):

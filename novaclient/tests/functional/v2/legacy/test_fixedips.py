@@ -22,6 +22,8 @@ class TestFixedIPsNovaClient(base.ClientTestBase):
     COMPUTE_API_VERSION = '2.1'
 
     def _test_fixedip_get(self, expect_reserved=False):
+        # os-fixed-ips does not proxy to neutron
+        self.skip_if_neutron()
         server = self._create_server(with_network=False)
         networks = server.networks
         self.assertIn('private', networks)

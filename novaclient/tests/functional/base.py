@@ -95,6 +95,9 @@ class NoCloudConfigException(Exception):
     pass
 
 
+USE_NEUTRON = None
+
+
 class ClientTestBase(testtools.TestCase):
     """Base test class for read only python-novaclient commands.
 
@@ -231,6 +234,16 @@ class ClientTestBase(testtools.TestCase):
                                               username=user,
                                               password=passwd)
         self.cinder = cinderclient.Client(auth=auth, session=session)
+
+        global USE_NEUTRON
+        if USE_NEUTRON is None:
+            # check to see if we're running with neutron or not
+            for service in self.keystone.services.list():
+                if service.type == 'network':
+                    USE_NEUTRON = True
+                    break
+            else:
+                USE_NEUTRON = False
 
     def nova(self, action, flags='', params='', fail_ok=False,
              endpoint_type='publicURL', merge_stderr=False):
@@ -414,6 +427,10 @@ class ClientTestBase(testtools.TestCase):
         else:
             project = self.keystone.tenants.find(name=name)
         return project.id
+
+    def skip_if_neutron(self):
+        if USE_NEUTRON:
+            self.skipTest('nova-network is not available')
 
 
 class TenantTestBase(ClientTestBase):
