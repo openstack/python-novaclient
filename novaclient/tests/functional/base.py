@@ -258,7 +258,7 @@ class ClientTestBase(testtools.TestCase):
             self.fail("Volume %s did not reach status %s after %d s"
                       % (volume.id, status, timeout))
 
-    def wait_for_server_os_boot(self, server_id, timeout=60,
+    def wait_for_server_os_boot(self, server_id, timeout=300,
                                 poll_interval=1):
         """Wait until instance's operating system  is completely booted.
 
@@ -267,13 +267,15 @@ class ClientTestBase(testtools.TestCase):
         :param poll_interval: poll interval in seconds
         """
         start_time = time.time()
+        console = None
         while time.time() - start_time < timeout:
-            if BOOT_IS_COMPLETE in self.nova('console-log %s ' % server_id):
+            console = self.nova('console-log %s ' % server_id)
+            if BOOT_IS_COMPLETE in console:
                 break
             time.sleep(poll_interval)
         else:
-            self.fail("Server %s did not boot after %d s"
-                      % (server_id, timeout))
+            self.fail("Server %s did not boot after %d s.\nConsole:\n%s"
+                      % (server_id, timeout, console))
 
     def wait_for_resource_delete(self, resource, manager,
                                  timeout=60, poll_interval=1):
