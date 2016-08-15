@@ -38,4 +38,4 @@ class TestConsolesNovaClientV28(test_consoles.TestConsolesNovaClient):
     COMPUTE_API_VERSION = "2.8"
 
     def test_webmks_console_get(self):
-        self._test_console_get('get-mks-console %s ')
+        self._test_console_get('get-mks-console %s ', 'webmks')
