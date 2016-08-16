@@ -2270,7 +2270,31 @@ def _find_flavor(cs, flavor):
         return cs.flavors.find(ram=flavor)
 
 
+def _find_network_id_neutron(cs, net_name):
+    """Get unique network ID from network name from neutron"""
+    try:
+        return cs.neutron.find_network(net_name).id
+    except (exceptions.NotFound, exceptions.NoUniqueMatch) as e:
+        raise exceptions.CommandError(six.text_type(e))
+
+
 def _find_network_id(cs, net_name):
+    """Find the network id for a network name.
+
+    If we have access to neutron in the service catalog, use neutron
+    for this lookup, otherwise use nova. This ensures that we do the
+    right thing in the future.
+
+    Once nova network support is deleted, we can delete this check and
+    the has_neutron function.
+    """
+    if cs.has_neutron():
+        return _find_network_id_neutron(cs, net_name)
+    else:
+        return _find_network_id_novanet(cs, net_name)
+
+
+def _find_network_id_novanet(cs, net_name):
     """Get unique network ID from network name."""
     network_id = None
     for net_info in cs.networks.list():

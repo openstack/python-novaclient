@@ -1,0 +1,12 @@
+---
+upgrade:
+  - |
+    The 2.36 microversion deprecated the network proxy APIs in
+    Nova. Because of this we now go directly to neutron for name to
+    net-id lookups. For nova-net deployements the old proxies will
+    continue to be used.
+
+    To do this the following is assumed:
+
+    #. There is a **network** entry in the service catalog.
+    #. The network v2 API is available.

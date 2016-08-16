@@ -15,6 +15,8 @@
 
 import logging
 
+from keystoneauth1.exceptions import catalog as key_ex
+
 from novaclient import api_versions
 from novaclient import client
 from novaclient import exceptions
@@ -149,6 +151,7 @@ class Client(object):
         self.volumes = volumes.VolumeManager(self)
         self.keypairs = keypairs.KeypairManager(self)
         self.networks = networks.NetworkManager(self)
+        self.neutron = networks.NeutronManager(self)
         self.quota_classes = quota_classes.QuotaClassSetManager(self)
         self.quotas = quotas.QuotaSetManager(self)
         self.security_groups = security_groups.SecurityGroupManager(self)
@@ -232,6 +235,23 @@ class Client(object):
 
     def reset_timings(self):
         self.client.reset_timings()
+
+    def has_neutron(self):
+        """Check the service catalog to figure out if we have neutron.
+
+        This is an intermediary solution for the window of time where
+        we still have nova-network support in the client, but we
+        expect most people have neutron. This ensures that if they
+        have neutron we understand, we talk to it, if they don't, we
+        fail back to nova proxies.
+        """
+        try:
+            endpoint = self.client.get_endpoint(service_type='network')
+            if endpoint:
+                return True
+            return False
+        except key_ex.EndpointNotFound:
+            return False
 
     @client._original_only
     def authenticate(self):

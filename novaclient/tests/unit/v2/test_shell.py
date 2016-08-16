@@ -26,6 +26,7 @@ import mock
 from oslo_utils import timeutils
 import six
 from six.moves import builtins
+import testtools
 
 import novaclient
 from novaclient import api_versions
@@ -671,14 +672,10 @@ class ShellTest(utils.TestCase):
                '--nic net-id=net-id1,net-id=net-id2 some-server' % FAKE_UUID_1)
         self.assertRaises(exceptions.CommandError, self.run_command, cmd)
 
-    @mock.patch(
-        'novaclient.tests.unit.v2.fakes.FakeHTTPClient.get_os_networks')
-    def test_boot_nics_net_name(self, mock_networks_list):
-        mock_networks_list.return_value = (200, {}, {
-            'networks': [{"label": "some-net", 'id': '1'}]})
-
+    @mock.patch('novaclient.v2.client.Client.has_neutron', return_value=False)
+    def test_boot_nics_net_name(self, has_neutron):
         cmd = ('boot --image %s --flavor 1 '
-               '--nic net-name=some-net some-server' % FAKE_UUID_1)
+               '--nic net-name=1 some-server' % FAKE_UUID_1)
         self.run_command(cmd)
         self.assert_called_anytime(
             'POST', '/servers',
@@ -696,14 +693,61 @@ class ShellTest(utils.TestCase):
             },
         )
 
-    def test_boot_nics_net_name_not_found(self):
+    @mock.patch('novaclient.v2.client.Client.has_neutron', return_value=True)
+    def test_boot_nics_net_name_neutron(self, has_neutron):
+        cmd = ('boot --image %s --flavor 1 '
+               '--nic net-name=private some-server' % FAKE_UUID_1)
+        self.run_command(cmd)
+        self.assert_called_anytime(
+            'POST', '/servers',
+            {
+                'server': {
+                    'flavorRef': '1',
+                    'name': 'some-server',
+                    'imageRef': FAKE_UUID_1,
+                    'min_count': 1,
+                    'max_count': 1,
+                    'networks': [
+                        {'uuid': 'e43a56c7-11d4-45c9-8681-ddc8171b5850'},
+                    ],
+                },
+            },
+        )
+
+    @mock.patch('novaclient.v2.client.Client.has_neutron', return_value=True)
+    def test_boot_nics_net_name_neutron_dup(self, has_neutron):
+        cmd = ('boot --image %s --flavor 1 '
+               '--nic net-name=duplicate some-server' % FAKE_UUID_1)
+        # this should raise a multiple matches error
+        msg = ("Multiple network matches found for 'duplicate', "
+               "use an ID to be more specific.")
+        with testtools.ExpectedException(exceptions.CommandError, msg):
+            self.run_command(cmd)
+
+    @mock.patch('novaclient.v2.client.Client.has_neutron', return_value=True)
+    def test_boot_nics_net_name_neutron_blank(self, has_neutron):
+        cmd = ('boot --image %s --flavor 1 '
+               '--nic net-name=blank some-server' % FAKE_UUID_1)
+        # this should raise a multiple matches error
+        msg = 'No Network matching blank\..*'
+        with testtools.ExpectedException(exceptions.CommandError, msg):
+            self.run_command(cmd)
+
+    # TODO(sdague): the following tests should really avoid mocking
+    # out other tests, and they should check the string in the
+    # CommandError, because it's not really enough to distinguish
+    # between various errors.
+    @mock.patch('novaclient.v2.client.Client.has_neutron', return_value=False)
+    def test_boot_nics_net_name_not_found(self, has_neutron):
         cmd = ('boot --image %s --flavor 1 '
                '--nic net-name=some-net some-server' % FAKE_UUID_1)
         self.assertRaises(exceptions.ResourceNotFound, self.run_command, cmd)
 
+    @mock.patch('novaclient.v2.client.Client.has_neutron', return_value=False)
     @mock.patch(
         'novaclient.tests.unit.v2.fakes.FakeHTTPClient.get_os_networks')
-    def test_boot_nics_net_name_multiple_matches(self, mock_networks_list):
+    def test_boot_nics_net_name_multiple_matches(self, mock_networks_list,
+                                                 has_neutron):
         mock_networks_list.return_value = (200, {}, {
             'networks': [{"label": "some-net", 'id': '1'},
                          {"label": "some-net", 'id': '2'}]})
