@@ -20,6 +20,8 @@ class TestVirtualInterfacesNovaClient(base.ClientTestBase):
     COMPUTE_API_VERSION = "2.1"
 
     def test_virtual_interface_list(self):
+        # os-virtual-interfaces does not proxy to neutron
+        self.skip_if_neutron()
         server = self._create_server()
         output = self.nova('virtual-interface-list %s' % server.id)
         self.assertTrue(len(output.split("\n")) > 5,
