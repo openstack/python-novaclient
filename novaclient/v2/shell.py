@@ -1274,7 +1274,7 @@ def _print_image(image):
     info = image._info.copy()
 
     # ignore links, we don't need to present those
-    info.pop('links')
+    info.pop('links', None)
 
     # try to replace a server entity to just an id
     server = info.pop('server', None)
@@ -1322,7 +1322,10 @@ def do_image_delete(cs, args):
     emit_image_deprecation_warning('image-delete')
     for image in args.image:
         try:
-            _find_image(cs, image).delete()
+            # _find_image is using the GlanceManager which doesn't implement
+            # the delete() method so use the ImagesManager for that.
+            image = _find_image(cs, image)
+            cs.images.delete(image)
         except Exception as e:
             print(_("Delete for image %(image)s failed: %(e)s") %
                   {'image': image, 'e': e})
@@ -2080,7 +2083,7 @@ def do_image_create(cs, args):
     image_uuid = cs.servers.create_image(server, args.name, meta)
 
     if args.poll:
-        _poll_for_status(cs.images.get, image_uuid, 'snapshotting',
+        _poll_for_status(cs.glance.find_image, image_uuid, 'snapshotting',
                          ['active'])
 
         # NOTE(sirp):  A race-condition exists between when the image finishes
@@ -2099,7 +2102,7 @@ def do_image_create(cs, args):
                              show_progress=False, silent=True)
 
     if args.show:
-        _print_image(cs.images.get(image_uuid))
+        _print_image(_find_image(cs, image_uuid))
 
 
 @utils.arg('server', metavar='<server>', help=_('Name or ID of server.'))
@@ -2253,7 +2256,10 @@ def _find_server(cs, server, raise_if_notfound=True, **find_args):
 
 def _find_image(cs, image):
     """Get an image by name or ID."""
-    return utils.find_resource(cs.images, image)
+    try:
+        return cs.glance.find_image(image)
+    except (exceptions.NotFound, exceptions.NoUniqueMatch) as e:
+        raise exceptions.CommandError(six.text_type(e))
 
 
 def _find_flavor(cs, flavor):

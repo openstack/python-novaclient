@@ -45,6 +45,8 @@ CALLBACK_RE = re.compile(r"^get_http:__nova_api:8774_v\d(_\d)?$")
 # fake image uuids
 FAKE_IMAGE_UUID_1 = 'c99d7632-bd66-4be9-aed5-3dd14b223a76'
 FAKE_IMAGE_UUID_2 = 'f27f479a-ddda-419a-9bbc-d6b56b210161'
+FAKE_IMAGE_UUID_SNAPSHOT = '555cae93-fb41-4145-9c52-f5b923538a26'
+FAKE_IMAGE_UUID_SNAP_DEL = '55bb23af-97a4-4068-bdf8-f10c62880ddf'
 
 # fake request id
 FAKE_REQUEST_ID = fakes.FAKE_REQUEST_ID
@@ -128,6 +130,12 @@ class FakeHTTPClient(base_client.HTTPClient):
             # more like we'd expect when making REST calls.
             raise exceptions.NotFound('404')
 
+        # Handle fake glance v2 requests
+        v2_image = False
+        if callback.startswith('get_v2_images'):
+            v2_image = True
+            callback = callback.replace('get_v2_', 'get_')
+
         if not hasattr(self, callback):
             raise AssertionError('Called unknown API method: %s %s, '
                                  'expected fakes method name: %s' %
@@ -137,6 +145,12 @@ class FakeHTTPClient(base_client.HTTPClient):
         self.callstack.append((method, url, kwargs.get('body')))
 
         status, headers, body = getattr(self, callback)(**kwargs)
+
+        # If we're dealing with a glance v2 image response, the response
+        # isn't wrapped like the compute images API proxy is, so handle that.
+        if body and v2_image and 'image' in body:
+            body = body['image']
+
         r = utils.TestResponse({
             "status_code": status,
             "text": body,
@@ -417,7 +431,7 @@ class FakeHTTPClient(base_client.HTTPClient):
                 "id": 5678,
                 "name": "sample-server2",
                 "image": {
-                    "id": 2,
+                    "id": FAKE_IMAGE_UUID_1,
                     "name": "sample image",
                 },
                 "flavor": {
@@ -742,9 +756,11 @@ class FakeHTTPClient(base_client.HTTPClient):
             _body = {'adminPass': 'RescuePassword'}
         elif action == 'createImage':
             assert set(body[action].keys()) == set(['name', 'metadata'])
-            _headers = dict(location="http://blah/images/456")
+            _headers = dict(location="http://blah/images/%s" %
+                            FAKE_IMAGE_UUID_SNAPSHOT)
             if body[action]['name'] == 'mysnapshot_deleted':
-                _headers = dict(location="http://blah/images/457")
+                _headers = dict(location="http://blah/images/%s" %
+                                FAKE_IMAGE_UUID_SNAP_DEL)
         elif action == 'os-getConsoleOutput':
             assert list(body[action]) == ['length']
             return (202, {}, {'output': 'foo'})
@@ -1079,8 +1095,6 @@ class FakeHTTPClient(base_client.HTTPClient):
     #
     def get_images(self, **kw):
         return (200, {}, {'images': [
-            {'id': 1, 'name': 'CentOS 5.2'},
-            {'id': 2, 'name': 'My Server Backup'},
             {'id': FAKE_IMAGE_UUID_1, 'name': 'CentOS 5.2'},
             {'id': FAKE_IMAGE_UUID_2, 'name': 'My Server Backup'}
         ]})
@@ -1088,18 +1102,7 @@ class FakeHTTPClient(base_client.HTTPClient):
     def get_images_detail(self, **kw):
         return (200, {}, {'images': [
             {
-                'id': 1,
-                'name': 'CentOS 5.2',
-                "updated": "2010-10-10T12:00:00Z",
-                "created": "2010-08-10T12:00:00Z",
-                "status": "ACTIVE",
-                "metadata": {
-                    "test_key": "test_value",
-                },
-                "links": {},
-            },
-            {
-                "id": 2,
+                "id": FAKE_IMAGE_UUID_SNAPSHOT,
                 "name": "My Server Backup",
                 "serverId": 1234,
                 "updated": "2010-10-10T12:00:00Z",
@@ -1109,7 +1112,7 @@ class FakeHTTPClient(base_client.HTTPClient):
                 "links": {},
             },
             {
-                "id": 3,
+                "id": FAKE_IMAGE_UUID_SNAP_DEL,
                 "name": "My Server Backup Deleted",
                 "serverId": 1234,
                 "updated": "2010-10-10T12:00:00Z",
@@ -1141,38 +1144,31 @@ class FakeHTTPClient(base_client.HTTPClient):
             }
         ]})
 
-    def get_images_1(self, **kw):
+    def get_images_555cae93_fb41_4145_9c52_f5b923538a26(self, **kw):
         return (200, {}, {'image': self.get_images_detail()[2]['images'][0]})
 
-    def get_images_2(self, **kw):
+    def get_images_55bb23af_97a4_4068_bdf8_f10c62880ddf(self, **kw):
         return (200, {}, {'image': self.get_images_detail()[2]['images'][1]})
-
-    def get_images_456(self, **kw):
-        return (200, {}, {'image': self.get_images_detail()[2]['images'][1]})
-
-    def get_images_457(self, **kw):
-        return (200, {}, {'image': self.get_images_detail()[2]['images'][2]})
 
     def get_images_c99d7632_bd66_4be9_aed5_3dd14b223a76(self, **kw):
-        return (200, {}, {'image': self.get_images_detail()[2]['images'][3]})
+        return (200, {}, {'image': self.get_images_detail()[2]['images'][2]})
 
     def get_images_f27f479a_ddda_419a_9bbc_d6b56b210161(self, **kw):
-        return (200, {}, {'image': self.get_images_detail()[2]['images'][4]})
+        return (200, {}, {'image': self.get_images_detail()[2]['images'][3]})
 
     def get_images_3e861307_73a6_4d1f_8d68_f68b03223032(self):
         raise exceptions.NotFound('404')
 
-    def post_images_1_metadata(self, body, **kw):
+    def post_images_c99d7632_bd66_4be9_aed5_3dd14b223a76_metadata(
+            self, body, **kw):
         assert list(body) == ['metadata']
         fakes.assert_has_keys(body['metadata'],
                               required=['test_key'])
+        get_image = self.get_images_c99d7632_bd66_4be9_aed5_3dd14b223a76
         return (
             200,
             {},
-            {'metadata': self.get_images_1()[2]['image']['metadata']})
-
-    def delete_images_1(self, **kw):
-        return (204, {}, None)
+            {'metadata': get_image()[2]['image']['metadata']})
 
     def delete_images_c99d7632_bd66_4be9_aed5_3dd14b223a76(self, **kw):
         return (204, {}, None)
@@ -1180,7 +1176,8 @@ class FakeHTTPClient(base_client.HTTPClient):
     def delete_images_f27f479a_ddda_419a_9bbc_d6b56b210161(self, **kw):
         return (204, {}, None)
 
-    def delete_images_1_metadata_test_key(self, **kw):
+    def delete_images_c99d7632_bd66_4be9_aed5_3dd14b223a76_metadata_test_key(
+            self, **kw):
         return (204, {}, None)
 
     #
