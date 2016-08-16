@@ -34,10 +34,13 @@ class ServersTest(utils.FixturedTestCase):
 
     client_fixture_class = client.V1
     data_fixture_class = data.V1
+    api_version = None
 
     def setUp(self):
         super(ServersTest, self).setUp()
         self.useFixture(floatingips.FloatingFixture(self.requests))
+        if self.api_version:
+            self.cs.api_version = api_versions.APIVersion(self.api_version)
 
     def test_list_servers(self):
         sl = self.cs.servers.list()
@@ -975,9 +978,8 @@ class ServersTest(utils.FixturedTestCase):
 
 
 class ServersV26Test(ServersTest):
-    def setUp(self):
-        super(ServersV26Test, self).setUp()
-        self.cs.api_version = api_versions.APIVersion("2.6")
+
+    api_version = "2.6"
 
     def test_get_vnc_console(self):
         s = self.cs.servers.get(1234)
@@ -1021,9 +1023,8 @@ class ServersV26Test(ServersTest):
 
 
 class ServersV28Test(ServersV26Test):
-    def setUp(self):
-        super(ServersV28Test, self).setUp()
-        self.cs.api_version = api_versions.APIVersion("2.8")
+
+    api_version = "2.8"
 
     def test_get_mks_console(self):
         s = self.cs.servers.get(1234)
@@ -1037,9 +1038,8 @@ class ServersV28Test(ServersV26Test):
 
 
 class ServersV214Test(ServersV28Test):
-    def setUp(self):
-        super(ServersV214Test, self).setUp()
-        self.cs.api_version = api_versions.APIVersion("2.14")
+
+    api_version = "2.14"
 
     def test_evacuate(self):
         s = self.cs.servers.get(1234)
@@ -1051,9 +1051,8 @@ class ServersV214Test(ServersV28Test):
 
 
 class ServersV217Test(ServersV214Test):
-    def setUp(self):
-        super(ServersV217Test, self).setUp()
-        self.cs.api_version = api_versions.APIVersion("2.17")
+
+    api_version = "2.17"
 
     def test_trigger_crash_dump(self):
         s = self.cs.servers.get(1234)
@@ -1064,9 +1063,8 @@ class ServersV217Test(ServersV214Test):
 
 
 class ServersV219Test(ServersV217Test):
-    def setUp(self):
-        super(ServersV219Test, self).setUp()
-        self.cs.api_version = api_versions.APIVersion("2.19")
+
+    api_version = "2.19"
 
     def test_create_server_with_description(self):
         self.cs.servers.create(
@@ -1096,9 +1094,8 @@ class ServersV219Test(ServersV217Test):
 
 
 class ServersV225Test(ServersV219Test):
-    def setUp(self):
-        super(ServersV219Test, self).setUp()
-        self.cs.api_version = api_versions.APIVersion("2.25")
+
+    api_version = "2.25"
 
     def test_live_migrate_server(self):
         s = self.cs.servers.get(1234)
@@ -1146,9 +1143,8 @@ class ServersV225Test(ServersV219Test):
 
 
 class ServersV226Test(ServersV225Test):
-    def setUp(self):
-        super(ServersV219Test, self).setUp()
-        self.cs.api_version = api_versions.APIVersion("2.26")
+
+    api_version = "2.26"
 
     def test_tag_list(self):
         s = self.cs.servers.get(1234)
@@ -1182,9 +1178,8 @@ class ServersV226Test(ServersV225Test):
 
 
 class ServersV229Test(ServersV226Test):
-    def setUp(self):
-        super(ServersV229Test, self).setUp()
-        self.cs.api_version = api_versions.APIVersion("2.29")
+
+    api_version = "2.29"
 
     def test_evacuate(self):
         s = self.cs.servers.get(1234)
@@ -1198,9 +1193,8 @@ class ServersV229Test(ServersV226Test):
 
 
 class ServersV230Test(ServersV229Test):
-    def setUp(self):
-        super(ServersV230Test, self).setUp()
-        self.cs.api_version = api_versions.APIVersion("2.30")
+
+    api_version = "2.30"
 
     def test_live_migrate_server(self):
         s = self.cs.servers.get(1234)
@@ -1220,9 +1214,8 @@ class ServersV230Test(ServersV229Test):
 
 
 class ServersV232Test(ServersV226Test):
-    def setUp(self):
-        super(ServersV232Test, self).setUp()
-        self.cs.api_version = api_versions.APIVersion("2.32")
+
+    api_version = "2.32"
 
     def test_create_server_boot_with_tagged_nics(self):
         nics = [{'net-id': '11111111-1111-1111-1111-111111111111',
