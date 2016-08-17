@@ -16,6 +16,7 @@ import uuid
 
 from cinderclient.v2 import client as cinderclient
 import fixtures
+from glanceclient import client as glanceclient
 from keystoneauth1.exceptions import discovery as discovery_exc
 from keystoneauth1 import identity
 from keystoneauth1 import session as ksession
@@ -208,9 +209,11 @@ class ClientTestBase(testtools.TestCase):
 
         self.client = novaclient.client.Client(version, session=session)
 
+        self.glance = glanceclient.Client('2', session=session)
+
         # pick some reasonable flavor / image combo
         self.flavor = pick_flavor(self.client.flavors.list())
-        self.image = pick_image(self.client.images.list())
+        self.image = pick_image(self.glance.images.list())
         self.network = pick_network(self.client.networks.list())
 
         # create a CLI client in case we'd like to do CLI
