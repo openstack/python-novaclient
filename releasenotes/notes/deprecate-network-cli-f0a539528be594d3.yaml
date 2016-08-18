@@ -1,0 +1,67 @@
+---
+upgrade:
+  - |
+    The ability to update the following network-related resources via the
+    ``nova quota-update`` and ``nova quota-class-update`` commands is now
+    deprecated:
+
+    * Fixed IPs
+    * Floating IPs
+    * Security Groups
+    * Security Group Rules
+
+    By default the quota and limits CLIs will not update or show those
+    resources using microversion >= 2.36. You can still use them, however, by
+    specifying ``--os-compute-api-version 2.35``. Quota information for network
+    resources should be retrieved from python-neutronclient or
+    python-openstackclient.
+deprecations:
+  - |
+    The following commands are now deprecated:
+
+    * dns-create
+    * dns-create-private-domain
+    * dns-create-public-domain
+    * dns-delete
+    * dns-delete-domain
+    * dns-domains
+    * dns-list
+    * fixed-ip-get
+    * fixed-ip-reserve
+    * fixed-ip-unreserve
+    * floating-ip-create
+    * floating-ip-delete
+    * floating-ip-list
+    * floating-ip-pool-list
+    * floating-ip-bulk-create
+    * floating-ip-bulk-delete
+    * floating-ip-bulk-list
+    * network-create
+    * network-delete
+    * network-disassociate
+    * network-associate-host
+    * network-associate-project
+    * network-list
+    * network-show
+    * scrub
+    * secgroup-create
+    * secgroup-delete
+    * secgroup-list
+    * secgroup-update
+    * secgroup-add-group-rule
+    * secgroup-delete-group-rule
+    * secgroup-add-rule
+    * secgroup-delete-rule
+    * secgroup-list-rules
+    * secgroup-list-default-rules
+    * secgroup-add-default-rule
+    * secgroup-delete-default-rule
+    * tenant-network-create
+    * tenant-network-delete
+    * tenant-network-list
+    * tenant-network-show
+
+    With the 2.36 microversion these will fail in the API. The CLI will
+    fallback to passing the 2.35 microversion to ease the transition. Network
+    resource information should be retrieved from python-neutronclient or
+    python-openstackclient.

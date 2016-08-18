@@ -693,6 +693,38 @@ class ShellTest(utils.TestCase):
             },
         )
 
+    @mock.patch('novaclient.v2.client.Client.has_neutron', return_value=False)
+    def test_boot_nics_net_name_nova_net_2_36(self, has_neutron):
+        orig_find_network = novaclient.v2.shell._find_network_id_novanet
+
+        def stubbed_find_network(cs, net_name):
+            # assert that we dropped back to 2.35
+            self.assertEqual(api_versions.APIVersion('2.35'),
+                             cs.client.api_version)
+            return orig_find_network(cs, net_name)
+
+        cmd = ('boot --image %s --flavor 1 '
+               '--nic net-name=1 some-server' % FAKE_UUID_1)
+        with mock.patch.object(novaclient.v2.shell, '_find_network_id_novanet',
+                               side_effect=stubbed_find_network) as find_net:
+            self.run_command(cmd, api_version='2.36')
+        find_net.assert_called_once_with(self.shell.cs, '1')
+        self.assert_called_anytime(
+            'POST', '/servers',
+            {
+                'server': {
+                    'flavorRef': '1',
+                    'name': 'some-server',
+                    'imageRef': FAKE_UUID_1,
+                    'min_count': 1,
+                    'max_count': 1,
+                    'networks': [
+                        {'uuid': '1'},
+                    ],
+                },
+            },
+        )
+
     @mock.patch('novaclient.v2.client.Client.has_neutron', return_value=True)
     def test_boot_nics_net_name_neutron(self, has_neutron):
         cmd = ('boot --image %s --flavor 1 '
@@ -3271,3 +3303,39 @@ class PollForStatusTestCase(utils.TestCase):
                           action=action,
                           show_progress=True,
                           silent=False)
+
+
+class ShellUtilTest(utils.TestCase):
+    def test_deprecated_network_newer(self):
+        @novaclient.v2.shell.deprecated_network
+        def tester(cs):
+            'foo'
+            self.assertEqual(api_versions.APIVersion('2.35'),
+                             cs.api_version)
+
+        cs = mock.MagicMock()
+        cs.api_version = api_versions.APIVersion('2.9999')
+        tester(cs)
+        self.assertEqual('DEPRECATED: foo', tester.__doc__)
+
+    def test_deprecated_network_older(self):
+        @novaclient.v2.shell.deprecated_network
+        def tester(cs):
+            'foo'
+            # since we didn't need to adjust the api_version the mock won't
+            # have cs.client.api_version set on it
+            self.assertFalse(hasattr(cs, 'client'))
+            # we have to set the attribute back on cs so the decorator can
+            # set the value on it when we return from this wrapped function
+            setattr(cs, 'client', mock.MagicMock())
+
+        cs = mock.MagicMock()
+        cs.api_version = api_versions.APIVersion('2.1')
+        # we have to delete the cs.client attribute so hasattr won't return a
+        # false positive in the wrapped function
+        del cs.client
+        tester(cs)
+        self.assertEqual('DEPRECATED: foo', tester.__doc__)
+        # the deprecated_network decorator will set cs.client.api_version
+        # after calling the wrapped function
+        self.assertEqual(cs.api_version, cs.api_version)

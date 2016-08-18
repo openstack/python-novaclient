@@ -10,6 +10,10 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import six
+from tempest.lib import exceptions
+
+from novaclient import api_versions
 from novaclient.tests.functional.v2.legacy import test_readonly_nova
 
 
@@ -22,3 +26,13 @@ class SimpleReadOnlyNovaClientTest(
     """
 
     COMPUTE_API_VERSION = "2.latest"
+
+    def test_admin_image_list(self):
+        # The nova images proxy API returns a 404 after 2.35.
+        if self.client.api_version > api_versions.APIVersion('2.35'):
+            ex = self.assertRaises(exceptions.CommandFailed,
+                                   super(SimpleReadOnlyNovaClientTest, self).
+                                   test_admin_image_list)
+            self.assertIn('NotFound', six.text_type(ex))
+        else:
+            super(SimpleReadOnlyNovaClientTest, self).test_admin_image_list()

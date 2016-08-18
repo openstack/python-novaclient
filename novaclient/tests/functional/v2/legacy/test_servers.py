@@ -56,13 +56,12 @@ class TestServersBootNovaClient(base.ClientTestBase):
         self._boot_server_with_legacy_bdm()
 
     def test_boot_server_with_net_name(self):
-        network = self.client.networks.list()[0]
         server_info = self.nova("boot", params=(
             "%(name)s --flavor %(flavor)s --image %(image)s --poll "
             "--nic net-name=%(net-name)s" % {"name": str(uuid.uuid4()),
                                              "image": self.image.id,
                                              "flavor": self.flavor.id,
-                                             "net-name": network.label}))
+                                             "net-name": self.network.label}))
         server_id = self._get_value_from_the_table(server_info, "id")
 
         self.client.servers.delete(server_id)
