@@ -97,6 +97,7 @@ class NoCloudConfigException(Exception):
 
 
 USE_NEUTRON = None
+SERVER_API_VERSIONS = None
 
 
 class ClientTestBase(testtools.TestCase):
@@ -194,11 +195,6 @@ class ClientTestBase(testtools.TestCase):
         else:
             self.insecure = False
 
-        if self.COMPUTE_API_VERSION == "2.latest":
-            version = novaclient.API_MAX_VERSION.get_string()
-        else:
-            version = self.COMPUTE_API_VERSION or "2"
-
         auth = identity.Password(username=user,
                                  password=passwd,
                                  project_name=tenant,
@@ -207,7 +203,7 @@ class ClientTestBase(testtools.TestCase):
                                  user_domain_id=user_domain_id)
         session = ksession.Session(auth=auth, verify=(not self.insecure))
 
-        self.client = novaclient.client.Client(version, session=session)
+        self.client = self._get_novaclient(session)
 
         self.glance = glanceclient.Client('2', session=session)
 
@@ -247,6 +243,45 @@ class ClientTestBase(testtools.TestCase):
                     break
             else:
                 USE_NEUTRON = False
+
+    def _get_novaclient(self, session):
+        nc = novaclient.client.Client("2", session=session)
+
+        if self.COMPUTE_API_VERSION:
+            global SERVER_API_VERSIONS
+            if SERVER_API_VERSIONS is None:
+                # Obtain supported versions by API side
+                v = nc.versions.get_current()
+                if not hasattr(v, 'version') or not v.version:
+                    # API doesn't support microversions
+                    SERVER_API_VERSIONS = (
+                        novaclient.api_versions.APIVersion("2.0"),
+                        novaclient.api_versions.APIVersion("2.0"))
+                else:
+                    SERVER_API_VERSIONS = (
+                        novaclient.api_versions.APIVersion(v.min_version),
+                        novaclient.api_versions.APIVersion(v.version))
+
+            if self.COMPUTE_API_VERSION == "2.latest":
+                requested_version = min(novaclient.API_MAX_VERSION,
+                                        SERVER_API_VERSIONS[1])
+            else:
+                requested_version = novaclient.api_versions.APIVersion(
+                    self.COMPUTE_API_VERSION)
+
+            if not requested_version.matches(*SERVER_API_VERSIONS):
+                msg = ("%s is not supported by Nova-API. Supported version" %
+                       self.COMPUTE_API_VERSION)
+                if SERVER_API_VERSIONS[0] == SERVER_API_VERSIONS[1]:
+                    msg += ": %s" % SERVER_API_VERSIONS[0].get_string()
+                else:
+                    msg += "s: %s - %s" % (
+                        SERVER_API_VERSIONS[0].get_string(),
+                        SERVER_API_VERSIONS[1].get_string())
+                self.skipTest(msg)
+
+            nc.api_version = requested_version
+        return nc
 
     def nova(self, action, flags='', params='', fail_ok=False,
              endpoint_type='publicURL', merge_stderr=False):
