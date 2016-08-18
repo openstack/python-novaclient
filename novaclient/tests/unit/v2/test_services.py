@@ -20,13 +20,12 @@ from novaclient.v2 import services
 
 
 class ServicesTest(utils.TestCase):
+    api_version = "2.0"
+
     def setUp(self):
         super(ServicesTest, self).setUp()
-        self.cs = self._get_fake_client()
+        self.cs = fakes.FakeClient(api_versions.APIVersion(self.api_version))
         self.service_type = self._get_service_type()
-
-    def _get_fake_client(self):
-        return fakes.FakeClient()
 
     def _get_service_type(self):
         return services.Service
@@ -109,9 +108,7 @@ class ServicesTest(utils.TestCase):
 
 
 class ServicesV211TestCase(ServicesTest):
-    def setUp(self):
-        super(ServicesV211TestCase, self).setUp()
-        self.cs.api_version = api_versions.APIVersion("2.11")
+    api_version = "2.11"
 
     def _update_body(self, host, binary, disabled_reason=None,
                      force_down=None):

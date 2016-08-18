@@ -11,6 +11,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from novaclient import api_versions
 from novaclient import extension
 from novaclient.tests.unit import utils
 from novaclient.tests.unit.v2 import fakes
@@ -24,7 +25,8 @@ class ListExtensionsTests(utils.TestCase):
             extension.Extension(list_extensions.__name__.split(".")[-1],
                                 list_extensions),
         ]
-        self.cs = fakes.FakeClient(extensions=extensions)
+        self.cs = fakes.FakeClient(api_versions.APIVersion("2.0"),
+                                   extensions=extensions)
 
     def test_list_extensions(self):
         all_exts = self.cs.list_extensions.show_all()

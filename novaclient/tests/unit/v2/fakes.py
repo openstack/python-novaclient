@@ -56,13 +56,12 @@ FAKE_RESPONSE_HEADERS = {'x-openstack-request-id': FAKE_REQUEST_ID}
 
 class FakeClient(fakes.FakeClient, client.Client):
 
-    def __init__(self, api_version=None, *args, **kwargs):
+    def __init__(self, api_version, *args, **kwargs):
         client.Client.__init__(self, 'username', 'password',
                                'project_id', 'auth_url',
                                extensions=kwargs.get('extensions'),
                                direct_use=False)
-        self.api_version = api_version or api_versions.APIVersion("2.1")
-        kwargs["api_version"] = self.api_version
+        kwargs["api_version"] = api_version
         self.client = FakeHTTPClient(**kwargs)
 
 
@@ -2368,8 +2367,8 @@ class FakeSessionClient(fakes.FakeClient, client.Client):
         client.Client.__init__(self, 'username', 'password',
                                'project_id', 'auth_url',
                                extensions=kwargs.get('extensions'),
-                               api_version=api_version, direct_use=False)
-        kwargs['api_version'] = api_version
+                               direct_use=False)
+        kwargs["api_version"] = api_version
         self.client = FakeSessionMockClient(**kwargs)
 
 

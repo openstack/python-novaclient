@@ -15,6 +15,7 @@ import datetime
 
 import six
 
+from novaclient import api_versions
 from novaclient.tests.unit import utils
 from novaclient.tests.unit.v2 import fakes
 from novaclient.v2 import usage
@@ -23,11 +24,8 @@ from novaclient.v2 import usage
 class UsageTest(utils.TestCase):
     def setUp(self):
         super(UsageTest, self).setUp()
-        self.cs = self._get_fake_client()
+        self.cs = fakes.FakeClient(api_versions.APIVersion("2.0"))
         self.usage_type = self._get_usage_type()
-
-    def _get_fake_client(self):
-        return fakes.FakeClient()
 
     def _get_usage_type(self):
         return usage.Usage

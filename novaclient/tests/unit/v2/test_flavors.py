@@ -15,6 +15,7 @@
 
 import mock
 
+from novaclient import api_versions
 from novaclient import base
 from novaclient import exceptions
 from novaclient.tests.unit import utils
@@ -25,11 +26,8 @@ from novaclient.v2 import flavors
 class FlavorsTest(utils.TestCase):
     def setUp(self):
         super(FlavorsTest, self).setUp()
-        self.cs = self._get_fake_client()
+        self.cs = fakes.FakeClient(api_versions.APIVersion("2.0"))
         self.flavor_type = self._get_flavor_type()
-
-    def _get_fake_client(self):
-        return fakes.FakeClient()
 
     def _get_flavor_type(self):
         return flavors.Flavor

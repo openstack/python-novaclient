@@ -14,6 +14,7 @@
 
 import mock
 
+from novaclient import api_versions
 from novaclient import base
 from novaclient import exceptions as exc
 from novaclient.tests.unit import utils
@@ -24,7 +25,7 @@ from novaclient.v2 import versions
 class VersionsTest(utils.TestCase):
     def setUp(self):
         super(VersionsTest, self).setUp()
-        self.cs = fakes.FakeClient()
+        self.cs = fakes.FakeClient(api_versions.APIVersion("2.0"))
         self.service_type = versions.Version
 
     @mock.patch.object(versions.VersionManager, '_is_session_client',
@@ -98,7 +99,8 @@ class VersionsTest(utils.TestCase):
         # doesn't return uuid in url
         endpoint_type = 'v2.1'
         expected_endpoint = 'http://nova-api:8774/v2.1/'
-        cs_2_1 = fakes.FakeClient(endpoint_type=endpoint_type)
+        cs_2_1 = fakes.FakeClient(api_versions.APIVersion("2.0"),
+                                  endpoint_type=endpoint_type)
 
         result = cs_2_1.versions.get_current()
         self.assert_request_id(result, fakes.FAKE_REQUEST_ID_LIST)
@@ -117,7 +119,8 @@ class VersionsTest(utils.TestCase):
         #  doesn't return uuid in url
         endpoint_type = 'v2'
         expected_endpoint = 'http://nova-api:8774/v2/'
-        cs_2 = fakes.FakeClient(endpoint_type=endpoint_type)
+        cs_2 = fakes.FakeClient(api_versions.APIVersion("2.0"),
+                                endpoint_type=endpoint_type)
 
         result = cs_2.versions.get_current()
         self.assert_request_id(result, fakes.FAKE_REQUEST_ID_LIST)

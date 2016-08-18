@@ -17,7 +17,6 @@ import logging
 
 from keystoneauth1.exceptions import catalog as key_ex
 
-from novaclient import api_versions
 from novaclient import client
 from novaclient import exceptions
 from novaclient.i18n import _LE
@@ -137,7 +136,6 @@ class Client(object):
         self.limits = limits.LimitsManager(self)
         self.servers = servers.ServerManager(self)
         self.versions = versions.VersionManager(self)
-        self.api_version = api_version or api_versions.APIVersion("2.1")
 
         # extensions
         self.agents = agents.AgentsManager(self)
@@ -216,6 +214,14 @@ class Client(object):
             api_version=api_version,
             logger=logger,
             **kwargs)
+
+    @property
+    def api_version(self):
+        return self.client.api_version
+
+    @api_version.setter
+    def api_version(self, value):
+        self.client.api_version = value
 
     @client._original_only
     def __enter__(self):

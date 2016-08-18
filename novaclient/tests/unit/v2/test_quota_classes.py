@@ -13,30 +13,31 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from novaclient import api_versions
 from novaclient.tests.unit import utils
 from novaclient.tests.unit.v2 import fakes
 
 
-cs = fakes.FakeClient()
-
-
 class QuotaClassSetsTest(utils.TestCase):
+    def setUp(self):
+        super(QuotaClassSetsTest, self).setUp()
+        self.cs = fakes.FakeClient(api_versions.APIVersion("2.0"))
 
     def test_class_quotas_get(self):
         class_name = 'test'
-        q = cs.quota_classes.get(class_name)
+        q = self.cs.quota_classes.get(class_name)
         self.assert_request_id(q, fakes.FAKE_REQUEST_ID_LIST)
-        cs.assert_called('GET', '/os-quota-class-sets/%s' % class_name)
+        self.cs.assert_called('GET', '/os-quota-class-sets/%s' % class_name)
 
     def test_update_quota(self):
-        q = cs.quota_classes.get('test')
+        q = self.cs.quota_classes.get('test')
         self.assert_request_id(q, fakes.FAKE_REQUEST_ID_LIST)
         q.update(cores=2)
-        cs.assert_called('PUT', '/os-quota-class-sets/test')
+        self.cs.assert_called('PUT', '/os-quota-class-sets/test')
 
     def test_refresh_quota(self):
-        q = cs.quota_classes.get('test')
-        q2 = cs.quota_classes.get('test')
+        q = self.cs.quota_classes.get('test')
+        q2 = self.cs.quota_classes.get('test')
         self.assertEqual(q.cores, q2.cores)
         q2.cores = 0
         self.assertNotEqual(q.cores, q2.cores)

@@ -24,7 +24,8 @@ class MigrationsTest(utils.TestCase):
             extension.Extension(migrations.__name__.split(".")[-1],
                                 migrations),
         ]
-        self.cs = fakes.FakeClient(extensions=self.extensions)
+        self.cs = fakes.FakeClient(api_versions.APIVersion("2.0"),
+                                   extensions=self.extensions)
 
     def test_list_migrations(self):
         ml = self.cs.migrations.list()

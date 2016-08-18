@@ -14,14 +14,12 @@
 from requests import Response
 import six
 
+from novaclient import api_versions
 from novaclient import base
 from novaclient import exceptions
 from novaclient.tests.unit import utils
 from novaclient.tests.unit.v2 import fakes
 from novaclient.v2 import flavors
-
-
-cs = fakes.FakeClient()
 
 
 def create_response_obj_with_header():
@@ -37,7 +35,6 @@ def create_response_obj_with_compute_header():
 
 
 class BaseTest(utils.TestCase):
-
     def test_resource_repr(self):
         r = base.Resource(None, dict(foo="bar", baz="spam"))
         self.assertEqual("<Resource baz=spam, foo=bar>", repr(r))
@@ -50,6 +47,7 @@ class BaseTest(utils.TestCase):
         self.assertEqual(4, base.getid(TmpObject))
 
     def test_resource_lazy_getattr(self):
+        cs = fakes.FakeClient(api_versions.APIVersion("2.0"))
         f = flavors.Flavor(cs.flavors, {'id': 1})
         self.assertEqual('256 MB Server', f.name)
         cs.assert_called('GET', '/flavors/1')
@@ -74,6 +72,7 @@ class BaseTest(utils.TestCase):
         self.assertEqual(r1, r2)
 
     def test_findall_invalid_attribute(self):
+        cs = fakes.FakeClient(api_versions.APIVersion("2.0"))
         # Make sure findall with an invalid attribute doesn't cause errors.
         # The following should not raise an exception.
         cs.flavors.findall(vegetable='carrot')
