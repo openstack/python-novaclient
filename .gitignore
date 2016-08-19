@@ -16,6 +16,7 @@ ChangeLog
 novaclient/versioninfo
 *.egg
 *egg-info
+.eggs
 
 # Files created by releasenotes build
 releasenotes/build
