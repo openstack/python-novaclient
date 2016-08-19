@@ -21,6 +21,7 @@ from __future__ import print_function
 import argparse
 import copy
 import datetime
+import functools
 import getpass
 import locale
 import logging
@@ -74,6 +75,28 @@ def emit_image_deprecation_warning(command_name):
     print('WARNING: Command %s is deprecated and will be removed after Nova '
           '15.0.0 is released. Use python-glanceclient or openstackclient '
           'instead.' % command_name, file=sys.stderr)
+
+
+def deprecated_network(fn):
+    @functools.wraps(fn)
+    def wrapped(cs, *args, **kwargs):
+        command_name = '-'.join(fn.__name__.split('_')[1:])
+        print('WARNING: Command %s is deprecated and will be removed '
+              'after Nova 15.0.0 is released. Use python-neutronclient '
+              'or python-openstackclient instead.' % command_name,
+              file=sys.stderr)
+        # The network proxy API methods were deprecated in 2.36 and will return
+        # a 404 so we fallback to 2.35 to maintain a transition for CLI users.
+        want_version = api_versions.APIVersion('2.35')
+        cur_version = cs.api_version
+        if cs.api_version > want_version:
+            cs.api_version = want_version
+        try:
+            return fn(cs, *args, **kwargs)
+        finally:
+            cs.api_version = cur_version
+    wrapped.__doc__ = 'DEPRECATED: ' + fn.__doc__
+    return wrapped
 
 
 def _key_value_pairing(text):
@@ -954,6 +977,7 @@ def do_flavor_access_remove(cs, args):
 @utils.arg(
     'project_id', metavar='<project_id>',
     help=_('The ID of the project.'))
+@deprecated_network
 def do_scrub(cs, args):
     """Delete networks and security groups associated with a project."""
     networks_list = cs.networks.list()
@@ -975,6 +999,7 @@ def do_scrub(cs, args):
     metavar='<fields>',
     help=_('Comma-separated list of fields to display. '
            'Use the show command to see which fields are available.'))
+@deprecated_network
 def do_network_list(cs, args):
     """Print a list of available networks."""
     network_list = cs.networks.list()
@@ -989,6 +1014,7 @@ def do_network_list(cs, args):
     'network',
     metavar='<network>',
     help=_("UUID or label of network."))
+@deprecated_network
 def do_network_show(cs, args):
     """Show details about the given network."""
     network = utils.find_resource(cs.networks, args.network)
@@ -999,6 +1025,7 @@ def do_network_show(cs, args):
     'network',
     metavar='<network>',
     help=_("UUID or label of network."))
+@deprecated_network
 def do_network_delete(cs, args):
     """Delete network by label or id."""
     network = utils.find_resource(cs.networks, args.network)
@@ -1025,6 +1052,7 @@ def do_network_delete(cs, args):
     'network',
     metavar='<network>',
     help=_("UUID of network."))
+@deprecated_network
 def do_network_disassociate(cs, args):
     """Disassociate host and/or project from the given network."""
     if args.host_only:
@@ -1043,6 +1071,7 @@ def do_network_disassociate(cs, args):
     'host',
     metavar='<host>',
     help=_("Name of host"))
+@deprecated_network
 def do_network_associate_host(cs, args):
     """Associate host with network."""
     cs.networks.associate_host(args.network, args.host)
@@ -1052,6 +1081,7 @@ def do_network_associate_host(cs, args):
     'network',
     metavar='<network>',
     help=_("UUID of network."))
+@deprecated_network
 def do_network_associate_project(cs, args):
     """Associate project with network."""
     cs.networks.associate_project(args.network)
@@ -1182,6 +1212,7 @@ def _filter_network_create_options(args):
     '--allowed-end',
     dest="allowed_end",
     help=_('End of allowed addresses for instances.'))
+@deprecated_network
 def do_network_create(cs, args):
     """Create a network."""
 
@@ -2291,7 +2322,16 @@ def _find_network_id(cs, net_name):
     if cs.has_neutron():
         return _find_network_id_neutron(cs, net_name)
     else:
-        return _find_network_id_novanet(cs, net_name)
+        # The network proxy API methods were deprecated in 2.36 and will return
+        # a 404 so we fallback to 2.35 to maintain a transition for CLI users.
+        want_version = api_versions.APIVersion('2.35')
+        cur_version = cs.api_version
+        if cs.api_version > want_version:
+            cs.api_version = want_version
+        try:
+            return _find_network_id_novanet(cs, net_name)
+        finally:
+            cs.api_version = cur_version
 
 
 def _find_network_id_novanet(cs, net_name):
@@ -2663,12 +2703,14 @@ def do_list_secgroup(cs, args):
     help=_('Name of Floating IP Pool. (Optional)'),
     nargs='?',
     default=None)
+@deprecated_network
 def do_floating_ip_create(cs, args):
     """Allocate a floating IP for the current tenant."""
     _print_floating_ip_list([cs.floating_ips.create(pool=args.pool)])
 
 
 @utils.arg('address', metavar='<address>', help=_('IP of Floating IP.'))
+@deprecated_network
 def do_floating_ip_delete(cs, args):
     """De-allocate a floating IP."""
     floating_ips = cs.floating_ips.list()
@@ -2679,11 +2721,13 @@ def do_floating_ip_delete(cs, args):
                                   args.address)
 
 
+@deprecated_network
 def do_floating_ip_list(cs, _args):
     """List floating IPs."""
     _print_floating_ip_list(cs.floating_ips.list())
 
 
+@deprecated_network
 def do_floating_ip_pool_list(cs, _args):
     """List all floating IP pools."""
     utils.print_list(cs.floating_ip_pools.list(), ['name'])
@@ -2692,6 +2736,7 @@ def do_floating_ip_pool_list(cs, _args):
 @utils.arg(
     '--host', dest='host', metavar='<host>', default=None,
     help=_('Filter by host.'))
+@deprecated_network
 def do_floating_ip_bulk_list(cs, args):
     """List all floating IPs (nova-network only)."""
     utils.print_list(cs.floating_ips_bulk.list(args.host), ['project_id',
@@ -2709,6 +2754,7 @@ def do_floating_ip_bulk_list(cs, args):
 @utils.arg(
     '--interface', metavar='<interface>', default=None,
     help=_('Interface for new Floating IPs.'))
+@deprecated_network
 def do_floating_ip_bulk_create(cs, args):
     """Bulk create floating IPs by range (nova-network only)."""
     cs.floating_ips_bulk.create(args.ip_range, args.pool, args.interface)
@@ -2716,6 +2762,7 @@ def do_floating_ip_bulk_create(cs, args):
 
 @utils.arg('ip_range', metavar='<range>',
            help=_('Address range to delete.'))
+@deprecated_network
 def do_floating_ip_bulk_delete(cs, args):
     """Bulk delete floating IPs by range (nova-network only)."""
     cs.floating_ips_bulk.delete(args.ip_range)
@@ -2730,6 +2777,7 @@ def _print_domain_list(domain_entries):
                                       'project', 'availability_zone'])
 
 
+@deprecated_network
 def do_dns_domains(cs, args):
     """Print a list of available dns domains."""
     domains = cs.dns_domains.domains()
@@ -2739,6 +2787,7 @@ def do_dns_domains(cs, args):
 @utils.arg('domain', metavar='<domain>', help=_('DNS domain.'))
 @utils.arg('--ip', metavar='<ip>', help=_('IP address.'), default=None)
 @utils.arg('--name', metavar='<name>', help=_('DNS name.'), default=None)
+@deprecated_network
 def do_dns_list(cs, args):
     """List current DNS entries for domain and IP or domain and name."""
     if not (args.ip or args.name):
@@ -2761,6 +2810,7 @@ def do_dns_list(cs, args):
     metavar='<type>',
     help=_('DNS type (e.g. "A")'),
     default='A')
+@deprecated_network
 def do_dns_create(cs, args):
     """Create a DNS entry for domain, name, and IP."""
     cs.dns_entries.create(args.domain, args.name, args.ip, args.type)
@@ -2768,12 +2818,14 @@ def do_dns_create(cs, args):
 
 @utils.arg('domain', metavar='<domain>', help=_('DNS domain.'))
 @utils.arg('name', metavar='<name>', help=_('DNS name.'))
+@deprecated_network
 def do_dns_delete(cs, args):
     """Delete the specified DNS entry."""
     cs.dns_entries.delete(args.domain, args.name)
 
 
 @utils.arg('domain', metavar='<domain>', help=_('DNS domain.'))
+@deprecated_network
 def do_dns_delete_domain(cs, args):
     """Delete the specified DNS domain."""
     cs.dns_domains.delete(args.domain)
@@ -2786,6 +2838,7 @@ def do_dns_delete_domain(cs, args):
     default=None,
     help=_('Limit access to this domain to servers '
            'in the specified availability zone.'))
+@deprecated_network
 def do_dns_create_private_domain(cs, args):
     """Create the specified DNS domain."""
     cs.dns_domains.create_private(args.domain,
@@ -2798,6 +2851,7 @@ def do_dns_create_private_domain(cs, args):
     help=_('Limit access to this domain to users '
            'of the specified project.'),
     default=None)
+@deprecated_network
 def do_dns_create_public_domain(cs, args):
     """Create the specified DNS domain."""
     cs.dns_domains.create_public(args.domain,
@@ -2875,6 +2929,7 @@ def _get_secgroup(cs, secgroup):
     metavar='<to-port>',
     help=_('Port at end of range.'))
 @utils.arg('cidr', metavar='<cidr>', help=_('CIDR for address range.'))
+@deprecated_network
 def do_secgroup_add_rule(cs, args):
     """Add a rule to a security group."""
     secgroup = _get_secgroup(cs, args.secgroup)
@@ -2903,6 +2958,7 @@ def do_secgroup_add_rule(cs, args):
     metavar='<to-port>',
     help=_('Port at end of range.'))
 @utils.arg('cidr', metavar='<cidr>', help=_('CIDR for address range.'))
+@deprecated_network
 def do_secgroup_delete_rule(cs, args):
     """Delete a rule from a security group."""
     secgroup = _get_secgroup(cs, args.secgroup)
@@ -2922,6 +2978,7 @@ def do_secgroup_delete_rule(cs, args):
 @utils.arg(
     'description', metavar='<description>',
     help=_('Description of security group.'))
+@deprecated_network
 def do_secgroup_create(cs, args):
     """Create a security group."""
     secgroup = cs.security_groups.create(args.name, args.description)
@@ -2936,6 +2993,7 @@ def do_secgroup_create(cs, args):
 @utils.arg(
     'description', metavar='<description>',
     help=_('Description of security group.'))
+@deprecated_network
 def do_secgroup_update(cs, args):
     """Update a security group."""
     sg = _get_secgroup(cs, args.secgroup)
@@ -2947,6 +3005,7 @@ def do_secgroup_update(cs, args):
     'secgroup',
     metavar='<secgroup>',
     help=_('ID or name of security group.'))
+@deprecated_network
 def do_secgroup_delete(cs, args):
     """Delete a security group."""
     secgroup = _get_secgroup(cs, args.secgroup)
@@ -2964,6 +3023,7 @@ def do_secgroup_delete(cs, args):
     default=int(strutils.bool_from_string(
         os.environ.get("ALL_TENANTS", 'false'), True)),
     help=_('Display information from all tenants (Admin only).'))
+@deprecated_network
 def do_secgroup_list(cs, args):
     """List security groups for the current tenant."""
     search_opts = {'all_tenants': args.all_tenants}
@@ -2978,6 +3038,7 @@ def do_secgroup_list(cs, args):
     'secgroup',
     metavar='<secgroup>',
     help=_('ID or name of security group.'))
+@deprecated_network
 def do_secgroup_list_rules(cs, args):
     """List rules for a security group."""
     secgroup = _get_secgroup(cs, args.secgroup)
@@ -3004,6 +3065,7 @@ def do_secgroup_list_rules(cs, args):
     'to_port',
     metavar='<to-port>',
     help=_('Port at end of range.'))
+@deprecated_network
 def do_secgroup_add_group_rule(cs, args):
     """Add a source group rule to a security group."""
     secgroup = _get_secgroup(cs, args.secgroup)
@@ -3042,6 +3104,7 @@ def do_secgroup_add_group_rule(cs, args):
     'to_port',
     metavar='<to-port>',
     help=_('Port at end of range.'))
+@deprecated_network
 def do_secgroup_delete_group_rule(cs, args):
     """Delete a source group rule from a security group."""
     secgroup = _get_secgroup(cs, args.secgroup)
@@ -3973,6 +4036,7 @@ def _print_fixed_ip(cs, fixed_ip):
 
 
 @utils.arg('fixed_ip', metavar='<fixed_ip>', help=_('Fixed IP Address.'))
+@deprecated_network
 def do_fixed_ip_get(cs, args):
     """Retrieve info on a fixed IP."""
     result = cs.fixed_ips.get(args.fixed_ip)
@@ -3980,12 +4044,14 @@ def do_fixed_ip_get(cs, args):
 
 
 @utils.arg('fixed_ip', metavar='<fixed_ip>', help=_('Fixed IP Address.'))
+@deprecated_network
 def do_fixed_ip_reserve(cs, args):
     """Reserve a fixed IP."""
     cs.fixed_ips.reserve(args.fixed_ip)
 
 
 @utils.arg('fixed_ip', metavar='<fixed_ip>', help=_('Fixed IP Address.'))
+@deprecated_network
 def do_fixed_ip_unreserve(cs, args):
     """Unreserve a fixed IP."""
     cs.fixed_ips.unreserve(args.fixed_ip)
@@ -4450,6 +4516,7 @@ def do_quota_defaults(cs, args):
     _quota_show(cs.quotas.defaults(project_id))
 
 
+@api_versions.wraps("2.0", "2.35")
 @utils.arg(
     'tenant',
     metavar='<tenant-id>',
@@ -4479,12 +4546,14 @@ def do_quota_defaults(cs, args):
     metavar='<floating-ips>',
     type=int,
     default=None,
+    action=shell.DeprecatedAction,
     help=_('New value for the "floating-ips" quota.'))
 @utils.arg(
     '--fixed-ips',
     metavar='<fixed-ips>',
     type=int,
     default=None,
+    action=shell.DeprecatedAction,
     help=_('New value for the "fixed-ips" quota.'))
 @utils.arg(
     '--metadata-items',
@@ -4521,13 +4590,97 @@ def do_quota_defaults(cs, args):
     metavar='<security-groups>',
     type=int,
     default=None,
+    action=shell.DeprecatedAction,
     help=_('New value for the "security-groups" quota.'))
 @utils.arg(
     '--security-group-rules',
     metavar='<security-group-rules>',
     type=int,
     default=None,
+    action=shell.DeprecatedAction,
     help=_('New value for the "security-group-rules" quota.'))
+@utils.arg(
+    '--server-groups',
+    metavar='<server-groups>',
+    type=int,
+    default=None,
+    help=_('New value for the "server-groups" quota.'))
+@utils.arg(
+    '--server-group-members',
+    metavar='<server-group-members>',
+    type=int,
+    default=None,
+    help=_('New value for the "server-group-members" quota.'))
+@utils.arg(
+    '--force',
+    dest='force',
+    action="store_true",
+    default=None,
+    help=_('Whether force update the quota even if the already used and '
+           'reserved exceeds the new quota.'))
+def do_quota_update(cs, args):
+    """Update the quotas for a tenant/user."""
+
+    _quota_update(cs.quotas, args.tenant, args)
+
+
+# 2.36 does not support updating quota for floating IPs, fixed IPs, security
+# groups or security group rules.
+@api_versions.wraps("2.36")
+@utils.arg(
+    'tenant',
+    metavar='<tenant-id>',
+    help=_('ID of tenant to set the quotas for.'))
+@utils.arg(
+    '--user',
+    metavar='<user-id>',
+    default=None,
+    help=_('ID of user to set the quotas for.'))
+@utils.arg(
+    '--instances',
+    metavar='<instances>',
+    type=int, default=None,
+    help=_('New value for the "instances" quota.'))
+@utils.arg(
+    '--cores',
+    metavar='<cores>',
+    type=int, default=None,
+    help=_('New value for the "cores" quota.'))
+@utils.arg(
+    '--ram',
+    metavar='<ram>',
+    type=int, default=None,
+    help=_('New value for the "ram" quota.'))
+@utils.arg(
+    '--metadata-items',
+    metavar='<metadata-items>',
+    type=int,
+    default=None,
+    help=_('New value for the "metadata-items" quota.'))
+@utils.arg(
+    '--injected-files',
+    metavar='<injected-files>',
+    type=int,
+    default=None,
+    help=_('New value for the "injected-files" quota.'))
+@utils.arg(
+    '--injected-file-content-bytes',
+    metavar='<injected-file-content-bytes>',
+    type=int,
+    default=None,
+    help=_('New value for the "injected-file-content-bytes" quota.'))
+@utils.arg(
+    '--injected-file-path-bytes',
+    metavar='<injected-file-path-bytes>',
+    type=int,
+    default=None,
+    help=_('New value for the "injected-file-path-bytes" quota.'))
+@utils.arg(
+    '--key-pairs',
+    metavar='<key-pairs>',
+    type=int,
+    default=None,
+    help=_('New value for the "key-pairs" quota.'))
 @utils.arg(
     '--server-groups',
     metavar='<server-groups>',
@@ -4580,6 +4733,7 @@ def do_quota_class_show(cs, args):
     _quota_show(cs.quota_classes.get(args.class_name))
 
 
+@api_versions.wraps("2.0", "2.35")
 @utils.arg(
     'class_name',
     metavar='<class>',
@@ -4604,12 +4758,14 @@ def do_quota_class_show(cs, args):
     metavar='<floating-ips>',
     type=int,
     default=None,
+    action=shell.DeprecatedAction,
     help=_('New value for the "floating-ips" quota.'))
 @utils.arg(
     '--fixed-ips',
     metavar='<fixed-ips>',
     type=int,
     default=None,
+    action=shell.DeprecatedAction,
     help=_('New value for the "fixed-ips" quota.'))
 @utils.arg(
     '--metadata-items',
@@ -4646,13 +4802,85 @@ def do_quota_class_show(cs, args):
     metavar='<security-groups>',
     type=int,
     default=None,
+    action=shell.DeprecatedAction,
     help=_('New value for the "security-groups" quota.'))
 @utils.arg(
     '--security-group-rules',
     metavar='<security-group-rules>',
     type=int,
     default=None,
+    action=shell.DeprecatedAction,
     help=_('New value for the "security-group-rules" quota.'))
+@utils.arg(
+    '--server-groups',
+    metavar='<server-groups>',
+    type=int,
+    default=None,
+    help=_('New value for the "server-groups" quota.'))
+@utils.arg(
+    '--server-group-members',
+    metavar='<server-group-members>',
+    type=int,
+    default=None,
+    help=_('New value for the "server-group-members" quota.'))
+def do_quota_class_update(cs, args):
+    """Update the quotas for a quota class."""
+
+    _quota_update(cs.quota_classes, args.class_name, args)
+
+
+# 2.36 does not support updating quota for floating IPs, fixed IPs, security
+# groups or security group rules.
+@api_versions.wraps("2.36")
+@utils.arg(
+    'class_name',
+    metavar='<class>',
+    help=_('Name of quota class to set the quotas for.'))
+@utils.arg(
+    '--instances',
+    metavar='<instances>',
+    type=int, default=None,
+    help=_('New value for the "instances" quota.'))
+@utils.arg(
+    '--cores',
+    metavar='<cores>',
+    type=int, default=None,
+    help=_('New value for the "cores" quota.'))
+@utils.arg(
+    '--ram',
+    metavar='<ram>',
+    type=int, default=None,
+    help=_('New value for the "ram" quota.'))
+@utils.arg(
+    '--metadata-items',
+    metavar='<metadata-items>',
+    type=int,
+    default=None,
+    help=_('New value for the "metadata-items" quota.'))
+@utils.arg(
+    '--injected-files',
+    metavar='<injected-files>',
+    type=int,
+    default=None,
+    help=_('New value for the "injected-files" quota.'))
+@utils.arg(
+    '--injected-file-content-bytes',
+    metavar='<injected-file-content-bytes>',
+    type=int,
+    default=None,
+    help=_('New value for the "injected-file-content-bytes" quota.'))
+@utils.arg(
+    '--injected-file-path-bytes',
+    metavar='<injected-file-path-bytes>',
+    type=int,
+    default=None,
+    help=_('New value for the "injected-file-path-bytes" quota.'))
+@utils.arg(
+    '--key-pairs',
+    metavar='<key-pairs>',
+    type=int,
+    default=None,
+    help=_('New value for the "key-pairs" quota.'))
 @utils.arg(
     '--server-groups',
     metavar='<server-groups>',
@@ -4871,6 +5099,7 @@ def do_server_group_list(cs, args):
     _print_server_group_details(cs, server_groups)
 
 
+@deprecated_network
 def do_secgroup_list_default_rules(cs, args):
     """List rules that will be added to the 'default' security group for
     new tenants.
@@ -4892,6 +5121,7 @@ def do_secgroup_list_default_rules(cs, args):
     metavar='<to-port>',
     help=_('Port at end of range.'))
 @utils.arg('cidr', metavar='<cidr>', help=_('CIDR for address range.'))
+@deprecated_network
 def do_secgroup_add_default_rule(cs, args):
     """Add a rule to the set of rules that will be added to the 'default'
     security group for new tenants (nova-network only).
@@ -4916,6 +5146,7 @@ def do_secgroup_add_default_rule(cs, args):
     metavar='<to-port>',
     help=_('Port at end of range.'))
 @utils.arg('cidr', metavar='<cidr>', help=_('CIDR for address range.'))
+@deprecated_network
 def do_secgroup_delete_default_rule(cs, args):
     """Delete a rule from the set of rules that will be added to the
     'default' security group for new tenants (nova-network only).

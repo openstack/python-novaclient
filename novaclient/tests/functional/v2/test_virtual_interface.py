@@ -22,7 +22,6 @@ class TestVirtualInterfacesNovaClient(
     def test_virtual_interface_list(self):
         output = super(TestVirtualInterfacesNovaClient,
                        self).test_virtual_interface_list()
-        network = self.client.networks.list()[0]
-        self.assertEqual(network.id,
+        self.assertEqual(self.network.id,
                          self._get_column_value_from_single_row_table(
                              output, "Network ID"))

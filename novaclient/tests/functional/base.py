@@ -214,7 +214,16 @@ class ClientTestBase(testtools.TestCase):
         # pick some reasonable flavor / image combo
         self.flavor = pick_flavor(self.client.flavors.list())
         self.image = pick_image(self.glance.images.list())
-        self.network = pick_network(self.client.networks.list())
+
+        tested_api_version = self.client.api_version
+        proxy_api_version = novaclient.api_versions.APIVersion('2.35')
+        if tested_api_version > proxy_api_version:
+            self.client.api_version = proxy_api_version
+        try:
+            # TODO(mriedem): Get the networks from neutron if using neutron.
+            self.network = pick_network(self.client.networks.list())
+        finally:
+            self.client.api_version = tested_api_version
 
         # create a CLI client in case we'd like to do CLI
         # testing. tempest.lib does this really weird thing where it
