@@ -15,6 +15,7 @@
 
 from six.moves.urllib import parse
 
+from novaclient import api_versions
 from novaclient import base
 
 
@@ -29,9 +30,11 @@ def _quote_domain(domain):
 
 
 class FloatingIPDNSDomain(base.Resource):
+    """DEPRECATED"""
+
     def delete(self):
         """
-        Delete the own Floating IP DNS domain.
+        DEPRECATED: Delete the own Floating IP DNS domain.
 
         :returns: An instance of novaclient.base.TupleWithMeta
         """
@@ -39,7 +42,7 @@ class FloatingIPDNSDomain(base.Resource):
 
     def create(self):
         """
-        Create a Floating IP DNS domain.
+        DEPRECATED: Create a Floating IP DNS domain.
 
         :returns: An instance of novaclient.base.DictWithMeta
         """
@@ -51,7 +54,7 @@ class FloatingIPDNSDomain(base.Resource):
 
     def get(self):
         """
-        Get the own Floating IP DNS domain.
+        DEPRECATED: Get the own Floating IP DNS domain.
 
         :returns: An instance of novaclient.base.TupleWithMeta or
                   novaclient.base.ListWithMeta
@@ -65,30 +68,36 @@ class FloatingIPDNSDomain(base.Resource):
 
 
 class FloatingIPDNSDomainManager(base.Manager):
+    """DEPRECATED"""
+
     resource_class = FloatingIPDNSDomain
 
+    @api_versions.deprecated_after('2.35')
     def domains(self):
-        """Return the list of available dns domains."""
+        """DEPRECATED: Return the list of available dns domains."""
         return self._list("/os-floating-ip-dns", "domain_entries")
 
+    @api_versions.deprecated_after('2.35')
     def create_private(self, fqdomain, availability_zone):
-        """Add or modify a private DNS domain."""
+        """DEPRECATED: Add or modify a private DNS domain."""
         body = {'domain_entry': {'scope': 'private',
                                  'availability_zone': availability_zone}}
         return self._update('/os-floating-ip-dns/%s' % _quote_domain(fqdomain),
                             body,
                             'domain_entry')
 
+    @api_versions.deprecated_after('2.35')
     def create_public(self, fqdomain, project):
-        """Add or modify a public DNS domain."""
+        """DEPRECATED: Add or modify a public DNS domain."""
         body = {'domain_entry': {'scope': 'public', 'project': project}}
 
         return self._update('/os-floating-ip-dns/%s' % _quote_domain(fqdomain),
                             body, 'domain_entry')
 
+    @api_versions.deprecated_after('2.35')
     def delete(self, fqdomain):
         """
-        Delete the specified domain.
+        DEPRECATED: Delete the specified domain.
 
         :param fqdomain: The domain to delete
         :returns: An instance of novaclient.base.TupleWithMeta
@@ -97,9 +106,11 @@ class FloatingIPDNSDomainManager(base.Manager):
 
 
 class FloatingIPDNSEntry(base.Resource):
+    """DEPRECATED"""
+
     def delete(self):
         """
-        Delete the own Floating IP DNS entry.
+        DEPRECATED: Delete the own Floating IP DNS entry.
 
         :returns: An instance of novaclient.base.TupleWithMeta
         """
@@ -107,7 +118,7 @@ class FloatingIPDNSEntry(base.Resource):
 
     def create(self):
         """
-        Create a Floating IP DNS entry.
+        DEPRECATED: Create a Floating IP DNS entry.
 
         :returns: :class:`FloatingIPDNSEntry`
         """
@@ -115,42 +126,55 @@ class FloatingIPDNSEntry(base.Resource):
                                    self.dns_type)
 
     def get(self):
+        """DEPRECATED"""
         return self.manager.get(self.domain, self.name)
 
 
 class FloatingIPDNSEntryManager(base.Manager):
+    """DEPRECATED"""
     resource_class = FloatingIPDNSEntry
 
+    @api_versions.deprecated_after('2.35')
     def get(self, domain, name):
-        """Return a list of entries for the given domain and IP or name."""
+        """
+        DEPRECATED: Return a list of entries for the given domain and IP or
+        name.
+        """
         return self._get("/os-floating-ip-dns/%s/entries/%s" %
                          (_quote_domain(domain), name), "dns_entry")
 
+    @api_versions.deprecated_after('2.35')
     def get_for_ip(self, domain, ip):
-        """Return a list of entries for the given domain and IP or name."""
+        """
+        DEPRECATED: Return a list of entries for the given domain and IP or
+        name.
+        """
         qparams = {'ip': ip}
         params = "?%s" % parse.urlencode(qparams)
 
         return self._list("/os-floating-ip-dns/%s/entries%s" %
                           (_quote_domain(domain), params), "dns_entries")
 
+    @api_versions.deprecated_after('2.35')
     def create(self, domain, name, ip, dns_type):
-        """Add a new DNS entry."""
+        """DEPRECATED: Add a new DNS entry."""
         body = {'dns_entry': {'ip': ip, 'dns_type': dns_type}}
 
         return self._update("/os-floating-ip-dns/%s/entries/%s" %
                             (_quote_domain(domain), name), body, "dns_entry")
 
+    @api_versions.deprecated_after('2.35')
     def modify_ip(self, domain, name, ip):
-        """Add a new DNS entry."""
+        """DEPRECATED: Add a new DNS entry."""
         body = {'dns_entry': {'ip': ip, 'dns_type': 'A'}}
 
         return self._update("/os-floating-ip-dns/%s/entries/%s" %
                             (_quote_domain(domain), name), body, "dns_entry")
 
+    @api_versions.deprecated_after('2.35')
     def delete(self, domain, name):
         """
-        Delete entry specified by name and domain.
+        DEPRECATED: Delete entry specified by name and domain.
 
         :returns: An instance of novaclient.base.TupleWithMeta
         """

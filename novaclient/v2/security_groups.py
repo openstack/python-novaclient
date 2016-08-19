@@ -20,16 +20,19 @@ Security group interface (1.1 extension).
 import six
 from six.moves.urllib import parse
 
+from novaclient import api_versions
 from novaclient import base
 
 
 class SecurityGroup(base.Resource):
+    """DEPRECATED"""
+
     def __str__(self):
         return str(self.id)
 
     def delete(self):
         """
-        Delete this security group.
+        DEPRECATED: Delete this security group.
 
         :returns: An instance of novaclient.base.TupleWithMeta
         """
@@ -37,7 +40,7 @@ class SecurityGroup(base.Resource):
 
     def update(self):
         """
-        Update this security group.
+        DEPRECATED: Update this security group.
 
         :returns: :class:`SecurityGroup`
         """
@@ -45,11 +48,14 @@ class SecurityGroup(base.Resource):
 
 
 class SecurityGroupManager(base.ManagerWithFind):
+    """DEPRECATED"""
+
     resource_class = SecurityGroup
 
+    @api_versions.deprecated_after('2.35')
     def create(self, name, description):
         """
-        Create a security group
+        DEPRECATED: Create a security group
 
         :param name: name for the security group to create
         :param description: description of the security group
@@ -58,9 +64,10 @@ class SecurityGroupManager(base.ManagerWithFind):
         body = {"security_group": {"name": name, 'description': description}}
         return self._create('/os-security-groups', body, 'security_group')
 
+    @api_versions.deprecated_after('2.35')
     def update(self, group, name, description):
         """
-        Update a security group
+        DEPRECATED: Update a security group
 
         :param group: The security group to update (group or ID)
         :param name: name for the security group to update
@@ -71,18 +78,20 @@ class SecurityGroupManager(base.ManagerWithFind):
         return self._update('/os-security-groups/%s' % base.getid(group),
                             body, 'security_group')
 
+    @api_versions.deprecated_after('2.35')
     def delete(self, group):
         """
-        Delete a security group
+        DEPRECATED: Delete a security group
 
         :param group: The security group to delete (group or ID)
         :returns: An instance of novaclient.base.TupleWithMeta
         """
         return self._delete('/os-security-groups/%s' % base.getid(group))
 
+    @api_versions.deprecated_after('2.35')
     def get(self, group_id):
         """
-        Get a security group
+        DEPRECATED: Get a security group
 
         :param group_id: The security group to get by ID
         :rtype: :class:`SecurityGroup`
@@ -90,9 +99,10 @@ class SecurityGroupManager(base.ManagerWithFind):
         return self._get('/os-security-groups/%s' % group_id,
                          'security_group')
 
+    @api_versions.deprecated_after('2.35')
     def list(self, search_opts=None):
         """
-        Get a list of all security_groups
+        DEPRECATED: Get a list of all security_groups
 
         :rtype: list of :class:`SecurityGroup`
         """

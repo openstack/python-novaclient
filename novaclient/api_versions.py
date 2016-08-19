@@ -17,6 +17,7 @@ import os
 import pkgutil
 import re
 import traceback
+import warnings
 
 from oslo_utils import strutils
 
@@ -421,3 +422,21 @@ def _warn_missing_microversion_header(header_name):
         "Your request was processed by a Nova API which does not support "
         "microversions (%s header is missing from response). "
         "Warning: Response may be incorrect."), header_name)
+
+
+def deprecated_after(version):
+    decorator = wraps('2.0', version)
+
+    def wrapper(fn):
+        @functools.wraps(fn)
+        def wrapped(*a, **k):
+            decorated = decorator(fn)
+            if hasattr(fn, '__module__'):
+                mod = fn.__module__
+            else:
+                mod = a[0].__module__
+            warnings.warn('The %s module is deprecated '
+                          'and will be removed.' % mod, DeprecationWarning)
+            return decorated(*a, **k)
+        return wrapped
+    return wrapper
