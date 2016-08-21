@@ -15,6 +15,8 @@ import warnings
 
 import mock
 
+from novaclient import api_versions
+from novaclient import exceptions
 from novaclient.tests.unit.fixture_data import client
 from novaclient.tests.unit.fixture_data import images as data
 from novaclient.tests.unit import utils
@@ -96,3 +98,10 @@ class ImagesTest(utils.FixturedTestCase):
         self.assert_request_id(iml, fakes.FAKE_REQUEST_ID_LIST)
         self.assertEqual(1, len(iml))
         self.assertEqual('My Server Backup', iml[0].name)
+
+    def test_find_2_36(self):
+        """Tests that using the find method fails after microversion 2.35.
+        """
+        self.cs.api_version = api_versions.APIVersion('2.36')
+        self.assertRaises(exceptions.VersionNotFoundForAPIMethod,
+                          self.cs.images.find, name="CentOS 5.2")

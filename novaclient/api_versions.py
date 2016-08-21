@@ -374,6 +374,9 @@ def get_substitutions(func_name, api_version=None):
     return sorted(substitutions, key=lambda m: m.start_version)
 
 
+# FIXME(mriedem): This breaks any ManagerWithFind.list method that has a
+# 'detailed' kwarg since the ManagerWithFind.findall won't find the correct
+# argspec from the wrapped list method.
 def wraps(start_version, end_version=None):
     start_version = APIVersion(start_version)
     if end_version:

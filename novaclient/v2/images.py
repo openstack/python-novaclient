@@ -21,6 +21,7 @@ import warnings
 from oslo_utils import uuidutils
 from six.moves.urllib import parse
 
+from novaclient import api_versions
 from novaclient import base
 from novaclient import exceptions
 from novaclient.i18n import _
@@ -91,6 +92,7 @@ class ImageManager(base.ManagerWithFind):
     """
     resource_class = Image
 
+    @api_versions.wraps('2.0', '2.35')
     def get(self, image):
         """
         DEPRECATED: Get an image.
@@ -113,6 +115,14 @@ class ImageManager(base.ManagerWithFind):
         :param marker: Begin returning images that appear later in the image
                        list than that represented by this image id (optional).
         """
+        # FIXME(mriedem): Should use the api_versions.wraps decorator but that
+        # breaks the ManagerWithFind.findall method which checks the argspec
+        # on this function looking for the 'detailed' arg, and it's getting
+        # tripped up if you use the wraps decorator. This is all deprecated for
+        # removal anyway so we probably don't care too much about this.
+        if self.api.api_version > api_versions.APIVersion('2.35'):
+            raise exceptions.VersionNotFoundForAPIMethod(
+                self.api.api_version, 'list')
         warnings.warn(
             'The novaclient.v2.images module is deprecated and will be '
             'removed after Nova 15.0.0 is released. Use python-glanceclient '
@@ -129,6 +139,7 @@ class ImageManager(base.ManagerWithFind):
         query = '?%s' % parse.urlencode(params) if params else ''
         return self._list('/images%s%s' % (detail, query), 'images')
 
+    @api_versions.wraps('2.0', '2.35')
     def delete(self, image):
         """
         DEPRECATED: Delete an image.
