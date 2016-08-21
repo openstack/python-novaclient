@@ -22,6 +22,7 @@ from __future__ import print_function
 import sys
 import warnings
 
+from novaclient import api_versions
 from novaclient import base
 from novaclient.i18n import _
 from novaclient import utils
@@ -64,6 +65,7 @@ class BareMetalNodeManager(base.ManagerWithFind):
     """
     resource_class = BareMetalNode
 
+    @api_versions.wraps('2.0', '2.35')
     def get(self, node_id):
         """
         DEPRECATED: Get a baremetal node.
@@ -74,6 +76,7 @@ class BareMetalNodeManager(base.ManagerWithFind):
         warnings.warn(DEPRECATION_WARNING, DeprecationWarning)
         return self._get("/os-baremetal-nodes/%s" % node_id, 'node')
 
+    @api_versions.wraps('2.0', '2.35')
     def list(self):
         """
         DEPRECATED: Get a list of all baremetal nodes.
@@ -83,6 +86,7 @@ class BareMetalNodeManager(base.ManagerWithFind):
         warnings.warn(DEPRECATION_WARNING, DeprecationWarning)
         return self._list('/os-baremetal-nodes', 'nodes')
 
+    @api_versions.wraps('2.0', '2.35')
     def list_interfaces(self, node_id):
         """
         DEPRECATED: List the interfaces on a baremetal node.
