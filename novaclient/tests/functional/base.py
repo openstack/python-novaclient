@@ -60,7 +60,9 @@ def pick_flavor(flavors):
 
 
 def pick_image(images):
+    firstImage = None
     for image in images:
+        firstImage = firstImage or image
         if image.name.startswith('cirros') and (
                 image.name.endswith('-uec') or
                 image.name.endswith('-disk.img')):
@@ -68,8 +70,8 @@ def pick_image(images):
 
     # We didn't find the specific cirros image we'd like to use, so just use
     # the first available.
-    if images:
-        return images[0]
+    if firstImage:
+        return firstImage
 
     raise NoImageException()
 
