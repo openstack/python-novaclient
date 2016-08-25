@@ -106,8 +106,7 @@ class NoCloudConfigException(Exception):
     pass
 
 
-USE_NEUTRON = None
-SERVER_API_VERSIONS = None
+CACHE = {}
 
 
 class ClientTestBase(testtools.TestCase):
@@ -218,18 +217,24 @@ class ClientTestBase(testtools.TestCase):
         self.glance = glanceclient.Client('2', session=session)
 
         # pick some reasonable flavor / image combo
-        self.flavor = pick_flavor(self.client.flavors.list())
-        self.image = pick_image(self.glance.images.list())
+        if "flavor" not in CACHE:
+            CACHE["flavor"] = pick_flavor(self.client.flavors.list())
+        if "image" not in CACHE:
+            CACHE["image"] = pick_image(self.glance.images.list())
+        self.flavor = CACHE["flavor"]
+        self.image = CACHE["image"]
 
-        tested_api_version = self.client.api_version
-        proxy_api_version = novaclient.api_versions.APIVersion('2.35')
-        if tested_api_version > proxy_api_version:
-            self.client.api_version = proxy_api_version
-        try:
-            # TODO(mriedem): Get the networks from neutron if using neutron.
-            self.network = pick_network(self.client.networks.list())
-        finally:
-            self.client.api_version = tested_api_version
+        if "network" not in CACHE:
+            tested_api_version = self.client.api_version
+            proxy_api_version = novaclient.api_versions.APIVersion('2.35')
+            if tested_api_version > proxy_api_version:
+                self.client.api_version = proxy_api_version
+            try:
+                # TODO(mriedem): Get the networks from neutron if using neutron
+                CACHE["network"] = pick_network(self.client.networks.list())
+            finally:
+                self.client.api_version = tested_api_version
+        self.network = CACHE["network"]
 
         # create a CLI client in case we'd like to do CLI
         # testing. tempest.lib does this really weird thing where it
@@ -253,50 +258,51 @@ class ClientTestBase(testtools.TestCase):
                                               password=passwd)
         self.cinder = cinderclient.Client(auth=auth, session=session)
 
-        global USE_NEUTRON
-        if USE_NEUTRON is None:
+        if "use_neutron" not in CACHE:
             # check to see if we're running with neutron or not
             for service in self.keystone.services.list():
                 if service.type == 'network':
-                    USE_NEUTRON = True
+                    CACHE["use_neutron"] = True
                     break
             else:
-                USE_NEUTRON = False
+                CACHE["use_neutron"] = False
 
     def _get_novaclient(self, session):
         nc = novaclient.client.Client("2", session=session)
 
         if self.COMPUTE_API_VERSION:
-            global SERVER_API_VERSIONS
-            if SERVER_API_VERSIONS is None:
+            if "min_api_version" not in CACHE:
                 # Obtain supported versions by API side
                 v = nc.versions.get_current()
                 if not hasattr(v, 'version') or not v.version:
                     # API doesn't support microversions
-                    SERVER_API_VERSIONS = (
-                        novaclient.api_versions.APIVersion("2.0"),
+                    CACHE["min_api_version"] = (
+                        novaclient.api_versions.APIVersion("2.0"))
+                    CACHE["max_api_version"] = (
                         novaclient.api_versions.APIVersion("2.0"))
                 else:
-                    SERVER_API_VERSIONS = (
-                        novaclient.api_versions.APIVersion(v.min_version),
+                    CACHE["min_api_version"] = (
+                        novaclient.api_versions.APIVersion(v.min_version))
+                    CACHE["max_api_version"] = (
                         novaclient.api_versions.APIVersion(v.version))
 
             if self.COMPUTE_API_VERSION == "2.latest":
                 requested_version = min(novaclient.API_MAX_VERSION,
-                                        SERVER_API_VERSIONS[1])
+                                        CACHE["max_api_version"])
             else:
                 requested_version = novaclient.api_versions.APIVersion(
                     self.COMPUTE_API_VERSION)
 
-            if not requested_version.matches(*SERVER_API_VERSIONS):
+            if not requested_version.matches(CACHE["min_api_version"],
+                                             CACHE["max_api_version"]):
                 msg = ("%s is not supported by Nova-API. Supported version" %
                        self.COMPUTE_API_VERSION)
-                if SERVER_API_VERSIONS[0] == SERVER_API_VERSIONS[1]:
-                    msg += ": %s" % SERVER_API_VERSIONS[0].get_string()
+                if CACHE["min_api_version"] == CACHE["max_api_version"]:
+                    msg += ": %s" % CACHE["min_api_version"].get_string()
                 else:
                     msg += "s: %s - %s" % (
-                        SERVER_API_VERSIONS[0].get_string(),
-                        SERVER_API_VERSIONS[1].get_string())
+                        CACHE["min_api_version"].get_string(),
+                        CACHE["max_api_version"].get_string())
                 self.skipTest(msg)
 
             nc.api_version = requested_version
@@ -488,7 +494,7 @@ class ClientTestBase(testtools.TestCase):
         return project.id
 
     def skip_if_neutron(self):
-        if USE_NEUTRON:
+        if CACHE["use_neutron"]:
             self.skipTest('nova-network is not available')
 
 
