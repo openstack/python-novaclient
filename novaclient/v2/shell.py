@@ -188,7 +188,16 @@ def _parse_block_device_mapping_v2(args, image):
 
 
 def _parse_nics(cs, args):
-    if cs.api_version >= api_versions.APIVersion('2.32'):
+    supports_auto_alloc = cs.api_version >= api_versions.APIVersion('2.37')
+    if supports_auto_alloc:
+        err_msg = (_("Invalid nic argument '%s'. Nic arguments must be of "
+                     "the form --nic <auto,none,net-id=net-uuid,"
+                     "net-name=network-name,v4-fixed-ip=ip-addr,"
+                     "v6-fixed-ip=ip-addr,port-id=port-uuid,tag=tag>, "
+                     "with only one of net-id, net-name or port-id "
+                     "specified. Specifying a --nic of auto or none cannot "
+                     "be used with any other --nic value."))
+    elif cs.api_version >= api_versions.APIVersion('2.32'):
         err_msg = (_("Invalid nic argument '%s'. Nic arguments must be of "
                      "the form --nic <net-id=net-uuid,"
                      "net-name=network-name,v4-fixed-ip=ip-addr,"
@@ -202,6 +211,7 @@ def _parse_nics(cs, args):
                      "v6-fixed-ip=ip-addr,port-id=port-uuid>, "
                      "with only one of net-id, net-name or port-id "
                      "specified."))
+    auto_or_none = False
     nics = []
     for nic_str in args.nics:
         nic_info = {"net-id": "", "v4-fixed-ip": "", "v6-fixed-ip": "",
@@ -209,6 +219,13 @@ def _parse_nics(cs, args):
 
         for kv_str in nic_str.split(","):
             try:
+                # handle the special auto/none cases
+                if kv_str in ('auto', 'none'):
+                    if not supports_auto_alloc:
+                        raise exceptions.CommandError(err_msg % nic_str)
+                    nics.append(kv_str)
+                    auto_or_none = True
+                    continue
                 k, v = kv_str.split("=", 1)
             except ValueError:
                 raise exceptions.CommandError(err_msg % nic_str)
@@ -225,6 +242,9 @@ def _parse_nics(cs, args):
             else:
                 raise exceptions.CommandError(err_msg % nic_str)
 
+        if auto_or_none:
+            continue
+
         if nic_info['v4-fixed-ip'] and not netutils.is_valid_ipv4(
                 nic_info['v4-fixed-ip']):
             raise exceptions.CommandError(_("Invalid ipv4 address."))
@@ -237,6 +257,17 @@ def _parse_nics(cs, args):
             raise exceptions.CommandError(err_msg % nic_str)
 
         nics.append(nic_info)
+
+    if nics:
+        if auto_or_none:
+            if len(nics) > 1:
+                raise exceptions.CommandError(err_msg % nic_str)
+            # change the single list entry to a string
+            nics = nics[0]
+    else:
+        # Default to 'auto' if API version >= 2.37 and nothing was specified
+        if supports_auto_alloc:
+            nics = 'auto'
 
     return nics
 
@@ -577,9 +608,35 @@ def _boot(cs, args):
     dest='nics',
     default=[],
     start_version='2.32',
+    end_version='2.36',
     help=_("Create a NIC on the server. "
            "Specify option multiple times to create multiple nics. "
            "net-id: attach NIC to network with this UUID "
+           "net-name: attach NIC to network with this name "
+           "(either port-id or net-id or net-name must be provided), "
+           "v4-fixed-ip: IPv4 fixed address for NIC (optional), "
+           "v6-fixed-ip: IPv6 fixed address for NIC (optional), "
+           "port-id: attach NIC to port with this UUID "
+           "tag: interface metadata tag (optional) "
+           "(either port-id or net-id must be provided)."))
+@utils.arg(
+    '--nic',
+    metavar="<auto,none,"
+            "net-id=net-uuid,net-name=network-name,port-id=port-uuid,"
+            "v4-fixed-ip=ip-addr,v6-fixed-ip=ip-addr,tag=tag>",
+    action='append',
+    dest='nics',
+    default=[],
+    start_version='2.37',
+    help=_("Create a NIC on the server. "
+           "Specify option multiple times to create multiple nics unless "
+           "using the special 'auto' or 'none' values. "
+           "auto: automatically allocate network resources if none are "
+           "available. This cannot be specified with any other nic value and "
+           "cannot be specified multiple times. "
+           "none: do not attach a NIC at all. This cannot be specified "
+           "with any other nic value and cannot be specified multiple times. "
+           "net-id: attach NIC to network with a specific UUID. "
            "net-name: attach NIC to network with this name "
            "(either port-id or net-id or net-name must be provided), "
            "v4-fixed-ip: IPv4 fixed address for NIC (optional), "

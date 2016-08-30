@@ -1,0 +1,27 @@
+---
+features:
+  - |
+    The 2.37 microversion is now supported. This introduces the following
+    changes:
+
+    * CLI: The **--nic** value for the **nova boot** command now takes two
+           special values, 'auto' and 'none'. If --nic is not specified, the
+           CLI defaults to 'auto'.
+    * Python API: The **nics** kwarg is required when creating a server using
+           the *novaclient.v2.servers.ServerManager.create* API. The **nics**
+           value can be a list of dicts or a string with value 'auto' or
+           'none'.
+
+upgrade:
+  - |
+    With the 2.37 microversion, the **nics** kwarg is required when creating
+    a server using the *novaclient.v2.servers.ServerManager.create* API. The
+    **nics** value can be a list of dicts or an enum string with one of the
+    following values:
+
+    * **auto**: This tells the Compute service to automatically allocate a
+      network for the project if one is not available and then associate
+      an IP from that network with the server. This is the same behavior as
+      passing nics=None before the 2.37 microversion.
+    * **none**: This tells the Compute service to not allocate any networking
+      for the server.
