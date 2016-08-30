@@ -127,6 +127,7 @@ class TestTriggerCrashDumpNovaClientV217(base.TenantTestBase):
         self.addCleanup(self.another_nova, 'unlock', params=name)
         output = self.another_nova('trigger-crash-dump %s ' %
                                    server_id, fail_ok=True, merge_stderr=True)
-        self.assertIn("ERROR (Conflict): Instance %s is in an invalid "
-                      "state for 'trigger_crash_dump' (HTTP 409) " %
-                      server_id, output)
+        # NOTE(mriedem): Depending on the version of the server you can get
+        # different error messages back from this, so just assert that it's a
+        # 409 either way.
+        self.assertIn("ERROR (Conflict)", output)
