@@ -33,7 +33,7 @@ class TestConsolesNovaClient(base.ClientTestBase):
                 output, 'Type')
             self.assertEqual(expected_response_type, console_type, output)
         except exceptions.CommandFailed as cf:
-            self.assertTrue('HTTP 400' in str(cf.stderr))
+            self.assertIn('HTTP 400', str(cf.stderr))
 
     def _test_vnc_console_get(self):
         self._test_console_get('get-vnc-console %s novnc', 'novnc')
