@@ -25,6 +25,6 @@ class ListExtensionsTests(utils.TestCase):
         all_exts = self.cs.list_extensions.show_all()
         self.assert_request_id(all_exts, fakes.FAKE_REQUEST_ID_LIST)
         self.cs.assert_called('GET', '/extensions')
-        self.assertTrue(len(all_exts) > 0)
+        self.assertGreater(len(all_exts), 0)
         for r in all_exts:
-            self.assertTrue(len(r.summary) > 0)
+            self.assertGreater(len(r.summary), 0)
