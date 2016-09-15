@@ -76,7 +76,7 @@ class HostManager(base.ManagerWithFind):
         :param action: The action to perform
         returns: An instance of novaclient.base.TupleWithMeta
         """
-        url = '/os-hosts/{0}/{1}'.format(host, action)
+        url = '/os-hosts/%s/%s' % (host, action)
         resp, body = self.api.client.get(url)
         return base.TupleWithMeta((resp, body), resp)
 
