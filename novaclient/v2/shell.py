@@ -2236,7 +2236,7 @@ def do_meta(cs, args):
         cs.servers.delete_meta(server, sorted(metadata.keys(), reverse=True))
 
 
-def _print_server(cs, args, server=None):
+def _print_server(cs, args, server=None, wrap=0):
     # By default when searching via name we will do a
     # findall(name=blah) and due a REST /details which is not the same
     # as a .get() and doesn't get the information about flavors and
@@ -2287,7 +2287,7 @@ def _print_server(cs, args, server=None):
     info.pop('links', None)
     info.pop('addresses', None)
 
-    utils.print_dict(info)
+    utils.print_dict(info, wrap=wrap)
 
 
 @utils.arg(
@@ -2297,9 +2297,12 @@ def _print_server(cs, args, server=None):
     default=False,
     help=_('Skips flavor/image lookups when showing servers.'))
 @utils.arg('server', metavar='<server>', help=_('Name or ID of server.'))
+@utils.arg(
+    '--wrap', dest='wrap', metavar='<integer>', type=int, default=0,
+    help=_('Wrap the output to a specified length, or 0 to disable.'))
 def do_show(cs, args):
     """Show details about the given server."""
-    _print_server(cs, args)
+    _print_server(cs, args, wrap=args.wrap)
 
 
 @utils.arg(
