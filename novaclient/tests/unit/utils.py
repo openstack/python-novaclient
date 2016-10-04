@@ -55,6 +55,10 @@ class TestCase(testtools.TestCase):
         'verify': True,
     }
 
+    @property
+    def requests(self):
+        return self.requests_mock
+
     def setUp(self):
         super(TestCase, self).setUp()
         if (os.environ.get('OS_STDOUT_CAPTURE') == 'True' or
@@ -65,6 +69,8 @@ class TestCase(testtools.TestCase):
                 os.environ.get('OS_STDERR_CAPTURE') == '1'):
             stderr = self.useFixture(fixtures.StringStream('stderr')).stream
             self.useFixture(fixtures.MonkeyPatch('sys.stderr', stderr))
+
+        self.requests_mock = self.useFixture(requests_mock_fixture.Fixture())
 
     def assert_request_id(self, request_id_mixin, request_id_list):
         self.assertEqual(request_id_list, request_id_mixin.request_ids)
@@ -78,7 +84,6 @@ class FixturedTestCase(testscenarios.TestWithScenarios, TestCase):
     def setUp(self):
         super(FixturedTestCase, self).setUp()
 
-        self.requests = self.useFixture(requests_mock_fixture.Fixture())
         self.data_fixture = None
         self.client_fixture = None
         self.cs = None
