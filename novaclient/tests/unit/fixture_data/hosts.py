@@ -10,9 +10,6 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-from oslo_serialization import jsonutils
-from six.moves.urllib import parse
-
 from novaclient.tests.unit.fixture_data import base
 
 
@@ -38,24 +35,22 @@ class BaseFixture(base.Fixture):
 
         headers = self.json_headers
 
-        self.requests.register_uri('GET', self.url('host'),
-                                   json=get_os_hosts_host,
-                                   headers=headers)
+        self.requests_mock.get(self.url('host'),
+                               json=get_os_hosts_host,
+                               headers=headers)
 
         def get_os_hosts(request, context):
-            host, query = parse.splitquery(request.url)
             zone = 'nova1'
             service = None
 
-            if query:
-                qs = parse.parse_qs(query)
+            if request.query:
                 try:
-                    zone = qs['zone'][0]
+                    zone = request.qs['zone'][0]
                 except Exception:
                     pass
 
                 try:
-                    service = qs['service'][0]
+                    service = request.qs['service'][0]
                 except Exception:
                     pass
 
@@ -74,51 +69,51 @@ class BaseFixture(base.Fixture):
                 ]
             }
 
-        self.requests.register_uri('GET', self.url(),
-                                   json=get_os_hosts,
-                                   headers=headers)
+        self.requests_mock.get(self.url(),
+                               json=get_os_hosts,
+                               headers=headers)
 
         get_os_hosts_sample_host = {
             'host': [
                 {'resource': {'host': 'sample_host'}}
             ],
         }
-        self.requests.register_uri('GET', self.url('sample_host'),
-                                   json=get_os_hosts_sample_host,
-                                   headers=headers)
+        self.requests_mock.get(self.url('sample_host'),
+                               json=get_os_hosts_sample_host,
+                               headers=headers)
 
-        self.requests.register_uri('PUT', self.url('sample_host', 1),
-                                   json=self.put_host_1(),
-                                   headers=headers)
+        self.requests_mock.put(self.url('sample_host', 1),
+                               json=self.put_host_1(),
+                               headers=headers)
 
-        self.requests.register_uri('PUT', self.url('sample_host', 2),
-                                   json=self.put_host_2(),
-                                   headers=headers)
+        self.requests_mock.put(self.url('sample_host', 2),
+                               json=self.put_host_2(),
+                               headers=headers)
 
-        self.requests.register_uri('PUT', self.url('sample_host', 3),
-                                   json=self.put_host_3(),
-                                   headers=headers)
+        self.requests_mock.put(self.url('sample_host', 3),
+                               json=self.put_host_3(),
+                               headers=headers)
 
-        self.requests.register_uri('GET', self.url('sample_host', 'reboot'),
-                                   json=self.get_host_reboot(),
-                                   headers=headers)
+        self.requests_mock.get(self.url('sample_host', 'reboot'),
+                               json=self.get_host_reboot(),
+                               headers=headers)
 
-        self.requests.register_uri('GET', self.url('sample_host', 'startup'),
-                                   json=self.get_host_startup(),
-                                   headers=headers)
+        self.requests_mock.get(self.url('sample_host', 'startup'),
+                               json=self.get_host_startup(),
+                               headers=headers)
 
-        self.requests.register_uri('GET', self.url('sample_host', 'shutdown'),
-                                   json=self.get_host_shutdown(),
-                                   headers=headers)
+        self.requests_mock.get(self.url('sample_host', 'shutdown'),
+                               json=self.get_host_shutdown(),
+                               headers=headers)
 
         def put_os_hosts_sample_host(request, context):
             result = {'host': 'dummy'}
-            result.update(jsonutils.loads(request.body))
+            result.update(request.json())
             return result
 
-        self.requests.register_uri('PUT', self.url('sample_host'),
-                                   json=put_os_hosts_sample_host,
-                                   headers=headers)
+        self.requests_mock.put(self.url('sample_host'),
+                               json=put_os_hosts_sample_host,
+                               headers=headers)
 
 
 class V1(BaseFixture):

@@ -75,6 +75,6 @@ class Fixture(base.Fixture):
         }
 
         headers = self.json_headers
-        self.requests.register_uri('GET', self.url(),
-                                   json=get_limits,
-                                   headers=headers)
+        self.requests_mock.get(self.url(),
+                               json=get_limits,
+                               headers=headers)

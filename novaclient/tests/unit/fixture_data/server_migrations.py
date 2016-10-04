@@ -22,9 +22,9 @@ class Fixture(base.Fixture):
     def setUp(self):
         super(Fixture, self).setUp()
         url = self.url('1234', 'migrations', '1', 'action')
-        self.requests.register_uri('POST', url,
-                                   status_code=202,
-                                   headers=self.json_headers)
+        self.requests_mock.post(url,
+                                status_code=202,
+                                headers=self.json_headers)
 
         get_migrations = {'migrations': [
             {
@@ -47,10 +47,9 @@ class Fixture(base.Fixture):
             }]}
 
         url = self.url('1234', 'migrations')
-        self.requests.register_uri('GET', url,
-                                   status_code=200,
-                                   json=get_migrations,
-                                   headers=self.json_headers)
+        self.requests_mock.get(url,
+                               json=get_migrations,
+                               headers=self.json_headers)
 
         get_migration = {'migration': {
             "created_at": "2016-01-29T13:42:02.000000",
@@ -72,11 +71,10 @@ class Fixture(base.Fixture):
         }}
 
         url = self.url('1234', 'migrations', '1')
-        self.requests.register_uri('GET', url,
-                                   status_code=200,
-                                   json=get_migration,
-                                   headers=self.json_headers)
+        self.requests_mock.get(url,
+                               json=get_migration,
+                               headers=self.json_headers)
         url = self.url('1234', 'migrations', '1')
-        self.requests.register_uri('DELETE', url,
-                                   status_code=202,
-                                   headers=self.json_headers)
+        self.requests_mock.delete(url,
+                                  status_code=202,
+                                  headers=self.json_headers)

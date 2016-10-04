@@ -39,9 +39,9 @@ class V1(base.Fixture):
             ]
         }
 
-        self.requests.register_uri('GET', self.url(),
-                                   json=get_os_availability_zone,
-                                   headers=self.json_headers)
+        self.requests_mock.get(self.url(),
+                               json=get_os_availability_zone,
+                               headers=self.json_headers)
 
         get_os_zone_detail = {
             self.zone_info_key: [
@@ -86,6 +86,6 @@ class V1(base.Fixture):
             ]
         }
 
-        self.requests.register_uri('GET', self.url('detail'),
-                                   json=get_os_zone_detail,
-                                   headers=self.json_headers)
+        self.requests_mock.get(self.url('detail'),
+                               json=get_os_zone_detail,
+                               headers=self.json_headers)

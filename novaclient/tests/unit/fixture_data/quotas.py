@@ -27,28 +27,28 @@ class V1(base.Fixture):
 
         for u in ('test', 'tenant-id', 'tenant-id/defaults',
                   '%s/defaults' % uuid2, 'test/detail'):
-            self.requests.register_uri('GET', self.url(u),
-                                       json=test_json,
-                                       headers=self.headers)
-
-        self.requests.register_uri('PUT', self.url(uuid),
-                                   json={'quota_set': self.test_quota(uuid)},
+            self.requests_mock.get(self.url(u),
+                                   json=test_json,
                                    headers=self.headers)
 
-        self.requests.register_uri('GET', self.url(uuid),
-                                   json={'quota_set': self.test_quota(uuid)},
-                                   headers=self.headers)
+        self.requests_mock.put(self.url(uuid),
+                               json={'quota_set': self.test_quota(uuid)},
+                               headers=self.headers)
 
-        self.requests.register_uri('PUT', self.url(uuid2),
-                                   json={'quota_set': self.test_quota(uuid2)},
-                                   headers=self.headers)
-        self.requests.register_uri('GET', self.url(uuid2),
-                                   json={'quota_set': self.test_quota(uuid2)},
-                                   headers=self.headers)
+        self.requests_mock.get(self.url(uuid),
+                               json={'quota_set': self.test_quota(uuid)},
+                               headers=self.headers)
+
+        self.requests_mock.put(self.url(uuid2),
+                               json={'quota_set': self.test_quota(uuid2)},
+                               headers=self.headers)
+        self.requests_mock.get(self.url(uuid2),
+                               json={'quota_set': self.test_quota(uuid2)},
+                               headers=self.headers)
 
         for u in ('test', uuid2):
-            self.requests.register_uri('DELETE', self.url(u), status_code=202,
-                                       headers=self.headers)
+            self.requests_mock.delete(self.url(u), status_code=202,
+                                      headers=self.headers)
 
     def test_quota(self, tenant_id='test'):
         return {

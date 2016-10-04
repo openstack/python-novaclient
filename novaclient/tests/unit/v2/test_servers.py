@@ -17,7 +17,6 @@ import os
 import tempfile
 
 import mock
-from oslo_serialization import jsonutils
 import six
 
 from novaclient import api_versions
@@ -38,7 +37,7 @@ class ServersTest(utils.FixturedTestCase):
 
     def setUp(self):
         super(ServersTest, self).setUp()
-        self.useFixture(floatingips.FloatingFixture(self.requests))
+        self.useFixture(floatingips.FloatingFixture(self.requests_mock))
         if self.api_version:
             self.cs.api_version = api_versions.APIVersion(self.api_version)
 
@@ -68,8 +67,8 @@ class ServersTest(utils.FixturedTestCase):
 
         self.assertEqual(2, len(sl))
 
-        self.assertEqual(self.requests.request_history[-2].method, 'GET')
-        self.assertEqual(self.requests.request_history[-2].path_url,
+        self.assertEqual(self.requests_mock.request_history[-2].method, 'GET')
+        self.assertEqual(self.requests_mock.request_history[-2].path_url,
                          '/servers/detail?marker=1234')
         self.assert_called('GET', '/servers/detail?marker=5678')
 
@@ -320,7 +319,7 @@ class ServersTest(utils.FixturedTestCase):
         self.assert_request_id(s, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers')
         self.assertIsInstance(s, servers.Server)
-        body = jsonutils.loads(self.requests.last_request.body)
+        body = self.requests_mock.last_request.json()
         self.assertEqual(test_password, body['server']['adminPass'])
 
     def test_create_server_userdata_bin(self):
@@ -346,7 +345,7 @@ class ServersTest(utils.FixturedTestCase):
             self.assert_called('POST', '/servers')
             self.assertIsInstance(s, servers.Server)
             # verify userdata matches original
-            body = jsonutils.loads(self.requests.last_request.body)
+            body = self.requests_mock.last_request.json()
             transferred_data = body['server']['user_data']
             transferred_data = base64.b64decode(transferred_data)
             self.assertEqual(original_data, transferred_data)
@@ -364,8 +363,7 @@ class ServersTest(utils.FixturedTestCase):
         self.assertIsInstance(s, servers.Server)
 
         # verify disk config param was used in the request:
-        body = jsonutils.loads(self.requests.last_request.body)
-        server = body['server']
+        server = self.requests_mock.last_request.json()['server']
         self.assertIn('OS-DCF:diskConfig', server)
         self.assertEqual(disk_config, server['OS-DCF:diskConfig'])
 
@@ -471,9 +469,7 @@ class ServersTest(utils.FixturedTestCase):
         self.assert_called('POST', '/servers/1234/action')
 
         # verify disk config param was used in the request:
-        body = jsonutils.loads(self.requests.last_request.body)
-
-        d = body[operation]
+        d = self.requests_mock.last_request.json()[operation]
         self.assertIn('OS-DCF:diskConfig', d)
         self.assertEqual(disk_config, d['OS-DCF:diskConfig'])
 
@@ -488,8 +484,7 @@ class ServersTest(utils.FixturedTestCase):
         ret = s.rebuild(image=1, preserve_ephemeral=True)
         self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
-        body = jsonutils.loads(self.requests.last_request.body)
-        d = body['rebuild']
+        d = self.requests_mock.last_request.json()['rebuild']
         self.assertIn('preserve_ephemeral', d)
         self.assertTrue(d['preserve_ephemeral'])
 
@@ -498,8 +493,7 @@ class ServersTest(utils.FixturedTestCase):
         s = self.cs.servers.get(1234)
         ret = s.rebuild(image=1, name='new', meta={'foo': 'bar'}, files=files)
         self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
-        body = jsonutils.loads(self.requests.last_request.body)
-        d = body['rebuild']
+        d = self.requests_mock.last_request.json()['rebuild']
         self.assertEqual('new', d['name'])
         self.assertEqual({'foo': 'bar'}, d['metadata'])
         self.assertEqual('/etc/passwd',

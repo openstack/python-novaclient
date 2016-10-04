@@ -21,17 +21,17 @@ class Fixture(base.Fixture):
         super(Fixture, self).setUp()
 
         get_os_cloudpipe = {'cloudpipes': [{'project_id': 1}]}
-        self.requests.register_uri('GET', self.url(),
-                                   json=get_os_cloudpipe,
-                                   headers=self.json_headers)
+        self.requests_mock.get(self.url(),
+                               json=get_os_cloudpipe,
+                               headers=self.json_headers)
 
         instance_id = '9d5824aa-20e6-4b9f-b967-76a699fc51fd'
         post_os_cloudpipe = {'instance_id': instance_id}
-        self.requests.register_uri('POST', self.url(),
-                                   json=post_os_cloudpipe,
-                                   headers=self.json_headers,
-                                   status_code=202)
+        self.requests_mock.post(self.url(),
+                                json=post_os_cloudpipe,
+                                headers=self.json_headers,
+                                status_code=202)
 
-        self.requests.register_uri('PUT', self.url('configure-project'),
-                                   headers=self.json_headers,
-                                   status_code=202)
+        self.requests_mock.put(self.url('configure-project'),
+                               headers=self.json_headers,
+                               status_code=202)

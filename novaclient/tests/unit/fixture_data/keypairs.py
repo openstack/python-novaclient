@@ -10,8 +10,6 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-from oslo_serialization import jsonutils
-
 from novaclient.tests.unit import fakes
 from novaclient.tests.unit.fixture_data import base
 
@@ -26,23 +24,24 @@ class V1(base.Fixture):
 
         headers = self.json_headers
 
-        self.requests.register_uri('GET', self.url(),
-                                   json={'keypairs': [keypair]},
-                                   headers=headers)
+        self.requests_mock.get(self.url(),
+                               json={'keypairs': [keypair]},
+                               headers=headers)
 
-        self.requests.register_uri('GET', self.url('test'),
-                                   json={'keypair': keypair},
-                                   headers=headers)
+        self.requests_mock.get(self.url('test'),
+                               json={'keypair': keypair},
+                               headers=headers)
 
-        self.requests.register_uri('DELETE', self.url('test'), status_code=202,
-                                   headers=headers)
+        self.requests_mock.delete(self.url('test'),
+                                  status_code=202,
+                                  headers=headers)
 
         def post_os_keypairs(request, context):
-            body = jsonutils.loads(request.body)
+            body = request.json()
             assert list(body) == ['keypair']
             fakes.assert_has_keys(body['keypair'], required=['name'])
             return {'keypair': keypair}
 
-        self.requests.register_uri('POST', self.url(),
-                                   json=post_os_keypairs,
-                                   headers=headers)
+        self.requests_mock.post(self.url(),
+                                json=post_os_keypairs,
+                                headers=headers)

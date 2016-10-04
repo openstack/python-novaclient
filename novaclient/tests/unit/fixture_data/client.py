@@ -23,13 +23,13 @@ COMPUTE_URL = 'http://compute.host'
 
 class V1(fixtures.Fixture):
 
-    def __init__(self, requests,
+    def __init__(self, requests_mock,
                  compute_url=COMPUTE_URL, identity_url=IDENTITY_URL):
         super(V1, self).__init__()
         self.identity_url = identity_url
         self.compute_url = compute_url
         self.client = None
-        self.requests = requests
+        self.requests_mock = requests_mock
 
         self.token = fixture.V2Token()
         self.token.set_scope()
@@ -46,12 +46,12 @@ class V1(fixtures.Fixture):
 
         auth_url = '%s/tokens' % self.identity_url
         headers = {'X-Content-Type': 'application/json'}
-        self.requests.register_uri('POST', auth_url,
-                                   json=self.token,
-                                   headers=headers)
-        self.requests.register_uri('GET', self.identity_url,
-                                   json=self.discovery,
-                                   headers=headers)
+        self.requests_mock.post(auth_url,
+                                json=self.token,
+                                headers=headers)
+        self.requests_mock.get(self.identity_url,
+                               json=self.discovery,
+                               headers=headers)
         self.client = self.new_client()
 
     def new_client(self):

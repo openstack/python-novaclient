@@ -27,9 +27,9 @@ class Fixture(base.Fixture):
                 "alive": True,
             }
         }
-        self.requests.register_uri('GET', self.url(1),
-                                   json=get_os_fping_1,
-                                   headers=self.json_headers)
+        self.requests_mock.get(self.url(1),
+                               json=get_os_fping_1,
+                               headers=self.json_headers)
 
         get_os_fping = {
             'servers': [
@@ -41,6 +41,6 @@ class Fixture(base.Fixture):
                 },
             ]
         }
-        self.requests.register_uri('GET', self.url(),
-                                   json=get_os_fping,
-                                   headers=self.json_headers)
+        self.requests_mock.get(self.url(),
+                               json=get_os_fping,
+                               headers=self.json_headers)

@@ -55,10 +55,6 @@ class TestCase(testtools.TestCase):
         'verify': True,
     }
 
-    @property
-    def requests(self):
-        return self.requests_mock
-
     def setUp(self):
         super(TestCase, self).setUp()
         if (os.environ.get('OS_STDOUT_CAPTURE') == 'True' or
@@ -89,20 +85,20 @@ class FixturedTestCase(testscenarios.TestWithScenarios, TestCase):
         self.cs = None
 
         if self.client_fixture_class:
-            fix = self.client_fixture_class(self.requests)
+            fix = self.client_fixture_class(self.requests_mock)
             self.client_fixture = self.useFixture(fix)
             self.cs = self.client_fixture.client
 
         if self.data_fixture_class:
-            fix = self.data_fixture_class(self.requests)
+            fix = self.data_fixture_class(self.requests_mock)
             self.data_fixture = self.useFixture(fix)
 
     def assert_called(self, method, path, body=None):
-        self.assertEqual(self.requests.last_request.method, method)
-        self.assertEqual(self.requests.last_request.path_url, path)
+        self.assertEqual(self.requests_mock.last_request.method, method)
+        self.assertEqual(self.requests_mock.last_request.path_url, path)
 
         if body:
-            req_data = self.requests.last_request.body
+            req_data = self.requests_mock.last_request.body
             if isinstance(req_data, six.binary_type):
                 req_data = req_data.decode('utf-8')
             if not isinstance(body, six.string_types):

@@ -53,9 +53,9 @@ class AgentsTest(utils.FixturedTestCase):
 
         headers = {'Content-Type': 'application/json',
                    'x-openstack-request-id': fakes.FAKE_REQUEST_ID}
-        self.requests.register_uri('GET', self.data_fixture.url(),
-                                   json=get_os_agents,
-                                   headers=headers)
+        self.requests_mock.get(self.data_fixture.url(),
+                               json=get_os_agents,
+                               headers=headers)
 
     def test_list_agents(self):
         self.stub_hypervisors()

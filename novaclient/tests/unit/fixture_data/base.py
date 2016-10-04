@@ -24,9 +24,9 @@ class Fixture(fixtures.Fixture):
     json_headers = {'Content-Type': 'application/json',
                     'x-openstack-request-id': fakes.FAKE_REQUEST_ID}
 
-    def __init__(self, requests, compute_url=COMPUTE_URL):
+    def __init__(self, requests_mock, compute_url=COMPUTE_URL):
         super(Fixture, self).__init__()
-        self.requests = requests
+        self.requests_mock = requests_mock
         self.compute_url = compute_url
 
     def url(self, *args, **kwargs):

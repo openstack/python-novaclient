@@ -10,8 +10,6 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-from oslo_serialization import jsonutils
-
 from novaclient.tests.unit.fixture_data import base
 
 
@@ -35,30 +33,29 @@ class Fixture(base.Fixture):
 
         headers = self.json_headers
 
-        self.requests.register_uri('GET', self.url(),
-                                   json=get_os_networks,
-                                   headers=headers)
+        self.requests_mock.get(self.url(),
+                               json=get_os_networks,
+                               headers=headers)
 
         def post_os_networks(request, context):
-            body = jsonutils.loads(request.body)
-            return {'network': body}
+            return {'network': request.json()}
 
-        self.requests.register_uri("POST", self.url(),
-                                   json=post_os_networks,
-                                   headers=headers)
+        self.requests_mock.post(self.url(),
+                                json=post_os_networks,
+                                headers=headers)
 
         get_os_networks_1 = {'network': {"label": "1", "cidr": "10.0.0.0/24"}}
 
-        self.requests.register_uri('GET', self.url(1),
-                                   json=get_os_networks_1,
-                                   headers=headers)
+        self.requests_mock.get(self.url(1),
+                               json=get_os_networks_1,
+                               headers=headers)
 
-        self.requests.register_uri('DELETE',
-                                   self.url('networkdelete'),
-                                   status_code=202,
-                                   headers=headers)
+        self.requests_mock.delete(self.url('networkdelete'),
+                                  status_code=202,
+                                  headers=headers)
 
         for u in ('add', 'networkdisassociate/action', 'networktest/action',
                   '1/action', '2/action'):
-            self.requests.register_uri('POST', self.url(u), status_code=202,
-                                       headers=headers)
+            self.requests_mock.post(self.url(u),
+                                    status_code=202,
+                                    headers=headers)

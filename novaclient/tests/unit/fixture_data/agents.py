@@ -32,9 +32,9 @@ class Fixture(base.Fixture):
             }
         }
 
-        self.requests.register_uri('POST', self.url(),
-                                   json=post_os_agents,
-                                   headers=self.json_headers)
+        self.requests_mock.post(self.url(),
+                                json=post_os_agents,
+                                headers=self.json_headers)
 
         put_os_agents_1 = {
             "agent": {
@@ -45,10 +45,10 @@ class Fixture(base.Fixture):
             }
         }
 
-        self.requests.register_uri('PUT', self.url(1),
-                                   json=put_os_agents_1,
-                                   headers=self.json_headers)
+        self.requests_mock.put(self.url(1),
+                               json=put_os_agents_1,
+                               headers=self.json_headers)
 
-        self.requests.register_uri('DELETE', self.url(1),
-                                   headers=self.json_headers,
-                                   status_code=202)
+        self.requests_mock.delete(self.url(1),
+                                  headers=self.json_headers,
+                                  status_code=202)

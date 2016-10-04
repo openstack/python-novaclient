@@ -29,25 +29,25 @@ class Fixture(base.Fixture):
              'availability_zone': 'nova1'},
         ]}
 
-        self.requests.register_uri('GET', self.url(),
-                                   json=get_os_aggregates,
-                                   headers=self.json_headers)
+        self.requests_mock.get(self.url(),
+                               json=get_os_aggregates,
+                               headers=self.json_headers)
 
         get_aggregates_1 = {'aggregate': get_os_aggregates['aggregates'][0]}
 
-        self.requests.register_uri('POST', self.url(),
-                                   json=get_aggregates_1,
-                                   headers=self.json_headers)
+        self.requests_mock.post(self.url(),
+                                json=get_aggregates_1,
+                                headers=self.json_headers)
 
         for agg_id in (1, 2):
             for method in ('GET', 'PUT'):
-                self.requests.register_uri(method, self.url(agg_id),
-                                           json=get_aggregates_1,
-                                           headers=self.json_headers)
+                self.requests_mock.register_uri(method, self.url(agg_id),
+                                                json=get_aggregates_1,
+                                                headers=self.json_headers)
 
-            self.requests.register_uri('POST', self.url(agg_id, 'action'),
-                                       json=get_aggregates_1,
-                                       headers=self.json_headers)
+            self.requests_mock.post(self.url(agg_id, 'action'),
+                                    json=get_aggregates_1,
+                                    headers=self.json_headers)
 
-        self.requests.register_uri('DELETE', self.url(1), status_code=202,
-                                   headers=self.json_headers)
+        self.requests_mock.delete(self.url(1), status_code=202,
+                                  headers=self.json_headers)

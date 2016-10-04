@@ -10,8 +10,6 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-from oslo_serialization import jsonutils
-
 from novaclient.tests.unit import fakes
 from novaclient.tests.unit.fixture_data import base
 from novaclient.tests.unit.v2 import fakes as v2_fakes
@@ -31,9 +29,9 @@ class Base(base.Fixture):
             ]
         }
 
-        self.requests.register_uri('GET', self.url(),
-                                   json=get_servers,
-                                   headers=self.json_headers)
+        self.requests_mock.get(self.url(),
+                               json=get_servers,
+                               headers=self.json_headers)
 
         self.server_1234 = {
             "id": 1234,
@@ -155,17 +153,17 @@ class Base(base.Fixture):
         servers = [self.server_1234, self.server_5678, self.server_9012]
         get_servers_detail = {"servers": servers}
 
-        self.requests.register_uri('GET', self.url('detail'),
-                                   json=get_servers_detail,
-                                   headers=self.json_headers)
+        self.requests_mock.get(self.url('detail'),
+                               json=get_servers_detail,
+                               headers=self.json_headers)
 
-        self.requests.register_uri(
-            'GET', self.url('detail', marker=self.server_1234["id"]),
+        self.requests_mock.get(
+            self.url('detail', marker=self.server_1234["id"]),
             json={"servers": [self.server_1234, self.server_5678]},
             headers=self.json_headers, complete_qs=True)
 
-        self.requests.register_uri(
-            'GET', self.url('detail', marker=self.server_5678["id"]),
+        self.requests_mock.get(
+            self.url('detail', marker=self.server_5678["id"]),
             json={"servers": []},
             headers=self.json_headers, complete_qs=True)
 
@@ -175,39 +173,37 @@ class Base(base.Fixture):
         self.server_1235['fault'] = {'message': 'something went wrong!'}
 
         for s in servers + [self.server_1235]:
-            self.requests.register_uri('GET', self.url(s['id']),
-                                       json={'server': s},
-                                       headers=self.json_headers)
+            self.requests_mock.get(self.url(s['id']),
+                                   json={'server': s},
+                                   headers=self.json_headers)
 
         for s in (1234, 5678):
-            self.requests.register_uri('DELETE', self.url(s), status_code=202,
-                                       headers=self.json_headers)
+            self.requests_mock.delete(self.url(s),
+                                      status_code=202,
+                                      headers=self.json_headers)
 
         for k in ('test_key', 'key1', 'key2'):
-            self.requests.register_uri('DELETE',
-                                       self.url(1234, 'metadata', k),
-                                       status_code=204,
-                                       headers=self.json_headers)
+            self.requests_mock.delete(self.url(1234, 'metadata', k),
+                                      status_code=204,
+                                      headers=self.json_headers)
 
         metadata1 = {'metadata': {'test_key': 'test_value'}}
-        self.requests.register_uri('POST', self.url(1234, 'metadata'),
-                                   json=metadata1,
-                                   headers=self.json_headers)
-        self.requests.register_uri('PUT',
-                                   self.url(1234, 'metadata', 'test_key'),
-                                   json=metadata1,
-                                   headers=self.json_headers)
+        self.requests_mock.post(self.url(1234, 'metadata'),
+                                json=metadata1,
+                                headers=self.json_headers)
+        self.requests_mock.put(self.url(1234, 'metadata', 'test_key'),
+                               json=metadata1,
+                               headers=self.json_headers)
 
         self.diagnostic = {'data': 'Fake diagnostics'}
 
         metadata2 = {'metadata': {'key1': 'val1'}}
         for u in ('uuid1', 'uuid2', 'uuid3', 'uuid4'):
-            self.requests.register_uri('POST', self.url(u, 'metadata'),
-                                       json=metadata2, status_code=204)
-            self.requests.register_uri('DELETE',
-                                       self.url(u, 'metadata', 'key1'),
-                                       json=self.diagnostic,
-                                       headers=self.json_headers)
+            self.requests_mock.post(self.url(u, 'metadata'),
+                                    json=metadata2, status_code=204)
+            self.requests_mock.delete(self.url(u, 'metadata', 'key1'),
+                                      json=self.diagnostic,
+                                      headers=self.json_headers)
 
         get_security_groups = {
             "security_groups": [{
@@ -218,22 +214,21 @@ class Base(base.Fixture):
                 'rules': []}]
         }
 
-        self.requests.register_uri('GET',
-                                   self.url('1234', 'os-security-groups'),
-                                   json=get_security_groups,
-                                   headers=self.json_headers)
+        self.requests_mock.get(self.url('1234', 'os-security-groups'),
+                               json=get_security_groups,
+                               headers=self.json_headers)
 
-        self.requests.register_uri('POST', self.url(),
-                                   json=self.post_servers,
-                                   headers=self.json_headers)
+        self.requests_mock.post(self.url(),
+                                json=self.post_servers,
+                                headers=self.json_headers)
 
-        self.requests.register_uri('POST', self.url('1234', 'remote-consoles'),
-                                   json=self.post_servers_1234_remote_consoles,
-                                   headers=self.json_headers)
+        self.requests_mock.post(self.url('1234', 'remote-consoles'),
+                                json=self.post_servers_1234_remote_consoles,
+                                headers=self.json_headers)
 
-        self.requests.register_uri('POST', self.url('1234', 'action'),
-                                   json=self.post_servers_1234_action,
-                                   headers=self.json_headers)
+        self.requests_mock.post(self.url('1234', 'action'),
+                                json=self.post_servers_1234_action,
+                                headers=self.json_headers)
 
         get_os_interface = {
             "interfaceAttachments": [
@@ -254,31 +249,29 @@ class Base(base.Fixture):
             ]
         }
 
-        self.requests.register_uri('GET',
-                                   self.url('1234', 'os-interface'),
-                                   json=get_os_interface,
-                                   headers=self.json_headers)
+        self.requests_mock.get(self.url('1234', 'os-interface'),
+                               json=get_os_interface,
+                               headers=self.json_headers)
 
         interface_data = {'interfaceAttachment': {}}
-        self.requests.register_uri('POST',
-                                   self.url('1234', 'os-interface'),
-                                   json=interface_data,
-                                   headers=self.json_headers)
+        self.requests_mock.post(self.url('1234', 'os-interface'),
+                                json=interface_data,
+                                headers=self.json_headers)
 
         def put_servers_1234(request, context):
-            body = jsonutils.loads(request.body)
+            body = request.json()
             assert list(body) == ['server']
             fakes.assert_has_keys(body['server'],
                                   optional=['name', 'adminPass'])
             return request.body
 
-        self.requests.register_uri('PUT', self.url(1234),
-                                   text=put_servers_1234,
-                                   status_code=204,
-                                   headers=self.json_headers)
+        self.requests_mock.put(self.url(1234),
+                               text=put_servers_1234,
+                               status_code=204,
+                               headers=self.json_headers)
 
         def post_os_volumes_boot(request, context):
-            body = jsonutils.loads(request.body)
+            body = request.json()
             assert (set(body.keys()) <=
                     set(['server', 'os:scheduler_hints']))
 
@@ -302,64 +295,56 @@ class Base(base.Fixture):
         # NOTE(jamielennox): hack to make os_volumes mock go to the right place
         base_url = self.base_url
         self.base_url = None
-        self.requests.register_uri('POST', self.url('os-volumes_boot'),
-                                   json=post_os_volumes_boot,
-                                   status_code=202,
-                                   headers=self.json_headers)
+        self.requests_mock.post(self.url('os-volumes_boot'),
+                                json=post_os_volumes_boot,
+                                status_code=202,
+                                headers=self.json_headers)
         self.base_url = base_url
 
         #
         # Server password
         #
 
-        self.requests.register_uri('DELETE',
-                                   self.url(1234, 'os-server-password'),
-                                   status_code=202,
-                                   headers=self.json_headers)
+        self.requests_mock.delete(self.url(1234, 'os-server-password'),
+                                  status_code=202,
+                                  headers=self.json_headers)
         #
         # Server tags
         #
 
-        self.requests.register_uri('GET',
-                                   self.url(1234, 'tags'),
-                                   json={'tags': ['tag1', 'tag2']},
-                                   headers=self.json_headers)
+        self.requests_mock.get(self.url(1234, 'tags'),
+                               json={'tags': ['tag1', 'tag2']},
+                               headers=self.json_headers)
 
-        self.requests.register_uri('GET',
-                                   self.url(1234, 'tags', 'tag'),
-                                   status_code=204,
-                                   headers=self.json_headers)
+        self.requests_mock.get(self.url(1234, 'tags', 'tag'),
+                               status_code=204,
+                               headers=self.json_headers)
 
-        self.requests.register_uri('DELETE',
-                                   self.url(1234, 'tags', 'tag'),
-                                   status_code=204,
-                                   headers=self.json_headers)
+        self.requests_mock.delete(self.url(1234, 'tags', 'tag'),
+                                  status_code=204,
+                                  headers=self.json_headers)
 
-        self.requests.register_uri('DELETE',
-                                   self.url(1234, 'tags'),
-                                   status_code=204,
-                                   headers=self.json_headers)
+        self.requests_mock.delete(self.url(1234, 'tags'),
+                                  status_code=204,
+                                  headers=self.json_headers)
 
         def put_server_tag(request, context):
-            body = jsonutils.loads(request.body)
-            assert body is None
+            assert request.json() is None
             context.status_code = 201
             return None
 
-        self.requests.register_uri('PUT',
-                                   self.url(1234, 'tags', 'tag'),
-                                   json=put_server_tag,
-                                   headers=self.json_headers)
+        self.requests_mock.put(self.url(1234, 'tags', 'tag'),
+                               json=put_server_tag,
+                               headers=self.json_headers)
 
         def put_server_tags(request, context):
-            body = jsonutils.loads(request.body)
+            body = request.json()
             assert list(body) == ['tags']
             return body
 
-        self.requests.register_uri('PUT',
-                                   self.url(1234, 'tags'),
-                                   json=put_server_tags,
-                                   headers=self.json_headers)
+        self.requests_mock.put(self.url(1234, 'tags'),
+                               json=put_server_tags,
+                               headers=self.json_headers)
 
 
 class V1(Base):
@@ -372,30 +357,27 @@ class V1(Base):
         #
 
         add = self.server_1234['addresses']
-        self.requests.register_uri('GET', self.url(1234, 'ips'),
-                                   json={'addresses': add},
-                                   headers=self.json_headers)
+        self.requests_mock.get(self.url(1234, 'ips'),
+                               json={'addresses': add},
+                               headers=self.json_headers)
 
-        self.requests.register_uri('GET', self.url(1234, 'ips', 'public'),
-                                   json={'public': add['public']},
-                                   headers=self.json_headers)
+        self.requests_mock.get(self.url(1234, 'ips', 'public'),
+                               json={'public': add['public']},
+                               headers=self.json_headers)
 
-        self.requests.register_uri('GET', self.url(1234, 'ips', 'private'),
-                                   json={'private': add['private']},
-                                   headers=self.json_headers)
+        self.requests_mock.get(self.url(1234, 'ips', 'private'),
+                               json={'private': add['private']},
+                               headers=self.json_headers)
 
-        self.requests.register_uri('DELETE',
-                                   self.url(1234, 'ips', 'public', '1.2.3.4'),
-                                   status_code=202)
+        self.requests_mock.delete(self.url(1234, 'ips', 'public', '1.2.3.4'),
+                                  status_code=202)
 
-        self.requests.register_uri('GET',
-                                   self.url('1234', 'diagnostics'),
-                                   json=self.diagnostic,
-                                   headers=self.json_headers)
+        self.requests_mock.get(self.url('1234', 'diagnostics'),
+                               json=self.diagnostic,
+                               headers=self.json_headers)
 
-        self.requests.register_uri('DELETE',
-                                   self.url('1234', 'os-interface', 'port-id'),
-                                   headers=self.json_headers)
+        self.requests_mock.delete(self.url('1234', 'os-interface', 'port-id'),
+                                  headers=self.json_headers)
 
         # Testing with the following password and key
         #
@@ -419,13 +401,12 @@ class V1(Base):
             '/y5a6Z3/AoJZYGG7IH5WN88UROU3B9JZGFB2qtPLQTOvDMZLUhoPRIJeHiVSlo1N'
             'tI2/++UsXVg3ow6ItqCJGgdNuGG5JB+bslDHWPxROpesEIHdczk46HCpHQN8f1sk'
             'Hi/fmZZNQQqj1Ijq0caOIw=='}
-        self.requests.register_uri('GET',
-                                   self.url(1234, 'os-server-password'),
-                                   json=get_server_password,
-                                   headers=self.json_headers)
+        self.requests_mock.get(self.url(1234, 'os-server-password'),
+                               json=get_server_password,
+                               headers=self.json_headers)
 
     def post_servers(self, request, context):
-        body = jsonutils.loads(request.body)
+        body = request.json()
         context.status_code = 202
         assert (set(body.keys()) <=
                 set(['server', 'os:scheduler_hints']))
@@ -444,7 +425,7 @@ class V1(Base):
 
     def post_servers_1234_remote_consoles(self, request, context):
         _body = ''
-        body = jsonutils.loads(request.body)
+        body = request.json()
         context.status_code = 202
         assert len(body.keys()) == 1
         assert 'remote_console' in body.keys()
@@ -458,7 +439,7 @@ class V1(Base):
 
     def post_servers_1234_action(self, request, context):
         _body = ''
-        body = jsonutils.loads(request.body)
+        body = request.json()
         context.status_code = 202
         assert len(body.keys()) == 1
         action = list(body)[0]

@@ -194,8 +194,7 @@ class HypervisorsV233Test(HypervisorsTest):
         self.cs.api_version = api_versions.APIVersion("2.33")
 
     def test_use_limit_marker_params(self):
-        params = {'limit': 10, 'marker': 'fake-marker'}
+        params = {'limit': '10', 'marker': 'fake-marker'}
         self.cs.hypervisors.list(**params)
         for k, v in params.items():
-            self.assertIn('%s=%s' % (k, v),
-                          self.requests.last_request.path_url)
+            self.assertEqual([v], self.requests_mock.last_request.qs[k])

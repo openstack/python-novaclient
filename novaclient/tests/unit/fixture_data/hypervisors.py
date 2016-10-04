@@ -29,9 +29,9 @@ class V1(base.Fixture):
 
         self.headers = self.json_headers
 
-        self.requests.register_uri('GET', self.url(),
-                                   json=get_os_hypervisors,
-                                   headers=self.headers)
+        self.requests_mock.get(self.url(),
+                               json=get_os_hypervisors,
+                               headers=self.headers)
 
         get_os_hypervisors_detail = {
             'hypervisors': [
@@ -82,9 +82,9 @@ class V1(base.Fixture):
             ]
         }
 
-        self.requests.register_uri('GET', self.url('detail'),
-                                   json=get_os_hypervisors_detail,
-                                   headers=self.headers)
+        self.requests_mock.get(self.url('detail'),
+                               json=get_os_hypervisors_detail,
+                               headers=self.headers)
 
         get_os_hypervisors_stats = {
             'hypervisor_statistics': {
@@ -103,9 +103,9 @@ class V1(base.Fixture):
             }
         }
 
-        self.requests.register_uri('GET', self.url('statistics'),
-                                   json=get_os_hypervisors_stats,
-                                   headers=self.headers)
+        self.requests_mock.get(self.url('statistics'),
+                               json=get_os_hypervisors_stats,
+                               headers=self.headers)
 
         get_os_hypervisors_search = {
             'hypervisors': [
@@ -114,9 +114,9 @@ class V1(base.Fixture):
             ]
         }
 
-        self.requests.register_uri('GET', self.url('hyper', 'search'),
-                                   json=get_os_hypervisors_search,
-                                   headers=self.headers)
+        self.requests_mock.get(self.url('hyper', 'search'),
+                               json=get_os_hypervisors_search,
+                               headers=self.headers)
 
         get_hyper_server = {
             'hypervisors': [
@@ -139,9 +139,9 @@ class V1(base.Fixture):
             ]
         }
 
-        self.requests.register_uri('GET', self.url('hyper', 'servers'),
-                                   json=get_hyper_server,
-                                   headers=self.headers)
+        self.requests_mock.get(self.url('hyper', 'servers'),
+                               json=get_hyper_server,
+                               headers=self.headers)
 
         get_os_hypervisors_1234 = {
             'hypervisor': {
@@ -165,9 +165,9 @@ class V1(base.Fixture):
             }
         }
 
-        self.requests.register_uri('GET', self.url(1234),
-                                   json=get_os_hypervisors_1234,
-                                   headers=self.headers)
+        self.requests_mock.get(self.url(1234),
+                               json=get_os_hypervisors_1234,
+                               headers=self.headers)
 
         get_os_hypervisors_uptime = {
             'hypervisor': {
@@ -177,6 +177,6 @@ class V1(base.Fixture):
             }
         }
 
-        self.requests.register_uri('GET', self.url(1234, 'uptime'),
-                                   json=get_os_hypervisors_uptime,
-                                   headers=self.headers)
+        self.requests_mock.get(self.url(1234, 'uptime'),
+                               json=get_os_hypervisors_uptime,
+                               headers=self.headers)

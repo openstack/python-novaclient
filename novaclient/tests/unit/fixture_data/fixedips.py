@@ -29,11 +29,10 @@ class Fixture(base.Fixture):
             }
         }
 
-        self.requests.register_uri('GET', self.url('192.168.1.1'),
-                                   json=get_os_fixed_ips,
-                                   headers=self.json_headers)
+        self.requests_mock.get(self.url('192.168.1.1'),
+                               json=get_os_fixed_ips,
+                               headers=self.json_headers)
 
-        self.requests.register_uri('POST',
-                                   self.url('192.168.1.1', 'action'),
-                                   headers=self.json_headers,
-                                   status_code=202)
+        self.requests_mock.post(self.url('192.168.1.1', 'action'),
+                                headers=self.json_headers,
+                                status_code=202)

@@ -40,9 +40,9 @@ class Fixture(base.Fixture):
                 'data': 'foo'
             }
         }
-        self.requests.register_uri('GET', self.url('root'),
-                                   json=get_os_certificate,
-                                   headers=self.json_headers)
+        self.requests_mock.get(self.url('root'),
+                               json=get_os_certificate,
+                               headers=self.json_headers)
 
         post_os_certificates = {
             'certificate': {
@@ -50,6 +50,6 @@ class Fixture(base.Fixture):
                 'data': 'bar'
             }
         }
-        self.requests.register_uri('POST', self.url(),
-                                   json=post_os_certificates,
-                                   headers=self.json_headers)
+        self.requests_mock.post(self.url(),
+                                json=post_os_certificates,
+                                headers=self.json_headers)

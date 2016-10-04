@@ -10,8 +10,6 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-from oslo_serialization import jsonutils
-
 from novaclient.tests.unit import fakes
 from novaclient.tests.unit.fixture_data import base
 
@@ -32,9 +30,9 @@ class V1(base.Fixture):
 
         headers = self.json_headers
 
-        self.requests.register_uri('GET', self.url(),
-                                   json=get_images,
-                                   headers=headers)
+        self.requests_mock.get(self.url(),
+                               json=get_images,
+                               headers=headers)
 
         image_1 = {
             'id': 1,
@@ -59,27 +57,27 @@ class V1(base.Fixture):
             "links": {},
         }
 
-        self.requests.register_uri('GET', self.url('detail'),
-                                   json={'images': [image_1, image_2]},
-                                   headers=headers)
+        self.requests_mock.get(self.url('detail'),
+                               json={'images': [image_1, image_2]},
+                               headers=headers)
 
-        self.requests.register_uri('GET', self.url(1),
-                                   json={'image': image_1},
-                                   headers=headers)
+        self.requests_mock.get(self.url(1),
+                               json={'image': image_1},
+                               headers=headers)
 
         def post_images_1_metadata(request, context):
-            body = jsonutils.loads(request.body)
+            body = request.json()
             assert list(body) == ['metadata']
             fakes.assert_has_keys(body['metadata'], required=['test_key'])
             return {'metadata': image_1['metadata']}
 
-        self.requests.register_uri('POST', self.url(1, 'metadata'),
-                                   json=post_images_1_metadata,
-                                   headers=headers)
+        self.requests_mock.post(self.url(1, 'metadata'),
+                                json=post_images_1_metadata,
+                                headers=headers)
 
         for u in (1, '1/metadata/test_key'):
-            self.requests.register_uri('DELETE', self.url(u), status_code=204,
-                                       headers=headers)
+            self.requests_mock.delete(self.url(u), status_code=204,
+                                      headers=headers)
 
 
 class V3(V1):

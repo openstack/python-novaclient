@@ -10,8 +10,6 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-from oslo_serialization import jsonutils
-
 from novaclient.tests.unit.fixture_data import base
 
 
@@ -54,16 +52,17 @@ class Fixture(base.Fixture):
 
         headers = self.json_headers
 
-        self.requests.register_uri('GET', self.url(),
-                                   json={'server_groups': server_groups},
-                                   headers=headers)
+        self.requests_mock.get(self.url(),
+                               json={'server_groups': server_groups},
+                               headers=headers)
 
         server = server_groups[0]
-        server_j = jsonutils.dumps({'server_group': server})
 
         def _register(method, *args):
-            self.requests.register_uri(method, self.url(*args), text=server_j,
-                                       headers=headers)
+            self.requests_mock.register_uri(method,
+                                            self.url(*args),
+                                            json={'server_group': server},
+                                            headers=headers)
 
         _register('POST')
         _register('POST', server['id'])
@@ -71,5 +70,6 @@ class Fixture(base.Fixture):
         _register('PUT', server['id'])
         _register('POST', server['id'], '/action')
 
-        self.requests.register_uri('DELETE', self.url(server['id']),
-                                   status_code=202, headers=headers)
+        self.requests_mock.delete(self.url(server['id']),
+                                  status_code=202,
+                                  headers=headers)
