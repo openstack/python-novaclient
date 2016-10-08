@@ -51,8 +51,8 @@ class UsageManager(base.ManagerWithFind):
         """
         Get usage for all tenants
 
-        :param start: :class:`datetime.datetime` Start date
-        :param end: :class:`datetime.datetime` End date
+        :param start: :class:`datetime.datetime` Start date in UTC
+        :param end: :class:`datetime.datetime` End date in UTC
         :param detailed: Whether to include information about each
                          instance whose usage is part of the report
         :rtype: list of :class:`Usage`.
@@ -67,8 +67,8 @@ class UsageManager(base.ManagerWithFind):
         Get usage for a specific tenant.
 
         :param tenant_id: Tenant ID to fetch usage for
-        :param start: :class:`datetime.datetime` Start date
-        :param end: :class:`datetime.datetime` End date
+        :param start: :class:`datetime.datetime` Start date in UTC
+        :param end: :class:`datetime.datetime` End date in UTC
         :rtype: :class:`Usage`
         """
         return self._get("/os-simple-tenant-usage/%s?start=%s&end=%s" %
