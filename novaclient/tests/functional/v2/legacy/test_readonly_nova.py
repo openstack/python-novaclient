@@ -32,10 +32,6 @@ class SimpleReadOnlyNovaClientTest(base.ClientTestBase):
 
     # NOTE(jogo): Commands in order listed in 'nova help'
 
-    def test_admin_absolute_limites(self):
-        self.nova('absolute-limits')
-        self.nova('absolute-limits', params='--reserved')
-
     def test_admin_aggregate_list(self):
         self.nova('aggregate-list')
 
@@ -44,9 +40,6 @@ class SimpleReadOnlyNovaClientTest(base.ClientTestBase):
 
     def test_admin_cloudpipe_list(self):
         self.nova('cloudpipe-list')
-
-    def test_admin_credentials(self):
-        self.nova('credentials')
 
     # "Neutron does not provide this feature"
     def test_admin_dns_domains(self):
@@ -57,9 +50,6 @@ class SimpleReadOnlyNovaClientTest(base.ClientTestBase):
     def test_admin_dns_list(self):
         self.skip_if_neutron()
         self.nova('dns-list')
-
-    def test_admin_endpoints(self):
-        self.nova('endpoints')
 
     def test_admin_flavor_acces_list(self):
         self.assertRaises(exceptions.CommandFailed,
@@ -111,9 +101,6 @@ class SimpleReadOnlyNovaClientTest(base.ClientTestBase):
 
     def test_admin_network_list(self):
         self.nova('network-list')
-
-    def test_admin_rate_limits(self):
-        self.nova('rate-limits')
 
     def test_admin_secgroup_list(self):
         self.nova('secgroup-list')

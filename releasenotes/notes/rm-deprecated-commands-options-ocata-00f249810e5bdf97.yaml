@@ -1,0 +1,17 @@
+---
+prelude: >
+    Several deprecated commands have been removed. See the upgrade section for
+    details.
+upgrade:
+  - |
+    The following deprecated commands have been removed:
+
+    * absolute-limits
+    * add-floating-ip
+    * aggregate-details
+    * credentials
+    * endpoints
+    * rate-limits
+    * remove-floating-ip
+    * rename
+    * root-password

@@ -28,7 +28,6 @@ import logging
 import os
 import sys
 import time
-import warnings
 
 from oslo_utils import encodeutils
 from oslo_utils import netutils
@@ -1891,15 +1890,6 @@ def do_rebuild(cs, args):
 @utils.arg(
     'server', metavar='<server>',
     help=_('Name (old name) or ID of server.'))
-@utils.arg('name', metavar='<name>', help=_('New name for the server.'))
-def do_rename(cs, args):
-    """DEPRECATED, use update instead."""
-    do_update(cs, args)
-
-
-@utils.arg(
-    'server', metavar='<server>',
-    help=_('Name (old name) or ID of server.'))
 @utils.arg(
     '--name',
     metavar='<name>',
@@ -2121,12 +2111,6 @@ def do_refresh_network(cs, args):
     server = _find_server(cs, args.server)
     cs.server_external_events.create([{'server_uuid': server.id,
                                        'name': 'network-changed'}])
-
-
-@utils.arg('server', metavar='<server>', help=_('Name or ID of server.'))
-def do_root_password(cs, args):
-    """DEPRECATED, use set-password instead."""
-    do_set_password(cs, args)
 
 
 @utils.arg('server', metavar='<server>', help=_('Name or ID of server.'))
@@ -2686,18 +2670,6 @@ def do_console_log(cs, args):
     metavar='<fixed_address>',
     default=None,
     help=_('Fixed IP Address to associate with.'))
-def do_add_floating_ip(cs, args):
-    """DEPRECATED, use floating-ip-associate instead."""
-    _associate_floating_ip(cs, args)
-
-
-@utils.arg('server', metavar='<server>', help=_('Name or ID of server.'))
-@utils.arg('address', metavar='<address>', help=_('IP Address.'))
-@utils.arg(
-    '--fixed-address',
-    metavar='<fixed_address>',
-    default=None,
-    help=_('Fixed IP Address to associate with.'))
 def do_floating_ip_associate(cs, args):
     """Associate a floating IP address to a server."""
     _associate_floating_ip(cs, args)
@@ -2706,13 +2678,6 @@ def do_floating_ip_associate(cs, args):
 def _associate_floating_ip(cs, args):
     server = _find_server(cs, args.server)
     server.add_floating_ip(args.address, args.fixed_address)
-
-
-@utils.arg('server', metavar='<server>', help=_('Name or ID of server.'))
-@utils.arg('address', metavar='<address>', help=_('IP Address.'))
-def do_remove_floating_ip(cs, args):
-    """DEPRECATED, use floating-ip-disassociate instead."""
-    _disassociate_floating_ip(cs, args)
 
 
 @utils.arg('server', metavar='<server>', help=_('Name or ID of server.'))
@@ -3369,25 +3334,6 @@ def _find_keypair(cs, keypair):
     return utils.find_resource(cs.keypairs, keypair)
 
 
-@utils.arg(
-    '--tenant',
-    # nova db searches by project_id
-    dest='tenant',
-    metavar='<tenant>',
-    nargs='?',
-    help=_('Display information from single tenant (Admin only).'))
-@utils.arg(
-    '--reserved',
-    dest='reserved',
-    action='store_true',
-    default=False,
-    help=_('Include reservations count.'))
-def do_absolute_limits(cs, args):
-    """DEPRECATED, use limits instead."""
-    limits = cs.limits.get(args.reserved, args.tenant).absolute
-    _print_absolute_limits(limits)
-
-
 def _print_absolute_limits(limits):
     """Prints absolute limits."""
     class Limit(object):
@@ -3448,12 +3394,6 @@ def _print_absolute_limits(limits):
         limit_list.append(l)
 
     utils.print_list(limit_list, columns)
-
-
-def do_rate_limits(cs, args):
-    """DEPRECATED, use limits instead."""
-    limits = cs.limits.get().rate
-    _print_rate_limits(limits)
 
 
 def _print_rate_limits(limits):
@@ -3835,14 +3775,6 @@ def do_aggregate_remove_host(cs, args):
             "%(aggregate_id)s ") % {'host': args.host,
                                     'aggregate_id': aggregate.id})
     _print_aggregate_details(aggregate)
-
-
-@utils.arg(
-    'aggregate', metavar='<aggregate>',
-    help=_('Name or ID of aggregate.'))
-def do_aggregate_details(cs, args):
-    """DEPRECATED, use aggregate-show instead."""
-    do_aggregate_show(cs, args)
 
 
 @utils.arg(
@@ -4294,86 +4226,6 @@ def do_hypervisor_stats(cs, args):
     """Get hypervisor statistics over all compute nodes."""
     stats = cs.hypervisor_stats.statistics()
     utils.print_dict(stats._info.copy())
-
-
-def ensure_service_catalog_present(cs):
-    if not hasattr(cs.client, 'service_catalog'):
-        # Turn off token caching and re-auth
-        cs.client.unauthenticate()
-        cs.client.use_token_cache(False)
-        cs.client.authenticate()
-
-
-def do_endpoints(cs, _args):
-    """Discover endpoints that get returned from the authenticate services."""
-    warnings.warn(
-        "nova endpoints is deprecated, use openstack catalog list instead")
-    if isinstance(cs.client, client.SessionClient):
-        access = cs.client.auth.get_access(cs.client.session)
-        for service in access.service_catalog.catalog:
-            _print_endpoints(service, cs.client.region_name)
-    else:
-        ensure_service_catalog_present(cs)
-
-        catalog = cs.client.service_catalog.catalog
-        region = cs.client.region_name
-        for service in catalog['access']['serviceCatalog']:
-            _print_endpoints(service, region)
-
-
-def _print_endpoints(service, region):
-    name, endpoints = service["name"], service["endpoints"]
-
-    try:
-        endpoint = _get_first_endpoint(endpoints, region)
-        utils.print_dict(endpoint, name)
-    except LookupError:
-        print(_("WARNING: %(service)s has no endpoint in %(region)s! "
-                "Available endpoints for this service:") %
-              {'service': name, 'region': region})
-        for other_endpoint in endpoints:
-            utils.print_dict(other_endpoint, name)
-
-
-def _get_first_endpoint(endpoints, region):
-    """Find the first suitable endpoint in endpoints.
-
-    If there is only one endpoint, return it. If there is more than
-    one endpoint, return the first one with the given region. If there
-    are no endpoints, or there is more than one endpoint but none of
-    them match the given region, raise KeyError.
-
-    """
-    if len(endpoints) == 1:
-        return endpoints[0]
-    else:
-        for candidate_endpoint in endpoints:
-            if candidate_endpoint["region"] == region:
-                return candidate_endpoint
-
-    raise LookupError("No suitable endpoint found")
-
-
-@utils.arg(
-    '--wrap', dest='wrap', metavar='<integer>', default=64,
-    help=_('Wrap PKI tokens to a specified length, or 0 to disable.'))
-def do_credentials(cs, _args):
-    """Show user credentials returned from auth."""
-    warnings.warn(
-        "nova credentials is deprecated, use openstack client instead")
-    if isinstance(cs.client, client.SessionClient):
-        access = cs.client.auth.get_access(cs.client.session)
-        utils.print_dict(access._user, 'User Credentials',
-                         wrap=int(_args.wrap))
-        if hasattr(access, '_token'):
-            utils.print_dict(access._token, 'Token', wrap=int(_args.wrap))
-    else:
-        ensure_service_catalog_present(cs)
-        catalog = cs.client.service_catalog.catalog
-        utils.print_dict(catalog['access']['user'], "User Credentials",
-                         wrap=int(_args.wrap))
-        utils.print_dict(catalog['access']['token'], "Token",
-                         wrap=int(_args.wrap))
 
 
 @utils.arg('server', metavar='<server>', help=_('Name or ID of server.'))

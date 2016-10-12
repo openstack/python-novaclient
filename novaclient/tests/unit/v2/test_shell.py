@@ -1466,11 +1466,6 @@ class ShellTest(utils.TestCase):
         self.run_command('migrate sample-server')
         self.assert_called('POST', '/servers/1234/action', {'migrate': None})
 
-    def test_rename(self):
-        self.run_command('rename sample-server newname')
-        self.assert_called('PUT', '/servers/1234',
-                           {'server': {'name': 'newname'}})
-
     def test_resize(self):
         self.run_command('resize sample-server 1')
         self.assert_called('POST', '/servers/1234/action',
@@ -1489,14 +1484,6 @@ class ShellTest(utils.TestCase):
     @mock.patch('getpass.getpass', mock.Mock(return_value='p'))
     def test_set_password(self):
         self.run_command('set-password sample-server')
-        self.assert_called('POST', '/servers/1234/action',
-                           {'changePassword': {'adminPass': 'p'}})
-
-    # root-password is deprecated, keeping this arond until it's removed
-    # entirely - penick
-    @mock.patch('getpass.getpass', mock.Mock(return_value='p'))
-    def test_root_password(self):
-        self.run_command('root-password sample-server')
         self.assert_called('POST', '/servers/1234/action',
                            {'changePassword': {'adminPass': 'p'}})
 
@@ -1752,16 +1739,6 @@ class ShellTest(utils.TestCase):
         self.assert_called('PUT', '/os-floating-ips-bulk/delete',
                            {'ip_range': '10.0.0.1/24'})
 
-    def test_server_floating_ip_add(self):
-        self.run_command('add-floating-ip sample-server 11.0.0.1')
-        self.assert_called('POST', '/servers/1234/action',
-                           {'addFloatingIp': {'address': '11.0.0.1'}})
-
-    def test_server_floating_ip_remove(self):
-        self.run_command('remove-floating-ip sample-server 11.0.0.1')
-        self.assert_called('POST', '/servers/1234/action',
-                           {'removeFloatingIp': {'address': '11.0.0.1'}})
-
     def test_server_floating_ip_associate(self):
         self.run_command('floating-ip-associate sample-server 11.0.0.1')
         self.assert_called('POST', '/servers/1234/action',
@@ -1934,14 +1911,6 @@ class ShellTest(utils.TestCase):
         body = {"remove_host": {"host": "host1"}}
         self.assert_called('POST', '/os-aggregates/1/action', body, pos=-2)
         self.assert_called('GET', '/os-aggregates/1', pos=-1)
-
-    def test_aggregate_details_by_id(self):
-        self.run_command('aggregate-details 1')
-        self.assert_called('GET', '/os-aggregates/1')
-
-    def test_aggregate_details_by_name(self):
-        self.run_command('aggregate-details test')
-        self.assert_called('GET', '/os-aggregates')
 
     def test_aggregate_show_by_id(self):
         self.run_command('aggregate-show 1')
@@ -2662,16 +2631,6 @@ class ShellTest(utils.TestCase):
                                              'backup_type': 'daily',
                                              'rotation': '1'}})
 
-    def test_absolute_limits(self):
-        self.run_command('absolute-limits')
-        self.assert_called('GET', '/limits')
-
-        self.run_command('absolute-limits --reserved')
-        self.assert_called('GET', '/limits?reserved=1')
-
-        self.run_command('absolute-limits --tenant 1234')
-        self.assert_called('GET', '/limits?tenant_id=1234')
-
     def test_limits(self):
         self.run_command('limits')
         self.assert_called('GET', '/limits')
@@ -3237,44 +3196,6 @@ class GetSecgroupTest(utils.TestCase):
                           novaclient.v2.shell._get_secgroup,
                           cs,
                           'group_one')
-
-
-class GetFirstEndpointTest(utils.TestCase):
-    def test_only_one_endpoint(self):
-        # If there is only one endpoint, it is returned.
-        endpoint = {"url": "test"}
-        result = novaclient.v2.shell._get_first_endpoint([endpoint], "XYZ")
-        self.assertEqual(endpoint, result)
-
-    def test_multiple_endpoints(self):
-        # If there are multiple endpoints, the first one of the appropriate
-        # region is returned.
-        endpoints = [
-            {"region": "XYZ"},
-            {"region": "ORD", "number": 1},
-            {"region": "ORD", "number": 2}
-        ]
-        result = novaclient.v2.shell._get_first_endpoint(endpoints, "ORD")
-        self.assertEqual(endpoints[1], result)
-
-    def test_multiple_endpoints_but_none_suitable(self):
-        # If there are multiple endpoints but none of them are suitable, an
-        # exception is raised.
-
-        endpoints = [
-            {"region": "XYZ"},
-            {"region": "PQR"},
-            {"region": "STU"}
-        ]
-        self.assertRaises(LookupError,
-                          novaclient.v2.shell._get_first_endpoint,
-                          endpoints, "ORD")
-
-    def test_no_endpoints(self):
-        # If there are no endpoints available, an exception is raised.
-        self.assertRaises(LookupError,
-                          novaclient.v2.shell._get_first_endpoint,
-                          [], "ORD")
 
 
 class PollForStatusTestCase(utils.TestCase):
