@@ -59,8 +59,10 @@ The process for command deprecation is:
      deprecated command is used.
    - That warning message should include a rough timeline for when the command
      will be removed and what should be used instead, if anything.
-   - The commit message on the change should include a DocImpact tag so it
-     gets in the release notes.
+   - The description in the help text for the deprecated command should mark
+     that it is deprecated.
+   - The change should include a release note with the ``deprecations`` section
+     filled out.
    - The deprecation cycle is typically the first client release *after* the
      next *full* Nova server release so that there is at least six months of
      deprecation.
