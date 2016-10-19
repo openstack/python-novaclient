@@ -2416,34 +2416,8 @@ def do_remove_fixed_ip(cs, args):
     server.remove_fixed_ip(args.address)
 
 
-def _find_volume(cs, volume):
-    """Get a volume by name or ID."""
-    return utils.find_resource(cs.volumes, volume)
-
-
-def _find_volume_snapshot(cs, snapshot):
-    """Get a volume snapshot by name or ID."""
-    return utils.find_resource(cs.volume_snapshots, snapshot)
-
-
 def _print_volume(volume):
     utils.print_dict(volume._info)
-
-
-def _print_volume_snapshot(snapshot):
-    utils.print_dict(snapshot._info)
-
-
-def _translate_volume_keys(collection):
-    _translate_keys(collection,
-                    [('displayName', 'display_name'),
-                     ('volumeType', 'volume_type')])
-
-
-def _translate_volume_snapshot_keys(collection):
-    _translate_keys(collection,
-                    [('displayName', 'display_name'),
-                     ('volumeId', 'volume_id')])
 
 
 def _translate_availability_zone_keys(collection):
