@@ -5050,27 +5050,13 @@ def do_secgroup_delete_default_rule(cs, args):
 
 
 @utils.arg('name', metavar='<name>', help=_('Server group name.'))
-# NOTE(wingwj): The '--policy' way is still reserved here for preserving
-# the backwards compatibility of CLI, even if a user won't get this usage
-# in '--help' description. It will be deprecated after a suitable deprecation
-# period(probably 2 coordinated releases or so).
-#
-# Moreover, we imagine that a given user will use only positional parameters or
-# only the "--policy" option. So we don't need to properly handle
-# the possibility that they might mix them here. That usage is unsupported.
-# The related discussion can be found in
-# https://review.openstack.org/#/c/96382/2/.
 @utils.arg(
     'policy',
     metavar='<policy>',
-    default=argparse.SUPPRESS,
-    nargs='*',
+    nargs='+',
     help=_('Policies for the server groups.'))
 def do_server_group_create(cs, args):
     """Create a new server group with the specified details."""
-    if not args.policy:
-        raise exceptions.CommandError(_("at least one policy must be "
-                                        "specified"))
     kwargs = {'name': args.name,
               'policies': args.policy}
     server_group = cs.server_groups.create(**kwargs)
