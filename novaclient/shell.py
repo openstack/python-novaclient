@@ -23,7 +23,6 @@ import argparse
 import getpass
 import logging
 import sys
-import warnings
 
 from keystoneauth1 import loading
 from oslo_utils import encodeutils
@@ -41,7 +40,6 @@ except ImportError:
 
 import novaclient
 from novaclient import api_versions
-import novaclient.auth_plugin
 from novaclient import client
 from novaclient import exceptions as exc
 import novaclient.extension
@@ -456,12 +454,6 @@ class OpenStackComputeShell(object):
             help=_('Defaults to env[OS_REGION_NAME].'))
 
         parser.add_argument(
-            '--os-auth-system',
-            metavar='<auth-system>',
-            default=utils.env('OS_AUTH_SYSTEM'),
-            help=argparse.SUPPRESS)
-
-        parser.add_argument(
             '--service-type',
             metavar='<service-type>',
             help=_('Defaults to compute for most actions.'))
@@ -508,9 +500,6 @@ class OpenStackComputeShell(object):
             default=utils.env('NOVACLIENT_BYPASS_URL'),
             help=_("Use this API endpoint instead of the Service Catalog. "
                    "Defaults to env[NOVACLIENT_BYPASS_URL]."))
-
-        # The auth-system-plugins might require some extra options
-        novaclient.auth_plugin.load_auth_system_opts(parser)
 
         self._append_global_identity_args(parser, argv)
 
@@ -639,9 +628,6 @@ class OpenStackComputeShell(object):
         skip_auth = do_help or (
             'bash-completion' in argv)
 
-        # Discover available auth plugins
-        novaclient.auth_plugin.discover_auth_systems()
-
         if not args.os_compute_api_version:
             api_version = api_versions.get_api_version(
                 DEFAULT_MAJOR_OS_COMPUTE_API_VERSION)
@@ -658,7 +644,6 @@ class OpenStackComputeShell(object):
             args, 'os_project_id', getattr(args, 'os_tenant_id', None))
         os_auth_url = args.os_auth_url
         os_region_name = args.os_region_name
-        os_auth_system = args.os_auth_system
 
         if "v2.0" not in os_auth_url:
             # NOTE(andreykurilin): assume that keystone V3 is used and try to
@@ -691,15 +676,6 @@ class OpenStackComputeShell(object):
         auth_token = getattr(args, 'os_token', None)
         management_url = bypass_url if bypass_url else None
 
-        if os_auth_system and os_auth_system != "keystone":
-            warnings.warn(_(
-                'novaclient auth plugins that are not keystone are deprecated.'
-                ' Auth plugins should now be done as plugins to keystoneauth'
-                ' and selected with --os-auth-type or OS_AUTH_TYPE'))
-            auth_plugin = novaclient.auth_plugin.load_plugin(os_auth_system)
-        else:
-            auth_plugin = None
-
         if not endpoint_type:
             endpoint_type = DEFAULT_NOVA_ENDPOINT_TYPE
 
@@ -717,25 +693,20 @@ class OpenStackComputeShell(object):
         # Expired tokens are handled by client.py:_cs_request
         must_auth = not (auth_token and management_url)
 
-        # Do not use Keystone session for cases with no session support. The
-        # presence of auth_plugin means os_auth_system is present and is not
-        # keystone.
+        # Do not use Keystone session for cases with no session support.
         use_session = True
-        if auth_plugin or bypass_url or os_cache or volume_service_name:
+        if bypass_url or os_cache or volume_service_name:
             use_session = False
 
         # FIXME(usrleon): Here should be restrict for project id same as
         # for os_username or os_password but for compatibility it is not.
         if must_auth and not skip_auth:
-            if auth_plugin:
-                auth_plugin.parse_opts(args)
 
-            if not auth_plugin or not auth_plugin.opts:
-                if not os_username and not os_user_id:
-                    raise exc.CommandError(
-                        _("You must provide a username "
-                          "or user ID via --os-username, --os-user-id, "
-                          "env[OS_USERNAME] or env[OS_USER_ID]"))
+            if not os_username and not os_user_id:
+                raise exc.CommandError(
+                    _("You must provide a username "
+                      "or user ID via --os-username, --os-user-id, "
+                      "env[OS_USERNAME] or env[OS_USER_ID]"))
 
             if not any([os_project_name, os_project_id]):
                 raise exc.CommandError(_("You must provide a project name or"
@@ -746,16 +717,9 @@ class OpenStackComputeShell(object):
                                          " interchangeably."))
 
             if not os_auth_url:
-                if os_auth_system and os_auth_system != 'keystone':
-                    os_auth_url = auth_plugin.get_auth_url()
-
-            if not os_auth_url:
-                    raise exc.CommandError(
-                        _("You must provide an auth url "
-                          "via either --os-auth-url or env[OS_AUTH_URL] "
-                          "or specify an auth_system which defines a "
-                          "default url with --os-auth-system "
-                          "or env[OS_AUTH_SYSTEM]"))
+                raise exc.CommandError(
+                    _("You must provide an auth url "
+                      "via either --os-auth-url or env[OS_AUTH_URL]."))
 
             if use_session:
                 # Not using Nova auth plugin, so use keystone
@@ -792,8 +756,7 @@ class OpenStackComputeShell(object):
             auth_url=os_auth_url, insecure=insecure,
             region_name=os_region_name, endpoint_type=endpoint_type,
             extensions=self.extensions, service_type=service_type,
-            service_name=service_name, auth_system=os_auth_system,
-            auth_plugin=auth_plugin, auth_token=auth_token,
+            service_name=service_name, auth_token=auth_token,
             volume_service_name=volume_service_name,
             timings=args.timings, bypass_url=bypass_url,
             os_cache=os_cache, http_log_debug=args.debug,
@@ -857,8 +820,7 @@ class OpenStackComputeShell(object):
             auth_url=os_auth_url, insecure=insecure,
             region_name=os_region_name, endpoint_type=endpoint_type,
             extensions=self.extensions, service_type=service_type,
-            service_name=service_name, auth_system=os_auth_system,
-            auth_plugin=auth_plugin, auth_token=auth_token,
+            service_name=service_name, auth_token=auth_token,
             volume_service_name=volume_service_name,
             timings=args.timings, bypass_url=bypass_url,
             os_cache=os_cache, http_log_debug=args.debug,
@@ -870,11 +832,6 @@ class OpenStackComputeShell(object):
         if must_auth:
             helper = SecretsHelper(args, self.cs.client)
             self.cs.client.keyring_saver = helper
-            if (auth_plugin and auth_plugin.opts and
-                    "os_password" not in auth_plugin.opts):
-                use_pw = False
-            else:
-                use_pw = True
 
             tenant_id = helper.tenant_id
             # Allow commandline to override cache
@@ -887,7 +844,7 @@ class OpenStackComputeShell(object):
                 self.cs.client.auth_token = auth_token
                 self.cs.client.management_url = management_url
                 self.cs.client.password_func = lambda: helper.password
-            elif use_pw:
+            else:
                 # We're missing something, so auth with user/pass and save
                 # the result in our helper.
                 self.cs.client.password = helper.password
