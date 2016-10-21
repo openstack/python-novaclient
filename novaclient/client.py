@@ -156,8 +156,7 @@ class HTTPClient(object):
                  service_name=None, volume_service_name=None,
                  timings=False, bypass_url=None,
                  os_cache=False, no_cache=True,
-                 http_log_debug=False, auth_system='keystone',
-                 auth_plugin=None, auth_token=None,
+                 http_log_debug=False, auth_token=None,
                  cacert=None, tenant_id=None, user_id=None,
                  connection_pool=False, api_version=None,
                  logger=None):
@@ -177,13 +176,6 @@ class HTTPClient(object):
         # been proven invalid
         self.password_func = None
 
-        if auth_system and auth_system != 'keystone' and not auth_plugin:
-            raise exceptions.AuthSystemNotFound(auth_system)
-
-        if not auth_url and auth_system and auth_system != 'keystone':
-            auth_url = auth_plugin.get_auth_url()
-            if not auth_url:
-                raise exceptions.EndpointNotFound()
         self.auth_url = auth_url.rstrip('/') if auth_url else auth_url
         self.version = 'v1.1'
         self.region_name = region_name
@@ -217,8 +209,6 @@ class HTTPClient(object):
             else:
                 self.verify_cert = True
 
-        self.auth_system = auth_system
-        self.auth_plugin = auth_plugin
         self._session = None
         self._current_url = None
         self._logger = logger or logging.getLogger(__name__)
@@ -589,10 +579,7 @@ class HTTPClient(object):
         auth_url = self.auth_url
         if self.version == "v2.0":  # FIXME(chris): This should be better.
             while auth_url:
-                if not self.auth_system or self.auth_system == 'keystone':
-                    auth_url = self._v2_auth(auth_url)
-                else:
-                    auth_url = self._plugin_auth(auth_url)
+                auth_url = self._v2_auth(auth_url)
 
             # Are we acting on behalf of another user via an
             # existing token? If so, our actual endpoints may
@@ -659,9 +646,6 @@ class HTTPClient(object):
         else:
             raise exceptions.from_response(resp, body, url)
 
-    def _plugin_auth(self, auth_url):
-        return self.auth_plugin.authenticate(self, auth_url)
-
     def _v2_auth(self, url):
         """Authenticate against a v2.0 auth service."""
         if self.auth_token:
@@ -707,7 +691,6 @@ def _construct_http_client(username=None, password=None, project_id=None,
                            service_name=None, volume_service_name=None,
                            timings=False, bypass_url=None, os_cache=False,
                            no_cache=True, http_log_debug=False,
-                           auth_system='keystone', auth_plugin=None,
                            auth_token=None, cacert=None, tenant_id=None,
                            user_id=None, connection_pool=False, session=None,
                            auth=None, user_agent='python-novaclient',
@@ -738,8 +721,6 @@ def _construct_http_client(username=None, password=None, project_id=None,
                           auth_token=auth_token,
                           insecure=insecure,
                           timeout=timeout,
-                          auth_system=auth_system,
-                          auth_plugin=auth_plugin,
                           proxy_token=proxy_token,
                           proxy_tenant_id=proxy_tenant_id,
                           region_name=region_name,

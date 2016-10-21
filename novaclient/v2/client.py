@@ -68,7 +68,7 @@ class Client(object):
                  service_type='compute', service_name=None,
                  volume_service_name=None, timings=False, bypass_url=None,
                  os_cache=False, no_cache=True, http_log_debug=False,
-                 auth_system='keystone', auth_plugin=None, auth_token=None,
+                 auth_token=None,
                  cacert=None, tenant_id=None, user_id=None,
                  connection_pool=False, session=None, auth=None,
                  api_version=None, direct_use=True, logger=None, **kwargs):
@@ -93,8 +93,6 @@ class Client(object):
         :param bool os_cache: OS cache
         :param bool no_cache: No cache
         :param bool http_log_debug: Enable debugging for HTTP connections
-        :param str auth_system: Auth system
-        :param str auth_plugin: Auth plugin
         :param str auth_token: Auth token
         :param str cacert: cacert
         :param str tenant_id: Tenant ID
@@ -194,8 +192,6 @@ class Client(object):
             auth_token=auth_token,
             insecure=insecure,
             timeout=timeout,
-            auth_system=auth_system,
-            auth_plugin=auth_plugin,
             proxy_token=proxy_token,
             proxy_tenant_id=proxy_tenant_id,
             region_name=region_name,

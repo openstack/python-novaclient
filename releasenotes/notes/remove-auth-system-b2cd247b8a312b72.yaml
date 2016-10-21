@@ -1,0 +1,9 @@
+---
+prelude: >
+    The ability to use non-Keystone authentication systems has been removed.
+upgrade:
+  - The ``--os-auth-system`` CLI option and ``OS_AUTH_SYSTEM`` environment
+    variable usage was deprecated in the 3.1.0 release during the Mitaka
+    development series. This release drops the support for using those options
+    to load non-Keystone authentication systems via the
+    ``openstack.client.auth_plugin`` extension point.

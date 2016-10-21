@@ -62,15 +62,7 @@ FAKE_ENV4 = {'OS_USER_ID': 'user_id',
 FAKE_ENV5 = {'OS_USERNAME': 'username',
              'OS_PASSWORD': 'password',
              'OS_TENANT_NAME': 'tenant_name',
-             'OS_AUTH_URL': 'http://no.where/v2.0',
-             'OS_COMPUTE_API_VERSION': '2',
-             'OS_AUTH_SYSTEM': 'rackspace'}
-
-FAKE_ENV6 = {'OS_USERNAME': 'username',
-             'OS_PASSWORD': 'password',
-             'OS_TENANT_NAME': 'tenant_name',
-             'OS_AUTH_URL': 'http://no.where/v2.0',
-             'OS_AUTH_SYSTEM': 'rackspace'}
+             'OS_AUTH_URL': 'http://no.where/v2.0'}
 
 
 def _create_ver_list(versions):
@@ -519,9 +511,7 @@ class ShellTest(utils.TestCase):
 
     def test_no_auth_url(self):
         required = ('You must provide an auth url'
-                    ' via either --os-auth-url or env[OS_AUTH_URL] or'
-                    ' specify an auth_system which defines a default url'
-                    ' with --os-auth-system or env[OS_AUTH_SYSTEM]',)
+                    ' via either --os-auth-url or env[OS_AUTH_URL].',)
         self.make_env(exclude='OS_AUTH_URL')
         try:
             self.shell('list')
@@ -687,7 +677,7 @@ class ShellTest(utils.TestCase):
 
     @mock.patch('novaclient.client.Client')
     def test_microversion_with_default_behaviour(self, mock_client):
-        self.make_env(fake_env=FAKE_ENV6)
+        self.make_env(fake_env=FAKE_ENV5)
         self.mock_server_version_range.return_value = (
             api_versions.APIVersion("2.1"), api_versions.APIVersion("2.3"))
         self.shell('list')
@@ -697,7 +687,7 @@ class ShellTest(utils.TestCase):
     @mock.patch('novaclient.client.Client')
     def test_microversion_with_default_behaviour_with_legacy_server(
             self, mock_client):
-        self.make_env(fake_env=FAKE_ENV6)
+        self.make_env(fake_env=FAKE_ENV5)
         self.mock_server_version_range.return_value = (
             api_versions.APIVersion(), api_versions.APIVersion())
         self.shell('list')
@@ -776,15 +766,6 @@ class ShellTest(utils.TestCase):
             exceptions.UnsupportedVersion,
             self.shell,
             '--os-compute-api-version 2.3 list')
-
-    @mock.patch('novaclient.client.Client')
-    def test_custom_auth_plugin(self, mock_client):
-        self.make_env(fake_env=FAKE_ENV5)
-        self.shell('list')
-        password = mock_client.call_args_list[0][0][2]
-        client_kwargs = mock_client.call_args_list[0][1]
-        self.assertEqual(password, 'password')
-        self.assertIs(client_kwargs['session'], None)
 
     @mock.patch.object(novaclient.shell.OpenStackComputeShell, 'main')
     def test_main_error_handling(self, mock_compute_shell):
