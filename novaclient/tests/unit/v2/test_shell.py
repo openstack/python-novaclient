@@ -3285,7 +3285,7 @@ class PollForStatusTestCase(utils.TestCase):
                           silent=False)
 
 
-class ShellUtilTest(utils.TestCase):
+class ShellNetworkUtilTest(utils.TestCase):
     def test_deprecated_network_newer(self):
         @novaclient.v2.shell.deprecated_network
         def tester(cs):
@@ -3300,6 +3300,42 @@ class ShellUtilTest(utils.TestCase):
 
     def test_deprecated_network_older(self):
         @novaclient.v2.shell.deprecated_network
+        def tester(cs):
+            'foo'
+            # since we didn't need to adjust the api_version the mock won't
+            # have cs.client.api_version set on it
+            self.assertFalse(hasattr(cs, 'client'))
+            # we have to set the attribute back on cs so the decorator can
+            # set the value on it when we return from this wrapped function
+            setattr(cs, 'client', mock.MagicMock())
+
+        cs = mock.MagicMock()
+        cs.api_version = api_versions.APIVersion('2.1')
+        # we have to delete the cs.client attribute so hasattr won't return a
+        # false positive in the wrapped function
+        del cs.client
+        tester(cs)
+        self.assertEqual('DEPRECATED: foo', tester.__doc__)
+        # the deprecated_network decorator will set cs.client.api_version
+        # after calling the wrapped function
+        self.assertEqual(cs.api_version, cs.api_version)
+
+
+class ShellImageUtilTest(utils.TestCase):
+    def test_deprecated_image_newer(self):
+        @novaclient.v2.shell.deprecated_image
+        def tester(cs):
+            'foo'
+            self.assertEqual(api_versions.APIVersion('2.35'),
+                             cs.api_version)
+
+        cs = mock.MagicMock()
+        cs.api_version = api_versions.APIVersion('2.9999')
+        tester(cs)
+        self.assertEqual('DEPRECATED: foo', tester.__doc__)
+
+    def test_deprecated_image_older(self):
+        @novaclient.v2.shell.deprecated_image
         def tester(cs):
             'foo'
             # since we didn't need to adjust the api_version the mock won't

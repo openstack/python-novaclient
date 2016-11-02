@@ -67,25 +67,29 @@ CLIENT_BDM2_KEYS = {
     'tag': 'tag',
 }
 
+msg_deprecate_net = ('WARNING: Command %s is deprecated and will be removed '
+                     'after Nova 15.0.0 is released. Use python-neutronclient '
+                     'or openstackclient instead.')
+
+msg_deprecate_img = ('WARNING: Command %s is deprecated and will be removed '
+                     'after Nova 15.0.0 is released. Use python-glanceclient '
+                     'or openstackclient instead')
+
 
 # NOTE(mriedem): Remove this along with the deprecated commands in the first
 # python-novaclient release AFTER the nova server 15.0.0 'O' release.
 def emit_image_deprecation_warning(command_name):
-    print('WARNING: Command %s is deprecated and will be removed after Nova '
-          '15.0.0 is released. Use python-glanceclient or openstackclient '
-          'instead.' % command_name, file=sys.stderr)
+    print(msg_deprecate_img % command_name, file=sys.stderr)
 
 
-def deprecated_network(fn):
+def deprecated_proxy(fn, msg_format):
     @functools.wraps(fn)
     def wrapped(cs, *args, **kwargs):
         command_name = '-'.join(fn.__name__.split('_')[1:])
-        print('WARNING: Command %s is deprecated and will be removed '
-              'after Nova 15.0.0 is released. Use python-neutronclient '
-              'or python-openstackclient instead.' % command_name,
-              file=sys.stderr)
-        # The network proxy API methods were deprecated in 2.36 and will return
-        # a 404 so we fallback to 2.35 to maintain a transition for CLI users.
+        print(msg_format % command_name, file=sys.stderr)
+        # The network or image proxy API methods were deprecated in 2.36 and
+        # will return a 404 so we fallback to 2.35 to maintain a transition
+        # for CLI users.
         want_version = api_versions.APIVersion('2.35')
         cur_version = cs.api_version
         if cs.api_version > want_version:
@@ -96,6 +100,13 @@ def deprecated_network(fn):
             cs.api_version = cur_version
     wrapped.__doc__ = 'DEPRECATED: ' + fn.__doc__
     return wrapped
+
+
+deprecated_network = functools.partial(deprecated_proxy,
+                                       msg_format=msg_deprecate_net)
+
+deprecated_image = functools.partial(deprecated_proxy,
+                                     msg_format=msg_deprecate_img)
 
 
 def _key_value_pairing(text):
@@ -1330,9 +1341,9 @@ def do_image_list(cs, _args):
     default=[],
     help=_('Metadata to add/update or delete (only key is necessary on '
            'delete).'))
+@deprecated_image
 def do_image_meta(cs, args):
-    """DEPRECATED: Set or delete metadata on an image."""
-    emit_image_deprecation_warning('image-meta')
+    """Set or delete metadata on an image."""
     image = _find_image(cs, args.image)
     metadata = _extract_metadata(args)
 
@@ -1394,9 +1405,9 @@ def _print_flavor(flavor):
     'image',
     metavar='<image>',
     help=_("Name or ID of image."))
+@deprecated_image
 def do_image_show(cs, args):
-    """DEPRECATED: Show details about the given image."""
-    emit_image_deprecation_warning('image-show')
+    """Show details about the given image."""
     image = _find_image(cs, args.image)
     _print_image(image)
 
@@ -1404,9 +1415,9 @@ def do_image_show(cs, args):
 @utils.arg(
     'image', metavar='<image>', nargs='+',
     help=_('Name or ID of image(s).'))
+@deprecated_image
 def do_image_delete(cs, args):
-    """DEPRECATED: Delete specified image(s)."""
-    emit_image_deprecation_warning('image-delete')
+    """Delete specified image(s)."""
     for image in args.image:
         try:
             # _find_image is using the GlanceManager which doesn't implement
