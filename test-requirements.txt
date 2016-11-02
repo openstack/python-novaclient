@@ -21,4 +21,4 @@ testtools>=1.4.0 # MIT
 tempest>=12.1.0 # Apache-2.0
 
 # releasenotes
-reno>=1.8.0 # Apache2
+reno>=1.8.0 # Apache-2.0
