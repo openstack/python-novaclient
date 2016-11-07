@@ -1,0 +1,4 @@
+---
+features:
+  - Added microversion v2.39 which introduces pagination support for usage
+    with the help of new optional parameters 'limit' and 'marker'.
