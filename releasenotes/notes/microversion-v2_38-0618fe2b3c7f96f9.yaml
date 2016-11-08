@@ -1,0 +1,5 @@
+---
+upgrade:
+  - Support for microversion 2.38 added. As of microversion 2.38, invalid
+    statuses passed to 'nova list --status invalid_status' will result in a
+    HTTP 400 Bad Request error response.
