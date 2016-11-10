@@ -1347,9 +1347,12 @@ def do_list(cs, args):
     _translate_extended_states(servers)
 
     formatters = {}
+    cols = []
+    fmts = {}
 
-    cols, fmts = _get_list_table_columns_and_formatters(
-        args.fields, servers, exclude_fields=('id',), filters=filters)
+    if servers:
+        cols, fmts = _get_list_table_columns_and_formatters(
+            args.fields, servers, exclude_fields=('id',), filters=filters)
 
     if args.minimal:
         columns = [

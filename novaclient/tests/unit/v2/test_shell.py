@@ -1355,6 +1355,16 @@ class ShellTest(utils.TestCase):
         self.assertIn('OS-EXT-MOD: Some Thing', output)
         self.assertIn('mod_some_thing_value', output)
 
+    @mock.patch(
+        'novaclient.tests.unit.v2.fakes.FakeSessionClient.get_servers_detail')
+    def test_list_fields_no_instances(self, mock_get_servers_detail):
+        mock_get_servers_detail.return_value = (200, {}, {"servers": []})
+        stdout, _stderr = self.run_command('list --fields metadata,networks')
+        # Because there are no instances, you just get the default columns
+        # rather than the ones you actually asked for (Metadata, Networks).
+        defaults = 'ID | Name | Status | Task State | Power State | Networks'
+        self.assertIn(defaults, stdout)
+
     def test_list_invalid_fields(self):
         self.assertRaises(exceptions.CommandError,
                           self.run_command,
