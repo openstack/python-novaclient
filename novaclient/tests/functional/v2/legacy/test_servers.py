@@ -10,6 +10,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import datetime
 import uuid
 
 from novaclient.tests.functional import base
@@ -85,12 +86,12 @@ class TestServersListNovaClient(base.ClientTestBase):
         self.assertEqual(1, len(servers), output)
 
     def test_list_with_changes_since(self):
-        now = timeutils.isotime()
+        now = datetime.datetime.isoformat(timeutils.utcnow())
         name = str(uuid.uuid4())
         self._create_servers(name, 1)
         output = self.nova("list", params="--changes-since %s" % now)
         self.assertIn(name, output, output)
-        now = timeutils.isotime()
+        now = datetime.datetime.isoformat(timeutils.utcnow())
         output = self.nova("list", params="--changes-since %s" % now)
         self.assertNotIn(name, output, output)
 
