@@ -37,7 +37,7 @@ class ServiceManager(base.ManagerWithFind):
 
     def list(self, host=None, binary=None):
         """
-        Describes cpu/memory/hdd info for host.
+        Get a list of services.
 
         :param host: destination host name.
         """
