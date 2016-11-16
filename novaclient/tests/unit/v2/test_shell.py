@@ -984,7 +984,7 @@ class ShellTest(utils.TestCase):
         )
         self.assertEqual(1, poll_method.call_count)
         poll_method.assert_has_calls(
-            [mock.call(self.shell.cs.servers.get, 1234, 'building',
+            [mock.call(self.shell.cs.servers.get, '1234', 'building',
                        ['active'])])
 
     def test_boot_with_poll_to_check_VM_state_error(self):
@@ -1618,7 +1618,7 @@ class ShellTest(utils.TestCase):
         self.run_command('refresh-network 1234')
         self.assert_called('POST', '/os-server-external-events',
                            {'events': [{'name': 'network-changed',
-                                        'server_uuid': 1234}]})
+                                        'server_uuid': '1234'}]})
 
     def test_set_meta_set(self):
         self.run_command('meta 1234 set key1=val1 key2=val2')

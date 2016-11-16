@@ -379,14 +379,14 @@ class FakeHTTPClient(base_client.HTTPClient):
 
     def get_servers(self, **kw):
         return (200, {}, {"servers": [
-            {'id': 1234, 'name': 'sample-server'},
-            {'id': 5678, 'name': 'sample-server2'}
+            {'id': '1234', 'name': 'sample-server'},
+            {'id': '5678', 'name': 'sample-server2'}
         ]})
 
     def get_servers_detail(self, **kw):
         return (200, {}, {"servers": [
             {
-                "id": 1234,
+                "id": '1234',
                 "name": "sample-server",
                 "image": {
                     "id": FAKE_IMAGE_UUID_2,
@@ -427,7 +427,7 @@ class FakeHTTPClient(base_client.HTTPClient):
                 "OS-EXT-MOD:some_thing": "mod_some_thing_value",
             },
             {
-                "id": 5678,
+                "id": '5678',
                 "name": "sample-server2",
                 "image": {
                     "id": FAKE_IMAGE_UUID_1,
@@ -471,7 +471,7 @@ class FakeHTTPClient(base_client.HTTPClient):
                     }],
             },
             {
-                "id": 9012,
+                "id": '9012',
                 "name": "sample-server3",
                 "image": "",
                 "flavor": {
@@ -500,7 +500,7 @@ class FakeHTTPClient(base_client.HTTPClient):
                 }
             },
             {
-                "id": 9013,
+                "id": '9013',
                 "name": "sample-server4",
                 "flavor": {
                     "id": '80645cf4-6ad3-410a-bbc8-6f3e1e291f51',
@@ -551,7 +551,7 @@ class FakeHTTPClient(base_client.HTTPClient):
 
     def get_servers_1235(self, **kw):
         r = {'server': self.get_servers_detail()[2]['servers'][0]}
-        r['server']['id'] = 1235
+        r['server']['id'] = '1235'
         r['server']['status'] = 'error'
         r['server']['fault'] = {'message': 'something went wrong!'}
         return (200, {}, r)
@@ -1103,7 +1103,7 @@ class FakeHTTPClient(base_client.HTTPClient):
             {
                 "id": FAKE_IMAGE_UUID_SNAPSHOT,
                 "name": "My Server Backup",
-                "serverId": 1234,
+                "serverId": '1234',
                 "updated": "2010-10-10T12:00:00Z",
                 "created": "2010-08-10T12:00:00Z",
                 "status": "SAVING",
@@ -1113,7 +1113,7 @@ class FakeHTTPClient(base_client.HTTPClient):
             {
                 "id": FAKE_IMAGE_UUID_SNAP_DEL,
                 "name": "My Server Backup Deleted",
-                "serverId": 1234,
+                "serverId": '1234',
                 "updated": "2010-10-10T12:00:00Z",
                 "created": "2010-08-10T12:00:00Z",
                 "status": "DELETED",
@@ -1134,7 +1134,7 @@ class FakeHTTPClient(base_client.HTTPClient):
             {
                 "id": FAKE_IMAGE_UUID_2,
                 "name": "My Server Backup",
-                "serverId": 1234,
+                "serverId": '1234',
                 "updated": "2010-10-10T12:00:00Z",
                 "created": "2010-08-10T12:00:00Z",
                 "status": "SAVING",
@@ -2240,7 +2240,7 @@ class FakeHTTPClient(base_client.HTTPClient):
             "dest_compute": "compute2",
             "dest_host": "1.2.3.4",
             "dest_node": "node2",
-            "id": 1234,
+            "id": '1234',
             "instance_uuid": "instance_id_123",
             "new_instance_type_id": 2,
             "old_instance_type_id": 1,
