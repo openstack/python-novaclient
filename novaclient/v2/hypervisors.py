@@ -58,6 +58,7 @@ class HypervisorManager(base.ManagerWithFind):
     def list(self, detailed=True, marker=None, limit=None):
         """
         Get a list of hypervisors.
+
         :param marker: Begin returning hypervisor that appear later in the
                        keypair list than that represented by this keypair name
                        (optional).
