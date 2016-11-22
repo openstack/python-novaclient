@@ -21,7 +21,6 @@ import uuid
 
 from oslo_serialization import jsonutils
 from oslo_utils import encodeutils
-import pkg_resources
 import prettytable
 import six
 from six.moves.urllib import parse
@@ -411,22 +410,6 @@ def do_action_on_many(action, resources, success_msg, error_msg):
 
     if failure_flag:
         raise exceptions.CommandError(error_msg)
-
-
-def load_entry_point(ep_name, name=None):
-    """Try to load the entry point ep_name that matches name."""
-    for ep in pkg_resources.iter_entry_points(ep_name, name=name):
-        try:
-            # FIXME(dhellmann): It would be better to use stevedore
-            # here, since it abstracts this difference in behavior
-            # between versions of setuptools, but this seemed like a
-            # more expedient fix.
-            if hasattr(ep, 'resolve') and hasattr(ep, 'require'):
-                return ep.resolve()
-            else:
-                return ep.load(require=False)
-        except (ImportError, pkg_resources.UnknownExtra, AttributeError):
-            continue
 
 
 def is_integer_like(val):
