@@ -94,48 +94,6 @@ class FakeHTTPClient(fakes.FakeHTTPClient):
             }
         )
 
-    def post_os_baremetal_nodes(self, **kw):
-        return (
-            200, FAKE_RESPONSE_HEADERS, {
-                'node': {
-                    "id": 1,
-                    "instance_uuid": None,
-                    "cpus": 2,
-                    "local_gb": 10,
-                    "memory_mb": 5,
-                    "pm_address": "2.3.4.5",
-                    "pm_user": "pmuser",
-                    "pm_password": "pmpass",
-                    "prov_mac_address": "aa:bb:cc:dd:ee:ff",
-                    "prov_vlan_id": 1,
-                    "service_host": "somehost",
-                    "terminal_port": 8080,
-                }
-            }
-        )
-
-    def delete_os_baremetal_nodes_1(self, **kw):
-        return (202, FAKE_RESPONSE_HEADERS, {})
-
-    def post_os_baremetal_nodes_1_action(self, **kw):
-        body = kw['body']
-        action = list(body)[0]
-        if action == "add_interface":
-            return (
-                200, FAKE_RESPONSE_HEADERS, {
-                    'interface': {
-                        "id": 2,
-                        "address": "bb:cc:dd:ee:ff:aa",
-                        "datapath_id": 1,
-                        "port_no": 2,
-                    }
-                }
-            )
-        elif action == "remove_interface":
-            return (202, FAKE_RESPONSE_HEADERS, {})
-        else:
-            return (500, {}, {})
-
     def post_os_assisted_volume_snapshots(self, **kw):
         return (202, FAKE_RESPONSE_HEADERS,
                 {'snapshot': {'id': 'blah', 'volumeId': '1'}})

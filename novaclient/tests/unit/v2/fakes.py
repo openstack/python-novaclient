@@ -568,11 +568,6 @@ class FakeHTTPClient(base_client.HTTPClient):
         r = {'server': self.get_servers_detail()[2]['servers'][3]}
         return (200, {}, r)
 
-    def put_servers_1234(self, body, **kw):
-        assert list(body) == ['server']
-        fakes.assert_has_keys(body['server'], optional=['name', 'adminPass'])
-        return (204, {}, body)
-
     def delete_os_server_groups_12345(self, **kw):
         return (202, {}, None)
 
@@ -585,9 +580,6 @@ class FakeHTTPClient(base_client.HTTPClient):
     def delete_servers_5678(self, **kw):
         return (202, {}, None)
 
-    def delete_servers_1234_metadata_test_key(self, **kw):
-        return (204, {}, None)
-
     def delete_servers_1234_metadata_key1(self, **kw):
         return (204, {}, None)
 
@@ -596,9 +588,6 @@ class FakeHTTPClient(base_client.HTTPClient):
 
     def post_servers_1234_metadata(self, **kw):
         return (204, {}, {'metadata': {'test_key': 'test_value'}})
-
-    def put_servers_1234_metadata_test_key(self, **kw):
-        return (200, {}, {'meta': {'test_key': 'test_value'}})
 
     def get_servers_1234_diagnostics(self, **kw):
         return (200, {}, {'data': 'Fake diagnostics'})
@@ -1092,12 +1081,6 @@ class FakeHTTPClient(base_client.HTTPClient):
     #
     # Images
     #
-    def get_images(self, **kw):
-        return (200, {}, {'images': [
-            {'id': FAKE_IMAGE_UUID_1, 'name': 'CentOS 5.2'},
-            {'id': FAKE_IMAGE_UUID_2, 'name': 'My Server Backup'}
-        ]})
-
     def get_images_detail(self, **kw):
         return (200, {}, {'images': [
             {
@@ -1535,15 +1518,6 @@ class FakeHTTPClient(base_client.HTTPClient):
         r = {'security_group_rule':
              self.get_os_security_group_rules()[2]['security_group_rules'][0]}
         return (202, {}, r)
-
-    #
-    # Security Group Default Rules
-    #
-    def get_os_security_group_default_rules(self, **kw):
-        return (200, {}, {"security_group_default_rules": [
-            {'id': 1, 'ip_protocol': 'TCP', 'from_port': 22,
-             'to_port': 22, 'cidr': '10.0.0.0/8'}
-        ]})
 
     #
     # Tenant Usage
@@ -2044,95 +2018,6 @@ class FakeHTTPClient(base_client.HTTPClient):
     def delete_servers_1234_os_interface_port_id(self, **kw):
         return (200, {}, None)
 
-    # NOTE (vkhomenko):
-    # Volume responses was taken from:
-    # https://wiki.openstack.org/wiki/CreateVolumeFromImage
-    # http://jorgew.github.com/block-storage-api/content/
-    # GET_listDetailVolumes_v1__tenantId__volumes_detail_.html
-    # I suppose they are outdated and should be updated after Cinder released
-
-    def get_volumes_detail(self, **kw):
-        return (200, FAKE_RESPONSE_HEADERS, {"volumes": [
-            {
-                "display_name": "Work",
-                "display_description": "volume for work",
-                "status": "ATTACHED",
-                "id": "15e59938-07d5-11e1-90e3-e3dffe0c5983",
-                "created_at": "2011-09-09T00:00:00Z",
-                "attached": "2011-11-11T00:00:00Z",
-                "size": 1024,
-                "attachments": [
-                    {"id": "3333",
-                     "links": ''}],
-                "metadata": {}},
-            {
-                "display_name": "Work2",
-                "display_description": "volume for work2",
-                "status": "ATTACHED",
-                "id": "15e59938-07d5-11e1-90e3-ee32ba30feaa",
-                "created_at": "2011-09-09T00:00:00Z",
-                "attached": "2011-11-11T00:00:00Z",
-                "size": 1024,
-                "attachments": [
-                    {"id": "2222",
-                     "links": ''}],
-                "metadata": {}}]})
-
-    def get_volumes(self, **kw):
-        return (200, FAKE_RESPONSE_HEADERS, {"volumes": [
-            {
-                "display_name": "Work",
-                "display_description": "volume for work",
-                "status": "ATTACHED",
-                "id": "15e59938-07d5-11e1-90e3-e3dffe0c5983",
-                "created_at": "2011-09-09T00:00:00Z",
-                "attached": "2011-11-11T00:00:00Z",
-                "size": 1024,
-                "attachments": [
-                    {"id": "3333",
-                     "links": ''}],
-                "metadata": {}},
-            {
-                "display_name": "Work2",
-                "display_description": "volume for work2",
-                "status": "ATTACHED",
-                "id": "15e59938-07d5-11e1-90e3-ee32ba30feaa",
-                "created_at": "2011-09-09T00:00:00Z",
-                "attached": "2011-11-11T00:00:00Z",
-                "size": 1024,
-                "attachments": [
-                    {"id": "2222",
-                     "links": ''}],
-                "metadata": {}}]})
-
-    def get_volumes_15e59938_07d5_11e1_90e3_e3dffe0c5983(self, **kw):
-        return (200, FAKE_RESPONSE_HEADERS, {
-                "volume": self.get_volumes_detail()[2]['volumes'][0]})
-
-    def get_volumes_15e59938_07d5_11e1_90e3_ee32ba30feaa(self, **kw):
-        return (200, {}, {
-                "volume": self.get_volumes_detail()[2]['volumes'][1]})
-
-    def post_volumes(self, **kw):
-        return (200, FAKE_RESPONSE_HEADERS, {"volume":
-                {"status": "creating",
-                 "display_name": "vol-007",
-                 "attachments": [(0)],
-                 "availability_zone": "cinder",
-                 "created_at": "2012-08-13T10:57:17.000000",
-                 "display_description": "create volume from image",
-                 "image_id": "f4cf905f-7c58-4d7b-8314-8dd8a2d1d483",
-                 "volume_type": "None",
-                 "metadata": {},
-                 "id": "5cb239f6-1baf-4fe1-bd78-c852cf00fa39",
-                 "size": 1}})
-
-    def delete_volumes_15e59938_07d5_11e1_90e3_e3dffe0c5983(self, **kw):
-        return (200, FAKE_RESPONSE_HEADERS, {})
-
-    def delete_volumes_15e59938_07d5_11e1_90e3_ee32ba30feaa(self, **kw):
-        return (200, {}, {})
-
     def post_servers_1234_os_volume_attachments(self, **kw):
         return (200, FAKE_RESPONSE_HEADERS, {
             "volumeAttachment":
@@ -2355,9 +2240,6 @@ class FakeHTTPClient(base_client.HTTPClient):
         return (204, {}, None)
 
     def delete_servers_1234_tags(self, **kw):
-        return (204, {}, None)
-
-    def get_servers_1234_tags_tag(self, **kw):
         return (204, {}, None)
 
 
