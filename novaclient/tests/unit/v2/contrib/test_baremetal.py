@@ -14,8 +14,9 @@
 #    under the License.
 
 
-import mock
 import warnings
+
+import mock
 
 from novaclient import extension
 from novaclient.tests.unit import utils
