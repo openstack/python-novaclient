@@ -60,9 +60,8 @@ class FakeClient(fakes.FakeClient, client.Client):
         client.Client.__init__(self, 'username', 'password',
                                'project_id', 'auth_url',
                                extensions=kwargs.get('extensions'),
-                               direct_use=False)
-        kwargs["api_version"] = api_version
-        self.client = FakeHTTPClient(**kwargs)
+                               direct_use=False, api_version=api_version)
+        self.client = FakeHTTPClient(api_version=api_version, **kwargs)
 
 
 class FakeHTTPClient(base_client.HTTPClient):
@@ -2142,11 +2141,6 @@ class FakeHTTPClient(base_client.HTTPClient):
 
         return (200, FAKE_RESPONSE_HEADERS, migrations)
 
-    def post_os_server_external_events(self, **kw):
-        return (200, {}, {'events': [
-            {'name': 'network-changed',
-             'server_uuid': '1234'}]})
-
     #
     # Server Groups
     #
@@ -2242,6 +2236,90 @@ class FakeHTTPClient(base_client.HTTPClient):
     def delete_servers_1234_tags(self, **kw):
         return (204, {}, None)
 
+    def get_os_tenant_networks(self):
+        return (200, FAKE_RESPONSE_HEADERS, {
+            'networks': [{"label": "1", "cidr": "10.0.0.0/24",
+                          'project_id': '4ffc664c198e435e9853f2538fbcd7a7',
+                          'id': '1'}]})
+
+    def get_os_tenant_networks_1(self, **kw):
+        return (200, FAKE_RESPONSE_HEADERS, {
+            'network': {"label": "1", "cidr": "10.0.0.0/24",
+                        'project_id': '4ffc664c198e435e9853f2538fbcd7a7',
+                        'id': '1'}})
+
+    def post_os_tenant_networks(self, **kw):
+        return (201, FAKE_RESPONSE_HEADERS, {
+            'network': {"label": "1", "cidr": "10.0.0.0/24",
+                        'project_id': '4ffc664c198e435e9853f2538fbcd7a7',
+                        'id': '1'}})
+
+    def delete_os_tenant_networks_1(self, **kw):
+        return (204, FAKE_RESPONSE_HEADERS, None)
+
+    def get_os_baremetal_nodes(self, **kw):
+        return (
+            200, FAKE_RESPONSE_HEADERS, {
+                'nodes': [
+                    {
+                        "id": 1,
+                        "instance_uuid": None,
+                        "interfaces": [],
+                        "cpus": 2,
+                        "local_gb": 10,
+                        "memory_mb": 5,
+                        "pm_address": "2.3.4.5",
+                        "pm_user": "pmuser",
+                        "pm_password": "pmpass",
+                        "prov_mac_address": "aa:bb:cc:dd:ee:ff",
+                        "prov_vlan_id": 1,
+                        "service_host": "somehost",
+                        "terminal_port": 8080,
+                    }
+                ]
+            }
+        )
+
+    def get_os_baremetal_nodes_1(self, **kw):
+        return (
+            200, FAKE_RESPONSE_HEADERS, {
+                'node': {
+                    "id": 1,
+                    "instance_uuid": None,
+                    "pm_address": "1.2.3.4",
+                    "interfaces": [],
+                    "cpus": 2,
+                    "local_gb": 10,
+                    "memory_mb": 5,
+                    "pm_user": "pmuser",
+                    "pm_password": "pmpass",
+                    "prov_mac_address": "aa:bb:cc:dd:ee:ff",
+                    "prov_vlan_id": 1,
+                    "service_host": "somehost",
+                    "terminal_port": 8080,
+                }
+            }
+        )
+
+    def post_os_assisted_volume_snapshots(self, **kw):
+        return (202, FAKE_RESPONSE_HEADERS,
+                {'snapshot': {'id': 'blah', 'volumeId': '1'}})
+
+    def delete_os_assisted_volume_snapshots_x(self, **kw):
+        return (202, FAKE_RESPONSE_HEADERS, {})
+
+    def post_os_server_external_events(self, **kw):
+        return (200, FAKE_RESPONSE_HEADERS, {
+            'events': [
+                {'name': 'test-event',
+                 'status': 'completed',
+                 'tag': 'tag',
+                 'server_uuid': 'fake-uuid1'},
+                {'name': 'test-event',
+                 'status': 'completed',
+                 'tag': 'tag',
+                 'server_uuid': 'fake-uuid2'}]})
+
 
 class FakeSessionClient(fakes.FakeClient, client.Client):
 
@@ -2249,9 +2327,8 @@ class FakeSessionClient(fakes.FakeClient, client.Client):
         client.Client.__init__(self, 'username', 'password',
                                'project_id', 'auth_url',
                                extensions=kwargs.get('extensions'),
-                               direct_use=False)
-        kwargs["api_version"] = api_version
-        self.client = FakeSessionMockClient(**kwargs)
+                               direct_use=False, api_version=api_version)
+        self.client = FakeSessionMockClient(api_version=api_version, **kwargs)
 
 
 class FakeSessionMockClient(base_client.SessionClient, FakeHTTPClient):

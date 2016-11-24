@@ -1,0 +1,21 @@
+---
+prelude: >
+    All extensions of API V2.0 were merged to 2.1, but NovaClient continued
+    to store them as a separate entities.
+upgrade:
+  - All managers and resources from novaclient.v2.contrib submodules are moved
+    to appropriate submodules of novaclient.v2 (except barametal and
+    tenant_networks, which were deprecated previously)
+  - All shell commands from novaclient.v2.contrib submodules are moved to
+    novaclient.v2.shell module.
+  - novaclient.v2.client.Client imports all modules (which were located in
+    submodules of novaclient.v2.contrib) by-default for api version v2
+  - Method novaclient.client.discover_extensions returns only barametal and
+    tenant_networks extensions, since they are not included by default.
+  - There are no modules and extensions for "deferred_delete", "host_evacuate",
+    "host_evacuate_live" and "metadata_extensions" anymore. Previously, they
+    contained only shell commands and shell module auto loads them (there is
+    no ability to not do it).
+deprecations:
+  - All modules of novaclient.v2.contrib are deprecated now and will be
+    removed after OpenStack Pike.

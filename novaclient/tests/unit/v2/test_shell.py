@@ -77,8 +77,7 @@ class ShellTest(utils.TestCase):
         self.shell = self.useFixture(ShellFixture()).shell
 
         self.useFixture(fixtures.MonkeyPatch(
-            'novaclient.client.Client',
-            lambda *args, **kwargs: fakes.FakeClient(*args, **kwargs)))
+            'novaclient.client.Client', fakes.FakeClient))
 
     @mock.patch('sys.stdout', new_callable=six.StringIO)
     @mock.patch('sys.stderr', new_callable=six.StringIO)
@@ -3150,9 +3149,9 @@ class ShellWithSessionClientTest(ShellTest):
     def setUp(self):
         """Run before each test."""
         super(ShellWithSessionClientTest, self).setUp()
+
         self.useFixture(fixtures.MonkeyPatch(
-            'novaclient.client.Client',
-            lambda *args, **kwargs: fakes.FakeSessionClient(*args, **kwargs)))
+            'novaclient.client.Client', fakes.FakeSessionClient))
 
 
 class GetSecgroupTest(utils.TestCase):

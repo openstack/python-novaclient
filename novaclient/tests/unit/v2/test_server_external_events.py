@@ -16,20 +16,15 @@
 External event triggering for servers, not to be used by users.
 """
 
-from novaclient import extension
+from novaclient import api_versions
 from novaclient.tests.unit import utils
-from novaclient.tests.unit.v2.contrib import fakes
-from novaclient.v2.contrib import server_external_events as ext_events
+from novaclient.tests.unit.v2 import fakes
 
 
 class ServerExternalEventsTestCase(utils.TestCase):
     def setUp(self):
         super(ServerExternalEventsTestCase, self).setUp()
-        extensions = [
-            extension.Extension(ext_events.__name__.split(".")[-1],
-                                ext_events),
-        ]
-        self.cs = fakes.FakeClient(extensions=extensions)
+        self.cs = fakes.FakeClient(api_versions.APIVersion("2.1"))
 
     def test_external_event(self):
         events = [{'server_uuid': 'fake-uuid1',

@@ -22,12 +22,9 @@ OpenStack Client interface. Handles the REST calls and responses.
 
 import copy
 import functools
-import glob
 import hashlib
-import imp
 import itertools
 import logging
-import os
 import pkgutil
 import re
 import warnings
@@ -772,18 +769,14 @@ def _discover_via_python_path():
 
 
 def _discover_via_contrib_path(version):
-    module_path = os.path.dirname(os.path.abspath(__file__))
-    ext_path = os.path.join(module_path, "v%s" % version.ver_major, 'contrib')
-    ext_glob = os.path.join(ext_path, "*.py")
+    if version.ver_major == 2:
+        modules = {"baremetal": "novaclient.v2.contrib.baremetal",
+                   "tenant_networks": "novaclient.v2.contrib.tenant_networks"}
 
-    for ext_path in glob.iglob(ext_glob):
-        name = os.path.basename(ext_path)[:-3]
-
-        if name in extensions_ignored_name:
-            continue
-
-        module = imp.load_source(name, ext_path)
-        yield name, module
+        for name, module_name in modules.items():
+            module_loader = pkgutil.get_loader(module_name)
+            module = module_loader.load_module(module_name)
+            yield name, module
 
 
 def _discover_via_entry_points():

@@ -13,20 +13,15 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from novaclient import extension
+from novaclient import api_versions
 from novaclient.tests.unit import utils
-from novaclient.tests.unit.v2.contrib import fakes
-from novaclient.v2.contrib import instance_action
+from novaclient.tests.unit.v2 import fakes
 
 
 class InstanceActionExtensionTests(utils.TestCase):
     def setUp(self):
         super(InstanceActionExtensionTests, self).setUp()
-        extensions = [
-            extension.Extension(instance_action.__name__.split(".")[-1],
-                                instance_action),
-        ]
-        self.cs = fakes.FakeClient(extensions=extensions)
+        self.cs = fakes.FakeClient(api_versions.APIVersion("2.1"))
 
     def test_list_instance_actions(self):
         server_uuid = '1234'

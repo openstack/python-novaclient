@@ -22,9 +22,12 @@ from novaclient import exceptions
 from novaclient.i18n import _LE
 from novaclient.v2 import agents
 from novaclient.v2 import aggregates
+from novaclient.v2 import assisted_volume_snapshots
 from novaclient.v2 import availability_zones
+from novaclient.v2 import cells
 from novaclient.v2 import certs
 from novaclient.v2 import cloudpipe
+from novaclient.v2 import contrib
 from novaclient.v2 import fixed_ips
 from novaclient.v2 import flavor_access
 from novaclient.v2 import flavors
@@ -36,14 +39,18 @@ from novaclient.v2 import fping
 from novaclient.v2 import hosts
 from novaclient.v2 import hypervisors
 from novaclient.v2 import images
+from novaclient.v2 import instance_action
 from novaclient.v2 import keypairs
 from novaclient.v2 import limits
+from novaclient.v2 import list_extensions
+from novaclient.v2 import migrations
 from novaclient.v2 import networks
 from novaclient.v2 import quota_classes
 from novaclient.v2 import quotas
 from novaclient.v2 import security_group_default_rules
 from novaclient.v2 import security_group_rules
 from novaclient.v2 import security_groups
+from novaclient.v2 import server_external_events
 from novaclient.v2 import server_groups
 from novaclient.v2 import server_migrations
 from novaclient.v2 import servers
@@ -172,15 +179,35 @@ class Client(object):
         self.server_migrations = \
             server_migrations.ServerMigrationsManager(self)
 
+        # V2.0 extensions:
+        # NOTE(andreykurilin): baremetal and tenant_networks extensions are
+        #   deprecated now, which is why they are not initialized by default.
+        self.assisted_volume_snapshots = \
+            assisted_volume_snapshots.AssistedSnapshotManager(self)
+        self.cells = cells.CellsManager(self)
+        self.instance_action = instance_action.InstanceActionManager(self)
+        self.list_extensions = list_extensions.ListExtManager(self)
+        self.migrations = migrations.MigrationManager(self)
+        self.server_external_events = \
+            server_external_events.ServerExternalEventManager(self)
+
+        self.logger = logger or logging.getLogger(__name__)
+
         # Add in any extensions...
         if extensions:
             for extension in extensions:
+                # do not import extensions from contrib directory twice.
+                if extension.name in contrib.V2_0_EXTENSIONS:
+                    # NOTE(andreykurilin): this message looks more like
+                    #   warning or note, but it is not critical, so let's do
+                    #   not flood "warning" logging level and use just debug..
+                    self.logger.debug("Nova 2.0 extenstion '%s' is auto-loaded"
+                                      " by default. You do not need to specify"
+                                      " it manually.", extension.name)
+                    continue
                 if extension.manager_class:
                     setattr(self, extension.name,
                             extension.manager_class(self))
-
-        if not logger:
-            logger = logging.getLogger(__name__)
 
         self.client = client._construct_http_client(
             username=username,
@@ -208,7 +235,7 @@ class Client(object):
             session=session,
             auth=auth,
             api_version=api_version,
-            logger=logger,
+            logger=self.logger,
             **kwargs)
 
     @property

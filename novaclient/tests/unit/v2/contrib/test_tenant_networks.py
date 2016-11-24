@@ -13,9 +13,10 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from novaclient import api_versions
 from novaclient import extension
 from novaclient.tests.unit import utils
-from novaclient.tests.unit.v2.contrib import fakes
+from novaclient.tests.unit.v2 import fakes
 from novaclient.v2.contrib import tenant_networks
 
 
@@ -27,7 +28,8 @@ class TenantNetworkExtensionTests(utils.TestCase):
             extension.Extension(tenant_networks.__name__.split(".")[-1],
                                 tenant_networks),
         ]
-        self.cs = fakes.FakeClient(extensions=extensions)
+        self.cs = fakes.FakeClient(api_versions.APIVersion("2.0"),
+                                   extensions=extensions)
 
     def test_list_tenant_networks(self):
         nets = self.cs.tenant_networks.list()

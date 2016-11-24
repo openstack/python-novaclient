@@ -16,42 +16,14 @@
 Assisted volume snapshots - to be used by Cinder and not end users.
 """
 
-import json
-
-from novaclient import base
-
-
-class Snapshot(base.Resource):
-    def __repr__(self):
-        return "<Snapshot: %s>" % self.id
-
-    def delete(self):
-        """
-        Delete this snapshot.
-
-        :returns: An instance of novaclient.base.TupleWithMeta
-        """
-        return self.manager.delete(self)
+from novaclient.v2 import assisted_volume_snapshots
+from novaclient.v2 import contrib
 
 
-class AssistedSnapshotManager(base.Manager):
-    resource_class = Snapshot
-
-    def create(self, volume_id, create_info):
-        body = {'snapshot': {'volume_id': volume_id,
-                             'create_info': create_info}}
-        return self._create('/os-assisted-volume-snapshots', body, 'snapshot')
-
-    def delete(self, snapshot, delete_info):
-        """
-        Delete a specified assisted volume snapshot.
-
-        :param snapshot: an assisted volume snapshot to delete
-        :param delete_info: Information for snapshot deletion
-        :returns: An instance of novaclient.base.TupleWithMeta
-        """
-        return self._delete("/os-assisted-volume-snapshots/%s?delete_info=%s" %
-                            (base.getid(snapshot), json.dumps(delete_info)))
+AssistedSnapshotManager = assisted_volume_snapshots.AssistedSnapshotManager
+Snapshot = assisted_volume_snapshots.Snapshot
 
 manager_class = AssistedSnapshotManager
 name = 'assisted_volume_snapshots'
+
+contrib.warn()

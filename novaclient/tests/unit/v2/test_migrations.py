@@ -11,21 +11,15 @@
 #    under the License.
 
 from novaclient import api_versions
-from novaclient import extension
 from novaclient.tests.unit import utils
 from novaclient.tests.unit.v2 import fakes
-from novaclient.v2.contrib import migrations
+from novaclient.v2 import migrations
 
 
 class MigrationsTest(utils.TestCase):
     def setUp(self):
         super(MigrationsTest, self).setUp()
-        self.extensions = [
-            extension.Extension(migrations.__name__.split(".")[-1],
-                                migrations),
-        ]
-        self.cs = fakes.FakeClient(api_versions.APIVersion("2.0"),
-                                   extensions=self.extensions)
+        self.cs = fakes.FakeClient(api_versions.APIVersion("2.1"))
 
     def test_list_migrations(self):
         ml = self.cs.migrations.list()
@@ -36,8 +30,7 @@ class MigrationsTest(utils.TestCase):
             self.assertRaises(AttributeError, getattr, m, "migration_type")
 
     def test_list_migrations_v223(self):
-        cs = fakes.FakeClient(extensions=self.extensions,
-                              api_version=api_versions.APIVersion("2.23"))
+        cs = fakes.FakeClient(api_versions.APIVersion("2.23"))
         ml = cs.migrations.list()
         self.assert_request_id(ml, fakes.FAKE_REQUEST_ID_LIST)
         cs.assert_called('GET', '/os-migrations')

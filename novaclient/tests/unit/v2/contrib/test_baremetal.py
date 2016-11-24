@@ -18,9 +18,10 @@ import warnings
 
 import mock
 
+from novaclient import api_versions
 from novaclient import extension
 from novaclient.tests.unit import utils
-from novaclient.tests.unit.v2.contrib import fakes
+from novaclient.tests.unit.v2 import fakes
 from novaclient.v2.contrib import baremetal
 
 
@@ -31,7 +32,8 @@ class BaremetalExtensionTest(utils.TestCase):
         extensions = [
             extension.Extension(baremetal.__name__.split(".")[-1], baremetal),
         ]
-        self.cs = fakes.FakeClient(extensions=extensions)
+        self.cs = fakes.FakeClient(api_versions.APIVersion("2.0"),
+                                   extensions=extensions)
 
     def test_list_nodes(self, mock_warn):
         nl = self.cs.baremetal.list()

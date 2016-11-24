@@ -12,21 +12,14 @@
 #    under the License.
 
 from novaclient import api_versions
-from novaclient import extension
 from novaclient.tests.unit import utils
 from novaclient.tests.unit.v2 import fakes
-from novaclient.v2.contrib import list_extensions
 
 
 class ListExtensionsTests(utils.TestCase):
     def setUp(self):
         super(ListExtensionsTests, self).setUp()
-        extensions = [
-            extension.Extension(list_extensions.__name__.split(".")[-1],
-                                list_extensions),
-        ]
-        self.cs = fakes.FakeClient(api_versions.APIVersion("2.0"),
-                                   extensions=extensions)
+        self.cs = fakes.FakeClient(api_versions.APIVersion("2.1"))
 
     def test_list_extensions(self):
         all_exts = self.cs.list_extensions.show_all()

@@ -1,4 +1,4 @@
-# Copyright 2014 OpenStack Foundation
+# Copyright 2011 OpenStack Foundation
 # All Rights Reserved.
 #
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -13,6 +13,24 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from novaclient.v2 import contrib
+from novaclient import base
 
-contrib.warn(alternative=False)
+
+class ListExtResource(base.Resource):
+    @property
+    def summary(self):
+        descr = self.description.strip()
+        if not descr:
+            return '??'
+        lines = descr.split("\n")
+        if len(lines) == 1:
+            return lines[0]
+        else:
+            return lines[0] + "..."
+
+
+class ListExtManager(base.Manager):
+    resource_class = ListExtResource
+
+    def show_all(self):
+        return self._list("/extensions", 'extensions')

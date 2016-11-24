@@ -13,34 +13,11 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from novaclient import base
-from novaclient import utils
+from novaclient.v2 import contrib
+from novaclient.v2 import list_extensions
 
 
-class ListExtResource(base.Resource):
-    @property
-    def summary(self):
-        descr = self.description.strip()
-        if not descr:
-            return '??'
-        lines = descr.split("\n")
-        if len(lines) == 1:
-            return lines[0]
-        else:
-            return lines[0] + "..."
+ListExtResource = list_extensions.ListExtResource
+ListExtManager = list_extensions.ListExtResource
 
-
-class ListExtManager(base.Manager):
-    resource_class = ListExtResource
-
-    def show_all(self):
-        return self._list("/extensions", 'extensions')
-
-
-def do_list_extensions(client, _args):
-    """
-    List all the os-api extensions that are available.
-    """
-    extensions = client.list_extensions.show_all()
-    fields = ["Name", "Summary", "Alias", "Updated"]
-    utils.print_list(extensions, fields)
+contrib.warn()

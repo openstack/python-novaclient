@@ -14,6 +14,7 @@ import uuid
 
 from keystoneauth1 import session
 
+from novaclient import api_versions
 from novaclient.tests.unit import utils
 from novaclient.v2 import client
 
@@ -27,6 +28,7 @@ class ClientTest(utils.TestCase):
 
         s = session.Session()
         c = client.Client(session=s,
+                          api_version=api_versions.APIVersion("2.0"),
                           user_agent=user_agent,
                           endpoint_override=endpoint_override,
                           direct_use=False)
@@ -40,6 +42,7 @@ class ClientTest(utils.TestCase):
 
         s = session.Session()
         c = client.Client(session=s,
+                          api_version=api_versions.APIVersion("2.0"),
                           interface=interface,
                           endpoint_type=endpoint_type,
                           direct_use=False)

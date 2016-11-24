@@ -16,20 +16,15 @@
 Assisted volume snapshots - to be used by Cinder and not end users.
 """
 
-from novaclient import extension
+from novaclient import api_versions
 from novaclient.tests.unit import utils
-from novaclient.tests.unit.v2.contrib import fakes
-from novaclient.v2.contrib import assisted_volume_snapshots as assisted_snaps
+from novaclient.tests.unit.v2 import fakes
 
 
 class AssistedVolumeSnapshotsTestCase(utils.TestCase):
     def setUp(self):
         super(AssistedVolumeSnapshotsTestCase, self).setUp()
-        extensions = [
-            extension.Extension(assisted_snaps.__name__.split(".")[-1],
-                                assisted_snaps),
-        ]
-        self.cs = fakes.FakeClient(extensions=extensions)
+        self.cs = fakes.FakeClient(api_versions.APIVersion("2.1"))
 
     def test_create_snap(self):
         vs = self.cs.assisted_volume_snapshots.create('1', {})

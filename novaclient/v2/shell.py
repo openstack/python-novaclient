@@ -26,6 +26,7 @@ import getpass
 import locale
 import logging
 import os
+import pprint
 import sys
 import time
 
@@ -5185,3 +5186,359 @@ def do_server_tag_delete_all(cs, args):
     """Delete all tags from a server."""
     server = _find_server(cs, args.server)
     server.delete_all_tags()
+
+
+@utils.arg(
+    'cell',
+    metavar='<cell-name>',
+    help=_('Name of the cell.'))
+def do_cell_show(cs, args):
+    """Show details of a given cell."""
+    cell = cs.cells.get(args.cell)
+    utils.print_dict(cell._info)
+
+
+@utils.arg(
+    '--cell',
+    metavar='<cell-name>',
+    help=_("Name of the cell to get the capacities."),
+    default=None)
+def do_cell_capacities(cs, args):
+    """Get cell capacities for all cells or a given cell."""
+    cell = cs.cells.capacities(args.cell)
+    print(_("Ram Available: %s MB") % cell.capacities['ram_free']['total_mb'])
+    utils.print_dict(cell.capacities['ram_free']['units_by_mb'],
+                     dict_property='Ram(MB)', dict_value="Units")
+    print(_("\nDisk Available: %s MB") %
+          cell.capacities['disk_free']['total_mb'])
+    utils.print_dict(cell.capacities['disk_free']['units_by_mb'],
+                     dict_property='Disk(MB)', dict_value="Units")
+
+
+@utils.arg('server', metavar='<server>', help='Name or ID of server.')
+def do_force_delete(cs, args):
+    """Force delete a server."""
+    utils.find_resource(cs.servers, args.server).force_delete()
+
+
+@utils.arg('server', metavar='<server>', help='Name or ID of server.')
+def do_restore(cs, args):
+    """Restore a soft-deleted server."""
+    utils.find_resource(cs.servers, args.server, deleted=True).restore()
+
+
+class EvacuateHostResponse(base.Resource):
+    pass
+
+
+def _server_evacuate(cs, server, args):
+    success = True
+    error_message = ""
+    try:
+        if api_versions.APIVersion("2.29") <= cs.api_version:
+            # if microversion >= 2.29
+            force = getattr(args, 'force', None)
+            cs.servers.evacuate(server=server['uuid'], host=args.target_host,
+                                force=force)
+        elif api_versions.APIVersion("2.14") <= cs.api_version:
+            # if microversion 2.14 - 2.28
+            cs.servers.evacuate(server=server['uuid'], host=args.target_host)
+        else:
+            # else microversion 2.0 - 2.13
+            on_shared_storage = getattr(args, 'on_shared_storage', None)
+            cs.servers.evacuate(server=server['uuid'],
+                                host=args.target_host,
+                                on_shared_storage=on_shared_storage)
+    except Exception as e:
+        success = False
+        error_message = _("Error while evacuating instance: %s") % e
+    return EvacuateHostResponse(base.Manager, {"server_uuid": server['uuid'],
+                                               "evacuate_accepted": success,
+                                               "error_message": error_message})
+
+
+@utils.arg('host', metavar='<host>', help='Name of host.')
+@utils.arg(
+    '--target_host',
+    metavar='<target_host>',
+    default=None,
+    help=_('Name of target host. If no host is specified the scheduler will '
+           'select a target.'))
+@utils.arg(
+    '--on-shared-storage',
+    dest='on_shared_storage',
+    action="store_true",
+    default=False,
+    help=_('Specifies whether all instances files are on shared storage'),
+    start_version='2.0',
+    end_version='2.13')
+@utils.arg(
+    '--force',
+    dest='force',
+    action='store_true',
+    default=False,
+    help=_('Force to not verify the scheduler if a host is provided.'),
+    start_version='2.29')
+def do_host_evacuate(cs, args):
+    """Evacuate all instances from failed host."""
+
+    hypervisors = cs.hypervisors.search(args.host, servers=True)
+    response = []
+    for hyper in hypervisors:
+        if hasattr(hyper, 'servers'):
+            for server in hyper.servers:
+                response.append(_server_evacuate(cs, server, args))
+
+    utils.print_list(response,
+                     ["Server UUID", "Evacuate Accepted", "Error Message"])
+
+
+def _server_live_migrate(cs, server, args):
+    class HostEvacuateLiveResponse(object):
+        def __init__(self, server_uuid, live_migration_accepted,
+                     error_message):
+            self.server_uuid = server_uuid
+            self.live_migration_accepted = live_migration_accepted
+            self.error_message = error_message
+    success = True
+    error_message = ""
+    update_kwargs = {}
+    try:
+        # API >= 2.30
+        if 'force' in args and args.force:
+            update_kwargs['force'] = args.force
+        # API 2.0->2.24
+        if 'disk_over_commit' in args:
+            update_kwargs['disk_over_commit'] = args.disk_over_commit
+        cs.servers.live_migrate(server['uuid'], args.target_host,
+                                args.block_migrate, **update_kwargs)
+    except Exception as e:
+        success = False
+        error_message = _("Error while live migrating instance: %s") % e
+    return HostEvacuateLiveResponse(server['uuid'],
+                                    success,
+                                    error_message)
+
+
+@utils.arg('host', metavar='<host>', help='Name of host.')
+@utils.arg(
+    '--target-host',
+    metavar='<target_host>',
+    default=None,
+    help=_('Name of target host.'))
+@utils.arg(
+    '--block-migrate',
+    action='store_true',
+    default=False,
+    help=_('Enable block migration. (Default=False)'),
+    start_version="2.0", end_version="2.24")
+@utils.arg(
+    '--block-migrate',
+    action='store_true',
+    default="auto",
+    help=_('Enable block migration. (Default=auto)'),
+    start_version="2.25")
+@utils.arg(
+    '--disk-over-commit',
+    action='store_true',
+    default=False,
+    help=_('Enable disk overcommit.'),
+    start_version="2.0", end_version="2.24")
+@utils.arg(
+    '--max-servers',
+    type=int,
+    dest='max_servers',
+    metavar='<max_servers>',
+    help='Maximum number of servers to live migrate simultaneously')
+@utils.arg(
+    '--force',
+    dest='force',
+    action='store_true',
+    default=False,
+    help=_('Force to not verify the scheduler if a host is provided.'),
+    start_version='2.30')
+def do_host_evacuate_live(cs, args):
+    """Live migrate all instances of the specified host
+    to other available hosts.
+    """
+    hypervisors = cs.hypervisors.search(args.host, servers=True)
+    response = []
+    migrating = 0
+    for hyper in hypervisors:
+        for server in getattr(hyper, 'servers', []):
+            response.append(_server_live_migrate(cs, server, args))
+            migrating += 1
+            if args.max_servers is not None and migrating >= args.max_servers:
+                break
+
+    utils.print_list(response, ["Server UUID", "Live Migration Accepted",
+                                "Error Message"])
+
+
+class HostServersMigrateResponse(base.Resource):
+    pass
+
+
+def _server_migrate(cs, server):
+    success = True
+    error_message = ""
+    try:
+        cs.servers.migrate(server['uuid'])
+    except Exception as e:
+        success = False
+        error_message = _("Error while migrating instance: %s") % e
+    return HostServersMigrateResponse(base.Manager,
+                                      {"server_uuid": server['uuid'],
+                                       "migration_accepted": success,
+                                       "error_message": error_message})
+
+
+@utils.arg('host', metavar='<host>', help='Name of host.')
+def do_host_servers_migrate(cs, args):
+    """Cold migrate all instances off the specified host to other available
+    hosts.
+    """
+
+    hypervisors = cs.hypervisors.search(args.host, servers=True)
+    response = []
+    for hyper in hypervisors:
+        if hasattr(hyper, 'servers'):
+            for server in hyper.servers:
+                response.append(_server_migrate(cs, server))
+
+    utils.print_list(response,
+                     ["Server UUID", "Migration Accepted", "Error Message"])
+
+
+@utils.arg(
+    'server',
+    metavar='<server>',
+    help=_('Name or UUID of the server to show actions for.'),
+    start_version="2.0", end_version="2.20")
+@utils.arg(
+    'server',
+    metavar='<server>',
+    help=_('Name or UUID of the server to show actions for. Only UUID can be '
+           'used to show actions for a deleted server.'),
+    start_version="2.21")
+@utils.arg(
+    'request_id',
+    metavar='<request_id>',
+    help=_('Request ID of the action to get.'))
+def do_instance_action(cs, args):
+    """Show an action."""
+    if cs.api_version < api_versions.APIVersion("2.21"):
+        server = _find_server(cs, args.server)
+    else:
+        server = _find_server(cs, args.server, raise_if_notfound=False)
+    action_resource = cs.instance_action.get(server, args.request_id)
+    action = action_resource._info
+    if 'events' in action:
+        action['events'] = pprint.pformat(action['events'])
+    utils.print_dict(action)
+
+
+@utils.arg(
+    'server',
+    metavar='<server>',
+    help=_('Name or UUID of the server to list actions for.'),
+    start_version="2.0", end_version="2.20")
+@utils.arg(
+    'server',
+    metavar='<server>',
+    help=_('Name or UUID of the server to list actions for. Only UUID can be '
+           'used to list actions on a deleted server.'),
+    start_version="2.21")
+def do_instance_action_list(cs, args):
+    """List actions on a server."""
+    if cs.api_version < api_versions.APIVersion("2.21"):
+        server = _find_server(cs, args.server)
+    else:
+        server = _find_server(cs, args.server, raise_if_notfound=False)
+    actions = cs.instance_action.list(server)
+    utils.print_list(actions,
+                     ['Action', 'Request_ID', 'Message', 'Start_Time'],
+                     sortby_index=3)
+
+
+def do_list_extensions(cs, _args):
+    """
+    List all the os-api extensions that are available.
+    """
+    extensions = cs.list_extensions.show_all()
+    fields = ["Name", "Summary", "Alias", "Updated"]
+    utils.print_list(extensions, fields)
+
+
+@utils.arg(
+    'host',
+    metavar='<host>',
+    help=_('Name of host.'))
+@utils.arg(
+    'action',
+    metavar='<action>',
+    choices=['set', 'delete'],
+    help=_("Actions: 'set' or 'delete'"))
+@utils.arg(
+    'metadata',
+    metavar='<key=value>',
+    nargs='+',
+    action='append',
+    default=[],
+    help=_('Metadata to set or delete (only key is necessary on delete)'))
+def do_host_meta(cs, args):
+    """Set or Delete metadata on all instances of a host."""
+    hypervisors = cs.hypervisors.search(args.host, servers=True)
+    for hyper in hypervisors:
+        metadata = _extract_metadata(args)
+        if hasattr(hyper, 'servers'):
+            for server in hyper.servers:
+                if args.action == 'set':
+                    cs.servers.set_meta(server['uuid'], metadata)
+                elif args.action == 'delete':
+                    cs.servers.delete_meta(server['uuid'], metadata.keys())
+
+
+def _print_migrations(cs, migrations):
+    fields = ['Source Node', 'Dest Node', 'Source Compute', 'Dest Compute',
+              'Dest Host', 'Status', 'Instance UUID', 'Old Flavor',
+              'New Flavor', 'Created At', 'Updated At']
+
+    def old_flavor(migration):
+        return migration.old_instance_type_id
+
+    def new_flavor(migration):
+        return migration.new_instance_type_id
+
+    def migration_type(migration):
+        return migration.migration_type
+
+    formatters = {'Old Flavor': old_flavor, 'New Flavor': new_flavor}
+
+    if cs.api_version >= api_versions.APIVersion("2.23"):
+        fields.insert(0, "Id")
+        fields.append("Type")
+        formatters.update({"Type": migration_type})
+
+    utils.print_list(migrations, fields, formatters)
+
+
+@utils.arg(
+    '--host',
+    dest='host',
+    metavar='<host>',
+    help=_('Fetch migrations for the given host.'))
+@utils.arg(
+    '--status',
+    dest='status',
+    metavar='<status>',
+    help=_('Fetch migrations for the given status.'))
+@utils.arg(
+    '--cell_name',
+    dest='cell_name',
+    metavar='<cell_name>',
+    help=_('Fetch migrations for the given cell_name.'))
+def do_migration_list(cs, args):
+    """Print a list of migrations."""
+    migrations = cs.migrations.list(args.host, args.status, args.cell_name)
+    _print_migrations(cs, migrations)

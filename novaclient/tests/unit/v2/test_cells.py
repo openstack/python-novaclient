@@ -13,20 +13,15 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from novaclient import extension
+from novaclient import api_versions
 from novaclient.tests.unit import utils
-from novaclient.tests.unit.v2.contrib import fakes
-from novaclient.v2.contrib import cells
+from novaclient.tests.unit.v2 import fakes
 
 
 class CellsExtensionTests(utils.TestCase):
     def setUp(self):
         super(CellsExtensionTests, self).setUp()
-        extensions = [
-            extension.Extension(cells.__name__.split(".")[-1],
-                                cells),
-        ]
-        self.cs = fakes.FakeClient(extensions=extensions)
+        self.cs = fakes.FakeClient(api_versions.APIVersion("2.1"))
 
     def test_get_cells(self):
         cell_name = 'child_cell'
