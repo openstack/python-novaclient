@@ -1524,6 +1524,10 @@ class ShellTest(utils.TestCase):
         self.assertIn('Image not found', output)
         self.assertIn('Flavor not found', output)
 
+    def test_show_with_name_help(self):
+        output, _ = self.run_command('show help')
+        self.assert_called('GET', '/servers/9014', pos=-6)
+
     @mock.patch('novaclient.v2.shell.utils.print_dict')
     def test_print_server(self, mock_print_dict):
         self.run_command('show 5678')
