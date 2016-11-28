@@ -858,10 +858,9 @@ def _print_flavor_list(flavors, show_extra_specs=False):
     metavar='<limit>',
     type=int,
     default=None,
-    help=_("Maximum number of flavors to display. If limit == -1, all flavors "
-           "will be displayed. If limit is bigger than 'osapi_max_limit' "
-           "option of Nova API, limit 'osapi_max_limit' will be used "
-           "instead."))
+    help=_("Maximum number of flavors to display. If limit is bigger than "
+           "'osapi_max_limit' option of Nova API, limit 'osapi_max_limit' "
+           "will be used instead."))
 def do_flavor_list(cs, args):
     """Print a list of available 'flavors' (sizes of servers)."""
     if args.all:
@@ -3316,8 +3315,7 @@ def do_keypair_list(cs, args):
     metavar='<limit>',
     type=int,
     default=None,
-    help=_("Maximum number of keypairs to display. If limit == -1, all "
-           "keypairs will be displayed. If limit is bigger than "
+    help=_("Maximum number of keypairs to display. If limit is bigger than "
            "'osapi_max_limit' option of Nova API, limit 'osapi_max_limit' "
            "will be used instead."))
 def do_keypair_list(cs, args):
@@ -4221,8 +4219,7 @@ def do_hypervisor_list(cs, args):
     metavar='<limit>',
     type=int,
     default=None,
-    help=_("Maximum number of hypervisors to display. If limit == -1, all "
-           "hypervisors will be displayed. If limit is bigger than "
+    help=_("Maximum number of hypervisors to display. If limit is bigger than "
            "'osapi_max_limit' option of Nova API, limit 'osapi_max_limit' "
            "will be used instead."))
 def do_hypervisor_list(cs, args):
