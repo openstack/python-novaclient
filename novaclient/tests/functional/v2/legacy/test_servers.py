@@ -13,8 +13,9 @@
 import datetime
 import uuid
 
-from novaclient.tests.functional import base
 from oslo_utils import timeutils
+
+from novaclient.tests.functional import base
 
 
 class TestServersBootNovaClient(base.ClientTestBase):

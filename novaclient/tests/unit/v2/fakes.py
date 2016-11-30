@@ -15,10 +15,10 @@
 # limitations under the License.
 
 import datetime
+import re
 
 import mock
 from oslo_utils import strutils
-import re
 import six
 from six.moves.urllib import parse
 
