@@ -50,7 +50,7 @@ class ShellFixture(fixtures.Fixture):
     def tearDown(self):
         # For some method like test_image_meta_bad_action we are
         # testing a SystemExit to be thrown and object self.shell has
-        # no time to get instantiated which is OK in this case, so
+        # no time to get instantatiated which is OK in this case, so
         # we make sure the method is there before launching it.
         if hasattr(self.shell, 'cs'):
             self.shell.cs.clear_callstack()
@@ -1750,36 +1750,12 @@ class ShellTest(utils.TestCase):
                            {'removeFloatingIp': {'address': '11.0.0.1'}})
 
     def test_usage_list(self):
-        cmd = 'usage-list --start 2000-01-20 --end 2005-02-01'
-        stdout, _ = self.run_command(cmd)
+        self.run_command('usage-list --start 2000-01-20 --end 2005-02-01')
         self.assert_called('GET',
                            '/os-simple-tenant-usage?' +
                            'start=2000-01-20T00:00:00&' +
                            'end=2005-02-01T00:00:00&' +
                            'detailed=1')
-        # Servers, RAM MB-Hours, CPU Hours, Disk GB-Hours
-        self.assertIn('1       | 25451.76     | 49.71     | 0.00', stdout)
-
-    def test_usage_list_stitch_together_next_results(self):
-        cmd = 'usage-list --start 2000-01-20 --end 2005-02-01'
-        stdout, _ = self.run_command(cmd, api_version='2.39')
-        self.assert_called('GET',
-                           '/os-simple-tenant-usage?'
-                           'start=2000-01-20T00:00:00&'
-                           'end=2005-02-01T00:00:00&'
-                           'detailed=1', pos=0)
-        markers = [
-            'f079e394-1111-457b-b350-bb5ecc685cdd',
-            'f079e394-2222-457b-b350-bb5ecc685cdd',
-        ]
-        for pos, marker in enumerate(markers):
-            self.assert_called('GET',
-                               '/os-simple-tenant-usage?'
-                               'start=2000-01-20T00:00:00&'
-                               'end=2005-02-01T00:00:00&'
-                               'marker=%s&detailed=1' % (marker), pos=pos + 1)
-        # Servers, RAM MB-Hours, CPU Hours, Disk GB-Hours
-        self.assertIn('2       | 50903.53     | 99.42     | 0.00', stdout)
 
     def test_usage_list_no_args(self):
         timeutils.set_time_override(datetime.datetime(2005, 2, 1, 0, 0))
@@ -1792,34 +1768,12 @@ class ShellTest(utils.TestCase):
                            'detailed=1')
 
     def test_usage(self):
-        cmd = 'usage --start 2000-01-20 --end 2005-02-01 --tenant test'
-        stdout, _ = self.run_command(cmd)
+        self.run_command('usage --start 2000-01-20 --end 2005-02-01 '
+                         '--tenant test')
         self.assert_called('GET',
                            '/os-simple-tenant-usage/test?' +
                            'start=2000-01-20T00:00:00&' +
                            'end=2005-02-01T00:00:00')
-        # Servers, RAM MB-Hours, CPU Hours, Disk GB-Hours
-        self.assertIn('1       | 25451.76     | 49.71     | 0.00', stdout)
-
-    def test_usage_stitch_together_next_results(self):
-        cmd = 'usage --start 2000-01-20 --end 2005-02-01'
-        stdout, _ = self.run_command(cmd, api_version='2.39')
-        self.assert_called('GET',
-                           '/os-simple-tenant-usage/tenant_id?'
-                           'start=2000-01-20T00:00:00&'
-                           'end=2005-02-01T00:00:00', pos=0)
-        markers = [
-            'f079e394-1111-457b-b350-bb5ecc685cdd',
-            'f079e394-2222-457b-b350-bb5ecc685cdd',
-        ]
-        for pos, marker in enumerate(markers):
-            self.assert_called('GET',
-                               '/os-simple-tenant-usage/tenant_id?'
-                               'start=2000-01-20T00:00:00&'
-                               'end=2005-02-01T00:00:00&'
-                               'marker=%s' % (marker), pos=pos + 1)
-        # Servers, RAM MB-Hours, CPU Hours, Disk GB-Hours
-        self.assertIn('2       | 50903.53     | 99.42     | 0.00', stdout)
 
     def test_usage_no_tenant(self):
         self.run_command('usage --start 2000-01-20 --end 2005-02-01')
