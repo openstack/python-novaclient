@@ -825,6 +825,32 @@ def get_client_class(version):
     return client_class
 
 
+def _check_arguments(kwargs, release, deprecated_name, right_name=None):
+    """Process deprecation of arguments.
+
+    Checks presence of deprecated argument in kwargs, prints proper warning
+    message, renames key to right one it needed.
+    """
+    if deprecated_name in kwargs:
+        msg = _LW("The '%(old)s' argument is deprecated in %(release)s and "
+                  "its use may result in errors in future releases.") % {
+            "old": deprecated_name, "release": release}
+        if right_name:
+            if right_name in kwargs:
+                msg += _LW(" As '%(new)s' is provided, the '%(old)s' argument "
+                           "will be ignored.") % {"old": deprecated_name,
+                                                  "new": right_name}
+                kwargs.pop(deprecated_name)
+            else:
+                msg += _LW(" Use '%s' instead.") % right_name
+                kwargs[right_name] = kwargs.pop(deprecated_name)
+        else:
+            # just ignore it
+            kwargs.pop(deprecated_name)
+
+        warnings.warn(msg)
+
+
 def Client(version, username=None, api_key=None, project_id=None,
            auth_url=None, **kwargs):
     """Initialize client object based on given version.
@@ -847,6 +873,10 @@ def Client(version, username=None, api_key=None, project_id=None,
     session API. See "The novaclient Python API" page at
     python-novaclient's doc.
     """
+
+    _check_arguments(kwargs, "Ocata", "auth_plugin")
+    _check_arguments(kwargs, "Ocata", "auth_system")
+
     api_version, client_class = _get_client_class_and_version(version)
     kwargs.pop("direct_use", None)
     return client_class(username=username, api_key=api_key,
