@@ -36,15 +36,12 @@ class ClientTest(utils.TestCase):
         self.assertEqual(user_agent, c.client.user_agent)
         self.assertEqual(endpoint_override, c.client.endpoint_override)
 
-    def test_passing_interface(self):
+    def test_passing_endpoint_type(self):
         endpoint_type = uuid.uuid4().hex
-        interface = uuid.uuid4().hex
 
         s = session.Session()
         c = client.Client(session=s,
-                          api_version=api_versions.APIVersion("2.0"),
-                          interface=interface,
                           endpoint_type=endpoint_type,
                           direct_use=False)
 
-        self.assertEqual(interface, c.client.interface)
+        self.assertEqual(endpoint_type, c.client.interface)

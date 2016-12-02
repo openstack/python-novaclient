@@ -690,7 +690,6 @@ def _construct_http_client(api_version=None,
                            endpoint_type='publicURL',
                            http_log_debug=False,
                            insecure=False,
-                           interface=None,
                            os_cache=False,
                            password=None,
                            project_id=None,
@@ -714,7 +713,7 @@ def _construct_http_client(api_version=None,
         return SessionClient(api_version=api_version,
                              auth=auth,
                              endpoint_override=endpoint_override,
-                             interface=interface or endpoint_type,
+                             interface=endpoint_type,
                              region_name=region_name,
                              service_name=service_name,
                              service_type=service_type,
@@ -884,6 +883,22 @@ def Client(version, username=None, password=None, project_id=None,
     _check_arguments(kwargs, "Ocata", "bypass_url",
                      right_name="endpoint_override")
     _check_arguments(kwargs, "Ocata", "api_key", right_name="password")
+    # NOTE(andreykurilin): OpenStack projects use two variables with one
+    #   meaning: 'endpoint_type' and 'interface'. 'endpoint_type' is an old
+    #   name which was used by most OpenStack clients. Later it was replaced by
+    #  'interface' in keystone and later some other clients switched to new
+    #   variable name too. In case of novaclient, there is no need to switch to
+    #  'interface' variable name due too several reasons:
+    #     - novaclient uses 'endpoint_type' variable name long time ago and
+    #       there is no real reasons to switch to new name;
+    #     - 'interface' argument is used in several shell subcommands
+    #       (for example in `nova floating-ip-bulk-create`), so we will need to
+    #       modify these subcommands to not conflict with global flag
+    #       'interface'
+    #   Actually, novaclient did not accept 'interface' before, but since we
+    #   allow additional arguments(kwargs), someone can use this variable name
+    #   and face issue about unexpected behavior.
+    _check_arguments(kwargs, "Ocata", "interface", right_name="endpoint_type")
 
     api_version, client_class = _get_client_class_and_version(version)
     kwargs.pop("direct_use", None)
