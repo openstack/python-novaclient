@@ -693,13 +693,13 @@ def _construct_http_client(api_version=None,
                            os_cache=False,
                            password=None,
                            project_id=None,
+                           project_name=None,
                            proxy_tenant_id=None,
                            proxy_token=None,
                            region_name=None,
                            service_name=None,
                            service_type='compute',
                            session=None,
-                           tenant_id=None,
                            timeout=None,
                            timings=False,
                            user_agent='python-novaclient',
@@ -728,8 +728,12 @@ def _construct_http_client(api_version=None,
         return HTTPClient(username,
                           password,
                           user_id=user_id,
-                          projectid=project_id,
-                          tenant_id=tenant_id,
+                          # NOTE(andreykurilin): HTTPClient will be replaced
+                          # fully by SessionClient soon, so there are no
+                          # reasons to spend time renaming projectid variable
+                          # to tenant_name/project_name.
+                          projectid=project_name,
+                          tenant_id=project_id,
                           auth_url=auth_url,
                           auth_token=auth_token,
                           insecure=insecure,
@@ -873,6 +877,9 @@ def Client(version, username=None, password=None, project_id=None,
     """
     if password:
         kwargs["password"] = password
+    if project_id:
+        kwargs["project_id"] = project_id
+
     _check_arguments(kwargs, "Ocata", "auth_plugin")
     _check_arguments(kwargs, "Ocata", "auth_system")
     if "no_cache" in kwargs:
@@ -899,12 +906,13 @@ def Client(version, username=None, password=None, project_id=None,
     #   allow additional arguments(kwargs), someone can use this variable name
     #   and face issue about unexpected behavior.
     _check_arguments(kwargs, "Ocata", "interface", right_name="endpoint_type")
+    _check_arguments(kwargs, "Ocata", "tenant_name", right_name="project_name")
+    _check_arguments(kwargs, "Ocata", "tenant_id", right_name="project_id")
 
     api_version, client_class = _get_client_class_and_version(version)
     kwargs.pop("direct_use", None)
     return client_class(api_version=api_version,
                         auth_url=auth_url,
                         direct_use=False,
-                        project_id=project_id,
                         username=username,
                         **kwargs)
