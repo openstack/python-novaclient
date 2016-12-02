@@ -68,7 +68,7 @@ class Client(object):
       directly. It should be done via `novaclient.client.Client` interface.
     """
 
-    def __init__(self, api_key=None,
+    def __init__(self,
                  api_version=None,
                  auth=None,
                  auth_token=None,
@@ -83,6 +83,7 @@ class Client(object):
                  insecure=False,
                  logger=None,
                  os_cache=False,
+                 password=None,
                  project_id=None,
                  proxy_tenant_id=None,
                  proxy_token=None,
@@ -99,7 +100,6 @@ class Client(object):
                  **kwargs):
         """Initialization of Client object.
 
-        :param str api_key: API Key
         :param api_version: Compute API version
         :type api_version: novaclient.api_versions.APIVersion
         :param str auth: Auth
@@ -115,6 +115,7 @@ class Client(object):
         :param bool insecure: Allow insecure
         :param logging.Logger logger: Logger instance to be used for all
             logging stuff
+        :param str password: User password
         :param bool os_cache: OS cache
         :param str project_id: Project ID
         :param str proxy_tenant_id: Tenant ID
@@ -138,16 +139,12 @@ class Client(object):
                          "'novaclient.client.Client' instead. Related lp "
                          "bug-report: 1493576"))
 
-        # FIXME(comstud): Rename the api_key argument above when we
-        # know it's not being used as keyword argument
-
         # NOTE(cyeoh): In the novaclient context (unlike Nova) the
         # project_id is not the same as the tenant_id. Here project_id
         # is a name (what the Nova API often refers to as a project or
         # tenant name) and tenant_id is a UUID (what the Nova API
         # often refers to as a project_id or tenant_id).
 
-        password = kwargs.pop('password', api_key)
         self.projectid = project_id
         self.tenant_id = tenant_id
         self.user_id = user_id

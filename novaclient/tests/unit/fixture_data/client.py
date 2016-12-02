@@ -56,7 +56,7 @@ class V1(fixtures.Fixture):
 
     def new_client(self):
         return client.Client("2", username='xx',
-                             api_key='xx',
+                             password='xx',
                              project_id='xx',
                              auth_url=self.identity_url)
 

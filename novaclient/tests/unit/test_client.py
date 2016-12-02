@@ -211,12 +211,6 @@ class ClientTest(utils.TestCase):
         self.assertTrue(fake_client.open_session.called)
         self.assertTrue(fake_client.close_session.called)
 
-    def test_client_with_password_in_args_and_kwargs(self):
-        # check that TypeError is not raised during instantiation of Client
-        cs = novaclient.client.Client("2", "user", "password", "project_id",
-                                      password='pass')
-        self.assertEqual('pass', cs.client.password)
-
     def test_get_password_simple(self):
         cs = novaclient.client.HTTPClient("user", "password", "", "")
         cs.password_func = mock.Mock()

@@ -850,7 +850,7 @@ def _check_arguments(kwargs, release, deprecated_name, right_name=None):
         warnings.warn(msg)
 
 
-def Client(version, username=None, api_key=None, project_id=None,
+def Client(version, username=None, password=None, project_id=None,
            auth_url=None, **kwargs):
     """Initialize client object based on given version.
 
@@ -872,19 +872,24 @@ def Client(version, username=None, api_key=None, project_id=None,
     session API. See "The novaclient Python API" page at
     python-novaclient's doc.
     """
-
+    if password:
+        kwargs["password"] = password
     _check_arguments(kwargs, "Ocata", "auth_plugin")
     _check_arguments(kwargs, "Ocata", "auth_system")
     if "no_cache" in kwargs:
-        _check_arguments(kwargs, "Ocata", "no_cache", "os_cache")
+        _check_arguments(kwargs, "Ocata", "no_cache", right_name="os_cache")
         # os_cache is not a fully compatible with no_cache, so we need to
         # apply this custom processing
         kwargs["os_cache"] = not kwargs["os_cache"]
-    _check_arguments(kwargs, "Ocata", "bypass_url", "endpoint_override")
+    _check_arguments(kwargs, "Ocata", "bypass_url",
+                     right_name="endpoint_override")
+    _check_arguments(kwargs, "Ocata", "api_key", right_name="password")
 
     api_version, client_class = _get_client_class_and_version(version)
     kwargs.pop("direct_use", None)
-    return client_class(username=username, api_key=api_key,
-                        project_id=project_id, auth_url=auth_url,
-                        api_version=api_version, direct_use=False,
+    return client_class(api_version=api_version,
+                        auth_url=auth_url,
+                        direct_use=False,
+                        project_id=project_id,
+                        username=username,
                         **kwargs)
