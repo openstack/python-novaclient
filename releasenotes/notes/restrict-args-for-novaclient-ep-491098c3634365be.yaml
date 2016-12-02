@@ -1,0 +1,5 @@
+---
+upgrade:
+  - novaclient.client.Client entry-point accepts only 5 positional arguments(
+    version, username, api_key, project_id, auth_url). Using positional
+    arguments for all other options become an error.
