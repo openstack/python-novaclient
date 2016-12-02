@@ -166,4 +166,4 @@ class SimpleReadOnlyNovaClientTest(base.ClientTestBase):
         self.assertRaises(exceptions.CommandFailed,
                           self.nova,
                           'list',
-                          flags='--bypass-url badurl')
+                          flags='--endpoint-override badurl')
