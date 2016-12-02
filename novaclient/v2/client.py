@@ -82,7 +82,6 @@ class Client(object):
                  http_log_debug=False,
                  insecure=False,
                  logger=None,
-                 no_cache=True,
                  os_cache=False,
                  project_id=None,
                  proxy_tenant_id=None,
@@ -116,7 +115,6 @@ class Client(object):
         :param bool insecure: Allow insecure
         :param logging.Logger logger: Logger instance to be used for all
             logging stuff
-        :param bool no_cache: No cache
         :param bool os_cache: OS cache
         :param str project_id: Project ID
         :param str proxy_tenant_id: Tenant ID
@@ -191,7 +189,7 @@ class Client(object):
         self.services = services.ServiceManager(self)
         self.fixed_ips = fixed_ips.FixedIPsManager(self)
         self.floating_ips_bulk = floating_ips_bulk.FloatingIPBulkManager(self)
-        self.os_cache = os_cache or not no_cache
+        self.os_cache = os_cache
         self.availability_zones = \
             availability_zones.AvailabilityZoneManager(self)
         self.server_groups = server_groups.ServerGroupsManager(self)
