@@ -12,7 +12,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import uuid
+from oslo_utils import uuidutils
 
 from novaclient.tests.functional import base
 
@@ -27,7 +27,7 @@ class TestDeviceTaggingCLI(base.ClientTestBase):
             '--nic net-id=%(net-uuid)s,tag=foo '
             '--block-device '
             'source=image,dest=volume,id=%(image)s,size=1,'
-            'bootindex=0,tag=bar' % {'name': str(uuid.uuid4()),
+            'bootindex=0,tag=bar' % {'name': uuidutils.generate_uuid(),
                                      'flavor': self.flavor.id,
                                      'net-uuid': self.network.id,
                                      'image': self.image.id}))

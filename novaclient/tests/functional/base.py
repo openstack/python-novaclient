@@ -12,7 +12,6 @@
 
 import os
 import time
-import uuid
 
 from cinderclient.v2 import client as cinderclient
 import fixtures
@@ -23,7 +22,7 @@ from keystoneauth1 import session as ksession
 from keystoneclient import client as keystoneclient
 from keystoneclient import discover as keystone_discover
 import os_client_config
-import six
+from oslo_utils import uuidutils
 import tempest.lib.cli.base
 import testtools
 
@@ -380,7 +379,7 @@ class ClientTestBase(testtools.TestCase):
 
         :param prefix: string prefix
         """
-        name = "%s-%s" % (prefix, six.text_type(uuid.uuid4()))
+        name = "%s-%s" % (prefix, uuidutils.generate_uuid())
         return name
 
     def _get_value_from_the_table(self, table, key):

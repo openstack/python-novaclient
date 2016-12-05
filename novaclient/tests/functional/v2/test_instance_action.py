@@ -10,8 +10,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import uuid
-
+from oslo_utils import uuidutils
 import six
 from tempest.lib import exceptions
 
@@ -31,13 +30,13 @@ class TestInstanceActionCLI(base.ClientTestBase):
             self.fail("%s is not failed on non existing instance." % cmd)
 
     def test_show_action_with_not_existing_instance(self):
-        name_or_uuid = str(uuid.uuid4())
-        request_id = str(uuid.uuid4())
+        name_or_uuid = uuidutils.generate_uuid()
+        request_id = uuidutils.generate_uuid()
         self._test_cmd_with_not_existing_instance(
             "instance-action", "%s %s" % (name_or_uuid, request_id))
 
     def test_list_actions_with_not_existing_instance(self):
-        name_or_uuid = str(uuid.uuid4())
+        name_or_uuid = uuidutils.generate_uuid()
         self._test_cmd_with_not_existing_instance("instance-action-list",
                                                   name_or_uuid)
 
