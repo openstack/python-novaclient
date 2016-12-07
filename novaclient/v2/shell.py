@@ -882,8 +882,8 @@ def _print_flavor_list(flavors, show_extra_specs=False):
     type=int,
     default=None,
     help=_("Maximum number of flavors to display. If limit is bigger than "
-           "'osapi_max_limit' option of Nova API, limit 'osapi_max_limit' "
-           "will be used instead."))
+           "'CONF.api.max_limit' option of Nova API, limit "
+           "'CONF.api.max_limit' will be used instead."))
 @utils.arg(
     '--sort-key',
     dest='sort_key',
@@ -1574,8 +1574,8 @@ def do_image_delete(cs, args):
     type=int,
     default=None,
     help=_("Maximum number of servers to display. If limit == -1, all servers "
-           "will be displayed. If limit is bigger than 'osapi_max_limit' "
-           "option of Nova API, limit 'osapi_max_limit' will be used "
+           "will be displayed. If limit is bigger than 'CONF.api.max_limit' "
+           "option of Nova API, limit 'CONF.api.max_limit' will be used "
            "instead."))
 @utils.arg(
     '--changes-since',
@@ -3298,8 +3298,8 @@ def do_keypair_list(cs, args):
     type=int,
     default=None,
     help=_("Maximum number of keypairs to display. If limit is bigger than "
-           "'osapi_max_limit' option of Nova API, limit 'osapi_max_limit' "
-           "will be used instead."))
+           "'CONF.api.max_limit' option of Nova API, limit "
+           "'CONF.api.max_limit' will be used instead."))
 def do_keypair_list(cs, args):
     """Print a list of keypairs for a user"""
     keypairs = cs.keypairs.list(args.user, args.marker, args.limit)
@@ -4169,8 +4169,8 @@ def do_hypervisor_list(cs, args):
     type=int,
     default=None,
     help=_("Maximum number of hypervisors to display. If limit is bigger than "
-           "'osapi_max_limit' option of Nova API, limit 'osapi_max_limit' "
-           "will be used instead."))
+           "'CONF.api.max_limit' option of Nova API, limit "
+           "'CONF.api.max_limit' will be used instead."))
 def do_hypervisor_list(cs, args):
     """List hypervisors."""
     _do_hypervisor_list(
