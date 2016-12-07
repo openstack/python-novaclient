@@ -76,7 +76,7 @@ gen_ref("v2", "Version 1.1, Version 2 API",
          "aggregates", "availability_zones", "certs", "fixed_ips",
          "floating_ip_pools", "floating_ips", "hypervisors", "keypairs",
          "limits", "networks", "quota_classes", "quotas",
-         "security_group_rules", "security_groups", "services",
+         "security_group_rules", "security_groups", "services", "usage",
          "virtual_interfaces", "volumes"])
 
 # -- General configuration ----------------------------------------------------
