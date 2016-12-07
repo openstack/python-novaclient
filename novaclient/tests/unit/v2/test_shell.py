@@ -1127,8 +1127,9 @@ class ShellTest(utils.TestCase):
                            {'metadata': {'test_key': 'test_value'}})
 
     def test_image_meta_del(self):
-        self.run_command('image-meta %s delete test_key=test_value' %
-                         FAKE_UUID_1)
+        _out, err = self.run_command('image-meta %s delete test_key' %
+                                     FAKE_UUID_1)
+        self.assertIn('Command image-meta is deprecated', err)
         self.assert_called('DELETE', '/images/%s/metadata/test_key' %
                            FAKE_UUID_1)
 
@@ -3097,6 +3098,7 @@ class ShellTest(utils.TestCase):
             34,  # doesn't require any changes in novaclient
             37,  # There are no versioned wrapped shell method changes for this
             38,  # doesn't require any changes in novaclient
+            39,  # There are no versioned wrapped shell method changes for this
         ])
         versions_supported = set(range(0,
                                  novaclient.API_MAX_VERSION.ver_minor + 1))

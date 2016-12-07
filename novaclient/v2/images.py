@@ -156,6 +156,7 @@ class ImageManager(base.ManagerWithFind):
             'or python-openstacksdk instead.', DeprecationWarning)
         return self._delete("/images/%s" % base.getid(image))
 
+    @api_versions.wraps('2.0', '2.38')
     def set_meta(self, image, metadata):
         """
         DEPRECATED: Set an images metadata
@@ -171,6 +172,7 @@ class ImageManager(base.ManagerWithFind):
         return self._create("/images/%s/metadata" % base.getid(image),
                             body, "metadata")
 
+    @api_versions.wraps('2.0', '2.38')
     def delete_meta(self, image, keys):
         """
         DEPRECATED: Delete metadata from an image

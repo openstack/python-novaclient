@@ -1,0 +1,6 @@
+---
+upgrade:
+  - Starting from microversion 2.39 'image-metadata' proxy API in Nova is
+    deprecated and python API bindings will not work, although 'image-meta'
+    CLI commands will still work, because of the fallback on the CLI to
+    version 2.35.
