@@ -379,7 +379,8 @@ class FakeHTTPClient(base_client.HTTPClient):
     def get_servers(self, **kw):
         return (200, {}, {"servers": [
             {'id': '1234', 'name': 'sample-server'},
-            {'id': '5678', 'name': 'sample-server2'}
+            {'id': '5678', 'name': 'sample-server2'},
+            {'id': '9014', 'name': 'help'}
         ]})
 
     def get_servers_detail(self, **kw):
@@ -510,6 +511,18 @@ class FakeHTTPClient(base_client.HTTPClient):
                 "hostId": "9e107d9d372bb6826bd81d3542a419d6",
                 "status": "ACTIVE",
             },
+            {
+                "id": '9014',
+                "name": "help",
+                "flavor": {
+                    "id": '80645cf4-6ad3-410a-bbc8-6f3e1e291f51',
+                },
+                "image": {
+                    "id": '3e861307-73a6-4d1f-8d68-f68b03223032',
+                },
+                "hostId": "9e107d9d372bb6826bd81d3542a419d6",
+                "status": "ACTIVE",
+            },
         ]})
 
     def post_servers(self, body, **kw):
@@ -565,6 +578,10 @@ class FakeHTTPClient(base_client.HTTPClient):
 
     def get_servers_9013(self, **kw):
         r = {'server': self.get_servers_detail()[2]['servers'][3]}
+        return (200, {}, r)
+
+    def get_servers_9014(self, **kw):
+        r = {'server': self.get_servers_detail()[2]['servers'][4]}
         return (200, {}, r)
 
     def delete_os_server_groups_12345(self, **kw):

@@ -621,8 +621,7 @@ class OpenStackComputeShell(object):
 
         self.setup_debugging(args.debug)
         self.extensions = []
-        do_help = ('help' in argv) or (
-            '--help' in argv) or ('-h' in argv) or not argv
+        do_help = args.help or not args_list or args_list[0] == 'help'
 
         # bash-completion should not require authentication
         skip_auth = do_help or (
