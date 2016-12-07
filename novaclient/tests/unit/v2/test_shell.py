@@ -1033,6 +1033,18 @@ class ShellTest(utils.TestCase):
         self.run_command('flavor-list --marker 1 --limit 2')
         self.assert_called('GET', '/flavors/detail?limit=2&marker=1')
 
+    def test_flavor_list_with_min_disk(self):
+        self.run_command('flavor-list --min-disk 20')
+        self.assert_called('GET', '/flavors/detail?minDisk=20')
+
+    def test_flavor_list_with_min_ram(self):
+        self.run_command('flavor-list --min-ram 512')
+        self.assert_called('GET', '/flavors/detail?minRam=512')
+
+    def test_flavor_list_with_sort_key_dir(self):
+        self.run_command('flavor-list --sort-key id --sort-dir asc')
+        self.assert_called('GET', '/flavors/detail?sort_dir=asc&sort_key=id')
+
     def test_flavor_show(self):
         self.run_command('flavor-show 1')
         self.assert_called_anytime('GET', '/flavors/1')
