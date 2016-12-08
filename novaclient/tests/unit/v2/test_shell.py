@@ -1070,7 +1070,7 @@ class ShellTest(utils.TestCase):
 
     def test_flavor_access_list_bad_filter(self):
         cmd = 'flavor-access-list --flavor 2 --tenant proj2'
-        _, err = self.run_command(cmd)
+        _out, err = self.run_command(cmd)
         # assert the deprecation warning for using --tenant
         self.assertIn('WARNING: Option "--tenant" is deprecated', err)
 
@@ -1103,13 +1103,13 @@ class ShellTest(utils.TestCase):
                            {'removeTenantAccess': {'tenant': 'proj2'}})
 
     def test_image_show(self):
-        _, err = self.run_command('image-show %s' % FAKE_UUID_1)
+        _out, err = self.run_command('image-show %s' % FAKE_UUID_1)
         self.assertIn('Command image-show is deprecated', err)
         self.assert_called('GET', '/v2/images/%s' % FAKE_UUID_1)
 
     def test_image_meta_set(self):
-        _, err = self.run_command('image-meta %s set test_key=test_value' %
-                                  FAKE_UUID_1)
+        _out, err = self.run_command('image-meta %s set test_key=test_value' %
+                                     FAKE_UUID_1)
         self.assertIn('Command image-meta is deprecated', err)
         self.assert_called('POST', '/images/%s/metadata' % FAKE_UUID_1,
                            {'metadata': {'test_key': 'test_value'}})
@@ -1147,7 +1147,7 @@ class ShellTest(utils.TestCase):
         )
 
     def test_create_image_show(self):
-        output, _ = self.run_command(
+        output, _err = self.run_command(
             'image-create sample-server mysnapshot --show')
         self.assert_called_anytime(
             'POST', '/servers/1234/action',
@@ -1176,7 +1176,7 @@ class ShellTest(utils.TestCase):
             'image-create sample-server mysnapshot_deleted --poll')
 
     def test_image_delete(self):
-        _, err = self.run_command('image-delete %s' % FAKE_UUID_1)
+        _out, err = self.run_command('image-delete %s' % FAKE_UUID_1)
         self.assertIn('Command image-delete is deprecated', err)
         self.assert_called('DELETE', '/images/%s' % FAKE_UUID_1)
 
@@ -1274,7 +1274,7 @@ class ShellTest(utils.TestCase):
                     mock.ANY, mock.ANY, mock.ANY, sortby_index=1)
 
     def test_list_fields(self):
-        output, _ = self.run_command(
+        output, _err = self.run_command(
             'list --fields '
             'host,security_groups,OS-EXT-MOD:some_thing')
         self.assert_called('GET', '/servers/detail')
@@ -1307,7 +1307,7 @@ class ShellTest(utils.TestCase):
                           self.run_command, 'list --changes-since 0123456789')
 
     def test_list_fields_redundant(self):
-        output, __ = self.run_command('list --fields id,status,status')
+        output, _err = self.run_command('list --fields id,status,status')
         header = output.splitlines()[1]
         self.assertEqual(1, header.count('ID'))
         self.assertEqual(0, header.count('Id'))
@@ -1335,7 +1335,8 @@ class ShellTest(utils.TestCase):
                            {'reboot': {'type': 'SOFT'}}, pos=-1)
 
     def test_rebuild(self):
-        output, _ = self.run_command('rebuild sample-server %s' % FAKE_UUID_1)
+        output, _err = self.run_command('rebuild sample-server %s'
+                                        % FAKE_UUID_1)
         self.assert_called('GET', '/servers?name=sample-server', pos=0)
         self.assert_called('GET', '/servers/1234', pos=1)
         self.assert_called('GET', '/v2/images/%s' % FAKE_UUID_1, pos=2)
@@ -1346,9 +1347,9 @@ class ShellTest(utils.TestCase):
         self.assertIn('adminPass', output)
 
     def test_rebuild_password(self):
-        output, _ = self.run_command('rebuild sample-server %s'
-                                     ' --rebuild-password asdf'
-                                     % FAKE_UUID_1)
+        output, _err = self.run_command('rebuild sample-server %s'
+                                        ' --rebuild-password asdf'
+                                        % FAKE_UUID_1)
         self.assert_called('GET', '/servers?name=sample-server', pos=0)
         self.assert_called('GET', '/servers/1234', pos=1)
         self.assert_called('GET', '/v2/images/%s' % FAKE_UUID_1, pos=2)
@@ -2465,7 +2466,7 @@ class ShellTest(utils.TestCase):
         self.assert_called('GET', '/os-networks')
 
     def test_network_list_fields(self):
-        output, _ = self.run_command(
+        output, _err = self.run_command(
             'network-list --fields '
             'vlan,project_id')
         self.assert_called('GET', '/os-networks')
@@ -2478,7 +2479,7 @@ class ShellTest(utils.TestCase):
                           'network-list --fields vlan,project_id,invalid')
 
     def test_network_list_redundant_fields(self):
-        output, __ = self.run_command(
+        output, _err = self.run_command(
             'network-list --fields label,project_id,project_id')
         header = output.splitlines()[1]
         self.assertEqual(1, header.count('Label'))
@@ -2644,7 +2645,7 @@ class ShellTest(utils.TestCase):
         self.run_command('limits --tenant 1234')
         self.assert_called('GET', '/limits?tenant_id=1234')
 
-        stdout, _ = self.run_command('limits --tenant 1234')
+        stdout, _err = self.run_command('limits --tenant 1234')
         self.assertIn('Verb', stdout)
         self.assertIn('Name', stdout)
 
