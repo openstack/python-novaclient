@@ -77,7 +77,7 @@ gen_ref("v2", "Version 1.1, Version 2 API",
          "floating_ip_pools", "floating_ips", "hypervisors", "keypairs",
          "limits", "networks", "quota_classes", "quotas",
          "security_group_rules", "security_groups", "services",
-         "virtual_interfaces", "volume_snapshots", "volumes", "volume_types"])
+         "virtual_interfaces", "volumes"])
 
 # -- General configuration ----------------------------------------------------
 
