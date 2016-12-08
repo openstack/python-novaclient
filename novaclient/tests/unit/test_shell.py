@@ -601,7 +601,7 @@ class ShellTest(utils.TestCase):
                    (service_type, version))
         self.make_env()
         self.shell(cmd)
-        _, client_kwargs = mock_client.call_args_list[0]
+        _client_args, client_kwargs = mock_client.call_args_list[0]
         self.assertEqual(service_type, client_kwargs['service_type'])
 
     @mock.patch('novaclient.client.Client')
