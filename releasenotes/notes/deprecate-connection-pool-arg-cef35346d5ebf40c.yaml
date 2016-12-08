@@ -1,0 +1,3 @@
+---
+deprecations:
+  - The **connection_pool** variable is deprecated now and will be ignored.

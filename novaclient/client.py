@@ -686,7 +686,6 @@ def _construct_http_client(api_version=None,
                            auth_url=None,
                            cacert=None,
                            cert=None,
-                           connection_pool=False,
                            endpoint_override=None,
                            endpoint_type='publicURL',
                            http_log_debug=False,
@@ -751,7 +750,6 @@ def _construct_http_client(api_version=None,
                           os_cache=os_cache,
                           http_log_debug=http_log_debug,
                           cacert=cacert,
-                          connection_pool=connection_pool,
                           api_version=api_version,
                           logger=logger)
 
@@ -911,6 +909,7 @@ def Client(version, username=None, password=None, project_id=None,
     _check_arguments(kwargs, "Ocata", "tenant_id", right_name="project_id")
     _check_arguments(kwargs, "Ocata", "proxy_tenant_id")
     _check_arguments(kwargs, "Ocata", "proxy_token")
+    _check_arguments(kwargs, "Ocata", "connection_pool")
 
     api_version, client_class = _get_client_class_and_version(version)
     kwargs.pop("direct_use", None)
