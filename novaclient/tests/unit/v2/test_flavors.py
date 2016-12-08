@@ -51,6 +51,16 @@ class FlavorsTest(utils.TestCase):
         self.assert_request_id(fl, fakes.FAKE_REQUEST_ID_LIST)
         self.cs.assert_called('GET', '/flavors/detail?limit=4&marker=1234')
 
+    def test_list_flavors_with_min_disk(self):
+        fl = self.cs.flavors.list(min_disk=20)
+        self.assert_request_id(fl, fakes.FAKE_REQUEST_ID_LIST)
+        self.cs.assert_called('GET', '/flavors/detail?minDisk=20')
+
+    def test_list_flavors_with_min_ram(self):
+        fl = self.cs.flavors.list(min_ram=512)
+        self.assert_request_id(fl, fakes.FAKE_REQUEST_ID_LIST)
+        self.cs.assert_called('GET', '/flavors/detail?minRam=512')
+
     def test_list_flavors_with_sort_key_dir(self):
         fl = self.cs.flavors.list(sort_key='id', sort_dir='asc')
         self.assert_request_id(fl, fakes.FAKE_REQUEST_ID_LIST)

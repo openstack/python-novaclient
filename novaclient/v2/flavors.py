@@ -92,8 +92,8 @@ class FlavorManager(base.ManagerWithFind):
     resource_class = Flavor
     is_alphanum_id_allowed = True
 
-    def list(self, detailed=True, is_public=True, marker=None, limit=None,
-             sort_key=None, sort_dir=None):
+    def list(self, detailed=True, is_public=True, marker=None, min_disk=None,
+             min_ram=None, limit=None, sort_key=None, sort_dir=None):
         """Get a list of all flavors.
 
         :param detailed: Whether flavor needs to be return with details
@@ -103,6 +103,8 @@ class FlavorManager(base.ManagerWithFind):
                           access to all flavor types.
         :param marker: Begin returning flavors that appear later in the flavor
                        list than that represented by this flavor id (optional).
+        :param min_disk: Filters the flavors by a minimum disk space, in GiB.
+        :param min_ram: Filters the flavors by a minimum RAM, in MB.
         :param limit: maximum number of flavors to return (optional).
         :param sort_key: Flavors list sort key (optional).
         :param sort_dir: Flavors list sort direction (optional).
@@ -114,6 +116,10 @@ class FlavorManager(base.ManagerWithFind):
         # and flavors from their own projects only.
         if marker:
             qparams['marker'] = str(marker)
+        if min_disk:
+            qparams['minDisk'] = int(min_disk)
+        if min_ram:
+            qparams['minRam'] = int(min_ram)
         if limit:
             qparams['limit'] = int(limit)
         if sort_key:
