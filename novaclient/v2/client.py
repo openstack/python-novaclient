@@ -74,6 +74,7 @@ class Client(object):
                  auth_token=None,
                  auth_url=None,
                  cacert=None,
+                 cert=None,
                  connection_pool=False,
                  direct_use=True,
                  endpoint_override=None,
@@ -84,6 +85,8 @@ class Client(object):
                  logger=None,
                  os_cache=False,
                  password=None,
+                 project_domain_id=None,
+                 project_domain_name=None,
                  project_id=None,
                  project_name=None,
                  region_name=None,
@@ -92,6 +95,8 @@ class Client(object):
                  session=None,
                  timeout=None,
                  timings=False,
+                 user_domain_id=None,
+                 user_domain_name=None,
                  user_id=None,
                  username=None,
                  volume_service_name=None,
@@ -103,7 +108,8 @@ class Client(object):
         :param str auth: Auth
         :param str auth_token: Auth token
         :param str auth_url: Auth URL
-        :param str cacert: cacert
+        :param str cacert: ca-certificate
+        :param str cert: certificate
         :param bool direct_use: Inner variable of novaclient. Do not use it
             outside novaclient. It's restricted.
         :param str endpoint_override: Bypass URL
@@ -115,6 +121,8 @@ class Client(object):
             logging stuff
         :param str password: User password
         :param bool os_cache: OS cache
+        :param str project_domain_id: ID of project domain
+        :param str project_domain_name: Name of project domain
         :param str project_id: Project/Tenant ID
         :param str project_name: Project/Tenant name
         :param str region_name: Region Name
@@ -123,6 +131,8 @@ class Client(object):
         :param str session: Session
         :param float timeout: API timeout, None or 0 disables
         :param bool timings: Timings
+        :param str user_domain_id: ID of user domain
+        :param str user_domain_name: Name of user domain
         :param str user_id: User ID
         :param str username: Username
         :param str volume_service_name: Volume Service Name
@@ -225,6 +235,7 @@ class Client(object):
             auth_token=auth_token,
             auth_url=auth_url,
             cacert=cacert,
+            cert=cert,
             connection_pool=connection_pool,
             endpoint_override=endpoint_override,
             endpoint_type=endpoint_type,
@@ -233,6 +244,8 @@ class Client(object):
             logger=self.logger,
             os_cache=self.os_cache,
             password=password,
+            project_domain_id=project_domain_id,
+            project_domain_name=project_domain_name,
             project_id=project_id,
             project_name=project_name,
             region_name=region_name,
@@ -241,6 +254,8 @@ class Client(object):
             session=session,
             timeout=timeout,
             timings=timings,
+            user_domain_id=user_domain_id,
+            user_domain_name=user_domain_name,
             user_id=user_id,
             username=username,
             volume_service_name=volume_service_name,
