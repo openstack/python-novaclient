@@ -1,0 +1,5 @@
+---
+deprecations:
+  - There are two arguments for proxying stuff (proxy_tenant_id and
+    proxy_token) in novaclient.client.Client entry-point. They were never
+    documented and tested.

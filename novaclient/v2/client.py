@@ -86,8 +86,6 @@ class Client(object):
                  password=None,
                  project_id=None,
                  project_name=None,
-                 proxy_tenant_id=None,
-                 proxy_token=None,
                  region_name=None,
                  service_name=None,
                  service_type='compute',
@@ -119,8 +117,6 @@ class Client(object):
         :param bool os_cache: OS cache
         :param str project_id: Project/Tenant ID
         :param str project_name: Project/Tenant name
-        :param str proxy_tenant_id: Tenant ID
-        :param str proxy_token: Proxy Token
         :param str region_name: Region Name
         :param str service_name: Service Name
         :param str service_type: Service Type
@@ -239,8 +235,6 @@ class Client(object):
             password=password,
             project_id=project_id,
             project_name=project_name,
-            proxy_tenant_id=proxy_tenant_id,
-            proxy_token=proxy_token,
             region_name=region_name,
             service_name=service_name,
             service_type=service_type,

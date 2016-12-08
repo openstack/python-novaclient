@@ -694,8 +694,6 @@ def _construct_http_client(api_version=None,
                            password=None,
                            project_id=None,
                            project_name=None,
-                           proxy_tenant_id=None,
-                           proxy_token=None,
                            region_name=None,
                            service_name=None,
                            service_type='compute',
@@ -738,8 +736,6 @@ def _construct_http_client(api_version=None,
                           auth_token=auth_token,
                           insecure=insecure,
                           timeout=timeout,
-                          proxy_token=proxy_token,
-                          proxy_tenant_id=proxy_tenant_id,
                           region_name=region_name,
                           endpoint_type=endpoint_type,
                           service_type=service_type,
@@ -908,6 +904,8 @@ def Client(version, username=None, password=None, project_id=None,
     _check_arguments(kwargs, "Ocata", "interface", right_name="endpoint_type")
     _check_arguments(kwargs, "Ocata", "tenant_name", right_name="project_name")
     _check_arguments(kwargs, "Ocata", "tenant_id", right_name="project_id")
+    _check_arguments(kwargs, "Ocata", "proxy_tenant_id")
+    _check_arguments(kwargs, "Ocata", "proxy_token")
 
     api_version, client_class = _get_client_class_and_version(version)
     kwargs.pop("direct_use", None)
