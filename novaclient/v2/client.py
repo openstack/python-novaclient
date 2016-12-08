@@ -98,7 +98,6 @@ class Client(object):
                  user_domain_name=None,
                  user_id=None,
                  username=None,
-                 volume_service_name=None,
                  **kwargs):
         """Initialization of Client object.
 
@@ -134,7 +133,6 @@ class Client(object):
         :param str user_domain_name: Name of user domain
         :param str user_id: User ID
         :param str username: Username
-        :param str volume_service_name: Volume Service Name
         """
         if direct_use:
             raise exceptions.Forbidden(
@@ -256,7 +254,6 @@ class Client(object):
             user_domain_name=user_domain_name,
             user_id=user_id,
             username=username,
-            volume_service_name=volume_service_name,
             **kwargs)
 
     @property

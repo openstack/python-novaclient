@@ -1,0 +1,7 @@
+---
+deprecations:
+  - CLI argument for volume_service_name was deprecated long time ago. All
+    novaclient's methods for communication with Volume API were deprecated and
+    removed. There is no need to leave **volume_service_name** argument of
+    novaclient.client.Client entry-point since it is not used anywhere,
+    so it is removed now.
