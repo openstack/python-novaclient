@@ -61,21 +61,24 @@ class FakeClient(fakes.FakeClient, client.Client):
                                project_id='project_id', auth_url='auth_url',
                                extensions=kwargs.get('extensions'),
                                direct_use=False, api_version=api_version)
-        self.client = FakeHTTPClient(api_version=api_version, **kwargs)
+        self.client = FakeSessionClient(api_version=api_version, **kwargs)
 
 
-class FakeHTTPClient(base_client.HTTPClient):
+class FakeSessionClient(base_client.SessionClient):
 
-    def __init__(self, **kwargs):
-        self.username = 'username'
-        self.password = 'password'
-        self.auth_url = 'auth_url'
-        self.tenant_id = 'tenant_id'
+    def __init__(self, *args, **kwargs):
+
         self.callstack = []
-        self.projectid = 'projectid'
-        self.user = 'user'
-        self.region_name = 'region_name'
-
+        self.auth = mock.Mock()
+        self.session = mock.Mock()
+        self.service_type = 'service_type'
+        self.service_name = None
+        self.endpoint_override = None
+        self.interface = None
+        self.region_name = None
+        self.version = None
+        self.api_version = kwargs.get('api_version')
+        self.auth.get_auth_ref.return_value.project_id = 'tenant_id'
         # determines which endpoint to return in get_endpoint()
         # NOTE(augustina): this is a hacky workaround, ultimately
         # we need to fix our whole mocking architecture (fixtures?)
@@ -83,17 +86,19 @@ class FakeHTTPClient(base_client.HTTPClient):
             self.endpoint_type = kwargs['endpoint_type']
         else:
             self.endpoint_type = 'endpoint_type'
+        self.logger = mock.MagicMock()
 
-        self.service_type = 'service_type'
-        self.service_name = 'service_name'
-        self.volume_service_name = 'volume_service_name'
-        self.timings = 'timings'
-        self.bypass_url = 'bypass_url'
-        self.os_cache = 'os_cache'
-        self.http_log_debug = 'http_log_debug'
-        self.last_request_id = None
-        self.management_url = self.get_endpoint()
-        self.api_version = kwargs.get("api_version")
+    def get_endpoint(self, **kwargs):
+        # check if endpoint matches expected format (eg, v2.1)
+        if (hasattr(self, 'endpoint_type') and
+                ENDPOINT_TYPE_RE.search(self.endpoint_type)):
+            return "http://nova-api:8774/%s/" % self.endpoint_type
+        else:
+            return (
+                "http://nova-api:8774/v2.1/190a755eef2e4aac9f06aa6be9786385")
+
+    def request(self, url, method, **kwargs):
+        return self._cs_request(url, method, **kwargs)
 
     def _cs_request(self, url, method, **kwargs):
         # Check that certain things are called correctly
@@ -155,15 +160,6 @@ class FakeHTTPClient(base_client.HTTPClient):
             "headers": headers,
         })
         return r, body
-
-    def get_endpoint(self, **kwargs):
-        # check if endpoint matches expected format (eg, v2.1)
-        if (hasattr(self, 'endpoint_type') and
-                ENDPOINT_TYPE_RE.search(self.endpoint_type)):
-            return "http://nova-api:8774/%s/" % self.endpoint_type
-        else:
-            return (
-                "http://nova-api:8774/v2.1/190a755eef2e4aac9f06aa6be9786385")
 
     def get_versions(self):
         return (200, FAKE_RESPONSE_HEADERS, {
@@ -2357,35 +2353,3 @@ class FakeHTTPClient(base_client.HTTPClient):
                  'status': 'completed',
                  'tag': 'tag',
                  'server_uuid': 'fake-uuid2'}]})
-
-
-class FakeSessionClient(fakes.FakeClient, client.Client):
-
-    def __init__(self, api_version, *args, **kwargs):
-        client.Client.__init__(self, username='username', password='password',
-                               project_id='project_id', auth_url='auth_url',
-                               extensions=kwargs.get('extensions'),
-                               direct_use=False, api_version=api_version)
-        self.client = FakeSessionMockClient(api_version=api_version, **kwargs)
-
-
-class FakeSessionMockClient(base_client.SessionClient, FakeHTTPClient):
-
-    def __init__(self, *args, **kwargs):
-
-        self.callstack = []
-        self.auth = mock.Mock()
-        self.session = mock.Mock()
-        self.session.get_endpoint.return_value = FakeHTTPClient.get_endpoint(
-            self)
-        self.service_type = 'service_type'
-        self.service_name = None
-        self.endpoint_override = None
-        self.interface = None
-        self.region_name = None
-        self.version = None
-        self.api_version = kwargs.get('api_version')
-        self.auth.get_auth_ref.return_value.project_id = 'tenant_id'
-
-    def request(self, url, method, **kwargs):
-        return self._cs_request(url, method, **kwargs)
