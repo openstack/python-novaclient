@@ -30,6 +30,7 @@ class ServerGroupsTest(utils.FixturedTestCase):
         result = self.cs.server_groups.list()
         self.assert_request_id(result, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('GET', '/os-server-groups')
+        self.assertEqual(4, len(result))
         for server_group in result:
             self.assertIsInstance(server_group,
                                   server_groups.ServerGroup)
@@ -37,10 +38,22 @@ class ServerGroupsTest(utils.FixturedTestCase):
     def test_list_server_groups_with_all_projects(self):
         result = self.cs.server_groups.list(all_projects=True)
         self.assert_request_id(result, fakes.FAKE_REQUEST_ID_LIST)
-        self.assert_called('GET', '/os-server-groups?all_projects')
+        self.assert_called('GET', '/os-server-groups?all_projects=True')
+        self.assertEqual(8, len(result))
         for server_group in result:
             self.assertIsInstance(server_group,
                                   server_groups.ServerGroup)
+
+    def test_list_server_groups_with_limit_and_offset(self):
+        all_groups = self.cs.server_groups.list()
+        result = self.cs.server_groups.list(limit=2, offset=1)
+        self.assert_request_id(result, fakes.FAKE_REQUEST_ID_LIST)
+        self.assert_called('GET', '/os-server-groups?limit=2&offset=1')
+        self.assertEqual(2, len(result))
+        for server_group in result:
+            self.assertIsInstance(server_group,
+                                  server_groups.ServerGroup)
+        self.assertEqual(all_groups[1:3], result)
 
     def test_create_server_group(self):
         kwargs = {'name': 'ig1',

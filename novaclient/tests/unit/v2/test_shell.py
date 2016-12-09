@@ -3149,7 +3149,11 @@ class ShellTest(utils.TestCase):
 
     def test_list_server_group_with_all_projects(self):
         self.run_command('server-group-list --all-projects')
-        self.assert_called('GET', '/os-server-groups?all_projects')
+        self.assert_called('GET', '/os-server-groups?all_projects=True')
+
+    def test_list_server_group_with_limit_and_offset(self):
+        self.run_command('server-group-list --limit 20 --offset 5')
+        self.assert_called('GET', '/os-server-groups?limit=20&offset=5')
 
     def test_list_server_os_virtual_interfaces(self):
         self.run_command('virtual-interface-list 1234')
