@@ -162,7 +162,7 @@ class Resource(RequestIdMixin):
         return None
 
     def _add_details(self, info):
-        for (k, v) in six.iteritems(info):
+        for (k, v) in info.items():
             try:
                 setattr(self, k, v)
                 self._info[k] = v
@@ -488,7 +488,7 @@ class BootingManagerWithFind(ManagerWithFind):
 
         bdm = []
 
-        for device_name, mapping in six.iteritems(block_device_mapping):
+        for device_name, mapping in block_device_mapping.items():
             #
             # The mapping is in the format:
             # <id>:[<type>]:[<size(GB)>]:[<delete_on_terminate>]

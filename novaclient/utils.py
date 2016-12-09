@@ -207,7 +207,7 @@ def _flatten(data, prefix=None):
 
     """
     if isinstance(data, dict):
-        for key, value in six.iteritems(data):
+        for key, value in data.items():
             new_key = '%s_%s' % (prefix, key) if prefix else key
             if isinstance(value, (dict, list)) and value:
                 for item in _flatten(value, new_key):
@@ -230,7 +230,7 @@ def flatten_dict(data):
     """
     data = data.copy()
     # Try and decode any nested JSON structures.
-    for key, value in six.iteritems(data):
+    for key, value in data.items():
         if isinstance(value, six.string_types):
             try:
                 data[key] = json.loads(value)

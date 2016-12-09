@@ -17,7 +17,6 @@
 Security group interface (1.1 extension).
 """
 
-import six
 from six.moves.urllib import parse
 
 from novaclient import api_versions
@@ -108,7 +107,7 @@ class SecurityGroupManager(base.ManagerWithFind):
         """
         search_opts = search_opts or {}
 
-        qparams = dict((k, v) for (k, v) in six.iteritems(search_opts) if v)
+        qparams = dict((k, v) for (k, v) in search_opts.items() if v)
 
         query_string = '?%s' % parse.urlencode(qparams) if qparams else ''
 
