@@ -3019,6 +3019,17 @@ class ShellTest(utils.TestCase):
             api_version='2.58')
         self.assertIn('Invalid changes-since value', six.text_type(ex))
 
+    def test_instance_usage_audit_log(self):
+        self.run_command('instance-usage-audit-log')
+        self.assert_called('GET', '/os-instance_usage_audit_log')
+
+    def test_instance_usage_audit_log_with_before(self):
+        self.run_command(
+            ["instance-usage-audit-log", "--before",
+             "2016-12-10 13:59:59.999999"])
+        self.assert_called('GET', '/os-instance_usage_audit_log'
+                                  '/2016-12-10%2013%3A59%3A59.999999')
+
     def test_cell_show(self):
         self.run_command('cell-show child_cell')
         self.assert_called('GET', '/os-cells/child_cell')

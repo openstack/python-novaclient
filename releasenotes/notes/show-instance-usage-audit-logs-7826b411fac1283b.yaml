@@ -1,0 +1,8 @@
+---
+features:
+  - Added new client API and CLI (``nova instance-usage-audit-log``)
+    to get server usage audit logs.
+    By default, it lists usage audits for all servers on all
+    compute hosts where usage auditing is configured.
+    If you specify the ``--before`` option, the result is filtered
+    by the date and time before which to list server usage audits.

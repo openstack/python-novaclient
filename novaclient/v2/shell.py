@@ -5084,3 +5084,20 @@ def do_migration_list(cs, args):
                                     changes_since=args.changes_since)
     # TODO(yikun): Output a "Marker" column if there is a next link?
     _print_migrations(cs, migrations)
+
+
+@utils.arg(
+    '--before',
+    dest='before',
+    metavar='<before>',
+    default=None,
+    help=_("Filters the response by the date and time before which to list "
+           "usage audits. The date and time stamp format is as follows: "
+           "CCYY-MM-DD hh:mm:ss.NNNNNN ex 2015-08-27 09:49:58 or "
+           "2015-08-27 09:49:58.123456."))
+def do_instance_usage_audit_log(cs, args):
+    """List/Get server usage audits."""
+    audit_log = cs.instance_usage_audit_log.get(before=args.before).to_dict()
+    if 'hosts_not_run' in audit_log:
+        audit_log['hosts_not_run'] = pprint.pformat(audit_log['hosts_not_run'])
+    utils.print_dict(audit_log)
