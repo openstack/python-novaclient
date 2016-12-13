@@ -158,6 +158,31 @@ def _parse_block_device_mapping_v2(args, image):
         for key, value in spec_dict.items():
             bdm_dict[CLIENT_BDM2_KEYS[key]] = value
 
+        source_type = bdm_dict.get('source_type')
+        if not source_type:
+            bdm_dict['source_type'] = 'blank'
+        elif source_type not in (
+                'volume', 'image', 'snapshot', 'blank'):
+            raise exceptions.CommandError(
+                _("The value of source_type key of --block-device "
+                  "should be one of 'volume', 'image', 'snapshot' "
+                  "or 'blank' but it was '%(action)s'")
+                % {'action': source_type})
+
+        destination_type = bdm_dict.get('destination_type')
+        if not destination_type:
+            source_type = bdm_dict['source_type']
+            if source_type in ('image', 'blank'):
+                bdm_dict['destination_type'] = 'local'
+            if source_type in ('snapshot', 'volume'):
+                bdm_dict['destination_type'] = 'volume'
+        elif destination_type not in ('local', 'volume'):
+            raise exceptions.CommandError(
+                _("The value of destination_type key of --block-device "
+                  "should be either 'local' or 'volume' but it "
+                  "was '%(action)s'")
+                % {'action': destination_type})
+
         # Convert the delete_on_termination to a boolean or set it to true by
         # default for local block devices when not specified.
         if 'delete_on_termination' in bdm_dict:
