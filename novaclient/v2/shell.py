@@ -19,7 +19,6 @@
 from __future__ import print_function
 
 import argparse
-import copy
 import datetime
 import functools
 import getpass
@@ -805,9 +804,10 @@ def _poll_for_status(poll_fn, obj_id, action, final_ok_states,
 def _translate_keys(collection, convert):
     for item in collection:
         keys = item.__dict__.keys()
+        item_dict = item.to_dict()
         for from_key, to_key in convert:
             if from_key in keys and to_key not in keys:
-                setattr(item, to_key, item._info[from_key])
+                setattr(item, to_key, item_dict[from_key])
 
 
 def _translate_extended_states(collection):
@@ -1138,7 +1138,7 @@ def do_network_list(cs, args):
 def do_network_show(cs, args):
     """Show details about the given network."""
     network = utils.find_resource(cs.networks, args.network)
-    utils.print_dict(network._info)
+    utils.print_dict(network.to_dict())
 
 
 @utils.arg(
@@ -1422,7 +1422,7 @@ def _extract_metadata(args):
 
 
 def _print_image(image):
-    info = image._info.copy()
+    info = image.to_dict()
 
     # ignore links, we don't need to present those
     info.pop('links', None)
@@ -1447,7 +1447,7 @@ def _print_image(image):
 
 
 def _print_flavor(flavor):
-    info = flavor._info.copy()
+    info = flavor.to_dict()
     # ignore links, we don't need to present those
     info.pop('links')
     info.update({"extra_specs": _print_flavor_extra_specs(flavor)})
@@ -2296,7 +2296,7 @@ def _print_server(cs, args, server=None, wrap=0):
     minimal = getattr(args, "minimal", False)
 
     networks = server.networks
-    info = server._info.copy()
+    info = server.to_dict()
     for network_label, address_list in networks.items():
         info['%s network' % network_label] = ', '.join(address_list)
 
@@ -2481,7 +2481,7 @@ def do_remove_fixed_ip(cs, args):
 
 
 def _print_volume(volume):
-    utils.print_dict(volume._info)
+    utils.print_dict(volume.to_dict())
 
 
 def _translate_availability_zone_keys(collection):
@@ -2924,7 +2924,7 @@ def do_dns_create_public_domain(cs, args):
 def _print_secgroup_rules(rules, show_source_group=True):
     class FormattedRule(object):
         def __init__(self, obj):
-            items = (obj if isinstance(obj, dict) else obj._info).items()
+            items = (obj if isinstance(obj, dict) else obj.to_dict()).items()
             for k, v in items:
                 if k == 'ip_range':
                     v = v.get('cidr')
@@ -3333,7 +3333,7 @@ def do_keypair_list(cs, args):
 
 
 def _print_keypair(keypair):
-    kp = keypair._info.copy()
+    kp = keypair.to_dict()
     pk = kp.pop('public_key')
     utils.print_dict(kp)
     print(_("Public key: %s") % pk)
@@ -3654,7 +3654,7 @@ def do_agent_create(cs, args):
     result = cs.agents.create(args.os, args.architecture,
                               args.version, args.url,
                               args.md5hash, args.hypervisor)
-    utils.print_dict(result._info.copy())
+    utils.print_dict(result.to_dict())
 
 
 @utils.arg('id', metavar='<id>', help=_('ID of the agent-build.'))
@@ -3671,7 +3671,7 @@ def do_agent_modify(cs, args):
     """Modify existing agent build."""
     result = cs.agents.update(args.id, args.version,
                               args.url, args.md5hash)
-    utils.print_dict(result._info)
+    utils.print_dict(result.to_dict())
 
 
 def _find_aggregate(cs, aggregate):
@@ -3926,7 +3926,7 @@ def do_server_migration_show(cs, args):
     """Get the migration of specified server."""
     server = _find_server(cs, args.server)
     migration = cs.server_migrations.get(server, args.migration)
-    utils.print_dict(migration._info)
+    utils.print_dict(migration.to_dict())
 
 
 @api_versions.wraps("2.24")
@@ -4242,7 +4242,7 @@ def do_hypervisor_servers(cs, args):
 def do_hypervisor_show(cs, args):
     """Display the details of the specified hypervisor."""
     hyper = _find_hypervisor(cs, args.hypervisor)
-    utils.print_dict(utils.flatten_dict(hyper._info), wrap=int(args.wrap))
+    utils.print_dict(utils.flatten_dict(hyper.to_dict()), wrap=int(args.wrap))
 
 
 @utils.arg(
@@ -4255,13 +4255,13 @@ def do_hypervisor_uptime(cs, args):
     hyper = cs.hypervisors.uptime(hyper)
 
     # Output the uptime information
-    utils.print_dict(hyper._info.copy())
+    utils.print_dict(hyper.to_dict())
 
 
 def do_hypervisor_stats(cs, args):
     """Get hypervisor statistics over all compute nodes."""
     stats = cs.hypervisor_stats.statistics()
-    utils.print_dict(stats._info.copy())
+    utils.print_dict(stats.to_dict())
 
 
 @utils.arg('server', metavar='<server>', help=_('Name or ID of server.'))
@@ -4964,41 +4964,39 @@ def _treeizeAvailabilityZone(zone):
     """Build a tree view for availability zones."""
     AvailabilityZone = availability_zones.AvailabilityZone
 
-    az = AvailabilityZone(zone.manager,
-                          copy.deepcopy(zone._info), zone._loaded)
+    az = AvailabilityZone(zone.manager, zone.to_dict(), zone._loaded)
     result = []
 
     # Zone tree view item
     az.zoneName = zone.zoneName
     az.zoneState = ('available'
                     if zone.zoneState['available'] else 'not available')
-    az._info['zoneName'] = az.zoneName
-    az._info['zoneState'] = az.zoneState
+    az.set_info('zoneName', az.zoneName)
+    az.set_info('zoneState', az.zoneState)
     result.append(az)
 
     if zone.hosts is not None:
         zone_hosts = sorted(zone.hosts.items(), key=lambda x: x[0])
         for (host, services) in zone_hosts:
             # Host tree view item
-            az = AvailabilityZone(zone.manager,
-                                  copy.deepcopy(zone._info), zone._loaded)
+            az = AvailabilityZone(zone.manager, zone.to_dict(), zone._loaded)
             az.zoneName = '|- %s' % host
             az.zoneState = ''
-            az._info['zoneName'] = az.zoneName
-            az._info['zoneState'] = az.zoneState
+            az.set_info('zoneName', az.zoneName)
+            az.set_info('zoneState', az.zoneState)
             result.append(az)
 
             for (svc, state) in services.items():
                 # Service tree view item
-                az = AvailabilityZone(zone.manager,
-                                      copy.deepcopy(zone._info), zone._loaded)
+                az = AvailabilityZone(zone.manager, zone.to_dict(),
+                                      zone._loaded)
                 az.zoneName = '| |- %s' % svc
                 az.zoneState = '%s %s %s' % (
                                'enabled' if state['active'] else 'disabled',
                                ':-)' if state['available'] else 'XXX',
                                state['updated_at'])
-                az._info['zoneName'] = az.zoneName
-                az._info['zoneState'] = az.zoneState
+                az.set_info('zoneName', az.zoneName)
+                az.set_info('zoneState', az.zoneState)
                 result.append(az)
     return result
 
@@ -5248,7 +5246,7 @@ def do_server_tag_delete_all(cs, args):
 def do_cell_show(cs, args):
     """Show details of a given cell."""
     cell = cs.cells.get(args.cell)
-    utils.print_dict(cell._info)
+    utils.print_dict(cell.to_dict())
 
 
 @utils.arg(
@@ -5485,7 +5483,7 @@ def do_instance_action(cs, args):
     else:
         server = _find_server(cs, args.server, raise_if_notfound=False)
     action_resource = cs.instance_action.get(server, args.request_id)
-    action = action_resource._info
+    action = action_resource.to_dict()
     if 'events' in action:
         action['events'] = pprint.pformat(action['events'])
     utils.print_dict(action)

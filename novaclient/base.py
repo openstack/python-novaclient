@@ -218,6 +218,9 @@ class Resource(RequestIdMixin):
     def set_loaded(self, val):
         self._loaded = val
 
+    def set_info(self, key, value):
+        self._info[key] = value
+
     def to_dict(self):
         return copy.deepcopy(self._info)
 
