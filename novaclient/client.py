@@ -688,11 +688,9 @@ def _construct_http_client(api_version=None,
                            cacert=None,
                            connection_pool=False,
                            endpoint_type='publicURL',
-                           extensions=None,
                            http_log_debug=False,
                            insecure=False,
                            interface=None,
-                           no_cache=True,
                            os_cache=False,
                            password=None,
                            project_id=None,
@@ -876,6 +874,11 @@ def Client(version, username=None, api_key=None, project_id=None,
 
     _check_arguments(kwargs, "Ocata", "auth_plugin")
     _check_arguments(kwargs, "Ocata", "auth_system")
+    if "no_cache" in kwargs:
+        _check_arguments(kwargs, "Ocata", "no_cache", "os_cache")
+        # os_cache is not a fully compatible with no_cache, so we need to
+        # apply this custom processing
+        kwargs["os_cache"] = not kwargs["os_cache"]
 
     api_version, client_class = _get_client_class_and_version(version)
     kwargs.pop("direct_use", None)

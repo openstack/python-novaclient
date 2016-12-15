@@ -184,18 +184,6 @@ class ClientTest(utils.TestCase):
         self.assertFalse(cs.os_cache)
         self.assertFalse(cs.client.os_cache)
 
-    def test_client_with_no_cache_enabled(self):
-        cs = novaclient.client.Client("2", "user", "password", "project_id",
-                                      auth_url="foo/v2", no_cache=True)
-        self.assertFalse(cs.os_cache)
-        self.assertFalse(cs.client.os_cache)
-
-    def test_client_with_no_cache_disabled(self):
-        cs = novaclient.client.Client("2", "user", "password", "project_id",
-                                      auth_url="foo/v2", no_cache=False)
-        self.assertTrue(cs.os_cache)
-        self.assertTrue(cs.client.os_cache)
-
     def test_client_set_management_url_v1_1(self):
         cs = novaclient.client.Client("2", "user", "password", "project_id",
                                       auth_url="foo/v2")

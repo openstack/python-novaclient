@@ -1,0 +1,5 @@
+---
+deprecations:
+  - novaclient.client.Client entry-point accepted two arguments with same
+    meaning (**no_cache** and **os_cache**). Since **os_cache** is more widely
+    used in our code, **no_cache** was deprecated.
