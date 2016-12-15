@@ -680,18 +680,36 @@ class HTTPClient(object):
         return self._extract_service_catalog(url, resp, respbody)
 
 
-def _construct_http_client(username=None, password=None, project_id=None,
-                           auth_url=None, insecure=False, timeout=None,
-                           proxy_tenant_id=None, proxy_token=None,
-                           region_name=None, endpoint_type='publicURL',
-                           extensions=None, service_type='compute',
-                           service_name=None, volume_service_name=None,
-                           timings=False, bypass_url=None, os_cache=False,
-                           no_cache=True, http_log_debug=False,
-                           auth_token=None, cacert=None, tenant_id=None,
-                           user_id=None, connection_pool=False, session=None,
-                           auth=None, user_agent='python-novaclient',
-                           interface=None, api_version=None, **kwargs):
+def _construct_http_client(api_version=None,
+                           auth=None,
+                           auth_token=None,
+                           auth_url=None,
+                           bypass_url=None,
+                           cacert=None,
+                           connection_pool=False,
+                           endpoint_type='publicURL',
+                           extensions=None,
+                           http_log_debug=False,
+                           insecure=False,
+                           interface=None,
+                           no_cache=True,
+                           os_cache=False,
+                           password=None,
+                           project_id=None,
+                           proxy_tenant_id=None,
+                           proxy_token=None,
+                           region_name=None,
+                           service_name=None,
+                           service_type='compute',
+                           session=None,
+                           tenant_id=None,
+                           timeout=None,
+                           timings=False,
+                           user_agent='python-novaclient',
+                           user_id=None,
+                           username=None,
+                           volume_service_name=None,
+                           **kwargs):
     # TODO(mordred): If not session, just make a Session, then return
     # SessionClient always
     if session:
