@@ -19,7 +19,7 @@ from keystoneauth1.exceptions import catalog as key_ex
 
 from novaclient import client
 from novaclient import exceptions
-from novaclient.i18n import _LE
+from novaclient.i18n import _LE, _LW
 from novaclient.v2 import agents
 from novaclient.v2 import aggregates
 from novaclient.v2 import assisted_volume_snapshots
@@ -85,13 +85,13 @@ class Client(object):
                  os_cache=False,
                  password=None,
                  project_id=None,
+                 project_name=None,
                  proxy_tenant_id=None,
                  proxy_token=None,
                  region_name=None,
                  service_name=None,
                  service_type='compute',
                  session=None,
-                 tenant_id=None,
                  timeout=None,
                  timings=False,
                  user_id=None,
@@ -117,14 +117,14 @@ class Client(object):
             logging stuff
         :param str password: User password
         :param bool os_cache: OS cache
-        :param str project_id: Project ID
+        :param str project_id: Project/Tenant ID
+        :param str project_name: Project/Tenant name
         :param str proxy_tenant_id: Tenant ID
         :param str proxy_token: Proxy Token
         :param str region_name: Region Name
         :param str service_name: Service Name
         :param str service_type: Service Type
         :param str session: Session
-        :param str tenant_id: Tenant ID
         :param float timeout: API timeout, None or 0 disables
         :param bool timings: Timings
         :param str user_id: User ID
@@ -145,8 +145,8 @@ class Client(object):
         # tenant name) and tenant_id is a UUID (what the Nova API
         # often refers to as a project_id or tenant_id).
 
-        self.projectid = project_id
-        self.tenant_id = tenant_id
+        self.project_id = project_id
+        self.project_name = project_name
         self.user_id = user_id
         self.flavors = flavors.FlavorManager(self)
         self.flavor_access = flavor_access.FlavorAccessManager(self)
@@ -238,13 +238,13 @@ class Client(object):
             os_cache=self.os_cache,
             password=password,
             project_id=project_id,
+            project_name=project_name,
             proxy_tenant_id=proxy_tenant_id,
             proxy_token=proxy_token,
             region_name=region_name,
             service_name=service_name,
             service_type=service_type,
             session=session,
-            tenant_id=tenant_id,
             timeout=timeout,
             timings=timings,
             user_id=user_id,
@@ -259,6 +259,18 @@ class Client(object):
     @api_version.setter
     def api_version(self, value):
         self.client.api_version = value
+
+    @property
+    def projectid(self):
+        self.logger.warning(_LW("Property 'projectid' is deprecated since "
+                                "Ocata. Use 'project_name' instead."))
+        return self.project_name
+
+    @property
+    def tenant_id(self):
+        self.logger.warning(_LW("Property 'tenant_id' is deprecated since "
+                                "Ocata. Use 'project_id' instead."))
+        return self.project_id
 
     @client._original_only
     def __enter__(self):
