@@ -73,10 +73,10 @@ class Client(object):
                  auth=None,
                  auth_token=None,
                  auth_url=None,
-                 bypass_url=None,
                  cacert=None,
                  connection_pool=False,
                  direct_use=True,
+                 endpoint_override=None,
                  endpoint_type='publicURL',
                  extensions=None,
                  http_log_debug=False,
@@ -105,10 +105,10 @@ class Client(object):
         :param str auth: Auth
         :param str auth_token: Auth token
         :param str auth_url: Auth URL
-        :param str bypass_url: Bypass URL
         :param str cacert: cacert
         :param bool direct_use: Inner variable of novaclient. Do not use it
             outside novaclient. It's restricted.
+        :param str endpoint_override: Bypass URL
         :param str endpoint_type: Endpoint Type
         :param str extensions: Extensions
         :param bool http_log_debug: Enable debugging for HTTP connections
@@ -231,9 +231,9 @@ class Client(object):
             auth=auth,
             auth_token=auth_token,
             auth_url=auth_url,
-            bypass_url=bypass_url,
             cacert=cacert,
             connection_pool=connection_pool,
+            endpoint_override=endpoint_override,
             endpoint_type=endpoint_type,
             http_log_debug=http_log_debug,
             insecure=insecure,

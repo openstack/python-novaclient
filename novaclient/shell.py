@@ -494,12 +494,21 @@ class OpenStackComputeShell(object):
                    '"X.latest", defaults to env[OS_COMPUTE_API_VERSION].'))
 
         parser.add_argument(
-            '--bypass-url',
+            '--endpoint-override',
             metavar='<bypass-url>',
-            dest='bypass_url',
-            default=utils.env('NOVACLIENT_BYPASS_URL'),
+            dest='endpoint_override',
+            default=utils.env('NOVACLIENT_ENDPOINT_OVERRIDE',
+                              'NOVACLIENT_BYPASS_URL'),
             help=_("Use this API endpoint instead of the Service Catalog. "
-                   "Defaults to env[NOVACLIENT_BYPASS_URL]."))
+                   "Defaults to env[NOVACLIENT_ENDPOINT_OVERRIDE]."))
+
+        parser.add_argument(
+            '--bypass-url',
+            action=DeprecatedAction,
+            use=_('use "%s"; this option will be removed after Pike OpenStack '
+                  'release.') % '--os-endpoint-override',
+            dest='endpoint_override',
+            help=argparse.SUPPRESS)
 
         self._append_global_identity_args(parser, argv)
 
@@ -658,7 +667,7 @@ class OpenStackComputeShell(object):
         service_type = args.service_type
         service_name = args.service_name
         volume_service_name = args.volume_service_name
-        bypass_url = args.bypass_url
+        endpoint_override = args.endpoint_override
         os_cache = args.os_cache
         cacert = args.os_cacert
         timeout = args.timeout
@@ -673,7 +682,6 @@ class OpenStackComputeShell(object):
         # Note if we don't auth we probably don't have a tenant ID so we can't
         # cache the token.
         auth_token = getattr(args, 'os_token', None)
-        management_url = bypass_url if bypass_url else None
 
         if not endpoint_type:
             endpoint_type = DEFAULT_NOVA_ENDPOINT_TYPE
@@ -688,13 +696,14 @@ class OpenStackComputeShell(object):
             # service type specified, we use default nova service type.
             service_type = DEFAULT_NOVA_SERVICE_TYPE
 
-        # If we have an auth token but no management_url, we must auth anyway.
+        # We should always auth unless we have a token and we're passing a
+        # specific endpoint
         # Expired tokens are handled by client.py:_cs_request
-        must_auth = not (auth_token and management_url)
+        must_auth = not (auth_token and endpoint_override)
 
         # Do not use Keystone session for cases with no session support.
         use_session = True
-        if bypass_url or os_cache or volume_service_name:
+        if endpoint_override or os_cache or volume_service_name:
             use_session = False
 
         # FIXME(usrleon): Here should be restrict for project id same as
@@ -757,7 +766,7 @@ class OpenStackComputeShell(object):
             extensions=self.extensions, service_type=service_type,
             service_name=service_name, auth_token=auth_token,
             volume_service_name=volume_service_name,
-            timings=args.timings, bypass_url=bypass_url,
+            timings=args.timings, endpoint_override=endpoint_override,
             os_cache=os_cache, http_log_debug=args.debug,
             cacert=cacert, timeout=timeout,
             session=keystone_session, auth=keystone_auth,
@@ -821,7 +830,7 @@ class OpenStackComputeShell(object):
             extensions=self.extensions, service_type=service_type,
             service_name=service_name, auth_token=auth_token,
             volume_service_name=volume_service_name,
-            timings=args.timings, bypass_url=bypass_url,
+            timings=args.timings, endpoint_override=endpoint_override,
             os_cache=os_cache, http_log_debug=args.debug,
             cacert=cacert, timeout=timeout,
             session=keystone_session, auth=keystone_auth)
@@ -836,12 +845,11 @@ class OpenStackComputeShell(object):
             # Allow commandline to override cache
             if not auth_token:
                 auth_token = helper.auth_token
-            if not management_url:
-                management_url = helper.management_url
-            if tenant_id and auth_token and management_url:
+            endpoint_override = endpoint_override or helper.management_url
+            if tenant_id and auth_token and endpoint_override:
                 self.cs.client.tenant_id = tenant_id
                 self.cs.client.auth_token = auth_token
-                self.cs.client.management_url = management_url
+                self.cs.client.management_url = endpoint_override
                 self.cs.client.password_func = lambda: helper.password
             else:
                 # We're missing something, so auth with user/pass and save

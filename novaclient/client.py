@@ -684,9 +684,9 @@ def _construct_http_client(api_version=None,
                            auth=None,
                            auth_token=None,
                            auth_url=None,
-                           bypass_url=None,
                            cacert=None,
                            connection_pool=False,
+                           endpoint_override=None,
                            endpoint_type='publicURL',
                            http_log_debug=False,
                            insecure=False,
@@ -711,15 +711,16 @@ def _construct_http_client(api_version=None,
     # TODO(mordred): If not session, just make a Session, then return
     # SessionClient always
     if session:
-        return SessionClient(session=session,
+        return SessionClient(api_version=api_version,
                              auth=auth,
+                             endpoint_override=endpoint_override,
                              interface=interface or endpoint_type,
-                             service_type=service_type,
                              region_name=region_name,
                              service_name=service_name,
-                             user_agent=user_agent,
+                             service_type=service_type,
+                             session=session,
                              timings=timings,
-                             api_version=api_version,
+                             user_agent=user_agent,
                              **kwargs)
     else:
         # FIXME(jamielennox): username and password are now optional. Need
@@ -742,7 +743,7 @@ def _construct_http_client(api_version=None,
                           service_name=service_name,
                           volume_service_name=volume_service_name,
                           timings=timings,
-                          bypass_url=bypass_url,
+                          bypass_url=endpoint_override,
                           os_cache=os_cache,
                           http_log_debug=http_log_debug,
                           cacert=cacert,
@@ -879,6 +880,7 @@ def Client(version, username=None, api_key=None, project_id=None,
         # os_cache is not a fully compatible with no_cache, so we need to
         # apply this custom processing
         kwargs["os_cache"] = not kwargs["os_cache"]
+    _check_arguments(kwargs, "Ocata", "bypass_url", "endpoint_override")
 
     api_version, client_class = _get_client_class_and_version(version)
     kwargs.pop("direct_use", None)
