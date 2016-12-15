@@ -50,10 +50,49 @@ class Fixture(base.Fixture):
             }
         ]
 
+        other_project_server_groups = [
+            {
+                "members": [],
+                "metadata": {},
+                "id": "11111111-1111-1111-1111-111111111111",
+                "policies": [],
+                "name": "ig4"
+            },
+            {
+                "members": [],
+                "metadata": {},
+                "id": "22222222-2222-2222-2222-222222222222",
+                "policies": ["anti-affinity"],
+                "name": "ig5"
+            },
+            {
+                "members": [],
+                "metadata": {"key": "value"},
+                "id": "33333333-3333-3333-3333-333333333333",
+                "policies": [], "name": "ig6"
+            },
+            {
+                "members": ["2dccb4a1-02b9-482a-aa23-5799490d6f5d"],
+                "metadata": {},
+                "id": "44444444-4444-4444-4444-444444444444",
+                "policies": ["anti-affinity"],
+                "name": "ig5"
+            }
+        ]
+
         headers = self.json_headers
 
         self.requests_mock.get(self.url(),
                                json={'server_groups': server_groups},
+                               headers=headers)
+
+        self.requests_mock.get(self.url(all_projects=True),
+                               json={'server_groups': server_groups
+                                     + other_project_server_groups},
+                               headers=headers)
+
+        self.requests_mock.get(self.url(limit=2, offset=1),
+                               json={'server_groups': server_groups[1:3]},
                                headers=headers)
 
         server = server_groups[0]

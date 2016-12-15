@@ -5034,6 +5034,23 @@ def _print_server_group_details(cs, server_group):    # noqa
 
 
 @utils.arg(
+    '--limit',
+    dest='limit',
+    metavar='<limit>',
+    type=int,
+    default=None,
+    help=_("Maximum number of server groups to display. If limit is bigger"
+           "than 'CONF.api.max_limit' option of Nova API, limit"
+           "'CONF.api.max_limit' will be used instead."))
+@utils.arg(
+    '--offset',
+    dest='offset',
+    metavar='<offset>',
+    type=int,
+    default=None,
+    help=_('The offset of groups list to display; use with limit to '
+           'return a slice of server groups.'))
+@utils.arg(
     '--all-projects',
     dest='all_projects',
     action='store_true',
@@ -5041,7 +5058,9 @@ def _print_server_group_details(cs, server_group):    # noqa
     help=_('Display server groups from all projects (Admin only).'))
 def do_server_group_list(cs, args):
     """Print a list of all server groups."""
-    server_groups = cs.server_groups.list(args.all_projects)
+    server_groups = cs.server_groups.list(all_projects=args.all_projects,
+                                          limit=args.limit,
+                                          offset=args.offset)
     _print_server_group_details(cs, server_groups)
 
 

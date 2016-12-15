@@ -17,6 +17,8 @@
 Server group interface.
 """
 
+from six.moves.urllib import parse
+
 from novaclient import base
 
 
@@ -43,13 +45,27 @@ class ServerGroupsManager(base.ManagerWithFind):
     """
     resource_class = ServerGroup
 
-    def list(self, all_projects=False):
+    def list(self, all_projects=False, limit=None, offset=None):
         """Get a list of all server groups.
 
-        :rtype: list of :class:`ServerGroup`.
+        :param all_projects: Lists server groups for all projects. (optional)
+        :param limit: Maximum number of server groups to return. (optional)
+        :param offset: Use with `limit` to return a slice of server
+                       groups. `offset` is where to start in the groups
+                       list. (optional)
+        :returns: list of :class:`ServerGroup`.
         """
-        all = '?all_projects' if all_projects else ''
-        return self._list('/os-server-groups%s' % all, 'server_groups')
+        qparams = {}
+        if all_projects:
+            qparams['all_projects'] = bool(all_projects)
+        if limit:
+            qparams['limit'] = int(limit)
+        if offset:
+            qparams['offset'] = int(offset)
+        qparams = sorted(qparams.items(), key=lambda x: x[0])
+        query_string = "?%s" % parse.urlencode(qparams) if qparams else ""
+        return self._list('/os-server-groups%s' % query_string,
+                          'server_groups')
 
     def get(self, id):
         """Get a specific server group.
