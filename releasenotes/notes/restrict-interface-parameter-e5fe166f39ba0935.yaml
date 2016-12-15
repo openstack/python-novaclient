@@ -1,0 +1,4 @@
+---
+deprecations:
+  - keyword argument **interface** of novaclient.client.Client entry-point was
+    deprecated in favor of **endpoint_type**;
