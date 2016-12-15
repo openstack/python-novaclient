@@ -808,7 +808,7 @@ def get_client_class(version):
 
 
 def Client(version, username=None, api_key=None, project_id=None,
-           auth_url=None, *args, **kwargs):
+           auth_url=None, **kwargs):
     """Initialize client object based on given version.
 
     HOW-TO:
@@ -829,15 +829,9 @@ def Client(version, username=None, api_key=None, project_id=None,
     session API. See "The novaclient Python API" page at
     python-novaclient's doc.
     """
-    if args:
-        warnings.warn("Only VERSION, USERNAME, PASSWORD, PROJECT_ID and "
-                      "AUTH_URL arguments can be specified as positional "
-                      "arguments. All other variables should be keyword "
-                      "arguments. Note that this will become an error in "
-                      "Ocata.")
     api_version, client_class = _get_client_class_and_version(version)
     kwargs.pop("direct_use", None)
     return client_class(username=username, api_key=api_key,
                         project_id=project_id, auth_url=auth_url,
                         api_version=api_version, direct_use=False,
-                        *args, **kwargs)
+                        **kwargs)
