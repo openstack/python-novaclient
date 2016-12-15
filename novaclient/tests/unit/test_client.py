@@ -13,7 +13,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-
+import copy
 import logging
 
 import fixtures
@@ -478,16 +478,16 @@ class SessionClientTest(utils.TestCase):
                                                     'compute')
 
 
-class DiscoverExtensionTest(utils.TestCase):
+class ClientsUtilsTest(utils.TestCase):
 
     @mock.patch("novaclient.client._discover_via_entry_points")
     @mock.patch("novaclient.client._discover_via_contrib_path")
     @mock.patch("novaclient.client._discover_via_python_path")
     @mock.patch("novaclient.extension.Extension")
-    def test_discover_all(self, mock_extension,
-                          mock_discover_via_python_path,
-                          mock_discover_via_contrib_path,
-                          mock_discover_via_entry_points):
+    def test_discover_extensions_all(self, mock_extension,
+                                     mock_discover_via_python_path,
+                                     mock_discover_via_contrib_path,
+                                     mock_discover_via_entry_points):
         def make_gen(start, end):
             def f(*args, **kwargs):
                 for i in range(start, end):
@@ -513,10 +513,9 @@ class DiscoverExtensionTest(utils.TestCase):
     @mock.patch("novaclient.client._discover_via_contrib_path")
     @mock.patch("novaclient.client._discover_via_python_path")
     @mock.patch("novaclient.extension.Extension")
-    def test_discover_only_contrib(self, mock_extension,
-                                   mock_discover_via_python_path,
-                                   mock_discover_via_contrib_path,
-                                   mock_discover_via_entry_points):
+    def test_discover_extensions_only_contrib(
+            self, mock_extension, mock_discover_via_python_path,
+            mock_discover_via_contrib_path, mock_discover_via_entry_points):
         mock_discover_via_contrib_path.return_value = [("name", "module")]
 
         version = novaclient.api_versions.APIVersion("2.0")
@@ -526,3 +525,39 @@ class DiscoverExtensionTest(utils.TestCase):
         self.assertFalse(mock_discover_via_python_path.called)
         self.assertFalse(mock_discover_via_entry_points.called)
         mock_extension.assert_called_once_with("name", "module")
+
+    @mock.patch("novaclient.client.warnings")
+    def test__check_arguments(self, mock_warnings):
+        release = "Coolest"
+
+        # no reference
+        novaclient.client._check_arguments({}, release=release,
+                                           deprecated_name="foo")
+        self.assertFalse(mock_warnings.warn.called)
+        novaclient.client._check_arguments({}, release=release,
+                                           deprecated_name="foo",
+                                           right_name="bar")
+        self.assertFalse(mock_warnings.warn.called)
+
+        # with alternative
+        original_kwargs = {"foo": "text"}
+        actual_kwargs = copy.copy(original_kwargs)
+        self.assertEqual(original_kwargs, actual_kwargs)
+        novaclient.client._check_arguments(actual_kwargs, release=release,
+                                           deprecated_name="foo",
+                                           right_name="bar")
+        self.assertNotEqual(original_kwargs, actual_kwargs)
+        self.assertEqual({"bar": original_kwargs["foo"]}, actual_kwargs)
+        self.assertTrue(mock_warnings.warn.called)
+
+        mock_warnings.warn.reset_mock()
+
+        # without alternative
+        original_kwargs = {"foo": "text"}
+        actual_kwargs = copy.copy(original_kwargs)
+        self.assertEqual(original_kwargs, actual_kwargs)
+        novaclient.client._check_arguments(actual_kwargs, release=release,
+                                           deprecated_name="foo")
+        self.assertNotEqual(original_kwargs, actual_kwargs)
+        self.assertEqual({}, actual_kwargs)
+        self.assertTrue(mock_warnings.warn.called)
