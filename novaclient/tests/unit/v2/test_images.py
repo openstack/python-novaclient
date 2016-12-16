@@ -105,3 +105,19 @@ class ImagesTest(utils.FixturedTestCase):
         self.cs.api_version = api_versions.APIVersion('2.36')
         self.assertRaises(exceptions.VersionNotFoundForAPIMethod,
                           self.cs.images.find, name="CentOS 5.2")
+
+    def test_delete_meta_2_39(self):
+        """Tests that 'delete_meta' method fails after microversion 2.39.
+        """
+        self.cs.api_version = api_versions.APIVersion('2.39')
+        self.assertRaises(exceptions.VersionNotFoundForAPIMethod,
+                          self.cs.images.delete_meta, 1,
+                          {'test_key': 'test_value'})
+
+    def test_set_meta_2_39(self):
+        """Tests that 'set_meta' method fails after microversion 2.39.
+        """
+        self.cs.api_version = api_versions.APIVersion('2.39')
+        self.assertRaises(exceptions.VersionNotFoundForAPIMethod,
+                          self.cs.images.set_meta, 1,
+                          {'test_key': 'test_value'})
