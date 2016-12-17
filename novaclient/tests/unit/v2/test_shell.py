@@ -75,7 +75,6 @@ class ShellTest(utils.TestCase):
             self.useFixture(fixtures.EnvironmentVariable(var,
                                                          self.FAKE_ENV[var]))
         self.shell = self.useFixture(ShellFixture()).shell
-
         self.useFixture(fixtures.MonkeyPatch(
             'novaclient.client.Client', fakes.FakeClient))
 
@@ -920,7 +919,7 @@ class ShellTest(utils.TestCase):
 
     @mock.patch('novaclient.v2.client.Client.has_neutron', return_value=False)
     @mock.patch(
-        'novaclient.tests.unit.v2.fakes.FakeHTTPClient.get_os_networks')
+        'novaclient.tests.unit.v2.fakes.FakeSessionClient.get_os_networks')
     def test_boot_nics_net_name_multiple_matches(self, mock_networks_list,
                                                  has_neutron):
         mock_networks_list.return_value = (200, {}, {
@@ -3251,16 +3250,6 @@ class ShellTest(utils.TestCase):
     def test_list_v2_26_not_tags_any(self):
         self.run_command('list --not-tags-any tag1,tag2', api_version='2.26')
         self.assert_called('GET', '/servers/detail?not-tags-any=tag1%2Ctag2')
-
-
-class ShellWithSessionClientTest(ShellTest):
-
-    def setUp(self):
-        """Run before each test."""
-        super(ShellWithSessionClientTest, self).setUp()
-
-        self.useFixture(fixtures.MonkeyPatch(
-            'novaclient.client.Client', fakes.FakeSessionClient))
 
 
 class GetSecgroupTest(utils.TestCase):

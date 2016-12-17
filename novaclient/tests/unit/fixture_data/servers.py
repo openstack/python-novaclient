@@ -444,7 +444,7 @@ class V1(Base):
         assert len(body.keys()) == 1
         action = list(body)[0]
 
-        if v2_fakes.FakeHTTPClient.check_server_actions(body):
+        if v2_fakes.FakeSessionClient.check_server_actions(body):
             # NOTE(snikitin): No need to do any operations here. This 'pass'
             # is needed to avoid AssertionError in the last 'else' statement
             # if we found 'action' in method check_server_actions and
