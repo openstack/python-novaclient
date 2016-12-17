@@ -662,6 +662,11 @@ class OpenStackComputeShell(object):
             if not args.os_user_domain_id and not args.os_user_domain_name:
                 setattr(args, "os_user_domain_id", "default")
 
+        os_project_domain_id = args.os_project_domain_id
+        os_project_domain_name = args.os_project_domain_name
+        os_user_domain_id = args.os_project_domain_id
+        os_user_domain_name = args.os_project_domain_name
+
         endpoint_type = args.endpoint_type
         insecure = args.insecure
         service_type = args.service_type
@@ -670,6 +675,7 @@ class OpenStackComputeShell(object):
         endpoint_override = args.endpoint_override
         os_cache = args.os_cache
         cacert = args.os_cacert
+        cert = args.os_cert
         timeout = args.timeout
 
         keystone_session = None
@@ -768,9 +774,13 @@ class OpenStackComputeShell(object):
             volume_service_name=volume_service_name,
             timings=args.timings, endpoint_override=endpoint_override,
             os_cache=os_cache, http_log_debug=args.debug,
-            cacert=cacert, timeout=timeout,
+            cacert=cacert, cert=cert, timeout=timeout,
             session=keystone_session, auth=keystone_auth,
-            logger=self.client_logger)
+            logger=self.client_logger,
+            project_domain_id=os_project_domain_id,
+            project_domain_name=os_project_domain_name,
+            user_domain_id=os_user_domain_id,
+            user_domain_name=os_user_domain_name)
 
         if not skip_auth:
             if not api_version.is_latest():
@@ -832,8 +842,12 @@ class OpenStackComputeShell(object):
             volume_service_name=volume_service_name,
             timings=args.timings, endpoint_override=endpoint_override,
             os_cache=os_cache, http_log_debug=args.debug,
-            cacert=cacert, timeout=timeout,
-            session=keystone_session, auth=keystone_auth)
+            cacert=cacert, cert=cert, timeout=timeout,
+            session=keystone_session, auth=keystone_auth,
+            project_domain_id=os_project_domain_id,
+            project_domain_name=os_project_domain_name,
+            user_domain_id=os_user_domain_id,
+            user_domain_name=os_user_domain_name)
 
         # Now check for the password/token of which pieces of the
         # identifying keyring key can come from the underlying client
