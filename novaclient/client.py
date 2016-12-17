@@ -121,6 +121,21 @@ class SessionClient(adapter.LegacyJsonAdapter):
     def reset_timings(self):
         self.times = []
 
+    @property
+    def management_url(self):
+        self.logger.warning(
+            _LW("Property `management_url` is deprecated for SessionClient. "
+                "Use `endpoint_override` instead."))
+        return self.endpoint_override
+
+    @management_url.setter
+    def management_url(self, value):
+        self.logger.warning(
+            _LW("Property `management_url` is deprecated for SessionClient. "
+                "It should be set via `endpoint_override` variable while class"
+                " initialization."))
+        self.endpoint_override = value
+
 
 def _original_only(f):
     """Decorator to indicate and enforce original HTTPClient object.

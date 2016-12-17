@@ -201,16 +201,6 @@ class ClientTest(utils.TestCase):
         cs.reset_timings()
         self.assertEqual(0, len(cs.get_timings()))
 
-    @mock.patch('novaclient.client.HTTPClient')
-    def test_contextmanager_v1_1(self, mock_http_client):
-        fake_client = mock.Mock()
-        mock_http_client.return_value = fake_client
-        with novaclient.client.Client("2", "user", "password", "project_id",
-                                      auth_url="foo/v2"):
-            pass
-        self.assertTrue(fake_client.open_session.called)
-        self.assertTrue(fake_client.close_session.called)
-
     def test_get_password_simple(self):
         cs = novaclient.client.HTTPClient("user", "password", "", "")
         cs.password_func = mock.Mock()

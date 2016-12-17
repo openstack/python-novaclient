@@ -379,14 +379,3 @@ class AuthenticationTests(utils.TestCase):
             self.assertTrue(mock_request.called)
 
         test_auth_call()
-
-    def test_auth_manual(self):
-        cs = Client("username", "password", project_name="project_id",
-                    auth_url=utils.AUTH_URL)
-
-        @mock.patch.object(cs.client, 'authenticate')
-        def test_auth_call(m):
-            cs.authenticate()
-            self.assertTrue(m.called)
-
-        test_auth_call()
