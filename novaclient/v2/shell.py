@@ -76,12 +76,6 @@ msg_deprecate_img = ('WARNING: Command %s is deprecated and will be removed '
                      'or openstackclient instead')
 
 
-# NOTE(mriedem): Remove this along with the deprecated commands in the first
-# python-novaclient release AFTER the nova server 15.0.0 'O' release.
-def emit_image_deprecation_warning(command_name):
-    print(msg_deprecate_img % command_name, file=sys.stderr)
-
-
 def deprecated_proxy(fn, msg_format):
     @functools.wraps(fn)
     def wrapped(cs, *args, **kwargs):
@@ -1360,9 +1354,9 @@ def do_network_create(cs, args):
     dest="limit",
     metavar="<limit>",
     help=_('Number of images to return per request.'))
+@deprecated_image
 def do_image_list(cs, _args):
-    """DEPRECATED: Print a list of available images to boot from."""
-    emit_image_deprecation_warning('image-list')
+    """Print a list of available images to boot from."""
     limit = _args.limit
     image_list = cs.images.list(limit=limit)
 
