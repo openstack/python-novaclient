@@ -29,6 +29,11 @@ def Client(*args, **kwargs):
 
 class AuthenticateAgainstKeystoneTests(utils.TestCase):
 
+    def setUp(self):
+        super(AuthenticateAgainstKeystoneTests, self).setUp()
+        self.skipTest("This TestCase checks deprecated authentication "
+                      "methods, which will be removed in separate patch.")
+
     def get_token(self, **kwargs):
         resp = fixture.V2Token(**kwargs)
         resp.set_scope()
@@ -315,6 +320,12 @@ class AuthenticateAgainstKeystoneTests(utils.TestCase):
 
 
 class AuthenticationTests(utils.TestCase):
+
+    def setUp(self):
+        super(AuthenticationTests, self).setUp()
+        self.skipTest("This TestCase checks deprecated authentication "
+                      "methods, which will be removed in separate patch.")
+
     def test_authenticate_success(self):
         cs = Client("username", "password", project_name="project_id",
                     auth_url=utils.AUTH_URL)

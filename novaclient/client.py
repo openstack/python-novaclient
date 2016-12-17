@@ -30,7 +30,8 @@ import re
 import warnings
 
 from keystoneauth1 import adapter
-from keystoneauth1 import session
+from keystoneauth1 import identity
+from keystoneauth1 import session as ksession
 from oslo_utils import importutils
 from oslo_utils import netutils
 import pkg_resources
@@ -65,7 +66,7 @@ class _ClientConnectionPool(object):
     def get(self, url):
         """Store and reuse HTTP adapters per Service URL."""
         if url not in self._adapters:
-            self._adapters[url] = session.TCPKeepAliveAdapter()
+            self._adapters[url] = ksession.TCPKeepAliveAdapter()
 
         return self._adapters[url]
 
@@ -705,6 +706,7 @@ def _construct_http_client(api_version=None,
                            endpoint_type='publicURL',
                            http_log_debug=False,
                            insecure=False,
+                           logger=None,
                            os_cache=False,
                            password=None,
                            project_domain_id=None,
@@ -724,49 +726,39 @@ def _construct_http_client(api_version=None,
                            username=None,
                            volume_service_name=None,
                            **kwargs):
-    # TODO(mordred): If not session, just make a Session, then return
-    # SessionClient always
-    if session:
-        return SessionClient(api_version=api_version,
-                             auth=auth,
-                             endpoint_override=endpoint_override,
-                             interface=endpoint_type,
-                             region_name=region_name,
-                             service_name=service_name,
-                             service_type=service_type,
-                             session=session,
-                             timings=timings,
-                             user_agent=user_agent,
-                             **kwargs)
-    else:
-        # FIXME(jamielennox): username and password are now optional. Need
-        # to test that they were provided in this mode.
-        logger = kwargs.get('logger')
-        return HTTPClient(username,
-                          password,
-                          user_id=user_id,
-                          # NOTE(andreykurilin): HTTPClient will be replaced
-                          # fully by SessionClient soon, so there are no
-                          # reasons to spend time renaming projectid variable
-                          # to tenant_name/project_name.
-                          projectid=project_name,
-                          tenant_id=project_id,
-                          auth_url=auth_url,
-                          auth_token=auth_token,
-                          insecure=insecure,
-                          timeout=timeout,
-                          region_name=region_name,
-                          endpoint_type=endpoint_type,
-                          service_type=service_type,
-                          service_name=service_name,
-                          volume_service_name=volume_service_name,
-                          timings=timings,
-                          bypass_url=endpoint_override,
-                          os_cache=os_cache,
-                          http_log_debug=http_log_debug,
-                          cacert=cacert,
-                          api_version=api_version,
-                          logger=logger)
+    if not session:
+        if not auth and auth_token:
+            auth = identity.Token(auth_url=auth_url,
+                                  token=auth_token)
+        elif not auth:
+            auth = identity.Password(username=username,
+                                     user_id=user_id,
+                                     password=password,
+                                     project_id=project_id,
+                                     project_name=project_name,
+                                     auth_url=auth_url,
+                                     project_domain_id=project_domain_id,
+                                     project_domain_name=project_domain_name,
+                                     user_domain_id=user_domain_id,
+                                     user_domain_name=user_domain_name)
+        session = ksession.Session(auth=auth,
+                                   verify=(cacert or not insecure),
+                                   timeout=timeout,
+                                   cert=cert,
+                                   user_agent=user_agent)
+
+    return SessionClient(api_version=api_version,
+                         auth=auth,
+                         endpoint_override=endpoint_override,
+                         interface=endpoint_type,
+                         logger=logger,
+                         region_name=region_name,
+                         service_name=service_name,
+                         service_type=service_type,
+                         session=session,
+                         timings=timings,
+                         user_agent=user_agent,
+                         **kwargs)
 
 
 def discover_extensions(version, only_contrib=False):

@@ -674,6 +674,7 @@ class OpenStackComputeShell(object):
         volume_service_name = args.volume_service_name
         endpoint_override = args.endpoint_override
         os_cache = args.os_cache
+        cert = args.os_cert
         cacert = args.os_cacert
         cert = args.os_cert
         timeout = args.timeout
@@ -707,11 +708,6 @@ class OpenStackComputeShell(object):
         # Expired tokens are handled by client.py:_cs_request
         must_auth = not (auth_token and endpoint_override)
 
-        # Do not use Keystone session for cases with no session support.
-        use_session = True
-        if endpoint_override or os_cache or volume_service_name:
-            use_session = False
-
         # FIXME(usrleon): Here should be restrict for project id same as
         # for os_username or os_password but for compatibility it is not.
         if must_auth and not skip_auth:
@@ -735,17 +731,12 @@ class OpenStackComputeShell(object):
                     _("You must provide an auth url "
                       "via either --os-auth-url or env[OS_AUTH_URL]."))
 
-            if use_session:
-                # Not using Nova auth plugin, so use keystone
-                with utils.record_time(self.times, args.timings,
-                                       'auth_url', args.os_auth_url):
-                    keystone_session = (
-                        loading.load_session_from_argparse_arguments(args))
-                    keystone_auth = (
-                        loading.load_auth_from_argparse_arguments(args))
-            else:
-                # set password for auth plugins
-                os_password = args.os_password
+            with utils.record_time(self.times, args.timings,
+                                   'auth_url', args.os_auth_url):
+                keystone_session = (
+                    loading.load_session_from_argparse_arguments(args))
+                keystone_auth = (
+                    loading.load_auth_from_argparse_arguments(args))
 
         if (not skip_auth and
                 not any([os_project_name, os_project_id])):
@@ -869,20 +860,6 @@ class OpenStackComputeShell(object):
                 # We're missing something, so auth with user/pass and save
                 # the result in our helper.
                 self.cs.client.password = helper.password
-
-        try:
-            # This does a couple of bits which are useful even if we've
-            # got the token + service URL already. It exits fast in that case.
-            if not utils.isunauthenticated(args.func):
-                if not use_session:
-                    # Only call authenticate() if Nova auth plugin is used.
-                    # If keystone is used, authentication is handled as part
-                    # of session.
-                    self.cs.authenticate()
-        except exc.Unauthorized:
-            raise exc.CommandError(_("Invalid OpenStack Nova credentials."))
-        except exc.AuthorizationFailure:
-            raise exc.CommandError(_("Unable to authorize user"))
 
         args.func(self.cs, args)
 

@@ -329,7 +329,7 @@ class Base(base.Fixture):
                                   headers=self.json_headers)
 
         def put_server_tag(request, context):
-            assert request.json() is None
+            assert request.text is None
             context.status_code = 201
             return None
 

@@ -1,0 +1,10 @@
+---
+upgrade:
+  - |
+    When using novaclient as a library (via novaclient.client.Client
+    entry-point), an internal implementation of HTTPClient was used if a
+    session object is not specified. For better user experience we switched
+    to using SessionClient which uses keystoneauth (Keystone folks maintain
+    this library) for all auth stuff.
+    The SessionClient interface is similar to HTTPClient, but there is a
+    small possibility that you will notice a difference.
