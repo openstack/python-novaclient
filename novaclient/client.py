@@ -138,7 +138,6 @@ def _construct_http_client(api_version=None,
                            user_domain_name=None,
                            user_id=None,
                            username=None,
-                           volume_service_name=None,
                            **kwargs):
     if not session:
         if not auth and auth_token:
@@ -331,6 +330,7 @@ def Client(version, username=None, password=None, project_id=None,
     _check_arguments(kwargs, "Ocata", "proxy_tenant_id")
     _check_arguments(kwargs, "Ocata", "proxy_token")
     _check_arguments(kwargs, "Ocata", "connection_pool")
+    _check_arguments(kwargs, "Ocata", "volume_service_name")
 
     api_version, client_class = _get_client_class_and_version(version)
     kwargs.pop("direct_use", None)

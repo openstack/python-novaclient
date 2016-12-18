@@ -231,7 +231,6 @@ class SecretsHelper(object):
             self.client.endpoint_type,
             self.client.service_type,
             self.client.service_name,
-            self.client.volume_service_name,
         ]
         for (index, key) in enumerate(keys):
             if key is None:
@@ -671,10 +670,8 @@ class OpenStackComputeShell(object):
         insecure = args.insecure
         service_type = args.service_type
         service_name = args.service_name
-        volume_service_name = args.volume_service_name
         endpoint_override = args.endpoint_override
         os_cache = args.os_cache
-        cert = args.os_cert
         cacert = args.os_cacert
         cert = args.os_cert
         timeout = args.timeout
@@ -762,7 +759,6 @@ class OpenStackComputeShell(object):
             region_name=os_region_name, endpoint_type=endpoint_type,
             extensions=self.extensions, service_type=service_type,
             service_name=service_name, auth_token=auth_token,
-            volume_service_name=volume_service_name,
             timings=args.timings, endpoint_override=endpoint_override,
             os_cache=os_cache, http_log_debug=args.debug,
             cacert=cacert, cert=cert, timeout=timeout,
@@ -830,7 +826,6 @@ class OpenStackComputeShell(object):
             region_name=os_region_name, endpoint_type=endpoint_type,
             extensions=self.extensions, service_type=service_type,
             service_name=service_name, auth_token=auth_token,
-            volume_service_name=volume_service_name,
             timings=args.timings, endpoint_override=endpoint_override,
             os_cache=os_cache, http_log_debug=args.debug,
             cacert=cacert, cert=cert, timeout=timeout,
