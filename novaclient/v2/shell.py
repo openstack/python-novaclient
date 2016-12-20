@@ -19,6 +19,7 @@
 from __future__ import print_function
 
 import argparse
+import collections
 import datetime
 import functools
 import getpass
@@ -3453,6 +3454,36 @@ def do_limits(cs, args):
     _print_absolute_limits(limits.absolute)
 
 
+def _get_usage_marker(usage):
+    marker = None
+    if hasattr(usage, 'server_usages') and usage.server_usages:
+        marker = usage.server_usages[-1]['instance_id']
+    return marker
+
+
+def _get_usage_list_marker(usage_list):
+    marker = None
+    if usage_list:
+        marker = _get_usage_marker(usage_list[-1])
+    return marker
+
+
+def _merge_usage(usage, next_usage):
+    usage.server_usages.extend(next_usage.server_usages)
+    usage.total_hours += next_usage.total_hours
+    usage.total_memory_mb_usage += next_usage.total_memory_mb_usage
+    usage.total_vcpus_usage += next_usage.total_vcpus_usage
+    usage.total_local_gb_usage += next_usage.total_local_gb_usage
+
+
+def _merge_usage_list(usages, next_usage_list):
+    for next_usage in next_usage_list:
+        if next_usage.tenant_id in usages:
+            _merge_usage(usages[next_usage.tenant_id], next_usage)
+        else:
+            usages[next_usage.tenant_id] = next_usage
+
+
 @utils.arg(
     '--start',
     metavar='<start>',
@@ -3490,7 +3521,23 @@ def do_usage_list(cs, args):
         setattr(u, simplerows[3], "%.2f" % u.total_vcpus_usage)
         setattr(u, simplerows[4], "%.2f" % u.total_local_gb_usage)
 
-    usage_list = cs.usage.list(start, end, detailed=True)
+    if cs.api_version < api_versions.APIVersion('2.40'):
+        usage_list = cs.usage.list(start, end, detailed=True)
+    else:
+        # If the number of instances used to calculate the usage is greater
+        # than CONF.api.max_limit, the usage will be split across multiple
+        # requests and the responses will need to be merged back together.
+        usages = collections.OrderedDict()
+        usage_list = cs.usage.list(start, end, detailed=True)
+        _merge_usage_list(usages, usage_list)
+        marker = _get_usage_list_marker(usage_list)
+        while marker:
+            next_usage_list = cs.usage.list(
+                start, end, detailed=True, marker=marker)
+            marker = _get_usage_list_marker(next_usage_list)
+            if marker:
+                _merge_usage_list(usages, next_usage_list)
+        usage_list = list(usages.values())
 
     print(_("Usage from %(start)s to %(end)s:") %
           {'start': start.strftime(dateformat),
@@ -3542,14 +3589,27 @@ def do_usage(cs, args):
         setattr(u, simplerows[3], "%.2f" % u.total_local_gb_usage)
 
     if args.tenant:
-        usage = cs.usage.get(args.tenant, start, end)
+        tenant_id = args.tenant
     else:
         if isinstance(cs.client, client.SessionClient):
             auth = cs.client.auth
-            project_id = auth.get_auth_ref(cs.client.session).project_id
-            usage = cs.usage.get(project_id, start, end)
+            tenant_id = auth.get_auth_ref(cs.client.session).project_id
         else:
-            usage = cs.usage.get(cs.client.tenant_id, start, end)
+            tenant_id = cs.client.tenant_id
+
+    if cs.api_version < api_versions.APIVersion('2.40'):
+        usage = cs.usage.get(tenant_id, start, end)
+    else:
+        # If the number of instances used to calculate the usage is greater
+        # than CONF.api.max_limit, the usage will be split across multiple
+        # requests and the responses will need to be merged back together.
+        usage = cs.usage.get(tenant_id, start, end)
+        marker = _get_usage_marker(usage)
+        while marker:
+            next_usage = cs.usage.get(tenant_id, start, end, marker=marker)
+            marker = _get_usage_marker(next_usage)
+            if marker:
+                _merge_usage(usage, next_usage)
 
     print(_("Usage from %(start)s to %(end)s:") %
           {'start': start.strftime(dateformat),
