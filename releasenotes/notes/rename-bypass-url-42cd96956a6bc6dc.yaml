@@ -3,8 +3,8 @@ deprecations:
   - The **--bypass-url** CLI argument was deprecated in favor of
     **--endpoint-override**
   - The **bypass_url** argument of novaclient.client.Client entry-point was
-    deprecated in favor of **endpoint_override**
+    deprecated in favor of **endpoint_override**.
 fixes:
-  - Inability to use bypass-url with keystone session
+  - Inability to use bypass-url with keystone session is fixed.
 features:
-  - You can use *bypass-url*/**endpoint-override** with Keystone V3
+  - You can use **bypass-url** / **endpoint-override** with Keystone V3.

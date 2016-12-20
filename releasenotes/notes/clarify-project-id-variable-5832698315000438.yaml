@@ -1,13 +1,13 @@
 ---
 deprecations:
-  - keyword argument **tenant_id** of novaclient.client.Client entry-point was
-    deprecated in favor of **project_id**;
-  - keyword argument **tenant_name** of novaclient.client.Client entry-point
-    was deprecated in favor of **project_name**;
+  - Keyword argument **tenant_id** of novaclient.client.Client entry-point was
+    deprecated in favor of **project_id**.
+  - Keyword argument **tenant_name** of novaclient.client.Client entry-point
+    was deprecated in favor of **project_name**.
 other:
   - The meaning of 'project_id' variable of novaclient.client.Client
     entry-point was not clear. In different cases it was used as ID or Name of
-    project(in terms of Keystone). The time to identify meaning is come, so now
-    project_id/tenant_id variables specifically mean about Project ID(in terms
-    of Keystone) and project_name/tenant_name variables take care about Project
-    Name(in terms of Keystone).
+    project (in terms of Keystone). The time to identify meaning is come, so
+    now project_id/tenant_id variables specifically mean Project ID (in terms
+    of Keystone) and project_name/tenant_name variables mean Project Name (in
+    terms of Keystone).
