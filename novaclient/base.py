@@ -210,7 +210,9 @@ class Resource(RequestIdMixin):
         return self._info == other._info
 
     def __ne__(self, other):
-        return not self.__eq__(other)
+        # Using not of '==' implementation because the not of
+        # __eq__, when it returns NotImplemented, is returning False.
+        return not self == other
 
     def is_loaded(self):
         return self._loaded

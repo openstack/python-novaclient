@@ -71,6 +71,12 @@ class BaseTest(utils.TestCase):
         r2 = base.Resource(None, {'name': 'joe', 'age': 12})
         self.assertEqual(r1, r2)
 
+    def test_ne(self):
+        # Two resources of different types: never equal
+        r1 = base.Resource(None, {'id': 1, 'name': 'test'})
+        r2 = object()
+        self.assertNotEqual(r1, r2)
+
     def test_findall_invalid_attribute(self):
         cs = fakes.FakeClient(api_versions.APIVersion("2.0"))
         # Make sure findall with an invalid attribute doesn't cause errors.
