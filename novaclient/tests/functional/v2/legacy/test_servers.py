@@ -11,9 +11,9 @@
 #    under the License.
 
 import datetime
-import uuid
 
 from oslo_utils import timeutils
+from oslo_utils import uuidutils
 
 from novaclient.tests.functional import base
 
@@ -25,7 +25,7 @@ class TestServersBootNovaClient(base.ClientTestBase):
 
     def _boot_server_with_legacy_bdm(self, bdm_params=()):
         volume_size = 1
-        volume_name = str(uuid.uuid4())
+        volume_name = uuidutils.generate_uuid()
         volume = self.cinder.volumes.create(size=volume_size,
                                             name=volume_name,
                                             imageRef=self.image.id)
@@ -38,7 +38,7 @@ class TestServersBootNovaClient(base.ClientTestBase):
         server_info = self.nova("boot", params=(
             "%(name)s --flavor %(flavor)s --poll "
             "--block-device-mapping vda=%(volume_id)s%(bdm_params)s" % {
-                "name": str(uuid.uuid4()), "flavor":
+                "name": uuidutils.generate_uuid(), "flavor":
                     self.flavor.id,
                 "volume_id": volume.id,
                 "bdm_params": bdm_params}))
@@ -60,7 +60,7 @@ class TestServersBootNovaClient(base.ClientTestBase):
     def test_boot_server_with_net_name(self):
         server_info = self.nova("boot", params=(
             "%(name)s --flavor %(flavor)s --image %(image)s --poll "
-            "--nic net-name=%(net-name)s" % {"name": str(uuid.uuid4()),
+            "--nic net-name=%(net-name)s" % {"name": uuidutils.generate_uuid(),
                                              "image": self.image.id,
                                              "flavor": self.flavor.id,
                                              "net-name": self.network.label}))
@@ -79,7 +79,7 @@ class TestServersListNovaClient(base.ClientTestBase):
         return [self._create_server(name) for i in range(number)]
 
     def test_list_with_limit(self):
-        name = str(uuid.uuid4())
+        name = uuidutils.generate_uuid()
         self._create_servers(name, 2)
         output = self.nova("list", params="--limit 1 --name %s" % name)
         # Cut header and footer of the table
@@ -88,7 +88,7 @@ class TestServersListNovaClient(base.ClientTestBase):
 
     def test_list_with_changes_since(self):
         now = datetime.datetime.isoformat(timeutils.utcnow())
-        name = str(uuid.uuid4())
+        name = uuidutils.generate_uuid()
         self._create_servers(name, 1)
         output = self.nova("list", params="--changes-since %s" % now)
         self.assertIn(name, output, output)
@@ -97,7 +97,7 @@ class TestServersListNovaClient(base.ClientTestBase):
         self.assertNotIn(name, output, output)
 
     def test_list_all_servers(self):
-        name = str(uuid.uuid4())
+        name = uuidutils.generate_uuid()
         precreated_servers = self._create_servers(name, 3)
         # there are no possibility to exceed the limit on API side, so just
         # check that "-1" limit processes by novaclient side

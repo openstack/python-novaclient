@@ -10,9 +10,8 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-import uuid
-
 from keystoneauth1 import session
+from oslo_utils import uuidutils
 
 from novaclient import api_versions
 from novaclient.tests.unit import utils
@@ -23,8 +22,8 @@ class ClientTest(utils.TestCase):
 
     def test_adapter_properties(self):
         # sample of properties, there are many more
-        user_agent = uuid.uuid4().hex
-        endpoint_override = uuid.uuid4().hex
+        user_agent = uuidutils.generate_uuid(dashed=False)
+        endpoint_override = uuidutils.generate_uuid(dashed=False)
 
         s = session.Session()
         c = client.Client(session=s,
@@ -37,7 +36,7 @@ class ClientTest(utils.TestCase):
         self.assertEqual(endpoint_override, c.client.endpoint_override)
 
     def test_passing_endpoint_type(self):
-        endpoint_type = uuid.uuid4().hex
+        endpoint_type = uuidutils.generate_uuid(dashed=False)
 
         s = session.Session()
         c = client.Client(session=s,
