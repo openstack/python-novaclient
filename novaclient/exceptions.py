@@ -24,6 +24,14 @@ class UnsupportedVersion(Exception):
     pass
 
 
+class UnsupportedConsoleType(Exception):
+    """Indicates that the user is trying to use an unsupported
+    console type when retrieving console urls of servers.
+    """
+    def __init__(self, console_type):
+        self.message = 'Unsupported console_type "%s"' % console_type
+
+
 class UnsupportedAttribute(AttributeError):
     """Indicates that the user is trying to transmit the argument to a method,
     which is not supported by selected version.

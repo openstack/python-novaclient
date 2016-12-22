@@ -35,6 +35,23 @@ from novaclient.v2 import security_groups
 
 REBOOT_SOFT, REBOOT_HARD = 'SOFT', 'HARD'
 
+CONSOLE_TYPE_ACTION_MAPPING = {
+    'novnc': 'os-getVNCConsole',
+    'xvpvnc': 'os-getVNCConsole',
+    'spice-html5': 'os-getSPICEConsole',
+    'rdp-html5': 'os-getRDPConsole',
+    'serial': 'os-getSerialConsole'
+}
+
+CONSOLE_TYPE_PROTOCOL_MAPPING = {
+    'novnc': 'vnc',
+    'xvpvnc': 'vnc',
+    'spice-html5': 'spice',
+    'rdp-html5': 'rdp',
+    'serial': 'serial',
+    'webmks': 'mks'
+}
+
 
 class Server(base.Resource):
     HUMAN_ID = True
@@ -120,6 +137,15 @@ class Server(base.Resource):
 
         """
         return self.manager.get_mks_console(self)
+
+    def get_console_url(self, console_type):
+        """
+        Retrieve a console of a particular protocol and console_type
+
+        :param console_type: Type of console
+        """
+
+        return self.manager.get_console_url(self, console_type)
 
     def get_password(self, private_key=None):
         """
@@ -904,7 +930,7 @@ class ServerManager(base.BootingManagerWithFind):
         :returns: An instance of novaclient.base.DictWithMeta
         """
 
-        return self._action('os-getVNCConsole', server, {'type': console_type})
+        return self.get_console_url(server, console_type)
 
     @api_versions.wraps('2.0', '2.5')
     def get_spice_console(self, server, console_type):
@@ -916,8 +942,7 @@ class ServerManager(base.BootingManagerWithFind):
         :returns: An instance of novaclient.base.DictWithMeta
         """
 
-        return self._action('os-getSPICEConsole', server,
-                            {'type': console_type})
+        return self.get_console_url(server, console_type)
 
     @api_versions.wraps('2.0', '2.5')
     def get_rdp_console(self, server, console_type):
@@ -929,8 +954,7 @@ class ServerManager(base.BootingManagerWithFind):
         :returns: An instance of novaclient.base.DictWithMeta
         """
 
-        return self._action('os-getRDPConsole', server,
-                            {'type': console_type})
+        return self.get_console_url(server, console_type)
 
     @api_versions.wraps('2.0', '2.5')
     def get_serial_console(self, server, console_type):
@@ -942,8 +966,29 @@ class ServerManager(base.BootingManagerWithFind):
         :returns: An instance of novaclient.base.DictWithMeta
         """
 
-        return self._action('os-getSerialConsole', server,
-                            {'type': console_type})
+        return self.get_console_url(server, console_type)
+
+    def _get_protocol(self, console_type):
+        protocol = CONSOLE_TYPE_PROTOCOL_MAPPING.get(console_type)
+        if not protocol:
+            raise exceptions.UnsupportedConsoleType(console_type)
+
+        return protocol
+
+    @api_versions.wraps('2.0', '2.5')
+    def get_console_url(self, server, console_type):
+        """
+        Retrieve a console url of a server.
+
+        :param server: server to get console url for
+        :param console_type: type can be novnc, xvpvnc, spice-html5,
+                             rdp-html5 and serial.
+        """
+
+        action = CONSOLE_TYPE_ACTION_MAPPING.get(console_type)
+        if not action:
+            raise exceptions.UnsupportedConsoleType(console_type)
+        return self._action(action, server, {'type': console_type})
 
     @api_versions.wraps('2.6')
     def get_vnc_console(self, server, console_type):
@@ -955,8 +1000,7 @@ class ServerManager(base.BootingManagerWithFind):
         :returns: An instance of novaclient.base.DictWithMeta
         """
 
-        return self._console(server,
-                             {'protocol': 'vnc', 'type': console_type})
+        return self.get_console_url(server, console_type)
 
     @api_versions.wraps('2.6')
     def get_spice_console(self, server, console_type):
@@ -968,8 +1012,7 @@ class ServerManager(base.BootingManagerWithFind):
         :returns: An instance of novaclient.base.DictWithMeta
         """
 
-        return self._console(server,
-                             {'protocol': 'spice', 'type': console_type})
+        return self.get_console_url(server, console_type)
 
     @api_versions.wraps('2.6')
     def get_rdp_console(self, server, console_type):
@@ -981,8 +1024,7 @@ class ServerManager(base.BootingManagerWithFind):
         :returns: An instance of novaclient.base.DictWithMeta
         """
 
-        return self._console(server,
-                             {'protocol': 'rdp', 'type': console_type})
+        return self.get_console_url(server, console_type)
 
     @api_versions.wraps('2.6')
     def get_serial_console(self, server, console_type):
@@ -994,8 +1036,7 @@ class ServerManager(base.BootingManagerWithFind):
         :returns: An instance of novaclient.base.DictWithMeta
         """
 
-        return self._console(server,
-                             {'protocol': 'serial', 'type': console_type})
+        return self.get_console_url(server, console_type)
 
     @api_versions.wraps('2.8')
     def get_mks_console(self, server):
@@ -1006,8 +1047,30 @@ class ServerManager(base.BootingManagerWithFind):
         :returns: An instance of novaclient.base.DictWithMeta
         """
 
-        return self._console(server,
-                             {'protocol': 'mks', 'type': 'webmks'})
+        return self.get_console_url(server, 'webmks')
+
+    @api_versions.wraps('2.6')
+    def get_console_url(self, server, console_type):
+        """
+        Retrieve a console url of a server.
+
+        :param server: server to get console url for
+        :param console_type: type can be novnc/xvpvnc for protocol vnc;
+                             spice-html5 for protocol spice; rdp-html5 for
+                             protocol rdp; serial for protocol serial.
+                             webmks for protocol mks (since version 2.8).
+        """
+
+        if self.api_version < api_versions.APIVersion('2.8'):
+            if console_type == 'webmks':
+                raise exceptions.UnsupportedConsoleType(console_type)
+
+        protocol = self._get_protocol(console_type)
+        body = {'remote_console': {'protocol': protocol,
+                                   'type': console_type}}
+        url = '/servers/%s/remote-consoles' % base.getid(server)
+        resp, body = self.api.client.post(url, body=body)
+        return self.convert_into_with_meta(body, resp)
 
     def get_password(self, server, private_key=None):
         """
@@ -1854,15 +1917,6 @@ class ServerManager(base.BootingManagerWithFind):
         self.run_hooks('modify_body_for_action', body, **kwargs)
         url = '/servers/%s/action' % base.getid(server)
         return self.api.client.post(url, body=body)
-
-    def _console(self, server, info=None, **kwargs):
-        """
-        Retrieve a console of a particular protocol -- vnc/spice/rdp/serial
-        """
-        body = {'remote_console': info}
-        url = '/servers/%s/remote-consoles' % base.getid(server)
-        resp, body = self.api.client.post(url, body=body)
-        return self.convert_into_with_meta(body, resp)
 
     @api_versions.wraps('2.26')
     def tag_list(self, server):
