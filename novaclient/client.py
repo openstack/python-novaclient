@@ -253,19 +253,28 @@ def _check_arguments(kwargs, release, deprecated_name, right_name=None):
     message, renames key to right one it needed.
     """
     if deprecated_name in kwargs:
-        msg = _LW("The '%(old)s' argument is deprecated in %(release)s and "
-                  "its use may result in errors in future releases.") % {
-            "old": deprecated_name, "release": release}
         if right_name:
             if right_name in kwargs:
-                msg += _LW(" As '%(new)s' is provided, the '%(old)s' argument "
-                           "will be ignored.") % {"old": deprecated_name,
-                                                  "new": right_name}
+                msg = _LW("The '%(old)s' argument is deprecated in "
+                          "%(release)s and its use may result in errors "
+                          "in future releases. As '%(new)s' is provided, "
+                          "the '%(old)s' argument will be ignored.") % {
+                    "old": deprecated_name, "release": release,
+                    "new": right_name}
                 kwargs.pop(deprecated_name)
             else:
-                msg += _LW(" Use '%s' instead.") % right_name
+                msg = _LW("The '%(old)s' argument is deprecated in "
+                          "%(release)s and its use may result in errors in "
+                          "future releases. Use '%(right)s' instead.") % {
+                    "old": deprecated_name, "release": release,
+                    "right": right_name}
                 kwargs[right_name] = kwargs.pop(deprecated_name)
+
         else:
+            msg = _LW("The '%(old)s' argument is deprecated in %(release)s "
+                      "and its use may result in errors in future "
+                      "releases.") % {
+                "old": deprecated_name, "release": release}
             # just ignore it
             kwargs.pop(deprecated_name)
 
