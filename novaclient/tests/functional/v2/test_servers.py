@@ -158,6 +158,12 @@ class TestServersTagsV226(base.ClientTestBase):
         self.assertEqual(["t1", "t2", "t3"],
                          self.client.servers.tag_list(uuid))
 
+    def test_add_many(self):
+        uuid = self._boot_server_with_tags()
+        self.nova("server-tag-add %s t3 t4" % uuid)
+        self.assertEqual(["t1", "t2", "t3", "t4"],
+                         self.client.servers.tag_list(uuid))
+
     def test_set(self):
         uuid = self._boot_server_with_tags()
         self.nova("server-tag-set %s t3 t4" % uuid)
@@ -167,6 +173,11 @@ class TestServersTagsV226(base.ClientTestBase):
         uuid = self._boot_server_with_tags()
         self.nova("server-tag-delete %s t2" % uuid)
         self.assertEqual(["t1"], self.client.servers.tag_list(uuid))
+
+    def test_delete_many(self):
+        uuid = self._boot_server_with_tags()
+        self.nova("server-tag-delete %s t1 t2" % uuid)
+        self.assertEqual([], self.client.servers.tag_list(uuid))
 
     def test_delete_all(self):
         uuid = self._boot_server_with_tags()
