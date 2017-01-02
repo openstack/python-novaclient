@@ -35,7 +35,7 @@ class TenantNetworkExtensionTests(utils.TestCase):
         nets = self.cs.tenant_networks.list()
         self.assert_request_id(nets, fakes.FAKE_REQUEST_ID_LIST)
         self.cs.assert_called('GET', '/os-tenant-networks')
-        self.assertTrue(len(nets) > 0)
+        self.assertGreater(len(nets), 0)
 
     def test_get_tenant_network(self):
         net = self.cs.tenant_networks.get(1)
