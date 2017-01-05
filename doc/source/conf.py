@@ -70,18 +70,17 @@ def gen_ref(ver, title, names):
                              "signs": "=" * len(name),
                              "pkg": pkg, "name": name})
 
+
+def get_module_names():
+    names = os.listdir(os.path.join(ROOT, 'novaclient', 'v2'))
+    exclude = ['shell.py', '__init__.py']
+    for name in names:
+        if name.endswith('.py') and name not in exclude:
+            yield name.strip('.py')
+
+
 gen_ref(None, "Exceptions", ["exceptions"])
-gen_ref("v2", "Version 1.1, Version 2 API",
-        ["agents", "aggregates", "assisted_volume_snapshots",
-         "availability_zones", "cells", "certs", "client", "cloudpipe",
-         "fixed_ips", "flavor_access", "flavors", "floating_ip_dns",
-         "floating_ip_pools", "floating_ips", "floating_ips_bulk", "fping",
-         "hosts", "hypervisors", "images", "instance_action", "keypairs",
-         "limits", "list_extensions", "migrations", "networks",
-         "quota_classes", "quotas", "security_group_default_rules",
-         "security_group_rules", "security_groups", "server_external_events",
-         "server_groups", "server_migrations", "servers", "services", "usage",
-         "versions", "virtual_interfaces", "volumes"])
+gen_ref("v2", "Version 2 API", sorted(get_module_names()))
 
 # -- General configuration ----------------------------------------------------
 
