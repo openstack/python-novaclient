@@ -3737,6 +3737,8 @@ def do_aggregate_list(cs, args):
     """Print a list of all aggregates."""
     aggregates = cs.aggregates.list()
     columns = ['Id', 'Name', 'Availability Zone']
+    if cs.api_version >= api_versions.APIVersion('2.41'):
+        columns.append('UUID')
     utils.print_list(aggregates, columns)
 
 
@@ -3750,7 +3752,7 @@ def do_aggregate_list(cs, args):
 def do_aggregate_create(cs, args):
     """Create a new aggregate with the specified details."""
     aggregate = cs.aggregates.create(args.name, args.availability_zone)
-    _print_aggregate_details(aggregate)
+    _print_aggregate_details(cs, aggregate)
 
 
 @utils.arg(
@@ -3804,7 +3806,7 @@ def do_aggregate_update(cs, args):
 
     aggregate = cs.aggregates.update(aggregate.id, updates)
     print(_("Aggregate %s has been successfully updated.") % aggregate.id)
-    _print_aggregate_details(aggregate)
+    _print_aggregate_details(cs, aggregate)
 
 
 @utils.arg(
@@ -3833,7 +3835,7 @@ def do_aggregate_set_metadata(cs, args):
     aggregate = cs.aggregates.set_metadata(aggregate.id, metadata)
     print(_("Metadata has been successfully updated for aggregate %s.") %
           aggregate.id)
-    _print_aggregate_details(aggregate)
+    _print_aggregate_details(cs, aggregate)
 
 
 @utils.arg(
@@ -3849,7 +3851,7 @@ def do_aggregate_add_host(cs, args):
     print(_("Host %(host)s has been successfully added for aggregate "
             "%(aggregate_id)s ") % {'host': args.host,
                                     'aggregate_id': aggregate.id})
-    _print_aggregate_details(aggregate)
+    _print_aggregate_details(cs, aggregate)
 
 
 @utils.arg(
@@ -3865,7 +3867,7 @@ def do_aggregate_remove_host(cs, args):
     print(_("Host %(host)s has been successfully removed from aggregate "
             "%(aggregate_id)s ") % {'host': args.host,
                                     'aggregate_id': aggregate.id})
-    _print_aggregate_details(aggregate)
+    _print_aggregate_details(cs, aggregate)
 
 
 @utils.arg(
@@ -3874,11 +3876,13 @@ def do_aggregate_remove_host(cs, args):
 def do_aggregate_show(cs, args):
     """Show details of the specified aggregate."""
     aggregate = _find_aggregate(cs, args.aggregate)
-    _print_aggregate_details(aggregate)
+    _print_aggregate_details(cs, aggregate)
 
 
-def _print_aggregate_details(aggregate):
+def _print_aggregate_details(cs, aggregate):
     columns = ['Id', 'Name', 'Availability Zone', 'Hosts', 'Metadata']
+    if cs.api_version >= api_versions.APIVersion('2.41'):
+        columns.append('UUID')
 
     def parser_metadata(fields):
         return utils.pretty_choice_dict(getattr(fields, 'metadata', {}) or {})
