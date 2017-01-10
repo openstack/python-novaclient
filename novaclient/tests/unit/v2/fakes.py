@@ -1703,7 +1703,7 @@ class FakeSessionClient(base_client.SessionClient):
     #
 
     def get_os_aggregates(self, *kw):
-        return (200, {}, {"aggregates": [
+        response = (200, {}, {"aggregates": [
             {'id': '1',
              'name': 'test',
              'availability_zone': 'nova1'},
@@ -1714,6 +1714,13 @@ class FakeSessionClient(base_client.SessionClient):
              'name': 'test3',
              'metadata': {'test': "dup", "none_key": "Nine"}},
         ]})
+        # microversion >= 2.41 returns the uuid in the response
+        if self.api_version >= api_versions.APIVersion('2.41'):
+            aggregates = response[2]['aggregates']
+            aggregates[0]['uuid'] = '80785864-087b-45a5-a433-b20eac9b58aa'
+            aggregates[1]['uuid'] = '30827713-5957-4b68-8fd3-ccaddb568c24'
+            aggregates[2]['uuid'] = '9a651b22-ce3f-4a87-acd7-98446ef591c4'
+        return response
 
     def _return_aggregate(self):
         r = {'aggregate': self.get_os_aggregates()[2]['aggregates'][0]}

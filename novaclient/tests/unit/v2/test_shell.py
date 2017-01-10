@@ -1942,15 +1942,35 @@ class ShellTest(utils.TestCase):
         self.assert_called('GET', '/flavors/1', pos=-1)
 
     def test_aggregate_list(self):
-        self.run_command('aggregate-list')
+        out, err = self.run_command('aggregate-list')
         self.assert_called('GET', '/os-aggregates')
+        self.assertNotIn('UUID', out)
+
+    def test_aggregate_list_v2_41(self):
+        out, err = self.run_command('aggregate-list', api_version='2.41')
+        self.assert_called('GET', '/os-aggregates')
+        self.assertIn('UUID', out)
+        self.assertIn('80785864-087b-45a5-a433-b20eac9b58aa', out)
+        self.assertIn('30827713-5957-4b68-8fd3-ccaddb568c24', out)
+        self.assertIn('9a651b22-ce3f-4a87-acd7-98446ef591c4', out)
 
     def test_aggregate_create(self):
-        self.run_command('aggregate-create test_name nova1')
+        out, err = self.run_command('aggregate-create test_name nova1')
         body = {"aggregate": {"name": "test_name",
                               "availability_zone": "nova1"}}
         self.assert_called('POST', '/os-aggregates', body, pos=-2)
         self.assert_called('GET', '/os-aggregates/1', pos=-1)
+        self.assertNotIn('UUID', out)
+
+    def test_aggregate_create_v2_41(self):
+        out, err = self.run_command('aggregate-create test_name nova1',
+                                    api_version='2.41')
+        body = {"aggregate": {"name": "test_name",
+                              "availability_zone": "nova1"}}
+        self.assert_called('POST', '/os-aggregates', body, pos=-2)
+        self.assert_called('GET', '/os-aggregates/1', pos=-1)
+        self.assertIn('UUID', out)
+        self.assertIn('80785864-087b-45a5-a433-b20eac9b58aa', out)
 
     def test_aggregate_delete_by_id(self):
         self.run_command('aggregate-delete 1')
@@ -1961,10 +1981,20 @@ class ShellTest(utils.TestCase):
         self.assert_called('DELETE', '/os-aggregates/1')
 
     def test_aggregate_update_by_id(self):
-        self.run_command('aggregate-update 1 --name new_name')
+        out, err = self.run_command('aggregate-update 1 --name new_name')
         body = {"aggregate": {"name": "new_name"}}
         self.assert_called('PUT', '/os-aggregates/1', body, pos=-2)
         self.assert_called('GET', '/os-aggregates/1', pos=-1)
+        self.assertNotIn('UUID', out)
+
+    def test_aggregate_update_by_id_v2_41(self):
+        out, err = self.run_command('aggregate-update 1 --name new_name',
+                                    api_version='2.41')
+        body = {"aggregate": {"name": "new_name"}}
+        self.assert_called('PUT', '/os-aggregates/1', body, pos=-2)
+        self.assert_called('GET', '/os-aggregates/1', pos=-1)
+        self.assertIn('UUID', out)
+        self.assertIn('80785864-087b-45a5-a433-b20eac9b58aa', out)
 
     def test_aggregate_update_by_name(self):
         self.run_command('aggregate-update test --name new_name ')
@@ -2011,10 +2041,20 @@ class ShellTest(utils.TestCase):
         self.assert_called('GET', '/os-aggregates/1', pos=-1)
 
     def test_aggregate_set_metadata_add_by_id(self):
-        self.run_command('aggregate-set-metadata 3 foo=bar')
+        out, err = self.run_command('aggregate-set-metadata 3 foo=bar')
         body = {"set_metadata": {"metadata": {"foo": "bar"}}}
         self.assert_called('POST', '/os-aggregates/3/action', body, pos=-2)
         self.assert_called('GET', '/os-aggregates/3', pos=-1)
+        self.assertNotIn('UUID', out)
+
+    def test_aggregate_set_metadata_add_by_id_v2_41(self):
+        out, err = self.run_command('aggregate-set-metadata 3 foo=bar',
+                                    api_version='2.41')
+        body = {"set_metadata": {"metadata": {"foo": "bar"}}}
+        self.assert_called('POST', '/os-aggregates/3/action', body, pos=-2)
+        self.assert_called('GET', '/os-aggregates/3', pos=-1)
+        self.assertIn('UUID', out)
+        self.assertIn('9a651b22-ce3f-4a87-acd7-98446ef591c4', out)
 
     def test_aggregate_set_metadata_add_duplicate_by_id(self):
         cmd = 'aggregate-set-metadata 3 test=dup'
@@ -2037,10 +2077,20 @@ class ShellTest(utils.TestCase):
         self.assert_called('GET', '/os-aggregates/1', pos=-1)
 
     def test_aggregate_add_host_by_id(self):
-        self.run_command('aggregate-add-host 1 host1')
+        out, err = self.run_command('aggregate-add-host 1 host1')
         body = {"add_host": {"host": "host1"}}
         self.assert_called('POST', '/os-aggregates/1/action', body, pos=-2)
         self.assert_called('GET', '/os-aggregates/1', pos=-1)
+        self.assertNotIn('UUID', out)
+
+    def test_aggregate_add_host_by_id_v2_41(self):
+        out, err = self.run_command('aggregate-add-host 1 host1',
+                                    api_version='2.41')
+        body = {"add_host": {"host": "host1"}}
+        self.assert_called('POST', '/os-aggregates/1/action', body, pos=-2)
+        self.assert_called('GET', '/os-aggregates/1', pos=-1)
+        self.assertIn('UUID', out)
+        self.assertIn('80785864-087b-45a5-a433-b20eac9b58aa', out)
 
     def test_aggregate_add_host_by_name(self):
         self.run_command('aggregate-add-host test host1')
@@ -2049,10 +2099,20 @@ class ShellTest(utils.TestCase):
         self.assert_called('GET', '/os-aggregates/1', pos=-1)
 
     def test_aggregate_remove_host_by_id(self):
-        self.run_command('aggregate-remove-host 1 host1')
+        out, err = self.run_command('aggregate-remove-host 1 host1')
         body = {"remove_host": {"host": "host1"}}
         self.assert_called('POST', '/os-aggregates/1/action', body, pos=-2)
         self.assert_called('GET', '/os-aggregates/1', pos=-1)
+        self.assertNotIn('UUID', out)
+
+    def test_aggregate_remove_host_by_id_v2_41(self):
+        out, err = self.run_command('aggregate-remove-host 1 host1',
+                                    api_version='2.41')
+        body = {"remove_host": {"host": "host1"}}
+        self.assert_called('POST', '/os-aggregates/1/action', body, pos=-2)
+        self.assert_called('GET', '/os-aggregates/1', pos=-1)
+        self.assertIn('UUID', out)
+        self.assertIn('80785864-087b-45a5-a433-b20eac9b58aa', out)
 
     def test_aggregate_remove_host_by_name(self):
         self.run_command('aggregate-remove-host test host1')
@@ -2061,8 +2121,15 @@ class ShellTest(utils.TestCase):
         self.assert_called('GET', '/os-aggregates/1', pos=-1)
 
     def test_aggregate_show_by_id(self):
-        self.run_command('aggregate-show 1')
+        out, err = self.run_command('aggregate-show 1')
         self.assert_called('GET', '/os-aggregates/1')
+        self.assertNotIn('UUID', out)
+
+    def test_aggregate_show_by_id_v2_41(self):
+        out, err = self.run_command('aggregate-show 1', api_version='2.41')
+        self.assert_called('GET', '/os-aggregates/1')
+        self.assertIn('UUID', out)
+        self.assertIn('80785864-087b-45a5-a433-b20eac9b58aa', out)
 
     def test_aggregate_show_by_name(self):
         self.run_command('aggregate-show test')
@@ -3234,6 +3301,7 @@ class ShellTest(utils.TestCase):
             37,  # There are no versioned wrapped shell method changes for this
             38,  # doesn't require any changes in novaclient
             39,  # There are no versioned wrapped shell method changes for this
+            41,  # There are no version-wrapped shell method changes for this.
         ])
         versions_supported = set(range(0,
                                  novaclient.API_MAX_VERSION.ver_minor + 1))

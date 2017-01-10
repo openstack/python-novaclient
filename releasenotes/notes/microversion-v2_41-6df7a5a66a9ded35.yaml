@@ -1,0 +1,6 @@
+---
+features:
+  - |
+    Added support for microversion 2.41 which shows the aggregate UUID in CLI
+    output when listing, creating, showing, updating, setting metadata, and
+    adding or removing hosts from an aggregate.
