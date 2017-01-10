@@ -35,13 +35,17 @@ class TestServersBootNovaClient(base.ClientTestBase):
         if bdm_params:
             bdm_params = ''.join((':', bdm_params))
 
-        server_info = self.nova("boot", params=(
+        params = (
             "%(name)s --flavor %(flavor)s --poll "
             "--block-device-mapping vda=%(volume_id)s%(bdm_params)s" % {
                 "name": uuidutils.generate_uuid(), "flavor":
                     self.flavor.id,
                 "volume_id": volume.id,
-                "bdm_params": bdm_params}))
+                "bdm_params": bdm_params})
+        # check to see if we have to pass in a network id
+        if self.multiple_networks:
+            params += ' --nic net-id=%s' % self.network.id
+        server_info = self.nova("boot", params=params)
         server_id = self._get_value_from_the_table(server_info, "id")
 
         self.client.servers.delete(server_id)

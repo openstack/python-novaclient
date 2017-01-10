@@ -205,6 +205,12 @@ class TestServersAutoAllocateNetworkCLI(base.ClientTestBase):
     def test_boot_server_with_auto_network(self):
         """Tests that the CLI defaults to 'auto' when --nic isn't specified.
         """
+        # check to see if multiple networks are available because if so we
+        # have to skip this test as auto will fail with a 409 conflict as it's
+        # an ambiguous request and nova won't know which network to pick
+        if self.multiple_networks:
+            # we could potentially get around this by extending TenantTestBase
+            self.skipTest('multiple networks available')
         server_info = self.nova('boot', params=(
             '%(name)s --flavor %(flavor)s --poll '
             '--image %(image)s ' % {'name': self.name_generate('server'),

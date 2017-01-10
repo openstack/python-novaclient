@@ -230,10 +230,17 @@ class ClientTestBase(testtools.TestCase):
                 self.client.api_version = proxy_api_version
             try:
                 # TODO(mriedem): Get the networks from neutron if using neutron
-                CACHE["network"] = pick_network(self.client.networks.list())
+                networks = self.client.networks.list()
+                # Keep track of whether or not there are multiple networks
+                # available to the given tenant because if so, a specific
+                # network ID has to be passed in on server create requests
+                # otherwise the server POST will fail with a 409.
+                CACHE['multiple_networks'] = len(networks) > 1
+                CACHE["network"] = pick_network(networks)
             finally:
                 self.client.api_version = tested_api_version
         self.network = CACHE["network"]
+        self.multiple_networks = CACHE['multiple_networks']
 
         # create a CLI client in case we'd like to do CLI
         # testing. tempest.lib does this really weird thing where it
