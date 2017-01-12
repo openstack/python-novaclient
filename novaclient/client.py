@@ -135,7 +135,11 @@ def _construct_http_client(api_version=None,
     if not session:
         if not auth and auth_token:
             auth = identity.Token(auth_url=auth_url,
-                                  token=auth_token)
+                                  token=auth_token,
+                                  project_id=project_id,
+                                  project_name=project_name,
+                                  project_domain_id=project_domain_id,
+                                  project_domain_name=project_domain_name)
         elif not auth:
             auth = identity.Password(username=username,
                                      user_id=user_id,

@@ -193,7 +193,7 @@ class ClientTestBase(testtools.TestCase):
 
         user = auth_info['username']
         passwd = auth_info['password']
-        tenant = auth_info['project_name']
+        self.project_name = auth_info['project_name']
         auth_url = auth_info['auth_url']
         user_domain_id = auth_info['user_domain_id']
         self.project_domain_id = auth_info['project_domain_id']
@@ -205,7 +205,7 @@ class ClientTestBase(testtools.TestCase):
 
         auth = identity.Password(username=user,
                                  password=passwd,
-                                 project_name=tenant,
+                                 project_name=self.project_name,
                                  auth_url=auth_url,
                                  project_domain_id=self.project_domain_id,
                                  user_domain_id=user_domain_id)
@@ -247,7 +247,7 @@ class ClientTestBase(testtools.TestCase):
         self.cli_clients = tempest.lib.cli.base.CLIClient(
             username=user,
             password=passwd,
-            tenant_name=tenant,
+            tenant_name=self.project_name,
             uri=auth_url,
             cli_dir=cli_dir,
             insecure=self.insecure)
