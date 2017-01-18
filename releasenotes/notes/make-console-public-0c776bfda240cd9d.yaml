@@ -1,0 +1,7 @@
+---
+features:
+  - Provides a public unified interface 'get_console_url' for classes
+    'novaclient.v2.servers.Server' and 'novaclient.v2.servers.ServerManager'.
+    Users (Heat, OpenStack-client and etc.) can call this public interface
+    instead of calling the individual methods to retrieve a console url
+    of a particular protocol.

@@ -794,43 +794,58 @@ class ServersTest(utils.FixturedTestCase):
 
     def test_get_vnc_console(self):
         s = self.cs.servers.get(1234)
-        vc = s.get_vnc_console('fake')
+        vc = s.get_vnc_console('novnc')
         self.assert_request_id(vc, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
 
-        vc = self.cs.servers.get_vnc_console(s, 'fake')
+        vc = self.cs.servers.get_vnc_console(s, 'novnc')
         self.assert_request_id(vc, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
 
     def test_get_spice_console(self):
         s = self.cs.servers.get(1234)
-        sc = s.get_spice_console('fake')
+        sc = s.get_spice_console('spice-html5')
         self.assert_request_id(sc, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
 
-        sc = self.cs.servers.get_spice_console(s, 'fake')
+        sc = self.cs.servers.get_spice_console(s, 'spice-html5')
         self.assert_request_id(sc, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
 
     def test_get_serial_console(self):
         s = self.cs.servers.get(1234)
-        sc = s.get_serial_console('fake')
+        sc = s.get_serial_console('serial')
         self.assert_request_id(sc, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
 
-        sc = self.cs.servers.get_serial_console(s, 'fake')
+        sc = self.cs.servers.get_serial_console(s, 'serial')
         self.assert_request_id(sc, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
 
     def test_get_rdp_console(self):
         s = self.cs.servers.get(1234)
-        rc = s.get_rdp_console('fake')
+        rc = s.get_rdp_console('rdp-html5')
         self.assert_request_id(rc, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
 
-        rc = self.cs.servers.get_rdp_console(s, 'fake')
+        rc = self.cs.servers.get_rdp_console(s, 'rdp-html5')
         self.assert_request_id(rc, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
+
+    def test_get_console_url(self):
+        s = self.cs.servers.get(1234)
+        rc = s.get_console_url('novnc')
+        self.assert_request_id(rc, fakes.FAKE_REQUEST_ID_LIST)
+        self.assert_called('POST', '/servers/1234/action')
+
+        rc = self.cs.servers.get_console_url(s, 'novnc')
+        self.assert_request_id(rc, fakes.FAKE_REQUEST_ID_LIST)
+        self.assert_called('POST', '/servers/1234/action')
+
+        # test the case with invalid console type
+        self.assertRaises(exceptions.UnsupportedConsoleType,
+                          s.get_console_url,
+                          'invalid')
 
     def test_create_image(self):
         s = self.cs.servers.get(1234)
@@ -1001,43 +1016,82 @@ class ServersV26Test(ServersTest):
 
     def test_get_vnc_console(self):
         s = self.cs.servers.get(1234)
-        vc = s.get_vnc_console('fake')
+        vc = s.get_vnc_console('novnc')
         self.assert_request_id(vc, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/remote-consoles')
 
-        vc = self.cs.servers.get_vnc_console(s, 'fake')
+        vc = self.cs.servers.get_vnc_console(s, 'novnc')
         self.assert_request_id(vc, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/remote-consoles')
+
+        # test the case with invalid console type
+        self.assertRaises(exceptions.UnsupportedConsoleType,
+                          s.get_vnc_console,
+                          'invalid')
 
     def test_get_spice_console(self):
         s = self.cs.servers.get(1234)
-        sc = s.get_spice_console('fake')
+        sc = s.get_spice_console('spice-html5')
         self.assert_request_id(sc, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/remote-consoles')
 
-        sc = self.cs.servers.get_spice_console(s, 'fake')
+        sc = self.cs.servers.get_spice_console(s, 'spice-html5')
         self.assert_request_id(sc, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/remote-consoles')
+
+        # test the case with invalid console type
+        self.assertRaises(exceptions.UnsupportedConsoleType,
+                          s.get_spice_console,
+                          'invalid')
 
     def test_get_serial_console(self):
         s = self.cs.servers.get(1234)
-        sc = s.get_serial_console('fake')
+        sc = s.get_serial_console('serial')
         self.assert_request_id(sc, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/remote-consoles')
 
-        sc = self.cs.servers.get_serial_console(s, 'fake')
+        sc = self.cs.servers.get_serial_console(s, 'serial')
         self.assert_request_id(sc, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/remote-consoles')
+
+        # test the case with invalid console type
+        self.assertRaises(exceptions.UnsupportedConsoleType,
+                          s.get_serial_console,
+                          'invalid')
 
     def test_get_rdp_console(self):
         s = self.cs.servers.get(1234)
-        rc = s.get_rdp_console('fake')
+        rc = s.get_rdp_console('rdp-html5')
         self.assert_request_id(rc, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/remote-consoles')
 
-        rc = self.cs.servers.get_rdp_console(s, 'fake')
+        rc = self.cs.servers.get_rdp_console(s, 'rdp-html5')
         self.assert_request_id(rc, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/remote-consoles')
+
+        # test the case with invalid console type
+        self.assertRaises(exceptions.UnsupportedConsoleType,
+                          s.get_rdp_console,
+                          'invalid')
+
+    def test_get_console_url(self):
+        s = self.cs.servers.get(1234)
+        vc = s.get_console_url('novnc')
+        self.assert_request_id(vc, fakes.FAKE_REQUEST_ID_LIST)
+        self.assert_called('POST', '/servers/1234/remote-consoles')
+
+        vc = self.cs.servers.get_console_url(s, 'novnc')
+        self.assert_request_id(vc, fakes.FAKE_REQUEST_ID_LIST)
+        self.assert_called('POST', '/servers/1234/remote-consoles')
+
+        # test the case with invalid console type
+        self.assertRaises(exceptions.UnsupportedConsoleType,
+                          s.get_console_url,
+                          'invalid')
+        # console type webmks is supported since api version 2.8
+        self.assertRaises(exceptions.UnsupportedConsoleType,
+                          s.get_console_url,
+                          'webmks')
 
 
 class ServersV28Test(ServersV26Test):
@@ -1053,6 +1107,21 @@ class ServersV28Test(ServersV26Test):
         mksc = self.cs.servers.get_mks_console(s)
         self.assert_request_id(mksc, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/remote-consoles')
+
+    def test_get_console_url(self):
+        s = self.cs.servers.get(1234)
+        mksc = s.get_console_url('novnc')
+        self.assert_request_id(mksc, fakes.FAKE_REQUEST_ID_LIST)
+        self.assert_called('POST', '/servers/1234/remote-consoles')
+
+        mksc = self.cs.servers.get_console_url(s, 'novnc')
+        self.assert_request_id(mksc, fakes.FAKE_REQUEST_ID_LIST)
+        self.assert_called('POST', '/servers/1234/remote-consoles')
+
+        # test the case with invalid console type
+        self.assertRaises(exceptions.UnsupportedConsoleType,
+                          s.get_console_url,
+                          'invalid')
 
 
 class ServersV214Test(ServersV28Test):
