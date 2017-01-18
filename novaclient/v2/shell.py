@@ -1629,7 +1629,7 @@ def do_image_delete(cs, args):
     dest='not-tags',
     metavar='<not-tags>',
     default=None,
-    help=_("Only the servers that do not have any of the given tags will"
+    help=_("Only the servers that do not have any of the given tags will "
            "be included in the list results. Boolean expression in this case "
            "is 'NOT(t1 AND t2)'. Tags must be separated by commas: "
            "--not-tags <tag1,tag2>"),
@@ -1639,7 +1639,7 @@ def do_image_delete(cs, args):
     dest='not-tags-any',
     metavar='<not-tags-any>',
     default=None,
-    help=_("Only the servers that do not have at least one of the given tags"
+    help=_("Only the servers that do not have at least one of the given tags "
            "will be included in the list result. Boolean expression in this "
            "case is 'NOT(t1 OR t2)'. Tags must be separated by commas: "
            "--not-tags-any <tag1,tag2>"),
@@ -5097,8 +5097,8 @@ def _print_server_group_details(cs, server_group):    # noqa
     metavar='<limit>',
     type=int,
     default=None,
-    help=_("Maximum number of server groups to display. If limit is bigger"
-           "than 'CONF.api.max_limit' option of Nova API, limit"
+    help=_("Maximum number of server groups to display. If limit is bigger "
+           "than 'CONF.api.max_limit' option of Nova API, limit "
            "'CONF.api.max_limit' will be used instead."))
 @utils.arg(
     '--offset',
