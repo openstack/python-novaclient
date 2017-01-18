@@ -46,18 +46,6 @@ from novaclient import utils
 extensions_ignored_name = ["__init__"]
 
 
-def _log_request_id(logger, resp, service_name):
-    request_id = (resp.headers.get('x-openstack-request-id') or
-                  resp.headers.get('x-compute-request-id'))
-    if request_id:
-        logger.debug('%(method)s call to %(service_name)s for %(url)s '
-                     'used request id %(response_request_id)s',
-                     {'method': resp.request.method,
-                      'service_name': service_name,
-                      'url': resp.url,
-                      'response_request_id': request_id})
-
-
 class SessionClient(adapter.LegacyJsonAdapter):
 
     def __init__(self, *args, **kwargs):
@@ -84,10 +72,6 @@ class SessionClient(adapter.LegacyJsonAdapter):
                                                             method,
                                                             raise_exc=False,
                                                             **kwargs)
-
-        # if service name is None then use service_type for logging
-        service = self.service_name or self.service_type
-        _log_request_id(self.logger, resp, service)
 
         # TODO(andreykurilin): uncomment this line, when we will be able to
         #   check only nova-related calls

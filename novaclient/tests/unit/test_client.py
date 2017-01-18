@@ -51,8 +51,7 @@ class ClientTest(utils.TestCase):
 
 class SessionClientTest(utils.TestCase):
 
-    @mock.patch.object(novaclient.client, '_log_request_id')
-    def test_timings(self, mock_log_request_id):
+    def test_timings(self):
         self.requests_mock.get('http://no.where')
 
         client = novaclient.client.SessionClient(session=session.Session())
@@ -74,15 +73,6 @@ class SessionClientTest(utils.TestCase):
 
         cs.reset_timings()
         self.assertEqual(0, len(cs.get_timings()))
-
-    @mock.patch.object(novaclient.client, '_log_request_id')
-    def test_log_request_id(self, mock_log_request_id):
-        self.requests_mock.get('http://no.where')
-        client = novaclient.client.SessionClient(session=session.Session(),
-                                                 service_name='compute')
-        client.request("http://no.where", 'GET')
-        mock_log_request_id.assert_called_once_with(client.logger, mock.ANY,
-                                                    'compute')
 
 
 class ClientsUtilsTest(utils.TestCase):
