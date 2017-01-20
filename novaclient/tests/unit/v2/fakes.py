@@ -2339,6 +2339,15 @@ class FakeSessionClient(base_client.SessionClient):
     def put_servers_1234_tags_tag(self, **kw):
         return (201, {}, None)
 
+    def put_servers_1234_tags_tag1(self, **kw):
+        return (201, {}, None)
+
+    def put_servers_1234_tags_tag2(self, **kw):
+        return (201, {}, None)
+
+    def put_servers_1234_tags_tag3(self, **kw):
+        return (201, {}, None)
+
     def put_servers_1234_tags(self, **kw):
         return (201, {}, None)
 
@@ -2346,6 +2355,15 @@ class FakeSessionClient(base_client.SessionClient):
         return (200, {}, {'tags': ['tag1', 'tag2']})
 
     def delete_servers_1234_tags_tag(self, **kw):
+        return (204, {}, None)
+
+    def delete_servers_1234_tags_tag1(self, **kw):
+        return (204, {}, None)
+
+    def delete_servers_1234_tags_tag2(self, **kw):
+        return (204, {}, None)
+
+    def delete_servers_1234_tags_tag3(self, **kw):
         return (204, {}, None)
 
     def delete_servers_1234_tags(self, **kw):

@@ -3329,6 +3329,13 @@ class ShellTest(utils.TestCase):
                          api_version='2.26')
         self.assert_called('PUT', '/servers/1234/tags/tag', None)
 
+    def test_server_tag_add_many(self):
+        self.run_command('server-tag-add sample-server tag1 tag2 tag3',
+                         api_version='2.26')
+        self.assert_called('PUT', '/servers/1234/tags/tag1', None, pos=-3)
+        self.assert_called('PUT', '/servers/1234/tags/tag2', None, pos=-2)
+        self.assert_called('PUT', '/servers/1234/tags/tag3', None, pos=-1)
+
     def test_server_tag_set(self):
         self.run_command('server-tag-set sample-server tag1 tag2',
                          api_version='2.26')
@@ -3343,6 +3350,13 @@ class ShellTest(utils.TestCase):
         self.run_command('server-tag-delete sample-server tag',
                          api_version='2.26')
         self.assert_called('DELETE', '/servers/1234/tags/tag')
+
+    def test_server_tag_delete_many(self):
+        self.run_command('server-tag-delete sample-server tag1 tag2 tag3',
+                         api_version='2.26')
+        self.assert_called('DELETE', '/servers/1234/tags/tag1', pos=-3)
+        self.assert_called('DELETE', '/servers/1234/tags/tag2', pos=-2)
+        self.assert_called('DELETE', '/servers/1234/tags/tag3', pos=-1)
 
     def test_server_tag_delete_all(self):
         self.run_command('server-tag-delete-all sample-server',

@@ -5283,11 +5283,15 @@ def do_server_tag_list(cs, args):
 
 @api_versions.wraps("2.26")
 @utils.arg('server', metavar='<server>', help=_('Name or ID of server.'))
-@utils.arg('tag', metavar='<tag>', help=_('Tag to add.'))
+@utils.arg('tag', metavar='<tag>', nargs='+', help=_('Tag(s) to add.'))
 def do_server_tag_add(cs, args):
-    """Add single tag to a server."""
+    """Add one or more tags to a server."""
     server = _find_server(cs, args.server)
-    server.add_tag(args.tag)
+    utils.do_action_on_many(
+        lambda t: server.add_tag(t),
+        args.tag,
+        _("Request to add tag %s to specified server has been accepted."),
+        _("Unable to add tag %s to the specified server."))
 
 
 @api_versions.wraps("2.26")
@@ -5301,11 +5305,15 @@ def do_server_tag_set(cs, args):
 
 @api_versions.wraps("2.26")
 @utils.arg('server', metavar='<server>', help=_('Name or ID of server.'))
-@utils.arg('tag', metavar='<tag>', help=_('Tag to delete.'))
+@utils.arg('tag', metavar='<tag>', nargs='+', help=_('Tag(s) to delete.'))
 def do_server_tag_delete(cs, args):
-    """Delete single tag from a server."""
+    """Delete one or more tags from a server."""
     server = _find_server(cs, args.server)
-    server.delete_tag(args.tag)
+    utils.do_action_on_many(
+        lambda t: server.delete_tag(t),
+        args.tag,
+        _("Request to delete tag %s from specified server has been accepted."),
+        _("Unable to delete tag %s from specified server."))
 
 
 @api_versions.wraps("2.26")
