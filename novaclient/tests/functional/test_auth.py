@@ -51,17 +51,15 @@ class TestAuthentication(base.ClientTestBase):
                              project_name=self.project_name, **kw)
         nova.servers.list()
 
-        # NOTE(andreykurilin): token auth is completely broken in CLI
-        # flags = ('--os-username %s --os-tenant-name %s --os-auth-token %s '
-        #         '--os-auth-url %s --os-endpoint-type publicURL' % (
-        #             self.cli_clients.username,
-        #             self.cli_clients.tenant_name,
-        #             token, auth_url))
-        # if self.cli_clients.insecure:
-        #    flags += ' --insecure '
-        #
-        # return tempest.lib.cli.base.execute(
-        #    "nova", action, flags, cli_dir=self.cli_clients.cli_dir)
+        flags = ('--os-tenant-name %(project_name)s --os-token %(token)s '
+                 '--os-auth-url %(auth_url)s --os-endpoint-type publicURL'
+                 % {"project_name": self.project_name,
+                    "token": token, "auth_url": auth_url})
+        if self.cli_clients.insecure:
+            flags += ' --insecure '
+
+        tempest.lib.cli.base.execute(
+            "nova", "list", flags, cli_dir=self.cli_clients.cli_dir)
 
     def test_auth_via_keystone_v2(self):
         session = self.keystone.session

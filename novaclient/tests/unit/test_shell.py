@@ -467,9 +467,9 @@ class ShellTest(utils.TestCase):
                             matchers.MatchesRegex(r, re.DOTALL | re.MULTILINE))
 
     def test_no_username(self):
-        required = ('You must provide a username or user ID'
-                    ' via --os-username, --os-user-id,'
-                    ' env[OS_USERNAME] or env[OS_USER_ID]')
+        required = ('You must provide a user name/id (via --os-username, '
+                    '--os-user-id, env[OS_USERNAME] or env[OS_USER_ID]) or '
+                    'an auth token (via --os-token).')
         self.make_env(exclude='OS_USERNAME')
         try:
             self.shell('list')
@@ -479,9 +479,9 @@ class ShellTest(utils.TestCase):
             self.fail('CommandError not raised')
 
     def test_no_user_id(self):
-        required = ('You must provide a username or user ID'
-                    ' via --os-username, --os-user-id,'
-                    ' env[OS_USERNAME] or env[OS_USER_ID]')
+        required = ('You must provide a user name/id (via --os-username, '
+                    '--os-user-id, env[OS_USERNAME] or env[OS_USER_ID]) or '
+                    'an auth token (via --os-token).')
         self.make_env(exclude='OS_USER_ID', fake_env=FAKE_ENV2)
         try:
             self.shell('list')

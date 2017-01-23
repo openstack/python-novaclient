@@ -249,11 +249,11 @@ class OpenStackComputeShell(object):
     def _append_global_identity_args(self, parser, argv):
         # Register the CLI arguments that have moved to the session object.
         loading.register_session_argparse_arguments(parser)
-        # Peek into argv to see if os-auth-token or os-token were given,
+        # Peek into argv to see if os-token was given,
         # in which case, the token auth plugin is what the user wants
         # else, we'll default to password
         default_auth_plugin = 'password'
-        if 'os-token' in argv:
+        if "--os-token" in argv:
             default_auth_plugin = 'token'
         loading.register_auth_argparse_arguments(
             parser, argv, default=default_auth_plugin)
@@ -513,8 +513,10 @@ class OpenStackComputeShell(object):
             api_version = api_versions.get_api_version(
                 args.os_compute_api_version)
 
-        os_username = args.os_username
-        os_user_id = args.os_user_id
+        auth_token = getattr(args, "os_token", None)
+
+        os_username = getattr(args, "os_username", None)
+        os_user_id = getattr(args, "os_user_id", None)
         os_password = None  # Fetched and set later as needed
         os_project_name = getattr(
             args, 'os_project_name', getattr(args, 'os_tenant_name', None))
@@ -529,13 +531,16 @@ class OpenStackComputeShell(object):
             if (not args.os_project_domain_id and
                     not args.os_project_domain_name):
                 setattr(args, "os_project_domain_id", "default")
-            if not args.os_user_domain_id and not args.os_user_domain_name:
+
+            # os_user_domain_id is redundant in case of Token auth type
+            if not auth_token and (not args.os_user_domain_id and
+                                   not args.os_user_domain_name):
                 setattr(args, "os_user_domain_id", "default")
 
         os_project_domain_id = args.os_project_domain_id
         os_project_domain_name = args.os_project_domain_name
-        os_user_domain_id = args.os_project_domain_id
-        os_user_domain_name = args.os_project_domain_name
+        os_user_domain_id = getattr(args, "os_user_domain_id", None)
+        os_user_domain_name = getattr(args, "os_user_domain_name", None)
 
         endpoint_type = args.endpoint_type
         insecure = args.insecure
@@ -549,13 +554,6 @@ class OpenStackComputeShell(object):
 
         keystone_session = None
         keystone_auth = None
-
-        # We may have either, both or none of these.
-        # If we have both, we don't need USERNAME, PASSWORD etc.
-        # Finally, authenticate unless we have both.
-        # Note if we don't auth we probably don't have a tenant ID so we can't
-        # cache the token.
-        auth_token = getattr(args, 'os_token', None)
 
         if not endpoint_type:
             endpoint_type = DEFAULT_NOVA_ENDPOINT_TYPE
@@ -579,11 +577,11 @@ class OpenStackComputeShell(object):
         # for os_username or os_password but for compatibility it is not.
         if must_auth and not skip_auth:
 
-            if not os_username and not os_user_id:
+            if not any([auth_token, os_username, os_user_id]):
                 raise exc.CommandError(
-                    _("You must provide a username "
-                      "or user ID via --os-username, --os-user-id, "
-                      "env[OS_USERNAME] or env[OS_USER_ID]"))
+                    _("You must provide a user name/id (via --os-username, "
+                      "--os-user-id, env[OS_USERNAME] or env[OS_USER_ID]) or "
+                      "an auth token (via --os-token)."))
 
             if not any([os_project_name, os_project_id]):
                 raise exc.CommandError(_("You must provide a project name or"
