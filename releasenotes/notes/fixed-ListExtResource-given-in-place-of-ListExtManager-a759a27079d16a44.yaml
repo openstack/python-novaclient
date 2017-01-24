@@ -1,0 +1,9 @@
+---
+fixes:
+  - |
+      The contents of the list_extensions.py file was moved from contrib to v2
+      directory in release 7.0.0, and a stub importing the objects from the new
+      location was left in its place for backward compatibility, together with
+      a warning informing about the new location. However, the stub incorrectly
+      assigned the ListExtResource class to the ListExtManager name. This has
+      now been fixed, and ListExtManager is used instead.
