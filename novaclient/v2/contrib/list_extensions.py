@@ -18,6 +18,6 @@ from novaclient.v2 import list_extensions
 
 
 ListExtResource = list_extensions.ListExtResource
-ListExtManager = list_extensions.ListExtResource
+ListExtManager = list_extensions.ListExtManager
 
 contrib.warn()
