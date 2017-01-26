@@ -1,0 +1,5 @@
+---
+fixes:
+  - Fix an ability to authenticate using Keystone Token which was broken with
+    novaclient 7.0.0 release.
+
