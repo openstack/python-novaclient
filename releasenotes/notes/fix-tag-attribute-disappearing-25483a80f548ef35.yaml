@@ -1,0 +1,13 @@
+---
+fixes:
+  - |
+    Microversion 2.42 is related to the following bug.
+
+    * https://bugs.launchpad.net/nova/+bug/1658571
+
+    The following options have been changed as of Microversion 2.42.
+
+    * Remove ``tag`` attribute in ``--block-device`` option
+      on the server boot (nova boot) between microversion 2.33 and 2.41.
+    * Remove ``tag`` attribute in ``--nic`` option
+      on the server boot (nova boot) between microversion 2.37 and 2.41.
