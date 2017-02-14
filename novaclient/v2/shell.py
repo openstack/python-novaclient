@@ -75,7 +75,11 @@ def _key_value_pairing(text):
 
 
 def _meta_parsing(metadata):
-    return dict(v.split('=', 1) for v in metadata)
+    try:
+        return dict(v.split('=', 1) for v in metadata)
+    except ValueError:
+        msg = _("'%s' is not in the format of 'key=value'") % metadata
+        raise argparse.ArgumentTypeError(msg)
 
 
 def _match_image(cs, wanted_properties):
