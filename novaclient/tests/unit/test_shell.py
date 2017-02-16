@@ -364,6 +364,7 @@ class ShellTest(utils.TestCase):
     def setUp(self):
         super(ShellTest, self).setUp()
         self.mock_client = mock.MagicMock()
+        self.mock_client.return_value.api_version = novaclient.API_MIN_VERSION
         self.useFixture(fixtures.MonkeyPatch('novaclient.client.Client',
                                              self.mock_client))
         self.nc_util = mock.patch('novaclient.utils.isunauthenticated').start()

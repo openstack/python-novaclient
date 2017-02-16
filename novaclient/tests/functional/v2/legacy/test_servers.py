@@ -159,3 +159,15 @@ class TestServersListNovaClient(base.ClientTestBase):
         # Cut header and footer of the table
         for server in precreated_servers:
             self.assertIn(server.id, output)
+
+    def test_list_minimal(self):
+        name = uuidutils.generate_uuid()
+        uuid = self._create_server(name).id
+        server_output = self.nova("list --minimal")
+        # The only fields output are "ID" and "Name"
+        output_uuid = self._get_column_value_from_single_row_table(
+            server_output, 'ID')
+        output_name = self._get_column_value_from_single_row_table(
+            server_output, 'Name')
+        self.assertEqual(output_uuid, uuid)
+        self.assertEqual(output_name, name)

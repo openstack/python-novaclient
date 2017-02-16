@@ -971,6 +971,21 @@ def _poll_for_status(poll_fn, obj_id, action, final_ok_states,
         time.sleep(poll_period)
 
 
+def _expand_dict_attr(collection, attr):
+    """Expand item attribute whose value is a dict.
+
+    Take a collection of items where the named attribute is known to have a
+    dictionary value and replace the named attribute with multiple attributes
+    whose names are the keys of the dictionary namespaced with the original
+    attribute name.
+    """
+    for item in collection:
+        field = getattr(item, attr)
+        delattr(item, attr)
+        for subkey in field.keys():
+            setattr(item, attr + ':' + subkey, field[subkey])
+
+
 def _translate_keys(collection, convert):
     for item in collection:
         keys = item.__dict__.keys()
@@ -1503,8 +1518,15 @@ def do_list(cs, args):
         if arg in args:
             search_opts[arg] = getattr(args, arg)
 
-    filters = {'flavor': lambda f: f['id'],
-               'security_groups': utils.format_security_groups}
+    filters = {'security_groups': utils.format_security_groups}
+
+    # In microversion 2.47 we started embedding flavor info in server details.
+    have_embedded_flavor_info = (
+        cs.api_version >= api_versions.APIVersion('2.47'))
+    # If we don't have embedded flavor info then we only report the flavor id
+    # rather than looking up the rest of the information.
+    if not have_embedded_flavor_info:
+        filters['flavor'] = lambda f: f['id']
 
     id_col = 'ID'
 
@@ -1547,6 +1569,11 @@ def do_list(cs, args):
     formatters = {}
     cols = []
     fmts = {}
+
+    # For detailed lists, if we have embedded flavor information then replace
+    # the "flavor" attribute with more detailed information.
+    if detailed and have_embedded_flavor_info:
+        _expand_dict_attr(servers, 'flavor')
 
     if servers:
         cols, fmts = _get_list_table_columns_and_formatters(
@@ -2131,15 +2158,31 @@ def _print_server(cs, args, server=None, wrap=0):
         info['%s network' % network_label] = ', '.join(address_list)
 
     flavor = info.get('flavor', {})
-    flavor_id = flavor.get('id', '')
-    if minimal:
-        info['flavor'] = flavor_id
+    if cs.api_version >= api_versions.APIVersion('2.47'):
+        # The "flavor" field is a JSON representation of a dict containing the
+        # flavor information used at boot.
+        if minimal:
+            # To retain something similar to the previous behaviour, keep the
+            # 'flavor' field name but just output the original name.
+            info['flavor'] = flavor['original_name']
+        else:
+            # Replace the "flavor" field with individual namespaced fields.
+            del info['flavor']
+            for key in flavor.keys():
+                info['flavor:' + key] = flavor[key]
     else:
-        try:
-            info['flavor'] = '%s (%s)' % (_find_flavor(cs, flavor_id).name,
-                                          flavor_id)
-        except Exception:
-            info['flavor'] = '%s (%s)' % (_("Flavor not found"), flavor_id)
+        # Prior to microversion 2.47 we just have the ID of the flavor so we
+        # need to retrieve the flavor information (which may have changed
+        # since the instance was booted).
+        flavor_id = flavor.get('id', '')
+        if minimal:
+            info['flavor'] = flavor_id
+        else:
+            try:
+                info['flavor'] = '%s (%s)' % (_find_flavor(cs, flavor_id).name,
+                                              flavor_id)
+            except Exception:
+                info['flavor'] = '%s (%s)' % (_("Flavor not found"), flavor_id)
 
     if 'security_groups' in info:
         # when we have multiple nics the info will include the

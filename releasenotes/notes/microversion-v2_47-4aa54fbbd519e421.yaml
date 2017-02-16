@@ -1,0 +1,18 @@
+---
+features:
+  - |
+    Added support for microversion 2.47 which returns the flavor details
+    directly embedded in the server details when listing or showing servers.
+    With this change, CLI requests with microversion >= 2.47 will no longer
+    need to do additional queries to get the flavor and flavor extra_specs
+    information.  Instead, the flavor information will be output as
+    separate key/value pairs with the keys namespaced with the
+    "flavor:" prefix.  As one would expect, these keys can also be
+    specified as output fields when listing servers, like this:
+
+    ``nova list  --fields name,flavor:original_name``
+
+    When displaying details of a single server, the ``--minimal`` option will
+    display a ``flavor`` field with a value of the ``original_name`` of the
+    flavor.  Prior to this microversion the value was the ``id`` of the flavor.
+
