@@ -13,6 +13,8 @@
 import random
 import string
 
+import novaclient
+from novaclient import api_versions
 from novaclient.tests.functional import base
 from novaclient.tests.functional.v2.legacy import test_servers
 from novaclient.v2 import shell
@@ -22,6 +24,18 @@ class TestServersBootNovaClient(test_servers.TestServersBootNovaClient):
     """Servers boot functional tests."""
 
     COMPUTE_API_VERSION = "2.latest"
+
+    def test_boot_server_using_image_with(self):
+        # --image-with relies on listing images via the compute image proxy
+        # API which does not work after 2.35 so we have to cap for this test.
+        try:
+            self.COMPUTE_API_VERSION = (
+                min(novaclient.API_MAX_VERSION,
+                    api_versions.APIVersion('2.35')).get_string())
+            super(TestServersBootNovaClient,
+                  self).test_boot_server_using_image_with()
+        finally:
+            self.COMPUTE_API_VERSION = '2.latest'
 
 
 class TestServersListNovaClient(test_servers.TestServersListNovaClient):

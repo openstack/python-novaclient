@@ -408,7 +408,8 @@ class ClientTestBase(testtools.TestCase):
                 l_property, l_value = line.split("|")[1:3]
                 if l_property.strip() == key:
                     return l_value.strip()
-        raise ValueError("Property '%s' is missing from the table." % key)
+        raise ValueError("Property '%s' is missing from the table:\n%s" %
+                         (key, table))
 
     def _get_column_value_from_single_row_table(self, table, column):
         """Get the value for the column in the single-row table
@@ -502,6 +503,11 @@ class ClientTestBase(testtools.TestCase):
     def skip_if_neutron(self):
         if CACHE["use_neutron"]:
             self.skipTest('nova-network is not available')
+
+    def _cleanup_server(self, server_id):
+        """Deletes a server and waits for it to be gone."""
+        self.client.servers.delete(server_id)
+        self.wait_for_resource_delete(server_id, self.client.servers)
 
 
 class TenantTestBase(ClientTestBase):

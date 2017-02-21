@@ -73,6 +73,47 @@ class TestServersBootNovaClient(base.ClientTestBase):
         self.client.servers.delete(server_id)
         self.wait_for_resource_delete(server_id, self.client.servers)
 
+    def test_boot_server_using_image_with(self):
+        """Scenario test which does the following:
+
+        1. Create a server.
+        2. Create a snapshot image of the server with a special meta key.
+        3. Create a second server using the --image-with option using the meta
+           key stored in the snapshot image created in step 2.
+        """
+        # create the first server and wait for it to be active
+        server_info = self.nova('boot', params=(
+            '--flavor %(flavor)s --image %(image)s --poll '
+            'image-with-server-1' % {'image': self.image.id,
+                                     'flavor': self.flavor.id}))
+        server_id = self._get_value_from_the_table(server_info, 'id')
+        self.addCleanup(self._cleanup_server, server_id)
+
+        # create a snapshot of the server with an image metadata key
+        snapshot_info = self.nova('image-create', params=(
+            '--metadata image_with_meta=%(meta_value)s '
+            '--show --poll %(server_id)s image-with-snapshot' % {
+                'meta_value': server_id,
+                'server_id': server_id}))
+
+        # get the snapshot image id out of the output table for the second
+        # server create request
+        snapshot_id = self._get_value_from_the_table(snapshot_info, 'id')
+        self.addCleanup(self.glance.images.delete, snapshot_id)
+
+        # verify the metadata was set on the snapshot image
+        meta_value = self._get_value_from_the_table(
+            snapshot_info, 'image_with_meta')
+        self.assertEqual(server_id, meta_value)
+
+        # create the second server using --image-with
+        server_info = self.nova('boot', params=(
+            '--flavor %(flavor)s --image-with image_with_meta=%(meta_value)s '
+            '--poll image-with-server-2' % {'meta_value': server_id,
+                                            'flavor': self.flavor.id}))
+        server_id = self._get_value_from_the_table(server_info, 'id')
+        self.addCleanup(self._cleanup_server, server_id)
+
 
 class TestServersListNovaClient(base.ClientTestBase):
     """Servers list functional tests."""
