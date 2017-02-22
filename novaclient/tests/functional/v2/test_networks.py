@@ -21,12 +21,6 @@ class TestNetworkCommandsV2_36(base.ClientTestBase):
     # and emit a warning.
     COMPUTE_API_VERSION = "2.36"
 
-    def test_command_deprecation(self):
-        output = self.nova('network-list', merge_stderr=True)
-        self.assertIn(
-            'is deprecated', output,
-            'network-list command did not print deprecation warning')
-
     def test_limits(self):
         """Tests that 2.36 won't return network-related resource limits and
         the CLI output won't show them.

@@ -1,0 +1,53 @@
+---
+prelude: >
+    Deprecated network-related resource commands have been removed.
+upgrade:
+  - |
+    The following deprecated network-related resource commands have been
+    removed::
+
+    * nova dns-create
+    * nova dns-create-private-domain
+    * nova dns-create-public-domain
+    * nova dns-delete
+    * nova dns-delete-domain
+    * nova dns-domains
+    * nova dns-list
+    * nova fixed-ip-get
+    * nova fixed-ip-reserve
+    * nova fixed-ip-unreserve
+    * nova floating-ip-create
+    * nova floating-ip-delete
+    * nova floating-ip-list
+    * nova floating-ip-bulk-create
+    * nova floating-ip-bulk-delete
+    * nova floating-ip-bulk-list
+    * nova floating-ip-pool-list
+    * nova net
+    * nova net-create
+    * nova net-delete
+    * nova net-list
+    * nova network-create
+    * nova network-delete
+    * nova network-list
+    * nova network-show
+    * nova network-associate-host
+    * nova-network-associate-project
+    * nova network-disassociate
+    * nova scrub
+    * nova secgroup-create
+    * nova secgroup-delete
+    * nova secgroup-list
+    * nova secgroup-update
+    * nova secgroup-add-rule
+    * nova secgroup-delete-rule
+    * nova secgroup-list-rules
+    * nova secgroup-add-default-rule
+    * nova secgroup-delete-default-rule
+    * nova secgroup-list-default-rules
+    * nova secgroup-add-group-rule
+    * nova secgroup-delete-group-rule
+    * nova tenant-network-create
+    * nova tenant-network-delete
+    * nova tenant-network-list
+    * nova tenant-network-show

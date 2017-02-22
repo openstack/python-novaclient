@@ -459,8 +459,8 @@ class ShellTest(utils.TestCase):
             '.*--matching',
             '.*--wrap',
             '.*help',
-            '.*secgroup-delete-rule',
-            '.*--priority']
+            '.*server-group-delete',
+            '.*--image-with']
         for r in required:
             self.assertThat((stdout + stderr),
                             matchers.MatchesRegex(r, re.DOTALL | re.MULTILINE))

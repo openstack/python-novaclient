@@ -1544,15 +1544,6 @@ class ShellTest(utils.TestCase):
         self.assert_called('POST', '/servers/1234/action',
                            {'changePassword': {'adminPass': 'p'}})
 
-    def test_scrub(self):
-        self.run_command('scrub 4ffc664c198e435e9853f2538fbcd7a7')
-        self.assert_called('GET', '/os-networks', pos=-4)
-        self.assert_called('GET', '/os-security-groups?all_tenants=1',
-                           pos=-3)
-        self.assert_called('POST', '/os-networks/1/action',
-                           {"disassociate": None}, pos=-2)
-        self.assert_called('DELETE', '/os-security-groups/1')
-
     def test_show(self):
         self.run_command('show 1234')
         self.assert_called('GET', '/servers?name=1234', pos=0)
@@ -1721,84 +1712,6 @@ class ShellTest(utils.TestCase):
         self.assert_called('GET', '/os-hypervisors/hyper/servers', pos=0)
         self.assert_called('DELETE', '/servers/uuid1/metadata/key1', pos=1)
         self.assert_called('DELETE', '/servers/uuid2/metadata/key1', pos=2)
-
-    def test_dns_create(self):
-        self.run_command('dns-create 192.168.1.1 testname testdomain')
-        self.assert_called('PUT',
-                           '/os-floating-ip-dns/testdomain/entries/testname')
-
-        self.run_command('dns-create 192.168.1.1 testname testdomain --type A')
-        self.assert_called('PUT',
-                           '/os-floating-ip-dns/testdomain/entries/testname')
-
-    def test_dns_create_public_domain(self):
-        self.run_command('dns-create-public-domain testdomain '
-                         '--project test_project')
-        self.assert_called('PUT', '/os-floating-ip-dns/testdomain')
-
-    def test_dns_create_private_domain(self):
-        self.run_command('dns-create-private-domain testdomain '
-                         '--availability-zone av_zone')
-        self.assert_called('PUT', '/os-floating-ip-dns/testdomain')
-
-    def test_dns_delete(self):
-        self.run_command('dns-delete testdomain testname')
-        self.assert_called('DELETE',
-                           '/os-floating-ip-dns/testdomain/entries/testname')
-
-    def test_dns_delete_domain(self):
-        self.run_command('dns-delete-domain testdomain')
-        self.assert_called('DELETE', '/os-floating-ip-dns/testdomain')
-
-    def test_dns_list(self):
-        self.run_command('dns-list testdomain --ip 192.168.1.1')
-        self.assert_called('GET',
-                           '/os-floating-ip-dns/testdomain/entries?'
-                           'ip=192.168.1.1')
-
-        self.run_command('dns-list testdomain --name testname')
-        self.assert_called('GET',
-                           '/os-floating-ip-dns/testdomain/entries/testname')
-
-    def test_dns_domains(self):
-        self.run_command('dns-domains')
-        self.assert_called('GET', '/os-floating-ip-dns')
-
-    def test_floating_ip_list(self):
-        self.run_command('floating-ip-list')
-        self.assert_called('GET', '/os-floating-ips')
-
-    def test_floating_ip_create(self):
-        self.run_command('floating-ip-create')
-        self.assert_called('GET', '/os-floating-ips/1')
-
-    def test_floating_ip_delete(self):
-        self.run_command('floating-ip-delete 11.0.0.1')
-        self.assert_called('DELETE', '/os-floating-ips/1')
-
-    def test_floating_ip_bulk_list(self):
-        self.run_command('floating-ip-bulk-list')
-        self.assert_called('GET', '/os-floating-ips-bulk')
-
-    def test_floating_ip_bulk_create(self):
-        self.run_command('floating-ip-bulk-create 10.0.0.1/24')
-        self.assert_called('POST', '/os-floating-ips-bulk',
-                           {'floating_ips_bulk_create':
-                               {'ip_range': '10.0.0.1/24'}})
-
-    def test_floating_ip_bulk_create_host_and_interface(self):
-        self.run_command('floating-ip-bulk-create 10.0.0.1/24 --pool testPool'
-                         ' --interface ethX')
-        self.assert_called('POST', '/os-floating-ips-bulk',
-                           {'floating_ips_bulk_create':
-                               {'ip_range': '10.0.0.1/24',
-                                'pool': 'testPool',
-                                'interface': 'ethX'}})
-
-    def test_floating_ip_bulk_delete(self):
-        self.run_command('floating-ip-bulk-delete 10.0.0.1/24')
-        self.assert_called('PUT', '/os-floating-ips-bulk/delete',
-                           {'ip_range': '10.0.0.1/24'})
 
     def test_server_floating_ip_associate(self):
         self.run_command('floating-ip-associate sample-server 11.0.0.1')
@@ -2324,20 +2237,6 @@ class ShellTest(utils.TestCase):
         self.run_command('service-delete 1')
         self.assert_called('DELETE', '/os-services/1')
 
-    def test_fixed_ips_get(self):
-        self.run_command('fixed-ip-get 192.168.1.1')
-        self.assert_called('GET', '/os-fixed-ips/192.168.1.1')
-
-    def test_fixed_ips_reserve(self):
-        self.run_command('fixed-ip-reserve 192.168.1.1')
-        body = {'reserve': None}
-        self.assert_called('POST', '/os-fixed-ips/192.168.1.1/action', body)
-
-    def test_fixed_ips_unreserve(self):
-        self.run_command('fixed-ip-unreserve 192.168.1.1')
-        body = {'unreserve': None}
-        self.assert_called('POST', '/os-fixed-ips/192.168.1.1/action', body)
-
     def test_host_list(self):
         self.run_command('host-list')
         self.assert_called('GET', '/os-hosts')
@@ -2631,34 +2530,6 @@ class ShellTest(utils.TestCase):
                 'PUT', '/os-quota-class-sets/97f4c221bff44578b0300df4ef119353',
                 body)
 
-    def test_network_list(self):
-        self.run_command('network-list')
-        self.assert_called('GET', '/os-networks')
-
-    def test_network_list_fields(self):
-        output, _err = self.run_command(
-            'network-list --fields '
-            'vlan,project_id')
-        self.assert_called('GET', '/os-networks')
-        self.assertIn('1234', output)
-        self.assertIn('4ffc664c198e435e9853f2538fbcd7a7', output)
-
-    def test_network_list_invalid_fields(self):
-        self.assertRaises(exceptions.CommandError,
-                          self.run_command,
-                          'network-list --fields vlan,project_id,invalid')
-
-    def test_network_list_redundant_fields(self):
-        output, _err = self.run_command(
-            'network-list --fields label,project_id,project_id')
-        header = output.splitlines()[1]
-        self.assertEqual(1, header.count('Label'))
-        self.assertEqual(1, header.count('Project Id'))
-
-    def test_network_show(self):
-        self.run_command('network-show 1')
-        self.assert_called('GET', '/os-networks')
-
     def test_cloudpipe_list(self):
         self.run_command('cloudpipe-list')
         self.assert_called('GET', '/os-cloudpipe')
@@ -2673,115 +2544,6 @@ class ShellTest(utils.TestCase):
         body = {'configure_project': {'vpn_ip': "192.168.1.1",
                                       'vpn_port': '1234'}}
         self.assert_called('PUT', '/os-cloudpipe/configure-project', body)
-
-    def test_network_associate_host(self):
-        self.run_command('network-associate-host 1 testHost')
-        body = {'associate_host': 'testHost'}
-        self.assert_called('POST', '/os-networks/1/action', body)
-
-    def test_network_associate_project(self):
-        self.run_command('network-associate-project 1')
-        body = {'id': "1"}
-        self.assert_called('POST', '/os-networks/add', body)
-
-    def test_network_disassociate_host(self):
-        self.run_command('network-disassociate --host-only 1 2')
-        body = {'disassociate_host': None}
-        self.assert_called('POST', '/os-networks/2/action', body)
-
-    def test_network_disassociate_project(self):
-        self.run_command('network-disassociate --project-only 1 2')
-        body = {'disassociate_project': None}
-        self.assert_called('POST', '/os-networks/2/action', body)
-
-    def test_network_create_v4(self):
-        self.run_command('network-create --fixed-range-v4 10.0.1.0/24'
-                         ' --dns1 10.0.1.254 new_network')
-        body = {'network': {'cidr': '10.0.1.0/24', 'label': 'new_network',
-                            'dns1': '10.0.1.254'}}
-        self.assert_called('POST', '/os-networks', body)
-
-    def test_network_create_v6(self):
-        self.run_command('network-create --fixed-range-v6 2001::/64'
-                         ' new_network')
-        body = {'network': {'cidr_v6': '2001::/64', 'label': 'new_network'}}
-        self.assert_called('POST', '/os-networks', body)
-
-    def test_network_create_invalid(self):
-        cmd = 'network-create 10.0.1.0'
-        self.assertRaises(exceptions.CommandError, self.run_command, cmd)
-
-    def test_network_create_multi_host(self):
-        self.run_command('network-create --fixed-range-v4 192.168.0.0/24'
-                         ' --multi-host=T new_network')
-        body = {'network': {'cidr': '192.168.0.0/24', 'label': 'new_network',
-                            'multi_host': True}}
-        self.assert_called('POST', '/os-networks', body)
-
-        self.run_command('network-create --fixed-range-v4 192.168.0.0/24'
-                         ' --multi-host=True new_network')
-        body = {'network': {'cidr': '192.168.0.0/24', 'label': 'new_network',
-                            'multi_host': True}}
-        self.assert_called('POST', '/os-networks', body)
-
-        self.run_command('network-create --fixed-range-v4 192.168.0.0/24'
-                         ' --multi-host=1 new_network')
-        body = {'network': {'cidr': '192.168.0.0/24', 'label': 'new_network',
-                            'multi_host': True}}
-        self.assert_called('POST', '/os-networks', body)
-
-        self.run_command('network-create --fixed-range-v4 192.168.1.0/24'
-                         ' --multi-host=F new_network')
-        body = {'network': {'cidr': '192.168.1.0/24', 'label': 'new_network',
-                            'multi_host': False}}
-        self.assert_called('POST', '/os-networks', body)
-
-    def test_network_create_vlan(self):
-        self.run_command('network-create --fixed-range-v4 192.168.0.0/24'
-                         ' --vlan=200 new_network')
-        body = {'network': {'cidr': '192.168.0.0/24', 'label': 'new_network',
-                            'vlan': 200}}
-        self.assert_called('POST', '/os-networks', body)
-
-    def test_network_create_vlan_start(self):
-        self.run_command('network-create --fixed-range-v4 192.168.0.0/24'
-                         ' --vlan-start=100 new_network')
-        body = {'network': {'cidr': '192.168.0.0/24', 'label': 'new_network',
-                            'vlan_start': 100}}
-        self.assert_called('POST', '/os-networks', body)
-
-    def test_network_create_extra_args(self):
-        self.run_command('network-create --fixed-range-v4 192.168.0.0/24'
-                         ' --enable-dhcp F --dhcp-server 192.168.0.2'
-                         ' --share-address T --allowed-start 192.168.0.10'
-                         ' --allowed-end 192.168.0.20 --mtu 9000 new_network')
-        body = {'network': {'cidr': '192.168.0.0/24', 'label': 'new_network',
-                            'enable_dhcp': False, 'dhcp_server': '192.168.0.2',
-                            'share_address': True, 'mtu': 9000,
-                            'allowed_start': '192.168.0.10',
-                            'allowed_end': '192.168.0.20'}}
-        self.assert_called('POST', '/os-networks', body)
-
-    def test_network_delete(self):
-        self.run_command('network-delete 1')
-        self.assert_called('DELETE', '/os-networks/1')
-
-    def test_tenant_network_list(self):
-        self.run_command('tenant-network-list')
-        self.assert_called('GET', '/os-tenant-networks')
-
-    def test_tenant_network_show(self):
-        self.run_command('tenant-network-show 1')
-        self.assert_called('GET', '/os-tenant-networks/1')
-
-    def test_tenant_network_create(self):
-        self.run_command('tenant-network-create new_network 10.0.1.0/24')
-        body = {'network': {'cidr': '10.0.1.0/24', 'label': 'new_network'}}
-        self.assert_called('POST', '/os-tenant-networks', body)
-
-    def test_tenant_network_delete(self):
-        self.run_command('tenant-network-delete 1')
-        self.assert_called('DELETE', '/os-tenant-networks/1')
 
     def test_add_fixed_ip(self):
         self.run_command('add-fixed-ip sample-server 1')
@@ -2878,82 +2640,6 @@ class ShellTest(utils.TestCase):
     def test_availability_zone_list(self):
         self.run_command('availability-zone-list')
         self.assert_called('GET', '/os-availability-zone/detail')
-
-    def test_security_group_create(self):
-        self.run_command('secgroup-create test FAKE_SECURITY_GROUP')
-        self.assert_called('POST', '/os-security-groups',
-                           {'security_group':
-                               {'name': 'test',
-                                'description': 'FAKE_SECURITY_GROUP'}})
-
-    def test_security_group_update(self):
-        self.run_command('secgroup-update test te FAKE_SECURITY_GROUP')
-        self.assert_called('PUT', '/os-security-groups/1',
-                           {'security_group':
-                               {'name': 'te',
-                                'description': 'FAKE_SECURITY_GROUP'}})
-
-    def test_security_group_list(self):
-        self.run_command('secgroup-list')
-        self.assert_called('GET', '/os-security-groups')
-
-    def test_security_group_add_rule(self):
-        self.run_command('secgroup-add-rule test tcp 22 22 10.0.0.0/8')
-        self.assert_called('POST', '/os-security-group-rules',
-                           {'security_group_rule':
-                               {'from_port': 22,
-                                'ip_protocol': 'tcp',
-                                'to_port': 22,
-                                'parent_group_id': 1,
-                                'cidr': '10.0.0.0/8',
-                                'group_id': None}})
-
-    def test_security_group_delete_rule(self):
-        self.run_command('secgroup-delete-rule test TCP 22 22 10.0.0.0/8')
-        self.assert_called('DELETE', '/os-security-group-rules/11')
-
-    def test_security_group_delete_rule_protocol_case(self):
-        self.run_command('secgroup-delete-rule test tcp 22 22 10.0.0.0/8')
-        self.assert_called('DELETE', '/os-security-group-rules/11')
-
-    def test_security_group_add_group_rule(self):
-        self.run_command('secgroup-add-group-rule test test2 tcp 22 22')
-        self.assert_called('POST', '/os-security-group-rules',
-                           {'security_group_rule':
-                               {'from_port': 22,
-                                'ip_protocol': 'TCP',
-                                'to_port': 22,
-                                'parent_group_id': 1,
-                                'cidr': None,
-                                'group_id': 2}})
-
-    def test_security_group_delete_valid_group_rule(self):
-        self.run_command('secgroup-delete-group-rule test test2 TCP 222 222')
-        self.assert_called('DELETE', '/os-security-group-rules/12')
-
-    def test_security_group_delete_valid_group_rule_protocol_case(self):
-        self.run_command('secgroup-delete-group-rule test test2 tcp 222 222')
-        self.assert_called('DELETE', '/os-security-group-rules/12')
-
-    def test_security_group_delete_invalid_group_rule(self):
-        self.run_command('secgroup-delete-group-rule test test4 TCP -1 -1')
-        self.assert_called('DELETE', '/os-security-group-rules/14')
-
-    def test_security_group_delete_invalid_group_rule_protocol_case(self):
-        self.run_command('secgroup-delete-group-rule test test4 tcp -1 -1')
-        self.assert_called('DELETE', '/os-security-group-rules/14')
-
-    def test_security_group_list_rules(self):
-        self.run_command('secgroup-list-rules test')
-        self.assert_called('GET', '/os-security-groups')
-
-    def test_security_group_list_all_tenants(self):
-        self.run_command('secgroup-list --all-tenants 1')
-        self.assert_called('GET', '/os-security-groups?all_tenants=1')
-
-    def test_security_group_delete(self):
-        self.run_command('secgroup-delete test')
-        self.assert_called('DELETE', '/os-security-groups/1')
 
     def test_server_security_group_add(self):
         self.run_command('add-secgroup sample-server testgroup')
@@ -3235,6 +2921,7 @@ class ShellTest(utils.TestCase):
         exclusions = set([
             1,   # Same as version 2.0
             3,   # doesn't require any changes in novaclient
+            4,   # fixed-ip-get command is gone
             5,   # doesn't require any changes in novaclient
             7,   # doesn't require any changes in novaclient
             9,   # doesn't require any changes in novaclient
@@ -3339,50 +3026,6 @@ class ShellTest(utils.TestCase):
         self.assert_called('GET', '/servers/detail?not-tags-any=tag1%2Ctag2')
 
 
-class GetSecgroupTest(utils.TestCase):
-    def test_with_integer(self):
-        cs = mock.Mock(**{
-            'security_groups.get.return_value': 'sec_group',
-            'security_groups.list.return_value': [],
-        })
-        result = novaclient.v2.shell._get_secgroup(cs, '1')
-        self.assertEqual('sec_group', result)
-        cs.security_groups.get.assert_called_once_with('1')
-
-    def test_with_uuid(self):
-        cs = mock.Mock(**{
-            'security_groups.get.return_value': 'sec_group',
-            'security_groups.list.return_value': [],
-        })
-        result = novaclient.v2.shell._get_secgroup(
-            cs, 'c0c32459-dc5f-44dc-9a0a-473b28bac831')
-        self.assertEqual('sec_group', result)
-        cs.security_groups.get.assert_called_once_with(
-            'c0c32459-dc5f-44dc-9a0a-473b28bac831')
-
-    def test_with_an_nonexisting_name(self):
-        cs = mock.Mock(**{
-            'security_groups.get.return_value': 'sec_group',
-            'security_groups.list.return_value': [],
-        })
-        self.assertRaises(exceptions.CommandError,
-                          novaclient.v2.shell._get_secgroup,
-                          cs,
-                          'abc')
-
-    def test_with_non_unique_name(self):
-        group_one = mock.MagicMock()
-        group_one.name = 'group_one'
-        cs = mock.Mock(**{
-            'security_groups.get.return_value': 'sec_group',
-            'security_groups.list.return_value': [group_one, group_one],
-        })
-        self.assertRaises(exceptions.NoUniqueMatch,
-                          novaclient.v2.shell._get_secgroup,
-                          cs,
-                          'group_one')
-
-
 class PollForStatusTestCase(utils.TestCase):
     @mock.patch("novaclient.v2.shell.time")
     def test_simple_usage(self, mock_time):
@@ -3468,39 +3111,3 @@ class PollForStatusTestCase(utils.TestCase):
                           action=action,
                           show_progress=True,
                           silent=False)
-
-
-class ShellNetworkUtilTest(utils.TestCase):
-    def test_deprecated_network_newer(self):
-        @novaclient.v2.shell.deprecated_network
-        def tester(cs):
-            'foo'
-            self.assertEqual(api_versions.APIVersion('2.35'),
-                             cs.api_version)
-
-        cs = mock.MagicMock()
-        cs.api_version = api_versions.APIVersion('2.9999')
-        tester(cs)
-        self.assertEqual('DEPRECATED: foo', tester.__doc__)
-
-    def test_deprecated_network_older(self):
-        @novaclient.v2.shell.deprecated_network
-        def tester(cs):
-            'foo'
-            # since we didn't need to adjust the api_version the mock won't
-            # have cs.client.api_version set on it
-            self.assertFalse(hasattr(cs, 'client'))
-            # we have to set the attribute back on cs so the decorator can
-            # set the value on it when we return from this wrapped function
-            setattr(cs, 'client', mock.MagicMock())
-
-        cs = mock.MagicMock()
-        cs.api_version = api_versions.APIVersion('2.1')
-        # we have to delete the cs.client attribute so hasattr won't return a
-        # false positive in the wrapped function
-        del cs.client
-        tester(cs)
-        self.assertEqual('DEPRECATED: foo', tester.__doc__)
-        # the deprecated_network decorator will set cs.client.api_version
-        # after calling the wrapped function
-        self.assertEqual(cs.api_version, cs.api_version)

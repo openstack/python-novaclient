@@ -64,15 +64,6 @@ class SimpleReadOnlyNovaClientTest(base.ClientTestBase):
     def test_admin_flavor_list(self):
         self.assertIn("Memory_MB", self.nova('flavor-list'))
 
-    def test_admin_floating_ip_bulk_list(self):
-        self.nova('floating-ip-bulk-list')
-
-    def test_admin_floating_ip_list(self):
-        self.nova('floating-ip-list')
-
-    def test_admin_floating_ip_pool_list(self):
-        self.nova('floating-ip-pool-list')
-
     def test_admin_host_list(self):
         self.nova('host-list')
 
@@ -95,16 +86,6 @@ class SimpleReadOnlyNovaClientTest(base.ClientTestBase):
                           'list',
                           params='--all-tenants bad')
 
-    def test_admin_network_list(self):
-        self.nova('network-list')
-
-    def test_admin_secgroup_list(self):
-        self.nova('secgroup-list')
-
-    @decorators.skip_because(bug="1157349")
-    def test_admin_secgroup_list_rules(self):
-        self.nova('secgroup-list-rules')
-
     def test_admin_server_group_list(self):
         self.nova('server-group-list')
 
@@ -122,9 +103,6 @@ class SimpleReadOnlyNovaClientTest(base.ClientTestBase):
 
     def test_admin_list_extensions(self):
         self.nova('list-extensions')
-
-    def test_admin_net_list(self):
-        self.nova('net-list')
 
     def test_agent_list(self):
         self.nova('agent-list')
