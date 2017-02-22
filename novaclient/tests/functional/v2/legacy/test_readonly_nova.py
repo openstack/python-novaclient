@@ -79,10 +79,6 @@ class SimpleReadOnlyNovaClientTest(base.ClientTestBase):
     def test_admin_hypervisor_list(self):
         self.nova('hypervisor-list')
 
-    def test_admin_image_list(self):
-        out = self.nova('image-list', merge_stderr=True)
-        self.assertIn('Command image-list is deprecated', out)
-
     @decorators.skip_because(bug="1157349")
     def test_admin_interface_list(self):
         self.nova('interface-list')

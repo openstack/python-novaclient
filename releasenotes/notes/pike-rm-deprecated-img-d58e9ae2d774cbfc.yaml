@@ -1,0 +1,13 @@
+---
+prelude: >
+    Deprecated image commands and python API bindings have been removed.
+upgrade:
+  - |
+    The following deprecated image commands have been removed::
+
+    * nova image-list
+    * nova image-show
+    * nova image-meta
+    * nova image-delete
+
+    Along with the related python API bindings in ``novaclient.v2.images``.

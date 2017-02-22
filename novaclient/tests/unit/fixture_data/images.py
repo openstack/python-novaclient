@@ -16,7 +16,7 @@ from novaclient.tests.unit.fixture_data import base
 
 class V1(base.Fixture):
 
-    base_url = 'images'
+    base_url = 'v2/images'
 
     def setUp(self):
         super(V1, self).setUp()
@@ -78,8 +78,3 @@ class V1(base.Fixture):
         for u in (1, '1/metadata/test_key'):
             self.requests_mock.delete(self.url(u), status_code=204,
                                       headers=headers)
-
-
-class V3(V1):
-
-    base_url = 'v1/images'

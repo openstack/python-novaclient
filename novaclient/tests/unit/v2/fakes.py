@@ -1103,7 +1103,7 @@ class FakeSessionClient(base_client.SessionClient):
     #
     # Images
     #
-    def get_images_detail(self, **kw):
+    def get_images(self, **kw):
         return (200, {}, {'images': [
             {
                 "id": FAKE_IMAGE_UUID_SNAPSHOT,
@@ -1131,9 +1131,7 @@ class FakeSessionClient(base_client.SessionClient):
                 "updated": "2010-10-10T12:00:00Z",
                 "created": "2010-08-10T12:00:00Z",
                 "status": "ACTIVE",
-                "metadata": {
-                    "test_key": "test_value",
-                },
+                "test_key": "test_value",
                 "links": {},
             },
             {
@@ -1149,40 +1147,19 @@ class FakeSessionClient(base_client.SessionClient):
         ]})
 
     def get_images_555cae93_fb41_4145_9c52_f5b923538a26(self, **kw):
-        return (200, {}, {'image': self.get_images_detail()[2]['images'][0]})
+        return (200, {}, {'image': self.get_images()[2]['images'][0]})
 
     def get_images_55bb23af_97a4_4068_bdf8_f10c62880ddf(self, **kw):
-        return (200, {}, {'image': self.get_images_detail()[2]['images'][1]})
+        return (200, {}, {'image': self.get_images()[2]['images'][1]})
 
     def get_images_c99d7632_bd66_4be9_aed5_3dd14b223a76(self, **kw):
-        return (200, {}, {'image': self.get_images_detail()[2]['images'][2]})
+        return (200, {}, {'image': self.get_images()[2]['images'][2]})
 
     def get_images_f27f479a_ddda_419a_9bbc_d6b56b210161(self, **kw):
-        return (200, {}, {'image': self.get_images_detail()[2]['images'][3]})
+        return (200, {}, {'image': self.get_images()[2]['images'][3]})
 
     def get_images_3e861307_73a6_4d1f_8d68_f68b03223032(self):
         raise exceptions.NotFound('404')
-
-    def post_images_c99d7632_bd66_4be9_aed5_3dd14b223a76_metadata(
-            self, body, **kw):
-        assert list(body) == ['metadata']
-        fakes.assert_has_keys(body['metadata'],
-                              required=['test_key'])
-        get_image = self.get_images_c99d7632_bd66_4be9_aed5_3dd14b223a76
-        return (
-            200,
-            {},
-            {'metadata': get_image()[2]['image']['metadata']})
-
-    def delete_images_c99d7632_bd66_4be9_aed5_3dd14b223a76(self, **kw):
-        return (204, {}, None)
-
-    def delete_images_f27f479a_ddda_419a_9bbc_d6b56b210161(self, **kw):
-        return (204, {}, None)
-
-    def delete_images_c99d7632_bd66_4be9_aed5_3dd14b223a76_metadata_test_key(
-            self, **kw):
-        return (204, {}, None)
 
     #
     # Keypairs

@@ -21,15 +21,6 @@ class TestImageMetaV239(base.ClientTestBase):
     # fallback to 2.35 and emit a warning.
     COMPUTE_API_VERSION = "2.39"
 
-    def test_command_deprecation(self):
-        output = self.nova('image-meta %s set test_key=test_value' %
-                           self.image.id, merge_stderr=True)
-        self.assertIn('is deprecated', output)
-
-        output = self.nova('image-meta %s delete test_key' %
-                           self.image.id, merge_stderr=True)
-        self.assertIn('is deprecated', output)
-
     def test_limits(self):
         """Tests that 2.39 won't return 'maxImageMeta' resource limit and
         the CLI output won't show it.

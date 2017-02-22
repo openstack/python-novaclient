@@ -1199,35 +1199,6 @@ class ShellTest(utils.TestCase):
         self.assert_called('POST', '/flavors/2/action',
                            {'removeTenantAccess': {'tenant': 'proj2'}})
 
-    def test_image_show(self):
-        _out, err = self.run_command('image-show %s' % FAKE_UUID_1)
-        self.assertIn('Command image-show is deprecated', err)
-        self.assert_called('GET', '/v2/images/%s' % FAKE_UUID_1)
-
-    def test_image_meta_set(self):
-        _out, err = self.run_command('image-meta %s set test_key=test_value' %
-                                     FAKE_UUID_1)
-        self.assertIn('Command image-meta is deprecated', err)
-        self.assert_called('POST', '/images/%s/metadata' % FAKE_UUID_1,
-                           {'metadata': {'test_key': 'test_value'}})
-
-    def test_image_meta_del(self):
-        _out, err = self.run_command('image-meta %s delete test_key' %
-                                     FAKE_UUID_1)
-        self.assertIn('Command image-meta is deprecated', err)
-        self.assert_called('DELETE', '/images/%s/metadata/test_key' %
-                           FAKE_UUID_1)
-
-    @mock.patch('sys.stdout', six.StringIO())
-    @mock.patch('sys.stderr', six.StringIO())
-    def test_image_meta_bad_action(self):
-        self.assertRaises(SystemExit, self.run_command,
-                          'image-meta 1 BAD_ACTION test_key=test_value')
-
-    def test_image_list(self):
-        self.run_command('image-list')
-        self.assert_called('GET', '/images/detail')
-
     def test_create_image(self):
         self.run_command('image-create sample-server mysnapshot')
         self.assert_called(
@@ -1272,18 +1243,6 @@ class ShellTest(utils.TestCase):
         self.assertRaises(
             exceptions.InstanceInDeletedState, self.run_command,
             'image-create sample-server mysnapshot_deleted --poll')
-
-    def test_image_delete(self):
-        _out, err = self.run_command('image-delete %s' % FAKE_UUID_1)
-        self.assertIn('Command image-delete is deprecated', err)
-        self.assert_called('DELETE', '/images/%s' % FAKE_UUID_1)
-
-    def test_image_delete_multiple(self):
-        self.run_command('image-delete %s %s' % (FAKE_UUID_1, FAKE_UUID_2))
-        self.assert_called('GET', '/v2/images/' + FAKE_UUID_1, pos=0)
-        self.assert_called('DELETE', '/images/' + FAKE_UUID_1, pos=1)
-        self.assert_called('GET', '/v2/images/' + FAKE_UUID_2, pos=2)
-        self.assert_called('DELETE', '/images/' + FAKE_UUID_2, pos=3)
 
     def test_list(self):
         self.run_command('list')
@@ -3526,42 +3485,6 @@ class ShellNetworkUtilTest(utils.TestCase):
 
     def test_deprecated_network_older(self):
         @novaclient.v2.shell.deprecated_network
-        def tester(cs):
-            'foo'
-            # since we didn't need to adjust the api_version the mock won't
-            # have cs.client.api_version set on it
-            self.assertFalse(hasattr(cs, 'client'))
-            # we have to set the attribute back on cs so the decorator can
-            # set the value on it when we return from this wrapped function
-            setattr(cs, 'client', mock.MagicMock())
-
-        cs = mock.MagicMock()
-        cs.api_version = api_versions.APIVersion('2.1')
-        # we have to delete the cs.client attribute so hasattr won't return a
-        # false positive in the wrapped function
-        del cs.client
-        tester(cs)
-        self.assertEqual('DEPRECATED: foo', tester.__doc__)
-        # the deprecated_network decorator will set cs.client.api_version
-        # after calling the wrapped function
-        self.assertEqual(cs.api_version, cs.api_version)
-
-
-class ShellImageUtilTest(utils.TestCase):
-    def test_deprecated_image_newer(self):
-        @novaclient.v2.shell.deprecated_image
-        def tester(cs):
-            'foo'
-            self.assertEqual(api_versions.APIVersion('2.35'),
-                             cs.api_version)
-
-        cs = mock.MagicMock()
-        cs.api_version = api_versions.APIVersion('2.9999')
-        tester(cs)
-        self.assertEqual('DEPRECATED: foo', tester.__doc__)
-
-    def test_deprecated_image_older(self):
-        @novaclient.v2.shell.deprecated_image
         def tester(cs):
             'foo'
             # since we didn't need to adjust the api_version the mock won't

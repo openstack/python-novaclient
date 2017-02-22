@@ -72,10 +72,6 @@ msg_deprecate_net = ('WARNING: Command %s is deprecated and will be removed '
                      'after Nova 15.0.0 is released. Use python-neutronclient '
                      'or openstackclient instead.')
 
-msg_deprecate_img = ('WARNING: Command %s is deprecated and will be removed '
-                     'after Nova 15.0.0 is released. Use python-glanceclient '
-                     'or openstackclient instead')
-
 
 def deprecated_proxy(fn, msg_format):
     @functools.wraps(fn)
@@ -100,9 +96,6 @@ def deprecated_proxy(fn, msg_format):
 deprecated_network = functools.partial(deprecated_proxy,
                                        msg_format=msg_deprecate_net)
 
-deprecated_image = functools.partial(deprecated_proxy,
-                                     msg_format=msg_deprecate_img)
-
 
 def _key_value_pairing(text):
     try:
@@ -118,15 +111,21 @@ def _meta_parsing(metadata):
 
 
 def _match_image(cs, wanted_properties):
-    image_list = cs.images.list()
+    image_list = cs.glance.list()
     images_matched = []
     match = set(wanted_properties)
     for img in image_list:
-        try:
-            if match == match.intersection(set(img.metadata.items())):
-                images_matched.append(img)
-        except AttributeError:
-            pass
+        img_dict = {}
+        # exclude any unhashable entries
+        for key, value in img.to_dict().items():
+            try:
+                set([key, value])
+            except TypeError:
+                pass
+            else:
+                img_dict[key] = value
+        if match == match.intersection(set(img_dict.items())):
+            images_matched.append(img)
     return images_matched
 
 
@@ -1350,57 +1349,6 @@ def do_network_create(cs, args):
     cs.networks.create(**kwargs)
 
 
-@utils.arg(
-    '--limit',
-    dest="limit",
-    metavar="<limit>",
-    help=_('Number of images to return per request.'))
-@deprecated_image
-def do_image_list(cs, _args):
-    """Print a list of available images to boot from."""
-    limit = _args.limit
-    image_list = cs.images.list(limit=limit)
-
-    def parse_server_name(image):
-        try:
-            return image.server['id']
-        except (AttributeError, KeyError):
-            return ''
-
-    fmts = {'Server': parse_server_name}
-    utils.print_list(image_list, ['ID', 'Name', 'Status', 'Server'],
-                     fmts, sortby_index=1)
-
-
-@utils.arg(
-    'image',
-    metavar='<image>',
-    help=_("Name or ID of image."))
-@utils.arg(
-    'action',
-    metavar='<action>',
-    choices=['set', 'delete'],
-    help=_("Actions: 'set' or 'delete'."))
-@utils.arg(
-    'metadata',
-    metavar='<key=value>',
-    nargs='+',
-    action='append',
-    default=[],
-    help=_('Metadata to add/update or delete (only key is necessary on '
-           'delete).'))
-@deprecated_image
-def do_image_meta(cs, args):
-    """Set or delete metadata on an image."""
-    image = _find_image(cs, args.image)
-    metadata = _extract_metadata(args)
-
-    if args.action == 'set':
-        cs.images.set_meta(image, metadata)
-    elif args.action == 'delete':
-        cs.images.delete_meta(image, metadata.keys())
-
-
 def _extract_metadata(args):
     metadata = {}
     for metadatum in args.metadata[0]:
@@ -1447,34 +1395,6 @@ def _print_flavor(flavor):
     info.pop('links')
     info.update({"extra_specs": _print_flavor_extra_specs(flavor)})
     utils.print_dict(info)
-
-
-@utils.arg(
-    'image',
-    metavar='<image>',
-    help=_("Name or ID of image."))
-@deprecated_image
-def do_image_show(cs, args):
-    """Show details about the given image."""
-    image = _find_image(cs, args.image)
-    _print_image(image)
-
-
-@utils.arg(
-    'image', metavar='<image>', nargs='+',
-    help=_('Name or ID of image(s).'))
-@deprecated_image
-def do_image_delete(cs, args):
-    """Delete specified image(s)."""
-    for image in args.image:
-        try:
-            # _find_image is using the GlanceManager which doesn't implement
-            # the delete() method so use the ImagesManager for that.
-            image = _find_image(cs, image)
-            cs.images.delete(image)
-        except Exception as e:
-            print(_("Delete for image %(image)s failed: %(e)s") %
-                  {'image': image, 'e': e})
 
 
 @utils.arg(
