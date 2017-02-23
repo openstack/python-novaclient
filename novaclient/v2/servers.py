@@ -1631,9 +1631,9 @@ class ServerManager(base.BootingManagerWithFind):
 
     def set_meta(self, server, metadata):
         """
-        Set a servers metadata
+        Set a server's metadata
         :param server: The :class:`Server` to add metadata to
-        :param metadata: A dict of metadata to add to the server
+        :param metadata: A dict of metadata to be added to the server
         """
         body = {'metadata': metadata}
         return self._create("/servers/%s/metadata" % base.getid(server),
