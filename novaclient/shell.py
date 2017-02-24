@@ -840,8 +840,8 @@ class OpenStackComputeShell(object):
         # Recreate client object with discovered version.
         self.cs = client.Client(
             api_version,
-            os_username, os_password, os_project_name,
-            tenant_id=os_project_id, user_id=os_user_id,
+            os_username, os_password, project_id=os_project_id,
+            project_name=os_project_name, user_id=os_user_id,
             auth_url=os_auth_url, insecure=insecure,
             region_name=os_region_name, endpoint_type=endpoint_type,
             extensions=self.extensions, service_type=service_type,
