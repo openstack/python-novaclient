@@ -41,11 +41,6 @@ class SimpleReadOnlyNovaClientTest(base.ClientTestBase):
     def test_admin_cloudpipe_list(self):
         self.nova('cloudpipe-list')
 
-    # "Neutron does not provide this feature"
-    def test_admin_dns_domains(self):
-        self.skip_if_neutron()
-        self.nova('dns-domains')
-
     @decorators.skip_because(bug="1157349")
     def test_admin_dns_list(self):
         self.skip_if_neutron()
