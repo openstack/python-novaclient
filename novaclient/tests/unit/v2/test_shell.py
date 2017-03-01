@@ -2729,8 +2729,7 @@ class ShellTest(utils.TestCase):
         self.run_command('migration-list --host host1 --cell_name child1 '
                          '--status finished')
         self.assert_called('GET',
-                           '/os-migrations?cell_name=child1&host=host1'
-                           '&status=finished')
+                           '/os-migrations?host=host1&status=finished')
 
     @mock.patch('novaclient.v2.shell._find_server')
     @mock.patch('os.system')

@@ -4772,8 +4772,12 @@ def _print_migrations(cs, migrations):
     '--cell_name',
     dest='cell_name',
     metavar='<cell_name>',
-    help=_('Fetch migrations for the given cell_name.'))
+    help=_('Fetch migrations for the given cell_name.'),
+    action=shell.DeprecatedAction,
+    real_action='nothing',
+    use=_('this option is not supported, and will be '
+          'removed after version 8.0.0.'))
 def do_migration_list(cs, args):
     """Print a list of migrations."""
-    migrations = cs.migrations.list(args.host, args.status, args.cell_name)
+    migrations = cs.migrations.list(args.host, args.status)
     _print_migrations(cs, migrations)
