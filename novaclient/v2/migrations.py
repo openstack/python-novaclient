@@ -17,6 +17,7 @@ migration interface
 from six.moves.urllib import parse
 
 from novaclient import base
+from novaclient.i18n import _LW
 
 
 class Migration(base.Resource):
@@ -40,6 +41,9 @@ class MigrationManager(base.ManagerWithFind):
         if status:
             opts['status'] = status
         if cell_name:
+            self.client.logger.warning(_LW("Argument 'cell_name' is "
+                                           "deprecated since Pike, and will "
+                                           "be removed in a future release."))
             opts['cell_name'] = cell_name
 
         # Transform the dict to a sequence of two-element tuples in fixed
