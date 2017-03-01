@@ -1,0 +1,6 @@
+---
+deprecations:
+  - CLI argument ``--cell_name`` for ``nova migration-list`` command is
+    deprecated. Nova API does not have logic for handling cell_name
+    parameter in **os-migrations**, and while the parameter is passed to Nova
+    it has never been used.
