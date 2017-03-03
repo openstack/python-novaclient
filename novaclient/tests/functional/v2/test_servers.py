@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
 #    not use this file except in compliance with the License. You may obtain
 #    a copy of the License at
@@ -134,15 +135,29 @@ class TestServersTagsV226(base.ClientTestBase):
 
     COMPUTE_API_VERSION = "2.26"
 
-    def _boot_server_with_tags(self):
+    def _boot_server_with_tags(self, tags=["t1", "t2"]):
         uuid = self._create_server().id
-        self.client.servers.set_tags(uuid, ["t1", "t2"])
+        self.client.servers.set_tags(uuid, tags)
         return uuid
 
     def test_show(self):
         uuid = self._boot_server_with_tags()
         output = self.nova("show %s" % uuid)
         self.assertEqual('["t1", "t2"]', self._get_value_from_the_table(
+            output, "tags"))
+
+    def test_unicode_tag_correctly_displayed(self):
+        """Regression test for bug #1669683.
+
+        List and dict fields with unicode cannot be correctly
+        displayed.
+
+        Ensure that once we fix this it doesn't regress.
+        """
+        # create an instance with chinese tag
+        uuid = self._boot_server_with_tags(tags=["中文标签"])
+        output = self.nova("show %s" % uuid)
+        self.assertEqual('["中文标签"]', self._get_value_from_the_table(
             output, "tags"))
 
     def test_list(self):
