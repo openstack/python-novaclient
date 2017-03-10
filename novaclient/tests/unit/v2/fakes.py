@@ -2017,23 +2017,6 @@ class FakeSessionClient(base_client.SessionClient):
     def post_os_networks_2_action(self, **kw):
         return (202, {}, None)
 
-    def get_os_tenant_networks(self, **kw):
-        return (200, {}, {'networks': [{"label": "1", "cidr": "10.0.0.0/24",
-                                        'project_id':
-                                            '4ffc664c198e435e9853f2538fbcd7a7',
-                                        'id': '1', 'vlan': '1234'}]})
-
-    def get_os_tenant_networks_1(self, **kw):
-        return (200, {}, {'network': {"label": "1", "cidr": "10.0.0.0/24",
-                                      "id": "1"}})
-
-    def post_os_tenant_networks(self, **kw):
-        return (202, {}, {'network': {"label": "new_network1",
-                                      "cidr1": "10.0.1.0/24"}})
-
-    def delete_os_tenant_networks_1(self, **kw):
-        return (202, {}, None)
-
     def get_os_availability_zone_detail(self, **kw):
         return (200, {}, {
             "availabilityZoneInfo": [
