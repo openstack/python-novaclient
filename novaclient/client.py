@@ -39,6 +39,14 @@ from novaclient import extension as ext
 from novaclient.i18n import _, _LW
 from novaclient import utils
 
+# set requests to automatically retry on ConnectionError
+if hasattr(requests, 'defaults'):
+    # requests < 1.0
+    requests.defaults.defaults['max_retries'] = 3
+elif hasattr(requests, 'adapters'):
+    # requests >= 1.0
+    requests.adapters.DEFAULT_RETRIES = 3
+
 
 # TODO(jichenjc): when an extension in contrib is moved to core extension,
 # Add the name into the following list, then after last patch merged,
