@@ -66,5 +66,5 @@ class TestInstanceCLI(base.ClientTestBase):
         self.wait_for_volume_status(volume, 'in-use')
 
         # clean up on success
-        self.nova('volume-detach', params="%s %s" % (name, volume.id))
+        self.cinder.volumes.detach(volume.id)
         self.wait_for_volume_status(volume, 'available')

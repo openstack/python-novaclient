@@ -31,7 +31,7 @@ class TestExtAttrNovaClient(base.ClientTestBase):
         return server, volume
 
     def _release_volume(self, server, volume):
-        self.nova('volume-detach', params="%s %s" % (server.id, volume.id))
+        self.cinder.volumes.detach(volume.id)
         self.wait_for_volume_status(volume, 'available')
 
     def test_extended_server_attributes(self):
