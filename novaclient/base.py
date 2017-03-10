@@ -415,7 +415,8 @@ class ManagerWithFind(Manager):
             msg = "No %s matching %s." % (self.resource_class.__name__, kwargs)
             raise exceptions.NotFound(404, msg)
         elif num_matches > 1:
-            raise exceptions.NoUniqueMatch
+            msg = "No unique %s matching %s" % (self.resource_class.__name__, kwargs)
+            raise exceptions.NoUniqueMatch(msg)
         else:
             matches[0].append_request_ids(matches.request_ids)
             return matches[0]
