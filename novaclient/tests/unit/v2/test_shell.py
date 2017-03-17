@@ -2016,30 +2016,6 @@ class ShellTest(utils.TestCase):
         self.assert_called('PUT', '/os-aggregates/1', body, pos=-2)
         self.assert_called('GET', '/os-aggregates/1', pos=-1)
 
-    def test_aggregate_update_by_id_legacy(self):
-        self.run_command('aggregate-update 1 new_name')
-        body = {"aggregate": {"name": "new_name"}}
-        self.assert_called('PUT', '/os-aggregates/1', body, pos=-2)
-        self.assert_called('GET', '/os-aggregates/1', pos=-1)
-
-    def test_aggregate_update_by_name_legacy(self):
-        self.run_command('aggregate-update test new_name')
-        body = {"aggregate": {"name": "new_name"}}
-        self.assert_called('PUT', '/os-aggregates/1', body, pos=-2)
-        self.assert_called('GET', '/os-aggregates/1', pos=-1)
-
-    def test_aggregate_update_with_availability_zone_by_id_legacy(self):
-        self.run_command('aggregate-update 1 foo new_zone')
-        body = {"aggregate": {"name": "foo", "availability_zone": "new_zone"}}
-        self.assert_called('PUT', '/os-aggregates/1', body, pos=-2)
-        self.assert_called('GET', '/os-aggregates/1', pos=-1)
-
-    def test_aggregate_update_with_availability_zone_by_name_legacy(self):
-        self.run_command('aggregate-update test foo new_zone')
-        body = {"aggregate": {"name": "foo", "availability_zone": "new_zone"}}
-        self.assert_called('PUT', '/os-aggregates/1', body, pos=-2)
-        self.assert_called('GET', '/os-aggregates/1', pos=-1)
-
     def test_aggregate_set_metadata_add_by_id(self):
         out, err = self.run_command('aggregate-set-metadata 3 foo=bar')
         body = {"set_metadata": {"metadata": {"foo": "bar"}}}
