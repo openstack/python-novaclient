@@ -3733,7 +3733,8 @@ def do_aggregate_delete(cs, args):
     metavar='<aggregate>',
     help=_('Name or ID of aggregate to update.'))
 @utils.arg(
-    'name',
+    'old_name',
+    metavar='<name>',
     nargs='?',
     action=shell.DeprecatedAction,
     use=_('use "%s"; this option will be removed in '
@@ -3744,7 +3745,7 @@ def do_aggregate_delete(cs, args):
     dest='name',
     help=_('Name of aggregate.'))
 @utils.arg(
-    'availability_zone',
+    'old_availability_zone',
     metavar='<availability-zone>',
     nargs='?',
     default=None,
@@ -3761,10 +3762,11 @@ def do_aggregate_update(cs, args):
     """Update the aggregate's name and optionally availability zone."""
     aggregate = _find_aggregate(cs, args.aggregate)
     updates = {}
-    if args.name:
-        updates["name"] = args.name
-    if args.availability_zone:
-        updates["availability_zone"] = args.availability_zone
+    if args.name or args.old_name:
+        updates["name"] = args.name or args.old_name
+    if args.availability_zone or args.old_availability_zone:
+        updates["availability_zone"] = (args.availability_zone or
+                                        args.old_availability_zone)
 
     aggregate = cs.aggregates.update(aggregate.id, updates)
     print(_("Aggregate %s has been successfully updated.") % aggregate.id)
