@@ -58,6 +58,7 @@ upgrade:
     * novaclient.v2.fixed_ips
     * novaclient.v2.floating_ip_dns
     * novaclient.v2.floating_ip_pools
+    * novaclient.v2.floating_ips
     * novaclient.v2.floating_ips_bulk
     * novaclient.v2.fping
     * novaclient.v2.security_group_default_rules

@@ -30,7 +30,6 @@ from novaclient.v2 import cloudpipe
 from novaclient.v2 import contrib
 from novaclient.v2 import flavor_access
 from novaclient.v2 import flavors
-from novaclient.v2 import floating_ips
 from novaclient.v2 import hosts
 from novaclient.v2 import hypervisors
 from novaclient.v2 import images
@@ -154,7 +153,6 @@ class Client(object):
         self.agents = agents.AgentsManager(self)
         self.cloudpipe = cloudpipe.CloudpipeManager(self)
         self.certs = certs.CertificateManager(self)
-        self.floating_ips = floating_ips.FloatingIPManager(self)
         self.volumes = volumes.VolumeManager(self)
         self.keypairs = keypairs.KeypairManager(self)
         self.networks = networks.NetworkManager(self)
