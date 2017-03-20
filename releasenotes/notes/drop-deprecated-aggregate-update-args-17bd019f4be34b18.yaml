@@ -1,0 +1,6 @@
+---
+upgrade:
+  - |
+    The deprecated `name` and `availability_zone` positional arguments in
+    the ``nova aggregate-update`` command have been removed. Use the
+    ``--name`` and ``--availability-zone`` options instead.

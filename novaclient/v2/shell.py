@@ -2972,26 +2972,9 @@ def do_aggregate_delete(cs, args):
     metavar='<aggregate>',
     help=_('Name or ID of aggregate to update.'))
 @utils.arg(
-    'old_name',
-    metavar='<name>',
-    nargs='?',
-    action=shell.DeprecatedAction,
-    use=_('use "%s"; this option will be removed in '
-          'novaclient 5.0.0.') % '--name',
-    help=argparse.SUPPRESS)
-@utils.arg(
     '--name',
     dest='name',
     help=_('Name of aggregate.'))
-@utils.arg(
-    'old_availability_zone',
-    metavar='<availability-zone>',
-    nargs='?',
-    default=None,
-    action=shell.DeprecatedAction,
-    use=_('use "%s"; this option will be removed in '
-          'novaclient 5.0.0.') % '--availability_zone',
-    help=argparse.SUPPRESS)
 @utils.arg(
     '--availability-zone',
     metavar='<availability-zone>',
@@ -3001,11 +2984,10 @@ def do_aggregate_update(cs, args):
     """Update the aggregate's name and optionally availability zone."""
     aggregate = _find_aggregate(cs, args.aggregate)
     updates = {}
-    if args.name or args.old_name:
-        updates["name"] = args.name or args.old_name
-    if args.availability_zone or args.old_availability_zone:
-        updates["availability_zone"] = (args.availability_zone or
-                                        args.old_availability_zone)
+    if args.name:
+        updates["name"] = args.name
+    if args.availability_zone:
+        updates["availability_zone"] = args.availability_zone
 
     aggregate = cs.aggregates.update(aggregate.id, updates)
     print(_("Aggregate %s has been successfully updated.") % aggregate.id)
