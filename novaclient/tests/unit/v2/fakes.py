@@ -1419,36 +1419,6 @@ class FakeSessionClient(base_client.SessionClient):
         return (205, {}, body)
 
     #
-    # Security Group Rules
-    #
-    def get_os_security_group_rules(self, **kw):
-        return (200, {}, {"security_group_rules": [
-            {'id': 1, 'parent_group_id': 1, 'group_id': 2,
-             'ip_protocol': 'TCP', 'from_port': 22, 'to_port': 22,
-             'cidr': '10.0.0.0/8'}
-        ]})
-
-    def delete_os_security_group_rules_11(self, **kw):
-        return (202, {}, None)
-
-    def delete_os_security_group_rules_12(self, **kw):
-        return (202, {}, None)
-
-    def delete_os_security_group_rules_14(self, **kw):
-        return (202, {}, None)
-
-    def post_os_security_group_rules(self, body, **kw):
-        assert list(body) == ['security_group_rule']
-        fakes.assert_has_keys(
-            body['security_group_rule'],
-            required=['parent_group_id'],
-            optional=['group_id', 'ip_protocol', 'from_port',
-                      'to_port', 'cidr'])
-        r = {'security_group_rule':
-             self.get_os_security_group_rules()[2]['security_group_rules'][0]}
-        return (202, {}, r)
-
-    #
     # Tenant Usage
     #
     def get_os_simple_tenant_usage(self, **kw):
