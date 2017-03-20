@@ -49,9 +49,6 @@ class DiscoverTest(utils.TestCase):
         def mock_discover_via_python_path():
             yield 'foo', imp.new_module('foo')
 
-        def mock_discover_via_contrib_path(version):
-            yield 'bar', imp.new_module('bar')
-
         def mock_discover_via_entry_points():
             yield 'baz', imp.new_module('baz')
 
@@ -59,15 +56,12 @@ class DiscoverTest(utils.TestCase):
                            '_discover_via_python_path',
                            mock_discover_via_python_path)
         @mock.patch.object(client,
-                           '_discover_via_contrib_path',
-                           mock_discover_via_contrib_path)
-        @mock.patch.object(client,
                            '_discover_via_entry_points',
                            mock_discover_via_entry_points)
         def test():
             extensions = client.discover_extensions('1.1')
-            self.assertEqual(3, len(extensions))
-            names = sorted(['foo', 'bar', 'baz'])
+            self.assertEqual(2, len(extensions))
+            names = sorted(['foo', 'baz'])
             sorted_extensions = sorted(extensions, key=lambda ext: ext.name)
             for i in range(len(names)):
                 ext = sorted_extensions[i]

@@ -51,3 +51,14 @@ upgrade:
     * nova tenant-network-delete
     * nova tenant-network-list
     * nova tenant-network-show
+
+    Along with the following python API bindings::
+
+    * novaclient.v2.contrib.tenant_networks
+
+deprecations:
+  - |
+    The ``only_contrib`` parameter for the
+    ``novaclient.client.discover_extensions`` method is deprecated and now
+    results in an empty list returned since all contrib extensions are either
+    required or have been removed.

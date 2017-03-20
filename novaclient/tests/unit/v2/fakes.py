@@ -2329,27 +2329,6 @@ class FakeSessionClient(base_client.SessionClient):
     def delete_servers_1234_tags(self, **kw):
         return (204, {}, None)
 
-    def get_os_tenant_networks(self):
-        return (200, FAKE_RESPONSE_HEADERS, {
-            'networks': [{"label": "1", "cidr": "10.0.0.0/24",
-                          'project_id': '4ffc664c198e435e9853f2538fbcd7a7',
-                          'id': '1'}]})
-
-    def get_os_tenant_networks_1(self, **kw):
-        return (200, FAKE_RESPONSE_HEADERS, {
-            'network': {"label": "1", "cidr": "10.0.0.0/24",
-                        'project_id': '4ffc664c198e435e9853f2538fbcd7a7',
-                        'id': '1'}})
-
-    def post_os_tenant_networks(self, **kw):
-        return (201, FAKE_RESPONSE_HEADERS, {
-            'network': {"label": "1", "cidr": "10.0.0.0/24",
-                        'project_id': '4ffc664c198e435e9853f2538fbcd7a7',
-                        'id': '1'}})
-
-    def delete_os_tenant_networks_1(self, **kw):
-        return (204, FAKE_RESPONSE_HEADERS, None)
-
     def post_os_assisted_volume_snapshots(self, **kw):
         return (202, FAKE_RESPONSE_HEADERS,
                 {'snapshot': {'id': 'blah', 'volumeId': '1'}})
