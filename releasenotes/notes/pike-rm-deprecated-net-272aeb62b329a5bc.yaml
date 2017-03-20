@@ -1,6 +1,9 @@
 ---
 prelude: >
-    Deprecated network-related resource commands have been removed.
+    Deprecated network-related resource commands and python API bindings
+    have been removed. From this point on, python-novaclient will no longer
+    work with nova-network *except* for the ``nova virtual-interface-list``
+    command.
 upgrade:
   - |
     The following deprecated network-related resource commands have been
@@ -61,6 +64,7 @@ upgrade:
     * novaclient.v2.floating_ips
     * novaclient.v2.floating_ips_bulk
     * novaclient.v2.fping
+    * novaclient.v2.networks
     * novaclient.v2.security_group_default_rules
     * novaclient.v2.security_group_rules
     * novaclient.v2.security_groups

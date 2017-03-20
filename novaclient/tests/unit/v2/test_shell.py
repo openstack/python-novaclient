@@ -822,61 +822,7 @@ class ShellTest(utils.TestCase):
                '--nic net-id=net-id1,net-id=net-id2 some-server' % FAKE_UUID_1)
         self.assertRaises(exceptions.CommandError, self.run_command, cmd)
 
-    @mock.patch('novaclient.v2.client.Client.has_neutron', return_value=False)
-    def test_boot_nics_net_name(self, has_neutron):
-        cmd = ('boot --image %s --flavor 1 '
-               '--nic net-name=1 some-server' % FAKE_UUID_1)
-        self.run_command(cmd)
-        self.assert_called_anytime(
-            'POST', '/servers',
-            {
-                'server': {
-                    'flavorRef': '1',
-                    'name': 'some-server',
-                    'imageRef': FAKE_UUID_1,
-                    'min_count': 1,
-                    'max_count': 1,
-                    'networks': [
-                        {'uuid': '1'},
-                    ],
-                },
-            },
-        )
-
-    @mock.patch('novaclient.v2.client.Client.has_neutron', return_value=False)
-    def test_boot_nics_net_name_nova_net_2_36(self, has_neutron):
-        orig_find_network = novaclient.v2.shell._find_network_id_novanet
-
-        def stubbed_find_network(cs, net_name):
-            # assert that we dropped back to 2.35
-            self.assertEqual(api_versions.APIVersion('2.35'),
-                             cs.client.api_version)
-            return orig_find_network(cs, net_name)
-
-        cmd = ('boot --image %s --flavor 1 '
-               '--nic net-name=1 some-server' % FAKE_UUID_1)
-        with mock.patch.object(novaclient.v2.shell, '_find_network_id_novanet',
-                               side_effect=stubbed_find_network) as find_net:
-            self.run_command(cmd, api_version='2.36')
-        find_net.assert_called_once_with(self.shell.cs, '1')
-        self.assert_called_anytime(
-            'POST', '/servers',
-            {
-                'server': {
-                    'flavorRef': '1',
-                    'name': 'some-server',
-                    'imageRef': FAKE_UUID_1,
-                    'min_count': 1,
-                    'max_count': 1,
-                    'networks': [
-                        {'uuid': '1'},
-                    ],
-                },
-            },
-        )
-
-    @mock.patch('novaclient.v2.client.Client.has_neutron', return_value=True)
-    def test_boot_nics_net_name_neutron(self, has_neutron):
+    def test_boot_nics_net_name_neutron(self):
         cmd = ('boot --image %s --flavor 1 '
                '--nic net-name=private some-server' % FAKE_UUID_1)
         self.run_command(cmd)
@@ -896,8 +842,7 @@ class ShellTest(utils.TestCase):
             },
         )
 
-    @mock.patch('novaclient.v2.client.Client.has_neutron', return_value=True)
-    def test_boot_nics_net_name_neutron_dup(self, has_neutron):
+    def test_boot_nics_net_name_neutron_dup(self):
         cmd = ('boot --image %s --flavor 1 '
                '--nic net-name=duplicate some-server' % FAKE_UUID_1)
         # this should raise a multiple matches error
@@ -906,8 +851,7 @@ class ShellTest(utils.TestCase):
         with testtools.ExpectedException(exceptions.CommandError, msg):
             self.run_command(cmd)
 
-    @mock.patch('novaclient.v2.client.Client.has_neutron', return_value=True)
-    def test_boot_nics_net_name_neutron_blank(self, has_neutron):
+    def test_boot_nics_net_name_neutron_blank(self):
         cmd = ('boot --image %s --flavor 1 '
                '--nic net-name=blank some-server' % FAKE_UUID_1)
         # this should raise a multiple matches error
@@ -919,25 +863,6 @@ class ShellTest(utils.TestCase):
     # out other tests, and they should check the string in the
     # CommandError, because it's not really enough to distinguish
     # between various errors.
-    @mock.patch('novaclient.v2.client.Client.has_neutron', return_value=False)
-    def test_boot_nics_net_name_not_found(self, has_neutron):
-        cmd = ('boot --image %s --flavor 1 '
-               '--nic net-name=some-net some-server' % FAKE_UUID_1)
-        self.assertRaises(exceptions.ResourceNotFound, self.run_command, cmd)
-
-    @mock.patch('novaclient.v2.client.Client.has_neutron', return_value=False)
-    @mock.patch(
-        'novaclient.tests.unit.v2.fakes.FakeSessionClient.get_os_networks')
-    def test_boot_nics_net_name_multiple_matches(self, mock_networks_list,
-                                                 has_neutron):
-        mock_networks_list.return_value = (200, {}, {
-            'networks': [{"label": "some-net", 'id': '1'},
-                         {"label": "some-net", 'id': '2'}]})
-
-        cmd = ('boot --image %s --flavor 1 '
-               '--nic net-name=some-net some-server' % FAKE_UUID_1)
-        self.assertRaises(exceptions.NoUniqueMatch, self.run_command, cmd)
-
     @mock.patch('novaclient.v2.shell._find_network_id', return_value='net-id')
     def test_boot_nics_net_name_and_net_id(self, mock_find_network_id):
         cmd = ('boot --image %s --flavor 1 '

@@ -67,7 +67,7 @@ class TestServersBootNovaClient(base.ClientTestBase):
             "--nic net-name=%(net-name)s" % {"name": uuidutils.generate_uuid(),
                                              "image": self.image.id,
                                              "flavor": self.flavor.id,
-                                             "net-name": self.network.label}))
+                                             "net-name": self.network.name}))
         server_id = self._get_value_from_the_table(server_info, "id")
 
         self.client.servers.delete(server_id)
