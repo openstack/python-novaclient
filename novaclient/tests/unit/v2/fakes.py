@@ -1030,57 +1030,6 @@ class FakeSessionClient(base_client.SessionClient):
     def delete_os_floating_ips_1(self, **kw):
         return (204, {}, None)
 
-    def get_os_floating_ip_dns(self, **kw):
-        return (205, {}, {'domain_entries':
-                          [{'domain': 'example.org'},
-                           {'domain': 'example.com'}]})
-
-    def get_os_floating_ip_dns_testdomain_entries(self, **kw):
-        if kw.get('ip'):
-            return (205, {}, {
-                'dns_entries': [
-                    {'dns_entry': {'ip': kw.get('ip'),
-                                   'name': "host1",
-                                   'type': "A",
-                                   'domain': 'testdomain'}},
-                    {'dns_entry': {'ip': kw.get('ip'),
-                                   'name': "host2",
-                                   'type': "A",
-                                   'domain': 'testdomain'}}]})
-        else:
-            return (404, {}, None)
-
-    def get_os_floating_ip_dns_testdomain_entries_testname(self, **kw):
-        return (205, {}, {
-            'dns_entry': {'ip': "10.10.10.10",
-                          'name': 'testname',
-                          'type': "A",
-                          'domain': 'testdomain'}})
-
-    def put_os_floating_ip_dns_testdomain(self, body, **kw):
-        if body['domain_entry']['scope'] == 'private':
-            fakes.assert_has_keys(body['domain_entry'],
-                                  required=['availability_zone', 'scope'])
-        elif body['domain_entry']['scope'] == 'public':
-            fakes.assert_has_keys(body['domain_entry'],
-                                  required=['project', 'scope'])
-
-        else:
-            fakes.assert_has_keys(body['domain_entry'],
-                                  required=['project', 'scope'])
-        return (205, {}, body)
-
-    def put_os_floating_ip_dns_testdomain_entries_testname(self, body, **kw):
-        fakes.assert_has_keys(body['dns_entry'],
-                              required=['ip', 'dns_type'])
-        return (205, {}, body)
-
-    def delete_os_floating_ip_dns_testdomain(self, **kw):
-        return (200, {}, None)
-
-    def delete_os_floating_ip_dns_testdomain_entries_testname(self, **kw):
-        return (200, {}, None)
-
     def get_os_floating_ips_bulk(self, **kw):
         return (200, {}, {'floating_ip_info': [
             {'id': 1, 'fixed_ip': '10.0.0.1', 'ip': '11.0.0.1'},
