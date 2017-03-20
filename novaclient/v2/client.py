@@ -43,7 +43,6 @@ from novaclient.v2 import migrations
 from novaclient.v2 import networks
 from novaclient.v2 import quota_classes
 from novaclient.v2 import quotas
-from novaclient.v2 import security_groups
 from novaclient.v2 import server_external_events
 from novaclient.v2 import server_groups
 from novaclient.v2 import server_migrations
@@ -163,7 +162,6 @@ class Client(object):
         self.neutron = networks.NeutronManager(self)
         self.quota_classes = quota_classes.QuotaClassSetManager(self)
         self.quotas = quotas.QuotaSetManager(self)
-        self.security_groups = security_groups.SecurityGroupManager(self)
         self.usage = usage.UsageManager(self)
         self.virtual_interfaces = \
             virtual_interfaces.VirtualInterfaceManager(self)

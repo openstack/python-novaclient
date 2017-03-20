@@ -30,7 +30,6 @@ from novaclient import base
 from novaclient import crypto
 from novaclient import exceptions
 from novaclient.i18n import _
-from novaclient.v2 import security_groups
 
 
 REBOOT_SOFT, REBOOT_HARD = 'SOFT', 'HARD'
@@ -630,6 +629,11 @@ class NetworkInterface(base.Resource):
 
     def __repr__(self):
         return '<NetworkInterface: %s>' % self.id
+
+
+class SecurityGroup(base.Resource):
+    def __str__(self):
+        return str(self.id)
 
 
 class ServerManager(base.BootingManagerWithFind):
@@ -1780,7 +1784,7 @@ class ServerManager(base.BootingManagerWithFind):
         """
         return self._list('/servers/%s/os-security-groups' %
                           base.getid(server), 'security_groups',
-                          security_groups.SecurityGroup)
+                          SecurityGroup)
 
     @api_versions.wraps("2.0", "2.13")
     def evacuate(self, server, host=None, on_shared_storage=True,
