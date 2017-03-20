@@ -45,21 +45,3 @@ class FloatingFixture(base.Fixture):
         self.requests_mock.post(self.url(),
                                 json=post_os_floating_ips,
                                 headers=self.json_headers)
-
-
-class PoolsFixture(base.Fixture):
-
-    base_url = 'os-floating-ip-pools'
-
-    def setUp(self):
-        super(PoolsFixture, self).setUp()
-
-        get_os_floating_ip_pools = {
-            'floating_ip_pools': [
-                {'name': 'foo'},
-                {'name': 'bar'}
-            ]
-        }
-        self.requests_mock.get(self.url(),
-                               json=get_os_floating_ip_pools,
-                               headers=self.json_headers)
