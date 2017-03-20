@@ -1,0 +1,7 @@
+---
+upgrade:
+  - |
+    The baremetal CLIs and python API bindings were deprecated in the Newton
+    release and have been removed. Use python-openstackclient or
+    python-ironicclient for CLIs. Use python-ironicclient or openstacksdk for
+    python API bindings
