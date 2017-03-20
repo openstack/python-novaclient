@@ -56,6 +56,7 @@ upgrade:
 
     * novaclient.v2.contrib.tenant_networks
     * novaclient.v2.floating_ip_dns
+    * novaclient.v2.floating_ips_bulk
 
 deprecations:
   - |

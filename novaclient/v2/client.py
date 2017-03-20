@@ -33,7 +33,6 @@ from novaclient.v2 import flavor_access
 from novaclient.v2 import flavors
 from novaclient.v2 import floating_ip_pools
 from novaclient.v2 import floating_ips
-from novaclient.v2 import floating_ips_bulk
 from novaclient.v2 import fping
 from novaclient.v2 import hosts
 from novaclient.v2 import hypervisors
@@ -184,7 +183,6 @@ class Client(object):
         self.hypervisor_stats = hypervisors.HypervisorStatsManager(self)
         self.services = services.ServiceManager(self)
         self.fixed_ips = fixed_ips.FixedIPsManager(self)
-        self.floating_ips_bulk = floating_ips_bulk.FloatingIPBulkManager(self)
         self.os_cache = os_cache
         self.availability_zones = \
             availability_zones.AvailabilityZoneManager(self)
