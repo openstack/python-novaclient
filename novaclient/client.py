@@ -36,7 +36,7 @@ osprofiler_web = importutils.try_import("osprofiler.web")
 from novaclient import api_versions
 from novaclient import exceptions
 from novaclient import extension as ext
-from novaclient.i18n import _, _LW
+from novaclient.i18n import _
 from novaclient import utils
 
 
@@ -90,16 +90,16 @@ class SessionClient(adapter.LegacyJsonAdapter):
     @property
     def management_url(self):
         self.logger.warning(
-            _LW("Property `management_url` is deprecated for SessionClient. "
-                "Use `endpoint_override` instead."))
+            _("Property `management_url` is deprecated for SessionClient. "
+              "Use `endpoint_override` instead."))
         return self.endpoint_override
 
     @management_url.setter
     def management_url(self, value):
         self.logger.warning(
-            _LW("Property `management_url` is deprecated for SessionClient. "
-                "It should be set via `endpoint_override` variable while class"
-                " initialization."))
+            _("Property `management_url` is deprecated for SessionClient. "
+              "It should be set via `endpoint_override` variable while class"
+              " initialization."))
         self.endpoint_override = value
 
 
@@ -177,11 +177,11 @@ def discover_extensions(*args, **kwargs):
     """
     # TODO(mriedem): Remove support for 'only_contrib' in Queens.
     if 'only_contrib' in kwargs and kwargs['only_contrib']:
-        warnings.warn(_LW('Discovering extensions only by contrib path is no '
-                          'longer supported since all contrib extensions '
-                          'have either been made required or removed. The '
-                          'only_contrib argument is deprecated and will be '
-                          'removed in a future release.'))
+        warnings.warn(_('Discovering extensions only by contrib path is no '
+                        'longer supported since all contrib extensions '
+                        'have either been made required or removed. The '
+                        'only_contrib argument is deprecated and will be '
+                        'removed in a future release.'))
         return []
     chain = itertools.chain(_discover_via_python_path(),
                             _discover_via_entry_points())
@@ -223,8 +223,8 @@ def _get_client_class_and_version(version):
 
 def get_client_class(version):
     """Returns Client class based on given version."""
-    warnings.warn(_LW("'get_client_class' is deprecated. "
-                      "Please use `novaclient.client.Client` instead."))
+    warnings.warn(_("'get_client_class' is deprecated. "
+                    "Please use `novaclient.client.Client` instead."))
     _api_version, client_class = _get_client_class_and_version(version)
     return client_class
 
@@ -238,25 +238,25 @@ def _check_arguments(kwargs, release, deprecated_name, right_name=None):
     if deprecated_name in kwargs:
         if right_name:
             if right_name in kwargs:
-                msg = _LW("The '%(old)s' argument is deprecated in "
-                          "%(release)s and its use may result in errors "
-                          "in future releases. As '%(new)s' is provided, "
-                          "the '%(old)s' argument will be ignored.") % {
+                msg = _("The '%(old)s' argument is deprecated in "
+                        "%(release)s and its use may result in errors "
+                        "in future releases. As '%(new)s' is provided, "
+                        "the '%(old)s' argument will be ignored.") % {
                     "old": deprecated_name, "release": release,
                     "new": right_name}
                 kwargs.pop(deprecated_name)
             else:
-                msg = _LW("The '%(old)s' argument is deprecated in "
-                          "%(release)s and its use may result in errors in "
-                          "future releases. Use '%(right)s' instead.") % {
+                msg = _("The '%(old)s' argument is deprecated in "
+                        "%(release)s and its use may result in errors in "
+                        "future releases. Use '%(right)s' instead.") % {
                     "old": deprecated_name, "release": release,
                     "right": right_name}
                 kwargs[right_name] = kwargs.pop(deprecated_name)
 
         else:
-            msg = _LW("The '%(old)s' argument is deprecated in %(release)s "
-                      "and its use may result in errors in future "
-                      "releases.") % {
+            msg = _("The '%(old)s' argument is deprecated in %(release)s "
+                    "and its use may result in errors in future "
+                    "releases.") % {
                 "old": deprecated_name, "release": release}
             # just ignore it
             kwargs.pop(deprecated_name)

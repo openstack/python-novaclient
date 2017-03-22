@@ -23,7 +23,7 @@ from oslo_utils import strutils
 
 import novaclient
 from novaclient import exceptions
-from novaclient.i18n import _, _LW
+from novaclient.i18n import _
 
 LOG = logging.getLogger(__name__)
 if not LOG.handlers:
@@ -234,8 +234,8 @@ def get_api_version(version_string):
     version_string = str(version_string)
     if version_string in DEPRECATED_VERSIONS:
         LOG.warning(
-            _LW("Version %(deprecated_version)s is deprecated, using "
-                "alternative version %(alternative)s instead."),
+            _("Version %(deprecated_version)s is deprecated, using "
+              "alternative version %(alternative)s instead."),
             {"deprecated_version": version_string,
              "alternative": DEPRECATED_VERSIONS[version_string]})
         version_string = DEPRECATED_VERSIONS[version_string]
@@ -421,7 +421,7 @@ def wraps(start_version, end_version=None):
 
 def _warn_missing_microversion_header(header_name):
     """Log a warning about missing microversion response header."""
-    LOG.warning(_LW(
+    LOG.warning(_(
         "Your request was processed by a Nova API which does not support "
         "microversions (%s header is missing from response). "
         "Warning: Response may be incorrect."), header_name)

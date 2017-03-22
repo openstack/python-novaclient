@@ -13,7 +13,7 @@
 import inspect
 import warnings
 
-from novaclient.i18n import _LW
+from novaclient.i18n import _
 
 # NOTE(andreykurilin): "tenant_networks" extension excluded
 #   here deliberately. It was deprecated separately from deprecation
@@ -37,15 +37,15 @@ def warn(alternative=True):
     if module_name.startswith("novaclient.v2.contrib."):
         if alternative:
             new_module_name = module_name.replace("contrib.", "")
-            msg = _LW("Module `%(module)s` is deprecated as of OpenStack "
-                      "Ocata in favor of `%(new_module)s` and will be "
-                      "removed after OpenStack Pike.") % {
+            msg = _("Module `%(module)s` is deprecated as of OpenStack "
+                    "Ocata in favor of `%(new_module)s` and will be "
+                    "removed after OpenStack Pike.") % {
                 "module": module_name, "new_module": new_module_name}
 
         if not alternative:
-            msg = _LW("Module `%s` is deprecated as of OpenStack Ocata "
-                      "All shell commands were moved to "
-                      "`novaclient.v2.shell` and will be automatically "
-                      "loaded.") % module_name
+            msg = _("Module `%s` is deprecated as of OpenStack Ocata "
+                    "All shell commands were moved to "
+                    "`novaclient.v2.shell` and will be automatically "
+                    "loaded.") % module_name
 
         warnings.warn(msg)

@@ -19,7 +19,7 @@ from keystoneauth1.exceptions import catalog as key_ex
 
 from novaclient import client
 from novaclient import exceptions
-from novaclient.i18n import _LE, _LW
+from novaclient.i18n import _
 from novaclient.v2 import agents
 from novaclient.v2 import aggregates
 from novaclient.v2 import assisted_volume_snapshots
@@ -127,11 +127,11 @@ class Client(object):
         """
         if direct_use:
             raise exceptions.Forbidden(
-                403, _LE("'novaclient.v2.client.Client' is not designed to be "
-                         "initialized directly. It is inner class of "
-                         "novaclient. You should use "
-                         "'novaclient.client.Client' instead. Related lp "
-                         "bug-report: 1493576"))
+                403, _("'novaclient.v2.client.Client' is not designed to be "
+                       "initialized directly. It is inner class of "
+                       "novaclient. You should use "
+                       "'novaclient.client.Client' instead. Related lp "
+                       "bug-report: 1493576"))
 
         # NOTE(cyeoh): In the novaclient context (unlike Nova) the
         # project_id is not the same as the tenant_id. Here project_id
@@ -244,21 +244,21 @@ class Client(object):
 
     @property
     def projectid(self):
-        self.logger.warning(_LW("Property 'projectid' is deprecated since "
-                                "Ocata. Use 'project_name' instead."))
+        self.logger.warning(_("Property 'projectid' is deprecated since "
+                              "Ocata. Use 'project_name' instead."))
         return self.project_name
 
     @property
     def tenant_id(self):
-        self.logger.warning(_LW("Property 'tenant_id' is deprecated since "
-                                "Ocata. Use 'project_id' instead."))
+        self.logger.warning(_("Property 'tenant_id' is deprecated since "
+                              "Ocata. Use 'project_id' instead."))
         return self.project_id
 
     def __enter__(self):
-        self.logger.warning(_LW("NovaClient instance can't be used as a "
-                                "context manager since Ocata (deprecated "
-                                "behaviour) since it is redundant in case of "
-                                "SessionClient."))
+        self.logger.warning(_("NovaClient instance can't be used as a "
+                              "context manager since Ocata (deprecated "
+                              "behaviour) since it is redundant in case of "
+                              "SessionClient."))
         return self
 
     def __exit__(self, t, v, tb):
@@ -267,9 +267,9 @@ class Client(object):
 
     def set_management_url(self, url):
         self.logger.warning(
-            _LW("Method `set_management_url` is deprecated since Ocata. "
-                "Use `endpoint_override` argument instead while initializing "
-                "novaclient's instance."))
+            _("Method `set_management_url` is deprecated since Ocata. "
+              "Use `endpoint_override` argument instead while initializing "
+              "novaclient's instance."))
         self.client.set_management_url(url)
 
     def get_timings(self):
@@ -304,5 +304,5 @@ class Client(object):
         Returns on success; raises :exc:`exceptions.Unauthorized` if the
         credentials are wrong.
         """
-        self.logger.warning(_LW(
+        self.logger.warning(_(
             "Method 'authenticate' is deprecated since Ocata."))
