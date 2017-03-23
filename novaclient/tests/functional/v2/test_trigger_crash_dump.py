@@ -12,10 +12,13 @@
 
 import time
 
+from tempest.lib import decorators
+
 from novaclient.tests.functional import base
 from novaclient.v2 import shell
 
 
+@decorators.skip_because(bug="1675526")
 class TestTriggerCrashDumpNovaClientV217(base.TenantTestBase):
     """Functional tests for trigger crash dump"""
 
