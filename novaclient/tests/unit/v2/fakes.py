@@ -997,40 +997,6 @@ class FakeSessionClient(base_client.SessionClient):
                 self.get_flavors_2_os_flavor_access()[2])
 
     #
-    # Floating IPs
-    #
-
-    def get_os_floating_ips(self, **kw):
-        return (
-            200,
-            {},
-            {'floating_ips': [
-                {'id': 1, 'fixed_ip': '10.0.0.1', 'ip': '11.0.0.1'},
-                {'id': 2, 'fixed_ip': '10.0.0.2', 'ip': '11.0.0.2'},
-            ]},
-        )
-
-    def get_os_floating_ips_1(self, **kw):
-        return (
-            200, {}, {'floating_ip': {'id': 1, 'fixed_ip': '10.0.0.1',
-                                      'ip': '11.0.0.1'}})
-
-    def post_os_floating_ips(self, body):
-        if body.get('pool'):
-            return (
-                200, {}, {'floating_ip': {'id': 1, 'fixed_ip': '10.0.0.1',
-                                          'ip': '11.0.0.1',
-                                          'pool': 'nova'}})
-        else:
-            return (
-                200, {}, {'floating_ip': {'id': 1, 'fixed_ip': '10.0.0.1',
-                                          'ip': '11.0.0.1',
-                                          'pool': None}})
-
-    def delete_os_floating_ips_1(self, **kw):
-        return (204, {}, None)
-
-    #
     # Images
     #
     def get_images(self, **kw):

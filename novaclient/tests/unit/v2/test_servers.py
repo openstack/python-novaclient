@@ -20,6 +20,7 @@ import mock
 import six
 
 from novaclient import api_versions
+from novaclient import base
 from novaclient import exceptions
 from novaclient.tests.unit.fixture_data import client
 from novaclient.tests.unit.fixture_data import floatingips
@@ -27,6 +28,21 @@ from novaclient.tests.unit.fixture_data import servers as data
 from novaclient.tests.unit import utils
 from novaclient.tests.unit.v2 import fakes
 from novaclient.v2 import servers
+
+
+class _FloatingIPManager(base.Manager):
+    resource_class = base.Resource
+
+    @api_versions.deprecated_after('2.35')
+    def list(self):
+        """DEPRECATED: List floating IPs"""
+        return self._list("/os-floating-ips", "floating_ips")
+
+    @api_versions.deprecated_after('2.35')
+    def get(self, floating_ip):
+        """DEPRECATED: Retrieve a floating IP"""
+        return self._get("/os-floating-ips/%s" % base.getid(floating_ip),
+                         "floating_ip")
 
 
 class ServersTest(utils.FixturedTestCase):
@@ -40,6 +56,7 @@ class ServersTest(utils.FixturedTestCase):
         self.useFixture(floatingips.FloatingFixture(self.requests_mock))
         if self.api_version:
             self.cs.api_version = api_versions.APIVersion(self.api_version)
+        self.floating_ips = _FloatingIPManager(self.cs)
 
     def _get_server_create_default_nics(self):
         """Callback for default nics kwarg when creating a server.
@@ -565,7 +582,7 @@ class ServersTest(utils.FixturedTestCase):
         fip = self.cs.servers.add_floating_ip(s, '11.0.0.1')
         self.assert_request_id(fip, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
-        f = self.cs.floating_ips.list()[0]
+        f = self.floating_ips.list()[0]
         fip = self.cs.servers.add_floating_ip(s, f)
         self.assert_request_id(fip, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
@@ -582,7 +599,7 @@ class ServersTest(utils.FixturedTestCase):
                                               fixed_address='12.0.0.1')
         self.assert_request_id(fip, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
-        f = self.cs.floating_ips.list()[0]
+        f = self.floating_ips.list()[0]
         fip = self.cs.servers.add_floating_ip(s, f)
         self.assert_request_id(fip, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
@@ -598,7 +615,7 @@ class ServersTest(utils.FixturedTestCase):
         ret = self.cs.servers.remove_floating_ip(s, '11.0.0.1')
         self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
-        f = self.cs.floating_ips.list()[0]
+        f = self.floating_ips.list()[0]
         ret = self.cs.servers.remove_floating_ip(s, f)
         self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
@@ -1374,13 +1391,13 @@ class ServersV2_37Test(ServersV226Test):
         self.assertIsInstance(s, servers.Server)
 
     def test_add_floating_ip(self):
-        # self.cs.floating_ips.list() is not available after 2.35
+        # self.floating_ips.list() is not available after 2.35
         pass
 
     def test_add_floating_ip_to_fixed(self):
-        # self.cs.floating_ips.list() is not available after 2.35
+        # self.floating_ips.list() is not available after 2.35
         pass
 
     def test_remove_floating_ip(self):
-        # self.cs.floating_ips.list() is not available after 2.35
+        # self.floating_ips.list() is not available after 2.35
         pass
