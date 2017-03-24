@@ -60,6 +60,7 @@ upgrade:
     * novaclient.v2.floating_ips_bulk
     * novaclient.v2.fping
     * novaclient.v2.security_group_default_rules
+    * novaclient.v2.security_group_rules
 
 deprecations:
   - |
