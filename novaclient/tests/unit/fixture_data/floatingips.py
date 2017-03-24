@@ -10,7 +10,6 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-from novaclient.tests.unit import fakes
 from novaclient.tests.unit.fixture_data import base
 
 
@@ -46,101 +45,6 @@ class FloatingFixture(base.Fixture):
         self.requests_mock.post(self.url(),
                                 json=post_os_floating_ips,
                                 headers=self.json_headers)
-
-
-class DNSFixture(base.Fixture):
-
-    base_url = 'os-floating-ip-dns'
-
-    def setUp(self):
-        super(DNSFixture, self).setUp()
-
-        get_os_floating_ip_dns = {
-            'domain_entries': [
-                {'domain': 'example.org'},
-                {'domain': 'example.com'}
-            ]
-        }
-        self.requests_mock.get(self.url(),
-                               json=get_os_floating_ip_dns,
-                               headers=self.json_headers,
-                               status_code=205)
-
-        get_dns_testdomain_entries_testname = {
-            'dns_entry': {
-                'ip': "10.10.10.10",
-                'name': 'testname',
-                'type': "A",
-                'domain': 'testdomain'
-            }
-        }
-
-        self.requests_mock.get(self.url('testdomain', 'entries', 'testname'),
-                               json=get_dns_testdomain_entries_testname,
-                               headers=self.json_headers,
-                               status_code=205)
-
-        self.requests_mock.delete(self.url('testdomain'),
-                                  headers=self.json_headers)
-
-        url = self.url('testdomain', 'entries', 'testname')
-        self.requests_mock.delete(url, headers=self.json_headers)
-
-        def put_dns_testdomain_entries_testname(request, context):
-            fakes.assert_has_keys(request.json()['dns_entry'],
-                                  required=['ip', 'dns_type'])
-            context.status_code = 205
-            return request.body
-        self.requests_mock.put(url,
-                               text=put_dns_testdomain_entries_testname,
-                               headers=self.json_headers)
-
-        url = self.url('testdomain', 'entries')
-        self.requests_mock.get(url, status_code=404)
-
-        get_os_floating_ip_dns_testdomain = {
-            'dns_entries': [
-                {
-                    'dns_entry': {
-                        'ip': '1.2.3.4',
-                        'name': "host1",
-                        'type': "A",
-                        'domain': 'testdomain'
-                    }
-                },
-                {
-                    'dns_entry': {
-                        'ip': '1.2.3.4',
-                        'name': "host2",
-                        'type': "A",
-                        'domain': 'testdomain'
-                    }
-                },
-            ]
-        }
-        self.requests_mock.get(url + '?ip=1.2.3.4',
-                               json=get_os_floating_ip_dns_testdomain,
-                               status_code=205,
-                               headers=self.json_headers)
-
-        def put_os_floating_ip_dns_testdomain(request, context):
-            body = request.json()
-            if body['domain_entry']['scope'] == 'private':
-                fakes.assert_has_keys(body['domain_entry'],
-                                      required=['availability_zone', 'scope'])
-            elif body['domain_entry']['scope'] == 'public':
-                fakes.assert_has_keys(body['domain_entry'],
-                                      required=['project', 'scope'])
-            else:
-                fakes.assert_has_keys(body['domain_entry'],
-                                      required=['project', 'scope'])
-
-            return request.body
-
-        self.requests_mock.put(self.url('testdomain'),
-                               text=put_os_floating_ip_dns_testdomain,
-                               status_code=205,
-                               headers=self.json_headers)
 
 
 class BulkFixture(base.Fixture):

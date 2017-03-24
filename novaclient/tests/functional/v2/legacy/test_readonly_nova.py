@@ -41,11 +41,6 @@ class SimpleReadOnlyNovaClientTest(base.ClientTestBase):
     def test_admin_cloudpipe_list(self):
         self.nova('cloudpipe-list')
 
-    @decorators.skip_because(bug="1157349")
-    def test_admin_dns_list(self):
-        self.skip_if_neutron()
-        self.nova('dns-list')
-
     def test_admin_flavor_acces_list(self):
         self.assertRaises(exceptions.CommandFailed,
                           self.nova,

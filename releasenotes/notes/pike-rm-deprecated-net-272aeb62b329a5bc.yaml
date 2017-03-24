@@ -55,6 +55,7 @@ upgrade:
     Along with the following python API bindings::
 
     * novaclient.v2.contrib.tenant_networks
+    * novaclient.v2.floating_ip_dns
 
 deprecations:
   - |

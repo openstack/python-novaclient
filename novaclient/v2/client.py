@@ -31,7 +31,6 @@ from novaclient.v2 import contrib
 from novaclient.v2 import fixed_ips
 from novaclient.v2 import flavor_access
 from novaclient.v2 import flavors
-from novaclient.v2 import floating_ip_dns
 from novaclient.v2 import floating_ip_pools
 from novaclient.v2 import floating_ips
 from novaclient.v2 import floating_ips_bulk
@@ -160,8 +159,6 @@ class Client(object):
 
         # extensions
         self.agents = agents.AgentsManager(self)
-        self.dns_domains = floating_ip_dns.FloatingIPDNSDomainManager(self)
-        self.dns_entries = floating_ip_dns.FloatingIPDNSEntryManager(self)
         self.cloudpipe = cloudpipe.CloudpipeManager(self)
         self.certs = certs.CertificateManager(self)
         self.floating_ips = floating_ips.FloatingIPManager(self)
