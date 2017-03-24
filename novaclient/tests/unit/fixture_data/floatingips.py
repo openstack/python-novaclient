@@ -47,51 +47,6 @@ class FloatingFixture(base.Fixture):
                                 headers=self.json_headers)
 
 
-class BulkFixture(base.Fixture):
-
-    base_url = 'os-floating-ips-bulk'
-
-    def setUp(self):
-        super(BulkFixture, self).setUp()
-
-        get_os_floating_ips_bulk = {
-            'floating_ip_info': [
-                {'id': 1, 'fixed_ip': '10.0.0.1', 'ip': '11.0.0.1'},
-                {'id': 2, 'fixed_ip': '10.0.0.2', 'ip': '11.0.0.2'},
-            ]
-        }
-        self.requests_mock.get(self.url(),
-                               json=get_os_floating_ips_bulk,
-                               headers=self.json_headers)
-        self.requests_mock.get(self.url('testHost'),
-                               json=get_os_floating_ips_bulk,
-                               headers=self.json_headers)
-
-        def put_os_floating_ips_bulk_delete(request, context):
-            ip_range = request.json().get('ip_range')
-            return {'floating_ips_bulk_delete': ip_range}
-
-        self.requests_mock.put(self.url('delete'),
-                               json=put_os_floating_ips_bulk_delete,
-                               headers=self.json_headers)
-
-        def post_os_floating_ips_bulk(request, context):
-            params = request.json().get('floating_ips_bulk_create')
-            pool = params.get('pool', 'defaultPool')
-            interface = params.get('interface', 'defaultInterface')
-            return {
-                'floating_ips_bulk_create': {
-                    'ip_range': '192.168.1.0/30',
-                    'pool': pool,
-                    'interface': interface
-                }
-            }
-
-        self.requests_mock.post(self.url(),
-                                json=post_os_floating_ips_bulk,
-                                headers=self.json_headers)
-
-
 class PoolsFixture(base.Fixture):
 
     base_url = 'os-floating-ip-pools'
