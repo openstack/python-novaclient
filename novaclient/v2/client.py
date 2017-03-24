@@ -28,7 +28,6 @@ from novaclient.v2 import cells
 from novaclient.v2 import certs
 from novaclient.v2 import cloudpipe
 from novaclient.v2 import contrib
-from novaclient.v2 import fixed_ips
 from novaclient.v2 import flavor_access
 from novaclient.v2 import flavors
 from novaclient.v2 import floating_ips
@@ -170,7 +169,6 @@ class Client(object):
         self.hypervisors = hypervisors.HypervisorManager(self)
         self.hypervisor_stats = hypervisors.HypervisorStatsManager(self)
         self.services = services.ServiceManager(self)
-        self.fixed_ips = fixed_ips.FixedIPsManager(self)
         self.os_cache = os_cache
         self.availability_zones = \
             availability_zones.AvailabilityZoneManager(self)
