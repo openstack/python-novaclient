@@ -31,7 +31,6 @@ from novaclient.v2 import contrib
 from novaclient.v2 import fixed_ips
 from novaclient.v2 import flavor_access
 from novaclient.v2 import flavors
-from novaclient.v2 import floating_ip_pools
 from novaclient.v2 import floating_ips
 from novaclient.v2 import fping
 from novaclient.v2 import hosts
@@ -161,7 +160,6 @@ class Client(object):
         self.cloudpipe = cloudpipe.CloudpipeManager(self)
         self.certs = certs.CertificateManager(self)
         self.floating_ips = floating_ips.FloatingIPManager(self)
-        self.floating_ip_pools = floating_ip_pools.FloatingIPPoolManager(self)
         self.fping = fping.FpingManager(self)
         self.volumes = volumes.VolumeManager(self)
         self.keypairs = keypairs.KeypairManager(self)
