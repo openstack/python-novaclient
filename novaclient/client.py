@@ -206,8 +206,7 @@ def _discover_via_python_path():
 
 def _discover_via_contrib_path(version):
     if version.ver_major == 2:
-        modules = {"baremetal": "novaclient.v2.contrib.baremetal",
-                   "tenant_networks": "novaclient.v2.contrib.tenant_networks"}
+        modules = {"tenant_networks": "novaclient.v2.contrib.tenant_networks"}
 
         for name, module_name in modules.items():
             module_loader = pkgutil.get_loader(module_name)

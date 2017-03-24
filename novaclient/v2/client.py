@@ -196,8 +196,8 @@ class Client(object):
             server_migrations.ServerMigrationsManager(self)
 
         # V2.0 extensions:
-        # NOTE(andreykurilin): baremetal and tenant_networks extensions are
-        #   deprecated now, which is why they are not initialized by default.
+        # NOTE(andreykurilin): tenant_networks extension is
+        #   deprecated now, which is why it is not initialized by default.
         self.assisted_volume_snapshots = \
             assisted_volume_snapshots.AssistedSnapshotManager(self)
         self.cells = cells.CellsManager(self)

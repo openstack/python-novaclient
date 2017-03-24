@@ -15,9 +15,9 @@ import warnings
 
 from novaclient.i18n import _LW
 
-# NOTE(andreykurilin): "baremetal" and "tenant_networks" extensions excluded
-#   here deliberately. They were deprecated separately from deprecation
-#   extension mechanism and I prefer to not auto-load them by default
+# NOTE(andreykurilin): "tenant_networks" extension excluded
+#   here deliberately. It was deprecated separately from deprecation
+#   extension mechanism and I prefer to not auto-load it by default
 #   (V2_0_EXTENSIONS is designed for such behaviour).
 V2_0_EXTENSIONS = {
     'assisted_volume_snapshots':
