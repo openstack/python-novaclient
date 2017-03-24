@@ -1,0 +1,255 @@
+# Gérald LONLAS <g.lonlas@gmail.com>, 2016. #zanata
+msgid ""
+msgstr ""
+"Project-Id-Version: Nova Client Release Notes 7.1.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-03-24 05:03+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2016-10-22 06:13+0000\n"
+"Last-Translator: Gérald LONLAS <g.lonlas@gmail.com>\n"
+"Language-Team: French\n"
+"Language: fr\n"
+"X-Generator: Zanata 3.9.6\n"
+"Plural-Forms: nplurals=2; plural=(n > 1)\n"
+
+msgid "3.0.0"
+msgstr "3.0.0"
+
+msgid "3.3.0"
+msgstr "3.3.0"
+
+msgid "4.0.0"
+msgstr "4.0.0"
+
+msgid "4.1.0"
+msgstr "4.1.0"
+
+msgid "5.0.0"
+msgstr "5.0.0"
+
+msgid "5.1.0"
+msgstr "5.1.0"
+
+msgid "6.0.0"
+msgstr "6.0.0"
+
+msgid ":ref:`genindex`"
+msgstr ":ref:`genindex`"
+
+msgid ":ref:`search`"
+msgstr ":ref:`search`"
+
+msgid "Contents"
+msgstr "Contenu"
+
+msgid "Current Series Release Notes"
+msgstr "Note de la release actuelle"
+
+msgid "Deprecation Notes"
+msgstr "Notes dépréciées "
+
+msgid "Fixed IPs"
+msgstr "IP fixes"
+
+msgid "Floating IPs"
+msgstr "IP flottantes"
+
+msgid "Indices and tables"
+msgstr "Index et table des matières"
+
+msgid "Known Issues"
+msgstr "Problèmes connus"
+
+msgid "Liberty Series Release Notes"
+msgstr "Note de release pour Liberty"
+
+msgid "Mitaka Series Release Notes"
+msgstr "Note de release pour Mitaka"
+
+msgid "New Features"
+msgstr "Nouvelles fonctionnalités"
+
+msgid "Newton Series Release Notes"
+msgstr "Note de release pour Newton"
+
+msgid "Security Group Rules"
+msgstr "Règles de groupe de sécurité"
+
+msgid "Security Groups"
+msgstr "Groupes de sécurité"
+
+msgid "Upgrade Notes"
+msgstr "Notes de mises à jours"
+
+msgid "Welcome to Nova Client Release Notes documentation!"
+msgstr "Bienvenue dans la documentation de la note de Release du Client Nova"
+
+msgid "absolute-limits"
+msgstr "absolute-limits"
+
+msgid "add-floating-ip"
+msgstr "add-floating-ip"
+
+msgid "aggregate-details"
+msgstr "aggregate-details"
+
+msgid "credentials"
+msgstr "informations d'identification"
+
+msgid "dns-create"
+msgstr "dns-create"
+
+msgid "dns-create-private-domain"
+msgstr "dns-create-private-domain"
+
+msgid "dns-create-public-domain"
+msgstr "dns-create-public-domain"
+
+msgid "dns-delete"
+msgstr "dns-delete"
+
+msgid "dns-delete-domain"
+msgstr "dns-delete-domain"
+
+msgid "dns-domains"
+msgstr "dns-domains"
+
+msgid "dns-list"
+msgstr "dns-list"
+
+msgid "endpoints"
+msgstr "points de terminaison"
+
+msgid "fixed-ip-get"
+msgstr "fixed-ip-get"
+
+msgid "fixed-ip-reserve"
+msgstr "fixed-ip-reserve"
+
+msgid "fixed-ip-unreserve"
+msgstr "fixed-ip-unreserve"
+
+msgid "floating-ip-bulk-create"
+msgstr "floating-ip-bulk-create"
+
+msgid "floating-ip-bulk-delete"
+msgstr "floating-ip-bulk-delete"
+
+msgid "floating-ip-bulk-list"
+msgstr "floating-ip-bulk-list"
+
+msgid "floating-ip-create"
+msgstr "floating-ip-create"
+
+msgid "floating-ip-delete"
+msgstr "floating-ip-delete"
+
+msgid "floating-ip-list"
+msgstr "floating-ip-list"
+
+msgid "floating-ip-pool-list"
+msgstr "floating-ip-pool-list"
+
+msgid "network-associate-host"
+msgstr "network-associate-host"
+
+msgid "network-associate-project"
+msgstr "network-associate-project"
+
+msgid "network-create"
+msgstr "network-create"
+
+msgid "network-delete"
+msgstr "network-delete"
+
+msgid "network-disassociate"
+msgstr "network-disassociate"
+
+msgid "network-list"
+msgstr "network-list"
+
+msgid "network-show"
+msgstr "network-show"
+
+msgid "nova baremetal-interface-list"
+msgstr "nova baremetal-interface-list"
+
+msgid "nova baremetal-node-list"
+msgstr "nova baremetal-node-list"
+
+msgid "nova baremetal-node-show"
+msgstr "nova baremetal-node-show"
+
+msgid "nova image-delete"
+msgstr "nova image-delete"
+
+msgid "nova image-list"
+msgstr "nova image-list"
+
+msgid "nova image-meta"
+msgstr "nova image-meta"
+
+msgid "nova image-show"
+msgstr "nova image-show"
+
+msgid "rate-limits"
+msgstr "rate-limits"
+
+msgid "remove-floating-ip"
+msgstr "remove-floating-ip"
+
+msgid "rename"
+msgstr "rename"
+
+msgid "root-password"
+msgstr "root-password"
+
+msgid "secgroup-add-default-rule"
+msgstr "secgroup-add-default-rule"
+
+msgid "secgroup-add-group-rule"
+msgstr "secgroup-add-group-rule"
+
+msgid "secgroup-add-rule"
+msgstr "secgroup-add-rule"
+
+msgid "secgroup-create"
+msgstr "secgroup-create"
+
+msgid "secgroup-delete"
+msgstr "secgroup-delete"
+
+msgid "secgroup-delete-default-rule"
+msgstr "secgroup-delete-default-rule"
+
+msgid "secgroup-delete-group-rule"
+msgstr "secgroup-delete-group-rule"
+
+msgid "secgroup-delete-rule"
+msgstr "secgroup-delete-rule"
+
+msgid "secgroup-list"
+msgstr "secgroup-list"
+
+msgid "secgroup-list-default-rules"
+msgstr "secgroup-list-default-rules"
+
+msgid "secgroup-list-rules"
+msgstr "secgroup-list-rules"
+
+msgid "secgroup-update"
+msgstr "secgroup-update"
+
+msgid "tenant-network-create"
+msgstr "tenant-network-create"
+
+msgid "tenant-network-delete"
+msgstr "tenant-network-delete"
+
+msgid "tenant-network-list"
+msgstr "tenant-network-list"
+
+msgid "tenant-network-show"
+msgstr "tenant-network-show"
