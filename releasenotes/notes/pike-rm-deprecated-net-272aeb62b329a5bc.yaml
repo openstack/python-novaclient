@@ -58,6 +58,7 @@ upgrade:
     * novaclient.v2.floating_ip_dns
     * novaclient.v2.floating_ip_pools
     * novaclient.v2.floating_ips_bulk
+    * novaclient.v2.fping
 
 deprecations:
   - |
