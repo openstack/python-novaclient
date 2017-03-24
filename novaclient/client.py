@@ -171,23 +171,20 @@ def _construct_http_client(api_version=None,
                          **kwargs)
 
 
-def discover_extensions(version, only_contrib=False):
-    """Returns the list of extensions, which can be discovered by python path,
-    contrib path and by entry-point 'novaclient.extension'.
-
-    :param version: api version
-    :type version: str or novaclient.api_versions.APIVersion
-    :param only_contrib: search only in contrib directory or not
-    :type only_contrib: bool
+def discover_extensions(*args, **kwargs):
+    """Returns the list of extensions, which can be discovered by python path
+    and by entry-point 'novaclient.extension'.
     """
-    if not isinstance(version, api_versions.APIVersion):
-        version = api_versions.get_api_version(version)
-    if only_contrib:
-        chain = _discover_via_contrib_path(version)
-    else:
-        chain = itertools.chain(_discover_via_python_path(),
-                                _discover_via_contrib_path(version),
-                                _discover_via_entry_points())
+    # TODO(mriedem): Remove support for 'only_contrib' in Queens.
+    if 'only_contrib' in kwargs and kwargs['only_contrib']:
+        warnings.warn(_LW('Discovering extensions only by contrib path is no '
+                          'longer supported since all contrib extensions '
+                          'have either been made required or removed. The '
+                          'only_contrib argument is deprecated and will be '
+                          'removed in a future release.'))
+        return []
+    chain = itertools.chain(_discover_via_python_path(),
+                            _discover_via_entry_points())
     return [ext.Extension(name, module) for name, module in chain]
 
 
@@ -201,16 +198,6 @@ def _discover_via_python_path():
             if hasattr(module, 'extension_name'):
                 name = module.extension_name
 
-            yield name, module
-
-
-def _discover_via_contrib_path(version):
-    if version.ver_major == 2:
-        modules = {"tenant_networks": "novaclient.v2.contrib.tenant_networks"}
-
-        for name, module_name in modules.items():
-            module_loader = pkgutil.get_loader(module_name)
-            module = module_loader.load_module(module_name)
             yield name, module
 
 

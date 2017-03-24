@@ -78,12 +78,10 @@ class SessionClientTest(utils.TestCase):
 class ClientsUtilsTest(utils.TestCase):
 
     @mock.patch("novaclient.client._discover_via_entry_points")
-    @mock.patch("novaclient.client._discover_via_contrib_path")
     @mock.patch("novaclient.client._discover_via_python_path")
     @mock.patch("novaclient.extension.Extension")
     def test_discover_extensions_all(self, mock_extension,
                                      mock_discover_via_python_path,
-                                     mock_discover_via_contrib_path,
                                      mock_discover_via_entry_points):
         def make_gen(start, end):
             def f(*args, **kwargs):
@@ -92,36 +90,34 @@ class ClientsUtilsTest(utils.TestCase):
             return f
 
         mock_discover_via_python_path.side_effect = make_gen(0, 3)
-        mock_discover_via_contrib_path.side_effect = make_gen(3, 5)
-        mock_discover_via_entry_points.side_effect = make_gen(5, 6)
+        mock_discover_via_entry_points.side_effect = make_gen(3, 4)
 
         version = novaclient.api_versions.APIVersion("2.0")
 
         result = novaclient.client.discover_extensions(version)
 
-        self.assertEqual([mock.call("name-%s" % i, i) for i in range(0, 6)],
+        self.assertEqual([mock.call("name-%s" % i, i) for i in range(0, 4)],
                          mock_extension.call_args_list)
         mock_discover_via_python_path.assert_called_once_with()
-        mock_discover_via_contrib_path.assert_called_once_with(version)
         mock_discover_via_entry_points.assert_called_once_with()
-        self.assertEqual([mock_extension()] * 6, result)
+        self.assertEqual([mock_extension()] * 4, result)
 
+    @mock.patch('novaclient.client.warnings')
     @mock.patch("novaclient.client._discover_via_entry_points")
-    @mock.patch("novaclient.client._discover_via_contrib_path")
     @mock.patch("novaclient.client._discover_via_python_path")
     @mock.patch("novaclient.extension.Extension")
     def test_discover_extensions_only_contrib(
             self, mock_extension, mock_discover_via_python_path,
-            mock_discover_via_contrib_path, mock_discover_via_entry_points):
-        mock_discover_via_contrib_path.return_value = [("name", "module")]
+            mock_discover_via_entry_points, mock_warnings):
 
         version = novaclient.api_versions.APIVersion("2.0")
 
-        novaclient.client.discover_extensions(version, only_contrib=True)
-        mock_discover_via_contrib_path.assert_called_once_with(version)
+        self.assertEqual([], novaclient.client.discover_extensions(
+            version, only_contrib=True))
         self.assertFalse(mock_discover_via_python_path.called)
         self.assertFalse(mock_discover_via_entry_points.called)
-        mock_extension.assert_called_once_with("name", "module")
+        self.assertFalse(mock_extension.called)
+        self.assertTrue(mock_warnings.warn.called)
 
     @mock.patch("novaclient.client.warnings")
     def test__check_arguments(self, mock_warnings):
