@@ -34,10 +34,6 @@ class ClientTest(utils.TestCase):
         output = novaclient.client.get_client_class(2)
         self.assertEqual(output, novaclient.v2.client.Client)
 
-    def test_get_client_class_v1_1(self):
-        output = novaclient.client.get_client_class('1.1')
-        self.assertEqual(output, novaclient.v2.client.Client)
-
     def test_get_client_class_unknown(self):
         self.assertRaises(novaclient.exceptions.UnsupportedVersion,
                           novaclient.client.get_client_class, '0')
