@@ -14,7 +14,7 @@
 #    under the License.
 
 """
-DEPRECATED Virtual Interfaces (1.1 extension).
+DEPRECATED Virtual Interfaces
 """
 
 import warnings

@@ -14,7 +14,7 @@
 #    under the License.
 
 """
-Hypervisors interface (1.1 extension).
+Hypervisors interface
 """
 
 from six.moves.urllib import parse
