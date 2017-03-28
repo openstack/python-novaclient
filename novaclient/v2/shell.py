@@ -55,6 +55,26 @@ CERT_DEPRECATION_WARNING = (
 )
 
 
+# NOTE(mriedem): Remove this along with the deprecated commands in the first
+# major python-novaclient release AFTER the nova server 16.0.0 Pike release.
+def emit_hosts_deprecation_warning(command_name, replacement=None):
+    if replacement is None:
+        print(_('WARNING: Command %s is deprecated and will be removed '
+                'in the first major release after the Nova server 16.0.0 '
+                'Pike release. There is no replacement or alternative for '
+                'this command. Specify --os-compute-api-version less than '
+                '2.43 to continue using this command until it is removed.') %
+              command_name, file=sys.stderr)
+    else:
+        print(_('WARNING: Command %(command)s is deprecated and will be '
+                'removed in the first major release after the Nova server '
+                '16.0.0 Pike release. Use %(replacement)s instead. Specify '
+                '--os-compute-api-version less than 2.43 to continue using '
+                'this command until it is removed.') %
+              {'command': command_name, 'replacement': replacement},
+              file=sys.stderr)
+
+
 CLIENT_BDM2_KEYS = {
     'id': 'uuid',
     'source': 'source_type',
@@ -3386,7 +3406,9 @@ def do_service_delete(cs, args):
 
 @utils.arg('host', metavar='<hostname>', help=_('Name of host.'))
 def do_host_describe(cs, args):
-    """Describe a specific host."""
+    """DEPRECATED Describe a specific host."""
+    emit_hosts_deprecation_warning('host-describe', 'hypervisor-show')
+
     result = cs.hosts.get(args.host)
     columns = ["HOST", "PROJECT", "cpu", "memory_mb", "disk_gb"]
     utils.print_list(result, columns)
@@ -3399,7 +3421,9 @@ def do_host_describe(cs, args):
     help=_('Filters the list, returning only those hosts in the availability '
            'zone <zone>.'))
 def do_host_list(cs, args):
-    """List all hosts by service."""
+    """DEPRECATED List all hosts by service."""
+    emit_hosts_deprecation_warning('host-list', 'hypervisor-list')
+
     columns = ["host_name", "service", "zone"]
     result = cs.hosts.list(args.zone)
     utils.print_list(result, columns)
@@ -3416,7 +3440,14 @@ def do_host_list(cs, args):
     dest='maintenance',
     help=_('Either put or resume host to/from maintenance.'))
 def do_host_update(cs, args):
-    """Update host settings."""
+    """DEPRECATED Update host settings."""
+    if args.status == 'enable':
+        emit_hosts_deprecation_warning('host-update', 'service-enable')
+    elif args.status == 'disable':
+        emit_hosts_deprecation_warning('host-update', 'service-disable')
+    else:
+        emit_hosts_deprecation_warning('host-update')
+
     updates = {}
     columns = ["HOST"]
     if args.status:
@@ -3435,7 +3466,9 @@ def do_host_update(cs, args):
     choices=['startup', 'shutdown', 'reboot'],
     help=_('A power action: startup, reboot, or shutdown.'))
 def do_host_action(cs, args):
-    """Perform a power action on a host."""
+    """DEPRECATED Perform a power action on a host."""
+    emit_hosts_deprecation_warning('host-action')
+
     result = cs.hosts.host_action(args.host, args.action)
     utils.print_list([result], ['HOST', 'power_action'])
 

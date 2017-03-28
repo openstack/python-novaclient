@@ -14,12 +14,23 @@
 #    under the License.
 
 """
-host interface (1.1 extension).
+DEPRECATED host interface (1.1 extension).
 """
+import warnings
+
+from novaclient import api_versions
 from novaclient import base
+from novaclient.i18n import _
+
+
+HOSTS_DEPRECATION_WARNING = (
+    _('The os-hosts API is deprecated. This API binding will be removed '
+      'in the first major release after the Nova server 16.0.0 Pike release.')
+)
 
 
 class Host(base.Resource):
+    """DEPRECATED"""
     def __repr__(self):
         return "<Host: %s>" % self.host
 
@@ -28,15 +39,19 @@ class Host(base.Resource):
         for (k, v) in dico.items():
             setattr(self, k, v)
 
+    @api_versions.wraps("2.0", "2.42")
     def update(self, values):
         return self.manager.update(self.host, values)
 
+    @api_versions.wraps("2.0", "2.42")
     def startup(self):
         return self.manager.host_action(self.host, 'startup')
 
+    @api_versions.wraps("2.0", "2.42")
     def shutdown(self):
         return self.manager.host_action(self.host, 'shutdown')
 
+    @api_versions.wraps("2.0", "2.42")
     def reboot(self):
         return self.manager.host_action(self.host, 'reboot')
 
@@ -56,31 +71,39 @@ class Host(base.Resource):
 class HostManager(base.ManagerWithFind):
     resource_class = Host
 
+    @api_versions.wraps("2.0", "2.42")
     def get(self, host):
         """
-        Describes cpu/memory/hdd info for host.
+        DEPRECATED Describes cpu/memory/hdd info for host.
 
         :param host: destination host name.
         """
+        warnings.warn(HOSTS_DEPRECATION_WARNING, DeprecationWarning)
         return self._list("/os-hosts/%s" % host, "host")
 
+    @api_versions.wraps("2.0", "2.42")
     def update(self, host, values):
-        """Update status or maintenance mode for the host."""
+        """DEPRECATED Update status or maintenance mode for the host."""
+        warnings.warn(HOSTS_DEPRECATION_WARNING, DeprecationWarning)
         return self._update("/os-hosts/%s" % host, values)
 
+    @api_versions.wraps("2.0", "2.42")
     def host_action(self, host, action):
         """
-        Perform an action on a host.
+        DEPRECATED Perform an action on a host.
 
         :param host: The host to perform an action
         :param action: The action to perform
         :returns: An instance of novaclient.base.TupleWithMeta
         """
+        warnings.warn(HOSTS_DEPRECATION_WARNING, DeprecationWarning)
         url = '/os-hosts/%s/%s' % (host, action)
         resp, body = self.api.client.get(url)
         return base.TupleWithMeta((resp, body), resp)
 
+    @api_versions.wraps("2.0", "2.42")
     def list(self, zone=None):
+        warnings.warn(HOSTS_DEPRECATION_WARNING, DeprecationWarning)
         url = '/os-hosts'
         if zone:
             url = '/os-hosts?zone=%s' % zone
