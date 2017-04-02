@@ -11,11 +11,11 @@ Compute API, such as TryStack, HP, or Rackspace, in order to use the nova client
 
 .. seealso::
 
-    You may want to read the `OpenStack Compute Developer Guide`__  -- the overview, at
-    least -- to get an idea of the concepts. By understanding the concepts
+    You may want to read the `OpenStack Compute API Guide`__
+    to get an idea of the concepts. By understanding the concepts
     this library should make more sense.
 
-    __ http://docs.openstack.org/api/openstack-compute/2/content/
+    __ https://developer.openstack.org/api-guide/compute/index.html
 
 Contents:
 
