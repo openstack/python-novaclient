@@ -21,6 +21,7 @@ from keystoneauth1 import identity
 from keystoneauth1 import session as ksession
 from keystoneclient import client as keystoneclient
 from keystoneclient import discover as keystone_discover
+from neutronclient.v2_0 import client as neutronclient
 import os_client_config
 from oslo_utils import uuidutils
 import tempest.lib.cli.base
@@ -29,6 +30,7 @@ import testtools
 import novaclient
 import novaclient.api_versions
 import novaclient.client
+from novaclient.v2 import networks
 import novaclient.v2.shell
 
 BOOT_IS_COMPLETE = ("login as 'cirros' user. default password: "
@@ -79,7 +81,7 @@ def pick_network(networks):
     network_name = os.environ.get('OS_NOVACLIENT_NETWORK')
     if network_name:
         for network in networks:
-            if network.label == network_name:
+            if network.name == network_name:
                 return network
         raise NoNetworkException()
     return networks[0]
@@ -224,21 +226,20 @@ class ClientTestBase(testtools.TestCase):
         self.image = CACHE["image"]
 
         if "network" not in CACHE:
-            tested_api_version = self.client.api_version
-            proxy_api_version = novaclient.api_versions.APIVersion('2.35')
-            if tested_api_version > proxy_api_version:
-                self.client.api_version = proxy_api_version
-            try:
-                # TODO(mriedem): Get the networks from neutron if using neutron
-                networks = self.client.networks.list()
-                # Keep track of whether or not there are multiple networks
-                # available to the given tenant because if so, a specific
-                # network ID has to be passed in on server create requests
-                # otherwise the server POST will fail with a 409.
-                CACHE['multiple_networks'] = len(networks) > 1
-                CACHE["network"] = pick_network(networks)
-            finally:
-                self.client.api_version = tested_api_version
+            # Get the networks from neutron.
+            neutron = neutronclient.Client(session=session)
+            neutron_networks = neutron.list_networks()['networks']
+            # Convert the neutron dicts to Network objects.
+            nets = []
+            for network in neutron_networks:
+                nets.append(networks.Network(
+                    networks.NeutronManager, network))
+            # Keep track of whether or not there are multiple networks
+            # available to the given tenant because if so, a specific
+            # network ID has to be passed in on server create requests
+            # otherwise the server POST will fail with a 409.
+            CACHE['multiple_networks'] = len(nets) > 1
+            CACHE["network"] = pick_network(nets)
         self.network = CACHE["network"]
         self.multiple_networks = CACHE['multiple_networks']
 
@@ -263,15 +264,6 @@ class ClientTestBase(testtools.TestCase):
                                               username=user,
                                               password=passwd)
         self.cinder = cinderclient.Client(auth=auth, session=session)
-
-        if "use_neutron" not in CACHE:
-            # check to see if we're running with neutron or not
-            for service in self.keystone.services.list():
-                if service.type == 'network':
-                    CACHE["use_neutron"] = True
-                    break
-            else:
-                CACHE["use_neutron"] = False
 
     def _get_novaclient(self, session):
         nc = novaclient.client.Client("2", session=session)
@@ -499,10 +491,6 @@ class ClientTestBase(testtools.TestCase):
         else:
             project = self.keystone.tenants.find(name=name)
         return project.id
-
-    def skip_if_neutron(self):
-        if CACHE["use_neutron"]:
-            self.skipTest('nova-network is not available')
 
     def _cleanup_server(self, server_id):
         """Deletes a server and waits for it to be gone."""

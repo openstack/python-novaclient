@@ -33,4 +33,4 @@ class TestServersAPI(base.ClientTestBase):
             self.fail("Server %s did not go ACTIVE after 60s" % server)
 
         ips = self.client.servers.ips(server)
-        self.assertIn(self.network.label, ips)
+        self.assertIn(self.network.name, ips)
