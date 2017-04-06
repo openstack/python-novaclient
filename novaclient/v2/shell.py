@@ -27,6 +27,7 @@ import os
 import pprint
 import sys
 import time
+import warnings
 
 from oslo_utils import netutils
 from oslo_utils import strutils
@@ -47,6 +48,11 @@ from novaclient.v2 import servers
 
 
 logger = logging.getLogger(__name__)
+
+CERT_DEPRECATION_WARNING = (
+    _('The nova-cert service is deprecated. This command will be removed '
+      'in the first major release after the Nova server 16.0.0 Pike release.')
+)
 
 
 CLIENT_BDM2_KEYS = {
@@ -2794,7 +2800,8 @@ def do_usage(cs, args):
     default='cert.pem',
     help=_('Filename for the X.509 certificate. [Default: cert.pem]'))
 def do_x509_create_cert(cs, args):
-    """Create x509 cert for a user in tenant."""
+    """DEPRECATED Create x509 cert for a user in tenant."""
+    warnings.warn(CERT_DEPRECATION_WARNING, DeprecationWarning)
 
     if os.path.exists(args.pk_filename):
         raise exceptions.CommandError(_("Unable to write privatekey - %s "
@@ -2825,7 +2832,8 @@ def do_x509_create_cert(cs, args):
     default='cacert.pem',
     help=_('Filename to write the x509 root cert.'))
 def do_x509_get_root_cert(cs, args):
-    """Fetch the x509 root cert."""
+    """DEPRECATED Fetch the x509 root cert."""
+    warnings.warn(CERT_DEPRECATION_WARNING, DeprecationWarning)
     if os.path.exists(args.filename):
         raise exceptions.CommandError(_("Unable to write x509 root cert - \
                                       %s exists.") % args.filename)

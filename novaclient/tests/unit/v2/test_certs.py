@@ -11,6 +11,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import mock
+
 from novaclient.tests.unit.fixture_data import certs as data
 from novaclient.tests.unit.fixture_data import client
 from novaclient.tests.unit import utils
@@ -26,14 +28,18 @@ class CertsTest(utils.FixturedTestCase):
     scenarios = [('original', {'client_fixture_class': client.V1}),
                  ('session', {'client_fixture_class': client.SessionV1})]
 
-    def test_create_cert(self):
+    @mock.patch('warnings.warn')
+    def test_create_cert(self, mock_warn):
         cert = self.cs.certs.create()
         self.assert_request_id(cert, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/os-certificates')
         self.assertIsInstance(cert, self.cert_type)
+        self.assertEqual(1, mock_warn.call_count)
 
-    def test_get_root_cert(self):
+    @mock.patch('warnings.warn')
+    def test_get_root_cert(self, mock_warn):
         cert = self.cs.certs.get()
         self.assert_request_id(cert, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('GET', '/os-certificates/root')
         self.assertIsInstance(cert, self.cert_type)
+        self.assertEqual(1, mock_warn.call_count)

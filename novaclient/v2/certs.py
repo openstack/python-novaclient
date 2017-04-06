@@ -16,13 +16,22 @@
 #    under the License.
 
 """
-Certificate interface.
+DEPRECATED Certificate interface.
 """
 
+import warnings
+
 from novaclient import base
+from novaclient.i18n import _
+
+CERT_DEPRECATION_WARNING = (
+    _('The nova-cert service is deprecated. This API binding will be removed '
+      'in the first major release after the Nova server 16.0.0 Pike release.')
+)
 
 
 class Certificate(base.Resource):
+    """DEPRECATED"""
     def __repr__(self):
         return ("<Certificate: private_key=[%s bytes] data=[%s bytes]>" %
                 (len(self.private_key) if self.private_key else 0,
@@ -30,13 +39,15 @@ class Certificate(base.Resource):
 
 
 class CertificateManager(base.Manager):
-    """Manage :class:`Certificate` resources."""
+    """DEPRECATED Manage :class:`Certificate` resources."""
     resource_class = Certificate
 
     def create(self):
-        """Create a x509 certificate for a user in tenant."""
+        """DEPRECATED Create a x509 certificate for a user in tenant."""
+        warnings.warn(CERT_DEPRECATION_WARNING, DeprecationWarning)
         return self._create('/os-certificates', {}, 'certificate')
 
     def get(self):
-        """Get root certificate."""
+        """DEPRECATED Get root certificate."""
+        warnings.warn(CERT_DEPRECATION_WARNING, DeprecationWarning)
         return self._get("/os-certificates/root", 'certificate')
