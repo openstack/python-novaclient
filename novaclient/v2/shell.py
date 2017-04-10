@@ -1275,7 +1275,7 @@ def _print_flavor(flavor):
            "--not-tags-any <tag1,tag2>"),
     start_version="2.26")
 def do_list(cs, args):
-    """List active servers."""
+    """List servers."""
     imageid = None
     flavorid = None
     if args.image:
