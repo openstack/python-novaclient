@@ -33,8 +33,6 @@ if not LOG.handlers:
 LEGACY_HEADER_NAME = "X-OpenStack-Nova-API-Version"
 HEADER_NAME = "OpenStack-API-Version"
 SERVICE_TYPE = "compute"
-# key is a deprecated version and value is an alternative version.
-DEPRECATED_VERSIONS = {"1.1": "2"}
 
 _SUBSTITUTIONS = {}
 
@@ -232,13 +230,6 @@ def check_major_version(api_version):
 def get_api_version(version_string):
     """Returns checked APIVersion object"""
     version_string = str(version_string)
-    if version_string in DEPRECATED_VERSIONS:
-        LOG.warning(
-            _("Version %(deprecated_version)s is deprecated, using "
-              "alternative version %(alternative)s instead."),
-            {"deprecated_version": version_string,
-             "alternative": DEPRECATED_VERSIONS[version_string]})
-        version_string = DEPRECATED_VERSIONS[version_string]
     if strutils.is_int_like(version_string):
         version_string = "%s.0" % version_string
 
