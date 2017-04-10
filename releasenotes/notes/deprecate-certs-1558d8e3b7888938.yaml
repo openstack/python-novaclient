@@ -1,0 +1,7 @@
+---
+deprecations:
+  - |
+    The ``nova x509-create-cert`` and ``nova x509-get-root-cert`` commands
+    and ``novaclient.v2.certs`` API binding are now deprecated and will be
+    removed in the first major release after the Nova server 16.0.0 Pike
+    release.
