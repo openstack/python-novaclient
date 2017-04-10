@@ -31,6 +31,11 @@ class TestServersBootNovaClient(base.ClientTestBase):
                                             imageRef=self.image.id)
         self.wait_for_volume_status(volume, "available")
 
+        if (len(bdm_params) >= 3 and bdm_params[2] == '1'):
+            delete_volume = False
+        else:
+            delete_volume = True
+
         bdm_params = ':'.join(bdm_params)
         if bdm_params:
             bdm_params = ''.join((':', bdm_params))
@@ -50,6 +55,10 @@ class TestServersBootNovaClient(base.ClientTestBase):
 
         self.client.servers.delete(server_id)
         self.wait_for_resource_delete(server_id, self.client.servers)
+
+        if delete_volume:
+            self.cinder.volumes.delete(volume.id)
+            self.wait_for_resource_delete(volume.id, self.cinder.volumes)
 
     def test_boot_server_with_legacy_bdm(self):
         # bdm v1 format
