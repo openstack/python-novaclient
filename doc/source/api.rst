@@ -38,6 +38,21 @@ parameter. Similarly, if your cloud uses keystone v3 and you have a DOMAIN_NAME
 or DOMAIN_ID, provide it as `user_domain_(name|id)` and if you are using a
 PROJECT_NAME also provide the domain information as `project_domain_(name|id)`.
 
+novaclient adds 'python-novaclient' and its version to the user-agent string
+that keystoneauth produces. If you are creating an application using novaclient
+and want to register a name and version in the user-agent string, pass those
+to the Session::
+
+    >>> sess = session.Session(
+    ...     auth=auth, app_name'nodepool', app_version'1.2.3')
+
+If you are making a library that consumes novaclient but is not an end-user
+application, you can append a (name, version) tuple to the session's
+`additional_user_agent` property::
+
+    >>> sess = session.Session(auth=auth)
+    >>> sess.additional_user_agent.append(('shade', '1.2.3'))
+
 For more information on this keystoneauth API, see `Using Sessions`_.
 
 .. _Using Sessions: http://docs.openstack.org/developer/keystoneauth/using-sessions.html

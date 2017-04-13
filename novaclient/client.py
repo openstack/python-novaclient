@@ -33,6 +33,7 @@ import pkg_resources
 osprofiler_profiler = importutils.try_import("osprofiler.profiler")
 osprofiler_web = importutils.try_import("osprofiler.web")
 
+import novaclient
 from novaclient import api_versions
 from novaclient import exceptions
 from novaclient import extension as ext
@@ -47,6 +48,9 @@ extensions_ignored_name = ["__init__"]
 
 
 class SessionClient(adapter.LegacyJsonAdapter):
+
+    client_name = 'python-novaclient'
+    client_version = novaclient.__version__
 
     def __init__(self, *args, **kwargs):
         self.times = []

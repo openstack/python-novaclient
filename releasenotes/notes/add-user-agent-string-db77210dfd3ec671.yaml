@@ -1,0 +1,6 @@
+---
+features:
+  - novaclient now adds information about itself to the keystoneauth
+    user-agent. Adding information about wrapping libraries or consuming
+    applications can be found at
+    https://docs.openstack.org/developer/python-novaclient/api.html
