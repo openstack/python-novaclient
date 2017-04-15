@@ -1630,8 +1630,13 @@ class ServerManager(base.BootingManagerWithFind):
         body = {'name': image_name, 'metadata': metadata or {}}
         resp, body = self._action_return_resp_and_body('createImage', server,
                                                        body)
-        location = resp.headers['location']
-        image_uuid = location.split('/')[-1]
+        # The 2.45 microversion returns the image_id in the response body,
+        # not as a location header.
+        if self.api_version >= api_versions.APIVersion('2.45'):
+            image_uuid = body['image_id']
+        else:
+            location = resp.headers['location']
+            image_uuid = location.split('/')[-1]
         return base.StrWithMeta(image_uuid, resp)
 
     def backup(self, server, backup_name, backup_type, rotation):
@@ -1643,7 +1648,8 @@ class ServerManager(base.BootingManagerWithFind):
         :param backup_type: The backup type, like 'daily' or 'weekly'
         :param rotation: Int parameter representing how many backups to
                         keep around.
-        :returns: An instance of novaclient.base.TupleWithMeta
+        :returns: An instance of novaclient.base.TupleWithMeta if the request
+            microversion is < 2.45, otherwise novaclient.base.DictWithMeta.
         """
         body = {'name': backup_name,
                 'backup_type': backup_type,

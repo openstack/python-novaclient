@@ -10,6 +10,7 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+from novaclient import api_versions
 from novaclient.tests.unit import fakes
 from novaclient.tests.unit.fixture_data import base
 from novaclient.tests.unit.v2 import fakes as v2_fakes
@@ -443,6 +444,8 @@ class V1(Base):
         context.status_code = 202
         assert len(body.keys()) == 1
         action = list(body)[0]
+        api_version = api_versions.APIVersion(
+            request.headers.get('X-OpenStack-Nova-API-Version', '2.1'))
 
         if v2_fakes.FakeSessionClient.check_server_actions(body):
             # NOTE(snikitin): No need to do any operations here. This 'pass'
@@ -475,6 +478,14 @@ class V1(Base):
             _body = {'adminPass': 'RescuePassword'}
         elif action == 'createImage':
             assert set(body[action].keys()) == set(['name', 'metadata'])
+            if api_version >= api_versions.APIVersion('2.45'):
+                return {'image_id': '456'}
+            context.headers['location'] = "http://blah/images/456"
+        elif action == 'createBackup':
+            assert set(body[action].keys()) == set(['name', 'backup_type',
+                                                    'rotation'])
+            if api_version >= api_versions.APIVersion('2.45'):
+                return {'image_id': '456'}
             context.headers['location'] = "http://blah/images/456"
         elif action == 'os-getConsoleOutput':
             assert list(body[action]) == ['length']

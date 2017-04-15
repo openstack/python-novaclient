@@ -1139,6 +1139,18 @@ class ShellTest(utils.TestCase):
             {'createImage': {'name': 'mysnapshot', 'metadata': {}}},
         )
 
+    def test_create_image_2_45(self):
+        """Tests the image-create command with microversion 2.45 which
+        does not change the output of the command, just how the response
+        from the server is processed.
+        """
+        self.run_command('image-create sample-server mysnapshot',
+                         api_version='2.45')
+        self.assert_called(
+            'POST', '/servers/1234/action',
+            {'createImage': {'name': 'mysnapshot', 'metadata': {}}},
+        )
+
     def test_create_image_with_incorrect_metadata(self):
         cmd = 'image-create sample-server mysnapshot --metadata foo'
         result = self.assertRaises(argparse.ArgumentTypeError,
@@ -2518,7 +2530,9 @@ class ShellTest(utils.TestCase):
                            {'removeFixedIp': {'address': '10.0.0.10'}})
 
     def test_backup(self):
-        self.run_command('backup sample-server back1 daily 1')
+        out, err = self.run_command('backup sample-server back1 daily 1')
+        # With microversion < 2.45 there is no output from this command.
+        self.assertEqual(0, len(out))
         self.assert_called('POST', '/servers/1234/action',
                            {'createBackup': {'name': 'back1',
                                              'backup_type': 'daily',
@@ -2528,6 +2542,23 @@ class ShellTest(utils.TestCase):
                            {'createBackup': {'name': 'back1',
                                              'backup_type': 'daily',
                                              'rotation': '1'}})
+
+    def test_backup_2_45(self):
+        """Tests the backup command with the 2.45 microversion which
+        handles a different response and prints out the backup snapshot
+        image details.
+        """
+        out, err = self.run_command(
+            'backup sample-server back1 daily 1',
+            api_version='2.45')
+        # We should see the backup snapshot image name in the output.
+        self.assertIn('back1', out)
+        self.assertIn('SAVING', out)
+        self.assert_called_anytime(
+            'POST', '/servers/1234/action',
+            {'createBackup': {'name': 'back1',
+                              'backup_type': 'daily',
+                              'rotation': '1'}})
 
     def test_limits(self):
         self.run_command('limits')
@@ -2914,6 +2945,7 @@ class ShellTest(utils.TestCase):
             42,  # There are no version-wrapped shell method changes for this.
             43,  # There are no version-wrapped shell method changes for this.
             44,  # There are no version-wrapped shell method changes for this.
+            45,  # There are no version-wrapped shell method changes for this.
         ])
         versions_supported = set(range(0,
                                  novaclient.API_MAX_VERSION.ver_minor + 1))

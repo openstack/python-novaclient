@@ -2040,9 +2040,13 @@ def do_image_create(cs, args):
            'around.'))
 def do_backup(cs, args):
     """Backup a server by creating a 'backup' type snapshot."""
-    _find_server(cs, args.server).backup(args.name,
-                                         args.backup_type,
-                                         args.rotation)
+    result = _find_server(cs, args.server).backup(args.name,
+                                                  args.backup_type,
+                                                  args.rotation)
+    # Microversion >= 2.45 will return a DictWithMeta that has the image_id
+    # in it for the backup snapshot image.
+    if cs.api_version >= api_versions.APIVersion('2.45'):
+        _print_image(_find_image(cs, result['image_id']))
 
 
 @utils.arg(

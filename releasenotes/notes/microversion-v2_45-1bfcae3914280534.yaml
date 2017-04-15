@@ -1,0 +1,13 @@
+---
+features:
+  - |
+    Support was added for microversion 2.45. This changes how the
+    ``createImage`` and ``createBackup`` server action APIs return
+    the created snapshot image ID in the response. With microversion
+    2.45 and later, the image ID is return in a json dict response body
+    with an ``image_id`` key and uuid value. The old ``Location`` response
+    header is no longer returned in microversion 2.45 or later.
+
+    There are no changes to the ``nova image-create`` CLI. However, the
+    ``nova backup`` CLI will print out the backup snapshot image information
+    with microversion 2.45 or greater now.

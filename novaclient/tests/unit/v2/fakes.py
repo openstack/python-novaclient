@@ -47,6 +47,7 @@ FAKE_IMAGE_UUID_1 = 'c99d7632-bd66-4be9-aed5-3dd14b223a76'
 FAKE_IMAGE_UUID_2 = 'f27f479a-ddda-419a-9bbc-d6b56b210161'
 FAKE_IMAGE_UUID_SNAPSHOT = '555cae93-fb41-4145-9c52-f5b923538a26'
 FAKE_IMAGE_UUID_SNAP_DEL = '55bb23af-97a4-4068-bdf8-f10c62880ddf'
+FAKE_IMAGE_UUID_BACKUP = '2f87e889-41a4-4778-8553-83f5eea68c5d'
 
 # fake request id
 FAKE_REQUEST_ID = fakes.FAKE_REQUEST_ID
@@ -716,9 +717,6 @@ class FakeSessionClient(base_client.SessionClient):
             assert body[action] is None
         elif action in ['addSecurityGroup', 'removeSecurityGroup']:
             assert list(body[action]) == ['name']
-        elif action == 'createBackup':
-            assert set(body[action]) == set(['name', 'backup_type',
-                                             'rotation'])
         elif action == 'trigger_crash_dump':
             assert body[action] is None
         else:
@@ -766,11 +764,22 @@ class FakeSessionClient(base_client.SessionClient):
             _body = {'adminPass': 'RescuePassword'}
         elif action == 'createImage':
             assert set(body[action].keys()) == set(['name', 'metadata'])
-            _headers = dict(location="http://blah/images/%s" %
-                            FAKE_IMAGE_UUID_SNAPSHOT)
+            if self.api_version < api_versions.APIVersion('2.45'):
+                _headers = dict(location="http://blah/images/%s" %
+                                FAKE_IMAGE_UUID_SNAPSHOT)
+            else:
+                _body = {'image_id': FAKE_IMAGE_UUID_SNAPSHOT}
             if body[action]['name'] == 'mysnapshot_deleted':
                 _headers = dict(location="http://blah/images/%s" %
                                 FAKE_IMAGE_UUID_SNAP_DEL)
+        elif action == 'createBackup':
+            assert set(body[action].keys()) == set(['name', 'backup_type',
+                                                    'rotation'])
+            if self.api_version < api_versions.APIVersion('2.45'):
+                _headers = dict(location="http://blah/images/%s" %
+                                FAKE_IMAGE_UUID_BACKUP)
+            else:
+                _body = {'image_id': FAKE_IMAGE_UUID_BACKUP}
         elif action == 'os-getConsoleOutput':
             assert list(body[action]) == ['length']
             return (202, {}, {'output': 'foo'})
@@ -1039,7 +1048,17 @@ class FakeSessionClient(base_client.SessionClient):
                 "status": "SAVING",
                 "progress": 80,
                 "links": {},
-            }
+            },
+            {
+                "id": FAKE_IMAGE_UUID_BACKUP,
+                "name": "back1",
+                "serverId": '1234',
+                "updated": "2010-10-10T12:00:00Z",
+                "created": "2010-08-10T12:00:00Z",
+                "status": "SAVING",
+                "progress": 80,
+                "links": {},
+            },
         ]})
 
     def get_images_555cae93_fb41_4145_9c52_f5b923538a26(self, **kw):
@@ -1053,6 +1072,9 @@ class FakeSessionClient(base_client.SessionClient):
 
     def get_images_f27f479a_ddda_419a_9bbc_d6b56b210161(self, **kw):
         return (200, {}, {'image': self.get_images()[2]['images'][3]})
+
+    def get_images_2f87e889_41a4_4778_8553_83f5eea68c5d(self, **kw):
+        return (200, {}, {'image': self.get_images()[2]['images'][4]})
 
     def get_images_3e861307_73a6_4d1f_8d68_f68b03223032(self):
         raise exceptions.NotFound('404')
