@@ -4247,9 +4247,8 @@ def do_server_group_list(cs, args):
     help=_('Policies for the server groups.'))
 def do_server_group_create(cs, args):
     """Create a new server group with the specified details."""
-    kwargs = {'name': args.name,
-              'policies': args.policy}
-    server_group = cs.server_groups.create(**kwargs)
+    server_group = cs.server_groups.create(name=args.name,
+                                           policies=args.policy)
     _print_server_group_details(cs, [server_group])
 
 

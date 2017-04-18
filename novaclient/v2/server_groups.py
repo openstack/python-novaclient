@@ -84,10 +84,15 @@ class ServerGroupsManager(base.ManagerWithFind):
         """
         return self._delete('/os-server-groups/%s' % id)
 
-    def create(self, **kwargs):
+    def create(self, name, policies):
         """Create (allocate) a server group.
 
+        :param name: The name of the server group.
+        :param policies: Policy name or a list of exactly one policy name to
+            associate with the server group.
         :rtype: list of :class:`ServerGroup`
         """
-        body = {'server_group': kwargs}
+        policies = policies if isinstance(policies, list) else [policies]
+        body = {'server_group': {'name': name,
+                                 'policies': policies}}
         return self._create('/os-server-groups', body, 'server_group')
