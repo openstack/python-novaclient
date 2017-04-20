@@ -106,7 +106,15 @@ def _match_image(cs, wanted_properties):
     return images_matched
 
 
-def _parse_block_device_mapping_v2(args, image):
+def _supports_block_device_tags(cs):
+    if (cs.api_version == api_versions.APIVersion('2.32') or
+            cs.api_version >= api_versions.APIVersion('2.42')):
+        return True
+    else:
+        return False
+
+
+def _parse_block_device_mapping_v2(cs, args, image):
     bdm = []
 
     if args.boot_volume:
@@ -124,6 +132,12 @@ def _parse_block_device_mapping_v2(args, image):
     for device_spec in args.block_device:
         spec_dict = dict(v.split('=') for v in device_spec.split(','))
         bdm_dict = {}
+
+        if ('tag' in spec_dict and not _supports_block_device_tags(cs)):
+            raise exceptions.CommandError(
+                _("'tag' in block device mapping is not supported "
+                  "in API version %(version)s.")
+                % {'version': cs.api_version.get_string()})
 
         for key, value in spec_dict.items():
             bdm_dict[CLIENT_BDM2_KEYS[key]] = value
@@ -193,9 +207,25 @@ def _parse_block_device_mapping_v2(args, image):
     return bdm
 
 
+def _supports_nic_tags(cs):
+    if ((cs.api_version >= api_versions.APIVersion('2.32') and
+         cs.api_version <= api_versions.APIVersion('2.36')) or
+            cs.api_version >= api_versions.APIVersion('2.42')):
+        return True
+    else:
+        return False
+
+
 def _parse_nics(cs, args):
     supports_auto_alloc = cs.api_version >= api_versions.APIVersion('2.37')
-    if supports_auto_alloc:
+    supports_nic_tags = _supports_nic_tags(cs)
+
+    nic_info = {"net-id": "", "v4-fixed-ip": "", "v6-fixed-ip": "",
+                "port-id": "", "net-name": ""}
+
+    if supports_auto_alloc and supports_nic_tags:
+        # API version >= 2.42
+        nic_info.update({"tag": ""})
         err_msg = (_("Invalid nic argument '%s'. Nic arguments must be of "
                      "the form --nic <auto,none,net-id=net-uuid,"
                      "net-name=network-name,v4-fixed-ip=ip-addr,"
@@ -203,7 +233,18 @@ def _parse_nics(cs, args):
                      "with only one of net-id, net-name or port-id "
                      "specified. Specifying a --nic of auto or none cannot "
                      "be used with any other --nic value."))
-    elif cs.api_version >= api_versions.APIVersion('2.32'):
+    elif supports_auto_alloc and not supports_nic_tags:
+        # 2.41 >= API version >= 2.37
+        err_msg = (_("Invalid nic argument '%s'. Nic arguments must be of "
+                     "the form --nic <auto,none,net-id=net-uuid,"
+                     "net-name=network-name,v4-fixed-ip=ip-addr,"
+                     "v6-fixed-ip=ip-addr,port-id=port-uuid>, "
+                     "with only one of net-id, net-name or port-id "
+                     "specified. Specifying a --nic of auto or none cannot "
+                     "be used with any other --nic value."))
+    elif not supports_auto_alloc and supports_nic_tags:
+        # 2.36 >= API version >= 2.32
+        nic_info.update({"tag": ""})
         err_msg = (_("Invalid nic argument '%s'. Nic arguments must be of "
                      "the form --nic <net-id=net-uuid,"
                      "net-name=network-name,v4-fixed-ip=ip-addr,"
@@ -211,6 +252,7 @@ def _parse_nics(cs, args):
                      "with only one of net-id, net-name or port-id "
                      "specified."))
     else:
+        # API version <= 2.31
         err_msg = (_("Invalid nic argument '%s'. Nic arguments must be of "
                      "the form --nic <net-id=net-uuid,"
                      "net-name=network-name,v4-fixed-ip=ip-addr,"
@@ -220,9 +262,6 @@ def _parse_nics(cs, args):
     auto_or_none = False
     nics = []
     for nic_str in args.nics:
-        nic_info = {"net-id": "", "v4-fixed-ip": "", "v6-fixed-ip": "",
-                    "port-id": "", "net-name": "", "tag": ""}
-
         for kv_str in nic_str.split(","):
             try:
                 # handle the special auto/none cases
@@ -360,7 +399,7 @@ def _boot(cs, args):
         device_name, mapping = bdm.split('=', 1)
         block_device_mapping[device_name] = mapping
 
-    block_device_mapping_v2 = _parse_block_device_mapping_v2(args, image)
+    block_device_mapping_v2 = _parse_block_device_mapping_v2(cs, args, image)
 
     n_boot_args = len(list(filter(
         bool, (image, args.boot_volume, args.snapshot))))
@@ -545,6 +584,7 @@ def _boot(cs, args):
     action='append',
     default=[],
     start_version='2.32',
+    end_version='2.32',
     help=_("Block device mapping with the keys: "
            "id=UUID (image_id, snapshot_id or volume_id only if using source "
            "image, snapshot or volume) "
@@ -568,6 +608,64 @@ def _boot(cs, args):
            "for others need to be specified) and "
            "shutdown=shutdown behaviour (either preserve or remove, "
            "for local destination set to remove)."))
+@utils.arg(
+    '--block-device',
+    metavar="key1=value1[,key2=value2...]",
+    action='append',
+    default=[],
+    start_version='2.33',
+    end_version='2.41',
+    help=_("Block device mapping with the keys: "
+           "id=UUID (image_id, snapshot_id or volume_id only if using source "
+           "image, snapshot or volume) "
+           "source=source type (image, snapshot, volume or blank), "
+           "dest=destination type of the block device (volume or local), "
+           "bus=device's bus (e.g. uml, lxc, virtio, ...; if omitted, "
+           "hypervisor driver chooses a suitable default, "
+           "honoured only if device type is supplied) "
+           "type=device type (e.g. disk, cdrom, ...; defaults to 'disk') "
+           "device=name of the device (e.g. vda, xda, ...; "
+           "if omitted, hypervisor driver chooses suitable device "
+           "depending on selected bus; note the libvirt driver always "
+           "uses default device names), "
+           "size=size of the block device in MB(for swap) and in "
+           "GB(for other formats) "
+           "(if omitted, hypervisor driver calculates size), "
+           "format=device will be formatted (e.g. swap, ntfs, ...; optional), "
+           "bootindex=integer used for ordering the boot disks "
+           "(for image backed instances it is equal to 0, "
+           "for others need to be specified) and "
+           "shutdown=shutdown behaviour (either preserve or remove, "
+           "for local destination set to remove)."))
+@utils.arg(
+    '--block-device',
+    metavar="key1=value1[,key2=value2...]",
+    action='append',
+    default=[],
+    start_version='2.42',
+    help=_("Block device mapping with the keys: "
+           "id=UUID (image_id, snapshot_id or volume_id only if using source "
+           "image, snapshot or volume) "
+           "source=source type (image, snapshot, volume or blank), "
+           "dest=destination type of the block device (volume or local), "
+           "bus=device's bus (e.g. uml, lxc, virtio, ...; if omitted, "
+           "hypervisor driver chooses a suitable default, "
+           "honoured only if device type is supplied) "
+           "type=device type (e.g. disk, cdrom, ...; defaults to 'disk') "
+           "device=name of the device (e.g. vda, xda, ...; "
+           "if omitted, hypervisor driver chooses suitable device "
+           "depending on selected bus; note the libvirt driver always "
+           "uses default device names), "
+           "size=size of the block device in MB(for swap) and in "
+           "GB(for other formats) "
+           "(if omitted, hypervisor driver calculates size), "
+           "format=device will be formatted (e.g. swap, ntfs, ...; optional), "
+           "bootindex=integer used for ordering the boot disks "
+           "(for image backed instances it is equal to 0, "
+           "for others need to be specified), "
+           "shutdown=shutdown behaviour (either preserve or remove, "
+           "for local destination set to remove) and "
+           "tag=device metadata tag (optional)."))
 @utils.arg(
     '--swap',
     metavar="<swap_size>",
@@ -609,7 +707,7 @@ def _boot(cs, args):
 @utils.arg(
     '--nic',
     metavar="<net-id=net-uuid,net-name=network-name,v4-fixed-ip=ip-addr,"
-            "v6-fixed-ip=ip-addr,port-id=port-uuid>",
+            "v6-fixed-ip=ip-addr,port-id=port-uuid,tag=tag>",
     action='append',
     dest='nics',
     default=[],
@@ -629,11 +727,36 @@ def _boot(cs, args):
     '--nic',
     metavar="<auto,none,"
             "net-id=net-uuid,net-name=network-name,port-id=port-uuid,"
-            "v4-fixed-ip=ip-addr,v6-fixed-ip=ip-addr,tag=tag>",
+            "v4-fixed-ip=ip-addr,v6-fixed-ip=ip-addr>",
     action='append',
     dest='nics',
     default=[],
     start_version='2.37',
+    end_version='2.41',
+    help=_("Create a NIC on the server. "
+           "Specify option multiple times to create multiple nics unless "
+           "using the special 'auto' or 'none' values. "
+           "auto: automatically allocate network resources if none are "
+           "available. This cannot be specified with any other nic value and "
+           "cannot be specified multiple times. "
+           "none: do not attach a NIC at all. This cannot be specified "
+           "with any other nic value and cannot be specified multiple times. "
+           "net-id: attach NIC to network with a specific UUID. "
+           "net-name: attach NIC to network with this name "
+           "(either port-id or net-id or net-name must be provided), "
+           "v4-fixed-ip: IPv4 fixed address for NIC (optional), "
+           "v6-fixed-ip: IPv6 fixed address for NIC (optional), "
+           "port-id: attach NIC to port with this UUID "
+           "(either port-id or net-id must be provided)."))
+@utils.arg(
+    '--nic',
+    metavar="<auto,none,"
+            "net-id=net-uuid,net-name=network-name,port-id=port-uuid,"
+            "v4-fixed-ip=ip-addr,v6-fixed-ip=ip-addr,tag=tag>",
+    action='append',
+    dest='nics',
+    default=[],
+    start_version='2.42',
     help=_("Create a NIC on the server. "
            "Specify option multiple times to create multiple nics unless "
            "using the special 'auto' or 'none' values. "
