@@ -28,7 +28,7 @@ class Migration(base.Resource):
 class MigrationManager(base.ManagerWithFind):
     resource_class = Migration
 
-    def list(self, host=None, status=None, cell_name=None):
+    def list(self, host=None, status=None, cell_name=None, instance_uuid=None):
         """
         Get a list of migrations.
         :param host: (optional) filter migrations by host name.
@@ -45,6 +45,8 @@ class MigrationManager(base.ManagerWithFind):
                                          "deprecated since Pike, and will "
                                          "be removed in a future release."))
             opts['cell_name'] = cell_name
+        if instance_uuid:
+            opts['instance_uuid'] = instance_uuid
 
         # Transform the dict to a sequence of two-element tuples in fixed
         # order, then the encoded string will be consistent in Python 2&3.

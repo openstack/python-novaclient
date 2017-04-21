@@ -4835,6 +4835,11 @@ def _print_migrations(cs, migrations):
 
 
 @utils.arg(
+    '--instance-uuid',
+    dest='instance_uuid',
+    metavar='<instance_uuid>',
+    help=_('Fetch migrations for the given instance.'))
+@utils.arg(
     '--host',
     dest='host',
     metavar='<host>',
@@ -4855,5 +4860,6 @@ def _print_migrations(cs, migrations):
           'removed after version 8.0.0.'))
 def do_migration_list(cs, args):
     """Print a list of migrations."""
-    migrations = cs.migrations.list(args.host, args.status)
+    migrations = cs.migrations.list(args.host, args.status, None,
+                                    instance_uuid=args.instance_uuid)
     _print_migrations(cs, migrations)

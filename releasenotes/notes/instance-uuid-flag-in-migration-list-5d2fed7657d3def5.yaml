@@ -1,0 +1,7 @@
+---
+features:
+  - |
+    A new ``--instance-uuid`` option is added to ``nova migration-list``
+    command. This is used to query the migration history of a specific server
+    by the migration-list command. Please use ``nova server-migration-list``
+    command for querying in-progress migrations of a specific server.
