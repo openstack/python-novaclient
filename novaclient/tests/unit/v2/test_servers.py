@@ -556,27 +556,33 @@ class ServersTest(utils.FixturedTestCase):
         self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
 
-    def test_add_fixed_ip(self):
+    @mock.patch('warnings.warn')
+    def test_add_fixed_ip(self, mock_warn):
         s = self.cs.servers.get(1234)
         fip = s.add_fixed_ip(1)
+        mock_warn.assert_called_once()
         self.assert_request_id(fip, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
         fip = self.cs.servers.add_fixed_ip(s, 1)
         self.assert_request_id(fip, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
 
-    def test_remove_fixed_ip(self):
+    @mock.patch('warnings.warn')
+    def test_remove_fixed_ip(self, mock_warn):
         s = self.cs.servers.get(1234)
         ret = s.remove_fixed_ip('10.0.0.1')
+        mock_warn.assert_called_once()
         self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
         ret = self.cs.servers.remove_fixed_ip(s, '10.0.0.1')
         self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
 
-    def test_add_floating_ip(self):
+    @mock.patch('warnings.warn')
+    def test_add_floating_ip(self, mock_warn):
         s = self.cs.servers.get(1234)
         fip = s.add_floating_ip('11.0.0.1')
+        mock_warn.assert_called_once()
         self.assert_request_id(fip, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
         fip = self.cs.servers.add_floating_ip(s, '11.0.0.1')
@@ -607,9 +613,11 @@ class ServersTest(utils.FixturedTestCase):
         self.assert_request_id(fip, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
 
-    def test_remove_floating_ip(self):
+    @mock.patch('warnings.warn')
+    def test_remove_floating_ip(self, mock_warn):
         s = self.cs.servers.get(1234)
         ret = s.remove_floating_ip('11.0.0.1')
+        mock_warn.assert_called_once()
         self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
         ret = self.cs.servers.remove_floating_ip(s, '11.0.0.1')

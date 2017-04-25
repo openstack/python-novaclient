@@ -1,0 +1,16 @@
+---
+deprecations:
+  - |
+    The following CLIs and their backing API bindings are deprecated and capped
+    at microversion 2.44:
+
+    * ``nova add-fixed-ip``: use python-neutronclient or openstacksdk
+    * ``nova remove-fixed-ip``: use python-neutronclient or openstacksdk
+    * ``nova floating-ip-associate``: use python-neutronclient or openstacksdk
+    * ``nova floating-ip-disassociate``: use python-neutronclient or
+      openstacksdk
+    * ``nova virtual-interface-list``: there is no replacement as this is
+      only implemented for nova-network which is deprecated
+
+    The CLIs and API bindings will be removed in the first major release after
+    Nova 16.0.0 Pike is released.

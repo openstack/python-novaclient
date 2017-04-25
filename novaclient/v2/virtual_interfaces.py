@@ -14,10 +14,14 @@
 #    under the License.
 
 """
-Virtual Interfaces (1.1 extension).
+DEPRECATED Virtual Interfaces (1.1 extension).
 """
 
+import warnings
+
+from novaclient import api_versions
 from novaclient import base
+from novaclient.i18n import _
 
 
 class VirtualInterface(base.Resource):
@@ -26,8 +30,15 @@ class VirtualInterface(base.Resource):
 
 
 class VirtualInterfaceManager(base.ManagerWithFind):
+    """DEPRECATED"""
     resource_class = VirtualInterface
 
+    @api_versions.wraps('2.0', '2.43')
     def list(self, instance_id):
+        """DEPRECATED"""
+        warnings.warn(_('The os-virtual-interfaces API is deprecated. This '
+                        'API binding will be removed in the first major '
+                        'release after the Nova server 16.0.0 Pike release.'),
+                      DeprecationWarning)
         return self._list('/servers/%s/os-virtual-interfaces' % instance_id,
                           'virtual_interfaces')

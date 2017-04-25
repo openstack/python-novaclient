@@ -75,6 +75,17 @@ def emit_hosts_deprecation_warning(command_name, replacement=None):
               file=sys.stderr)
 
 
+# NOTE(mriedem): Remove this along with the deprecated commands in the first
+# major python-novaclient release AFTER the nova server 16.0.0 Pike release.
+def emit_fixed_floating_deprecation_warning(command_name):
+    print(_('WARNING: Command %s is deprecated and will be removed '
+            'in the first major release after the Nova server 16.0.0 '
+            'Pike release. Use python-neutronclient or python-openstackclient'
+            'instead. Specify --os-compute-api-version less than 2.44 '
+            'to continue using this command until it is removed.') %
+          command_name, file=sys.stderr)
+
+
 CLIENT_BDM2_KEYS = {
     'id': 'uuid',
     'source': 'source_type',
@@ -2200,7 +2211,8 @@ def _find_network_id(cs, net_name):
     metavar='<network-id>',
     help=_('Network ID.'))
 def do_add_fixed_ip(cs, args):
-    """Add new IP address on a network to server."""
+    """DEPRECATED Add new IP address on a network to server."""
+    emit_fixed_floating_deprecation_warning('add-fixed-ip')
     server = _find_server(cs, args.server)
     server.add_fixed_ip(args.network_id)
 
@@ -2208,7 +2220,8 @@ def do_add_fixed_ip(cs, args):
 @utils.arg('server', metavar='<server>', help=_('Name or ID of server.'))
 @utils.arg('address', metavar='<address>', help=_('IP Address.'))
 def do_remove_fixed_ip(cs, args):
-    """Remove an IP address from a server."""
+    """DEPRECATED Remove an IP address from a server."""
+    emit_fixed_floating_deprecation_warning('remove-fixed-ip')
     server = _find_server(cs, args.server)
     server.remove_fixed_ip(args.address)
 
@@ -2442,7 +2455,8 @@ def do_console_log(cs, args):
     default=None,
     help=_('Fixed IP Address to associate with.'))
 def do_floating_ip_associate(cs, args):
-    """Associate a floating IP address to a server."""
+    """DEPRECATED Associate a floating IP address to a server."""
+    emit_fixed_floating_deprecation_warning('floating-ip-associate')
     _associate_floating_ip(cs, args)
 
 
@@ -2454,7 +2468,8 @@ def _associate_floating_ip(cs, args):
 @utils.arg('server', metavar='<server>', help=_('Name or ID of server.'))
 @utils.arg('address', metavar='<address>', help=_('IP Address.'))
 def do_floating_ip_disassociate(cs, args):
-    """Disassociate a floating IP address from a server."""
+    """DEPRECATED Disassociate a floating IP address from a server."""
+    emit_fixed_floating_deprecation_warning('floating-ip-disassociate')
     _disassociate_floating_ip(cs, args)
 
 
@@ -4473,7 +4488,13 @@ def _print_virtual_interface_list(cs, interface_list):
 
 @utils.arg('server', metavar='<server>', help=_('ID of server.'))
 def do_virtual_interface_list(cs, args):
-    """Show virtual interface info about the given server."""
+    """DEPRECATED Show virtual interface info about the given server."""
+    print(_('WARNING: Command virtual-interface-list is deprecated and will '
+            'be removed in the first major release after the Nova server '
+            '16.0.0 Pike release. There is no replacement or alternative for '
+            'this command. Specify --os-compute-api-version less than 2.44 '
+            'to continue using this command until it is removed.'),
+          file=sys.stderr)
     server = _find_server(cs, args.server)
     interface_list = cs.virtual_interfaces.list(base.getid(server))
     _print_virtual_interface_list(cs, interface_list)

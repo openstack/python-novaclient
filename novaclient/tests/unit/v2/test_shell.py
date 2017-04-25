@@ -1671,12 +1671,18 @@ class ShellTest(utils.TestCase):
         self.assert_called('DELETE', '/servers/uuid2/metadata/key1', pos=2)
 
     def test_server_floating_ip_associate(self):
-        self.run_command('floating-ip-associate sample-server 11.0.0.1')
+        _, err = self.run_command(
+            'floating-ip-associate sample-server 11.0.0.1')
+        self.assertIn('WARNING: Command floating-ip-associate is deprecated',
+                      err)
         self.assert_called('POST', '/servers/1234/action',
                            {'addFloatingIp': {'address': '11.0.0.1'}})
 
     def test_server_floating_ip_disassociate(self):
-        self.run_command('floating-ip-disassociate sample-server 11.0.0.1')
+        _, err = self.run_command(
+            'floating-ip-disassociate sample-server 11.0.0.1')
+        self.assertIn(
+            'WARNING: Command floating-ip-disassociate is deprecated', err)
         self.assert_called('POST', '/servers/1234/action',
                            {'removeFloatingIp': {'address': '11.0.0.1'}})
 
@@ -2500,12 +2506,14 @@ class ShellTest(utils.TestCase):
         self.assert_called('PUT', '/os-cloudpipe/configure-project', body)
 
     def test_add_fixed_ip(self):
-        self.run_command('add-fixed-ip sample-server 1')
+        _, err = self.run_command('add-fixed-ip sample-server 1')
+        self.assertIn('WARNING: Command add-fixed-ip is deprecated', err)
         self.assert_called('POST', '/servers/1234/action',
                            {'addFixedIp': {'networkId': '1'}})
 
     def test_remove_fixed_ip(self):
-        self.run_command('remove-fixed-ip sample-server 10.0.0.10')
+        _, err = self.run_command('remove-fixed-ip sample-server 10.0.0.10')
+        self.assertIn('WARNING: Command remove-fixed-ip is deprecated', err)
         self.assert_called('POST', '/servers/1234/action',
                            {'removeFixedIp': {'address': '10.0.0.10'}})
 
@@ -2867,7 +2875,9 @@ class ShellTest(utils.TestCase):
         self.assert_called('GET', '/os-server-groups?limit=20&offset=5')
 
     def test_list_server_os_virtual_interfaces(self):
-        self.run_command('virtual-interface-list 1234')
+        _, err = self.run_command('virtual-interface-list 1234')
+        self.assertIn('WARNING: Command virtual-interface-list is deprecated',
+                      err)
         self.assert_called('GET', '/servers/1234/os-virtual-interfaces')
 
     def test_versions(self):
@@ -2903,6 +2913,7 @@ class ShellTest(utils.TestCase):
             41,  # There are no version-wrapped shell method changes for this.
             42,  # There are no version-wrapped shell method changes for this.
             43,  # There are no version-wrapped shell method changes for this.
+            44,  # There are no version-wrapped shell method changes for this.
         ])
         versions_supported = set(range(0,
                                  novaclient.API_MAX_VERSION.ver_minor + 1))
