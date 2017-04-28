@@ -47,3 +47,15 @@ class MigrationsTest(utils.TestCase):
             '/os-migrations?cell_name=child1&host=host1&status=finished')
         for m in ml:
             self.assertIsInstance(m, migrations.Migration)
+
+    def test_list_migrations_with_instance_uuid_filter(self):
+        ml = self.cs.migrations.list('host1', 'finished', 'child1',
+                                     'instance_id_456')
+        self.assert_request_id(ml, fakes.FAKE_REQUEST_ID_LIST)
+
+        self.cs.assert_called(
+            'GET',
+            ('/os-migrations?cell_name=child1&host=host1&'
+             'instance_uuid=instance_id_456&status=finished'))
+        self.assertEqual(1, len(ml))
+        self.assertEqual('instance_id_456', ml[0].instance_uuid)
