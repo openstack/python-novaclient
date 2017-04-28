@@ -14,7 +14,7 @@
 #    under the License.
 
 """
-Keypair interface (1.1 extension).
+Keypair interface
 """
 
 from novaclient import api_versions

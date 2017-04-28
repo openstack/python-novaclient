@@ -14,7 +14,7 @@
 #    under the License.
 
 """
-DEPRECATED host interface (1.1 extension).
+DEPRECATED host interface
 """
 import warnings
 

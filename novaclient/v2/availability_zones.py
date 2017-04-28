@@ -15,7 +15,7 @@
 #    under the License.
 
 """
-Availability Zone interface (1.1 extension).
+Availability Zone interface
 """
 
 from novaclient import base

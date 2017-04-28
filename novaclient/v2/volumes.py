@@ -14,7 +14,7 @@
 #    under the License.
 
 """
-Volume interface (1.1 extension).
+Volume interface
 """
 
 from novaclient import base
