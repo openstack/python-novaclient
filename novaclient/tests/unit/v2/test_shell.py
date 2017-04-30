@@ -614,6 +614,14 @@ class ShellTest(utils.TestCase):
             }},
         )
 
+    def test_boot_with_incorrect_metadata(self):
+        cmd = ('boot --image %s --flavor 1 --meta foo '
+               'some-server ' % FAKE_UUID_1)
+        result = self.assertRaises(argparse.ArgumentTypeError,
+                                   self.run_command, cmd)
+        expected = "'['foo']' is not in the format of 'key=value'"
+        self.assertEqual(expected, result.args[0])
+
     def test_boot_hints(self):
         self.run_command('boot --image %s --flavor 1 '
                          '--hint a=b0=c0 --hint a=b1=c1 some-server ' %
@@ -1235,6 +1243,13 @@ class ShellTest(utils.TestCase):
             {'createImage': {'name': 'mysnapshot', 'metadata': {}}},
         )
 
+    def test_create_image_with_incorrect_metadata(self):
+        cmd = 'image-create sample-server mysnapshot --metadata foo'
+        result = self.assertRaises(argparse.ArgumentTypeError,
+                                   self.run_command, cmd)
+        expected = "'['foo']' is not in the format of 'key=value'"
+        self.assertEqual(expected, result.args[0])
+
     def test_create_image_with_metadata(self):
         self.run_command(
             'image-create sample-server mysnapshot --metadata mykey=123')
@@ -1482,6 +1497,13 @@ class ShellTest(utils.TestCase):
                                         'metadata': {'foo': 'bar'}}}, pos=3)
         self.assert_called('GET', '/flavors/1', pos=4)
         self.assert_called('GET', '/v2/images/%s' % FAKE_UUID_2, pos=5)
+
+    def test_rebuild_with_incorrect_metadata(self):
+        cmd = 'rebuild sample-server %s --name asdf --meta foo' % FAKE_UUID_1
+        result = self.assertRaises(argparse.ArgumentTypeError,
+                                   self.run_command, cmd)
+        expected = "'['foo']' is not in the format of 'key=value'"
+        self.assertEqual(expected, result.args[0])
 
     def test_start(self):
         self.run_command('start sample-server')
