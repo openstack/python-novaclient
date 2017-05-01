@@ -246,7 +246,7 @@ def print_dict(d, dict_property="Property", dict_value="Value", wrap=0):
     for k, v in sorted(d.items()):
         # convert dict to str to check length
         if isinstance(v, (dict, list)):
-            v = jsonutils.dumps(v)
+            v = jsonutils.dumps(v, ensure_ascii=False)
         if wrap > 0:
             v = textwrap.fill(six.text_type(v), wrap)
         # if value has a newline, add in multiple rows
