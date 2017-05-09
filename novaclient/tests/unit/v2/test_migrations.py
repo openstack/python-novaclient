@@ -10,6 +10,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import mock
+
 from novaclient import api_versions
 from novaclient.tests.unit import utils
 from novaclient.tests.unit.v2 import fakes
@@ -37,6 +39,15 @@ class MigrationsTest(utils.TestCase):
         for m in ml:
             self.assertIsInstance(m, migrations.Migration)
             self.assertEqual(m.migration_type, 'live-migration')
+
+    @mock.patch('novaclient.v2.migrations.warnings.warn')
+    def test_list_migrations_with_cell_name(self, mock_warn):
+        ml = self.cs.migrations.list(cell_name="abc")
+        self.assert_request_id(ml, fakes.FAKE_REQUEST_ID_LIST)
+        self.cs.assert_called('GET', '/os-migrations?cell_name=abc')
+        for m in ml:
+            self.assertIsInstance(m, migrations.Migration)
+        self.assertTrue(mock_warn.called)
 
     def test_list_migrations_with_filters(self):
         ml = self.cs.migrations.list('host1', 'finished', 'child1')
