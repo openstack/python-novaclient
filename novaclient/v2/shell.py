@@ -2289,18 +2289,23 @@ def do_volume_attach(cs, args):
     metavar='<server>',
     help=_('Name or ID of server.'))
 @utils.arg(
-    'attachment_id',
-    metavar='<attachment>',
-    help=_('Attachment ID of the volume.'))
+    'src_volume',
+    metavar='<src_volid>',
+    help=_('ID of the source (original) volume.'))
 @utils.arg(
-    'new_volume',
-    metavar='<volume>',
-    help=_('ID of the volume to attach.'))
+    'dest_volume',
+    metavar='<dest_volid>',
+    help=_('ID of the destination volume.'))
 def do_volume_update(cs, args):
-    """Update volume attachment."""
+    """Update the attachment on the server.
+
+    Migrates the data from an attached volume to the
+    specified available volume and swaps out the active
+    attachment to the new volume.
+    """
     cs.volumes.update_server_volume(_find_server(cs, args.server).id,
-                                    args.attachment_id,
-                                    args.new_volume)
+                                    args.src_volume,
+                                    args.dest_volume)
 
 
 @utils.arg(

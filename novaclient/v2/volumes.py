@@ -52,19 +52,25 @@ class VolumeManager(base.Manager):
         return self._create("/servers/%s/os-volume_attachments" % server_id,
                             body, "volumeAttachment")
 
-    def update_server_volume(self, server_id, attachment_id, new_volume_id):
+    def update_server_volume(self, server_id, src_volid, dest_volid):
         """
-        Update the volume identified by the attachment ID, that is attached to
-        the given server ID
+        Swaps the existing volume attachment to point to a new volume.
+
+        Takes a server, a source (attached) volume and a destination volume and
+        performs a hypervisor assisted data migration from src to dest volume,
+        detaches the original (source) volume and attaches the new destination
+        volume. Note that not all backing hypervisor drivers support this
+        operation and it may be disabled via policy.
+
 
         :param server_id: The ID of the server
-        :param attachment_id: The ID of the attachment
-        :param new_volume_id: The ID of the new volume to attach
+        :param source_volume: The ID of the src volume
+        :param dest_volume: The ID of the destination volume
         :rtype: :class:`Volume`
         """
-        body = {'volumeAttachment': {'volumeId': new_volume_id}}
+        body = {'volumeAttachment': {'volumeId': dest_volid}}
         return self._update("/servers/%s/os-volume_attachments/%s" %
-                            (server_id, attachment_id,),
+                            (server_id, src_volid,),
                             body, "volumeAttachment")
 
     def get_server_volume(self, server_id, attachment_id):

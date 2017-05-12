@@ -38,8 +38,8 @@ class VolumesTest(utils.TestCase):
         vol_id = '15e59938-07d5-11e1-90e3-e3dffe0c5983'
         v = self.cs.volumes.update_server_volume(
             server_id=1234,
-            attachment_id='Work',
-            new_volume_id=vol_id
+            src_volid='Work',
+            dest_volid=vol_id
         )
         self.assert_request_id(v, fakes.FAKE_REQUEST_ID_LIST)
         self.cs.assert_called('PUT',
