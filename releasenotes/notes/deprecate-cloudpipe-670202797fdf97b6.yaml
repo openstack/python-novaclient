@@ -1,0 +1,8 @@
+---
+deprecations:
+  - |
+    The os-cloudpipe API has been removed from Nova.  As a result, the
+    ``nova cloudpipe-list``, ``nova cloudpipe-create``, and ``nova
+    cloudpipe-configure`` commands and the ``novaclient.v2.cloudpipe``
+    API bindings are now deprecated, and will be removed in the first
+    major release after the Nova server 16.0.0 Pike release.

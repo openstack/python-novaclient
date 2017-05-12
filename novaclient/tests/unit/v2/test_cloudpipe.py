@@ -11,6 +11,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import mock
 import six
 
 from novaclient.tests.unit.fixture_data import client
@@ -27,24 +28,30 @@ class CloudpipeTest(utils.FixturedTestCase):
     scenarios = [('original', {'client_fixture_class': client.V1}),
                  ('session', {'client_fixture_class': client.SessionV1})]
 
-    def test_list_cloudpipes(self):
+    @mock.patch('warnings.warn')
+    def test_list_cloudpipes(self, mock_warn):
         cp = self.cs.cloudpipe.list()
         self.assert_request_id(cp, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('GET', '/os-cloudpipe')
         for c in cp:
             self.assertIsInstance(c, cloudpipe.Cloudpipe)
+        mock_warn.assert_called_once_with(mock.ANY)
 
-    def test_create(self):
+    @mock.patch('warnings.warn')
+    def test_create(self, mock_warn):
         project = "test"
         cp = self.cs.cloudpipe.create(project)
         self.assert_request_id(cp, fakes.FAKE_REQUEST_ID_LIST)
         body = {'cloudpipe': {'project_id': project}}
         self.assert_called('POST', '/os-cloudpipe', body)
         self.assertIsInstance(cp, six.string_types)
+        mock_warn.assert_called_once_with(mock.ANY)
 
-    def test_update(self):
+    @mock.patch('warnings.warn')
+    def test_update(self, mock_warn):
         cp = self.cs.cloudpipe.update("192.168.1.1", 2345)
         self.assert_request_id(cp, fakes.FAKE_REQUEST_ID_LIST)
         body = {'configure_project': {'vpn_ip': "192.168.1.1",
                                       'vpn_port': 2345}}
         self.assert_called('PUT', '/os-cloudpipe/configure-project', body)
+        mock_warn.assert_called_once_with(mock.ANY)

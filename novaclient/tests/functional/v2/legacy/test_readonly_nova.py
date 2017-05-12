@@ -38,9 +38,6 @@ class SimpleReadOnlyNovaClientTest(base.ClientTestBase):
     def test_admin_availability_zone_list(self):
         self.assertIn("internal", self.nova('availability-zone-list'))
 
-    def test_admin_cloudpipe_list(self):
-        self.nova('cloudpipe-list')
-
     def test_admin_flavor_acces_list(self):
         self.assertRaises(exceptions.CommandFailed,
                           self.nova,

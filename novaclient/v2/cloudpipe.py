@@ -13,9 +13,19 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-"""Cloudpipe interface."""
+"""DEPRECATED Cloudpipe interface."""
+
+import warnings
 
 from novaclient import base
+from novaclient.i18n import _
+
+
+DEPRECATION_WARNING = (
+    _('The os-cloudpipe Nova API has been removed. This API binding will be '
+      'removed in the first major release after the Nova server 16.0.0 Pike '
+      'release.')
+)
 
 
 class Cloudpipe(base.Resource):
@@ -26,31 +36,42 @@ class Cloudpipe(base.Resource):
 
     def delete(self):
         """
-        Delete the own cloudpipe instance
+        DEPRECATED Delete the own cloudpipe instance
 
         :returns: An instance of novaclient.base.TupleWithMeta
         """
+
+        warnings.warn(DEPRECATION_WARNING)
+
         return self.manager.delete(self)
 
 
 class CloudpipeManager(base.ManagerWithFind):
+    """DEPRECATED"""
+
     resource_class = Cloudpipe
 
     def create(self, project):
-        """Launch a cloudpipe instance.
+        """DEPRECATED Launch a cloudpipe instance.
 
         :param project: UUID of the project (tenant) for the cloudpipe
         """
+
+        warnings.warn(DEPRECATION_WARNING)
+
         body = {'cloudpipe': {'project_id': project}}
         return self._create('/os-cloudpipe', body, 'instance_id',
                             return_raw=True)
 
     def list(self):
-        """Get a list of cloudpipe instances."""
+        """DEPRECATED Get a list of cloudpipe instances."""
+
+        warnings.warn(DEPRECATION_WARNING)
+
         return self._list('/os-cloudpipe', 'cloudpipes')
 
     def update(self, address, port):
-        """Configure cloudpipe parameters for the project.
+        """DEPRECATED Configure cloudpipe parameters for the project.
 
         Update VPN address and port for all networks associated
         with the project defined by authentication
@@ -59,6 +80,8 @@ class CloudpipeManager(base.ManagerWithFind):
         :param port: Port number
         :returns: An instance of novaclient.base.TupleWithMeta
         """
+
+        warnings.warn(DEPRECATION_WARNING)
 
         body = {'configure_project': {'vpn_ip': address,
                                       'vpn_port': port}}
