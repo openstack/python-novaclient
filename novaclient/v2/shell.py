@@ -27,7 +27,6 @@ import os
 import pprint
 import sys
 import time
-import warnings
 
 from oslo_utils import netutils
 from oslo_utils import strutils
@@ -2983,7 +2982,7 @@ def do_usage(cs, args):
     help=_('Filename for the X.509 certificate. [Default: cert.pem]'))
 def do_x509_create_cert(cs, args):
     """DEPRECATED Create x509 cert for a user in tenant."""
-    warnings.warn(CERT_DEPRECATION_WARNING, DeprecationWarning)
+    print(CERT_DEPRECATION_WARNING, file=sys.stderr)
 
     if os.path.exists(args.pk_filename):
         raise exceptions.CommandError(_("Unable to write privatekey - %s "
@@ -3015,7 +3014,7 @@ def do_x509_create_cert(cs, args):
     help=_('Filename to write the x509 root cert.'))
 def do_x509_get_root_cert(cs, args):
     """DEPRECATED Fetch the x509 root cert."""
-    warnings.warn(CERT_DEPRECATION_WARNING, DeprecationWarning)
+    print(CERT_DEPRECATION_WARNING, file=sys.stderr)
     if os.path.exists(args.filename):
         raise exceptions.CommandError(_("Unable to write x509 root cert - \
                                       %s exists.") % args.filename)
