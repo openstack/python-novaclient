@@ -466,15 +466,6 @@ class OpenStackComputeShell(object):
             help=_('Defaults to env[NOVA_SERVICE_NAME].'))
 
         parser.add_argument(
-            '--volume-service-name',
-            action=DeprecatedAction,
-            metavar='<volume-service-name>',
-            default=utils.env('NOVA_VOLUME_SERVICE_NAME'),
-            use=_('This option will be removed after Nova 15.0.0 is '
-                  'released.'),
-            help=argparse.SUPPRESS)
-
-        parser.add_argument(
             '--os-endpoint-type',
             metavar='<endpoint-type>',
             dest='endpoint_type',

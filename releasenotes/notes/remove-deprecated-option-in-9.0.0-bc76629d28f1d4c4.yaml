@@ -1,0 +1,8 @@
+---
+upgrade:
+  - |
+    The following deprecated options have been removed:
+
+    - ``--tenant`` (from ``flavor access list``)
+    - ``--cell_name`` (from ``migration list``)
+    - ``--volume-service-name`` (global option)

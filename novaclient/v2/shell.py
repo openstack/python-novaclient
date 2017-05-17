@@ -1175,13 +1175,6 @@ def do_flavor_key(cs, args):
     '--flavor',
     metavar='<flavor>',
     help=_("Filter results by flavor name or ID."))
-@utils.arg(
-    '--tenant', metavar='<tenant_id>',
-    help=_('Filter results by tenant ID.'),
-    action=shell.DeprecatedAction,
-    real_action='nothing',
-    use=_('this option is not supported, and will be '
-          'removed in version 5.0.0.'))
 def do_flavor_access_list(cs, args):
     """Print access information about the given flavor."""
     if args.flavor:
@@ -4926,15 +4919,6 @@ def _print_migrations(cs, migrations):
     dest='status',
     metavar='<status>',
     help=_('Fetch migrations for the given status.'))
-@utils.arg(
-    '--cell_name',
-    dest='cell_name',
-    metavar='<cell_name>',
-    help=_('Fetch migrations for the given cell_name.'),
-    action=shell.DeprecatedAction,
-    real_action='nothing',
-    use=_('this option is not supported, and will be '
-          'removed after version 8.0.0.'))
 def do_migration_list(cs, args):
     """Print a list of migrations."""
     migrations = cs.migrations.list(args.host, args.status, None,

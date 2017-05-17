@@ -1098,12 +1098,6 @@ class ShellTest(utils.TestCase):
         self.run_command('flavor-access-list --flavor 2')
         self.assert_called('GET', '/flavors/2/os-flavor-access')
 
-    def test_flavor_access_list_bad_filter(self):
-        cmd = 'flavor-access-list --flavor 2 --tenant proj2'
-        _out, err = self.run_command(cmd)
-        # assert the deprecation warning for using --tenant
-        self.assertIn('WARNING: Option "--tenant" is deprecated', err)
-
     def test_flavor_access_list_no_filter(self):
         cmd = 'flavor-access-list'
         self.assertRaises(exceptions.CommandError, self.run_command, cmd)
@@ -2719,8 +2713,7 @@ class ShellTest(utils.TestCase):
         self.assert_called('GET', '/os-migrations')
 
     def test_migration_list_with_filters(self):
-        self.run_command('migration-list --host host1 --cell_name child1 '
-                         '--status finished')
+        self.run_command('migration-list --host host1 --status finished')
         self.assert_called('GET',
                            '/os-migrations?host=host1&status=finished')
 
