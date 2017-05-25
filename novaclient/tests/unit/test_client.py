@@ -14,6 +14,7 @@
 #    under the License.
 
 import copy
+import uuid
 
 from keystoneauth1 import session
 import mock
@@ -69,6 +70,16 @@ class SessionClientTest(utils.TestCase):
 
         cs.reset_timings()
         self.assertEqual(0, len(cs.get_timings()))
+
+    def test_global_id(self):
+        global_id = "req-%s" % uuid.uuid4()
+        self.requests_mock.get('http://no.where')
+
+        client = novaclient.client.SessionClient(session=session.Session(),
+                                                 global_request_id=global_id)
+        client.request("http://no.where", 'GET')
+        headers = self.requests_mock.last_request.headers
+        self.assertEqual(headers['X-OpenStack-Request-ID'], global_id)
 
 
 class ClientsUtilsTest(utils.TestCase):

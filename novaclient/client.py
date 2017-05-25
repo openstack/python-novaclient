@@ -40,7 +40,7 @@ from novaclient import extension as ext
 from novaclient.i18n import _
 from novaclient import utils
 
-
+REQ_ID_HEADER = 'X-OpenStack-Request-ID'
 # TODO(jichenjc): when an extension in contrib is moved to core extension,
 # Add the name into the following list, then after last patch merged,
 # remove the whole function
@@ -57,11 +57,15 @@ class SessionClient(adapter.LegacyJsonAdapter):
         self.timings = kwargs.pop('timings', False)
         self.api_version = kwargs.pop('api_version', None)
         self.api_version = self.api_version or api_versions.APIVersion()
+        self.global_request_id = kwargs.pop('global_request_id', None)
         super(SessionClient, self).__init__(*args, **kwargs)
 
     def request(self, url, method, **kwargs):
         kwargs.setdefault('headers', kwargs.get('headers', {}))
         api_versions.update_headers(kwargs["headers"], self.api_version)
+
+        if self.global_request_id is not None:
+            kwargs['headers'].setdefault(REQ_ID_HEADER, self.global_request_id)
 
         # NOTE(dbelova): osprofiler_web.get_trace_id_headers does not add any
         # headers in case if osprofiler is not initialized.

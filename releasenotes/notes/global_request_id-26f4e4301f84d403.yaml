@@ -1,0 +1,6 @@
+---
+features:
+  - |
+    A new ``global_request_id`` parameter is accepted on the client
+    constructor, which will then pass ``X-OpenStack-Request-ID`` on
+    all requests made.
