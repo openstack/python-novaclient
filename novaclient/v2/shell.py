@@ -525,7 +525,8 @@ def _boot(cs, args):
         config_drive=config_drive,
         admin_pass=args.admin_pass,
         access_ip_v4=args.access_ip_v4,
-        access_ip_v6=args.access_ip_v6)
+        access_ip_v6=args.access_ip_v6,
+        reservation_id=args.return_reservation_id)
 
     if 'description' in args:
         boot_kwargs["description"] = args.description
@@ -887,6 +888,12 @@ def _boot(cs, args):
     help=_('Tags for the server.'
            'Tags must be separated by commas: --tags <tag1,tag2>'),
     start_version="2.52")
+@utils.arg(
+    '--return-reservation-id',
+    dest='return_reservation_id',
+    action="store_true",
+    default=False,
+    help=_("Return a reservation id bound to created servers."))
 def do_boot(cs, args):
     """Boot a new server."""
     boot_args, boot_kwargs = _boot(cs, args)
@@ -895,7 +902,12 @@ def do_boot(cs, args):
     boot_kwargs.update(extra_boot_kwargs)
 
     server = cs.servers.create(*boot_args, **boot_kwargs)
-    _print_server(cs, args, server)
+    if boot_kwargs['reservation_id']:
+        new_server = {'reservation_id': server}
+        utils.print_dict(new_server)
+        return
+    else:
+        _print_server(cs, args, server)
 
     if args.poll:
         _poll_for_status(cs.servers.get, server.id, 'building', ['active'])
