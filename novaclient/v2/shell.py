@@ -150,6 +150,18 @@ def _supports_block_device_tags(cs):
         return False
 
 
+def _parse_device_spec(device_spec):
+    spec_dict = {}
+    for arg in device_spec.split(','):
+        if '=' in arg:
+            spec_dict.update([arg.split('=')])
+        else:
+            raise argparse.ArgumentTypeError(
+                _("Expected a comma-separated list of key=value pairs. '%s' "
+                  "is not a key=value pair.") % arg)
+    return spec_dict
+
+
 def _parse_block_device_mapping_v2(cs, args, image):
     bdm = []
 
@@ -166,7 +178,7 @@ def _parse_block_device_mapping_v2(cs, args, image):
         bdm.append(bdm_dict)
 
     for device_spec in args.block_device:
-        spec_dict = dict(v.split('=') for v in device_spec.split(','))
+        spec_dict = _parse_device_spec(device_spec)
         bdm_dict = {}
 
         if ('tag' in spec_dict and not _supports_block_device_tags(cs)):
@@ -223,7 +235,7 @@ def _parse_block_device_mapping_v2(cs, args, image):
         bdm_dict = {'source_type': 'blank', 'destination_type': 'local',
                     'boot_index': -1, 'delete_on_termination': True}
         try:
-            eph_dict = dict(v.split('=') for v in ephemeral_spec.split(','))
+            eph_dict = _parse_device_spec(ephemeral_spec)
         except ValueError:
             err_msg = (_("Invalid ephemeral argument '%s'.") % args.ephemeral)
             raise argparse.ArgumentTypeError(err_msg)
