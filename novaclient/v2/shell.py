@@ -3114,12 +3114,12 @@ def do_aggregate_delete(cs, args):
 @utils.arg(
     '--name',
     dest='name',
-    help=_('Name of aggregate.'))
+    help=_('New name for aggregate.'))
 @utils.arg(
     '--availability-zone',
     metavar='<availability-zone>',
     dest='availability_zone',
-    help=_('The availability zone of the aggregate.'))
+    help=_('New availability zone for aggregate.'))
 def do_aggregate_update(cs, args):
     """Update the aggregate's name and optionally availability zone."""
     aggregate = _find_aggregate(cs, args.aggregate)
