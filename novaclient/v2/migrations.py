@@ -19,6 +19,8 @@ from six.moves.urllib import parse
 from novaclient import base
 from novaclient.i18n import _
 
+import warnings
+
 
 class Migration(base.Resource):
     def __repr__(self):
@@ -41,9 +43,9 @@ class MigrationManager(base.ManagerWithFind):
         if status:
             opts['status'] = status
         if cell_name:
-            self.client.logger.warning(_("Argument 'cell_name' is "
-                                         "deprecated since Pike, and will "
-                                         "be removed in a future release."))
+            warnings.warn(_("Argument 'cell_name' is "
+                            "deprecated since Pike, and will "
+                            "be removed in a future release."))
             opts['cell_name'] = cell_name
         if instance_uuid:
             opts['instance_uuid'] = instance_uuid
