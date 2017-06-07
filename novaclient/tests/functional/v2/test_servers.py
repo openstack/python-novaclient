@@ -14,6 +14,8 @@
 import random
 import string
 
+from tempest.lib import decorators
+
 from novaclient.tests.functional import base
 from novaclient.tests.functional.v2.legacy import test_servers
 from novaclient.v2 import shell
@@ -85,6 +87,7 @@ class TestServersDescription(base.ClientTestBase):
                          self._get_column_value_from_single_row_table(
                              output, "Description"))
 
+    @decorators.skip_because(bug="1694371")
     def test_rebuild(self):
         # Add a description to the tests that rebuild a server
         server, descr = self._boot_server_with_description()
