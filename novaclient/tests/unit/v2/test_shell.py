@@ -289,6 +289,16 @@ class ShellTest(utils.TestCase):
         cmd = 'boot --image %s some-server' % FAKE_UUID_1
         self.assertRaises(exceptions.CommandError, self.run_command, cmd)
 
+    def test_boot_not_key_value_bdm(self):
+        cmd = ('boot --flavor 1 --image %s --block-device %s,tag=foo '
+               'test-server' % (FAKE_UUID_1, FAKE_UUID_2))
+        self.assertRaises(argparse.ArgumentTypeError, self.run_command, cmd)
+
+    def test_boot_not_key_value_ephemeral(self):
+        cmd = ('boot --flavor 1 --image %s --ephemeral %s,tag=foo '
+               'test-server' % (FAKE_UUID_1, FAKE_UUID_2))
+        self.assertRaises(argparse.ArgumentTypeError, self.run_command, cmd)
+
     def test_boot_no_image_bdms(self):
         self.run_command(
             'boot --flavor 1 --block-device-mapping vda=blah:::0 some-server'
