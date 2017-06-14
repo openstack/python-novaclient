@@ -310,12 +310,30 @@ def _parse_nics(cs, args):
     auto_or_none = False
     nics = []
     for nic_str in args.nics:
+        nic_info_set = False
         for kv_str in nic_str.split(","):
+            if auto_or_none:
+                # Since we start with auto_or_none being False, it being true
+                # means we've parsed an auto or none argument, then continued
+                # after the comma to another key=value pair. Since auto or none
+                # can only be given by themselves, raise.
+                raise exceptions.CommandError(_("'auto' or 'none' cannot be "
+                                                "used with any other nic "
+                                                "arguments"))
             try:
                 # handle the special auto/none cases
                 if kv_str in ('auto', 'none'):
                     if not supports_auto_alloc:
                         raise exceptions.CommandError(err_msg % nic_str)
+                    if nic_info_set:
+                        # Since we start with nic_info_set being False, it
+                        # being true means we've parsed a key=value pair, then
+                        # landed on a auto or none argument after the comma.
+                        # Since auto or none can only be given by themselves,
+                        # raise.
+                        raise exceptions.CommandError(
+                            _("'auto' or 'none' cannot be used with any "
+                              "other nic arguments"))
                     nics.append(kv_str)
                     auto_or_none = True
                     continue
@@ -332,6 +350,7 @@ def _parse_nics(cs, args):
                 if nic_info[k]:
                     raise exceptions.CommandError(err_msg % nic_str)
                 nic_info[k] = v
+                nic_info_set = True
             else:
                 raise exceptions.CommandError(err_msg % nic_str)
 

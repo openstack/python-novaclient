@@ -650,6 +650,30 @@ class ShellTest(utils.TestCase):
             },
         )
 
+    def test_boot_nic_auto_not_alone_after(self):
+        cmd = ('boot --image %s --flavor 1 '
+               '--nic auto,tag=foo some-server' %
+               FAKE_UUID_1)
+        self.assertRaises(exceptions.CommandError, self.run_command, cmd)
+
+    def test_boot_nic_auto_not_alone_before(self):
+        cmd = ('boot --image %s --flavor 1 '
+               '--nic tag=foo,auto some-server' %
+               FAKE_UUID_1)
+        self.assertRaises(exceptions.CommandError, self.run_command, cmd)
+
+    def test_boot_nic_none_not_alone_before(self):
+        cmd = ('boot --image %s --flavor 1 '
+               '--nic none,tag=foo some-server' %
+               FAKE_UUID_1)
+        self.assertRaises(exceptions.CommandError, self.run_command, cmd)
+
+    def test_boot_nic_none_not_alone_after(self):
+        cmd = ('boot --image %s --flavor 1 '
+               '--nic tag=foo,none some-server' %
+               FAKE_UUID_1)
+        self.assertRaises(exceptions.CommandError, self.run_command, cmd)
+
     def test_boot_nics(self):
         cmd = ('boot --image %s --flavor 1 '
                '--nic net-id=a=c,v4-fixed-ip=10.0.0.1 some-server' %
