@@ -363,9 +363,9 @@ class ShellTest(utils.TestCase):
 
     def setUp(self):
         super(ShellTest, self).setUp()
-        self.useFixture(fixtures.MonkeyPatch(
-                        'novaclient.client.Client',
-                        mock.MagicMock()))
+        self.mock_client = mock.MagicMock()
+        self.useFixture(fixtures.MonkeyPatch('novaclient.client.Client',
+                                             self.mock_client))
         self.nc_util = mock.patch('novaclient.utils.isunauthenticated').start()
         self.nc_util.return_value = False
         self.mock_server_version_range = mock.patch(
@@ -520,38 +520,34 @@ class ShellTest(utils.TestCase):
         else:
             self.fail('CommandError not raised')
 
-    @mock.patch('novaclient.client.Client')
     @requests_mock.Mocker()
-    def test_nova_endpoint_type(self, mock_client, m_requests):
+    def test_nova_endpoint_type(self, m_requests):
         self.make_env(fake_env=FAKE_ENV3)
         self.register_keystone_discovery_fixture(m_requests)
         self.shell('list')
-        client_kwargs = mock_client.call_args_list[0][1]
+        client_kwargs = self.mock_client.call_args_list[0][1]
         self.assertEqual(client_kwargs['endpoint_type'], 'novaURL')
 
-    @mock.patch('novaclient.client.Client')
     @requests_mock.Mocker()
-    def test_endpoint_type_like_other_clients(self, mock_client, m_requests):
+    def test_endpoint_type_like_other_clients(self, m_requests):
         self.make_env(fake_env=FAKE_ENV4)
         self.register_keystone_discovery_fixture(m_requests)
         self.shell('list')
-        client_kwargs = mock_client.call_args_list[0][1]
+        client_kwargs = self.mock_client.call_args_list[0][1]
         self.assertEqual(client_kwargs['endpoint_type'], 'internalURL')
 
-    @mock.patch('novaclient.client.Client')
     @requests_mock.Mocker()
-    def test_os_endpoint_type(self, mock_client, m_requests):
+    def test_os_endpoint_type(self, m_requests):
         self.make_env(exclude='NOVA_ENDPOINT_TYPE', fake_env=FAKE_ENV3)
         self.register_keystone_discovery_fixture(m_requests)
         self.shell('list')
-        client_kwargs = mock_client.call_args_list[0][1]
+        client_kwargs = self.mock_client.call_args_list[0][1]
         self.assertEqual(client_kwargs['endpoint_type'], 'osURL')
 
-    @mock.patch('novaclient.client.Client')
-    def test_default_endpoint_type(self, mock_client):
+    def test_default_endpoint_type(self):
         self.make_env()
         self.shell('list')
-        client_kwargs = mock_client.call_args_list[0][1]
+        client_kwargs = self.mock_client.call_args_list[0][1]
         self.assertEqual(client_kwargs['endpoint_type'], 'publicURL')
 
     @mock.patch('sys.stdin', side_effect=mock.MagicMock)
@@ -604,19 +600,16 @@ class ShellTest(utils.TestCase):
         _client_args, client_kwargs = mock_client.call_args_list[0]
         self.assertEqual(service_type, client_kwargs['service_type'])
 
-    @mock.patch('novaclient.client.Client')
-    def test_default_service_type(self, mock_client):
-        self._test_service_type(None, 'compute', mock_client)
+    def test_default_service_type(self):
+        self._test_service_type(None, 'compute', self.mock_client)
 
-    @mock.patch('novaclient.client.Client')
-    def test_v2_service_type(self, mock_client):
-        self._test_service_type('2', 'compute', mock_client)
+    def test_v2_service_type(self):
+        self._test_service_type('2', 'compute', self.mock_client)
 
-    @mock.patch('novaclient.client.Client')
-    def test_v_unknown_service_type(self, mock_client):
+    def test_v_unknown_service_type(self):
         self.assertRaises(exceptions.UnsupportedVersion,
                           self._test_service_type,
-                          'unknown', 'compute', mock_client)
+                          'unknown', 'compute', self.mock_client)
 
     @mock.patch('sys.argv', ['nova'])
     @mock.patch('sys.stdout', six.StringIO())
@@ -678,9 +671,8 @@ class ShellTest(utils.TestCase):
                 return_value=True)
     @mock.patch('novaclient.shell.SecretsHelper.management_url',
                 return_value=True)
-    @mock.patch('novaclient.client.Client')
     @requests_mock.Mocker()
-    def test_keyring_saver_helper(self, mock_client,
+    def test_keyring_saver_helper(self,
                                   sh_management_url_function,
                                   sh_auth_token_function,
                                   sh_tenant_id_function,
@@ -688,82 +680,72 @@ class ShellTest(utils.TestCase):
         self.make_env(fake_env=FAKE_ENV)
         self.register_keystone_discovery_fixture(m_requests)
         self.shell('list')
-        mock_client_instance = mock_client.return_value
+        mock_client_instance = self.mock_client.return_value
         keyring_saver = mock_client_instance.client.keyring_saver
         self.assertIsInstance(keyring_saver, novaclient.shell.SecretsHelper)
 
-    @mock.patch('novaclient.client.Client')
-    def test_microversion_with_default_behaviour(self, mock_client):
+    def test_microversion_with_default_behaviour(self):
         self.make_env(fake_env=FAKE_ENV5)
         self.mock_server_version_range.return_value = (
             api_versions.APIVersion("2.1"), api_versions.APIVersion("2.3"))
         self.shell('list')
-        client_args = mock_client.call_args_list[1][0]
+        client_args = self.mock_client.call_args_list[1][0]
         self.assertEqual(api_versions.APIVersion("2.3"), client_args[0])
 
-    @mock.patch('novaclient.client.Client')
-    def test_microversion_with_default_behaviour_with_legacy_server(
-            self, mock_client):
+    def test_microversion_with_default_behaviour_with_legacy_server(self):
         self.make_env(fake_env=FAKE_ENV5)
         self.mock_server_version_range.return_value = (
             api_versions.APIVersion(), api_versions.APIVersion())
         self.shell('list')
-        client_args = mock_client.call_args_list[1][0]
+        client_args = self.mock_client.call_args_list[1][0]
         self.assertEqual(api_versions.APIVersion("2.0"), client_args[0])
 
-    @mock.patch('novaclient.client.Client')
-    def test_microversion_with_latest(self, mock_client):
+    def test_microversion_with_latest(self):
         self.make_env()
         novaclient.API_MAX_VERSION = api_versions.APIVersion('2.3')
         self.mock_server_version_range.return_value = (
             api_versions.APIVersion("2.1"), api_versions.APIVersion("2.3"))
         self.shell('--os-compute-api-version 2.latest list')
-        client_args = mock_client.call_args_list[1][0]
+        client_args = self.mock_client.call_args_list[1][0]
         self.assertEqual(api_versions.APIVersion("2.3"), client_args[0])
 
-    @mock.patch('novaclient.client.Client')
-    def test_microversion_with_specified_version(self, mock_client):
+    def test_microversion_with_specified_version(self):
         self.make_env()
         self.mock_server_version_range.return_value = (
             api_versions.APIVersion("2.10"), api_versions.APIVersion("2.100"))
         novaclient.API_MAX_VERSION = api_versions.APIVersion("2.100")
         novaclient.API_MIN_VERSION = api_versions.APIVersion("2.90")
         self.shell('--os-compute-api-version 2.99 list')
-        client_args = mock_client.call_args_list[1][0]
+        client_args = self.mock_client.call_args_list[1][0]
         self.assertEqual(api_versions.APIVersion("2.99"), client_args[0])
 
-    @mock.patch('novaclient.client.Client')
-    def test_microversion_with_specified_version_out_of_range(self,
-                                                              mock_client):
+    def test_microversion_with_specified_version_out_of_range(self):
         novaclient.API_MAX_VERSION = api_versions.APIVersion("2.100")
         novaclient.API_MIN_VERSION = api_versions.APIVersion("2.90")
         self.assertRaises(exceptions.CommandError,
                           self.shell, '--os-compute-api-version 2.199 list')
 
-    @mock.patch('novaclient.client.Client')
-    def test_microversion_with_v2_and_v2_1_server(self, mock_client):
+    def test_microversion_with_v2_and_v2_1_server(self):
         self.make_env()
         self.mock_server_version_range.return_value = (
             api_versions.APIVersion('2.1'), api_versions.APIVersion('2.3'))
         novaclient.API_MAX_VERSION = api_versions.APIVersion("2.100")
         novaclient.API_MIN_VERSION = api_versions.APIVersion("2.1")
         self.shell('--os-compute-api-version 2 list')
-        client_args = mock_client.call_args_list[1][0]
+        client_args = self.mock_client.call_args_list[1][0]
         self.assertEqual(api_versions.APIVersion("2.0"), client_args[0])
 
-    @mock.patch('novaclient.client.Client')
-    def test_microversion_with_v2_and_v2_server(self, mock_client):
+    def test_microversion_with_v2_and_v2_server(self):
         self.make_env()
         self.mock_server_version_range.return_value = (
             api_versions.APIVersion(), api_versions.APIVersion())
         novaclient.API_MAX_VERSION = api_versions.APIVersion("2.100")
         novaclient.API_MIN_VERSION = api_versions.APIVersion("2.1")
         self.shell('--os-compute-api-version 2 list')
-        client_args = mock_client.call_args_list[1][0]
+        client_args = self.mock_client.call_args_list[1][0]
         self.assertEqual(api_versions.APIVersion("2.0"), client_args[0])
 
-    @mock.patch('novaclient.client.Client')
-    def test_microversion_with_v2_without_server_compatible(self, mock_client):
+    def test_microversion_with_v2_without_server_compatible(self):
         self.make_env()
         self.mock_server_version_range.return_value = (
             api_versions.APIVersion('2.2'), api_versions.APIVersion('2.3'))
