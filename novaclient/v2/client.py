@@ -183,11 +183,7 @@ class Client(object):
         self.server_external_events = \
             server_external_events.ServerExternalEventManager(self)
 
-        if not logger:
-            logger = logging.getLogger(__name__)
-            if not logger.handlers:
-                logger.addHandler(logging.StreamHandler())
-        self.logger = logger
+        self.logger = logger or logging.getLogger(__name__)
 
         # Add in any extensions...
         if extensions:
