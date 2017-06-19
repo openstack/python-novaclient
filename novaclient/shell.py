@@ -505,6 +505,7 @@ class OpenStackComputeShell(object):
         if osprofiler_profiler:
             parser.add_argument('--profile',
                                 metavar='HMAC_KEY',
+                                default=utils.env('OS_PROFILE'),
                                 help='HMAC key to use for encrypting context '
                                 'data for performance profiling of operation. '
                                 'This key should be the value of the HMAC key '
