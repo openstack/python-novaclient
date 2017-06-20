@@ -223,7 +223,7 @@ class ServersTest(utils.FixturedTestCase):
     def test_create_server_boot_with_nics_ipv6(self):
         old_boot = self.cs.servers._boot
         nics = [{'net-id': '11111111-1111-1111-1111-111111111111',
-                'v6-fixed-ip': '2001:db9:0:1::10'}]
+                 'v6-fixed-ip': '2001:db9:0:1::10'}]
 
         def wrapped_boot(url, key, *boot_args, **boot_kwargs):
             self.assertEqual(boot_kwargs['nics'], nics)
@@ -963,7 +963,7 @@ class ServersTest(utils.FixturedTestCase):
         self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
         ret = self.cs.servers.evacuate(s, 'fake_target_host',
-                                          'False', 'NewAdminPassword')
+                                       'False', 'NewAdminPassword')
         self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
 
@@ -1033,6 +1033,18 @@ class ServersTest(utils.FixturedTestCase):
                           image='d9d8d53c-4b4a-4144-a5e5-b30d9f1fe46a',
                           flavor='1',
                           nics='auto')
+
+    def test__validate_create_nics(self):
+        if self.cs.api_version > api_versions.APIVersion('2.36'):
+            self.assertRaises(ValueError,
+                              self.cs.servers._validate_create_nics, None)
+        else:
+            self.cs.servers._validate_create_nics(None)
+            self.assertRaises(ValueError,
+                              self.cs.servers._validate_create_nics,
+                              mock.Mock())
+        self.cs.servers._validate_create_nics(["foo", "bar"])
+        self.cs.servers._validate_create_nics(("foo", "bar"))
 
 
 class ServersV26Test(ServersTest):
