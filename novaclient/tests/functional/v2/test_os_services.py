@@ -20,6 +20,14 @@ class TestOsServicesNovaClientV211(test_os_services.TestOsServicesNovaClient):
 
     def test_os_services_force_down_force_up(self):
         for serv in self.client.services.list():
+            # In Pike the os-services API was made multi-cell aware and it
+            # looks up services by host, which uses the host mapping record
+            # in the API DB which is only populated for nova-compute services,
+            # effectively making it impossible to perform actions like enable
+            # or disable non-nova-compute services since the API won't be able
+            # to find them. So filter out anything that's not nova-compute.
+            if serv.binary != 'nova-compute':
+                continue
             host = self._get_column_value_from_single_row_table(
                 self.nova('service-list --binary %s' % serv.binary), 'Host')
             service = self.nova('service-force-down %s %s'

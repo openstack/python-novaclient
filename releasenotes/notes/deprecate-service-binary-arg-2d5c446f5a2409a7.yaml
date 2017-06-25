@@ -1,0 +1,10 @@
+---
+deprecations:
+  - |
+    The ``binary`` argument to the ``nova service-enable``,
+    ``nova service-disable``, and ``nova service-force-down`` commands has been
+    deprecated. The only binary that it makes sense to use is ``nova-compute``
+    since disabling a service like ``nova-scheduler`` or ``nova-conductor``
+    does not actually do anything, and starting in the 16.0.0 Pike release the
+    compute API will not be able to look up services other than
+    ``nova-compute`` for these operations.

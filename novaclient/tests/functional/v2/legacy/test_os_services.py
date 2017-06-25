@@ -31,6 +31,14 @@ class TestOsServicesNovaClient(base.ClientTestBase):
         # in serial way (https://review.openstack.org/#/c/217768/), but
         # it's a potential issue for making these tests parallel in the future
         for serv in self.client.services.list():
+            # In Pike the os-services API was made multi-cell aware and it
+            # looks up services by host, which uses the host mapping record
+            # in the API DB which is only populated for nova-compute services,
+            # effectively making it impossible to perform actions like enable
+            # or disable non-nova-compute services since the API won't be able
+            # to find them. So filter out anything that's not nova-compute.
+            if serv.binary != 'nova-compute':
+                continue
             host = self._get_column_value_from_single_row_table(
                 self.nova('service-list --binary %s' % serv.binary), 'Host')
             service = self.nova('service-disable %s %s' % (host, serv.binary))
@@ -46,6 +54,14 @@ class TestOsServicesNovaClient(base.ClientTestBase):
 
     def test_os_service_disable_log_reason(self):
         for serv in self.client.services.list():
+            # In Pike the os-services API was made multi-cell aware and it
+            # looks up services by host, which uses the host mapping record
+            # in the API DB which is only populated for nova-compute services,
+            # effectively making it impossible to perform actions like enable
+            # or disable non-nova-compute services since the API won't be able
+            # to find them. So filter out anything that's not nova-compute.
+            if serv.binary != 'nova-compute':
+                continue
             host = self._get_column_value_from_single_row_table(
                 self.nova('service-list --binary %s' % serv.binary), 'Host')
             service = self.nova('service-disable --reason test_disable %s %s'
