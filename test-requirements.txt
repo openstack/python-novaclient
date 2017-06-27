@@ -13,7 +13,7 @@ python-cinderclient>=2.1.0 # Apache-2.0
 python-glanceclient>=2.7.0 # Apache-2.0
 python-neutronclient>=6.3.0 # Apache-2.0
 requests-mock>=1.1 # Apache-2.0
-sphinx!=1.6.1,>=1.5.1 # BSD
+sphinx>=1.6.2 # BSD
 os-client-config>=1.27.0 # Apache-2.0
 oslosphinx>=4.7.0 # Apache-2.0
 osprofiler>=1.4.0 # Apache-2.0
