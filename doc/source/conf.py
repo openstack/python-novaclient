@@ -79,7 +79,10 @@ gen_ref("v2", "Version 2 API", sorted(get_module_names()))
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
-extensions = ['sphinx.ext.autodoc', 'oslosphinx']
+extensions = [
+    'sphinx.ext.autodoc',
+    'openstackdocstheme',
+]
 
 autoclass_content = 'both'
 
@@ -92,7 +95,10 @@ source_suffix = '.rst'
 # The master toctree document.
 master_doc = 'index'
 
-# General information about the project.
+# openstackdocstheme options
+repository_name = 'openstack/python-novaclient'
+bug_project = 'python-novaclient'
+bug_tag = 'doc'
 project = 'python-novaclient'
 copyright = 'OpenStack Contributors'
 
@@ -114,7 +120,13 @@ pygments_style = 'sphinx'
 
 # The theme to use for HTML and HTML Help pages.  Major themes that come with
 # Sphinx are currently 'default' and 'sphinxdoc'.
-html_theme = 'default'
+html_theme = 'openstackdocs'
+
+# -- Options for openstackdocstheme -------------------------------------------
+
+repository_name = 'openstack/python-novaclient'
+bug_project = 'python-novaclient'
+bug_tag = ''
 
 # -- Options for manual page output ------------------------------------------
 
