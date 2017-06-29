@@ -2201,9 +2201,21 @@ class ShellTest(utils.TestCase):
         body = {'host': 'host1', 'binary': 'nova-cert'}
         self.assert_called('PUT', '/os-services/enable', body)
 
+    def test_services_enable_default_binary(self):
+        """Tests that the default binary is nova-compute if not specified."""
+        self.run_command('service-enable host1')
+        body = {'host': 'host1', 'binary': 'nova-compute'}
+        self.assert_called('PUT', '/os-services/enable', body)
+
     def test_services_disable(self):
         self.run_command('service-disable host1 nova-cert')
         body = {'host': 'host1', 'binary': 'nova-cert'}
+        self.assert_called('PUT', '/os-services/disable', body)
+
+    def test_services_disable_default_binary(self):
+        """Tests that the default binary is nova-compute if not specified."""
+        self.run_command('service-disable host1')
+        body = {'host': 'host1', 'binary': 'nova-compute'}
         self.assert_called('PUT', '/os-services/disable', body)
 
     def test_services_disable_with_reason(self):

@@ -3463,7 +3463,10 @@ def do_service_list(cs, args):
 
 
 @utils.arg('host', metavar='<hostname>', help=_('Name of host.'))
-@utils.arg('binary', metavar='<binary>', help=_('Service binary.'))
+# TODO(mriedem): Eventually just hard-code the binary to "nova-compute".
+@utils.arg('binary', metavar='<binary>', help=_('Service binary. The only '
+           'meaningful binary is "nova-compute". (Deprecated)'),
+           default='nova-compute', nargs='?')
 def do_service_enable(cs, args):
     """Enable the service."""
     result = cs.services.enable(args.host, args.binary)
@@ -3471,7 +3474,10 @@ def do_service_enable(cs, args):
 
 
 @utils.arg('host', metavar='<hostname>', help=_('Name of host.'))
-@utils.arg('binary', metavar='<binary>', help=_('Service binary.'))
+# TODO(mriedem): Eventually just hard-code the binary to "nova-compute".
+@utils.arg('binary', metavar='<binary>', help=_('Service binary. The only '
+           'meaningful binary is "nova-compute". (Deprecated)'),
+           default='nova-compute', nargs='?')
 @utils.arg(
     '--reason',
     metavar='<reason>',
@@ -3490,7 +3496,10 @@ def do_service_disable(cs, args):
 
 @api_versions.wraps("2.11")
 @utils.arg('host', metavar='<hostname>', help=_('Name of host.'))
-@utils.arg('binary', metavar='<binary>', help=_('Service binary.'))
+# TODO(mriedem): Eventually just hard-code the binary to "nova-compute".
+@utils.arg('binary', metavar='<binary>', help=_('Service binary. The only '
+           'meaningful binary is "nova-compute". (Deprecated)'),
+           default='nova-compute', nargs='?')
 @utils.arg(
     '--unset',
     dest='force_down',
