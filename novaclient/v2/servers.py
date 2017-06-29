@@ -941,7 +941,6 @@ class ServerManager(base.BootingManagerWithFind):
         address = address.ip if hasattr(address, 'ip') else address
         return self._action('removeFloatingIp', server, {'address': address})
 
-    @api_versions.wraps('2.0', '2.5')
     def get_vnc_console(self, server, console_type):
         """
         Get a vnc console for an instance
@@ -953,7 +952,6 @@ class ServerManager(base.BootingManagerWithFind):
 
         return self.get_console_url(server, console_type)
 
-    @api_versions.wraps('2.0', '2.5')
     def get_spice_console(self, server, console_type):
         """
         Get a spice console for an instance
@@ -965,7 +963,6 @@ class ServerManager(base.BootingManagerWithFind):
 
         return self.get_console_url(server, console_type)
 
-    @api_versions.wraps('2.0', '2.5')
     def get_rdp_console(self, server, console_type):
         """
         Get a rdp console for an instance
@@ -977,7 +974,6 @@ class ServerManager(base.BootingManagerWithFind):
 
         return self.get_console_url(server, console_type)
 
-    @api_versions.wraps('2.0', '2.5')
     def get_serial_console(self, server, console_type):
         """
         Get a serial console for an instance
@@ -1010,54 +1006,6 @@ class ServerManager(base.BootingManagerWithFind):
         if not action:
             raise exceptions.UnsupportedConsoleType(console_type)
         return self._action(action, server, {'type': console_type})
-
-    @api_versions.wraps('2.6')
-    def get_vnc_console(self, server, console_type):
-        """
-        Get a vnc console for an instance
-
-        :param server: The :class:`Server` (or its ID) to get console for.
-        :param console_type: Type of vnc console to get ('novnc' or 'xvpvnc')
-        :returns: An instance of novaclient.base.DictWithMeta
-        """
-
-        return self.get_console_url(server, console_type)
-
-    @api_versions.wraps('2.6')
-    def get_spice_console(self, server, console_type):
-        """
-        Get a spice console for an instance
-
-        :param server: The :class:`Server` (or its ID) to get console for.
-        :param console_type: Type of spice console to get ('spice-html5')
-        :returns: An instance of novaclient.base.DictWithMeta
-        """
-
-        return self.get_console_url(server, console_type)
-
-    @api_versions.wraps('2.6')
-    def get_rdp_console(self, server, console_type):
-        """
-        Get a rdp console for an instance
-
-        :param server: The :class:`Server` (or its ID) to get console for.
-        :param console_type: Type of rdp console to get ('rdp-html5')
-        :returns: An instance of novaclient.base.DictWithMeta
-        """
-
-        return self.get_console_url(server, console_type)
-
-    @api_versions.wraps('2.6')
-    def get_serial_console(self, server, console_type):
-        """
-        Get a serial console for an instance
-
-        :param server: The :class:`Server` (or its ID) to get console for.
-        :param console_type: Type of serial console to get ('serial')
-        :returns: An instance of novaclient.base.DictWithMeta
-        """
-
-        return self.get_console_url(server, console_type)
 
     @api_versions.wraps('2.8')
     def get_mks_console(self, server):
