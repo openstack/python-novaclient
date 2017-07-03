@@ -373,13 +373,20 @@ class ClientTestBase(testtools.TestCase):
         else:
             self.fail("The resource '%s' still exists." % resource.id)
 
-    def name_generate(self, prefix='Entity'):
-        """Generate randomized name for some entity.
-
-        :param prefix: string prefix
-        """
-        name = "%s-%s" % (prefix, uuidutils.generate_uuid())
-        return name
+    def name_generate(self):
+        """Generate randomized name for some entity."""
+        # NOTE(andreykurilin): name_generator method is used for various
+        #   resources (servers, flavors, volumes, keystone users, etc).
+        #   Since the length of name has limits we cannot use the whole UUID,
+        #   so the first 8 chars is taken from it.
+        #   Based on the fact that the new name includes class and method
+        #   names, 8 chars of uuid should be enough to prevent any conflicts,
+        #   even if the single test will be launched in parallel thousand times
+        return "%(prefix)s-%(test_cls)s-%(test_name)s" % {
+            "prefix": uuidutils.generate_uuid()[:8],
+            "test_cls": self.__class__.__name__,
+            "test_name": self.id().rsplit(".", 1)[-1]
+        }
 
     def _get_value_from_the_table(self, table, key):
         """Parses table to get desired value.
@@ -470,7 +477,7 @@ class ClientTestBase(testtools.TestCase):
 
     def _create_server(self, name=None, flavor=None, with_network=True,
                        add_cleanup=True, **kwargs):
-        name = name or self.name_generate(prefix='server')
+        name = name or self.name_generate()
         if with_network:
             nics = [{"net-id": self.network.id}]
         else:
@@ -521,8 +528,8 @@ class TenantTestBase(ClientTestBase):
 
     def setUp(self):
         super(TenantTestBase, self).setUp()
-        user_name = self.name_generate('v' + self.COMPUTE_API_VERSION)
-        project_name = self.name_generate('v' + self.COMPUTE_API_VERSION)
+        user_name = uuidutils.generate_uuid()
+        project_name = uuidutils.generate_uuid()
         password = 'password'
 
         if self.keystone.version == "v3":

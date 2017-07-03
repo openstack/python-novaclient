@@ -11,8 +11,6 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from oslo_utils import uuidutils
-
 from novaclient.tests.functional import base
 
 
@@ -22,7 +20,7 @@ class TestServerGroupClient(base.ClientTestBase):
     COMPUTE_API_VERSION = "2.1"
 
     def _create_sg(self, policy):
-        sg_name = 'server_group-' + uuidutils.generate_uuid()
+        sg_name = self.name_generate()
         output = self.nova('server-group-create %s %s' % (sg_name, policy))
         sg_id = self._get_column_value_from_single_row_table(output, "Id")
         return sg_id

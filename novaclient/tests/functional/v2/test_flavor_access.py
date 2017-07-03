@@ -22,7 +22,7 @@ class TestFlvAccessNovaClientV27(test_flavor_access.TestFlvAccessNovaClient):
     COMPUTE_API_VERSION = "2.7"
 
     def test_add_access_public_flavor(self):
-        flv_name = self.name_generate('v' + self.COMPUTE_API_VERSION)
+        flv_name = self.name_generate()
         self.nova('flavor-create %s auto 512 1 1' % flv_name)
         self.addCleanup(self.nova, 'flavor-delete %s' % flv_name)
         output = self.nova('flavor-access-add %s %s' %

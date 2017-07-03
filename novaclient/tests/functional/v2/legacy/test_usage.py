@@ -34,13 +34,13 @@ class TestUsageCLI(base.ClientTestBase):
 
     def test_usage(self):
         before = self._get_num_servers_from_usage_output()
-        self._create_server('some-server')
+        self._create_server()
         after = self._get_num_servers_from_usage_output()
         self.assertGreater(after, before)
 
     def test_usage_tenant(self):
         before = self._get_num_servers_by_tenant_from_usage_output()
-        self._create_server('some-server')
+        self._create_server()
         after = self._get_num_servers_by_tenant_from_usage_output()
         self.assertGreater(after, before)
 
@@ -51,8 +51,8 @@ class TestUsageClient(base.ClientTestBase):
 
     def _create_servers_in_time_window(self):
         start = datetime.datetime.now()
-        self._create_server('some-server')
-        self._create_server('another-server')
+        self._create_server()
+        self._create_server()
         end = datetime.datetime.now()
         return start, end
 

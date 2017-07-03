@@ -66,8 +66,7 @@ class TestServersResize(base.ClientTestBase):
         """Tests creating a server and resizes up and confirms the resize.
         Compares quota before, during and after the resize.
         """
-        server_id = self._create_server('resize-up-confirm',
-                                        flavor=self.flavor.id).id
+        server_id = self._create_server(flavor=self.flavor.id).id
         # get the starting quota now that we've created a server
         starting_usage = self._get_absolute_limits()
         # now resize up
@@ -95,16 +94,14 @@ class TestServersResize(base.ClientTestBase):
             smaller flavor.
         """
         output = self.nova('flavor-create',
-                           params='resize-larger-flavor auto 128 0 1')
+                           params='%s auto 128 0 1' % self.name_generate())
         larger_id = self._get_column_value_from_single_row_table(output, "ID")
-        self.addCleanup(
-            self.nova, 'flavor-delete', params='resize-larger-flavor')
+        self.addCleanup(self.nova, 'flavor-delete', params=larger_id)
 
         output = self.nova('flavor-create',
-                           params='resize-smaller-flavor auto 64 0 1')
+                           params='%s auto 64 0 1' % self.name_generate())
         smaller_id = self._get_column_value_from_single_row_table(output, "ID")
-        self.addCleanup(
-            self.nova, 'flavor-delete', params='resize-smaller-flavor')
+        self.addCleanup(self.nova, 'flavor-delete', params=smaller_id)
 
         return larger_id, smaller_id
 
@@ -117,8 +114,7 @@ class TestServersResize(base.ClientTestBase):
         # create our own flavors.
         larger_flavor, smaller_flavor = self._create_resize_down_flavors()
         # Now create the server with the larger flavor.
-        server_id = self._create_server('resize-down-revert',
-                                        flavor=larger_flavor).id
+        server_id = self._create_server(flavor=larger_flavor).id
         # get the starting quota now that we've created a server
         starting_usage = self._get_absolute_limits()
         # now resize down
