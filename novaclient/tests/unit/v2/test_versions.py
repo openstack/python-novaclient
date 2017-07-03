@@ -30,7 +30,7 @@ class VersionsTest(utils.TestCase):
     def test_list_services(self):
         vl = self.cs.versions.list()
         self.assert_request_id(vl, fakes.FAKE_REQUEST_ID_LIST)
-        self.cs.assert_called('GET', 'http://nova-api:8774/')
+        self.cs.assert_called('GET', 'http://nova-api:8774')
 
     def test_get_current(self):
         self.cs.callback = []
@@ -75,3 +75,28 @@ class VersionsTest(utils.TestCase):
 
         # check that the full request works as expected
         cs_2.assert_called('GET', expected_endpoint)
+
+    def test_list_versions(self):
+        fapi = mock.Mock()
+        version_mgr = versions.VersionManager(fapi)
+        version_mgr._list = mock.Mock()
+        data = [
+            ("https://example.com:777/v2", "https://example.com:777"),
+            ("https://example.com/v2", "https://example.com"),
+            ("http://example.com/compute/v2", "http://example.com/compute"),
+            ("https://example.com/v2/prrrooojeect-uuid",
+             "https://example.com"),
+            ("https://example.com:777/v2.1", "https://example.com:777"),
+            ("https://example.com/v2.1", "https://example.com"),
+            ("http://example.com/compute/v2.1", "http://example.com/compute"),
+            ("https://example.com/v2.1/prrrooojeect-uuid",
+             "https://example.com"),
+            ("http://example.com/compute", "http://example.com/compute"),
+            ("http://compute.example.com", "http://compute.example.com"),
+        ]
+
+        for endpoint, expected in data:
+            version_mgr._list.reset_mock()
+            fapi.client.get_endpoint.return_value = endpoint
+            version_mgr.list()
+            version_mgr._list.assert_called_once_with(expected, "versions")

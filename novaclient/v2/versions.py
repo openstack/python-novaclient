@@ -78,11 +78,25 @@ class VersionManager(base.ManagerWithFind):
     def list(self):
         """List all versions."""
 
-        # NOTE: "list versions" API needs to be accessed without base
-        # URI (like "v2/{project-id}"), so here should be a scheme("http",
-        # etc.) and a hostname.
         endpoint = self.api.client.get_endpoint()
         url = urllib.parse.urlparse(endpoint)
-        version_url = '%s://%s/' % (url.scheme, url.netloc)
+        # NOTE(andreykurilin): endpoint URL has at least 3 formats:
+        #   1. the classic (legacy) endpoint:
+        #       http://{host}:{optional_port}/v{2 or 2.1}/{project-id}
+        #   2. starting from microversion 2.18 project-id is not included:
+        #       http://{host}:{optional_port}/v{2 or 2.1}
+        #   3. under wsgi:
+        #       http://{host}:{optional_port}/compute/v{2 or 2.1}
+        if (url.path.endswith("v2") or "/v2/" in url.path or
+                url.path.endswith("v2.1") or "/v2.1/" in url.path):
+            # this way should handle all 3 possible formats
+            path = url.path[:url.path.rfind("/v2")]
+            version_url = '%s://%s%s' % (url.scheme, url.netloc, path)
+        else:
+            # NOTE(andreykurilin): probably, it is one of the next cases:
+            #  * https://compute.example.com/
+            #  * https://example.com/compute
+            # leave as is without cropping.
+            version_url = endpoint
 
         return self._list(version_url, "versions")

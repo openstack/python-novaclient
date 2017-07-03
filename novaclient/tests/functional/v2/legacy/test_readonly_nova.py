@@ -100,7 +100,7 @@ class SimpleReadOnlyNovaClientTest(base.ClientTestBase):
         self.nova('migration-list', flags='--debug')
 
     def test_version_list(self):
-        self.nova('version-list')
+        self.nova('version-list', flags='--debug')
 
     def test_quota_defaults(self):
         self.nova('quota-defaults')
