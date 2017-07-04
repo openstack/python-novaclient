@@ -1,5 +1,6 @@
-The :mod:`novaclient` Python API
-================================
+==================================
+ The :mod:`novaclient` Python API
+==================================
 
 .. module:: novaclient
    :synopsis: A client for the OpenStack Nova API.
@@ -17,7 +18,6 @@ First create a client instance with your credentials::
 Here ``VERSION`` can be a string or ``novaclient.api_versions.APIVersion`` obj.
 If you prefer string value, you can use ``1.1`` (deprecated now), ``2`` or
 ``2.X`` (where X is a microversion).
-
 
 Alternatively, you can create a client instance using the keystoneauth
 session API::
@@ -98,7 +98,6 @@ Then call methods on its managers::
 
 .. _1493576: https://launchpad.net/bugs/1493576
 
-
 Reference
 ---------
 
@@ -107,5 +106,5 @@ For more information, see the reference:
 .. toctree::
    :maxdepth: 2
 
-   ref/index
-   ref/v2/index
+   v2/index
+   exceptions
