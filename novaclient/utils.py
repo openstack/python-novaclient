@@ -103,8 +103,11 @@ def add_arg(func, *args, **kwargs):
 
 def service_type(stype):
     """Adds 'service_type' attribute to decorated function.
+
     Usage:
+
     .. code-block:: python
+
        @service_type('volume')
        def mymethod(f):
        ...
@@ -436,11 +439,9 @@ def record_time(times, enabled, *args):
     """Record the time of a specific action.
 
     :param times: A list of tuples holds time data.
-    :type times: list
     :param enabled: Whether timing is enabled.
-    :type enabled: bool
-    :param *args: Other data to be stored besides time data, these args
-                  will be joined to a string.
+    :param args: Other data to be stored besides time data, these args
+        will be joined to a string.
     """
     if not enabled:
         yield

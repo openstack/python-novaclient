@@ -106,5 +106,4 @@ For more information, see the reference:
 .. toctree::
    :maxdepth: 2
 
-   v2/index
-   exceptions
+   autoindex
