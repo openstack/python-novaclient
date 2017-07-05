@@ -2339,14 +2339,25 @@ def _translate_volume_attachments_keys(collection):
     help=_('Name of the device e.g. /dev/vdb. '
            'Use "auto" for autoassign (if supported). '
            'Libvirt driver will use default device name.'))
+@utils.arg(
+    '--tag',
+    metavar='<tag>',
+    default=None,
+    help=_('Tag for the attached volume.'),
+    start_version="2.49")
 def do_volume_attach(cs, args):
     """Attach a volume to a server."""
     if args.device == 'auto':
         args.device = None
 
+    update_kwargs = {}
+    if 'tag' in args and args.tag:
+        update_kwargs['tag'] = args.tag
+
     volume = cs.volumes.create_server_volume(_find_server(cs, args.server).id,
                                              args.volume,
-                                             args.device)
+                                             args.device,
+                                             **update_kwargs)
     _print_volume(volume)
 
 
@@ -4376,11 +4387,23 @@ def do_interface_list(cs, args):
     metavar='<fixed_ip>',
     help=_('Requested fixed IP.'),
     default=None, dest="fixed_ip")
+@utils.arg(
+    '--tag',
+    metavar='<tag>',
+    default=None,
+    dest="tag",
+    help=_('Tag for the attached interface.'),
+    start_version="2.49")
 def do_interface_attach(cs, args):
     """Attach a network interface to a server."""
     server = _find_server(cs, args.server)
 
-    res = server.interface_attach(args.port_id, args.net_id, args.fixed_ip)
+    update_kwargs = {}
+    if 'tag' in args and args.tag:
+        update_kwargs['tag'] = args.tag
+
+    res = server.interface_attach(args.port_id, args.net_id, args.fixed_ip,
+                                  **update_kwargs)
     if isinstance(res, dict):
         utils.print_dict(res)
 

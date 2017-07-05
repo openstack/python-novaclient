@@ -1,0 +1,7 @@
+---
+features:
+  - |
+    Added support for microversion 2.49 that enables users to
+    attach tagged interfaces and volumes.
+    A new ``--tag`` option is added to ``nova volume-attach`` and
+    ``nova interface-attach`` commands.

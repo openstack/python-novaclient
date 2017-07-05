@@ -2697,6 +2697,20 @@ class ShellTest(utils.TestCase):
         self.assert_called('POST', '/servers/1234/os-interface',
                            {'interfaceAttachment': {'port_id': 'port_id'}})
 
+    def test_interface_attach_with_tag_pre_v2_49(self):
+        self.assertRaises(
+            SystemExit, self.run_command,
+            'interface-attach --port-id port_id --tag test_tag 1234',
+            api_version='2.48')
+
+    def test_interface_attach_with_tag(self):
+        self.run_command(
+            'interface-attach --port-id port_id --tag test_tag 1234',
+            api_version='2.49')
+        self.assert_called('POST', '/servers/1234/os-interface',
+                           {'interfaceAttachment': {'port_id': 'port_id',
+                                                    'tag': 'test_tag'}})
+
     def test_interface_detach(self):
         self.run_command('interface-detach 1234 port_id')
         self.assert_called('DELETE', '/servers/1234/os-interface/port_id')
@@ -2717,6 +2731,22 @@ class ShellTest(utils.TestCase):
         self.assert_called('POST', '/servers/1234/os-volume_attachments',
                            {'volumeAttachment':
                                {'volumeId': 'Work'}})
+
+    def test_volume_attach_with_tag_pre_v2_49(self):
+        self.assertRaises(
+            SystemExit, self.run_command,
+            'volume-attach --tag test_tag sample-server Work /dev/vdb',
+            api_version='2.48')
+
+    def test_volume_attach_with_tag(self):
+        self.run_command(
+            'volume-attach --tag test_tag sample-server Work /dev/vdb',
+            api_version='2.49')
+        self.assert_called('POST', '/servers/1234/os-volume_attachments',
+                           {'volumeAttachment':
+                               {'device': '/dev/vdb',
+                                'volumeId': 'Work',
+                                'tag': 'test_tag'}})
 
     def test_volume_update(self):
         self.run_command('volume-update sample-server Work Work')

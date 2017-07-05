@@ -20,9 +20,11 @@ from novaclient.v2 import volumes
 
 
 class VolumesTest(utils.TestCase):
+    api_version = "2.0"
+
     def setUp(self):
         super(VolumesTest, self).setUp()
-        self.cs = fakes.FakeClient(api_versions.APIVersion("2.0"))
+        self.cs = fakes.FakeClient(api_versions.APIVersion(self.api_version))
 
     def test_create_server_volume(self):
         v = self.cs.volumes.create_server_volume(
@@ -66,3 +68,23 @@ class VolumesTest(utils.TestCase):
         self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.cs.assert_called('DELETE',
                               '/servers/1234/os-volume_attachments/Work')
+
+
+class VolumesV249Test(VolumesTest):
+    api_version = "2.49"
+
+    def test_create_server_volume_with_tag(self):
+        v = self.cs.volumes.create_server_volume(
+            server_id=1234,
+            volume_id='15e59938-07d5-11e1-90e3-e3dffe0c5983',
+            device='/dev/vdb',
+            tag='test_tag'
+        )
+        self.assert_request_id(v, fakes.FAKE_REQUEST_ID_LIST)
+        self.cs.assert_called(
+            'POST', '/servers/1234/os-volume_attachments',
+            {'volumeAttachment': {
+                'volumeId': '15e59938-07d5-11e1-90e3-e3dffe0c5983',
+                'device': '/dev/vdb',
+                'tag': 'test_tag'}})
+        self.assertIsInstance(v, volumes.Volume)

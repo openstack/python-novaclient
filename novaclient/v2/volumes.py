@@ -17,6 +17,7 @@
 Volume interface
 """
 
+from novaclient import api_versions
 from novaclient import base
 
 
@@ -37,6 +38,7 @@ class VolumeManager(base.Manager):
     """
     resource_class = Volume
 
+    @api_versions.wraps("2.0", "2.48")
     def create_server_volume(self, server_id, volume_id, device=None):
         """
         Attach a volume identified by the volume ID to the given server ID
@@ -49,6 +51,26 @@ class VolumeManager(base.Manager):
         body = {'volumeAttachment': {'volumeId': volume_id}}
         if device is not None:
             body['volumeAttachment']['device'] = device
+        return self._create("/servers/%s/os-volume_attachments" % server_id,
+                            body, "volumeAttachment")
+
+    @api_versions.wraps("2.49")
+    def create_server_volume(self, server_id, volume_id, device=None,
+                             tag=None):
+        """
+        Attach a volume identified by the volume ID to the given server ID
+
+        :param server_id: The ID of the server
+        :param volume_id: The ID of the volume to attach.
+        :param device: The device name (optional)
+        :param tag: The tag (optional)
+        :rtype: :class:`Volume`
+        """
+        body = {'volumeAttachment': {'volumeId': volume_id}}
+        if device is not None:
+            body['volumeAttachment']['device'] = device
+        if tag is not None:
+            body['volumeAttachment']['tag'] = tag
         return self._create("/servers/%s/os-volume_attachments" % server_id,
                             body, "volumeAttachment")
 

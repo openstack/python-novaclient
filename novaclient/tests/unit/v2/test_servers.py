@@ -1457,3 +1457,29 @@ class ServersCreateImageBackupV2_45Test(utils.FixturedTestCase):
         self.assertEqual('456', sb['image_id'])
         self.assert_request_id(sb, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
+
+
+class ServersV249Test(ServersV2_37Test):
+
+    api_version = "2.49"
+
+    def test_interface_attach_with_tag(self):
+        s = self.cs.servers.get(1234)
+        ret = s.interface_attach('7f42712e-63fe-484c-a6df-30ae4867ff66',
+                                 None, None, 'test_tag')
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
+        self.assert_called(
+            'POST', '/servers/1234/os-interface',
+            {'interfaceAttachment':
+                {'port_id': '7f42712e-63fe-484c-a6df-30ae4867ff66',
+                 'tag': 'test_tag'}})
+
+    def test_add_fixed_ip(self):
+        # novaclient.v2.servers.Server.add_fixed_ip()
+        # is not available after 2.44
+        pass
+
+    def test_remove_fixed_ip(self):
+        # novaclient.v2.servers.Server.remove_fixed_ip()
+        # is not available after 2.44
+        pass

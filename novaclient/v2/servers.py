@@ -577,11 +577,20 @@ class Server(base.Resource):
         """
         return self.manager.interface_list(self)
 
+    @api_versions.wraps("2.0", "2.48")
     def interface_attach(self, port_id, net_id, fixed_ip):
         """
         Attach a network interface to an instance.
         """
         return self.manager.interface_attach(self, port_id, net_id, fixed_ip)
+
+    @api_versions.wraps("2.49")
+    def interface_attach(self, port_id, net_id, fixed_ip, tag=None):
+        """
+        Attach a network interface to an instance with an optional tag.
+        """
+        return self.manager.interface_attach(self, port_id, net_id, fixed_ip,
+                                             tag)
 
     def interface_detach(self, port_id):
         """
@@ -1839,6 +1848,7 @@ class ServerManager(base.BootingManagerWithFind):
         return self._list('/servers/%s/os-interface' % base.getid(server),
                           'interfaceAttachments', obj_class=NetworkInterface)
 
+    @api_versions.wraps("2.0", "2.48")
     def interface_attach(self, server, port_id, net_id, fixed_ip):
         """
         Attach a network_interface to an instance.
@@ -1855,6 +1865,35 @@ class ServerManager(base.BootingManagerWithFind):
         if fixed_ip:
             body['interfaceAttachment']['fixed_ips'] = [
                 {'ip_address': fixed_ip}]
+
+        return self._create('/servers/%s/os-interface' % base.getid(server),
+                            body, 'interfaceAttachment')
+
+    @api_versions.wraps("2.49")
+    def interface_attach(self, server, port_id, net_id, fixed_ip, tag=None):
+        """
+        Attach a network_interface to an instance.
+
+        :param server: The :class:`Server` (or its ID) to attach to.
+        :param port_id: The port to attach.
+                        The port_id and net_id parameters are mutually
+                        exclusive.
+        :param net_id: The ID of the network to attach.
+        :param fixed_ip: The fixed IP addresses. If the fixed_ip is specified,
+                         the net_id has to be specified at the same time.
+        :param tag: The tag.
+        """
+
+        body = {'interfaceAttachment': {}}
+        if port_id:
+            body['interfaceAttachment']['port_id'] = port_id
+        if net_id:
+            body['interfaceAttachment']['net_id'] = net_id
+        if fixed_ip:
+            body['interfaceAttachment']['fixed_ips'] = [
+                {'ip_address': fixed_ip}]
+        if tag:
+            body['interfaceAttachment']['tag'] = tag
 
         return self._create('/servers/%s/os-interface' % base.getid(server),
                             body, 'interfaceAttachment')
