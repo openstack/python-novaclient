@@ -3827,6 +3827,11 @@ def do_ssh(cs, args):
     os.system(cmd)
 
 
+# NOTE(mriedem): In the 2.50 microversion, the os-quota-class-sets API
+# will return the server_groups and server_group_members, but no longer
+# return floating_ips, fixed_ips, security_groups or security_group_members
+# as those are deprecated as networking service proxies and/or because
+# nova-network is deprecated. Similar to the 2.36 microversion.
 _quota_resources = ['instances', 'cores', 'ram',
                     'floating_ips', 'fixed_ips', 'metadata_items',
                     'injected_files', 'injected_file_content_bytes',
@@ -4137,7 +4142,7 @@ def do_quota_class_show(cs, args):
     _quota_show(cs.quota_classes.get(args.class_name))
 
 
-@api_versions.wraps("2.0", "2.35")
+@api_versions.wraps("2.0", "2.49")
 @utils.arg(
     'class_name',
     metavar='<class>',
@@ -4233,9 +4238,9 @@ def do_quota_class_update(cs, args):
     _quota_update(cs.quota_classes, args.class_name, args)
 
 
-# 2.36 does not support updating quota for floating IPs, fixed IPs, security
-# groups or security group rules.
-@api_versions.wraps("2.36")
+# 2.50 does not support updating quota class values for floating IPs,
+# fixed IPs, security groups or security group rules.
+@api_versions.wraps("2.50")
 @utils.arg(
     'class_name',
     metavar='<class>',

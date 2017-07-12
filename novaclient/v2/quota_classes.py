@@ -13,6 +13,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from novaclient import api_versions
 from novaclient import base
 
 
@@ -32,6 +33,10 @@ class QuotaClassSetManager(base.Manager):
     def _update_body(self, **kwargs):
         return {'quota_class_set': kwargs}
 
+    # NOTE(mriedem): Before 2.50 the resources you could update was just a
+    # kwargs dict and not validated on the client-side, only on the API server
+    # side.
+    @api_versions.wraps("2.0", "2.49")
     def update(self, class_name, **kwargs):
         body = self._update_body(**kwargs)
 
@@ -41,4 +46,38 @@ class QuotaClassSetManager(base.Manager):
 
         return self._update('/os-quota-class-sets/%s' % (class_name),
                             body,
+                            'quota_class_set')
+
+    # NOTE(mriedem): 2.50 does strict validation of the resources you can
+    # specify since the network-related resources are blocked in 2.50.
+    @api_versions.wraps("2.50")
+    def update(self, class_name, instances=None, cores=None, ram=None,
+               metadata_items=None, injected_files=None,
+               injected_file_content_bytes=None, injected_file_path_bytes=None,
+               key_pairs=None, server_groups=None, server_group_members=None):
+        resources = {}
+        if instances is not None:
+            resources['instances'] = instances
+        if cores is not None:
+            resources['cores'] = cores
+        if ram is not None:
+            resources['ram'] = ram
+        if metadata_items is not None:
+            resources['metadata_items'] = metadata_items
+        if injected_files is not None:
+            resources['injected_files'] = injected_files
+        if injected_file_content_bytes is not None:
+            resources['injected_file_content_bytes'] = (
+                injected_file_content_bytes)
+        if injected_file_path_bytes is not None:
+            resources['injected_file_path_bytes'] = injected_file_path_bytes
+        if key_pairs is not None:
+            resources['key_pairs'] = key_pairs
+        if server_groups is not None:
+            resources['server_groups'] = server_groups
+        if server_group_members is not None:
+            resources['server_group_members'] = server_group_members
+
+        body = {'quota_class_set': resources}
+        return self._update('/os-quota-class-sets/%s' % class_name, body,
                             'quota_class_set')

@@ -1,0 +1,32 @@
+---
+fixes:
+  - |
+    Adds support for the ``2.50`` microversion which fixes the
+    ``nova quota-class-show`` and ``nova quota-class-update`` commands in the
+    following ways:
+
+    * The ``server_groups`` and ``server_group_members`` quota resources will
+      now be shown in the output table for ``nova quota-class-show``.
+    * The ``floating_ips``, ``fixed_ips``, ``security_groups`` and
+      ``security_group_rules`` quota resources will no longer be able to
+      be updated using ``nova quota-class-update`` nor will they be shown in
+      the output of ``nova quota-class-show``. Use python-openstackclient or
+      python-neutronclient to work with quotas for network resources.
+
+    In addition, the ``nova quota-class-update`` CLI was previously incorrectly
+    limiting the ability to update quota class values for ``floating_ips``,
+    ``fixed_ips``, ``security_groups`` and ``security_group_rules`` based on
+    the 2.36 microversion. That has been changed to limit based on the ``2.50``
+    microversion.
+upgrade:
+  - |
+    The ``novaclient.v2.quota_classes.QuotaClassSetManager.update`` method
+    now defines specific kwargs starting with microversion ``2.50`` since
+    updating network-related resource quota class values is not supported on
+    the server with microversion ``2.50``. The list of excluded resources is:
+
+    - ``fixed_ips``
+    - ``floating_ips``
+    - ``networks``
+    - ``security_groups``
+    - ``security_group_rules``
