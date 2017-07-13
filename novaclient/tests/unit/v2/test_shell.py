@@ -3019,6 +3019,7 @@ class ShellTest(utils.TestCase):
             47,  # NOTE(cfriesen): 47 adds support for flavor details embedded
                  # within the server details
             48,  # There are no version-wrapped shell method changes for this.
+            51,  # There are no version-wrapped shell method changes for this.
         ])
         versions_supported = set(range(0,
                                  novaclient.API_MAX_VERSION.ver_minor + 1))
