@@ -484,6 +484,11 @@ class ClientTestBase(testtools.TestCase):
             'building', ['active'])
         return server
 
+    def _wait_for_state_change(self, server_id, status):
+        novaclient.v2.shell._poll_for_status(
+            self.client.servers.get, server_id, None, [status],
+            show_progress=False, poll_period=1, silent=True)
+
     def _get_project_id(self, name):
         """Obtain project id by project name."""
         if self.keystone.version == "v3":
@@ -496,6 +501,16 @@ class ClientTestBase(testtools.TestCase):
         """Deletes a server and waits for it to be gone."""
         self.client.servers.delete(server_id)
         self.wait_for_resource_delete(server_id, self.client.servers)
+
+    def _get_absolute_limits(self):
+        """Returns the absolute limits (quota usage) including reserved quota
+        usage for the given tenant running the test.
+
+        :return: A dict where the key is the limit (or usage) and value.
+        """
+        # The absolute limits are returned in a generator so convert to a dict.
+        return {limit.name: limit.value
+                for limit in self.client.limits.get(reserved=True).absolute}
 
 
 class TenantTestBase(ClientTestBase):
