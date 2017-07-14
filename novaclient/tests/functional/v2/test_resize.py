@@ -102,3 +102,50 @@ class TestServersResize(base.ClientTestBase):
         confirm_usage = self._get_absolute_limits()
         self._compare_quota_usage(
             resize_usage, confirm_usage, expect_diff=False)
+
+    def _create_resize_down_flavors(self):
+        """Creates two flavors with different size ram but same size vcpus
+        and disk.
+
+        :returns: tuple of (larger_flavor_name, smaller_flavor_name)
+        """
+        self.nova('flavor-create', params='resize-larger-flavor auto 128 0 1')
+        self.addCleanup(
+            self.nova, 'flavor-delete', params='resize-larger-flavor')
+
+        self.nova('flavor-create', params='resize-smaller-flavor auto 64 0 1')
+        self.addCleanup(
+            self.nova, 'flavor-delete', params='resize-smaller-flavor')
+
+        return 'resize-larger-flavor', 'resize-smaller-flavor'
+
+    def test_resize_down_revert(self):
+        """Tests creating a server and resizes down and reverts the resize.
+        Compares quota before, during and after the resize.
+        """
+        # devstack's m1.tiny and m1.small have different size disks so we
+        # can't use those as you can't resize down the disk. So we have to
+        # create our own flavors.
+        larger_flavor, smaller_flavor = self._create_resize_down_flavors()
+        # Now create the server with the larger flavor.
+        server_id = self._create_server('resize-down-revert', larger_flavor)
+        # get the starting quota now that we've created a server
+        starting_usage = self._get_absolute_limits()
+        # now resize down
+        self.nova('resize',
+                  params='%s %s --poll' % (server_id, smaller_flavor))
+        resize_usage = self._get_absolute_limits()
+        # compare the starting usage against the resize usage; in the case of
+        # a resize down we don't expect usage to change until it's confirmed,
+        # which doesn't happen in this test since we revert
+        self._compare_quota_usage(
+            starting_usage, resize_usage, expect_diff=False)
+        # now revert the resize
+        self.nova('resize-revert', params='%s' % server_id)
+        # we have to wait for the server to be ACTIVE before we can check quota
+        self._wait_for_state_change(server_id, 'active')
+        # get the final quota usage which should be the same as the resize
+        # usage before revert
+        revert_usage = self._get_absolute_limits()
+        self._compare_quota_usage(
+            resize_usage, revert_usage, expect_diff=False)
