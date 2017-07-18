@@ -1068,6 +1068,45 @@ class ShellTest(utils.TestCase):
                FAKE_UUID_1)
         self.assertRaises(argparse.ArgumentTypeError, self.run_command, cmd)
 
+    def test_boot_with_tags(self):
+        self.run_command('boot --flavor 1 --image %s --nic auto '
+                         'some-server --tags tag1,tag2' % FAKE_UUID_1,
+                         api_version='2.52')
+        self.assert_called_anytime(
+            'POST', '/servers',
+            {'server': {
+                'flavorRef': '1',
+                'name': 'some-server',
+                'imageRef': FAKE_UUID_1,
+                'min_count': 1,
+                'max_count': 1,
+                'networks': 'auto',
+                'tags': ['tag1', 'tag2']
+            }},
+        )
+
+    def test_boot_without_tags_v252(self):
+        self.run_command('boot --flavor 1 --image %s --nic auto '
+                         'some-server' % FAKE_UUID_1,
+                         api_version='2.52')
+        self.assert_called_anytime(
+            'POST', '/servers',
+            {'server': {
+                'flavorRef': '1',
+                'name': 'some-server',
+                'imageRef': FAKE_UUID_1,
+                'min_count': 1,
+                'max_count': 1,
+                'networks': 'auto',
+            }},
+        )
+
+    def test_boot_with_tags_pre_v2_52(self):
+        cmd = ('boot --flavor 1 --image %s some-server '
+               '--tags tag1,tag2' % FAKE_UUID_1)
+        self.assertRaises(SystemExit, self.run_command,
+                          cmd, api_version='2.51')
+
     def test_flavor_list(self):
         self.run_command('flavor-list')
         self.assert_called_anytime('GET', '/flavors/detail')
@@ -3020,6 +3059,7 @@ class ShellTest(utils.TestCase):
                  # within the server details
             48,  # There are no version-wrapped shell method changes for this.
             51,  # There are no version-wrapped shell method changes for this.
+            52,  # There are no version-wrapped shell method changes for this.
         ])
         versions_supported = set(range(0,
                                  novaclient.API_MAX_VERSION.ver_minor + 1))

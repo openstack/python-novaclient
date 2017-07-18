@@ -530,6 +530,9 @@ def _boot(cs, args):
     if 'description' in args:
         boot_kwargs["description"] = args.description
 
+    if 'tags' in args and args.tags:
+        boot_kwargs["tags"] = args.tags.split(',')
+
     return boot_args, boot_kwargs
 
 
@@ -877,6 +880,13 @@ def _boot(cs, args):
     default=None,
     help=_('Description for the server.'),
     start_version="2.19")
+@utils.arg(
+    '--tags',
+    metavar='<tags>',
+    default=None,
+    help=_('Tags for the server.'
+           'Tags must be separated by commas: --tags <tag1,tag2>'),
+    start_version="2.52")
 def do_boot(cs, args):
     """Boot a new server."""
     boot_args, boot_kwargs = _boot(cs, args)

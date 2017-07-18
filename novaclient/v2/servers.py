@@ -663,7 +663,7 @@ class ServerManager(base.BootingManagerWithFind):
               block_device_mapping_v2=None, nics=None, scheduler_hints=None,
               config_drive=None, admin_pass=None, disk_config=None,
               access_ip_v4=None, access_ip_v6=None, description=None,
-              **kwargs):
+              tags=None, **kwargs):
         """
         Create (boot) a new server.
         """
@@ -794,6 +794,9 @@ class ServerManager(base.BootingManagerWithFind):
 
         if description:
             body['server']['description'] = description
+
+        if tags:
+            body['server']['tags'] = tags
 
         return self._create(resource_url, body, response_key,
                             return_raw=return_raw, **kwargs)
@@ -1337,6 +1340,8 @@ class ServerManager(base.BootingManagerWithFind):
         :param access_ip_v6: (optional extension) add alternative access ip v6
         :param description: optional description of the server (allowed since
                             microversion 2.19)
+        :param tags: A list of arbitrary strings to be added to the
+                     server as tags (allowed since microversion 2.52)
         """
         if not min_count:
             min_count = 1
@@ -1368,6 +1373,10 @@ class ServerManager(base.BootingManagerWithFind):
                         raise ValueError("Setting block device tags is "
                                          "unsupported before microversion "
                                          "2.32")
+
+        boot_tags_microversion = api_versions.APIVersion("2.52")
+        if "tags" in kwargs and self.api_version < boot_tags_microversion:
+            raise exceptions.UnsupportedAttribute("tags", "2.52")
 
         boot_kwargs = dict(
             meta=meta, files=files, userdata=userdata,
