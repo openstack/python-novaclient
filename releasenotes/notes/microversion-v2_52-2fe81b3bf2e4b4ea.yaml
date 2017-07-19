@@ -1,0 +1,8 @@
+---
+features:
+  - |
+    `Microversion 2.52`_ is now supported which adds the ``--tags`` option to
+    the ``nova boot`` command and a ``tags`` kwarg to the
+    ``novaclient.v2.servers.ServerManager.create()`` python API binding method.
+
+    .. _Microversion 2.52: https://docs.openstack.org/nova/latest/api_microversion_history.html#id47
