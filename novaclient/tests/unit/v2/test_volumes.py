@@ -13,6 +13,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import mock
+
 from novaclient import api_versions
 from novaclient.tests.unit import utils
 from novaclient.tests.unit.v2 import fakes
@@ -55,6 +57,24 @@ class VolumesTest(utils.TestCase):
                               '/servers/1234/os-volume_attachments/Work')
         self.assertIsInstance(v, volumes.Volume)
 
+    def test_get_server_volume_with_exception(self):
+        self.assertRaises(TypeError,
+                          self.cs.volumes.get_server_volume,
+                          "1234")
+
+        self.assertRaises(TypeError,
+                          self.cs.volumes.get_server_volume,
+                          "1234",
+                          volume_id="Work",
+                          attachment_id="123")
+
+    @mock.patch('warnings.warn')
+    def test_get_server_volume_with_warn(self, mock_warn):
+        self.cs.volumes.get_server_volume(1234,
+                                          volume_id=None,
+                                          attachment_id="Work")
+        mock_warn.assert_called_once()
+
     def test_list_server_volumes(self):
         vl = self.cs.volumes.get_server_volumes(1234)
         self.assert_request_id(vl, fakes.FAKE_REQUEST_ID_LIST)
@@ -88,3 +108,21 @@ class VolumesV249Test(VolumesTest):
                 'device': '/dev/vdb',
                 'tag': 'test_tag'}})
         self.assertIsInstance(v, volumes.Volume)
+
+    def test_delete_server_volume_with_exception(self):
+        self.assertRaises(TypeError,
+                          self.cs.volumes.delete_server_volume,
+                          "1234")
+
+        self.assertRaises(TypeError,
+                          self.cs.volumes.delete_server_volume,
+                          "1234",
+                          volume_id="Work",
+                          attachment_id="123")
+
+    @mock.patch('warnings.warn')
+    def test_delete_server_volume_with_warn(self, mock_warn):
+        self.cs.volumes.delete_server_volume(1234,
+                                             volume_id=None,
+                                             attachment_id="Work")
+        mock_warn.assert_called_once()
