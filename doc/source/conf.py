@@ -22,37 +22,46 @@ sys.path.insert(0, ROOT)
 sys.path.insert(0, BASE_DIR)
 
 
+# TODO(stephenfin): This looks like something that pbr's autodoc integration
+# could be doing for us. Investigate.
+
 def gen_ref(ver, title, names):
-    refdir = os.path.join(BASE_DIR, "ref")
+    refdir = os.path.join(BASE_DIR, "reference", "api")
     pkg = "novaclient"
     if ver:
         pkg = "%s.%s" % (pkg, ver)
         refdir = os.path.join(refdir, ver)
     if not os.path.exists(refdir):
         os.makedirs(refdir)
-    idxpath = os.path.join(refdir, "index.rst")
-    with open(idxpath, "w") as idx:
-        idx.write(("%(title)s\n"
-                   "%(signs)s\n"
-                   "\n"
-                   ".. toctree::\n"
-                   "   :maxdepth: 1\n"
-                   "\n") % {"title": title, "signs": "=" * len(title)})
-        for name in names:
-            idx.write("   %s\n" % name)
-            rstpath = os.path.join(refdir, "%s.rst" % name)
-            with open(rstpath, "w") as rst:
-                rst.write(("%(title)s\n"
-                           "%(signs)s\n"
-                           "\n"
-                           ".. automodule:: %(pkg)s.%(name)s\n"
-                           "   :members:\n"
-                           "   :undoc-members:\n"
-                           "   :show-inheritance:\n"
-                           "   :noindex:\n")
-                          % {"title": name.capitalize(),
-                             "signs": "=" * len(name),
-                             "pkg": pkg, "name": name})
+
+    # we don't want to write index files for top-level directories - only
+    # sub-directories
+    if ver:
+        idxpath = os.path.join(refdir, "index.rst")
+        with open(idxpath, "w") as idx:
+            idx.write(("%(title)s\n"
+                       "%(signs)s\n"
+                       "\n"
+                       ".. toctree::\n"
+                       "   :maxdepth: 1\n"
+                       "\n") % {"title": title, "signs": "=" * len(title)})
+            for name in names:
+                idx.write("   %s\n" % name)
+
+    for name in names:
+        rstpath = os.path.join(refdir, "%s.rst" % name)
+        with open(rstpath, "w") as rst:
+            rst.write(("%(title)s\n"
+                       "%(signs)s\n"
+                       "\n"
+                       ".. automodule:: %(pkg)s.%(name)s\n"
+                       "   :members:\n"
+                       "   :undoc-members:\n"
+                       "   :show-inheritance:\n"
+                       "   :noindex:\n")
+                      % {"title": name.capitalize(),
+                         "signs": "=" * len(name),
+                         "pkg": pkg, "name": name})
 
 
 def get_module_names():
@@ -107,14 +116,11 @@ pygments_style = 'sphinx'
 # Sphinx are currently 'default' and 'sphinxdoc'.
 html_theme = 'default'
 
-# Output file base name for HTML help builder.
-htmlhelp_basename = 'python-novaclientdoc'
-
 # -- Options for manual page output ------------------------------------------
 
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('man/nova', 'nova', 'OpenStack Nova command line client',
+    ('cli/nova', 'nova', 'OpenStack Nova command line client',
      ['OpenStack Contributors'], 1),
 ]

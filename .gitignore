@@ -18,5 +18,9 @@ novaclient/versioninfo
 *egg-info
 .eggs
 
+# Files created by documentation build
+/doc/build/
+/doc/source/reference/api/
+
 # Files created by releasenotes build
-releasenotes/build
+/releasenotes/build
