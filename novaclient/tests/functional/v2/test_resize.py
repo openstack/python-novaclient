@@ -135,17 +135,16 @@ class TestServersResize(base.ClientTestBase):
         self.nova('resize',
                   params='%s %s --poll' % (server_id, smaller_flavor))
         resize_usage = self._get_absolute_limits()
-        # compare the starting usage against the resize usage; in the case of
-        # a resize down we don't expect usage to change until it's confirmed,
-        # which doesn't happen in this test since we revert
-        self._compare_quota_usage(
-            starting_usage, resize_usage, expect_diff=False)
+        # compare the starting usage against the resize usage; with counting
+        # quotas in the server there are no reservations, so the
+        # usage changes after the resize happens before it's confirmed.
+        self._compare_quota_usage(starting_usage, resize_usage)
         # now revert the resize
         self.nova('resize-revert', params='%s' % server_id)
         # we have to wait for the server to be ACTIVE before we can check quota
         self._wait_for_state_change(server_id, 'active')
-        # get the final quota usage which should be the same as the resize
-        # usage before revert
+        # get the final quota usage which will be different from the resize
+        # usage since we've reverted back *up* to the original flavor; the API
+        # code checks quota again if we revert up in size
         revert_usage = self._get_absolute_limits()
-        self._compare_quota_usage(
-            resize_usage, revert_usage, expect_diff=False)
+        self._compare_quota_usage(resize_usage, revert_usage)
