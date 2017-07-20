@@ -31,8 +31,10 @@ class HypervisorsTest(utils.FixturedTestCase):
 
     def test_hypervisor_index(self):
         expected = [
-            dict(id=1234, hypervisor_hostname='hyper1'),
-            dict(id=5678, hypervisor_hostname='hyper2')]
+            dict(id=self.data_fixture.hyper_id_1,
+                 hypervisor_hostname='hyper1'),
+            dict(id=self.data_fixture.hyper_id_2,
+                 hypervisor_hostname='hyper2')]
 
         result = self.cs.hypervisors.list(False)
         self.assert_request_id(result, fakes.FAKE_REQUEST_ID_LIST)
@@ -43,8 +45,9 @@ class HypervisorsTest(utils.FixturedTestCase):
 
     def test_hypervisor_detail(self):
         expected = [
-            dict(id=1234,
-                 service=dict(id=1, host='compute1'),
+            dict(id=self.data_fixture.hyper_id_1,
+                 service=dict(id=self.data_fixture.service_id_1,
+                              host='compute1'),
                  vcpus=4,
                  memory_mb=10 * 1024,
                  local_gb=250,
@@ -60,8 +63,9 @@ class HypervisorsTest(utils.FixturedTestCase):
                  running_vms=2,
                  cpu_info='cpu_info',
                  disk_available_least=100),
-            dict(id=2,
-                 service=dict(id=2, host="compute2"),
+            dict(id=self.data_fixture.hyper_id_2,
+                 service=dict(id=self.data_fixture.service_id_2,
+                              host="compute2"),
                  vcpus=4,
                  memory_mb=10 * 1024,
                  local_gb=250,
@@ -87,24 +91,30 @@ class HypervisorsTest(utils.FixturedTestCase):
 
     def test_hypervisor_search(self):
         expected = [
-            dict(id=1234, hypervisor_hostname='hyper1'),
-            dict(id=5678, hypervisor_hostname='hyper2')]
+            dict(id=self.data_fixture.hyper_id_1,
+                 hypervisor_hostname='hyper1'),
+            dict(id=self.data_fixture.hyper_id_2,
+                 hypervisor_hostname='hyper2')]
 
         result = self.cs.hypervisors.search('hyper')
         self.assert_request_id(result, fakes.FAKE_REQUEST_ID_LIST)
-        self.assert_called('GET', '/os-hypervisors/hyper/search')
+        if self.cs.api_version >= api_versions.APIVersion('2.53'):
+            self.assert_called(
+                'GET', '/os-hypervisors?hypervisor_hostname_pattern=hyper')
+        else:
+            self.assert_called('GET', '/os-hypervisors/hyper/search')
 
         for idx, hyper in enumerate(result):
             self.compare_to_expected(expected[idx], hyper)
 
     def test_hypervisor_servers(self):
         expected = [
-            dict(id=1234,
+            dict(id=self.data_fixture.hyper_id_1,
                  hypervisor_hostname='hyper1',
                  servers=[
                      dict(name='inst1', uuid='uuid1'),
                      dict(name='inst2', uuid='uuid2')]),
-            dict(id=5678,
+            dict(id=self.data_fixture.hyper_id_2,
                  hypervisor_hostname='hyper2',
                  servers=[
                      dict(name='inst3', uuid='uuid3'),
@@ -113,15 +123,20 @@ class HypervisorsTest(utils.FixturedTestCase):
 
         result = self.cs.hypervisors.search('hyper', True)
         self.assert_request_id(result, fakes.FAKE_REQUEST_ID_LIST)
-        self.assert_called('GET', '/os-hypervisors/hyper/servers')
+        if self.cs.api_version >= api_versions.APIVersion('2.53'):
+            self.assert_called(
+                'GET', '/os-hypervisors?hypervisor_hostname_pattern=hyper&'
+                       'with_servers=True')
+        else:
+            self.assert_called('GET', '/os-hypervisors/hyper/servers')
 
         for idx, hyper in enumerate(result):
             self.compare_to_expected(expected[idx], hyper)
 
     def test_hypervisor_get(self):
         expected = dict(
-            id=1234,
-            service=dict(id=1, host='compute1'),
+            id=self.data_fixture.hyper_id_1,
+            service=dict(id=self.data_fixture.service_id_1, host='compute1'),
             vcpus=4,
             memory_mb=10 * 1024,
             local_gb=250,
@@ -138,21 +153,23 @@ class HypervisorsTest(utils.FixturedTestCase):
             cpu_info='cpu_info',
             disk_available_least=100)
 
-        result = self.cs.hypervisors.get(1234)
+        result = self.cs.hypervisors.get(self.data_fixture.hyper_id_1)
         self.assert_request_id(result, fakes.FAKE_REQUEST_ID_LIST)
-        self.assert_called('GET', '/os-hypervisors/1234')
+        self.assert_called(
+            'GET', '/os-hypervisors/%s' % self.data_fixture.hyper_id_1)
 
         self.compare_to_expected(expected, result)
 
     def test_hypervisor_uptime(self):
         expected = dict(
-            id=1234,
+            id=self.data_fixture.hyper_id_1,
             hypervisor_hostname="hyper1",
             uptime="fake uptime")
 
-        result = self.cs.hypervisors.uptime(1234)
+        result = self.cs.hypervisors.uptime(self.data_fixture.hyper_id_1)
         self.assert_request_id(result, fakes.FAKE_REQUEST_ID_LIST)
-        self.assert_called('GET', '/os-hypervisors/1234/uptime')
+        self.assert_called(
+            'GET', '/os-hypervisors/%s/uptime' % self.data_fixture.hyper_id_1)
 
         self.compare_to_expected(expected, result)
 
@@ -198,3 +215,12 @@ class HypervisorsV233Test(HypervisorsTest):
         self.cs.hypervisors.list(**params)
         for k, v in params.items():
             self.assertEqual([v], self.requests_mock.last_request.qs[k])
+
+
+class HypervisorsV2_53Test(HypervisorsV233Test):
+    """Tests the os-hypervisors 2.53 API bindings."""
+    data_fixture_class = data.V2_53
+
+    def setUp(self):
+        super(HypervisorsV2_53Test, self).setUp()
+        self.cs.api_version = api_versions.APIVersion("2.53")

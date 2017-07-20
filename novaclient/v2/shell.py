@@ -3474,6 +3474,9 @@ def do_service_list(cs, args):
     utils.print_list(result, columns)
 
 
+# Before microversion 2.53, the service was identified using it's host/binary
+# values.
+@api_versions.wraps('2.0', '2.52')
 @utils.arg('host', metavar='<hostname>', help=_('Name of host.'))
 # TODO(mriedem): Eventually just hard-code the binary to "nova-compute".
 @utils.arg('binary', metavar='<binary>', help=_('Service binary. The only '
@@ -3485,6 +3488,18 @@ def do_service_enable(cs, args):
     utils.print_list([result], ['Host', 'Binary', 'Status'])
 
 
+# Starting in microversion 2.53, the service is identified by UUID ID.
+@api_versions.wraps('2.53')
+@utils.arg('id', metavar='<id>', help=_('ID of the service as a UUID.'))
+def do_service_enable(cs, args):
+    """Enable the service."""
+    result = cs.services.enable(args.id)
+    utils.print_list([result], ['ID', 'Host', 'Binary', 'Status'])
+
+
+# Before microversion 2.53, the service was identified using it's host/binary
+# values.
+@api_versions.wraps('2.0', '2.52')
 @utils.arg('host', metavar='<hostname>', help=_('Name of host.'))
 # TODO(mriedem): Eventually just hard-code the binary to "nova-compute".
 @utils.arg('binary', metavar='<binary>', help=_('Service binary. The only '
@@ -3506,7 +3521,27 @@ def do_service_disable(cs, args):
         utils.print_list([result], ['Host', 'Binary', 'Status'])
 
 
-@api_versions.wraps("2.11")
+# Starting in microversion 2.53, the service is identified by UUID ID.
+@api_versions.wraps('2.53')
+@utils.arg('id', metavar='<id>', help=_('ID of the service as a UUID.'))
+@utils.arg(
+    '--reason',
+    metavar='<reason>',
+    help=_('Reason for disabling the service.'))
+def do_service_disable(cs, args):
+    """Disable the service."""
+    if args.reason:
+        result = cs.services.disable_log_reason(args.id, args.reason)
+        utils.print_list(
+            [result], ['ID', 'Host', 'Binary', 'Status', 'Disabled Reason'])
+    else:
+        result = cs.services.disable(args.id)
+        utils.print_list([result], ['ID', 'Host', 'Binary', 'Status'])
+
+
+# Before microversion 2.53, the service was identified using it's host/binary
+# values.
+@api_versions.wraps("2.11", "2.52")
 @utils.arg('host', metavar='<hostname>', help=_('Name of host.'))
 # TODO(mriedem): Eventually just hard-code the binary to "nova-compute".
 @utils.arg('binary', metavar='<binary>', help=_('Service binary. The only '
@@ -3524,9 +3559,37 @@ def do_service_force_down(cs, args):
     utils.print_list([result], ['Host', 'Binary', 'Forced down'])
 
 
-@utils.arg('id', metavar='<id>', help=_('ID of service.'))
+# Starting in microversion 2.53, the service is identified by UUID ID.
+@api_versions.wraps('2.53')
+@utils.arg('id', metavar='<id>', help=_('ID of the service as a UUID.'))
+@utils.arg(
+    '--unset',
+    dest='force_down',
+    help=_("Unset the forced_down state of the service."),
+    action='store_false',
+    default=True)
+def do_service_force_down(cs, args):
+    """Force service to down."""
+    result = cs.services.force_down(args.id, args.force_down)
+    utils.print_list([result], ['ID', 'Host', 'Binary', 'Forced down'])
+
+
+# Before microversion 2.53, the service was identified using it's host/binary
+# values.
+@api_versions.wraps('2.0', '2.52')
+@utils.arg('id', metavar='<id>',
+           help=_('ID of service as an integer. Note that this may not '
+                  'uniquely identify a service in a multi-cell deployment.'))
 def do_service_delete(cs, args):
-    """Delete the service."""
+    """Delete the service by integer ID."""
+    cs.services.delete(args.id)
+
+
+# Starting in microversion 2.53, the service is identified by UUID ID.
+@api_versions.wraps('2.53')
+@utils.arg('id', metavar='<id>', help=_('ID of service as a UUID.'))
+def do_service_delete(cs, args):
+    """Delete the service by UUID ID."""
     cs.services.delete(args.id)
 
 
@@ -3691,7 +3754,8 @@ def do_hypervisor_servers(cs, args):
 @utils.arg(
     'hypervisor',
     metavar='<hypervisor>',
-    help=_('Name or ID of the hypervisor to show the details of.'))
+    help=_('Name or ID of the hypervisor. Starting with microversion 2.53 '
+           'the ID must be a UUID.'))
 @utils.arg(
     '--wrap', dest='wrap', metavar='<integer>', default=40,
     help=_('Wrap the output to a specified length. '
@@ -3705,7 +3769,8 @@ def do_hypervisor_show(cs, args):
 @utils.arg(
     'hypervisor',
     metavar='<hypervisor>',
-    help=_('Name or ID of the hypervisor to show the uptime of.'))
+    help=_('Name or ID of the hypervisor. Starting with microversion 2.53 '
+           'the ID must be a UUID.'))
 def do_hypervisor_uptime(cs, args):
     """Display the uptime of the specified hypervisor."""
     hyper = _find_hypervisor(cs, args.hypervisor)

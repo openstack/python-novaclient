@@ -2223,6 +2223,11 @@ class ShellTest(utils.TestCase):
         self.run_command('service-list')
         self.assert_called('GET', '/os-services')
 
+    def test_services_list_v2_53(self):
+        """Tests nova service-list at the 2.53 microversion."""
+        self.run_command('service-list', api_version='2.53')
+        self.assert_called('GET', '/os-services')
+
     def test_services_list_with_host(self):
         self.run_command('service-list --host host1')
         self.assert_called('GET', '/os-services?host=host1')
@@ -2240,6 +2245,14 @@ class ShellTest(utils.TestCase):
         body = {'host': 'host1', 'binary': 'nova-cert'}
         self.assert_called('PUT', '/os-services/enable', body)
 
+    def test_services_enable_v2_53(self):
+        """Tests nova service-enable at the 2.53 microversion."""
+        self.run_command('service-enable %s' % fakes.FAKE_SERVICE_UUID_1,
+                         api_version='2.53')
+        body = {'status': 'enabled'}
+        self.assert_called(
+            'PUT', '/os-services/%s' % fakes.FAKE_SERVICE_UUID_1, body)
+
     def test_services_enable_default_binary(self):
         """Tests that the default binary is nova-compute if not specified."""
         self.run_command('service-enable host1')
@@ -2250,6 +2263,14 @@ class ShellTest(utils.TestCase):
         self.run_command('service-disable host1 nova-cert')
         body = {'host': 'host1', 'binary': 'nova-cert'}
         self.assert_called('PUT', '/os-services/disable', body)
+
+    def test_services_disable_v2_53(self):
+        """Tests nova service-disable at the 2.53 microversion."""
+        self.run_command('service-disable %s' % fakes.FAKE_SERVICE_UUID_1,
+                         api_version='2.53')
+        body = {'status': 'disabled'}
+        self.assert_called(
+            'PUT', '/os-services/%s' % fakes.FAKE_SERVICE_UUID_1, body)
 
     def test_services_disable_default_binary(self):
         """Tests that the default binary is nova-compute if not specified."""
@@ -2263,9 +2284,31 @@ class ShellTest(utils.TestCase):
                 'disabled_reason': 'no_reason'}
         self.assert_called('PUT', '/os-services/disable-log-reason', body)
 
+    def test_services_disable_with_reason_v2_53(self):
+        """Tests nova service-disable --reason at microversion 2.53."""
+        self.run_command('service-disable %s --reason no_reason' %
+                         fakes.FAKE_SERVICE_UUID_1, api_version='2.53')
+        body = {'status': 'disabled', 'disabled_reason': 'no_reason'}
+        self.assert_called(
+            'PUT', '/os-services/%s' % fakes.FAKE_SERVICE_UUID_1, body)
+
+    def test_service_force_down_v2_53(self):
+        """Tests nova service-force-down at the 2.53 microversion."""
+        self.run_command('service-force-down %s' %
+                         fakes.FAKE_SERVICE_UUID_1, api_version='2.53')
+        body = {'forced_down': True}
+        self.assert_called(
+            'PUT', '/os-services/%s' % fakes.FAKE_SERVICE_UUID_1, body)
+
     def test_services_delete(self):
         self.run_command('service-delete 1')
         self.assert_called('DELETE', '/os-services/1')
+
+    def test_services_delete_v2_53(self):
+        """Tests nova service-delete at the 2.53 microversion."""
+        self.run_command('service-delete %s' % fakes.FAKE_SERVICE_UUID_1)
+        self.assert_called(
+            'DELETE', '/os-services/%s' % fakes.FAKE_SERVICE_UUID_1)
 
     def test_host_list(self):
         _, err = self.run_command('host-list')

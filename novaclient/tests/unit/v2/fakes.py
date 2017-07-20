@@ -54,6 +54,9 @@ FAKE_REQUEST_ID = fakes.FAKE_REQUEST_ID
 FAKE_REQUEST_ID_LIST = fakes.FAKE_REQUEST_ID_LIST
 FAKE_RESPONSE_HEADERS = {'x-openstack-request-id': FAKE_REQUEST_ID}
 
+FAKE_SERVICE_UUID_1 = '75e9eabc-ed3b-4f11-8bba-add1e7e7e2de'
+FAKE_SERVICE_UUID_2 = '1f140183-c914-4ddf-8757-6df73028aa86'
+
 
 class FakeClient(fakes.FakeClient, client.Client):
 
@@ -1582,6 +1585,12 @@ class FakeSessionClient(base_client.SessionClient):
     def get_os_services(self, **kw):
         host = kw.get('host', 'host1')
         binary = kw.get('binary', 'nova-compute')
+        if self.api_version >= api_versions.APIVersion('2.53'):
+            service_id_1 = FAKE_SERVICE_UUID_1
+            service_id_2 = FAKE_SERVICE_UUID_2
+        else:
+            service_id_1 = 1
+            service_id_2 = 2
         return (200, FAKE_RESPONSE_HEADERS,
                 {'services': [{'binary': binary,
                                'host': host,
@@ -1589,14 +1598,16 @@ class FakeSessionClient(base_client.SessionClient):
                                'status': 'enabled',
                                'state': 'up',
                                'updated_at': datetime.datetime(
-                                   2012, 10, 29, 13, 42, 2)},
+                                   2012, 10, 29, 13, 42, 2),
+                               'id': service_id_1},
                               {'binary': binary,
                                'host': host,
                                'zone': 'nova',
                                'status': 'disabled',
                                'state': 'down',
                                'updated_at': datetime.datetime(
-                                   2012, 9, 18, 8, 3, 38)},
+                                   2012, 9, 18, 8, 3, 38),
+                               'id': service_id_2},
                               ]})
 
     def put_os_services_enable(self, body, **kw):
@@ -1618,7 +1629,20 @@ class FakeSessionClient(base_client.SessionClient):
             'status': 'disabled',
             'disabled_reason': body['disabled_reason']}})
 
+    def put_os_services_75e9eabc_ed3b_4f11_8bba_add1e7e7e2de(
+            self, body, **kw):
+        """This should only be called with microversion >= 2.53."""
+        return (200, FAKE_RESPONSE_HEADERS, {'service': {
+            'host': 'host1',
+            'binary': 'nova-compute',
+            'status': body.get('status', 'enabled'),
+            'disabled_reason': body.get('disabled_reason'),
+            'forced_down': body.get('forced_down', False)}})
+
     def delete_os_services_1(self, **kw):
+        return (204, FAKE_RESPONSE_HEADERS, None)
+
+    def delete_os_services_75e9eabc_ed3b_4f11_8bba_add1e7e7e2de(self, **kwarg):
         return (204, FAKE_RESPONSE_HEADERS, None)
 
     def put_os_services_force_down(self, body, **kw):

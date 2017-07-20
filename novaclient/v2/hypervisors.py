@@ -51,6 +51,8 @@ class HypervisorManager(base.ManagerWithFind):
     def list(self, detailed=True):
         """
         Get a list of hypervisors.
+
+        :param detailed: Include a detailed response.
         """
         return self._list_base(detailed=detailed)
 
@@ -59,10 +61,13 @@ class HypervisorManager(base.ManagerWithFind):
         """
         Get a list of hypervisors.
 
-        :param marker: Begin returning hypervisor that appear later in the
-                       keypair list than that represented by this keypair name
+        :param detailed: Include a detailed response.
+        :param marker: Begin returning hypervisors that appear later in the
+                       hypervisors list than that represented by this
+                       hypervisor ID. Starting with microversion 2.53 the
+                       marker must be a UUID hypervisor ID.
                        (optional).
-        :param limit: maximum number of keypairs to return (optional).
+        :param limit: maximum number of hypervisors to return (optional).
         """
         return self._list_base(detailed=detailed, marker=marker, limit=limit)
 
@@ -70,16 +75,31 @@ class HypervisorManager(base.ManagerWithFind):
         """
         Get a list of matching hypervisors.
 
+        :param hypervisor_match: The hypervisor host name or a portion of it.
+            The hypervisor hosts are selected with the host name matching
+            this pattern.
         :param servers: If True, server information is also retrieved.
         """
-        target = 'servers' if servers else 'search'
-        url = ('/os-hypervisors/%s/%s' %
-               (parse.quote(hypervisor_match, safe=''), target))
+        # Starting with microversion 2.53, the /servers and /search routes are
+        # deprecated and we get the same results using GET /os-hypervisors
+        # using query parameters for the hostname pattern and servers.
+        if self.api_version >= api_versions.APIVersion('2.53'):
+            url = ('/os-hypervisors?hypervisor_hostname_pattern=%s' %
+                   parse.quote(hypervisor_match, safe=''))
+            if servers:
+                url += '&with_servers=True'
+        else:
+            target = 'servers' if servers else 'search'
+            url = ('/os-hypervisors/%s/%s' %
+                   (parse.quote(hypervisor_match, safe=''), target))
         return self._list(url, 'hypervisors')
 
     def get(self, hypervisor):
         """
         Get a specific hypervisor.
+
+        :param hypervisor: Either a Hypervisor object or an ID. Starting with
+            microversion 2.53 the ID must be a UUID value.
         """
         return self._get("/os-hypervisors/%s" % base.getid(hypervisor),
                          "hypervisor")
@@ -87,6 +107,9 @@ class HypervisorManager(base.ManagerWithFind):
     def uptime(self, hypervisor):
         """
         Get the uptime for a specific hypervisor.
+
+        :param hypervisor: Either a Hypervisor object or an ID. Starting with
+            microversion 2.53 the ID must be a UUID value.
         """
         return self._get("/os-hypervisors/%s/uptime" % base.getid(hypervisor),
                          "hypervisor")
