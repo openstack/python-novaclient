@@ -3469,17 +3469,8 @@ def do_reset_network(cs, args):
 def do_service_list(cs, args):
     """Show a list of all running services. Filter by host & binary."""
     result = cs.services.list(host=args.host, binary=args.binary)
-    columns = ["Binary", "Host", "Zone", "Status", "State", "Updated_at"]
-    # NOTE(sulo): we check if the response has disabled_reason
-    # so as not to add the column when the extended ext is not enabled.
-    if result and hasattr(result[0], 'disabled_reason'):
-        columns.append("Disabled Reason")
-
-    # NOTE(gtt): After https://review.openstack.org/#/c/39998/ nova will
-    # show id in response.
-    if result and hasattr(result[0], 'id'):
-        columns.insert(0, "Id")
-
+    columns = ["Id", "Binary", "Host", "Zone", "Status",
+               "State", "Updated_at", "Disabled Reason"]
     utils.print_list(result, columns)
 
 
