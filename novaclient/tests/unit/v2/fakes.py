@@ -687,7 +687,7 @@ class FakeSessionClient(base_client.SessionClient):
     # Server actions
     #
 
-    none_actions = ['revertResize', 'migrate', 'os-stop', 'os-start',
+    none_actions = ['revertResize', 'os-stop', 'os-start',
                     'forceDelete', 'restore', 'pause', 'unpause', 'unlock',
                     'unrescue', 'resume', 'suspend', 'lock', 'shelve',
                     'shelveOffload', 'unshelve', 'resetNetwork']
@@ -749,6 +749,15 @@ class FakeSessionClient(base_client.SessionClient):
             if self.api_version < api_versions.APIVersion("2.25"):
                 expected.add('disk_over_commit')
             assert set(body[action].keys()) == expected
+        elif action == 'migrate':
+            if self.api_version < api_versions.APIVersion("2.56"):
+                assert body[action] is None
+            else:
+                expected = set()
+                if 'host' in body[action].keys():
+                    # host can be optional
+                    expected.add('host')
+                assert set(body[action].keys()) == expected
         elif action == 'rebuild':
             body = body[action]
             adminPass = body.get('adminPass', 'randompassword')
