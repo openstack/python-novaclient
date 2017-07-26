@@ -1,0 +1,35 @@
+---
+features:
+  - |
+    Added support for `microversion 2.53`_. The following changes were made
+    for the ``services`` commands and python API bindings:
+
+    - The ``nova service-list`` command and API will have a UUID value for the
+      ``id`` field in the output and response, respectively.
+    - The ``nova service-enable`` command and API will require a UUID service
+      id value to uniquely identify the service rather than a ``host`` and
+      ``binary`` value. The UUID ``id`` field will also be in the command
+      output.
+    - The ``nova service-disable`` command and API will require a UUID service
+      id value to uniquely identify the service rather than a ``host`` and
+      ``binary`` value. The UUID ``id`` field will also be in the command
+      output.
+    - The ``nova service-force-down`` command and API will require a UUID
+      service id value to uniquely identify the service rather than a ``host``
+      and ``binary`` value. The UUID ``id`` field will also be in the command
+      output.
+    - The ``nova service-delete`` command and API will require a UUID
+      service id value to uniquely identify the service rather than an integer
+      service id value.
+
+    The following changes were made for the ``hypervisors`` commands and python
+    API bindings:
+
+    - The ID field in the various ``nova hypervisor-*`` commands and
+      ``Hypervisor.id`` attribute in the API binding will now be a UUID value.
+    - If paging over hypervisors using ``nova hypervisor-list``, the
+      ``--marker`` must be a UUID value.
+    - The ``nova hypervisor-show`` and ``nova hypervisor-uptime`` commands and
+      APIs now take a UUID value for the hypervisor ID.
+
+    .. _microversion 2.53: https://docs.openstack.org/nova/latest/api_microversion_history.html#id48

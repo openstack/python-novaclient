@@ -19,3 +19,10 @@ class TestHypervisorsV28(test_hypervisors.TestHypervisors):
 
     def test_list(self):
         self._test_list(dict)
+
+
+class TestHypervisorsV2_53(TestHypervisorsV28):
+    COMPUTE_API_VERSION = "2.53"
+
+    def test_list(self):
+        self._test_list(cpu_info_type=dict, uuid_as_id=True)
