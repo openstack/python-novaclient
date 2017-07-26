@@ -20,15 +20,10 @@ from six.moves import urllib
 
 from novaclient import api_versions
 from novaclient import base
-from novaclient import utils
 
 
 class Service(base.Resource):
     def __repr__(self):
-        # If the id is int-like, then represent the service using it's binary
-        # name, otherwise use the UUID ID.
-        if utils.is_integer_like(self.id):
-            return "<Service: %s>" % self.binary
         return "<Service: %s>" % self.id
 
     def _add_details(self, info):
