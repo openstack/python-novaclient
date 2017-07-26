@@ -3471,6 +3471,9 @@ def do_service_list(cs, args):
     result = cs.services.list(host=args.host, binary=args.binary)
     columns = ["Id", "Binary", "Host", "Zone", "Status",
                "State", "Updated_at", "Disabled Reason"]
+    if cs.api_version >= api_versions.APIVersion('2.11'):
+        columns.append("Forced down")
+
     utils.print_list(result, columns)
 
 
