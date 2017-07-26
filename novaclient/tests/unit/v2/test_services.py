@@ -34,18 +34,11 @@ class ServicesTest(utils.TestCase):
         svs = self.cs.services.list()
         self.assert_request_id(svs, fakes.FAKE_REQUEST_ID_LIST)
         self.cs.assert_called('GET', '/os-services')
-        expect_uuid_id = (
-            api_versions.APIVersion(self.api_version) >=
-            api_versions.APIVersion('2.53'))
         for s in svs:
             self.assertIsInstance(s, self._get_service_type())
             self.assertEqual('nova-compute', s.binary)
             self.assertEqual('host1', s.host)
-            if expect_uuid_id:
-                stringified = '<Service: %s>' % s.id
-            else:
-                stringified = '<Service: %s>' % s.binary
-            self.assertEqual(stringified, str(s))
+            self.assertEqual('<Service: %s>' % s.id, str(s))
 
     def test_list_services_with_hostname(self):
         svs = self.cs.services.list(host='host2')
