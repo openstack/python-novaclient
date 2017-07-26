@@ -4750,7 +4750,10 @@ def _server_evacuate(cs, server, args):
                                                "error_message": error_message})
 
 
-@utils.arg('host', metavar='<host>', help='Name of host.')
+@utils.arg('host', metavar='<host>',
+           help='The hypervisor hostname (or pattern) to search for. '
+                'WARNING: Use a fully qualified domain name if you only '
+                'want to evacuate from a specific host.')
 @utils.arg(
     '--target_host',
     metavar='<target_host>',
@@ -4813,7 +4816,10 @@ def _server_live_migrate(cs, server, args):
                                     error_message)
 
 
-@utils.arg('host', metavar='<host>', help='Name of host.')
+@utils.arg('host', metavar='<host>',
+           help='The hypervisor hostname (or pattern) to search for. '
+                'WARNING: Use a fully qualified domain name if you only '
+                'want to live migrate from a specific host.')
 @utils.arg(
     '--target-host',
     metavar='<target_host>',
@@ -4886,7 +4892,10 @@ def _server_migrate(cs, server):
                                        "error_message": error_message})
 
 
-@utils.arg('host', metavar='<host>', help='Name of host.')
+@utils.arg('host', metavar='<host>',
+           help='The hypervisor hostname (or pattern) to search for. '
+                'WARNING: Use a fully qualified domain name if you only '
+                'want to cold migrate from a specific host.')
 def do_host_servers_migrate(cs, args):
     """Cold migrate all instances off the specified host to other available
     hosts.
@@ -4963,10 +4972,10 @@ def do_list_extensions(cs, _args):
     utils.print_list(extensions, fields)
 
 
-@utils.arg(
-    'host',
-    metavar='<host>',
-    help=_('Name of host.'))
+@utils.arg('host', metavar='<host>',
+           help='The hypervisor hostname (or pattern) to search for. '
+                'WARNING: Use a fully qualified domain name if you only '
+                'want to update metadata for servers on a specific host.')
 @utils.arg(
     'action',
     metavar='<action>',
