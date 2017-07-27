@@ -1273,8 +1273,9 @@ class ServerManager(base.BootingManagerWithFind):
         if self.api_version > api_versions.APIVersion('2.36'):
             if not nics:
                 raise ValueError('nics are required after microversion 2.36')
-        elif nics and not isinstance(nics, list):
-            raise ValueError('nics must be a list')
+        elif nics and not isinstance(nics, (list, tuple)):
+            raise ValueError('nics must be a list or a tuple, not %s' %
+                             type(nics))
 
     def create(self, name, image, flavor, meta=None, files=None,
                reservation_id=None, min_count=None,
