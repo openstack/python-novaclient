@@ -30,8 +30,14 @@ class TestOsServicesNovaClientV211(test_os_services.TestOsServicesNovaClient):
             # to find them. So filter out anything that's not nova-compute.
             if serv.binary != 'nova-compute':
                 continue
-            host = self._get_column_value_from_single_row_table(
-                self.nova('service-list --binary %s' % serv.binary), 'Host')
+            service_list = self.nova('service-list --binary %s' % serv.binary)
+            # Check the 'service-list' table has the 'Forced down' column
+            status = self._get_column_value_from_single_row_table(
+                service_list, 'Forced down')
+            self.assertEqual('False', status)
+
+            host = self._get_column_value_from_single_row_table(service_list,
+                                                                'Host')
             service = self.nova('service-force-down %s %s'
                                 % (host, serv.binary))
             self.addCleanup(self.nova, 'service-force-down --unset',
