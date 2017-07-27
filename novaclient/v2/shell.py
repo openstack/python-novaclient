@@ -3690,7 +3690,7 @@ def _do_hypervisor_list(cs, matching=None, limit=None, marker=None):
     '--matching',
     metavar='<hostname>',
     default=None,
-    help=_('List hypervisors matching the given <hostname>.'))
+    help=_('List hypervisors matching the given <hostname> (or pattern).'))
 def do_hypervisor_list(cs, args):
     """List hypervisors."""
     _do_hypervisor_list(cs, matching=args.matching)
@@ -3701,7 +3701,7 @@ def do_hypervisor_list(cs, args):
     '--matching',
     metavar='<hostname>',
     default=None,
-    help=_('List hypervisors matching the given <hostname>. '
+    help=_('List hypervisors matching the given <hostname> (or pattern). '
            'If matching is used limit and marker options will be ignored.'))
 @utils.arg(
     '--marker',
