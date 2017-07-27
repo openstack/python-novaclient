@@ -400,7 +400,7 @@ def wraps(start_version, end_version=None):
 
         # NOTE(andreykurilin): The way to obtain function's name in Python 2
         #   bases on traceback(see _get_function_name for details). Since the
-        #   right versioned method method is used in several places, one object
+        #   right versioned method is used in several places, one object
         #   can have different names. Let's generate name of function one time
         #   and use __id__ property in all other places.
         substitution.__id__ = name
