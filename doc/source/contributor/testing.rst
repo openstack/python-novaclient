@@ -18,7 +18,7 @@ test targets that can be run to validate the code.
   Live functional testing against an existing OpenStack instance.
 
 Functional testing assumes the existence of a `clouds.yaml` file as supported
-by `os-client-config <http://docs.openstack.org/developer/os-client-config>`__
+by `os-client-config <https://docs.openstack.org/os-client-config/latest>`__
 It assumes the existence of a cloud named `devstack` that behaves like a normal
 DevStack installation with a demo and an admin user/tenant - or clouds named
 `functional_admin` and `functional_nonadmin`.
