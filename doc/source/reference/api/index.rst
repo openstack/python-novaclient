@@ -55,7 +55,7 @@ application, you can append a (name, version) tuple to the session's
 
 For more information on this keystoneauth API, see `Using Sessions`_.
 
-.. _Using Sessions: http://docs.openstack.org/developer/keystoneauth/using-sessions.html
+.. _Using Sessions: https://docs.openstack.org/keystoneauth/latest/using-sessions.html
 
 It is also possible to use an instance as a context manager in which case
 there will be a session kept alive for the duration of the with statement::

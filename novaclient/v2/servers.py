@@ -820,7 +820,7 @@ class ServerManager(base.BootingManagerWithFind):
             match the search_opts (optional). The search opts format is a
             dictionary of key / value pairs that will be appended to the query
             string.  For a complete list of keys see:
-            http://developer.openstack.org/api-ref-compute-v2.1.html#listServers
+            https://developer.openstack.org/api-ref/compute/#list-servers
         :param marker: Begin returning servers that appear later in the server
                        list than that represented by this server id (optional).
         :param limit: Maximum number of servers to return (optional).
