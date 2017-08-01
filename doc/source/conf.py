@@ -12,69 +12,6 @@
 #
 # python-novaclient documentation build configuration file
 
-import os
-import sys
-
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-ROOT = os.path.abspath(os.path.join(BASE_DIR, "..", ".."))
-
-sys.path.insert(0, ROOT)
-sys.path.insert(0, BASE_DIR)
-
-
-# TODO(stephenfin): This looks like something that pbr's autodoc integration
-# could be doing for us. Investigate.
-
-def gen_ref(ver, title, names):
-    refdir = os.path.join(BASE_DIR, "reference", "api")
-    pkg = "novaclient"
-    if ver:
-        pkg = "%s.%s" % (pkg, ver)
-        refdir = os.path.join(refdir, ver)
-    if not os.path.exists(refdir):
-        os.makedirs(refdir)
-
-    # we don't want to write index files for top-level directories - only
-    # sub-directories
-    if ver:
-        idxpath = os.path.join(refdir, "index.rst")
-        with open(idxpath, "w") as idx:
-            idx.write(("%(title)s\n"
-                       "%(signs)s\n"
-                       "\n"
-                       ".. toctree::\n"
-                       "   :maxdepth: 1\n"
-                       "\n") % {"title": title, "signs": "=" * len(title)})
-            for name in names:
-                idx.write("   %s\n" % name)
-
-    for name in names:
-        rstpath = os.path.join(refdir, "%s.rst" % name)
-        with open(rstpath, "w") as rst:
-            rst.write(("%(title)s\n"
-                       "%(signs)s\n"
-                       "\n"
-                       ".. automodule:: %(pkg)s.%(name)s\n"
-                       "   :members:\n"
-                       "   :undoc-members:\n"
-                       "   :show-inheritance:\n"
-                       "   :noindex:\n")
-                      % {"title": name.capitalize(),
-                         "signs": "=" * len(name),
-                         "pkg": pkg, "name": name})
-
-
-def get_module_names():
-    names = os.listdir(os.path.join(ROOT, 'novaclient', 'v2'))
-    exclude = ['shell.py', '__init__.py']
-    for name in names:
-        if name.endswith('.py') and name not in exclude:
-            yield name.strip('.py')
-
-
-gen_ref(None, "Exceptions", ["exceptions"])
-gen_ref("v2", "Version 2 API", sorted(get_module_names()))
-
 # -- General configuration ----------------------------------------------------
 
 # Add any Sphinx extension module names here, as strings. They can be
@@ -84,6 +21,8 @@ extensions = [
     'openstackdocstheme',
 ]
 
+# The content that will be inserted into the main body of an autoclass
+# directive.
 autoclass_content = 'both'
 
 # Add any paths that contain templates here, relative to this directory.
