@@ -1,0 +1,4 @@
+---
+upgrade:
+  - The ``run_tests.sh`` shell script that was deprecated in Newton has
+    been removed.
