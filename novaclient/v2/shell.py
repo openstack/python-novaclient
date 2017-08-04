@@ -4728,7 +4728,7 @@ def do_server_tag_add(cs, args):
         lambda t: server.add_tag(t),
         args.tag,
         _("Request to add tag %s to specified server has been accepted."),
-        _("Unable to add tag %s to the specified server."))
+        _("Unable to add the specified tag to the server."))
 
 
 @api_versions.wraps("2.26")
@@ -4750,7 +4750,7 @@ def do_server_tag_delete(cs, args):
         lambda t: server.delete_tag(t),
         args.tag,
         _("Request to delete tag %s from specified server has been accepted."),
-        _("Unable to delete tag %s from specified server."))
+        _("Unable to delete the specified tag from the server."))
 
 
 @api_versions.wraps("2.26")
