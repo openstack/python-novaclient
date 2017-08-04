@@ -3864,7 +3864,7 @@ def do_ssh(cs, args):
             msg = _("Server '%(server)s' is not attached to any network.")
             raise exceptions.CommandError(msg % {'server': args.server})
         else:
-            network_addresses = list(six.itervalues(addresses))[0]
+            network_addresses = list(addresses.values())[0]
 
     # Select the address in the selected network.
     # If the extension is not present, we assume the address to be floating.
