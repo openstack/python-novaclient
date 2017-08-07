@@ -390,6 +390,17 @@ class ServersTest(utils.FixturedTestCase):
     def test_create_server_disk_config_manual(self):
         self._create_disk_config('MANUAL')
 
+    def test_create_server_return_reservation_id(self):
+        s = self.cs.servers.create(
+            name="My server",
+            image=1,
+            flavor=1,
+            reservation_id=True,
+            nics=self._get_server_create_default_nics()
+        )
+        self.assert_request_id(s, fakes.FAKE_REQUEST_ID_LIST)
+        self.assert_called('POST', '/servers')
+
     def test_update_server(self):
         s = self.cs.servers.get(1234)
 

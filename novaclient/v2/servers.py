@@ -657,7 +657,7 @@ class ServerManager(base.BootingManagerWithFind):
 
     def _boot(self, resource_url, response_key, name, image, flavor,
               meta=None, files=None, userdata=None,
-              reservation_id=None, return_raw=False, min_count=None,
+              reservation_id=False, return_raw=False, min_count=None,
               max_count=None, security_groups=None, key_name=None,
               availability_zone=None, block_device_mapping=None,
               block_device_mapping_v2=None, nics=None, scheduler_hints=None,
@@ -695,7 +695,8 @@ class ServerManager(base.BootingManagerWithFind):
         if meta:
             body["server"]["metadata"] = meta
         if reservation_id:
-            body["server"]["reservation_id"] = reservation_id
+            body["server"]["return_reservation_id"] = reservation_id
+            return_raw = True
         if key_name:
             body["server"]["key_name"] = key_name
         if scheduler_hints:
@@ -1278,7 +1279,7 @@ class ServerManager(base.BootingManagerWithFind):
                              type(nics))
 
     def create(self, name, image, flavor, meta=None, files=None,
-               reservation_id=None, min_count=None,
+               reservation_id=False, min_count=None,
                max_count=None, security_groups=None, userdata=None,
                key_name=None, availability_zone=None,
                block_device_mapping=None, block_device_mapping_v2=None,
@@ -1300,7 +1301,8 @@ class ServerManager(base.BootingManagerWithFind):
                       are the file contents (either as a string or as a
                       file-like object). A maximum of five entries is allowed,
                       and each file must be 10k or less.
-        :param reservation_id: a UUID for the set of servers being requested.
+        :param reservation_id: return a reservation_id for the set of
+                               servers being requested, boolean.
         :param min_count: (optional extension) The minimum number of
                           servers to launch.
         :param max_count: (optional extension) The maximum number of
@@ -1399,7 +1401,7 @@ class ServerManager(base.BootingManagerWithFind):
         if nics:
             boot_kwargs['nics'] = nics
 
-        response_key = "server"
+        response_key = "server" if not reservation_id else "reservation_id"
         return self._boot(resource_url, response_key, *boot_args,
                           **boot_kwargs)
 

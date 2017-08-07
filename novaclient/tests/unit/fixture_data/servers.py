@@ -417,6 +417,9 @@ class V1(Base):
         if 'personality' in body['server']:
             for pfile in body['server']['personality']:
                 fakes.assert_has_keys(pfile, required=['path', 'contents'])
+        if ('return_reservation_id' in body['server'].keys() and
+                body['server']['return_reservation_id']):
+            return {'reservation_id': 'r-3fhpjulh'}
         if body['server']['name'] == 'some-bad-server':
             body = self.server_1235
         else:
