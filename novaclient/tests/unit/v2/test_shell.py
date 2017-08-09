@@ -695,6 +695,29 @@ class ShellTest(utils.TestCase):
             },
         )
 
+    def test_boot_with_multiple_nics(self):
+        cmd = ('boot --image %s --flavor 1 '
+               '--nic net-id=net_a,v4-fixed-ip=10.0.0.1 '
+               '--nic net-id=net_b some-server' %
+               FAKE_UUID_1)
+        self.run_command(cmd)
+        self.assert_called_anytime(
+            'POST', '/servers',
+            {
+                'server': {
+                    'flavorRef': '1',
+                    'name': 'some-server',
+                    'imageRef': FAKE_UUID_1,
+                    'min_count': 1,
+                    'max_count': 1,
+                    'networks': [
+                        {'uuid': 'net_a', 'fixed_ip': '10.0.0.1'},
+                        {'uuid': 'net_b'}
+                    ],
+                },
+            },
+        )
+
     def test_boot_nics_with_tag(self):
         cmd = ('boot --image %s --flavor 1 '
                '--nic net-id=a=c,v4-fixed-ip=10.0.0.1,tag=foo some-server' %

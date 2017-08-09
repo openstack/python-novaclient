@@ -268,12 +268,11 @@ def _parse_nics(cs, args):
     supports_auto_alloc = cs.api_version >= api_versions.APIVersion('2.37')
     supports_nic_tags = _supports_nic_tags(cs)
 
-    nic_info = {"net-id": "", "v4-fixed-ip": "", "v6-fixed-ip": "",
-                "port-id": "", "net-name": ""}
+    nic_keys = {'net-id', 'v4-fixed-ip', 'v6-fixed-ip', 'port-id', 'net-name'}
 
     if supports_auto_alloc and supports_nic_tags:
         # API version >= 2.42
-        nic_info.update({"tag": ""})
+        nic_keys.add('tag')
         err_msg = (_("Invalid nic argument '%s'. Nic arguments must be of "
                      "the form --nic <auto,none,net-id=net-uuid,"
                      "net-name=network-name,v4-fixed-ip=ip-addr,"
@@ -292,7 +291,7 @@ def _parse_nics(cs, args):
                      "be used with any other --nic value."))
     elif not supports_auto_alloc and supports_nic_tags:
         # 2.36 >= API version >= 2.32
-        nic_info.update({"tag": ""})
+        nic_keys.add('tag')
         err_msg = (_("Invalid nic argument '%s'. Nic arguments must be of "
                      "the form --nic <net-id=net-uuid,"
                      "net-name=network-name,v4-fixed-ip=ip-addr,"
@@ -310,6 +309,7 @@ def _parse_nics(cs, args):
     auto_or_none = False
     nics = []
     for nic_str in args.nics:
+        nic_info = {}
         nic_info_set = False
         for kv_str in nic_str.split(","):
             if auto_or_none:
@@ -341,13 +341,13 @@ def _parse_nics(cs, args):
             except ValueError:
                 raise exceptions.CommandError(err_msg % nic_str)
 
-            if k in nic_info:
+            if k in nic_keys:
                 # if user has given a net-name resolve it to network ID
                 if k == 'net-name':
                     k = 'net-id'
                     v = _find_network_id(cs, v)
                 # if some argument was given multiple times
-                if nic_info[k]:
+                if k in nic_info:
                     raise exceptions.CommandError(err_msg % nic_str)
                 nic_info[k] = v
                 nic_info_set = True
@@ -357,15 +357,15 @@ def _parse_nics(cs, args):
         if auto_or_none:
             continue
 
-        if nic_info['v4-fixed-ip'] and not netutils.is_valid_ipv4(
+        if 'v4-fixed-ip' in nic_info and not netutils.is_valid_ipv4(
                 nic_info['v4-fixed-ip']):
             raise exceptions.CommandError(_("Invalid ipv4 address."))
 
-        if nic_info['v6-fixed-ip'] and not netutils.is_valid_ipv6(
+        if 'v6-fixed-ip' in nic_info and not netutils.is_valid_ipv6(
                 nic_info['v6-fixed-ip']):
             raise exceptions.CommandError(_("Invalid ipv6 address."))
 
-        if bool(nic_info['net-id']) == bool(nic_info['port-id']):
+        if bool(nic_info.get('net-id')) == bool(nic_info.get('port-id')):
             raise exceptions.CommandError(err_msg % nic_str)
 
         nics.append(nic_info)
