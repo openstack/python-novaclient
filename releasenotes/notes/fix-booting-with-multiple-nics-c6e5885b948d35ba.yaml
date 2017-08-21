@@ -1,0 +1,4 @@
+---
+fixes:
+  - Fix an ability to boot server with multiple nics which was broken with
+    microversion 2.42 (fix tag attribute disappearing).
