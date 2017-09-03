@@ -1155,6 +1155,113 @@ class ShellTest(utils.TestCase):
         self.assertRaises(SystemExit, self.run_command,
                           cmd, api_version='2.51')
 
+    def test_boot_with_single_trusted_image_certificates(self):
+        self.run_command('boot --flavor 1 --image %s --nic auto some-server '
+                         '--trusted-image-certificate-id id1'
+                         % FAKE_UUID_1, api_version='2.63')
+        self.assert_called_anytime(
+            'POST', '/servers',
+            {'server': {
+                'flavorRef': '1',
+                'name': 'some-server',
+                'imageRef': FAKE_UUID_1,
+                'min_count': 1,
+                'max_count': 1,
+                'networks': 'auto',
+                'trusted_image_certificates': ['id1']
+            }},
+        )
+
+    def test_boot_with_multiple_trusted_image_certificates(self):
+        self.run_command('boot --flavor 1 --image %s --nic auto some-server '
+                         '--trusted-image-certificate-id id1 '
+                         '--trusted-image-certificate-id id2'
+                         % FAKE_UUID_1, api_version='2.63')
+        self.assert_called_anytime(
+            'POST', '/servers',
+            {'server': {
+                'flavorRef': '1',
+                'name': 'some-server',
+                'imageRef': FAKE_UUID_1,
+                'min_count': 1,
+                'max_count': 1,
+                'networks': 'auto',
+                'trusted_image_certificates': ['id1', 'id2']
+            }},
+        )
+
+    def test_boot_with_trusted_image_certificates_envar(self):
+        self.useFixture(fixtures.EnvironmentVariable(
+            'OS_TRUSTED_IMAGE_CERTIFICATE_IDS', 'var_id1,var_id2'))
+        self.run_command('boot --flavor 1 --image %s --nic auto some-server'
+                         % FAKE_UUID_1, api_version='2.63')
+        self.assert_called_anytime(
+            'POST', '/servers',
+            {'server': {
+                'flavorRef': '1',
+                'name': 'some-server',
+                'imageRef': FAKE_UUID_1,
+                'min_count': 1,
+                'max_count': 1,
+                'networks': 'auto',
+                'trusted_image_certificates': ['var_id1', 'var_id2']
+            }},
+        )
+
+    def test_boot_without_trusted_image_certificates_v263(self):
+        self.run_command('boot --flavor 1 --image %s --nic auto some-server'
+                         % FAKE_UUID_1, api_version='2.63')
+        self.assert_called_anytime(
+            'POST', '/servers',
+            {'server': {
+                'flavorRef': '1',
+                'name': 'some-server',
+                'imageRef': FAKE_UUID_1,
+                'min_count': 1,
+                'max_count': 1,
+                'networks': 'auto',
+            }},
+        )
+
+    def test_boot_with_trusted_image_certificates_pre_v263(self):
+        cmd = ('boot --flavor 1 --image %s some-server '
+               '--trusted-image-certificate-id id1 '
+               '--trusted-image-certificate-id id2' % FAKE_UUID_1)
+        self.assertRaises(SystemExit, self.run_command,
+                          cmd, api_version='2.62')
+
+    # OS_TRUSTED_IMAGE_CERTIFICATE_IDS environment variable is not supported in
+    # microversions < 2.63 (should result in an UnsupportedAttribute exception)
+    def test_boot_with_trusted_image_certificates_envar_pre_v263(self):
+        self.useFixture(fixtures.EnvironmentVariable(
+            'OS_TRUSTED_IMAGE_CERTIFICATE_IDS', 'var_id1,var_id2'))
+        cmd = ('boot --flavor 1 --image %s --nic auto some-server '
+               % FAKE_UUID_1)
+        self.assertRaises(exceptions.UnsupportedAttribute, self.run_command,
+                          cmd, api_version='2.62')
+
+    def test_boot_with_trusted_image_certificates_arg_and_envvar(self):
+        """Tests that if both the environment variable and argument are
+        specified, the argument takes precedence.
+        """
+        self.useFixture(fixtures.EnvironmentVariable(
+            'OS_TRUSTED_IMAGE_CERTIFICATE_IDS', 'cert1'))
+        self.run_command('boot --flavor 1 --image %s --nic auto '
+                         '--trusted-image-certificate-id cert2 some-server'
+                         % FAKE_UUID_1, api_version='2.63')
+        self.assert_called_anytime(
+            'POST', '/servers',
+            {'server': {
+                'flavorRef': '1',
+                'name': 'some-server',
+                'imageRef': FAKE_UUID_1,
+                'min_count': 1,
+                'max_count': 1,
+                'networks': 'auto',
+                'trusted_image_certificates': ['cert2']
+            }},
+        )
+
     def test_flavor_list(self):
         out, _ = self.run_command('flavor-list')
         self.assert_called_anytime('GET', '/flavors/detail')
@@ -1663,6 +1770,148 @@ class ShellTest(utils.TestCase):
                                api_version='2.57')
         self.assertIn("Cannot specify '--user-data-unset' with "
                       "'--user-data'.", six.text_type(ex))
+
+    def test_rebuild_with_single_trusted_image_certificates(self):
+        self.run_command('rebuild sample-server %s '
+                         '--trusted-image-certificate-id id1'
+                         % FAKE_UUID_1, api_version='2.63')
+        self.assert_called('GET', '/servers?name=sample-server', pos=0)
+        self.assert_called('GET', '/servers/1234', pos=1)
+        self.assert_called('GET', '/v2/images/%s' % FAKE_UUID_1, pos=2)
+        self.assert_called('POST', '/servers/1234/action',
+                           {'rebuild': {'imageRef': FAKE_UUID_1,
+                                        'description': None,
+                                        'trusted_image_certificates': ['id1']
+                                        }
+                            }, pos=3)
+        self.assert_called('GET', '/v2/images/%s' % FAKE_UUID_2, pos=4)
+
+    def test_rebuild_with_multiple_trusted_image_certificate_ids(self):
+        self.run_command('rebuild sample-server %s '
+                         '--trusted-image-certificate-id id1 '
+                         '--trusted-image-certificate-id id2'
+                         % FAKE_UUID_1, api_version='2.63')
+        self.assert_called('GET', '/servers?name=sample-server', pos=0)
+        self.assert_called('GET', '/servers/1234', pos=1)
+        self.assert_called('GET', '/v2/images/%s' % FAKE_UUID_1, pos=2)
+        self.assert_called('POST', '/servers/1234/action',
+                           {'rebuild': {'imageRef': FAKE_UUID_1,
+                                        'description': None,
+                                        'trusted_image_certificates': ['id1',
+                                                                       'id2']
+                                        }
+                            }, pos=3)
+        self.assert_called('GET', '/v2/images/%s' % FAKE_UUID_2, pos=4)
+
+    def test_rebuild_with_trusted_image_certificates_envar(self):
+        self.useFixture(fixtures.EnvironmentVariable(
+            'OS_TRUSTED_IMAGE_CERTIFICATE_IDS', 'var_id1,var_id2'))
+        self.run_command('rebuild sample-server %s'
+                         % FAKE_UUID_1, api_version='2.63')
+        self.assert_called('GET', '/servers?name=sample-server', pos=0)
+        self.assert_called('GET', '/servers/1234', pos=1)
+        self.assert_called('GET', '/v2/images/%s' % FAKE_UUID_1, pos=2)
+        self.assert_called('POST', '/servers/1234/action',
+                           {'rebuild': {'imageRef': FAKE_UUID_1,
+                                        'description': None,
+                                        'trusted_image_certificates':
+                                            ['var_id1', 'var_id2']}
+                            }, pos=3)
+        self.assert_called('GET', '/v2/images/%s' % FAKE_UUID_2, pos=4)
+
+    def test_rebuild_without_trusted_image_certificates_v263(self):
+        self.run_command('rebuild sample-server %s' % FAKE_UUID_1,
+                         api_version='2.63')
+        self.assert_called('GET', '/servers?name=sample-server', pos=0)
+        self.assert_called('GET', '/servers/1234', pos=1)
+        self.assert_called('GET', '/v2/images/%s' % FAKE_UUID_1, pos=2)
+        self.assert_called('POST', '/servers/1234/action',
+                           {'rebuild': {'imageRef': FAKE_UUID_1,
+                                        'description': None,
+                                        }
+                            }, pos=3)
+        self.assert_called('GET', '/v2/images/%s' % FAKE_UUID_2, pos=4)
+
+    def test_rebuild_with_trusted_image_certificates_pre_v263(self):
+        cmd = ('rebuild sample-server %s'
+               '--trusted-image-certificate-id id1 '
+               '--trusted-image-certificate-id id2' % FAKE_UUID_1)
+        self.assertRaises(SystemExit, self.run_command,
+                          cmd, api_version='2.62')
+
+    # OS_TRUSTED_IMAGE_CERTIFICATE_IDS environment variable is not supported in
+    # microversions < 2.63 (should result in an UnsupportedAttribute exception)
+    def test_rebuild_with_trusted_image_certificates_envar_pre_v263(self):
+        self.useFixture(fixtures.EnvironmentVariable(
+            'OS_TRUSTED_IMAGE_CERTIFICATE_IDS', 'var_id1,var_id2'))
+        cmd = ('rebuild sample-server %s' % FAKE_UUID_1)
+        self.assertRaises(exceptions.UnsupportedAttribute, self.run_command,
+                          cmd, api_version='2.62')
+
+    def test_rebuild_with_trusted_image_certificates_unset(self):
+        """Tests explicitly unsetting the existing server trusted image
+        certificate IDs.
+        """
+        self.run_command('rebuild sample-server %s '
+                         '--trusted-image-certificates-unset'
+                         % FAKE_UUID_1, api_version='2.63')
+        self.assert_called('GET', '/servers?name=sample-server', pos=0)
+        self.assert_called('GET', '/servers/1234', pos=1)
+        self.assert_called('GET', '/v2/images/%s' % FAKE_UUID_1, pos=2)
+        self.assert_called('POST', '/servers/1234/action',
+                           {'rebuild': {'imageRef': FAKE_UUID_1,
+                                        'description': None,
+                                        'trusted_image_certificates': None
+                                        }
+                            }, pos=3)
+        self.assert_called('GET', '/v2/images/%s' % FAKE_UUID_2, pos=4)
+
+    def test_rebuild_with_trusted_image_certificates_unset_arg_conflict(self):
+        """Tests the error condition that trusted image certs are both unset
+        and set via argument during rebuild.
+        """
+        ex = self.assertRaises(
+            exceptions.CommandError, self.run_command,
+            'rebuild sample-server %s --trusted-image-certificate-id id1 '
+            '--trusted-image-certificates-unset' % FAKE_UUID_1,
+            api_version='2.63')
+        self.assertIn("Cannot specify '--trusted-image-certificates-unset' "
+                      "with '--trusted-image-certificate-id'",
+                      six.text_type(ex))
+
+    def test_rebuild_with_trusted_image_certificates_unset_env_conflict(self):
+        """Tests the error condition that trusted image certs are both unset
+        and set via environment variable during rebuild.
+        """
+        self.useFixture(fixtures.EnvironmentVariable(
+            'OS_TRUSTED_IMAGE_CERTIFICATE_IDS', 'var_id1'))
+        ex = self.assertRaises(
+            exceptions.CommandError, self.run_command,
+            'rebuild sample-server %s --trusted-image-certificates-unset' %
+            FAKE_UUID_1, api_version='2.63')
+        self.assertIn("Cannot specify '--trusted-image-certificates-unset' "
+                      "with '--trusted-image-certificate-id'",
+                      six.text_type(ex))
+
+    def test_rebuild_with_trusted_image_certificates_arg_and_envar(self):
+        """Tests that if both the environment variable and argument are
+        specified, the argument takes precedence.
+        """
+        self.useFixture(fixtures.EnvironmentVariable(
+            'OS_TRUSTED_IMAGE_CERTIFICATE_IDS', 'cert1'))
+        self.run_command('rebuild sample-server '
+                         '--trusted-image-certificate-id cert2 %s'
+                         % FAKE_UUID_1, api_version='2.63')
+        self.assert_called('GET', '/servers?name=sample-server', pos=0)
+        self.assert_called('GET', '/servers/1234', pos=1)
+        self.assert_called('GET', '/v2/images/%s' % FAKE_UUID_1, pos=2)
+        self.assert_called('POST', '/servers/1234/action',
+                           {'rebuild': {'imageRef': FAKE_UUID_1,
+                                        'description': None,
+                                        'trusted_image_certificates':
+                                            ['cert2']}
+                            }, pos=3)
+        self.assert_called('GET', '/v2/images/%s' % FAKE_UUID_2, pos=4)
 
     def test_start(self):
         self.run_command('start sample-server')
@@ -3547,6 +3796,7 @@ class ShellTest(utils.TestCase):
             60,  # There are no client-side changes for volume multiattach.
             61,  # There are no version-wrapped shell method changes for this.
             62,  # There are no version-wrapped shell method changes for this.
+            63,  # There are no version-wrapped shell method changes for this.
         ])
         versions_supported = set(range(0,
                                  novaclient.API_MAX_VERSION.ver_minor + 1))

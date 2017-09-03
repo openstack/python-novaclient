@@ -1,0 +1,17 @@
+---
+features:
+  - |
+    Added support for `microversion 2.63`_, which includes the following
+    changes:
+
+    - New environment variable called ``OS_TRUSTED_IMAGE_CERTIFICATE_IDS``
+    - New ``nova boot`` option called ``--trusted-image-certificate-id``
+    - New ``nova rebuild`` options called ``--trusted-image-certificate-id``
+      and ``--trusted-image-certificates-unset``
+    - New kwarg called ``trusted_image_certificates`` added to python API
+      bindings:
+
+        - ``novaclient.v2.servers.ServerManager.create()``
+        - ``novaclient.v2.servers.ServerManager.rebuild()``
+
+    .. _microversion 2.63: https://docs.openstack.org/nova/latest/api_microversion_history.html#id57

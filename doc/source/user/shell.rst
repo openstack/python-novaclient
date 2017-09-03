@@ -60,6 +60,16 @@ some environment variables:
     The Keystone region name. Defaults to the first region if multiple regions
     are available.
 
+.. envvar:: OS_TRUSTED_IMAGE_CERTIFICATE_IDS
+
+    A comma-delimited list of trusted image certificate IDs. Only used
+    with the ``nova boot`` and ``nova rebuild`` commands starting with the
+    2.63 microversion.
+
+    For example::
+
+      export OS_TRUSTED_IMAGE_CERTIFICATE_IDS=trusted-cert-id1,trusted-cert-id2
+
 For example, in Bash you'd use::
 
     export OS_USERNAME=yourname

@@ -650,7 +650,7 @@ class ServerManager(base.BootingManagerWithFind):
               block_device_mapping_v2=None, nics=None, scheduler_hints=None,
               config_drive=None, admin_pass=None, disk_config=None,
               access_ip_v4=None, access_ip_v6=None, description=None,
-              tags=None, **kwargs):
+              tags=None, trusted_image_certificates=None, **kwargs):
         """
         Create (boot) a new server.
         """
@@ -767,6 +767,10 @@ class ServerManager(base.BootingManagerWithFind):
 
         if tags:
             body['server']['tags'] = tags
+
+        if trusted_image_certificates:
+            body['server']['trusted_image_certificates'] = (
+                trusted_image_certificates)
 
         return self._create('/servers', body, response_key,
                             return_raw=return_raw, **kwargs)
@@ -1191,7 +1195,8 @@ class ServerManager(base.BootingManagerWithFind):
                block_device_mapping=None, block_device_mapping_v2=None,
                nics=None, scheduler_hints=None,
                config_drive=None, disk_config=None, admin_pass=None,
-               access_ip_v4=None, access_ip_v6=None, **kwargs):
+               access_ip_v4=None, access_ip_v6=None,
+               trusted_image_certificates=None, **kwargs):
         # TODO(anthony): indicate in doc string if param is an extension
         # and/or optional
         """
@@ -1252,6 +1257,8 @@ class ServerManager(base.BootingManagerWithFind):
                             microversion 2.19)
         :param tags: A list of arbitrary strings to be added to the
                      server as tags (allowed since microversion 2.52)
+        :param trusted_image_certificates: A list of trusted certificate IDs
+                                           (allowed since microversion 2.63)
         """
         if not min_count:
             min_count = 1
@@ -1292,6 +1299,12 @@ class ServerManager(base.BootingManagerWithFind):
         if files and self.api_version >= personality_files_deprecation:
             raise exceptions.UnsupportedAttribute('files', '2.0', '2.56')
 
+        trusted_certs_microversion = api_versions.APIVersion("2.63")
+        if (trusted_image_certificates and
+                self.api_version < trusted_certs_microversion):
+            raise exceptions.UnsupportedAttribute("trusted_image_certificates",
+                                                  "2.63")
+
         boot_kwargs = dict(
             meta=meta, files=files, userdata=userdata,
             reservation_id=reservation_id, min_count=min_count,
@@ -1299,7 +1312,8 @@ class ServerManager(base.BootingManagerWithFind):
             key_name=key_name, availability_zone=availability_zone,
             scheduler_hints=scheduler_hints, config_drive=config_drive,
             disk_config=disk_config, admin_pass=admin_pass,
-            access_ip_v4=access_ip_v4, access_ip_v6=access_ip_v6, **kwargs)
+            access_ip_v4=access_ip_v4, access_ip_v6=access_ip_v6,
+            trusted_image_certificates=trusted_image_certificates, **kwargs)
 
         if block_device_mapping:
             boot_kwargs['block_device_mapping'] = block_device_mapping
@@ -1416,6 +1430,9 @@ class ServerManager(base.BootingManagerWithFind):
                          well or a string. If None is specified, the existing
                          user_data is unset.
                          (starting from microversion 2.57)
+        :param trusted_image_certificates: A list of trusted certificate IDs
+                         or None to unset/reset the servers trusted image
+                         certificates (allowed since microversion 2.63)
         :returns: :class:`Server`
         """
         descr_microversion = api_versions.APIVersion("2.19")
@@ -1436,6 +1453,15 @@ class ServerManager(base.BootingManagerWithFind):
         if 'userdata' in kwargs and self.api_version < files_and_userdata:
             raise exceptions.UnsupportedAttribute('userdata', '2.57')
 
+        trusted_certs_microversion = api_versions.APIVersion("2.63")
+        # trusted_image_certificates is intentionally *not* a named kwarg
+        # so that trusted_image_certificates=None is not confused with an
+        # intentional unset/reset request.
+        if ("trusted_image_certificates" in kwargs and
+                self.api_version < trusted_certs_microversion):
+            raise exceptions.UnsupportedAttribute("trusted_image_certificates",
+                                                  "2.63")
+
         body = {'imageRef': base.getid(image)}
         if password is not None:
             body['adminPass'] = password
@@ -1449,6 +1475,9 @@ class ServerManager(base.BootingManagerWithFind):
             body["description"] = kwargs["description"]
         if 'key_name' in kwargs:
             body['key_name'] = kwargs['key_name']
+        if "trusted_image_certificates" in kwargs:
+            body["trusted_image_certificates"] = kwargs[
+                "trusted_image_certificates"]
         if meta:
             body['metadata'] = meta
         if files:
