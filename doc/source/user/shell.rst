@@ -8,33 +8,52 @@
 The :program:`nova` shell utility interacts with OpenStack Nova API from the
 command line. It supports the entirety of the OpenStack Nova API.
 
-First, you'll need an OpenStack Nova account and an API key. You get this by
-using the `nova-manage` command in OpenStack Nova.
-
-You'll need to provide :program:`nova` with your OpenStack username and API
-key. You can do this with the `--os-username`, `--os-password` and
-`--os-tenant-id` options, but it's easier to just set them as environment
-variables by setting some environment variables:
+You'll need to provide :program:`nova` with your OpenStack Keystone user
+information. You can do this with the `--os-username`, `--os-password`,
+`--os-project-name` (`--os-project-id`), `--os-project-domain-name`
+(`--os-project-domain-id`) and `--os-user-domain-name` (`--os-user-domain-id`)
+options, but it's easier to just set them as environment variables by setting
+some environment variables:
 
 .. envvar:: OS_USERNAME
 
-    Your OpenStack Nova username.
+    Your OpenStack Keystone user name.
 
 .. envvar:: OS_PASSWORD
 
     Your password.
 
-.. envvar:: OS_TENANT_NAME
+.. envvar:: OS_PROJECT_NAME
 
-    Project for work.
+    The name of project for work.
+
+.. envvar:: OS_PROJECT_ID
+
+    The ID of project for work.
+
+.. envvar:: OS_PROJECT_DOMAIN_NAME
+
+    The name of domain containing the project.
+
+.. envvar:: OS_PROJECT_DOMAIN_ID
+
+    The ID of domain containing the project.
+
+.. envvar:: OS_USER_DOMAIN_NAME
+
+    The user's domain name.
+
+.. envvar:: OS_USER_DOMAIN_ID
+
+    The user's domain ID.
 
 .. envvar:: OS_AUTH_URL
 
-    The OpenStack API server URL.
+    The OpenStack Keystone endpoint URL.
 
 .. envvar:: OS_COMPUTE_API_VERSION
 
-    The OpenStack API version.
+    The OpenStack Nova API version (microversion).
 
 .. envvar:: OS_REGION_NAME
 
@@ -45,8 +64,10 @@ For example, in Bash you'd use::
 
     export OS_USERNAME=yourname
     export OS_PASSWORD=yadayadayada
-    export OS_TENANT_NAME=myproject
-    export OS_AUTH_URL=http://<url-to-openstack-keystone>:5000/v3/
+    export OS_PROJECT_NAME=myproject
+    export OS_PROJECT_DOMAIN_NAME=default
+    export OS_USER_DOMAIN_NAME=default
+    export OS_AUTH_URL=http://<url-to-openstack-keystone>/identity
     export OS_COMPUTE_API_VERSION=2.1
 
 From there, all shell commands take the form::
