@@ -21,14 +21,14 @@ function generate_testr_results {
         sudo /usr/os-testr-env/bin/subunit2html $BASE/logs/testrepository.subunit $BASE/logs/testr_results.html
         sudo gzip -9 $BASE/logs/testrepository.subunit
         sudo gzip -9 $BASE/logs/testr_results.html
-        sudo chown jenkins:jenkins $BASE/logs/testrepository.subunit.gz $BASE/logs/testr_results.html.gz
+        sudo chown $USER:$USER $BASE/logs/testrepository.subunit.gz $BASE/logs/testr_results.html.gz
         sudo chmod a+r $BASE/logs/testrepository.subunit.gz $BASE/logs/testr_results.html.gz
     fi
 }
 
 export NOVACLIENT_DIR="$BASE/new/python-novaclient"
 
-sudo chown -R jenkins:stack $NOVACLIENT_DIR
+sudo chown -R $USER:stack $NOVACLIENT_DIR
 
 # Go to the novaclient dir
 cd $NOVACLIENT_DIR
@@ -37,7 +37,7 @@ cd $NOVACLIENT_DIR
 echo "Running novaclient functional test suite"
 set +e
 # Preserve env for OS_ credentials
-sudo -E -H -u jenkins tox -e ${TOX_ENV:-functional}
+sudo -E -H -u $USER tox -e ${TOX_ENV:-functional}
 EXIT_CODE=$?
 set -e
 
