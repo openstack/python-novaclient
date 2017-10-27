@@ -590,7 +590,10 @@ def _boot(cs, args):
     dest='files',
     default=[],
     help=_("Store arbitrary files from <src-path> locally to <dst-path> "
-           "on the new server. Limited by the injected_files quota value."))
+           "on the new server. More files can be injected using multiple "
+           "'--file' options. Limited by the 'injected_files' quota value. "
+           "The default value is 5. You can get the current quota value by "
+           "'Personality' limit from 'nova limits' command."))
 @utils.arg(
     '--key-name',
     default=os.environ.get('NOVACLIENT_DEFAULT_KEY_NAME'),
@@ -1815,7 +1818,8 @@ def do_reboot(cs, args):
     dest='files',
     default=[],
     help=_("Store arbitrary files from <src-path> locally to <dst-path> "
-           "on the new server. You may store up to 5 files."))
+           "on the new server. More files can be injected using multiple "
+           "'--file' options. You may store up to 5 files."))
 @utils.arg(
     '--key-name',
     metavar='<key-name>',
