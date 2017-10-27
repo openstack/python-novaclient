@@ -17,7 +17,6 @@ Flavor interface.
 """
 
 from oslo_utils import strutils
-from six.moves.urllib import parse
 
 from novaclient import base
 from novaclient import exceptions
@@ -128,14 +127,11 @@ class FlavorManager(base.ManagerWithFind):
             qparams['sort_dir'] = str(sort_dir)
         if not is_public:
             qparams['is_public'] = is_public
-        qparams = sorted(qparams.items(), key=lambda x: x[0])
-        query_string = "?%s" % parse.urlencode(qparams) if qparams else ""
-
         detail = ""
         if detailed:
             detail = "/detail"
 
-        return self._list("/flavors%s%s" % (detail, query_string), "flavors")
+        return self._list("/flavors%s" % detail, "flavors", filters=qparams)
 
     def get(self, flavor):
         """Get a specific flavor.

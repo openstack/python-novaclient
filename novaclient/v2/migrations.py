@@ -14,8 +14,6 @@
 migration interface
 """
 
-from six.moves.urllib import parse
-
 from novaclient import base
 from novaclient.i18n import _
 
@@ -50,10 +48,4 @@ class MigrationManager(base.ManagerWithFind):
         if instance_uuid:
             opts['instance_uuid'] = instance_uuid
 
-        # Transform the dict to a sequence of two-element tuples in fixed
-        # order, then the encoded string will be consistent in Python 2&3.
-        new_opts = sorted(opts.items(), key=lambda x: x[0])
-
-        query_string = "?%s" % parse.urlencode(new_opts) if new_opts else ""
-
-        return self._list("/os-migrations%s" % query_string, "migrations")
+        return self._list("/os-migrations", "migrations", filters=opts)
