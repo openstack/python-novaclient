@@ -1,0 +1,8 @@
+---
+features:
+  - |
+    Added support for microversion v2.59 which introduces pagination support
+    for migrations with the help of new optional parameters ``limit``,
+    ``marker``, and also adds the new filter ``changes-since``. Users can use
+    ``changes-since`` filter to filter the results based on the last time the
+    migration was updated.

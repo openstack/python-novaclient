@@ -3036,13 +3036,54 @@ class ShellTest(utils.TestCase):
         self.assert_called('GET', '/os-migrations')
 
     def test_migration_list_v223(self):
-        self.run_command('migration-list', api_version="2.23")
+        out, _ = self.run_command('migration-list', api_version="2.23")
         self.assert_called('GET', '/os-migrations')
+        # Make sure there is no UUID in the output. Uses "| UUID" to
+        # avoid collisions with the "Instance UUID" column.
+        self.assertNotIn('| UUID', out)
 
     def test_migration_list_with_filters(self):
         self.run_command('migration-list --host host1 --status finished')
         self.assert_called('GET',
                            '/os-migrations?host=host1&status=finished')
+
+    def test_migration_list_marker_pre_v259_not_allowed(self):
+        cmd = 'migration-list --marker %s'
+        self.assertRaises(SystemExit, self.run_command,
+                          cmd % FAKE_UUID_1, api_version='2.58')
+
+    def test_migration_list_limit_pre_v259_not_allowed(self):
+        cmd = 'migration-list --limit 10'
+        self.assertRaises(SystemExit, self.run_command,
+                          cmd, api_version='2.58')
+
+    def test_migration_list_changes_since_pre_v259_not_allowed(self):
+        cmd = 'migration-list --changes-since 2016-02-29T06:23:22'
+        self.assertRaises(SystemExit, self.run_command,
+                          cmd, api_version='2.58')
+
+    def test_migration_list_limit_marker_v259(self):
+        out, _ = self.run_command(
+            'migration-list --limit 10 --marker %s' % FAKE_UUID_1,
+            api_version='2.59')
+        self.assert_called(
+            'GET',
+            '/os-migrations?limit=10&marker=%s' % FAKE_UUID_1)
+        # Make sure the UUID column is now in the output. Uses "| UUID" to
+        # avoid collisions with the "Instance UUID" column.
+        self.assertIn('| UUID', out)
+
+    def test_migration_list_with_changes_since_v259(self):
+        self.run_command('migration-list --changes-since 2016-02-29T06:23:22',
+                         api_version='2.59')
+        self.assert_called(
+            'GET', '/os-migrations?changes-since=2016-02-29T06%3A23%3A22')
+
+    def test_migration_list_with_changes_since_invalid_value_v259(self):
+        ex = self.assertRaises(exceptions.CommandError, self.run_command,
+                               'migration-list --changes-since 0123456789',
+                               api_version='2.59')
+        self.assertIn('Invalid changes-since value', six.text_type(ex))
 
     @mock.patch('novaclient.v2.shell._find_server')
     @mock.patch('os.system')

@@ -4992,6 +4992,10 @@ def _print_migrations(cs, migrations):
 
     formatters = {'Old Flavor': old_flavor, 'New Flavor': new_flavor}
 
+    # Insert migrations UUID after ID
+    if cs.api_version >= api_versions.APIVersion("2.59"):
+        fields.insert(0, "UUID")
+
     if cs.api_version >= api_versions.APIVersion("2.23"):
         fields.insert(0, "Id")
         fields.append("Type")
@@ -5000,6 +5004,7 @@ def _print_migrations(cs, migrations):
     utils.print_list(migrations, fields, formatters)
 
 
+@api_versions.wraps("2.0", "2.58")
 @utils.arg(
     '--instance-uuid',
     dest='instance_uuid',
@@ -5019,4 +5024,63 @@ def do_migration_list(cs, args):
     """Print a list of migrations."""
     migrations = cs.migrations.list(args.host, args.status,
                                     instance_uuid=args.instance_uuid)
+    _print_migrations(cs, migrations)
+
+
+@api_versions.wraps("2.59")
+@utils.arg(
+    '--instance-uuid',
+    dest='instance_uuid',
+    metavar='<instance_uuid>',
+    help=_('Fetch migrations for the given instance.'))
+@utils.arg(
+    '--host',
+    dest='host',
+    metavar='<host>',
+    help=_('Fetch migrations for the given host.'))
+@utils.arg(
+    '--status',
+    dest='status',
+    metavar='<status>',
+    help=_('Fetch migrations for the given status.'))
+@utils.arg(
+    '--marker',
+    dest='marker',
+    metavar='<marker>',
+    default=None,
+    help=_('The last migration of the previous page; displays list of '
+           'migrations after "marker". Note that the marker is the '
+           'migration UUID.'))
+@utils.arg(
+    '--limit',
+    dest='limit',
+    metavar='<limit>',
+    type=int,
+    default=None,
+    help=_('Maximum number of migrations to display. Note that there is a '
+           'configurable max limit on the server, and the limit that is used '
+           'will be the minimum between what is requested here and what '
+           'is configured in the server.'))
+@utils.arg(
+    '--changes-since',
+    dest='changes_since',
+    metavar='<changes_since>',
+    default=None,
+    help=_('List only migrations changed after a certain point of time. '
+           'The provided time should be an ISO 8061 formatted time. '
+           'ex 2016-03-04T06:27:59Z .'))
+def do_migration_list(cs, args):
+    """Print a list of migrations."""
+    if args.changes_since:
+        try:
+            timeutils.parse_isotime(args.changes_since)
+        except ValueError:
+            raise exceptions.CommandError(_('Invalid changes-since value: %s')
+                                          % args.changes_since)
+
+    migrations = cs.migrations.list(args.host, args.status,
+                                    instance_uuid=args.instance_uuid,
+                                    marker=args.marker, limit=args.limit,
+                                    changes_since=args.changes_since)
+    # TODO(yikun): Output a "Marker" column if there is a next link?
     _print_migrations(cs, migrations)

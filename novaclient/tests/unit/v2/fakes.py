@@ -2049,6 +2049,10 @@ class FakeSessionClient(base_client.SessionClient):
             migration1.update({"migration_type": "live-migration"})
             migration2.update({"migration_type": "live-migration"})
 
+        if self.api_version >= api_versions.APIVersion("2.59"):
+            migration1.update({"uuid": "11111111-07d5-11e1-90e3-e3dffe0c5983"})
+            migration2.update({"uuid": "22222222-07d5-11e1-90e3-e3dffe0c5983"})
+
         migration_list = []
         instance_uuid = kw.get('instance_uuid', None)
         if instance_uuid == migration1['instance_uuid']:
