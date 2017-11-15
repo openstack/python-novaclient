@@ -4674,6 +4674,23 @@ def _server_evacuate(cs, server, args):
                                                "error_message": error_message})
 
 
+def _hyper_servers(cs, host, strict):
+    hypervisors = cs.hypervisors.search(host, servers=True)
+    for hyper in hypervisors:
+        if strict and hyper.hypervisor_hostname != host:
+            continue
+        if hasattr(hyper, 'servers'):
+            for server in hyper.servers:
+                yield server
+        if strict:
+            break
+    else:
+        if strict:
+            msg = (_("No hypervisor matching '%s' could be found.") %
+                   host)
+            raise exceptions.NotFound(404, msg)
+
+
 @utils.arg('host', metavar='<host>',
            help='The hypervisor hostname (or pattern) to search for. '
                 'WARNING: Use a fully qualified domain name if you only '
@@ -4699,18 +4716,22 @@ def _server_evacuate(cs, server, args):
     default=False,
     help=_('Force to not verify the scheduler if a host is provided.'),
     start_version='2.29')
+@utils.arg(
+    '--strict',
+    dest='strict',
+    action='store_true',
+    default=False,
+    help=_('Evacuate host with exact hypervisor hostname match'))
 def do_host_evacuate(cs, args):
     """Evacuate all instances from failed host."""
-
-    hypervisors = cs.hypervisors.search(args.host, servers=True)
     response = []
-    for hyper in hypervisors:
-        if hasattr(hyper, 'servers'):
-            for server in hyper.servers:
-                response.append(_server_evacuate(cs, server, args))
-
-    utils.print_list(response,
-                     ["Server UUID", "Evacuate Accepted", "Error Message"])
+    for server in _hyper_servers(cs, args.host, args.strict):
+        response.append(_server_evacuate(cs, server, args))
+    utils.print_list(response, [
+        "Server UUID",
+        "Evacuate Accepted",
+        "Error Message",
+    ])
 
 
 def _server_live_migrate(cs, server, args):
@@ -4780,22 +4801,29 @@ def _server_live_migrate(cs, server, args):
     default=False,
     help=_('Force to not verify the scheduler if a host is provided.'),
     start_version='2.30')
+@utils.arg(
+    '--strict',
+    dest='strict',
+    action='store_true',
+    default=False,
+    help=_('live Evacuate host with exact hypervisor hostname match'))
 def do_host_evacuate_live(cs, args):
     """Live migrate all instances of the specified host
     to other available hosts.
     """
-    hypervisors = cs.hypervisors.search(args.host, servers=True)
     response = []
     migrating = 0
-    for hyper in hypervisors:
-        for server in getattr(hyper, 'servers', []):
-            response.append(_server_live_migrate(cs, server, args))
-            migrating += 1
-            if args.max_servers is not None and migrating >= args.max_servers:
-                break
-
-    utils.print_list(response, ["Server UUID", "Live Migration Accepted",
-                                "Error Message"])
+    for server in _hyper_servers(cs, args.host, args.strict):
+        response.append(_server_live_migrate(cs, server, args))
+        migrating = migrating + 1
+        if (args.max_servers is not None and
+                migrating >= args.max_servers):
+            break
+    utils.print_list(response, [
+        "Server UUID",
+        "Live Migration Accepted",
+        "Error Message",
+    ])
 
 
 class HostServersMigrateResponse(base.Resource):
@@ -4820,20 +4848,24 @@ def _server_migrate(cs, server):
            help='The hypervisor hostname (or pattern) to search for. '
                 'WARNING: Use a fully qualified domain name if you only '
                 'want to cold migrate from a specific host.')
+@utils.arg(
+    '--strict',
+    dest='strict',
+    action='store_true',
+    default=False,
+    help=_('Migrate host with exact hypervisor hostname match'))
 def do_host_servers_migrate(cs, args):
     """Cold migrate all instances off the specified host to other available
     hosts.
     """
-
-    hypervisors = cs.hypervisors.search(args.host, servers=True)
     response = []
-    for hyper in hypervisors:
-        if hasattr(hyper, 'servers'):
-            for server in hyper.servers:
-                response.append(_server_migrate(cs, server))
-
-    utils.print_list(response,
-                     ["Server UUID", "Migration Accepted", "Error Message"])
+    for server in _hyper_servers(cs, args.host, args.strict):
+        response.append(_server_migrate(cs, server))
+    utils.print_list(response, [
+        "Server UUID",
+        "Migration Accepted",
+        "Error Message",
+    ])
 
 
 @utils.arg(
@@ -4963,17 +4995,20 @@ def do_list_extensions(cs, _args):
     action='append',
     default=[],
     help=_('Metadata to set or delete (only key is necessary on delete)'))
+@utils.arg(
+    '--strict',
+    dest='strict',
+    action='store_true',
+    default=False,
+    help=_('Set host-meta to the hypervisor with exact hostname match'))
 def do_host_meta(cs, args):
     """Set or Delete metadata on all instances of a host."""
-    hypervisors = cs.hypervisors.search(args.host, servers=True)
-    for hyper in hypervisors:
+    for server in _hyper_servers(cs, args.host, args.strict):
         metadata = _extract_metadata(args)
-        if hasattr(hyper, 'servers'):
-            for server in hyper.servers:
-                if args.action == 'set':
-                    cs.servers.set_meta(server['uuid'], metadata)
-                elif args.action == 'delete':
-                    cs.servers.delete_meta(server['uuid'], metadata.keys())
+        if args.action == 'set':
+            cs.servers.set_meta(server['uuid'], metadata)
+        elif args.action == 'delete':
+            cs.servers.delete_meta(server['uuid'], metadata.keys())
 
 
 def _print_migrations(cs, migrations):

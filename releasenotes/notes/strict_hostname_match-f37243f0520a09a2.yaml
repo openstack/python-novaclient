@@ -1,0 +1,9 @@
+---
+features:
+  - |
+    Provides "--strict" option for  "nova host-servers-migrate", "nova host-evacuate",
+    "nova host-evacuate-live" and "nova host-meta" commands. When "--strict" option is
+    used, the action will be applied to a single compute with the exact hypervisor
+    hostname string match rather than to the computes with hostname substring match.
+    When the specified hostname does not exist in the system, "NotFound" error code
+    will be returned.

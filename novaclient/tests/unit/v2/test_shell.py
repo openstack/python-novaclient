@@ -1915,13 +1915,37 @@ class ShellTest(utils.TestCase):
                            {'metadata': {'key1': 'val1', 'key2': 'val2'}},
                            pos=4)
 
+    def test_set_host_meta_strict(self):
+        self.run_command('host-meta hyper1 --strict set key1=val1 key2=val2')
+        self.assert_called('GET', '/os-hypervisors/hyper1/servers', pos=0)
+        self.assert_called('POST', '/servers/uuid1/metadata',
+                           {'metadata': {'key1': 'val1', 'key2': 'val2'}},
+                           pos=1)
+        self.assert_called('POST', '/servers/uuid2/metadata',
+                           {'metadata': {'key1': 'val1', 'key2': 'val2'}},
+                           pos=2)
+
+    def test_set_host_meta_no_match(self):
+        cmd = 'host-meta hyper --strict set key1=val1 key2=val2'
+        self.assertRaises(exceptions.NotFound, self.run_command, cmd)
+
     def test_set_host_meta_with_no_servers(self):
         self.run_command('host-meta hyper_no_servers set key1=val1 key2=val2')
         self.assert_called('GET', '/os-hypervisors/hyper_no_servers/servers')
 
+    def test_set_host_meta_with_no_servers_strict(self):
+        cmd = 'host-meta hyper_no_servers --strict set key1=val1 key2=val2'
+        self.assertRaises(exceptions.NotFound, self.run_command, cmd)
+
     def test_delete_host_meta(self):
         self.run_command('host-meta hyper delete key1')
         self.assert_called('GET', '/os-hypervisors/hyper/servers', pos=0)
+        self.assert_called('DELETE', '/servers/uuid1/metadata/key1', pos=1)
+        self.assert_called('DELETE', '/servers/uuid2/metadata/key1', pos=2)
+
+    def test_delete_host_meta_strict(self):
+        self.run_command('host-meta hyper1 --strict delete key1')
+        self.assert_called('GET', '/os-hypervisors/hyper1/servers', pos=0)
         self.assert_called('DELETE', '/servers/uuid1/metadata/key1', pos=1)
         self.assert_called('DELETE', '/servers/uuid2/metadata/key1', pos=2)
 
@@ -2300,6 +2324,19 @@ class ShellTest(utils.TestCase):
         self.assert_called('POST', '/servers/uuid3/action', body, pos=3)
         self.assert_called('POST', '/servers/uuid4/action', body, pos=4)
 
+    def test_host_evacuate_live_with_no_target_host_strict(self):
+        self.run_command('host-evacuate-live hyper1 --strict')
+        self.assert_called('GET', '/os-hypervisors/hyper1/servers', pos=0)
+        body = {'os-migrateLive': {'host': None,
+                                   'block_migration': False,
+                                   'disk_over_commit': False}}
+        self.assert_called('POST', '/servers/uuid1/action', body, pos=1)
+        self.assert_called('POST', '/servers/uuid2/action', body, pos=2)
+
+    def test_host_evacuate_live_no_match(self):
+        cmd = 'host-evacuate-live hyper --strict'
+        self.assertRaises(exceptions.NotFound, self.run_command, cmd)
+
     def test_host_evacuate_live_2_25(self):
         self.run_command('host-evacuate-live hyper', api_version='2.25')
         self.assert_called('GET', '/os-hypervisors/hyper/servers', pos=0)
@@ -2308,6 +2345,14 @@ class ShellTest(utils.TestCase):
         self.assert_called('POST', '/servers/uuid2/action', body, pos=2)
         self.assert_called('POST', '/servers/uuid3/action', body, pos=3)
         self.assert_called('POST', '/servers/uuid4/action', body, pos=4)
+
+    def test_host_evacuate_live_2_25_strict(self):
+        self.run_command('host-evacuate-live hyper1 --strict',
+                         api_version='2.25')
+        self.assert_called('GET', '/os-hypervisors/hyper1/servers', pos=0)
+        body = {'os-migrateLive': {'host': None, 'block_migration': 'auto'}}
+        self.assert_called('POST', '/servers/uuid1/action', body, pos=1)
+        self.assert_called('POST', '/servers/uuid2/action', body, pos=2)
 
     def test_host_evacuate_live_with_target_host(self):
         self.run_command('host-evacuate-live hyper '
@@ -2320,6 +2365,16 @@ class ShellTest(utils.TestCase):
         self.assert_called('POST', '/servers/uuid2/action', body, pos=2)
         self.assert_called('POST', '/servers/uuid3/action', body, pos=3)
         self.assert_called('POST', '/servers/uuid4/action', body, pos=4)
+
+    def test_host_evacuate_live_with_target_host_strict(self):
+        self.run_command('host-evacuate-live hyper1 '
+                         '--target-host hostname --strict')
+        self.assert_called('GET', '/os-hypervisors/hyper1/servers', pos=0)
+        body = {'os-migrateLive': {'host': 'hostname',
+                                   'block_migration': False,
+                                   'disk_over_commit': False}}
+        self.assert_called('POST', '/servers/uuid1/action', body, pos=1)
+        self.assert_called('POST', '/servers/uuid2/action', body, pos=2)
 
     def test_host_evacuate_live_2_30(self):
         self.run_command('host-evacuate-live --force hyper '
@@ -2334,6 +2389,17 @@ class ShellTest(utils.TestCase):
         self.assert_called('POST', '/servers/uuid3/action', body, pos=3)
         self.assert_called('POST', '/servers/uuid4/action', body, pos=4)
 
+    def test_host_evacuate_live_2_30_strict(self):
+        self.run_command('host-evacuate-live --force hyper1 '
+                         '--target-host hostname --strict',
+                         api_version='2.30')
+        self.assert_called('GET', '/os-hypervisors/hyper1/servers', pos=0)
+        body = {'os-migrateLive': {'host': 'hostname',
+                                   'block_migration': 'auto',
+                                   'force': True}}
+        self.assert_called('POST', '/servers/uuid1/action', body, pos=1)
+        self.assert_called('POST', '/servers/uuid2/action', body, pos=2)
+
     def test_host_evacuate_live_with_block_migration(self):
         self.run_command('host-evacuate-live --block-migrate hyper')
         self.assert_called('GET', '/os-hypervisors/hyper/servers', pos=0)
@@ -2345,6 +2411,15 @@ class ShellTest(utils.TestCase):
         self.assert_called('POST', '/servers/uuid3/action', body, pos=3)
         self.assert_called('POST', '/servers/uuid4/action', body, pos=4)
 
+    def test_host_evacuate_live_with_block_migration_strict(self):
+        self.run_command('host-evacuate-live --block-migrate hyper2 --strict')
+        self.assert_called('GET', '/os-hypervisors/hyper2/servers', pos=0)
+        body = {'os-migrateLive': {'host': None,
+                                   'block_migration': True,
+                                   'disk_over_commit': False}}
+        self.assert_called('POST', '/servers/uuid3/action', body, pos=1)
+        self.assert_called('POST', '/servers/uuid4/action', body, pos=2)
+
     def test_host_evacuate_live_with_block_migration_2_25(self):
         self.run_command('host-evacuate-live --block-migrate hyper',
                          api_version='2.25')
@@ -2354,6 +2429,14 @@ class ShellTest(utils.TestCase):
         self.assert_called('POST', '/servers/uuid2/action', body, pos=2)
         self.assert_called('POST', '/servers/uuid3/action', body, pos=3)
         self.assert_called('POST', '/servers/uuid4/action', body, pos=4)
+
+    def test_host_evacuate_live_with_block_migration_2_25_strict(self):
+        self.run_command('host-evacuate-live --block-migrate hyper2 --strict',
+                         api_version='2.25')
+        self.assert_called('GET', '/os-hypervisors/hyper2/servers', pos=0)
+        body = {'os-migrateLive': {'host': None, 'block_migration': True}}
+        self.assert_called('POST', '/servers/uuid3/action', body, pos=1)
+        self.assert_called('POST', '/servers/uuid4/action', body, pos=2)
 
     def test_host_evacuate_live_with_disk_over_commit(self):
         self.run_command('host-evacuate-live --disk-over-commit hyper')
@@ -2366,14 +2449,37 @@ class ShellTest(utils.TestCase):
         self.assert_called('POST', '/servers/uuid3/action', body, pos=3)
         self.assert_called('POST', '/servers/uuid4/action', body, pos=4)
 
+    def test_host_evacuate_live_with_disk_over_commit_strict(self):
+        self.run_command('host-evacuate-live --disk-over-commit hyper2 '
+                         '--strict')
+        self.assert_called('GET', '/os-hypervisors/hyper2/servers', pos=0)
+        body = {'os-migrateLive': {'host': None,
+                                   'block_migration': False,
+                                   'disk_over_commit': True}}
+        self.assert_called('POST', '/servers/uuid3/action', body, pos=1)
+        self.assert_called('POST', '/servers/uuid4/action', body, pos=2)
+
     def test_host_evacuate_live_with_disk_over_commit_2_25(self):
         self.assertRaises(SystemExit, self.run_command,
                           'host-evacuate-live --disk-over-commit hyper',
                           api_version='2.25')
 
+    def test_host_evacuate_live_with_disk_over_commit_2_25_strict(self):
+        self.assertRaises(SystemExit, self.run_command,
+                          'host-evacuate-live --disk-over-commit hyper2 '
+                          '--strict', api_version='2.25')
+
     def test_host_evacuate_list_with_max_servers(self):
         self.run_command('host-evacuate-live --max-servers 1 hyper')
         self.assert_called('GET', '/os-hypervisors/hyper/servers', pos=0)
+        body = {'os-migrateLive': {'host': None,
+                                   'block_migration': False,
+                                   'disk_over_commit': False}}
+        self.assert_called('POST', '/servers/uuid1/action', body, pos=1)
+
+    def test_host_evacuate_list_with_max_servers_strict(self):
+        self.run_command('host-evacuate-live --max-servers 1 hyper1 --strict')
+        self.assert_called('GET', '/os-hypervisors/hyper1/servers', pos=0)
         body = {'os-migrateLive': {'host': None,
                                    'block_migration': False,
                                    'disk_over_commit': False}}
@@ -2506,6 +2612,15 @@ class ShellTest(utils.TestCase):
         self.assert_called('POST', '/servers/uuid4/action',
                            {'evacuate': {'host': 'target_hyper'}}, pos=4)
 
+    def test_host_evacuate_v2_14_strict(self):
+        self.run_command('host-evacuate hyper1 --target target_hyper --strict',
+                         api_version='2.14')
+        self.assert_called('GET', '/os-hypervisors/hyper1/servers', pos=0)
+        self.assert_called('POST', '/servers/uuid1/action',
+                           {'evacuate': {'host': 'target_hyper'}}, pos=1)
+        self.assert_called('POST', '/servers/uuid2/action',
+                           {'evacuate': {'host': 'target_hyper'}}, pos=2)
+
     def test_host_evacuate(self):
         self.run_command('host-evacuate hyper --target target_hyper')
         self.assert_called('GET', '/os-hypervisors/hyper/servers', pos=0)
@@ -2521,6 +2636,20 @@ class ShellTest(utils.TestCase):
         self.assert_called('POST', '/servers/uuid4/action',
                            {'evacuate': {'host': 'target_hyper',
                                          'onSharedStorage': False}}, pos=4)
+
+    def test_host_evacuate_strict(self):
+        self.run_command('host-evacuate hyper1 --target target_hyper --strict')
+        self.assert_called('GET', '/os-hypervisors/hyper1/servers', pos=0)
+        self.assert_called('POST', '/servers/uuid1/action',
+                           {'evacuate': {'host': 'target_hyper',
+                                         'onSharedStorage': False}}, pos=1)
+        self.assert_called('POST', '/servers/uuid2/action',
+                           {'evacuate': {'host': 'target_hyper',
+                                         'onSharedStorage': False}}, pos=2)
+
+    def test_host_evacuate_no_match(self):
+        cmd = 'host-evacuate hyper --target target_hyper --strict'
+        self.assertRaises(exceptions.NotFound, self.run_command, cmd)
 
     def test_host_evacuate_v2_29(self):
         self.run_command('host-evacuate hyper --target target_hyper --force',
@@ -2539,6 +2668,17 @@ class ShellTest(utils.TestCase):
                            {'evacuate': {'host': 'target_hyper', 'force': True}
                             }, pos=4)
 
+    def test_host_evacuate_v2_29_strict(self):
+        self.run_command('host-evacuate hyper1 --target target_hyper'
+                         ' --force --strict', api_version='2.29')
+        self.assert_called('GET', '/os-hypervisors/hyper1/servers', pos=0)
+        self.assert_called('POST', '/servers/uuid1/action',
+                           {'evacuate': {'host': 'target_hyper', 'force': True}
+                            }, pos=1)
+        self.assert_called('POST', '/servers/uuid2/action',
+                           {'evacuate': {'host': 'target_hyper', 'force': True}
+                            }, pos=2)
+
     def test_host_evacuate_with_shared_storage(self):
         self.run_command(
             'host-evacuate --on-shared-storage hyper --target target_hyper')
@@ -2556,6 +2696,17 @@ class ShellTest(utils.TestCase):
                            {'evacuate': {'host': 'target_hyper',
                                          'onSharedStorage': True}}, pos=4)
 
+    def test_host_evacuate_with_shared_storage_strict(self):
+        self.run_command('host-evacuate --on-shared-storage hyper1'
+                         ' --target target_hyper --strict')
+        self.assert_called('GET', '/os-hypervisors/hyper1/servers', pos=0)
+        self.assert_called('POST', '/servers/uuid1/action',
+                           {'evacuate': {'host': 'target_hyper',
+                                         'onSharedStorage': True}}, pos=1)
+        self.assert_called('POST', '/servers/uuid2/action',
+                           {'evacuate': {'host': 'target_hyper',
+                                         'onSharedStorage': True}}, pos=2)
+
     def test_host_evacuate_with_no_target_host(self):
         self.run_command('host-evacuate --on-shared-storage hyper')
         self.assert_called('GET', '/os-hypervisors/hyper/servers', pos=0)
@@ -2568,6 +2719,14 @@ class ShellTest(utils.TestCase):
         self.assert_called('POST', '/servers/uuid4/action',
                            {'evacuate': {'onSharedStorage': True}}, pos=4)
 
+    def test_host_evacuate_with_no_target_host_strict(self):
+        self.run_command('host-evacuate --on-shared-storage hyper1 --strict')
+        self.assert_called('GET', '/os-hypervisors/hyper1/servers', pos=0)
+        self.assert_called('POST', '/servers/uuid1/action',
+                           {'evacuate': {'onSharedStorage': True}}, pos=1)
+        self.assert_called('POST', '/servers/uuid2/action',
+                           {'evacuate': {'onSharedStorage': True}}, pos=2)
+
     def test_host_servers_migrate(self):
         self.run_command('host-servers-migrate hyper')
         self.assert_called('GET', '/os-hypervisors/hyper/servers', pos=0)
@@ -2579,6 +2738,18 @@ class ShellTest(utils.TestCase):
                            '/servers/uuid3/action', {'migrate': None}, pos=3)
         self.assert_called('POST',
                            '/servers/uuid4/action', {'migrate': None}, pos=4)
+
+    def test_host_servers_migrate_strict(self):
+        self.run_command('host-servers-migrate hyper1 --strict')
+        self.assert_called('GET', '/os-hypervisors/hyper1/servers', pos=0)
+        self.assert_called('POST',
+                           '/servers/uuid1/action', {'migrate': None}, pos=1)
+        self.assert_called('POST',
+                           '/servers/uuid2/action', {'migrate': None}, pos=2)
+
+    def test_host_servers_migrate_no_match(self):
+        cmd = 'host-servers-migrate hyper --strict'
+        self.assertRaises(exceptions.NotFound, self.run_command, cmd)
 
     def test_hypervisor_list(self):
         self.run_command('hypervisor-list')
