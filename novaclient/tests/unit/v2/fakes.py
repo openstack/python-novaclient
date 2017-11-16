@@ -14,6 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import copy
 import datetime
 import re
 
@@ -832,9 +833,12 @@ class FakeSessionClient(base_client.SessionClient):
 
     def get_flavors(self, **kw):
         status, header, flavors = self.get_flavors_detail(**kw)
+        included_fields = ['id', 'name']
+        if self.api_version >= api_versions.APIVersion('2.55'):
+            included_fields.append('description')
         for flavor in flavors['flavors']:
             for k in list(flavor):
-                if k not in ['id', 'name']:
+                if k not in included_fields:
                     del flavor[k]
 
         return (200, FAKE_RESPONSE_HEADERS, flavors)
@@ -879,6 +883,18 @@ class FakeSessionClient(base_client.SessionClient):
                     v for v in flavors['flavors']
                     if not v['os-flavor-access:is_public']
                 ]
+
+        # Add description in the response for all flavors.
+        if self.api_version >= api_versions.APIVersion('2.55'):
+            for flavor in flavors['flavors']:
+                flavor['description'] = None
+            # Add a new flavor that is a copy of the first but with a different
+            # name, flavorid and a description set.
+            new_flavor = copy.deepcopy(flavors['flavors'][0])
+            new_flavor['id'] = 'with-description'
+            new_flavor['name'] = 'with-description'
+            new_flavor['description'] = 'test description'
+            flavors['flavors'].append(new_flavor)
 
         return (200, FAKE_RESPONSE_HEADERS, flavors)
 
@@ -937,6 +953,14 @@ class FakeSessionClient(base_client.SessionClient):
                 self.get_flavors_detail(is_public='None')[2]['flavors'][2]}
         )
 
+    def get_flavors_with_description(self, **kw):
+        return (
+            200,
+            {},
+            {'flavor':
+                self.get_flavors_detail(is_public='None')[2]['flavors'][-1]}
+        )
+
     def delete_flavors_flavordelete(self, **kw):
         return (202, FAKE_RESPONSE_HEADERS, None)
 
@@ -950,6 +974,14 @@ class FakeSessionClient(base_client.SessionClient):
             {'flavor':
                 self.get_flavors_detail(is_public='None')[2]['flavors'][0]}
         )
+
+    def put_flavors_with_description(self, body, **kw):
+        assert 'flavor' in body
+        assert 'description' in body['flavor']
+        flavor = self.get_flavors_with_description(**kw)[2]
+        # Fake out the actual update of the flavor description for the response
+        flavor['description'] = body['flavor']['description']
+        return (200, {}, {'flavor': flavor})
 
     def get_flavors_1_os_extra_specs(self, **kw):
         return (

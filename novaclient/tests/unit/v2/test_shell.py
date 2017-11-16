@@ -1131,8 +1131,15 @@ class ShellTest(utils.TestCase):
                           cmd, api_version='2.51')
 
     def test_flavor_list(self):
-        self.run_command('flavor-list')
+        out, _ = self.run_command('flavor-list')
         self.assert_called_anytime('GET', '/flavors/detail')
+        self.assertNotIn('Description', out)
+
+    def test_flavor_list_with_description(self):
+        """Tests that the description column is added for version >= 2.55."""
+        out, _ = self.run_command('flavor-list', api_version='2.55')
+        self.assert_called_anytime('GET', '/flavors/detail')
+        self.assertIn('Description', out)
 
     def test_flavor_list_with_extra_specs(self):
         self.run_command('flavor-list --extra-specs')
@@ -1160,8 +1167,15 @@ class ShellTest(utils.TestCase):
         self.assert_called('GET', '/flavors/detail?sort_dir=asc&sort_key=id')
 
     def test_flavor_show(self):
-        self.run_command('flavor-show 1')
+        out, _ = self.run_command('flavor-show 1')
         self.assert_called_anytime('GET', '/flavors/1')
+        self.assertNotIn('description', out)
+
+    def test_flavor_show_with_description(self):
+        """Tests that the description is shown in version >= 2.55."""
+        out, _ = self.run_command('flavor-show 1', api_version='2.55')
+        self.assert_called_anytime('GET', '/flavors/1')
+        self.assertIn('description', out)
 
     def test_flavor_show_with_alphanum_id(self):
         self.run_command('flavor-show aa1')
@@ -1909,6 +1923,41 @@ class ShellTest(utils.TestCase):
                          "--is-public true")
         self.assert_called('POST', '/flavors', pos=-2)
         self.assert_called('GET', '/flavors/1', pos=-1)
+
+    def test_flavor_create_with_description(self):
+        """Tests creating a flavor with a description."""
+        self.run_command("flavor-create description "
+                         "1234 512 10 1 --description foo", api_version='2.55')
+        expected_post_body = {
+            "flavor": {
+                "name": "description",
+                "ram": 512,
+                "vcpus": 1,
+                "disk": 10,
+                "id": "1234",
+                "swap": 0,
+                "OS-FLV-EXT-DATA:ephemeral": 0,
+                "rxtx_factor": 1.0,
+                "os-flavor-access:is_public": True,
+                "description": "foo"
+            }
+        }
+        self.assert_called('POST', '/flavors', expected_post_body, pos=-2)
+
+    def test_flavor_update(self):
+        """Tests creating a flavor with a description."""
+        out, _ = self.run_command(
+            "flavor-update with-description new-description",
+            api_version='2.55')
+        expected_put_body = {
+            "flavor": {
+                "description": "new-description"
+            }
+        }
+        self.assert_called('GET', '/flavors/with-description', pos=-2)
+        self.assert_called('PUT', '/flavors/with-description',
+                           expected_put_body, pos=-1)
+        self.assertIn('new-description', out)
 
     def test_aggregate_list(self):
         out, err = self.run_command('aggregate-list')

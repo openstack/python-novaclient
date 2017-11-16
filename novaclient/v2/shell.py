@@ -1052,7 +1052,7 @@ def _print_flavor_extra_specs(flavor):
         return "N/A"
 
 
-def _print_flavor_list(flavors, show_extra_specs=False):
+def _print_flavor_list(cs, flavors, show_extra_specs=False):
     _translate_flavor_keys(flavors)
 
     headers = [
@@ -1072,6 +1072,9 @@ def _print_flavor_list(flavors, show_extra_specs=False):
         headers.append('extra_specs')
     else:
         formatters = {}
+
+    if cs.api_version >= api_versions.APIVersion('2.55'):
+        headers.append('Description')
 
     utils.print_list(flavors, headers, formatters)
 
@@ -1138,7 +1141,7 @@ def do_flavor_list(cs, args):
         flavors = cs.flavors.list(marker=args.marker, min_disk=args.min_disk,
                                   min_ram=args.min_ram, sort_key=args.sort_key,
                                   sort_dir=args.sort_dir, limit=args.limit)
-    _print_flavor_list(flavors, args.extra_specs)
+    _print_flavor_list(cs, flavors, args.extra_specs)
 
 
 @utils.arg(
@@ -1149,7 +1152,7 @@ def do_flavor_delete(cs, args):
     """Delete a specific flavor"""
     flavorid = _find_flavor(cs, args.flavor)
     cs.flavors.delete(flavorid)
-    _print_flavor_list([flavorid])
+    _print_flavor_list(cs, [flavorid])
 
 
 @utils.arg(
@@ -1204,12 +1207,39 @@ def do_flavor_show(cs, args):
     help=_("Make flavor accessible to the public (default true)."),
     type=lambda v: strutils.bool_from_string(v, True),
     default=True)
+@utils.arg(
+    '--description',
+    metavar='<description>',
+    help=_('A free form description of the flavor. Limited to 65535 '
+           'characters in length. Only printable characters are allowed.'),
+    start_version='2.55')
 def do_flavor_create(cs, args):
     """Create a new flavor."""
+    if cs.api_version >= api_versions.APIVersion('2.55'):
+        description = args.description
+    else:
+        description = None
     f = cs.flavors.create(args.name, args.ram, args.vcpus, args.disk, args.id,
                           args.ephemeral, args.swap, args.rxtx_factor,
-                          args.is_public)
-    _print_flavor_list([f])
+                          args.is_public, description)
+    _print_flavor_list(cs, [f])
+
+
+@api_versions.wraps('2.55')
+@utils.arg(
+    'flavor',
+    metavar='<flavor>',
+    help=_('Name or ID of the flavor to update.'))
+@utils.arg(
+    'description',
+    metavar='<description>',
+    help=_('A free form description of the flavor. Limited to 65535 '
+           'characters in length. Only printable characters are allowed.'))
+def do_flavor_update(cs, args):
+    """Update the description of an existing flavor."""
+    flavorid = _find_flavor(cs, args.flavor)
+    flavor = cs.flavors.update(flavorid, args.description)
+    _print_flavor_list(cs, [flavor])
 
 
 @utils.arg(

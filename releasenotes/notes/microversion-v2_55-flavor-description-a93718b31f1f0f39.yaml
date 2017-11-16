@@ -1,0 +1,8 @@
+---
+features:
+  - |
+    Support is added for compute API version 2.55. This adds the ability
+    to create a flavor with a description, show the description of a flavor,
+    and update the description on an existing flavor.
+
+    A new ``nova flavor-update <flavor> <description>`` command is added.
