@@ -655,7 +655,7 @@ class SecurityGroup(base.Resource):
 class ServerManager(base.BootingManagerWithFind):
     resource_class = Server
 
-    def _boot(self, resource_url, response_key, name, image, flavor,
+    def _boot(self, response_key, name, image, flavor,
               meta=None, files=None, userdata=None,
               reservation_id=False, return_raw=False, min_count=None,
               max_count=None, security_groups=None, key_name=None,
@@ -799,7 +799,7 @@ class ServerManager(base.BootingManagerWithFind):
         if tags:
             body['server']['tags'] = tags
 
-        return self._create(resource_url, body, response_key,
+        return self._create('/servers', body, response_key,
                             return_raw=return_raw, **kwargs)
 
     def get(self, server):
@@ -1391,19 +1391,15 @@ class ServerManager(base.BootingManagerWithFind):
             access_ip_v4=access_ip_v4, access_ip_v6=access_ip_v6, **kwargs)
 
         if block_device_mapping:
-            resource_url = "/os-volumes_boot"
             boot_kwargs['block_device_mapping'] = block_device_mapping
         elif block_device_mapping_v2:
-            resource_url = "/os-volumes_boot"
             boot_kwargs['block_device_mapping_v2'] = block_device_mapping_v2
-        else:
-            resource_url = "/servers"
+
         if nics:
             boot_kwargs['nics'] = nics
 
         response_key = "server" if not reservation_id else "reservation_id"
-        return self._boot(resource_url, response_key, *boot_args,
-                          **boot_kwargs)
+        return self._boot(response_key, *boot_args, **boot_kwargs)
 
     @api_versions.wraps("2.0", "2.18")
     def update(self, server, name=None):

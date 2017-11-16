@@ -188,7 +188,7 @@ class ServersTest(utils.FixturedTestCase):
                 nics=nics
             )
             self.assert_request_id(s, fakes.FAKE_REQUEST_ID_LIST)
-            self.assert_called('POST', '/os-volumes_boot')
+            self.assert_called('POST', '/servers')
             self.assertIsInstance(s, servers.Server)
 
         test_create_server_from_volume()
@@ -217,7 +217,7 @@ class ServersTest(utils.FixturedTestCase):
                 nics=self._get_server_create_default_nics()
             )
             self.assert_request_id(s, fakes.FAKE_REQUEST_ID_LIST)
-            self.assert_called('POST', '/os-volumes_boot')
+            self.assert_called('POST', '/servers')
             self.assertIsInstance(s, servers.Server)
 
     def test_create_server_boot_with_nics_ipv6(self):
@@ -1384,7 +1384,7 @@ class ServersV232Test(ServersV226Test):
                                    key_name="fakekey",
                                    block_device_mapping_v2=bdm)
         self.assert_request_id(s, fakes.FAKE_REQUEST_ID_LIST)
-        self.assert_called('POST', '/os-volumes_boot')
+        self.assert_called('POST', '/servers')
 
     def test_create_server_boot_from_volume_tagged_bdm_v2_pre232(self):
         self.cs.api_version = api_versions.APIVersion("2.31")

@@ -304,7 +304,7 @@ class ShellTest(utils.TestCase):
             'boot --flavor 1 --block-device-mapping vda=blah:::0 some-server'
         )
         self.assert_called_anytime(
-            'POST', '/os-volumes_boot',
+            'POST', '/servers',
             {'server': {
                 'flavorRef': '1',
                 'name': 'some-server',
@@ -328,7 +328,7 @@ class ShellTest(utils.TestCase):
             'type=disk,shutdown=preserve some-server' % FAKE_UUID_1
         )
         self.assert_called_anytime(
-            'POST', '/os-volumes_boot',
+            'POST', '/servers',
             {'server': {
                 'flavorRef': '1',
                 'name': 'some-server',
@@ -371,7 +371,7 @@ class ShellTest(utils.TestCase):
             'type=disk,shutdown=preserve some-server' % FAKE_UUID_1
         )
         self.assert_called_anytime(
-            'POST', '/os-volumes_boot',
+            'POST', '/servers',
             {'server': {
                 'flavorRef': '1',
                 'name': 'some-server',
@@ -407,7 +407,7 @@ class ShellTest(utils.TestCase):
             'type=disk,shutdown=preserve some-server' % FAKE_UUID_1
         )
         self.assert_called_anytime(
-            'POST', '/os-volumes_boot',
+            'POST', '/servers',
             {'server': {
                 'flavorRef': '1',
                 'name': 'some-server',
@@ -451,7 +451,7 @@ class ShellTest(utils.TestCase):
             api_version='2.32'
         )
         self.assert_called_anytime(
-            'POST', '/os-volumes_boot',
+            'POST', '/servers',
             {'server': {
                 'flavorRef': '1',
                 'name': 'some-server',
@@ -488,7 +488,7 @@ class ShellTest(utils.TestCase):
             'type=disk,shutdown=preserve some-server'
         )
         self.assert_called_anytime(
-            'POST', '/os-volumes_boot',
+            'POST', '/servers',
             {'server': {
                 'flavorRef': '1',
                 'name': 'some-server',
@@ -515,7 +515,7 @@ class ShellTest(utils.TestCase):
         cmd = 'boot --flavor 1 --boot-volume fake-id some-server'
         self.run_command(cmd)
         self.assert_called_anytime(
-            'POST', '/os-volumes_boot',
+            'POST', '/servers',
             {'server': {
                 'flavorRef': '1',
                 'name': 'some-server',
@@ -537,7 +537,7 @@ class ShellTest(utils.TestCase):
         cmd = 'boot --flavor 1 --snapshot fake-id some-server'
         self.run_command(cmd)
         self.assert_called_anytime(
-            'POST', '/os-volumes_boot',
+            'POST', '/servers',
             {'server': {
                 'flavorRef': '1',
                 'name': 'some-server',
@@ -558,7 +558,7 @@ class ShellTest(utils.TestCase):
 
         self.run_command('boot --flavor 1 --swap 1 some-server')
         self.assert_called_anytime(
-            'POST', '/os-volumes_boot',
+            'POST', '/servers',
             {'server': {
                 'flavorRef': '1',
                 'name': 'some-server',
@@ -582,7 +582,7 @@ class ShellTest(utils.TestCase):
             'boot --flavor 1 --ephemeral size=1,format=ext4 some-server'
         )
         self.assert_called_anytime(
-            'POST', '/os-volumes_boot',
+            'POST', '/servers',
             {'server': {
                 'flavorRef': '1',
                 'name': 'some-server',
