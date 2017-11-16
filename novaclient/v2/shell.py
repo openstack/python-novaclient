@@ -3220,6 +3220,7 @@ def do_aggregate_delete(cs, args):
     help=_('Name or ID of aggregate to update.'))
 @utils.arg(
     '--name',
+    metavar='<name>',
     dest='name',
     help=_('New name for aggregate.'))
 @utils.arg(
