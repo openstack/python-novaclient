@@ -20,7 +20,6 @@ Command-line interface to the OpenStack Nova API.
 
 from __future__ import print_function
 import argparse
-import getpass
 import logging
 import sys
 
@@ -31,14 +30,6 @@ from oslo_utils import strutils
 import six
 
 osprofiler_profiler = importutils.try_import("osprofiler.profiler")
-
-HAS_KEYRING = False
-all_errors = ValueError
-try:
-    import keyring
-    HAS_KEYRING = True
-except ImportError:
-    pass
 
 import novaclient
 from novaclient import api_versions
@@ -208,133 +199,6 @@ class DeprecatedAction(argparse.Action):
 
         if action:
             action(parser, namespace, values, option_string)
-
-
-class SecretsHelper(object):
-    def __init__(self, args, client):
-        self.args = args
-        self.client = client
-        self.key = None
-        self._password = None
-
-    def _validate_string(self, text):
-        if text is None or len(text) == 0:
-            return False
-        return True
-
-    def _make_key(self):
-        if self.key is not None:
-            return self.key
-        keys = [
-            self.client.auth_url,
-            self.client.projectid,
-            self.client.user,
-            self.client.region_name,
-            self.client.endpoint_type,
-            self.client.service_type,
-            self.client.service_name,
-        ]
-        for (index, key) in enumerate(keys):
-            if key is None:
-                keys[index] = '?'
-            else:
-                keys[index] = str(keys[index])
-        self.key = "/".join(keys)
-        return self.key
-
-    def _prompt_password(self, verify=True):
-        pw = None
-        if hasattr(sys.stdin, 'isatty') and sys.stdin.isatty():
-            # Check for Ctl-D
-            try:
-                while True:
-                    pw1 = getpass.getpass('OS Password: ')
-                    if verify:
-                        pw2 = getpass.getpass('Please verify: ')
-                    else:
-                        pw2 = pw1
-                    if pw1 == pw2 and self._validate_string(pw1):
-                        pw = pw1
-                        break
-            except EOFError:
-                pass
-        return pw
-
-    def save(self, auth_token, management_url, tenant_id):
-        if not HAS_KEYRING or not self.args.os_cache:
-            return
-        if (auth_token == self.auth_token and
-                management_url == self.management_url):
-            # Nothing changed....
-            return
-        if not all([management_url, auth_token, tenant_id]):
-            raise ValueError(_("Unable to save empty management url/auth "
-                               "token"))
-        value = "|".join([str(auth_token),
-                          str(management_url),
-                          str(tenant_id)])
-        keyring.set_password("novaclient_auth", self._make_key(), value)
-
-    @property
-    def password(self):
-        # Cache password so we prompt user at most once
-        if self._password:
-            pass
-        elif self._validate_string(self.args.os_password):
-            self._password = self.args.os_password
-        else:
-            verify_pass = strutils.bool_from_string(
-                utils.env("OS_VERIFY_PASSWORD", default=False), True)
-            self._password = self._prompt_password(verify_pass)
-        if not self._password:
-            raise exc.CommandError(
-                'Expecting a password provided via either '
-                '--os-password, env[OS_PASSWORD], or '
-                'prompted response')
-        return self._password
-
-    @property
-    def management_url(self):
-        if not HAS_KEYRING or not self.args.os_cache:
-            return None
-        management_url = None
-        try:
-            block = keyring.get_password('novaclient_auth', self._make_key())
-            if block:
-                _token, management_url, _tenant_id = block.split('|', 2)
-        except all_errors:
-            pass
-        return management_url
-
-    @property
-    def auth_token(self):
-        # Now is where it gets complicated since we
-        # want to look into the keyring module, if it
-        # exists and see if anything was provided in that
-        # file that we can use.
-        if not HAS_KEYRING or not self.args.os_cache:
-            return None
-        token = None
-        try:
-            block = keyring.get_password('novaclient_auth', self._make_key())
-            if block:
-                token, _management_url, _tenant_id = block.split('|', 2)
-        except all_errors:
-            pass
-        return token
-
-    @property
-    def tenant_id(self):
-        if not HAS_KEYRING or not self.args.os_cache:
-            return None
-        tenant_id = None
-        try:
-            block = keyring.get_password('novaclient_auth', self._make_key())
-            if block:
-                _token, _management_url, tenant_id = block.split('|', 2)
-        except all_errors:
-            pass
-        return tenant_id
 
 
 class NovaClientArgumentParser(argparse.ArgumentParser):
@@ -688,7 +552,6 @@ class OpenStackComputeShell(object):
 
         # We may have either, both or none of these.
         # If we have both, we don't need USERNAME, PASSWORD etc.
-        # Fill in the blanks from the SecretsHelper if possible.
         # Finally, authenticate unless we have both.
         # Note if we don't auth we probably don't have a tenant ID so we can't
         # cache the token.
@@ -846,27 +709,6 @@ class OpenStackComputeShell(object):
             project_domain_name=os_project_domain_name,
             user_domain_id=os_user_domain_id,
             user_domain_name=os_user_domain_name)
-
-        # Now check for the password/token of which pieces of the
-        # identifying keyring key can come from the underlying client
-        if must_auth:
-            helper = SecretsHelper(args, self.cs.client)
-            self.cs.client.keyring_saver = helper
-
-            tenant_id = helper.tenant_id
-            # Allow commandline to override cache
-            if not auth_token:
-                auth_token = helper.auth_token
-            endpoint_override = endpoint_override or helper.management_url
-            if tenant_id and auth_token and endpoint_override:
-                self.cs.client.tenant_id = tenant_id
-                self.cs.client.auth_token = auth_token
-                self.cs.client.management_url = endpoint_override
-                self.cs.client.password_func = lambda: helper.password
-            else:
-                # We're missing something, so auth with user/pass and save
-                # the result in our helper.
-                self.cs.client.password = helper.password
 
         args.func(self.cs, args)
 
