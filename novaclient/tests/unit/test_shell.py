@@ -576,20 +576,6 @@ class ShellTest(utils.TestCase):
         stdout, stderr = self.shell('list')
         self.assertEqual((stdout + stderr), ex)
 
-    @mock.patch('sys.stdin', side_effect=mock.MagicMock)
-    @mock.patch('getpass.getpass', side_effect=EOFError)
-    def test_no_password(self, mock_getpass, mock_stdin):
-        required = ('Expecting a password provided'
-                    ' via either --os-password, env[OS_PASSWORD],'
-                    ' or prompted response',)
-        self.make_env(exclude='OS_PASSWORD')
-        try:
-            self.shell('list')
-        except exceptions.CommandError as message:
-            self.assertEqual(required, message.args)
-        else:
-            self.fail('CommandError not raised')
-
     def _test_service_type(self, version, service_type, mock_client):
         if version is None:
             cmd = 'list'
@@ -665,25 +651,6 @@ class ShellTest(utils.TestCase):
             _, stderr = self.shell('list --profile swordfish', (0, 2))
             self.assertIn('unrecognized arguments: --profile swordfish',
                           stderr)
-
-    @mock.patch('novaclient.shell.SecretsHelper.tenant_id',
-                return_value=True)
-    @mock.patch('novaclient.shell.SecretsHelper.auth_token',
-                return_value=True)
-    @mock.patch('novaclient.shell.SecretsHelper.management_url',
-                return_value=True)
-    @requests_mock.Mocker()
-    def test_keyring_saver_helper(self,
-                                  sh_management_url_function,
-                                  sh_auth_token_function,
-                                  sh_tenant_id_function,
-                                  m_requests):
-        self.make_env(fake_env=FAKE_ENV)
-        self.register_keystone_discovery_fixture(m_requests)
-        self.shell('list')
-        mock_client_instance = self.mock_client.return_value
-        keyring_saver = mock_client_instance.client.keyring_saver
-        self.assertIsInstance(keyring_saver, novaclient.shell.SecretsHelper)
 
     def test_microversion_with_default_behaviour(self):
         self.make_env(fake_env=FAKE_ENV5)
