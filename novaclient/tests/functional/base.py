@@ -468,14 +468,15 @@ class ClientTestBase(testtools.TestCase):
                     values.append(line.split("|")[1].strip())
         return values
 
-    def _create_server(self, name=None, with_network=True, add_cleanup=True,
-                       **kwargs):
+    def _create_server(self, name=None, flavor=None, with_network=True,
+                       add_cleanup=True, **kwargs):
         name = name or self.name_generate(prefix='server')
         if with_network:
             nics = [{"net-id": self.network.id}]
         else:
             nics = None
-        server = self.client.servers.create(name, self.image, self.flavor,
+        flavor = flavor or self.flavor
+        server = self.client.servers.create(name, self.image, flavor,
                                             nics=nics, **kwargs)
         if add_cleanup:
             self.addCleanup(server.delete)
