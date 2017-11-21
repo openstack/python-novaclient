@@ -1,0 +1,7 @@
+---
+features:
+  - |
+    Adds support for microversion 2.54 which adds resetting keypair and
+    unsetting keypair in rebuild operation.
+    Adds optional ``--key-name`` and ``--key-unset`` options
+    in the ``nova rebuild`` command.

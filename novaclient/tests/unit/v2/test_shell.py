@@ -1494,6 +1494,38 @@ class ShellTest(utils.TestCase):
         self.assert_called('GET', '/flavors/1', pos=4)
         self.assert_called('GET', '/v2/images/%s' % FAKE_UUID_2, pos=5)
 
+    def test_rebuild_reset_keypair(self):
+        self.run_command('rebuild sample-server %s --key-name test_keypair' %
+                         FAKE_UUID_1, api_version='2.54')
+        self.assert_called('GET', '/servers?name=sample-server', pos=0)
+        self.assert_called('GET', '/servers/1234', pos=1)
+        self.assert_called('GET', '/v2/images/%s' % FAKE_UUID_1, pos=2)
+        self.assert_called('POST', '/servers/1234/action',
+                           {'rebuild': {'imageRef': FAKE_UUID_1,
+                                        'key_name': 'test_keypair',
+                                        'description': None}}, pos=3)
+        self.assert_called('GET', '/v2/images/%s' % FAKE_UUID_2, pos=4)
+
+    def test_rebuild_unset_keypair(self):
+        self.run_command('rebuild sample-server %s --key-unset' %
+                         FAKE_UUID_1, api_version='2.54')
+        self.assert_called('GET', '/servers?name=sample-server', pos=0)
+        self.assert_called('GET', '/servers/1234', pos=1)
+        self.assert_called('GET', '/v2/images/%s' % FAKE_UUID_1, pos=2)
+        self.assert_called('POST', '/servers/1234/action',
+                           {'rebuild': {'imageRef': FAKE_UUID_1,
+                                        'key_name': None,
+                                        'description': None}}, pos=3)
+        self.assert_called('GET', '/v2/images/%s' % FAKE_UUID_2, pos=4)
+
+    def test_rebuild_unset_keypair_with_key_name(self):
+        ex = self.assertRaises(
+            exceptions.CommandError, self.run_command,
+            'rebuild sample-server %s --key-unset --key-name test_keypair' %
+            FAKE_UUID_1, api_version='2.54')
+        self.assertIn("Cannot specify '--key-unset' with '--key-name'.",
+                      six.text_type(ex))
+
     def test_rebuild_with_incorrect_metadata(self):
         cmd = 'rebuild sample-server %s --name asdf --meta foo' % FAKE_UUID_1
         result = self.assertRaises(argparse.ArgumentTypeError,
@@ -3126,6 +3158,7 @@ class ShellTest(utils.TestCase):
             48,  # There are no version-wrapped shell method changes for this.
             51,  # There are no version-wrapped shell method changes for this.
             52,  # There are no version-wrapped shell method changes for this.
+            54,  # There are no version-wrapped shell method changes for this.
         ])
         versions_supported = set(range(0,
                                  novaclient.API_MAX_VERSION.ver_minor + 1))

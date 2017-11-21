@@ -1496,11 +1496,20 @@ class ServerManager(base.BootingManagerWithFind):
                       and each file must be 10k or less.
         :param description: optional description of the server (allowed since
                             microversion 2.19)
+        :param key_name: optional key pair name for rebuild operation; passing
+                         None will unset the key for the server instance
+                         (starting from microversion 2.54)
         :returns: :class:`Server`
         """
         descr_microversion = api_versions.APIVersion("2.19")
         if "description" in kwargs and self.api_version < descr_microversion:
             raise exceptions.UnsupportedAttribute("description", "2.19")
+
+        # Starting from microversion 2.54,
+        # the optional 'key_name' parameter has been added.
+        if ('key_name' in kwargs and
+                self.api_version < api_versions.APIVersion('2.54')):
+            raise exceptions.UnsupportedAttribute('key_name', '2.54')
 
         body = {'imageRef': base.getid(image)}
         if password is not None:
@@ -1513,6 +1522,8 @@ class ServerManager(base.BootingManagerWithFind):
             body['name'] = name
         if "description" in kwargs:
             body["description"] = kwargs["description"]
+        if 'key_name' in kwargs:
+            body['key_name'] = kwargs['key_name']
         if meta:
             body['metadata'] = meta
         if files:

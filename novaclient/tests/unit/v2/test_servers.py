@@ -1550,3 +1550,34 @@ class ServersV252Test(ServersV249Test):
                           key_name="fakekey",
                           nics=self._get_server_create_default_nics(),
                           tags=['tag1', 'tag2'])
+
+
+class ServersV254Test(ServersV252Test):
+
+    api_version = "2.54"
+
+    def test_rebuild_with_key_name(self):
+        s = self.cs.servers.get(1234)
+        ret = s.rebuild(image="1", key_name="test_keypair")
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
+        self.assert_called('POST', '/servers/1234/action',
+                           {'rebuild': {
+                               'imageRef': '1',
+                               'key_name': 'test_keypair'}})
+
+    def test_rebuild_with_key_name_none(self):
+        s = self.cs.servers.get(1234)
+        ret = s.rebuild(image="1", key_name=None)
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
+        self.assert_called('POST', '/servers/1234/action',
+                           {'rebuild': {
+                               'key_name': None,
+                               'imageRef': '1'}})
+
+    def test_rebuild_with_key_name_pre_254_fails(self):
+        self.cs.api_version = api_versions.APIVersion('2.53')
+        ex = self.assertRaises(exceptions.UnsupportedAttribute,
+                               self.cs.servers.rebuild,
+                               '1234', fakes.FAKE_IMAGE_UUID_1,
+                               key_name='test_keypair')
+        self.assertIn('key_name', six.text_type(ex.message))

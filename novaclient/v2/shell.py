@@ -1786,6 +1786,20 @@ def do_reboot(cs, args):
     default=[],
     help=_("Store arbitrary files from <src-path> locally to <dst-path> "
            "on the new server. You may store up to 5 files."))
+@utils.arg(
+    '--key-name',
+    metavar='<key-name>',
+    default=None,
+    help=_("Keypair name to set in the server. "
+           "Cannot be specified with the '--key-unset' option."),
+    start_version='2.54')
+@utils.arg(
+    '--key-unset',
+    action='store_true',
+    default=False,
+    help=_("Unset keypair in the server. "
+           "Cannot be specified with the '--key-name' option."),
+    start_version='2.54')
 def do_rebuild(cs, args):
     """Shutdown, re-image, and re-boot a server."""
     server = _find_server(cs, args.server)
@@ -1819,6 +1833,16 @@ def do_rebuild(cs, args):
                                             "form '--file "
                                             "<dst-path=src-path>'") % f)
     kwargs['files'] = files
+
+    if cs.api_version >= api_versions.APIVersion('2.54'):
+        if args.key_unset:
+            kwargs['key_name'] = None
+            if args.key_name:
+                raise exceptions.CommandError(
+                    _("Cannot specify '--key-unset' with '--key-name'."))
+        elif args.key_name:
+            kwargs['key_name'] = args.key_name
+
     server = server.rebuild(image, _password, **kwargs)
     _print_server(cs, args, server)
 
