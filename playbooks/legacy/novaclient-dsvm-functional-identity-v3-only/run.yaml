@@ -1,0 +1,59 @@
+- hosts: all
+  name: Autoconverted job legacy-novaclient-dsvm-functional-identity-v3-only from
+    old job gate-novaclient-dsvm-functional-identity-v3-only-ubuntu-xenial-nv
+  tasks:
+
+    - name: Ensure legacy workspace directory
+      file:
+        path: '{{ ansible_user_dir }}/workspace'
+        state: directory
+
+    - shell:
+        cmd: |
+          set -e
+          set -x
+          cat > clonemap.yaml << EOF
+          clonemap:
+            - name: openstack-infra/devstack-gate
+              dest: devstack-gate
+          EOF
+          /usr/zuul-env/bin/zuul-cloner -m clonemap.yaml --cache-dir /opt/git \
+              git://git.openstack.org \
+              openstack-infra/devstack-gate
+        executable: /bin/bash
+        chdir: '{{ ansible_user_dir }}/workspace'
+      environment: '{{ zuul | zuul_legacy_vars }}'
+
+    - shell:
+        cmd: |
+          set -e
+          set -x
+          export PYTHONUNBUFFERED=true
+          export BRANCH_OVERRIDE=default
+          export DEVSTACK_PROJECT_FROM_GIT=python-novaclient
+          if [ "$BRANCH_OVERRIDE" != "default" ] ; then
+              export OVERRIDE_ZUUL_BRANCH=$BRANCH_OVERRIDE
+          fi
+          # This ensures that if we set override branch to something
+          # else, we still take python-novaclient from the zuul branch
+          # name. So override branch can be 'stable/mitaka' but we can
+          # test master changes.
+          uc_project=`echo $DEVSTACK_PROJECT_FROM_GIT | tr [:lower:] [:upper:] | tr '-' '_' | sed 's/[^A-Z_]//'`
+          export "OVERRIDE_"$uc_project"_PROJECT_BRANCH"=$ZUUL_BRANCH
+
+          function post_test_hook {
+              # Configure and run functional tests
+              $BASE/new/python-novaclient/novaclient/tests/functional/hooks/post_test_hook.sh
+          }
+          if [ "-identity-v3-only" == "-identity-v3-only" ] ; then
+              export DEVSTACK_LOCAL_CONFIG="ENABLE_IDENTITY_V2=False"
+          elif [ "-identity-v3-only" == "-neutron" ] ; then
+              export DEVSTACK_GATE_NEUTRON=1
+          fi
+          export -f post_test_hook
+
+          cp devstack-gate/devstack-vm-gate-wrap.sh ./safe-devstack-vm-gate-wrap.sh
+          ./safe-devstack-vm-gate-wrap.sh
+        executable: /bin/bash
+        chdir: '{{ ansible_user_dir }}/workspace'
+      environment: '{{ zuul | zuul_legacy_vars }}'

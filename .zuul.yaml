@@ -1,0 +1,33 @@
+- job:
+    name: novaclient-dsvm-functional-identity-v3-only
+    parent: legacy-dsvm-base
+    run: playbooks/legacy/novaclient-dsvm-functional-identity-v3-only/run.yaml
+    post-run: playbooks/legacy/novaclient-dsvm-functional-identity-v3-only/post.yaml
+    timeout: 7200
+    voting: false
+    required-projects:
+      - openstack-infra/devstack-gate
+      - openstack/nova
+      - openstack/python-novaclient
+
+- job:
+    name: novaclient-dsvm-functional-neutron
+    parent: legacy-dsvm-base
+    run: playbooks/legacy/novaclient-dsvm-functional-neutron/run.yaml
+    post-run: playbooks/legacy/novaclient-dsvm-functional-neutron/post.yaml
+    timeout: 7200
+    required-projects:
+      - openstack-infra/devstack-gate
+      - openstack/neutron
+      - openstack/nova
+      - openstack/python-novaclient
+
+- project:
+    name: openstack/python-novaclient
+    check:
+      jobs:
+        - novaclient-dsvm-functional-identity-v3-only
+        - novaclient-dsvm-functional-neutron
+    gate:
+      jobs:
+        - novaclient-dsvm-functional-neutron
