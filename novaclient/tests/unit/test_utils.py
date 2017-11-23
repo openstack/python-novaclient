@@ -443,19 +443,31 @@ class RecordTimeTestCase(test_utils.TestCase):
 
 
 class PrepareQueryStringTestCase(test_utils.TestCase):
-    def test_convert_dict_to_string(self):
-        ustr = b'?\xd0\xbf=1&\xd1\x80=2'
+
+    def setUp(self):
+        super(PrepareQueryStringTestCase, self).setUp()
+        self.ustr = b'?\xd0\xbf=1&\xd1\x80=2'
         if six.PY3:
             # in py3 real unicode symbols will be urlencoded
-            ustr = ustr.decode('utf8')
-        cases = (
+            self.ustr = self.ustr.decode('utf8')
+        self.cases = (
             ({}, ''),
+            (None, ''),
             ({'2': 2, '10': 1}, '?10=1&2=2'),
             ({'abc': 1, 'abc1': 2}, '?abc=1&abc1=2'),
-            ({b'\xd0\xbf': 1, b'\xd1\x80': 2}, ustr),
+            ({b'\xd0\xbf': 1, b'\xd1\x80': 2}, self.ustr),
             ({(1, 2): '1', (3, 4): '2'}, '?(1, 2)=1&(3, 4)=2')
         )
-        for case in cases:
+
+    def test_convert_dict_to_string(self):
+        for case in self.cases:
             self.assertEqual(
                 case[1],
                 parse.unquote_plus(utils.prepare_query_string(case[0])))
+
+    def test_get_url_with_filter(self):
+        url = '/fake'
+        for case in self.cases:
+            self.assertEqual(
+                '%s%s' % (url, case[1]),
+                parse.unquote_plus(utils.get_url_with_filter(url, case[0])))

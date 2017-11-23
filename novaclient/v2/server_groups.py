@@ -17,8 +17,6 @@
 Server group interface.
 """
 
-from six.moves.urllib import parse
-
 from novaclient import base
 
 
@@ -62,10 +60,8 @@ class ServerGroupsManager(base.ManagerWithFind):
             qparams['limit'] = int(limit)
         if offset:
             qparams['offset'] = int(offset)
-        qparams = sorted(qparams.items(), key=lambda x: x[0])
-        query_string = "?%s" % parse.urlencode(qparams) if qparams else ""
-        return self._list('/os-server-groups%s' % query_string,
-                          'server_groups')
+        return self._list('/os-server-groups', 'server_groups',
+                          filters=qparams)
 
     def get(self, id):
         """Get a specific server group.

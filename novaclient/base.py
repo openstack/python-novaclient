@@ -247,7 +247,10 @@ class Manager(HookableMixin):
     def api_version(self):
         return self.api.api_version
 
-    def _list(self, url, response_key, obj_class=None, body=None):
+    def _list(self, url, response_key, obj_class=None, body=None,
+              filters=None):
+        if filters:
+            url = utils.get_url_with_filter(url, filters)
         if body:
             resp, body = self.api.client.post(url, body=body)
         else:
@@ -347,7 +350,9 @@ class Manager(HookableMixin):
         if cache:
             cache.write("%s\n" % val)
 
-    def _get(self, url, response_key):
+    def _get(self, url, response_key, filters=None):
+        if filters:
+            url = utils.get_url_with_filter(url, filters)
         resp, body = self.api.client.get(url)
         if response_key is not None:
             content = body[response_key]

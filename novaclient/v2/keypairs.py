@@ -19,7 +19,6 @@ Keypair interface
 
 from novaclient import api_versions
 from novaclient import base
-from novaclient import utils
 
 
 class Keypair(base.Resource):
@@ -170,9 +169,11 @@ class KeypairManager(base.ManagerWithFind):
 
         :param user_id: Id of key-pairs owner (Admin only).
         """
-        query_string = "?user_id=%s" % user_id if user_id else ""
-        url = '/%s%s' % (self.keypair_prefix, query_string)
-        return self._list(url, 'keypairs')
+        params = {}
+        if user_id:
+            params['user_id'] = user_id
+        return self._list('/%s' % self.keypair_prefix, 'keypairs',
+                          filters=params)
 
     @api_versions.wraps("2.35")
     def list(self, user_id=None, marker=None, limit=None):
@@ -192,6 +193,5 @@ class KeypairManager(base.ManagerWithFind):
             params['limit'] = int(limit)
         if marker:
             params['marker'] = str(marker)
-        query_string = utils.prepare_query_string(params)
-        url = '/%s%s' % (self.keypair_prefix, query_string)
-        return self._list(url, 'keypairs')
+        return self._list('/%s' % self.keypair_prefix, 'keypairs',
+                          filters=params)
