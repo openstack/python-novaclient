@@ -20,23 +20,6 @@ class TestServersResize(base.ClientTestBase):
 
     COMPUTE_API_VERSION = '2.1'
 
-    def _create_server(self, name, flavor):
-        """Boots a server with the given name and flavor and waits for it to
-        be ACTIVE.
-        """
-        params = (
-            "%(name)s --flavor %(flavor)s --image %(image)s --poll " % {
-                "name": self.name_generate(name),
-                "flavor": flavor,
-                "image": self.image.id})
-        # check to see if we have to pass in a network id
-        if self.multiple_networks:
-            params += ' --nic net-id=%s' % self.network.id
-        server_info = self.nova("boot", params=params)
-        server_id = self._get_value_from_the_table(server_info, "id")
-        self.addCleanup(self._cleanup_server, server_id)
-        return server_id
-
     def _pick_alternate_flavor(self):
         """Given the flavor picked in the base class setup, this finds the
         opposite flavor to use for a resize test. For example, if m1.nano is
@@ -83,7 +66,8 @@ class TestServersResize(base.ClientTestBase):
         """Tests creating a server and resizes up and confirms the resize.
         Compares quota before, during and after the resize.
         """
-        server_id = self._create_server('resize-up-confirm', self.flavor.name)
+        server_id = self._create_server('resize-up-confirm',
+                                        flavor=self.flavor.id).id
         # get the starting quota now that we've created a server
         starting_usage = self._get_absolute_limits()
         # now resize up
@@ -107,17 +91,22 @@ class TestServersResize(base.ClientTestBase):
         """Creates two flavors with different size ram but same size vcpus
         and disk.
 
-        :returns: tuple of (larger_flavor_name, smaller_flavor_name)
+        :returns: tuple of 2 IDs which represents larger_flavor for resize and
+            smaller flavor.
         """
-        self.nova('flavor-create', params='resize-larger-flavor auto 128 0 1')
+        output = self.nova('flavor-create',
+                           params='resize-larger-flavor auto 128 0 1')
+        larger_id = self._get_column_value_from_single_row_table(output, "ID")
         self.addCleanup(
             self.nova, 'flavor-delete', params='resize-larger-flavor')
 
-        self.nova('flavor-create', params='resize-smaller-flavor auto 64 0 1')
+        output = self.nova('flavor-create',
+                           params='resize-smaller-flavor auto 64 0 1')
+        smaller_id = self._get_column_value_from_single_row_table(output, "ID")
         self.addCleanup(
             self.nova, 'flavor-delete', params='resize-smaller-flavor')
 
-        return 'resize-larger-flavor', 'resize-smaller-flavor'
+        return larger_id, smaller_id
 
     def test_resize_down_revert(self):
         """Tests creating a server and resizes down and reverts the resize.
@@ -128,7 +117,8 @@ class TestServersResize(base.ClientTestBase):
         # create our own flavors.
         larger_flavor, smaller_flavor = self._create_resize_down_flavors()
         # Now create the server with the larger flavor.
-        server_id = self._create_server('resize-down-revert', larger_flavor)
+        server_id = self._create_server('resize-down-revert',
+                                        flavor=larger_flavor).id
         # get the starting quota now that we've created a server
         starting_usage = self._get_absolute_limits()
         # now resize down
