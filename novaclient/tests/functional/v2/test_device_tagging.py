@@ -12,7 +12,6 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from oslo_utils import uuidutils
 import six
 from tempest.lib import exceptions
 
@@ -33,7 +32,7 @@ class TestBlockDeviceTaggingCLIError(base.ClientTestBase):
                 '--nic net-id=%(net-uuid)s '
                 '--block-device '
                 'source=image,dest=volume,id=%(image)s,size=1,bootindex=0,'
-                'shutdown=remove,tag=bar' % {'name': uuidutils.generate_uuid(),
+                'shutdown=remove,tag=bar' % {'name': self.name_generate(),
                                              'flavor': self.flavor.id,
                                              'net-uuid': self.network.id,
                                              'image': self.image.id}))
@@ -63,7 +62,7 @@ class TestNICDeviceTaggingCLIError(base.ClientTestBase):
                 '--nic net-id=%(net-uuid)s,tag=foo '
                 '--block-device '
                 'source=image,dest=volume,id=%(image)s,size=1,bootindex=0,'
-                'shutdown=remove' % {'name': uuidutils.generate_uuid(),
+                'shutdown=remove' % {'name': self.name_generate(),
                                      'flavor': self.flavor.id,
                                      'net-uuid': self.network.id,
                                      'image': self.image.id}))
@@ -90,7 +89,7 @@ class TestBlockDeviceTaggingCLI(base.ClientTestBase):
             '--nic net-id=%(net-uuid)s '
             '--block-device '
             'source=image,dest=volume,id=%(image)s,size=1,bootindex=0,'
-            'shutdown=remove,tag=bar' % {'name': uuidutils.generate_uuid(),
+            'shutdown=remove,tag=bar' % {'name': self.name_generate(),
                                          'flavor': self.flavor.id,
                                          'net-uuid': self.network.id,
                                          'image': self.image.id}))
@@ -112,7 +111,7 @@ class TestNICDeviceTaggingCLI(base.ClientTestBase):
             '--nic net-id=%(net-uuid)s,tag=foo '
             '--block-device '
             'source=image,dest=volume,id=%(image)s,size=1,bootindex=0,'
-            'shutdown=remove' % {'name': uuidutils.generate_uuid(),
+            'shutdown=remove' % {'name': self.name_generate(),
                                  'flavor': self.flavor.id,
                                  'net-uuid': self.network.id,
                                  'image': self.image.id}))

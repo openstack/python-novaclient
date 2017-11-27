@@ -29,7 +29,7 @@ class TestFlvAccessNovaClient(base.TenantTestBase):
         # Check that non-public flavor appears in flavor list
         # only for admin tenant and only with --all attribute
         # and doesn't appear for non-admin tenant
-        flv_name = self.name_generate(prefix='flv')
+        flv_name = self.name_generate()
         self.nova('flavor-create --is-public false %s auto 512 1 1' % flv_name)
         self.addCleanup(self.nova, 'flavor-delete %s' % flv_name)
         flavor_list1 = self.nova('flavor-list')
@@ -42,7 +42,7 @@ class TestFlvAccessNovaClient(base.TenantTestBase):
     def test_add_access_non_public_flavor(self):
         # Check that it's allowed to grant an access to non-public flavor for
         # the given tenant
-        flv_name = self.name_generate(prefix='flv')
+        flv_name = self.name_generate()
         self.nova('flavor-create --is-public false %s auto 512 1 1' % flv_name)
         self.addCleanup(self.nova, 'flavor-delete %s' % flv_name)
         self.nova('flavor-access-add', params="%s %s" %
@@ -55,7 +55,7 @@ class TestFlvAccessNovaClient(base.TenantTestBase):
         # successfully for public flavor, but the next operation,
         # 'flavor-access-list --flavor %(name_of_public_flavor)' returns
         # a CommandError
-        flv_name = self.name_generate(prefix='flv')
+        flv_name = self.name_generate()
         self.nova('flavor-create %s auto 512 1 1' % flv_name)
         self.addCleanup(self.nova, 'flavor-delete %s' % flv_name)
         self.nova('flavor-access-add %s %s' % (flv_name, self.project_id))

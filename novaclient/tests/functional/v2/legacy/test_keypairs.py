@@ -12,7 +12,6 @@
 
 import tempfile
 
-from oslo_utils import uuidutils
 from tempest.lib import exceptions
 
 from novaclient.tests.functional import base
@@ -36,7 +35,7 @@ class TestKeypairsNovaClient(base.ClientTestBase):
         return key_name
 
     def _raw_create_keypair(self, **kwargs):
-        key_name = 'keypair-' + uuidutils.generate_uuid()
+        key_name = self.name_generate()
         kwargs_str = self._serialize_kwargs(kwargs)
         self.nova('keypair-add %s %s' % (kwargs_str, key_name))
         return key_name

@@ -11,8 +11,6 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from oslo_utils import uuidutils
-
 from novaclient.tests.functional import base
 
 
@@ -21,8 +19,8 @@ class TestAggregatesNovaClient(base.ClientTestBase):
 
     def setUp(self):
         super(TestAggregatesNovaClient, self).setUp()
-        self.agg1 = 'agg-%s' % uuidutils.generate_uuid()
-        self.agg2 = 'agg-%s' % uuidutils.generate_uuid()
+        self.agg1 = self.name_generate()
+        self.agg2 = self.name_generate()
         self.addCleanup(self._clean_aggregates)
 
     def _clean_aggregates(self):

@@ -119,7 +119,7 @@ class TestTriggerCrashDumpNovaClientV217(base.TenantTestBase):
         self._assert_nmi(server.id)
 
     def test_trigger_crash_dump_in_locked_state_nonadmin(self):
-        name = self.name_generate(prefix='server')
+        name = self.name_generate()
         server = self.another_nova('boot --flavor %s --image %s --poll %s' %
                                    (self.flavor.name, self.image.name, name))
         self.addCleanup(self.another_nova, 'delete', params=name)

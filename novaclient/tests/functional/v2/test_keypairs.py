@@ -50,7 +50,7 @@ class TestKeypairsNovaClientV210(base.TenantTestBase):
     COMPUTE_API_VERSION = "2.10"
 
     def test_create_and_list_keypair(self):
-        name = self.name_generate("v2_10")
+        name = self.name_generate()
         self.nova("keypair-add %s --user %s" % (name, self.user_id))
         self.addCleanup(self.another_nova, "keypair-delete %s" % name)
         output = self.nova("keypair-list")
@@ -71,7 +71,7 @@ class TestKeypairsNovaClientV210(base.TenantTestBase):
                          self._get_value_from_the_table(output_1, "user_id"))
 
     def test_create_and_delete(self):
-        name = self.name_generate("v2_10")
+        name = self.name_generate()
 
         def cleanup():
             # We should check keypair existence and remove it from correct user
@@ -101,7 +101,7 @@ class TestKeypairsNovaClientV235(base.TenantTestBase):
     def test_create_and_list_keypair_with_marker_and_limit(self):
         names = []
         for i in range(3):
-            names.append(self.name_generate("v2_35"))
+            names.append(self.name_generate())
             self.nova("keypair-add %s --user %s" % (names[i], self.user_id))
             self.addCleanup(self.another_nova, "keypair-delete %s" % names[i])
 

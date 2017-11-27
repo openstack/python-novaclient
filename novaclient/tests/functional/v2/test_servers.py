@@ -231,7 +231,7 @@ class TestServersAutoAllocateNetworkCLI(base.ClientTestBase):
             self.skipTest('multiple networks available')
         server_info = self.nova('boot', params=(
             '%(name)s --flavor %(flavor)s --poll '
-            '--image %(image)s ' % {'name': self.name_generate('server'),
+            '--image %(image)s ' % {'name': self.name_generate(),
                                     'flavor': self.flavor.id,
                                     'image': self.image.id}))
         server_id = self._get_value_from_the_table(server_info, 'id')
@@ -251,7 +251,7 @@ class TestServersAutoAllocateNetworkCLI(base.ClientTestBase):
         server_info = self.nova('boot', params=(
             '%(name)s --flavor %(flavor)s --poll '
             '--image %(image)s --nic none' %
-            {'name': self.name_generate('server'),
+            {'name': self.name_generate(),
              'flavor': self.flavor.id,
              'image': self.image.id}))
         server_id = self._get_value_from_the_table(server_info, 'id')

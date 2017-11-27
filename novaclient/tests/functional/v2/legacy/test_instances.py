@@ -37,7 +37,7 @@ class TestInstanceCLI(base.ClientTestBase):
         destroy.
 
         """
-        name = self.name_generate('Instance')
+        name = self.name_generate()
 
         # Boot via the cli, as we're primarily testing the cli in this test
         self.nova('boot',
