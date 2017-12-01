@@ -1819,7 +1819,9 @@ def do_reboot(cs, args):
     default=[],
     help=_("Store arbitrary files from <src-path> locally to <dst-path> "
            "on the new server. More files can be injected using multiple "
-           "'--file' options. You may store up to 5 files."))
+           "'--file' options. You may store up to 5 files by default. "
+           "The maximum number of files is specified by the 'Personality' "
+           "limit reported by the 'nova limits' command."))
 @utils.arg(
     '--key-name',
     metavar='<key-name>',
