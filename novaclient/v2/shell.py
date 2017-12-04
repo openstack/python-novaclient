@@ -1009,6 +1009,7 @@ def _expand_dict_attr(collection, attr):
         delattr(item, attr)
         for subkey in field.keys():
             setattr(item, attr + ':' + subkey, field[subkey])
+            item.set_info(attr + ':' + subkey, field[subkey])
 
 
 def _translate_keys(collection, convert):
@@ -1018,6 +1019,7 @@ def _translate_keys(collection, convert):
         for from_key, to_key in convert:
             if from_key in keys and to_key not in keys:
                 setattr(item, to_key, item_dict[from_key])
+                item.set_info(to_key, item_dict[from_key])
 
 
 def _translate_extended_states(collection):
@@ -1042,6 +1044,8 @@ def _translate_extended_states(collection):
             getattr(item, 'task_state')
         except AttributeError:
             setattr(item, 'task_state', "N/A")
+        item.set_info('power_state', item.power_state)
+        item.set_info('task_state', item.task_state)
 
 
 def _translate_flavor_keys(collection):
@@ -1706,12 +1710,19 @@ def _get_list_table_columns_and_formatters(fields, objs, exclude_fields=(),
 
     columns = []
     formatters = {}
+    existing_fields = set()
 
     non_existent_fields = []
     exclude_fields = set(exclude_fields)
 
+    # NOTE(ttsiouts): Bug #1733917. Validating the fields using the keys of
+    # the Resource.to_dict(). Adding also the 'networks' field.
+    if obj:
+        obj_dict = obj.to_dict()
+        existing_fields = set(['networks']) | set(obj_dict.keys())
+
     for field in fields.split(','):
-        if not hasattr(obj, field):
+        if field not in existing_fields:
             non_existent_fields.append(field)
             continue
         if field in exclude_fields:
