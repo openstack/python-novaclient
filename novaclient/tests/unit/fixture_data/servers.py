@@ -452,6 +452,8 @@ class V1(Base):
             # but we can not specify version in data_fixture now and this is
             # V1 data, so just let it pass
             pass
+        elif action == 'migrate':
+            return None
         elif action == 'rebuild':
             body = body[action]
             adminPass = body.get('adminPass', 'randompassword')

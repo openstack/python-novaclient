@@ -1628,6 +1628,23 @@ class ShellTest(utils.TestCase):
         self.run_command('migrate sample-server')
         self.assert_called('POST', '/servers/1234/action', {'migrate': None})
 
+    def test_migrate_pre_v256(self):
+        self.assertRaises(SystemExit,
+                          self.run_command,
+                          'migrate --host target-host sample-server',
+                          api_version='2.55')
+
+    def test_migrate_v256(self):
+        self.run_command('migrate sample-server',
+                         api_version='2.56')
+        self.assert_called('POST', '/servers/1234/action',
+                           {'migrate': {}})
+
+        self.run_command('migrate --host target-host sample-server',
+                         api_version='2.56')
+        self.assert_called('POST', '/servers/1234/action',
+                           {'migrate': {'host': 'target-host'}})
+
     def test_resize(self):
         self.run_command('resize sample-server 1')
         self.assert_called('POST', '/servers/1234/action',

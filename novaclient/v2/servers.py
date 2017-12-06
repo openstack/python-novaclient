@@ -327,6 +327,7 @@ class Server(base.Resource):
         """Diagnostics -- Retrieve server diagnostics."""
         return self.manager.diagnostics(self)
 
+    @api_versions.wraps("2.0", "2.55")
     def migrate(self):
         """
         Migrate a server to a new host.
@@ -334,6 +335,16 @@ class Server(base.Resource):
         :returns: An instance of novaclient.base.TupleWithMeta
         """
         return self.manager.migrate(self)
+
+    @api_versions.wraps("2.56")
+    def migrate(self, host=None):
+        """
+        Migrate a server to a new host.
+
+        :param host: (Optional) The target host.
+        :returns: An instance of novaclient.base.TupleWithMeta
+        """
+        return self.manager.migrate(self, host=host)
 
     def remove_fixed_ip(self, address):
         """
@@ -1545,6 +1556,7 @@ class ServerManager(base.BootingManagerWithFind):
                                                        body, **kwargs)
         return Server(self, body['server'], resp=resp)
 
+    @api_versions.wraps("2.0", "2.55")
     def migrate(self, server):
         """
         Migrate a server to a new host.
@@ -1553,6 +1565,22 @@ class ServerManager(base.BootingManagerWithFind):
         :returns: An instance of novaclient.base.TupleWithMeta
         """
         return self._action('migrate', server)
+
+    @api_versions.wraps("2.56")
+    def migrate(self, server, host=None):
+        """
+        Migrate a server to a new host.
+
+        :param server: The :class:`Server` (or its ID).
+        :param host: (Optional) The target host.
+        :returns: An instance of novaclient.base.TupleWithMeta
+        """
+        info = {}
+
+        if host:
+            info['host'] = host
+
+        return self._action('migrate', server, info)
 
     def resize(self, server, flavor, disk_config=None, **kwargs):
         """

@@ -1,0 +1,8 @@
+---
+features:
+  - Added a new ``--host`` option to ``nova migrate`` command
+    in microversion 2.56. It enables administrators to specify
+    a target host when cold migating a server. The target host will be
+    validated by the scheduler. The target host cannot be the same as
+    the current host on which the server is running and must be in the
+    same cell that the server is currently in.

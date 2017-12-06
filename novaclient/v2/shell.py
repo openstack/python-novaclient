@@ -1951,15 +1951,25 @@ def do_resize_revert(cs, args):
 
 @utils.arg('server', metavar='<server>', help=_('Name or ID of server.'))
 @utils.arg(
+    '--host',
+    metavar='<host>',
+    default=None,
+    help=_('Destination host name.'),
+    start_version='2.56')
+@utils.arg(
     '--poll',
     dest='poll',
     action="store_true",
     default=False,
     help=_('Report the server migration progress until it completes.'))
 def do_migrate(cs, args):
-    """Migrate a server. The new host will be selected by the scheduler."""
+    """Migrate a server."""
+    update_kwargs = {}
+    if 'host' in args and args.host:
+        update_kwargs['host'] = args.host
+
     server = _find_server(cs, args.server)
-    server.migrate()
+    server.migrate(**update_kwargs)
 
     if args.poll:
         _poll_for_status(cs.servers.get, server.id, 'migrating',

@@ -1581,3 +1581,26 @@ class ServersV254Test(ServersV252Test):
                                '1234', fakes.FAKE_IMAGE_UUID_1,
                                key_name='test_keypair')
         self.assertIn('key_name', six.text_type(ex.message))
+
+
+class ServersV256Test(ServersV254Test):
+
+    api_version = "2.56"
+
+    def test_migrate_server(self):
+        s = self.cs.servers.get(1234)
+        ret = s.migrate()
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
+        self.assert_called('POST', '/servers/1234/action',
+                           {'migrate': {}})
+        ret = s.migrate(host='target-host')
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
+        self.assert_called('POST', '/servers/1234/action',
+                           {'migrate': {'host': 'target-host'}})
+
+    def test_migrate_server_pre_256_fails(self):
+        self.cs.api_version = api_versions.APIVersion('2.55')
+        s = self.cs.servers.get(1234)
+        ex = self.assertRaises(TypeError,
+                               s.migrate, host='target-host')
+        self.assertIn('host', six.text_type(ex))
