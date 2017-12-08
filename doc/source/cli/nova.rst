@@ -48,10 +48,6 @@ Get information about boot command::
 
     nova help boot
 
-List available images::
-
-    nova image-list
-
 List available flavors::
 
     nova flavor-list
