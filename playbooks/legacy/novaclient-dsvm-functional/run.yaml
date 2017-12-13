@@ -1,6 +1,5 @@
 - hosts: all
-  name: Autoconverted job legacy-novaclient-dsvm-functional-identity-v3-only from
-    old job gate-novaclient-dsvm-functional-identity-v3-only-ubuntu-xenial-nv
+  name: novaclient-dsvm-functional job with identity v3 and neutron
   tasks:
 
     - name: Ensure legacy workspace directory
@@ -45,11 +44,6 @@
               # Configure and run functional tests
               $BASE/new/python-novaclient/novaclient/tests/functional/hooks/post_test_hook.sh
           }
-          if [ "-identity-v3-only" == "-identity-v3-only" ] ; then
-              export DEVSTACK_LOCAL_CONFIG="ENABLE_IDENTITY_V2=False"
-          elif [ "-identity-v3-only" == "-neutron" ] ; then
-              export DEVSTACK_GATE_NEUTRON=1
-          fi
           export -f post_test_hook
 
           cp devstack-gate/devstack-vm-gate-wrap.sh ./safe-devstack-vm-gate-wrap.sh
