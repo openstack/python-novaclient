@@ -34,6 +34,7 @@ class ServersTest(utils.FixturedTestCase):
     client_fixture_class = client.V1
     data_fixture_class = data.V1
     api_version = None
+    supports_files = True
 
     def setUp(self):
         super(ServersTest, self).setUp()
@@ -126,6 +127,12 @@ class ServersTest(utils.FixturedTestCase):
         self.assertEqual(s1._info, s2._info)
 
     def test_create_server(self):
+        kwargs = {}
+        if self.supports_files:
+            kwargs['files'] = {
+                '/etc/passwd': 'some data',             # a file
+                '/tmp/foo.txt': six.StringIO('data'),   # a stream
+            }
         s = self.cs.servers.create(
             name="My server",
             image=1,
@@ -133,11 +140,8 @@ class ServersTest(utils.FixturedTestCase):
             meta={'foo': 'bar'},
             userdata="hello moto",
             key_name="fakekey",
-            files={
-                '/etc/passwd': 'some data',                 # a file
-                '/tmp/foo.txt': six.StringIO('data'),   # a stream
-            },
-            nics=self._get_server_create_default_nics()
+            nics=self._get_server_create_default_nics(),
+            **kwargs
         )
         self.assert_request_id(s, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers')
@@ -253,23 +257,32 @@ class ServersTest(utils.FixturedTestCase):
             self.assertIsInstance(s, servers.Server)
 
     def test_create_server_userdata_file_object(self):
+        kwargs = {}
+        if self.supports_files:
+            kwargs['files'] = {
+                '/etc/passwd': 'some data',             # a file
+                '/tmp/foo.txt': six.StringIO('data'),   # a stream
+            }
         s = self.cs.servers.create(
             name="My server",
             image=1,
             flavor=1,
             meta={'foo': 'bar'},
             userdata=six.StringIO('hello moto'),
-            files={
-                '/etc/passwd': 'some data',                 # a file
-                '/tmp/foo.txt': six.StringIO('data'),   # a stream
-            },
             nics=self._get_server_create_default_nics(),
+            **kwargs
         )
         self.assert_request_id(s, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers')
         self.assertIsInstance(s, servers.Server)
 
     def test_create_server_userdata_unicode(self):
+        kwargs = {}
+        if self.supports_files:
+            kwargs['files'] = {
+                '/etc/passwd': 'some data',             # a file
+                '/tmp/foo.txt': six.StringIO('data'),   # a stream
+            }
         s = self.cs.servers.create(
             name="My server",
             image=1,
@@ -277,17 +290,20 @@ class ServersTest(utils.FixturedTestCase):
             meta={'foo': 'bar'},
             userdata=six.u('こんにちは'),
             key_name="fakekey",
-            files={
-                '/etc/passwd': 'some data',                 # a file
-                '/tmp/foo.txt': six.StringIO('data'),   # a stream
-            },
             nics=self._get_server_create_default_nics(),
+            **kwargs
         )
         self.assert_request_id(s, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers')
         self.assertIsInstance(s, servers.Server)
 
     def test_create_server_userdata_utf8(self):
+        kwargs = {}
+        if self.supports_files:
+            kwargs['files'] = {
+                '/etc/passwd': 'some data',             # a file
+                '/tmp/foo.txt': six.StringIO('data'),   # a stream
+            }
         s = self.cs.servers.create(
             name="My server",
             image=1,
@@ -295,11 +311,8 @@ class ServersTest(utils.FixturedTestCase):
             meta={'foo': 'bar'},
             userdata='こんにちは',
             key_name="fakekey",
-            files={
-                '/etc/passwd': 'some data',                 # a file
-                '/tmp/foo.txt': six.StringIO('data'),   # a stream
-            },
             nics=self._get_server_create_default_nics(),
+            **kwargs
         )
         self.assert_request_id(s, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers')
@@ -323,6 +336,12 @@ class ServersTest(utils.FixturedTestCase):
         self.assertEqual(test_password, body['server']['adminPass'])
 
     def test_create_server_userdata_bin(self):
+        kwargs = {}
+        if self.supports_files:
+            kwargs['files'] = {
+                '/etc/passwd': 'some data',             # a file
+                '/tmp/foo.txt': six.StringIO('data'),   # a stream
+            }
         with tempfile.TemporaryFile(mode='wb+') as bin_file:
             original_data = os.urandom(1024)
             bin_file.write(original_data)
@@ -335,11 +354,8 @@ class ServersTest(utils.FixturedTestCase):
                 meta={'foo': 'bar'},
                 userdata=bin_file,
                 key_name="fakekey",
-                files={
-                    '/etc/passwd': 'some data',                 # a file
-                    '/tmp/foo.txt': six.StringIO('data'),   # a stream
-                },
                 nics=self._get_server_create_default_nics(),
+                **kwargs
             )
             self.assert_request_id(s, fakes.FAKE_REQUEST_ID_LIST)
             self.assert_called('POST', '/servers')
@@ -1500,3 +1516,29 @@ class ServersV256Test(ServersV254Test):
         ex = self.assertRaises(TypeError,
                                s.migrate, host='target-host')
         self.assertIn('host', six.text_type(ex))
+
+
+class ServersV257Test(ServersV256Test):
+    """Tests the servers python API bindings with microversion 2.57 where
+    personality files are deprecated.
+    """
+    api_version = "2.57"
+    supports_files = False
+
+    def test_create_server_with_files_fails(self):
+        ex = self.assertRaises(
+            exceptions.UnsupportedAttribute, self.cs.servers.create,
+            name="My server", image=1, flavor=1,
+            files={
+                '/etc/passwd': 'some data',  # a file
+                '/tmp/foo.txt': six.StringIO('data'),  # a stream
+            }, nics='auto')
+        self.assertIn('files', six.text_type(ex))
+
+    def test_rebuild_server_name_meta_files(self):
+        files = {'/etc/passwd': 'some data'}
+        s = self.cs.servers.get(1234)
+        ex = self.assertRaises(
+            exceptions.UnsupportedAttribute, s.rebuild, image=1, name='new',
+            meta={'foo': 'bar'}, files=files)
+        self.assertIn('files', six.text_type(ex))

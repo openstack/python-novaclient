@@ -391,19 +391,22 @@ def _boot(cs, args):
 
     meta = _meta_parsing(args.meta)
 
-    files = {}
-    for f in args.files:
-        try:
-            dst, src = f.split('=', 1)
-            files[dst] = open(src)
-        except IOError as e:
-            raise exceptions.CommandError(_("Can't open '%(src)s': %(exc)s") %
-                                          {'src': src, 'exc': e})
-        except ValueError:
-            raise exceptions.CommandError(_("Invalid file argument '%s'. "
-                                            "File arguments must be of the "
-                                            "form '--file "
-                                            "<dst-path=src-path>'") % f)
+    include_files = cs.api_version < api_versions.APIVersion('2.57')
+    if include_files:
+        files = {}
+        for f in args.files:
+            try:
+                dst, src = f.split('=', 1)
+                files[dst] = open(src)
+            except IOError as e:
+                raise exceptions.CommandError(
+                    _("Can't open '%(src)s': %(exc)s") %
+                    {'src': src, 'exc': e})
+            except ValueError:
+                raise exceptions.CommandError(
+                    _("Invalid file argument '%s'. "
+                      "File arguments must be of the "
+                      "form '--file <dst-path=src-path>'") % f)
 
     # use the os-keypair extension
     key_name = None
@@ -481,7 +484,6 @@ def _boot(cs, args):
 
     boot_kwargs = dict(
         meta=meta,
-        files=files,
         key_name=key_name,
         min_count=min_count,
         max_count=max_count,
@@ -503,6 +505,9 @@ def _boot(cs, args):
 
     if 'tags' in args and args.tags:
         boot_kwargs["tags"] = args.tags.split(',')
+
+    if include_files:
+        boot_kwargs['files'] = files
 
     return boot_args, boot_kwargs
 
@@ -563,7 +568,8 @@ def _boot(cs, args):
            "on the new server. More files can be injected using multiple "
            "'--file' options. Limited by the 'injected_files' quota value. "
            "The default value is 5. You can get the current quota value by "
-           "'Personality' limit from 'nova limits' command."))
+           "'Personality' limit from 'nova limits' command."),
+    start_version='2.0', end_version='2.56')
 @utils.arg(
     '--key-name',
     default=os.environ.get('NOVACLIENT_DEFAULT_KEY_NAME'),
@@ -1770,7 +1776,8 @@ def do_reboot(cs, args):
            "on the new server. More files can be injected using multiple "
            "'--file' options. You may store up to 5 files by default. "
            "The maximum number of files is specified by the 'Personality' "
-           "limit reported by the 'nova limits' command."))
+           "limit reported by the 'nova limits' command."),
+    start_version='2.0', end_version='2.56')
 @utils.arg(
     '--key-name',
     metavar='<key-name>',
@@ -1785,6 +1792,19 @@ def do_reboot(cs, args):
     help=_("Unset keypair in the server. "
            "Cannot be specified with the '--key-name' option."),
     start_version='2.54')
+@utils.arg(
+    '--user-data',
+    default=None,
+    metavar='<user-data>',
+    help=_("User data file to pass to be exposed by the metadata server."),
+    start_version='2.57')
+@utils.arg(
+    '--user-data-unset',
+    action='store_true',
+    default=False,
+    help=_("Unset user_data in the server. Cannot be specified with the "
+           "'--user-data' option."),
+    start_version='2.57')
 def do_rebuild(cs, args):
     """Shutdown, re-image, and re-boot a server."""
     server = _find_server(cs, args.server)
@@ -1803,21 +1823,34 @@ def do_rebuild(cs, args):
     meta = _meta_parsing(args.meta)
     kwargs['meta'] = meta
 
-    files = {}
-    for f in args.files:
-        try:
-            dst, src = f.split('=', 1)
-            with open(src, 'r') as s:
-                files[dst] = s.read()
-        except IOError as e:
-            raise exceptions.CommandError(_("Can't open '%(src)s': %(exc)s") %
-                                          {'src': src, 'exc': e})
-        except ValueError:
-            raise exceptions.CommandError(_("Invalid file argument '%s'. "
-                                            "File arguments must be of the "
-                                            "form '--file "
-                                            "<dst-path=src-path>'") % f)
-    kwargs['files'] = files
+    # 2.57 deprecates the --file option and adds the --user-data and
+    # --user-data-unset options.
+    if cs.api_version < api_versions.APIVersion('2.57'):
+        files = {}
+        for f in args.files:
+            try:
+                dst, src = f.split('=', 1)
+                with open(src, 'r') as s:
+                    files[dst] = s.read()
+            except IOError as e:
+                raise exceptions.CommandError(
+                    _("Can't open '%(src)s': %(exc)s") %
+                    {'src': src, 'exc': e})
+            except ValueError:
+                raise exceptions.CommandError(
+                    _("Invalid file argument '%s'. "
+                      "File arguments must be of the "
+                      "form '--file <dst-path=src-path>'") % f)
+        kwargs['files'] = files
+    else:
+        if args.user_data_unset:
+            kwargs['userdata'] = None
+            if args.user_data:
+                raise exceptions.CommandError(
+                    _("Cannot specify '--user-data-unset' with "
+                      "'--user-data'."))
+        elif args.user_data:
+            kwargs['userdata'] = args.user_data
 
     if cs.api_version >= api_versions.APIVersion('2.54'):
         if args.key_unset:
@@ -3739,6 +3772,10 @@ def do_ssh(cs, args):
 # return floating_ips, fixed_ips, security_groups or security_group_members
 # as those are deprecated as networking service proxies and/or because
 # nova-network is deprecated. Similar to the 2.36 microversion.
+# NOTE(mriedem): In the 2.57 microversion, the os-quota-sets and
+# os-quota-class-sets APIs will no longer return injected_files,
+# injected_file_content_bytes or injected_file_content_bytes since personality
+# files (file injection) is deprecated starting with v2.57.
 _quota_resources = ['instances', 'cores', 'ram',
                     'floating_ips', 'fixed_ips', 'metadata_items',
                     'injected_files', 'injected_file_content_bytes',
@@ -3942,6 +3979,7 @@ def do_quota_update(cs, args):
 
 # 2.36 does not support updating quota for floating IPs, fixed IPs, security
 # groups or security group rules.
+# 2.57 does not support updating injected_file* quotas.
 @api_versions.wraps("2.36")
 @utils.arg(
     'tenant',
@@ -3978,19 +4016,22 @@ def do_quota_update(cs, args):
     metavar='<injected-files>',
     type=int,
     default=None,
-    help=_('New value for the "injected-files" quota.'))
+    help=_('New value for the "injected-files" quota.'),
+    start_version='2.36', end_version='2.56')
 @utils.arg(
     '--injected-file-content-bytes',
     metavar='<injected-file-content-bytes>',
     type=int,
     default=None,
-    help=_('New value for the "injected-file-content-bytes" quota.'))
+    help=_('New value for the "injected-file-content-bytes" quota.'),
+    start_version='2.36', end_version='2.56')
 @utils.arg(
     '--injected-file-path-bytes',
     metavar='<injected-file-path-bytes>',
     type=int,
     default=None,
-    help=_('New value for the "injected-file-path-bytes" quota.'))
+    help=_('New value for the "injected-file-path-bytes" quota.'),
+    start_version='2.36', end_version='2.56')
 @utils.arg(
     '--key-pairs',
     metavar='<key-pairs>',
@@ -4147,6 +4188,7 @@ def do_quota_class_update(cs, args):
 
 # 2.50 does not support updating quota class values for floating IPs,
 # fixed IPs, security groups or security group rules.
+# 2.57 does not support updating injected_file* quotas.
 @api_versions.wraps("2.50")
 @utils.arg(
     'class_name',
@@ -4178,19 +4220,22 @@ def do_quota_class_update(cs, args):
     metavar='<injected-files>',
     type=int,
     default=None,
-    help=_('New value for the "injected-files" quota.'))
+    help=_('New value for the "injected-files" quota.'),
+    start_version='2.50', end_version='2.56')
 @utils.arg(
     '--injected-file-content-bytes',
     metavar='<injected-file-content-bytes>',
     type=int,
     default=None,
-    help=_('New value for the "injected-file-content-bytes" quota.'))
+    help=_('New value for the "injected-file-content-bytes" quota.'),
+    start_version='2.50', end_version='2.56')
 @utils.arg(
     '--injected-file-path-bytes',
     metavar='<injected-file-path-bytes>',
     type=int,
     default=None,
-    help=_('New value for the "injected-file-path-bytes" quota.'))
+    help=_('New value for the "injected-file-path-bytes" quota.'),
+    start_version='2.50', end_version='2.56')
 @utils.arg(
     '--key-pairs',
     metavar='<key-pairs>',

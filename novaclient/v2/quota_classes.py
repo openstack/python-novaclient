@@ -50,7 +50,7 @@ class QuotaClassSetManager(base.Manager):
 
     # NOTE(mriedem): 2.50 does strict validation of the resources you can
     # specify since the network-related resources are blocked in 2.50.
-    @api_versions.wraps("2.50")
+    @api_versions.wraps("2.50", "2.56")
     def update(self, class_name, instances=None, cores=None, ram=None,
                metadata_items=None, injected_files=None,
                injected_file_content_bytes=None, injected_file_path_bytes=None,
@@ -71,6 +71,33 @@ class QuotaClassSetManager(base.Manager):
                 injected_file_content_bytes)
         if injected_file_path_bytes is not None:
             resources['injected_file_path_bytes'] = injected_file_path_bytes
+        if key_pairs is not None:
+            resources['key_pairs'] = key_pairs
+        if server_groups is not None:
+            resources['server_groups'] = server_groups
+        if server_group_members is not None:
+            resources['server_group_members'] = server_group_members
+
+        body = {'quota_class_set': resources}
+        return self._update('/os-quota-class-sets/%s' % class_name, body,
+                            'quota_class_set')
+
+    # NOTE(mriedem): 2.57 deprecates the usage of injected_files,
+    # injected_file_content_bytes and injected_file_path_bytes so those
+    # kwargs are removed.
+    @api_versions.wraps("2.57")
+    def update(self, class_name, instances=None, cores=None, ram=None,
+               metadata_items=None, key_pairs=None, server_groups=None,
+               server_group_members=None):
+        resources = {}
+        if instances is not None:
+            resources['instances'] = instances
+        if cores is not None:
+            resources['cores'] = cores
+        if ram is not None:
+            resources['ram'] = ram
+        if metadata_items is not None:
+            resources['metadata_items'] = metadata_items
         if key_pairs is not None:
             resources['key_pairs'] = key_pairs
         if server_groups is not None:

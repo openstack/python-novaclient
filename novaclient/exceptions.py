@@ -48,6 +48,7 @@ class UnsupportedAttribute(AttributeError):
             self.message = (
                 "'%(name)s' argument is only allowed since microversion "
                 "%(start)s." % {"name": argument_name, "start": start_version})
+        super(UnsupportedAttribute, self).__init__(self.message)
 
 
 class CommandError(Exception):

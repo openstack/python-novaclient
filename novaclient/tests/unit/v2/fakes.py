@@ -331,6 +331,14 @@ class FakeSessionClient(base_client.SessionClient):
     #
 
     def get_limits(self, **kw):
+        absolute = {
+            "maxTotalRAMSize": 51200,
+            "maxServerMeta": 5,
+            "maxImageMeta": 5
+        }
+        # 2.57 removes injected_file* entries from the response.
+        if self.api_version < api_versions.APIVersion('2.57'):
+            absolute.update({"maxPersonality": 5, "maxPersonalitySize": 10240})
         return (200, {}, {"limits": {
             "rate": [
                 {
@@ -374,13 +382,7 @@ class FakeSessionClient(base_client.SessionClient):
                     ]
                 }
             ],
-            "absolute": {
-                "maxTotalRAMSize": 51200,
-                "maxServerMeta": 5,
-                "maxImageMeta": 5,
-                "maxPersonality": 5,
-                "maxPersonalitySize": 10240
-            },
+            "absolute": absolute,
         }})
 
     #
@@ -1297,6 +1299,19 @@ class FakeSessionClient(base_client.SessionClient):
     #
 
     def get_os_quota_class_sets_test(self, **kw):
+        # 2.57 removes injected_file* entries from the response.
+        if self.api_version >= api_versions.APIVersion('2.57'):
+            return (200, FAKE_RESPONSE_HEADERS, {
+                'quota_class_set': {
+                    'id': 'test',
+                    'metadata_items': 1,
+                    'ram': 1,
+                    'instances': 1,
+                    'cores': 1,
+                    'key_pairs': 1,
+                    'server_groups': 1,
+                    'server_group_members': 1}})
+
         if self.api_version >= api_versions.APIVersion('2.50'):
             return (200, FAKE_RESPONSE_HEADERS, {
                 'quota_class_set': {
@@ -1329,6 +1344,18 @@ class FakeSessionClient(base_client.SessionClient):
 
     def put_os_quota_class_sets_test(self, body, **kw):
         assert list(body) == ['quota_class_set']
+        # 2.57 removes injected_file* entries from the response.
+        if self.api_version >= api_versions.APIVersion('2.57'):
+            return (200, {}, {
+                'quota_class_set': {
+                    'metadata_items': 1,
+                    'ram': 1,
+                    'instances': 1,
+                    'cores': 1,
+                    'key_pairs': 1,
+                    'server_groups': 1,
+                    'server_group_members': 1}})
+
         if self.api_version >= api_versions.APIVersion('2.50'):
             return (200, {}, {
                 'quota_class_set': {

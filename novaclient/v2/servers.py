@@ -621,6 +621,27 @@ class SecurityGroup(base.Resource):
 class ServerManager(base.BootingManagerWithFind):
     resource_class = Server
 
+    @staticmethod
+    def transform_userdata(userdata):
+        if hasattr(userdata, 'read'):
+            userdata = userdata.read()
+
+        # NOTE(melwitt): Text file data is converted to bytes prior to
+        # base64 encoding. The utf-8 encoding will fail for binary files.
+        if six.PY3:
+            try:
+                userdata = userdata.encode("utf-8")
+            except AttributeError:
+                # In python 3, 'bytes' object has no attribute 'encode'
+                pass
+        else:
+            try:
+                userdata = encodeutils.safe_encode(userdata)
+            except UnicodeDecodeError:
+                pass
+
+        return base64.b64encode(userdata).decode('utf-8')
+
     def _boot(self, response_key, name, image, flavor,
               meta=None, files=None, userdata=None,
               reservation_id=False, return_raw=False, min_count=None,
@@ -639,25 +660,7 @@ class ServerManager(base.BootingManagerWithFind):
             "flavorRef": str(base.getid(flavor)),
         }}
         if userdata:
-            if hasattr(userdata, 'read'):
-                userdata = userdata.read()
-
-            # NOTE(melwitt): Text file data is converted to bytes prior to
-            # base64 encoding. The utf-8 encoding will fail for binary files.
-            if six.PY3:
-                try:
-                    userdata = userdata.encode("utf-8")
-                except AttributeError:
-                    # In python 3, 'bytes' object has no attribute 'encode'
-                    pass
-            else:
-                try:
-                    userdata = encodeutils.safe_encode(userdata)
-                except UnicodeDecodeError:
-                    pass
-
-            userdata_b64 = base64.b64encode(userdata).decode('utf-8')
-            body["server"]["user_data"] = userdata_b64
+            body["server"]["user_data"] = self.transform_userdata(userdata)
         if meta:
             body["server"]["metadata"] = meta
         if reservation_id:
@@ -1204,6 +1207,7 @@ class ServerManager(base.BootingManagerWithFind):
                       are the file contents (either as a string or as a
                       file-like object). A maximum of five entries is allowed,
                       and each file must be 10k or less.
+                      (deprecated starting with microversion 2.57)
         :param reservation_id: return a reservation_id for the set of
                                servers being requested, boolean.
         :param min_count: (optional extension) The minimum number of
@@ -1283,6 +1287,10 @@ class ServerManager(base.BootingManagerWithFind):
         boot_tags_microversion = api_versions.APIVersion("2.52")
         if "tags" in kwargs and self.api_version < boot_tags_microversion:
             raise exceptions.UnsupportedAttribute("tags", "2.52")
+
+        personality_files_deprecation = api_versions.APIVersion('2.57')
+        if files and self.api_version >= personality_files_deprecation:
+            raise exceptions.UnsupportedAttribute('files', '2.0', '2.56')
 
         boot_kwargs = dict(
             meta=meta, files=files, userdata=userdata,
@@ -1397,11 +1405,17 @@ class ServerManager(base.BootingManagerWithFind):
                       are the file contents (either as a string or as a
                       file-like object). A maximum of five entries is allowed,
                       and each file must be 10k or less.
+                      (deprecated starting with microversion 2.57)
         :param description: optional description of the server (allowed since
                             microversion 2.19)
         :param key_name: optional key pair name for rebuild operation; passing
                          None will unset the key for the server instance
                          (starting from microversion 2.54)
+        :param userdata: optional user data to pass to be exposed by the
+                         metadata server; this can be a file type object as
+                         well or a string. If None is specified, the existing
+                         user_data is unset.
+                         (starting from microversion 2.57)
         :returns: :class:`Server`
         """
         descr_microversion = api_versions.APIVersion("2.19")
@@ -1413,6 +1427,14 @@ class ServerManager(base.BootingManagerWithFind):
         if ('key_name' in kwargs and
                 self.api_version < api_versions.APIVersion('2.54')):
             raise exceptions.UnsupportedAttribute('key_name', '2.54')
+
+        # Microversion 2.57 deprecates personality files and adds support
+        # for user_data.
+        files_and_userdata = api_versions.APIVersion('2.57')
+        if files and self.api_version >= files_and_userdata:
+            raise exceptions.UnsupportedAttribute('files', '2.0', '2.56')
+        if 'userdata' in kwargs and self.api_version < files_and_userdata:
+            raise exceptions.UnsupportedAttribute('userdata', '2.57')
 
         body = {'imageRef': base.getid(image)}
         if password is not None:
@@ -1443,6 +1465,12 @@ class ServerManager(base.BootingManagerWithFind):
                     'path': filepath,
                     'contents': cont,
                 })
+        if 'userdata' in kwargs:
+            # If userdata is specified but None, it means unset the existing
+            # user_data on the instance.
+            userdata = kwargs['userdata']
+            body['user_data'] = (userdata if userdata is None else
+                                 self.transform_userdata(userdata))
 
         resp, body = self._action_return_resp_and_body('rebuild', server,
                                                        body, **kwargs)
