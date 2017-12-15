@@ -877,9 +877,6 @@ def do_boot(cs, args):
     """Boot a new server."""
     boot_args, boot_kwargs = _boot(cs, args)
 
-    extra_boot_kwargs = utils.get_resource_manager_extra_kwargs(do_boot, args)
-    boot_kwargs.update(extra_boot_kwargs)
-
     server = cs.servers.create(*boot_args, **boot_kwargs)
     if boot_kwargs['reservation_id']:
         new_server = {'reservation_id': server}
@@ -1815,13 +1812,11 @@ def do_rebuild(cs, args):
     else:
         _password = None
 
-    kwargs = utils.get_resource_manager_extra_kwargs(do_rebuild, args)
-    kwargs['preserve_ephemeral'] = args.preserve_ephemeral
-    kwargs['name'] = args.name
+    kwargs = {'preserve_ephemeral': args.preserve_ephemeral,
+              'name': args.name,
+              'meta': _meta_parsing(args.meta)}
     if 'description' in args:
         kwargs['description'] = args.description
-    meta = _meta_parsing(args.meta)
-    kwargs['meta'] = meta
 
     # 2.57 deprecates the --file option and adds the --user-data and
     # --user-data-unset options.
@@ -1910,8 +1905,7 @@ def do_resize(cs, args):
     """Resize a server."""
     server = _find_server(cs, args.server)
     flavor = _find_flavor(cs, args.flavor)
-    kwargs = utils.get_resource_manager_extra_kwargs(do_resize, args)
-    server.resize(flavor, **kwargs)
+    server.resize(flavor)
     if args.poll:
         _poll_for_status(cs.servers.get, server.id, 'resizing',
                          ['active', 'verify_resize'])
