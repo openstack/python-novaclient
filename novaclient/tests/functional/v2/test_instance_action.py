@@ -10,6 +10,9 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import time
+
+from oslo_utils import timeutils
 from oslo_utils import uuidutils
 import six
 from tempest.lib import exceptions
@@ -57,3 +60,56 @@ class TestInstanceActionCLI(base.ClientTestBase):
         # ensure that obtained action is "create".
         self.assertEqual("create",
                          self._get_value_from_the_table(output, "action"))
+
+
+class TestInstanceActionCLIV258(TestInstanceActionCLI):
+    """Instance action functional tests for v2.58 nova-api microversion."""
+
+    COMPUTE_API_VERSION = "2.58"
+
+    def test_list_instance_action_with_marker_and_limit(self):
+        server = self._create_server()
+        server.stop()
+        # The actions are sorted by created_at in descending order,
+        # and now we have two actions: create and stop.
+        output = self.nova("instance-action-list %s --limit 1" % server.id)
+        marker_req = self._get_column_value_from_single_row_table(
+            output, "Request_ID")
+        action = self._get_list_of_values_from_single_column_table(
+            output, "Action")
+        # The stop action was most recently created so it's what
+        # we get back when limit=1.
+        self.assertEqual(action, ['stop'])
+
+        output = self.nova("instance-action-list %s --limit 1 "
+                           "--marker %s" % (server.id, marker_req))
+        action = self._get_list_of_values_from_single_column_table(
+            output, "Action")
+        self.assertEqual(action, ['create'])
+
+    def test_list_instance_action_with_changes_since(self):
+        # Ignore microseconds to make this a deterministic test.
+        before_create = timeutils.utcnow().replace(microsecond=0).isoformat()
+        server = self._create_server()
+        time.sleep(2)
+        before_stop = timeutils.utcnow().replace(microsecond=0).isoformat()
+        server.stop()
+
+        create_output = self.nova(
+            "instance-action-list %s --changes-since %s" %
+            (server.id, before_create))
+        action = self._get_list_of_values_from_single_column_table(
+            create_output, "Action")
+        # The actions are sorted by created_at in descending order.
+        self.assertEqual(action, ['create', 'stop'])
+
+        stop_output = self.nova("instance-action-list %s --changes-since %s" %
+                                (server.id, before_stop))
+        action = self._get_list_of_values_from_single_column_table(
+            stop_output, "Action")
+        # Provide detailed debug information if this fails.
+        self.assertEqual(action, ['stop'],
+                         'Expected to find the stop action with '
+                         '--changes-since=%s but got: %s\n\n'
+                         'First instance-action-list output: %s' %
+                         (before_stop, stop_output, create_output))

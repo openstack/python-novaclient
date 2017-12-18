@@ -2976,6 +2976,49 @@ class ShellTest(utils.TestCase):
             'GET',
             '/servers/1234/os-instance-actions/req-abcde12345')
 
+    def test_instance_action_list_marker_pre_v258_not_allowed(self):
+        cmd = 'instance-action-list sample-server --marker %s'
+        self.assertRaises(SystemExit, self.run_command,
+                          cmd % FAKE_UUID_1, api_version='2.57')
+
+    def test_instance_action_list_limit_pre_v258_not_allowed(self):
+        cmd = 'instance-action-list sample-server --limit 10'
+        self.assertRaises(SystemExit, self.run_command,
+                          cmd, api_version='2.57')
+
+    def test_instance_action_list_changes_since_pre_v258_not_allowed(self):
+        cmd = 'instance-action-list sample-server --changes-since ' \
+              '2016-02-29T06:23:22'
+        self.assertRaises(SystemExit, self.run_command,
+                          cmd, api_version='2.57')
+
+    def test_instance_action_list_limit_marker_v258(self):
+        out = self.run_command('instance-action-list sample-server --limit 10 '
+                               '--marker %s' % FAKE_UUID_1,
+                               api_version='2.58')[0]
+        # Assert that the updated_at value is in the output.
+        self.assertIn('2013-03-25T13:50:09.000000', out)
+        self.assert_called(
+            'GET',
+            '/servers/1234/os-instance-actions?'
+            'limit=10&marker=%s' % FAKE_UUID_1)
+
+    def test_instance_action_list_with_changes_since_v258(self):
+        self.run_command('instance-action-list sample-server '
+                         '--changes-since 2016-02-29T06:23:22',
+                         api_version='2.58')
+        self.assert_called(
+            'GET',
+            '/servers/1234/os-instance-actions?'
+            'changes-since=2016-02-29T06%3A23%3A22')
+
+    def test_instance_action_list_with_changes_since_invalid_value_v258(self):
+        ex = self.assertRaises(
+            exceptions.CommandError, self.run_command,
+            'instance-action-list sample-server --changes-since 0123456789',
+            api_version='2.58')
+        self.assertIn('Invalid changes-since value', six.text_type(ex))
+
     def test_cell_show(self):
         self.run_command('cell-show child_cell')
         self.assert_called('GET', '/os-cells/child_cell')

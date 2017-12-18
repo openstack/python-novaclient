@@ -13,6 +13,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from novaclient import api_versions
 from novaclient import base
 
 
@@ -32,9 +33,37 @@ class InstanceActionManager(base.ManagerWithFind):
         return self._get("/servers/%s/os-instance-actions/%s" %
                          (base.getid(server), request_id), 'instanceAction')
 
+    @api_versions.wraps("2.0", "2.57")
     def list(self, server):
         """
         Get a list of actions performed on a server.
+
+        :param server: The :class:`Server` (or its ID)
         """
         return self._list('/servers/%s/os-instance-actions' %
                           base.getid(server), 'instanceActions')
+
+    @api_versions.wraps("2.58")
+    def list(self, server, marker=None, limit=None, changes_since=None):
+        """
+        Get a list of actions performed on a server.
+
+        :param server: The :class:`Server` (or its ID)
+        :param marker: Begin returning actions that appear later in the action
+                       list than that represented by this action request id
+                       (optional).
+        :param limit: Maximum number of actions to return. (optional).
+        :param changes_since: List only instance actions changed after a
+                              certain point of time. The provided time should
+                              be an ISO 8061 formatted time. ex
+                              2016-03-04T06:27:59Z . (optional).
+        """
+        opts = {}
+        if marker:
+            opts['marker'] = marker
+        if limit:
+            opts['limit'] = limit
+        if changes_since:
+            opts['changes-since'] = changes_since
+        return self._list('/servers/%s/os-instance-actions' %
+                          base.getid(server), 'instanceActions', filters=opts)
