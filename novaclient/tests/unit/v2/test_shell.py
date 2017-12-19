@@ -1395,6 +1395,12 @@ class ShellTest(utils.TestCase):
         self.assertIn('securitygroup1', output)
         self.assertIn('OS-EXT-MOD: Some Thing', output)
         self.assertIn('mod_some_thing_value', output)
+        # Testing the 'networks' field that is explicitly added to the
+        # existing fields list.
+        output, _err = self.run_command('list --fields networks')
+        self.assertIn('Networks', output)
+        self.assertIn('10.11.12.13', output)
+        self.assertIn('5.6.7.8', output)
 
     @mock.patch(
         'novaclient.tests.unit.v2.fakes.FakeSessionClient.get_servers_detail')
@@ -1411,6 +1417,18 @@ class ShellTest(utils.TestCase):
                           self.run_command,
                           'list --fields host,security_groups,'
                           'OS-EXT-MOD:some_thing,invalid')
+        self.assertRaises(exceptions.CommandError,
+                          self.run_command,
+                          'list --fields __dict__')
+        self.assertRaises(exceptions.CommandError,
+                          self.run_command,
+                          'list --fields update')
+        self.assertRaises(exceptions.CommandError,
+                          self.run_command,
+                          'list --fields __init__')
+        self.assertRaises(exceptions.CommandError,
+                          self.run_command,
+                          'list --fields __module__,updated')
 
     def test_list_with_marker(self):
         self.run_command('list --marker some-uuid')
