@@ -1919,10 +1919,6 @@ def do_update(cs, args):
     update_kwargs = {}
     if args.name:
         update_kwargs["name"] = args.name
-    # NOTE(andreykurilin): `do_update` method is used by `do_rename` method,
-    # which do not have description argument at all. When `do_rename` will be
-    # removed after deprecation period, feel free to change the check below to:
-    #     `if args.description:`
     if "description" in args and args.description is not None:
         update_kwargs["description"] = args.description
     _find_server(cs, args.server).update(**update_kwargs)
