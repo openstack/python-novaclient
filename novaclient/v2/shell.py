@@ -91,6 +91,15 @@ def emit_fixed_floating_deprecation_warning(command_name):
           command_name, file=sys.stderr)
 
 
+def emit_duplicated_image_with_warning(img, image_with):
+    img_uuid_list = [str(image.id) for image in img]
+    print(_('WARNING: Multiple matching images: %(img_uuid_list)s\n'
+            'Using image: %(chosen_one)s') %
+          {'img_uuid_list': img_uuid_list,
+           'chosen_one': img_uuid_list[0]},
+          file=sys.stderr)
+
+
 CLIENT_BDM2_KEYS = {
     'id': 'uuid',
     'source': 'source_type',
@@ -396,9 +405,9 @@ def _boot(cs, args):
 
     if not image and args.image_with:
         images = _match_image(cs, args.image_with)
+        if len(images) > 1:
+            emit_duplicated_image_with_warning(images, args.image_with)
         if images:
-            # TODO(harlowja): log a warning that we
-            # are selecting the first of many?
             image = images[0]
 
     min_count = 1
