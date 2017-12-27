@@ -1201,7 +1201,7 @@ def do_flavor_show(cs, args):
 @utils.arg(
     '--swap',
     metavar='<swap>',
-    help=_("Swap space size in MB (default 0)."),
+    help=_("Additional swap space size in MB (default 0)."),
     default=0)
 @utils.arg(
     '--rxtx-factor',
