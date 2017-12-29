@@ -157,6 +157,11 @@ class ShellTest(utils.TestCase):
             }},
         )
 
+    def test_boot_image_with_error_out_no_match(self):
+        cmd = ("boot --flavor 1"
+               " --image-with fake_key=fake_value some-server")
+        self.assertRaises(exceptions.CommandError, self.run_command, cmd)
+
     def test_boot_key(self):
         self.run_command('boot --flavor 1 --image %s --key-name 1 some-server'
                          % FAKE_UUID_1)

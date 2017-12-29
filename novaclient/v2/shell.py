@@ -409,6 +409,9 @@ def _boot(cs, args):
             emit_duplicated_image_with_warning(images, args.image_with)
         if images:
             image = images[0]
+        else:
+            raise exceptions.CommandError(_("No images match the property "
+                                            "expected by --image-with"))
 
     min_count = 1
     max_count = 1
