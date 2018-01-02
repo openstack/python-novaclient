@@ -52,8 +52,8 @@ class V1(base.Fixture):
 
     def test_quota(self, tenant_id='test'):
         return {
-            'tenant_id': tenant_id,
-            'metadata_items': [],
+            'id': tenant_id,
+            'metadata_items': 1,
             'injected_file_content_bytes': 1,
             'injected_file_path_bytes': 1,
             'ram': 1,
@@ -61,7 +61,9 @@ class V1(base.Fixture):
             'instances': 1,
             'injected_files': 1,
             'cores': 1,
-            'keypairs': 1,
+            'key_pairs': 1,
             'security_groups': 1,
-            'security_group_rules': 1
+            'security_group_rules': 1,
+            'server_groups': 1,
+            'server_group_members': 1
         }
