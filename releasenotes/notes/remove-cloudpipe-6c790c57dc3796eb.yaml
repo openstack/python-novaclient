@@ -1,0 +1,6 @@
+---
+upgrade:
+  - |
+    The deprecated ``nova cloudpipe-list``, ``nova cloudpipe-create``, and
+    ``nova cloudpipe-configure`` commands and the ``novaclient.v2.cloudpipe``
+    API bindings have been removed.

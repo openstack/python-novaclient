@@ -816,27 +816,6 @@ class FakeSessionClient(base_client.SessionClient):
         return self.post_servers_1234_action(body, **kw)
 
     #
-    # Cloudpipe
-    #
-
-    def get_os_cloudpipe(self, **kw):
-        return (
-            200,
-            {},
-            {'cloudpipes': [{'project_id': 1}]}
-        )
-
-    def post_os_cloudpipe(self, **ks):
-        return (
-            202,
-            {},
-            {'instance_id': '9d5824aa-20e6-4b9f-b967-76a699fc51fd'}
-        )
-
-    def put_os_cloudpipe_configure_project(self, **kw):
-        return (202, {}, None)
-
-    #
     # Flavors
     #
 

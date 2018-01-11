@@ -48,12 +48,6 @@ from novaclient.v2 import servers
 
 logger = logging.getLogger(__name__)
 
-CLOUDPIPE_DEPRECATION_WARNING = (
-    _('The os-cloudpipe Nova API has been removed.  This command will be '
-      'removed in the first major release after the Nova server 16.0.0 Pike '
-      'release.')
-)
-
 
 # NOTE(mriedem): Remove this along with the deprecated commands in the first
 # major python-novaclient release AFTER the nova server 16.0.0 Pike release.
@@ -921,38 +915,6 @@ def do_boot(cs, args):
 
     if args.poll:
         _poll_for_status(cs.servers.get, server.id, 'building', ['active'])
-
-
-def do_cloudpipe_list(cs, _args):
-    """DEPRECATED Print a list of all cloudpipe instances."""
-
-    print(CLOUDPIPE_DEPRECATION_WARNING, file=sys.stderr)
-
-    cloudpipes = cs.cloudpipe.list()
-    columns = ['Project Id', "Public IP", "Public Port", "Internal IP"]
-    utils.print_list(cloudpipes, columns)
-
-
-@utils.arg(
-    'project',
-    metavar='<project_id>',
-    help=_('UUID of the project to create the cloudpipe for.'))
-def do_cloudpipe_create(cs, args):
-    """DEPRECATED Create a cloudpipe instance for the given project."""
-
-    print(CLOUDPIPE_DEPRECATION_WARNING, file=sys.stderr)
-
-    cs.cloudpipe.create(args.project)
-
-
-@utils.arg('address', metavar='<ip address>', help=_('New IP Address.'))
-@utils.arg('port', metavar='<port>', help=_('New Port.'))
-def do_cloudpipe_configure(cs, args):
-    """DEPRECATED Update the VPN IP/port of a cloudpipe instance."""
-
-    print(CLOUDPIPE_DEPRECATION_WARNING, file=sys.stderr)
-
-    cs.cloudpipe.update(args.address, args.port)
 
 
 def _poll_for_status(poll_fn, obj_id, action, final_ok_states,
