@@ -38,15 +38,13 @@ class TestOsServicesNovaClientV211(test_os_services.TestOsServicesNovaClient):
 
             host = self._get_column_value_from_single_row_table(service_list,
                                                                 'Host')
-            service = self.nova('service-force-down %s %s'
-                                % (host, serv.binary))
+            service = self.nova('service-force-down %s' % host)
             self.addCleanup(self.nova, 'service-force-down --unset',
-                            params="%s %s" % (host, serv.binary))
+                            params=host)
             status = self._get_column_value_from_single_row_table(
                 service, 'Forced down')
             self.assertEqual('True', status)
-            service = self.nova('service-force-down --unset %s %s'
-                                % (host, serv.binary))
+            service = self.nova('service-force-down --unset %s' % host)
             status = self._get_column_value_from_single_row_table(
                 service, 'Forced down')
             self.assertEqual('False', status)

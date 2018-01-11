@@ -41,13 +41,12 @@ class TestOsServicesNovaClient(base.ClientTestBase):
                 continue
             host = self._get_column_value_from_single_row_table(
                 self.nova('service-list --binary %s' % serv.binary), 'Host')
-            service = self.nova('service-disable %s %s' % (host, serv.binary))
-            self.addCleanup(self.nova, 'service-enable',
-                            params="%s %s" % (host, serv.binary))
+            service = self.nova('service-disable %s' % host)
+            self.addCleanup(self.nova, 'service-enable', params=host)
             status = self._get_column_value_from_single_row_table(
                 service, 'Status')
             self.assertEqual('disabled', status)
-            service = self.nova('service-enable %s %s' % (host, serv.binary))
+            service = self.nova('service-enable %s' % host)
             status = self._get_column_value_from_single_row_table(
                 service, 'Status')
             self.assertEqual('enabled', status)
@@ -64,10 +63,9 @@ class TestOsServicesNovaClient(base.ClientTestBase):
                 continue
             host = self._get_column_value_from_single_row_table(
                 self.nova('service-list --binary %s' % serv.binary), 'Host')
-            service = self.nova('service-disable --reason test_disable %s %s'
-                                % (host, serv.binary))
-            self.addCleanup(self.nova, 'service-enable',
-                            params="%s %s" % (host, serv.binary))
+            service = self.nova(
+                'service-disable --reason test_disable %s' % host)
+            self.addCleanup(self.nova, 'service-enable', params=host)
             status = self._get_column_value_from_single_row_table(
                 service, 'Status')
             log_reason = self._get_column_value_from_single_row_table(

@@ -3400,13 +3400,9 @@ def do_service_list(cs, args):
 # values.
 @api_versions.wraps('2.0', '2.52')
 @utils.arg('host', metavar='<hostname>', help=_('Name of host.'))
-# TODO(mriedem): Eventually just hard-code the binary to "nova-compute".
-@utils.arg('binary', metavar='<binary>', help=_('Service binary. The only '
-           'meaningful binary is "nova-compute". (Deprecated)'),
-           default='nova-compute', nargs='?')
 def do_service_enable(cs, args):
     """Enable the service."""
-    result = cs.services.enable(args.host, args.binary)
+    result = cs.services.enable(args.host, 'nova-compute')
     utils.print_list([result], ['Host', 'Binary', 'Status'])
 
 
@@ -3423,10 +3419,6 @@ def do_service_enable(cs, args):
 # values.
 @api_versions.wraps('2.0', '2.52')
 @utils.arg('host', metavar='<hostname>', help=_('Name of host.'))
-# TODO(mriedem): Eventually just hard-code the binary to "nova-compute".
-@utils.arg('binary', metavar='<binary>', help=_('Service binary. The only '
-           'meaningful binary is "nova-compute". (Deprecated)'),
-           default='nova-compute', nargs='?')
 @utils.arg(
     '--reason',
     metavar='<reason>',
@@ -3434,12 +3426,12 @@ def do_service_enable(cs, args):
 def do_service_disable(cs, args):
     """Disable the service."""
     if args.reason:
-        result = cs.services.disable_log_reason(args.host, args.binary,
+        result = cs.services.disable_log_reason(args.host, 'nova-compute',
                                                 args.reason)
         utils.print_list([result], ['Host', 'Binary', 'Status',
                          'Disabled Reason'])
     else:
-        result = cs.services.disable(args.host, args.binary)
+        result = cs.services.disable(args.host, 'nova-compute')
         utils.print_list([result], ['Host', 'Binary', 'Status'])
 
 
@@ -3465,10 +3457,6 @@ def do_service_disable(cs, args):
 # values.
 @api_versions.wraps("2.11", "2.52")
 @utils.arg('host', metavar='<hostname>', help=_('Name of host.'))
-# TODO(mriedem): Eventually just hard-code the binary to "nova-compute".
-@utils.arg('binary', metavar='<binary>', help=_('Service binary. The only '
-           'meaningful binary is "nova-compute". (Deprecated)'),
-           default='nova-compute', nargs='?')
 @utils.arg(
     '--unset',
     dest='force_down',
@@ -3477,7 +3465,7 @@ def do_service_disable(cs, args):
     default=True)
 def do_service_force_down(cs, args):
     """Force service to down."""
-    result = cs.services.force_down(args.host, args.binary, args.force_down)
+    result = cs.services.force_down(args.host, 'nova-compute', args.force_down)
     utils.print_list([result], ['Host', 'Binary', 'Forced down'])
 
 

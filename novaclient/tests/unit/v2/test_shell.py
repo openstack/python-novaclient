@@ -2369,8 +2369,8 @@ class ShellTest(utils.TestCase):
         self.assert_called('GET', '/os-services?host=host1&binary=nova-cert')
 
     def test_services_enable(self):
-        self.run_command('service-enable host1 nova-cert')
-        body = {'host': 'host1', 'binary': 'nova-cert'}
+        self.run_command('service-enable host1')
+        body = {'host': 'host1', 'binary': 'nova-compute'}
         self.assert_called('PUT', '/os-services/enable', body)
 
     def test_services_enable_v2_53(self):
@@ -2381,15 +2381,9 @@ class ShellTest(utils.TestCase):
         self.assert_called(
             'PUT', '/os-services/%s' % fakes.FAKE_SERVICE_UUID_1, body)
 
-    def test_services_enable_default_binary(self):
-        """Tests that the default binary is nova-compute if not specified."""
-        self.run_command('service-enable host1')
-        body = {'host': 'host1', 'binary': 'nova-compute'}
-        self.assert_called('PUT', '/os-services/enable', body)
-
     def test_services_disable(self):
-        self.run_command('service-disable host1 nova-cert')
-        body = {'host': 'host1', 'binary': 'nova-cert'}
+        self.run_command('service-disable host1')
+        body = {'host': 'host1', 'binary': 'nova-compute'}
         self.assert_called('PUT', '/os-services/disable', body)
 
     def test_services_disable_v2_53(self):
@@ -2400,15 +2394,9 @@ class ShellTest(utils.TestCase):
         self.assert_called(
             'PUT', '/os-services/%s' % fakes.FAKE_SERVICE_UUID_1, body)
 
-    def test_services_disable_default_binary(self):
-        """Tests that the default binary is nova-compute if not specified."""
-        self.run_command('service-disable host1')
-        body = {'host': 'host1', 'binary': 'nova-compute'}
-        self.assert_called('PUT', '/os-services/disable', body)
-
     def test_services_disable_with_reason(self):
-        self.run_command('service-disable host1 nova-cert --reason no_reason')
-        body = {'host': 'host1', 'binary': 'nova-cert',
+        self.run_command('service-disable host1 --reason no_reason')
+        body = {'host': 'host1', 'binary': 'nova-compute',
                 'disabled_reason': 'no_reason'}
         self.assert_called('PUT', '/os-services/disable-log-reason', body)
 

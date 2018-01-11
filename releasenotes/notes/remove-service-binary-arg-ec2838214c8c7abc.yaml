@@ -1,0 +1,6 @@
+---
+upgrade:
+  - |
+    The deprecated ``binary`` argument to the ``nova service-enable``,
+    ``nova service-disable``, and ``nova service-force-down`` commands has been
+    removed.
