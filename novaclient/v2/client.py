@@ -23,7 +23,6 @@ from novaclient.v2 import aggregates
 from novaclient.v2 import assisted_volume_snapshots
 from novaclient.v2 import availability_zones
 from novaclient.v2 import cells
-from novaclient.v2 import certs
 from novaclient.v2 import cloudpipe
 from novaclient.v2 import contrib
 from novaclient.v2 import flavor_access
@@ -150,7 +149,6 @@ class Client(object):
         # extensions
         self.agents = agents.AgentsManager(self)
         self.cloudpipe = cloudpipe.CloudpipeManager(self)
-        self.certs = certs.CertificateManager(self)
         self.volumes = volumes.VolumeManager(self)
         self.keypairs = keypairs.KeypairManager(self)
         self.neutron = networks.NeutronManager(self)

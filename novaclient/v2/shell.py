@@ -48,11 +48,6 @@ from novaclient.v2 import servers
 
 logger = logging.getLogger(__name__)
 
-CERT_DEPRECATION_WARNING = (
-    _('The nova-cert service is deprecated. This command will be removed '
-      'in the first major release after the Nova server 16.0.0 Pike release.')
-)
-
 CLOUDPIPE_DEPRECATION_WARNING = (
     _('The os-cloudpipe Nova API has been removed.  This command will be '
       'removed in the first major release after the Nova server 16.0.0 Pike '
@@ -3155,63 +3150,6 @@ def do_usage(cs, args):
         utils.print_list([usage], rows)
     else:
         print(_('None'))
-
-
-@utils.arg(
-    'pk_filename',
-    metavar='<private-key-filename>',
-    nargs='?',
-    default='pk.pem',
-    help=_('Filename for the private key. [Default: pk.pem]'))
-@utils.arg(
-    'cert_filename',
-    metavar='<x509-cert-filename>',
-    nargs='?',
-    default='cert.pem',
-    help=_('Filename for the X.509 certificate. [Default: cert.pem]'))
-def do_x509_create_cert(cs, args):
-    """DEPRECATED Create x509 cert for a user in tenant."""
-    print(CERT_DEPRECATION_WARNING, file=sys.stderr)
-
-    if os.path.exists(args.pk_filename):
-        raise exceptions.CommandError(_("Unable to write privatekey - %s "
-                                        "exists.") % args.pk_filename)
-    if os.path.exists(args.cert_filename):
-        raise exceptions.CommandError(_("Unable to write x509 cert - %s "
-                                        "exists.") % args.cert_filename)
-
-    certs = cs.certs.create()
-
-    try:
-        old_umask = os.umask(0o377)
-        with open(args.pk_filename, 'w') as private_key:
-            private_key.write(certs.private_key)
-            print(_("Wrote private key to %s") % args.pk_filename)
-    finally:
-        os.umask(old_umask)
-
-    with open(args.cert_filename, 'w') as cert:
-        cert.write(certs.data)
-        print(_("Wrote x509 certificate to %s") % args.cert_filename)
-
-
-@utils.arg(
-    'filename',
-    metavar='<filename>',
-    nargs='?',
-    default='cacert.pem',
-    help=_('Filename to write the x509 root cert.'))
-def do_x509_get_root_cert(cs, args):
-    """DEPRECATED Fetch the x509 root cert."""
-    print(CERT_DEPRECATION_WARNING, file=sys.stderr)
-    if os.path.exists(args.filename):
-        raise exceptions.CommandError(_("Unable to write x509 root cert - \
-                                      %s exists.") % args.filename)
-
-    with open(args.filename, 'w') as cert:
-        cacert = cs.certs.get()
-        cert.write(cacert.data)
-        print(_("Wrote x509 root cert to %s") % args.filename)
 
 
 @utils.arg(

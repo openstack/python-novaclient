@@ -1,0 +1,6 @@
+---
+upgrade:
+  - |
+    The ``nova x509-create-cert`` and ``nova x509-get-root-cert`` commands
+    and ``novaclient.v2.certs`` API binding were deprecated in the 9.0.0
+    release and have now been removed.
