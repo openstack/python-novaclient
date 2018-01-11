@@ -20,7 +20,6 @@ Server interface.
 """
 
 import base64
-import warnings
 
 from oslo_utils import encodeutils
 import six
@@ -51,12 +50,6 @@ CONSOLE_TYPE_PROTOCOL_MAPPING = {
     'serial': 'serial',
     'webmks': 'mks'
 }
-
-ADD_REMOVE_FIXED_FLOATING_DEPRECATION_WARNING = _(
-    'The %s server action API is deprecated as of the 2.44 microversion. This '
-    'API binding will be removed in the first major release after the Nova '
-    '16.0.0 Pike release. Use python-neutronclient or openstacksdk instead.'
-)
 
 
 class Server(base.Resource):
@@ -171,35 +164,6 @@ class Server(base.Resource):
 
         """
         return self.manager.clear_password(self)
-
-    def add_fixed_ip(self, network_id):
-        """
-        Add an IP address on a network.
-
-        :param network_id: The ID of the network the IP should be on.
-        :returns: An instance of novaclient.base.TupleWithMeta
-        """
-        return self.manager.add_fixed_ip(self, network_id)
-
-    def add_floating_ip(self, address, fixed_address=None):
-        """
-        Add floating IP to an instance
-
-        :param address: The IP address or FloatingIP to add to the instance
-        :param fixed_address: The fixedIP address the FloatingIP is to be
-               associated with (optional)
-        :returns: An instance of novaclient.base.TupleWithMeta
-        """
-        return self.manager.add_floating_ip(self, address, fixed_address)
-
-    def remove_floating_ip(self, address):
-        """
-        Remove floating IP from an instance
-
-        :param address: The IP address or FloatingIP to remove
-        :returns: An instance of novaclient.base.TupleWithMeta
-        """
-        return self.manager.remove_floating_ip(self, address)
 
     def stop(self):
         """
@@ -345,15 +309,6 @@ class Server(base.Resource):
         :returns: An instance of novaclient.base.TupleWithMeta
         """
         return self.manager.migrate(self, host=host)
-
-    def remove_fixed_ip(self, address):
-        """
-        Remove an IP address.
-
-        :param address: The IP address to remove.
-        :returns: An instance of novaclient.base.TupleWithMeta
-        """
-        return self.manager.remove_fixed_ip(self, address)
 
     def change_password(self, password):
         """
@@ -901,69 +856,6 @@ class ServerManager(base.BootingManagerWithFind):
                 break
             marker = result[-1].id
         return result
-
-    @api_versions.wraps('2.0', '2.43')
-    def add_fixed_ip(self, server, network_id):
-        """
-        DEPRECATED Add an IP address on a network.
-
-        :param server: The :class:`Server` (or its ID) to add an IP to.
-        :param network_id: The ID of the network the IP should be on.
-        :returns: An instance of novaclient.base.TupleWithMeta
-        """
-        warnings.warn(ADD_REMOVE_FIXED_FLOATING_DEPRECATION_WARNING %
-                      'addFixedIP', DeprecationWarning)
-        return self._action('addFixedIp', server, {'networkId': network_id})
-
-    @api_versions.wraps('2.0', '2.43')
-    def remove_fixed_ip(self, server, address):
-        """
-        DEPRECATED Remove an IP address.
-
-        :param server: The :class:`Server` (or its ID) to add an IP to.
-        :param address: The IP address to remove.
-        :returns: An instance of novaclient.base.TupleWithMeta
-        """
-        warnings.warn(ADD_REMOVE_FIXED_FLOATING_DEPRECATION_WARNING %
-                      'removeFixedIP', DeprecationWarning)
-        return self._action('removeFixedIp', server, {'address': address})
-
-    @api_versions.wraps('2.0', '2.43')
-    def add_floating_ip(self, server, address, fixed_address=None):
-        """
-        DEPRECATED Add a floating IP to an instance
-
-        :param server: The :class:`Server` (or its ID) to add an IP to.
-        :param address: The FloatingIP or string floating address to add.
-        :param fixed_address: The FixedIP the floatingIP should be
-                              associated with (optional)
-        :returns: An instance of novaclient.base.TupleWithMeta
-        """
-        warnings.warn(ADD_REMOVE_FIXED_FLOATING_DEPRECATION_WARNING %
-                      'addFloatingIP', DeprecationWarning)
-        address = address.ip if hasattr(address, 'ip') else address
-        if fixed_address:
-            if hasattr(fixed_address, 'ip'):
-                fixed_address = fixed_address.ip
-            return self._action('addFloatingIp', server,
-                                {'address': address,
-                                 'fixed_address': fixed_address})
-        else:
-            return self._action('addFloatingIp', server, {'address': address})
-
-    @api_versions.wraps('2.0', '2.43')
-    def remove_floating_ip(self, server, address):
-        """
-        DEPRECATED Remove a floating IP address.
-
-        :param server: The :class:`Server` (or its ID) to remove an IP from.
-        :param address: The FloatingIP or string floating address to remove.
-        :returns: An instance of novaclient.base.TupleWithMeta
-        """
-        warnings.warn(ADD_REMOVE_FIXED_FLOATING_DEPRECATION_WARNING %
-                      'removeFloatingIP', DeprecationWarning)
-        address = address.ip if hasattr(address, 'ip') else address
-        return self._action('removeFloatingIp', server, {'address': address})
 
     def get_vnc_console(self, server, console_type):
         """

@@ -43,7 +43,6 @@ from novaclient.v2 import servers
 from novaclient.v2 import services
 from novaclient.v2 import usage
 from novaclient.v2 import versions
-from novaclient.v2 import virtual_interfaces
 from novaclient.v2 import volumes
 
 
@@ -152,8 +151,6 @@ class Client(object):
         self.quota_classes = quota_classes.QuotaClassSetManager(self)
         self.quotas = quotas.QuotaSetManager(self)
         self.usage = usage.UsageManager(self)
-        self.virtual_interfaces = \
-            virtual_interfaces.VirtualInterfaceManager(self)
         self.aggregates = aggregates.AggregateManager(self)
         self.hypervisors = hypervisors.HypervisorManager(self)
         self.hypervisor_stats = hypervisors.HypervisorStatsManager(self)

@@ -704,13 +704,6 @@ class FakeSessionClient(base_client.SessionClient):
             assert 'flavorRef' in body[action]
         elif action in cls.none_actions:
             assert body[action] is None
-        elif action == 'addFixedIp':
-            assert list(body[action]) == ['networkId']
-        elif action in ['removeFixedIp', 'removeFloatingIp']:
-            assert list(body[action]) == ['address']
-        elif action == 'addFloatingIp':
-            assert (list(body[action]) == ['address'] or
-                    sorted(list(body[action])) == ['address', 'fixed_address'])
         elif action == 'changePassword':
             assert list(body[action]) == ['adminPass']
         elif action in cls.type_actions:
@@ -1133,14 +1126,6 @@ class FakeSessionClient(base_client.SessionClient):
                               required=['name'])
         r = {'keypair': self.get_os_keypairs()[2]['keypairs'][0]['keypair']}
         return (202, {}, r)
-
-    #
-    # Virtual Interfaces
-    #
-    def get_servers_1234_os_virtual_interfaces(self, **kw):
-        return (200, {}, {"virtual_interfaces": [
-            {'id': 'fakeid', 'mac_address': 'fakemac'}
-        ]})
 
     #
     # Quotas

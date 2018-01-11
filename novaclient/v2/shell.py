@@ -49,17 +49,6 @@ from novaclient.v2 import servers
 logger = logging.getLogger(__name__)
 
 
-# NOTE(mriedem): Remove this along with the deprecated commands in the first
-# major python-novaclient release AFTER the nova server 16.0.0 Pike release.
-def emit_fixed_floating_deprecation_warning(command_name):
-    print(_('WARNING: Command %s is deprecated and will be removed '
-            'in the first major release after the Nova server 16.0.0 '
-            'Pike release. Use python-neutronclient or python-openstackclient'
-            'instead. Specify --os-compute-api-version less than 2.44 '
-            'to continue using this command until it is removed.') %
-          command_name, file=sys.stderr)
-
-
 def emit_duplicated_image_with_warning(img, image_with):
     img_uuid_list = [str(image.id) for image in img]
     print(_('WARNING: Multiple matching images: %(img_uuid_list)s\n'
@@ -2338,27 +2327,6 @@ def _find_network_id(cs, net_name):
         raise exceptions.CommandError(six.text_type(e))
 
 
-@utils.arg('server', metavar='<server>', help=_('Name or ID of server.'))
-@utils.arg(
-    'network_id',
-    metavar='<network-id>',
-    help=_('Network ID.'))
-def do_add_fixed_ip(cs, args):
-    """DEPRECATED Add new IP address on a network to server."""
-    emit_fixed_floating_deprecation_warning('add-fixed-ip')
-    server = _find_server(cs, args.server)
-    server.add_fixed_ip(args.network_id)
-
-
-@utils.arg('server', metavar='<server>', help=_('Name or ID of server.'))
-@utils.arg('address', metavar='<address>', help=_('IP Address.'))
-def do_remove_fixed_ip(cs, args):
-    """DEPRECATED Remove an IP address from a server."""
-    emit_fixed_floating_deprecation_warning('remove-fixed-ip')
-    server = _find_server(cs, args.server)
-    server.remove_fixed_ip(args.address)
-
-
 def _print_volume(volume):
     utils.print_dict(volume.to_dict())
 
@@ -2594,37 +2562,6 @@ def do_console_log(cs, args):
     server = _find_server(cs, args.server)
     data = server.get_console_output(length=args.length)
     print(data)
-
-
-@utils.arg('server', metavar='<server>', help=_('Name or ID of server.'))
-@utils.arg('address', metavar='<address>', help=_('IP Address.'))
-@utils.arg(
-    '--fixed-address',
-    metavar='<fixed_address>',
-    default=None,
-    help=_('Fixed IP Address to associate with.'))
-def do_floating_ip_associate(cs, args):
-    """DEPRECATED Associate a floating IP address to a server."""
-    emit_fixed_floating_deprecation_warning('floating-ip-associate')
-    _associate_floating_ip(cs, args)
-
-
-def _associate_floating_ip(cs, args):
-    server = _find_server(cs, args.server)
-    server.add_floating_ip(args.address, args.fixed_address)
-
-
-@utils.arg('server', metavar='<server>', help=_('Name or ID of server.'))
-@utils.arg('address', metavar='<address>', help=_('IP Address.'))
-def do_floating_ip_disassociate(cs, args):
-    """DEPRECATED Disassociate a floating IP address from a server."""
-    emit_fixed_floating_deprecation_warning('floating-ip-disassociate')
-    _disassociate_floating_ip(cs, args)
-
-
-def _disassociate_floating_ip(cs, args):
-    server = _find_server(cs, args.server)
-    server.remove_floating_ip(args.address)
 
 
 @utils.arg('server', metavar='<server>', help=_('Name or ID of server.'))
@@ -4580,33 +4517,6 @@ def do_version_list(cs, args):
 
     print(_("\nServer supported API versions:"))
     utils.print_list(result, columns)
-
-
-@api_versions.wraps("2.0", "2.11")
-def _print_virtual_interface_list(cs, interface_list):
-    columns = ['Id', 'Mac address']
-    utils.print_list(interface_list, columns)
-
-
-@api_versions.wraps("2.12")
-def _print_virtual_interface_list(cs, interface_list):
-    columns = ['Id', 'Mac address', 'Network ID']
-    formatters = {"Network ID": lambda o: o.net_id}
-    utils.print_list(interface_list, columns, formatters)
-
-
-@utils.arg('server', metavar='<server>', help=_('ID of server.'))
-def do_virtual_interface_list(cs, args):
-    """DEPRECATED Show virtual interface info about the given server."""
-    print(_('WARNING: Command virtual-interface-list is deprecated and will '
-            'be removed in the first major release after the Nova server '
-            '16.0.0 Pike release. There is no replacement or alternative for '
-            'this command. Specify --os-compute-api-version less than 2.44 '
-            'to continue using this command until it is removed.'),
-          file=sys.stderr)
-    server = _find_server(cs, args.server)
-    interface_list = cs.virtual_interfaces.list(base.getid(server))
-    _print_virtual_interface_list(cs, interface_list)
 
 
 @api_versions.wraps("2.26")

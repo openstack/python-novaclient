@@ -20,7 +20,6 @@ import mock
 import six
 
 from novaclient import api_versions
-from novaclient import base
 from novaclient import exceptions
 from novaclient.tests.unit.fixture_data import client
 from novaclient.tests.unit.fixture_data import floatingips
@@ -28,21 +27,6 @@ from novaclient.tests.unit.fixture_data import servers as data
 from novaclient.tests.unit import utils
 from novaclient.tests.unit.v2 import fakes
 from novaclient.v2 import servers
-
-
-class _FloatingIPManager(base.Manager):
-    resource_class = base.Resource
-
-    @api_versions.deprecated_after('2.35')
-    def list(self):
-        """DEPRECATED: List floating IPs"""
-        return self._list("/os-floating-ips", "floating_ips")
-
-    @api_versions.deprecated_after('2.35')
-    def get(self, floating_ip):
-        """DEPRECATED: Retrieve a floating IP"""
-        return self._get("/os-floating-ips/%s" % base.getid(floating_ip),
-                         "floating_ip")
 
 
 class ServersTest(utils.FixturedTestCase):
@@ -56,7 +40,6 @@ class ServersTest(utils.FixturedTestCase):
         self.useFixture(floatingips.FloatingFixture(self.requests_mock))
         if self.api_version:
             self.cs.api_version = api_versions.APIVersion(self.api_version)
-        self.floating_ips = _FloatingIPManager(self.cs)
 
     def _get_server_create_default_nics(self):
         """Callback for default nics kwarg when creating a server.
@@ -564,81 +547,6 @@ class ServersTest(utils.FixturedTestCase):
         self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
         ret = self.cs.servers.migrate(s)
-        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
-        self.assert_called('POST', '/servers/1234/action')
-
-    @mock.patch('warnings.warn')
-    def test_add_fixed_ip(self, mock_warn):
-        s = self.cs.servers.get(1234)
-        fip = s.add_fixed_ip(1)
-        mock_warn.assert_called_once()
-        self.assert_request_id(fip, fakes.FAKE_REQUEST_ID_LIST)
-        self.assert_called('POST', '/servers/1234/action')
-        fip = self.cs.servers.add_fixed_ip(s, 1)
-        self.assert_request_id(fip, fakes.FAKE_REQUEST_ID_LIST)
-        self.assert_called('POST', '/servers/1234/action')
-
-    @mock.patch('warnings.warn')
-    def test_remove_fixed_ip(self, mock_warn):
-        s = self.cs.servers.get(1234)
-        ret = s.remove_fixed_ip('10.0.0.1')
-        mock_warn.assert_called_once()
-        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
-        self.assert_called('POST', '/servers/1234/action')
-        ret = self.cs.servers.remove_fixed_ip(s, '10.0.0.1')
-        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
-        self.assert_called('POST', '/servers/1234/action')
-
-    @mock.patch('warnings.warn')
-    def test_add_floating_ip(self, mock_warn):
-        s = self.cs.servers.get(1234)
-        fip = s.add_floating_ip('11.0.0.1')
-        mock_warn.assert_called_once()
-        self.assert_request_id(fip, fakes.FAKE_REQUEST_ID_LIST)
-        self.assert_called('POST', '/servers/1234/action')
-        fip = self.cs.servers.add_floating_ip(s, '11.0.0.1')
-        self.assert_request_id(fip, fakes.FAKE_REQUEST_ID_LIST)
-        self.assert_called('POST', '/servers/1234/action')
-        f = self.floating_ips.list()[0]
-        fip = self.cs.servers.add_floating_ip(s, f)
-        self.assert_request_id(fip, fakes.FAKE_REQUEST_ID_LIST)
-        self.assert_called('POST', '/servers/1234/action')
-        fip = s.add_floating_ip(f)
-        self.assert_request_id(fip, fakes.FAKE_REQUEST_ID_LIST)
-        self.assert_called('POST', '/servers/1234/action')
-
-    def test_add_floating_ip_to_fixed(self):
-        s = self.cs.servers.get(1234)
-        fip = s.add_floating_ip('11.0.0.1', fixed_address='12.0.0.1')
-        self.assert_request_id(fip, fakes.FAKE_REQUEST_ID_LIST)
-        self.assert_called('POST', '/servers/1234/action')
-        fip = self.cs.servers.add_floating_ip(s, '11.0.0.1',
-                                              fixed_address='12.0.0.1')
-        self.assert_request_id(fip, fakes.FAKE_REQUEST_ID_LIST)
-        self.assert_called('POST', '/servers/1234/action')
-        f = self.floating_ips.list()[0]
-        fip = self.cs.servers.add_floating_ip(s, f)
-        self.assert_request_id(fip, fakes.FAKE_REQUEST_ID_LIST)
-        self.assert_called('POST', '/servers/1234/action')
-        fip = s.add_floating_ip(f)
-        self.assert_request_id(fip, fakes.FAKE_REQUEST_ID_LIST)
-        self.assert_called('POST', '/servers/1234/action')
-
-    @mock.patch('warnings.warn')
-    def test_remove_floating_ip(self, mock_warn):
-        s = self.cs.servers.get(1234)
-        ret = s.remove_floating_ip('11.0.0.1')
-        mock_warn.assert_called_once()
-        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
-        self.assert_called('POST', '/servers/1234/action')
-        ret = self.cs.servers.remove_floating_ip(s, '11.0.0.1')
-        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
-        self.assert_called('POST', '/servers/1234/action')
-        f = self.floating_ips.list()[0]
-        ret = self.cs.servers.remove_floating_ip(s, f)
-        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
-        self.assert_called('POST', '/servers/1234/action')
-        ret = s.remove_floating_ip(f)
         self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/action')
 
@@ -1420,18 +1328,6 @@ class ServersV2_37Test(ServersV226Test):
         self.assert_request_id(s, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers')
         self.assertIsInstance(s, servers.Server)
-
-    def test_add_floating_ip(self):
-        # self.floating_ips.list() is not available after 2.35
-        pass
-
-    def test_add_floating_ip_to_fixed(self):
-        # self.floating_ips.list() is not available after 2.35
-        pass
-
-    def test_remove_floating_ip(self):
-        # self.floating_ips.list() is not available after 2.35
-        pass
 
 
 class ServersCreateImageBackupV2_45Test(utils.FixturedTestCase):

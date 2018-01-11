@@ -1858,22 +1858,6 @@ class ShellTest(utils.TestCase):
         self.assert_called('DELETE', '/servers/uuid1/metadata/key1', pos=1)
         self.assert_called('DELETE', '/servers/uuid2/metadata/key1', pos=2)
 
-    def test_server_floating_ip_associate(self):
-        _, err = self.run_command(
-            'floating-ip-associate sample-server 11.0.0.1')
-        self.assertIn('WARNING: Command floating-ip-associate is deprecated',
-                      err)
-        self.assert_called('POST', '/servers/1234/action',
-                           {'addFloatingIp': {'address': '11.0.0.1'}})
-
-    def test_server_floating_ip_disassociate(self):
-        _, err = self.run_command(
-            'floating-ip-disassociate sample-server 11.0.0.1')
-        self.assertIn(
-            'WARNING: Command floating-ip-disassociate is deprecated', err)
-        self.assert_called('POST', '/servers/1234/action',
-                           {'removeFloatingIp': {'address': '11.0.0.1'}})
-
     def test_usage_list(self):
         cmd = 'usage-list --start 2000-01-20 --end 2005-02-01'
         stdout, _stderr = self.run_command(cmd)
@@ -2708,18 +2692,6 @@ class ShellTest(utils.TestCase):
                 'PUT', '/os-quota-class-sets/97f4c221bff44578b0300df4ef119353',
                 body)
 
-    def test_add_fixed_ip(self):
-        _, err = self.run_command('add-fixed-ip sample-server 1')
-        self.assertIn('WARNING: Command add-fixed-ip is deprecated', err)
-        self.assert_called('POST', '/servers/1234/action',
-                           {'addFixedIp': {'networkId': '1'}})
-
-    def test_remove_fixed_ip(self):
-        _, err = self.run_command('remove-fixed-ip sample-server 10.0.0.10')
-        self.assertIn('WARNING: Command remove-fixed-ip is deprecated', err)
-        self.assert_called('POST', '/servers/1234/action',
-                           {'removeFixedIp': {'address': '10.0.0.10'}})
-
     def test_backup(self):
         out, err = self.run_command('backup sample-server back1 daily 1')
         # With microversion < 2.45 there is no output from this command.
@@ -3125,12 +3097,6 @@ class ShellTest(utils.TestCase):
         self.run_command('server-group-list --limit 20 --offset 5')
         self.assert_called('GET', '/os-server-groups?limit=20&offset=5')
 
-    def test_list_server_os_virtual_interfaces(self):
-        _, err = self.run_command('virtual-interface-list 1234')
-        self.assertIn('WARNING: Command virtual-interface-list is deprecated',
-                      err)
-        self.assert_called('GET', '/servers/1234/os-virtual-interfaces')
-
     def test_versions(self):
         exclusions = set([
             1,   # Same as version 2.0
@@ -3139,6 +3105,7 @@ class ShellTest(utils.TestCase):
             5,   # doesn't require any changes in novaclient
             7,   # doesn't require any changes in novaclient
             9,   # doesn't require any changes in novaclient
+            12,  # no longer supported
             15,  # doesn't require any changes in novaclient
             16,  # doesn't require any changes in novaclient
             18,  # NOTE(andreykurilin): this microversion requires changes in
