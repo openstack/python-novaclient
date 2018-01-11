@@ -6,3 +6,6 @@ upgrade:
     - ``--tenant`` (from ``flavor access list``)
     - ``--cell_name`` (from ``migration list``)
     - ``--volume-service-name`` (global option)
+
+    As a result, the ``novaclient.v2.migrations.MigrationManager.list``
+    python API binding method no longer takes a ``cell_name`` kwarg.

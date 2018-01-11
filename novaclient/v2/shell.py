@@ -5212,6 +5212,6 @@ def _print_migrations(cs, migrations):
     help=_('Fetch migrations for the given status.'))
 def do_migration_list(cs, args):
     """Print a list of migrations."""
-    migrations = cs.migrations.list(args.host, args.status, None,
+    migrations = cs.migrations.list(args.host, args.status,
                                     instance_uuid=args.instance_uuid)
     _print_migrations(cs, migrations)
