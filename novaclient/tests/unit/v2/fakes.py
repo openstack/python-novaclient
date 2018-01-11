@@ -1672,42 +1672,8 @@ class FakeSessionClient(base_client.SessionClient):
             'forced_down': False}})
 
     #
-    # Hosts
+    # Hypervisors
     #
-
-    def get_os_hosts(self, **kw):
-        zone = kw.get('zone', 'nova1')
-        return (200, {}, {'hosts': [{'host': 'host1',
-                                     'service': 'nova-compute',
-                                     'zone': zone},
-                                    {'host': 'host1',
-                                     'service': 'nova-cert',
-                                     'zone': zone}]})
-
-    def put_os_hosts_sample_host_1(self, body, **kw):
-        return (200, {}, {'host': 'sample-host_1',
-                          'status': 'enabled'})
-
-    def put_os_hosts_sample_host_2(self, body, **kw):
-        return (200, {}, {'host': 'sample-host_2',
-                          'maintenance_mode': 'on_maintenance'})
-
-    def put_os_hosts_sample_host_3(self, body, **kw):
-        return (200, {}, {'host': 'sample-host_3',
-                          'status': 'enabled',
-                          'maintenance_mode': 'on_maintenance'})
-
-    def get_os_hosts_sample_host_reboot(self, **kw):
-        return (200, {}, {'host': 'sample_host',
-                          'power_action': 'reboot'})
-
-    def get_os_hosts_sample_host_startup(self, **kw):
-        return (200, {}, {'host': 'sample_host',
-                          'power_action': 'startup'})
-
-    def get_os_hosts_sample_host_shutdown(self, **kw):
-        return (200, {}, {'host': 'sample_host',
-                          'power_action': 'shutdown'})
 
     def get_os_hypervisors(self, **kw):
         return (200, {}, {

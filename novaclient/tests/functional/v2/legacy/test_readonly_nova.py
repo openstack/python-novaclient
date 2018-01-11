@@ -51,9 +51,6 @@ class SimpleReadOnlyNovaClientTest(base.ClientTestBase):
     def test_admin_flavor_list(self):
         self.assertIn("Memory_MB", self.nova('flavor-list'))
 
-    def test_admin_host_list(self):
-        self.nova('host-list')
-
     def test_admin_hypervisor_list(self):
         self.nova('hypervisor-list')
 

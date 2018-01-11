@@ -1,0 +1,13 @@
+---
+upgrade:
+  - |
+    The following CLIs and their backing API bindings were deprecated and
+    capped at microversion 2.43:
+
+    * ``nova host-describe`` - superseded by ``nova hypervisor-show``
+    * ``nova host-list`` - superseded by ``nova hypervisor-list``
+    * ``nova host-update`` - superseded by ``nova service-enable`` and
+      ``nova service-disable``
+    * ``nova host-action`` - no alternative by design
+
+    The CLIs and API bindings have now been removed.

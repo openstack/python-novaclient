@@ -26,7 +26,6 @@ from novaclient.v2 import cells
 from novaclient.v2 import contrib
 from novaclient.v2 import flavor_access
 from novaclient.v2 import flavors
-from novaclient.v2 import hosts
 from novaclient.v2 import hypervisors
 from novaclient.v2 import images
 from novaclient.v2 import instance_action
@@ -156,7 +155,6 @@ class Client(object):
         self.virtual_interfaces = \
             virtual_interfaces.VirtualInterfaceManager(self)
         self.aggregates = aggregates.AggregateManager(self)
-        self.hosts = hosts.HostManager(self)
         self.hypervisors = hypervisors.HypervisorManager(self)
         self.hypervisor_stats = hypervisors.HypervisorStatsManager(self)
         self.services = services.ServiceManager(self)

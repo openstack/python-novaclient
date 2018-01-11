@@ -2454,66 +2454,6 @@ class ShellTest(utils.TestCase):
         self.assert_called(
             'DELETE', '/os-services/%s' % fakes.FAKE_SERVICE_UUID_1)
 
-    def test_host_list(self):
-        _, err = self.run_command('host-list')
-        # make sure we said it's deprecated
-        self.assertIn('WARNING: Command host-list is deprecated', err)
-        # and replaced with hypervisor-list
-        self.assertIn('hypervisor-list', err)
-        self.assert_called('GET', '/os-hosts')
-
-    def test_host_list_with_zone(self):
-        self.run_command('host-list --zone nova')
-        self.assert_called('GET', '/os-hosts?zone=nova')
-
-    def test_host_update_status(self):
-        _, err = self.run_command('host-update sample-host_1 --status enable')
-        # make sure we said it's deprecated
-        self.assertIn('WARNING: Command host-update is deprecated', err)
-        # and replaced with service-enable
-        self.assertIn('service-enable', err)
-        body = {'status': 'enable'}
-        self.assert_called('PUT', '/os-hosts/sample-host_1', body)
-
-    def test_host_update_maintenance(self):
-        _, err = (
-            self.run_command('host-update sample-host_2 --maintenance enable'))
-        # make sure we said it's deprecated
-        self.assertIn('WARNING: Command host-update is deprecated', err)
-        # and there is no replacement
-        self.assertIn('There is no replacement', err)
-        body = {'maintenance_mode': 'enable'}
-        self.assert_called('PUT', '/os-hosts/sample-host_2', body)
-
-    def test_host_update_multiple_settings(self):
-        _, err = self.run_command('host-update sample-host_3 '
-                                  '--status disable --maintenance enable')
-        # make sure we said it's deprecated
-        self.assertIn('WARNING: Command host-update is deprecated', err)
-        # and replaced with service-disable
-        self.assertIn('service-disable', err)
-        body = {'status': 'disable', 'maintenance_mode': 'enable'}
-        self.assert_called('PUT', '/os-hosts/sample-host_3', body)
-
-    def test_host_startup(self):
-        _, err = self.run_command('host-action sample-host --action startup')
-        # make sure we said it's deprecated
-        self.assertIn('WARNING: Command host-action is deprecated', err)
-        # and there is no replacement
-        self.assertIn('There is no replacement', err)
-        self.assert_called(
-            'GET', '/os-hosts/sample-host/startup')
-
-    def test_host_shutdown(self):
-        self.run_command('host-action sample-host --action shutdown')
-        self.assert_called(
-            'GET', '/os-hosts/sample-host/shutdown')
-
-    def test_host_reboot(self):
-        self.run_command('host-action sample-host --action reboot')
-        self.assert_called(
-            'GET', '/os-hosts/sample-host/reboot')
-
     def test_host_evacuate_v2_14(self):
         self.run_command('host-evacuate hyper --target target_hyper',
                          api_version='2.14')
