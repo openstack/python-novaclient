@@ -1442,8 +1442,8 @@ def _print_flavor(flavor):
     dest='changes_since',
     metavar='<changes_since>',
     default=None,
-    help=_("List only servers changed after a certain point of time."
-           "The provided time should be an ISO 8061 formatted time."
+    help=_("List only servers changed after a certain point of time. "
+           "The provided time should be an ISO 8061 formatted time. "
            "ex 2016-03-04T06:27:59Z ."))
 @utils.arg(
     '--tags',
