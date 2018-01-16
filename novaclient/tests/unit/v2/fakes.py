@@ -392,6 +392,8 @@ class FakeSessionClient(base_client.SessionClient):
     #
 
     def get_servers(self, **kw):
+        if kw.get('marker') == '9014':
+            return (200, {}, {"servers": []})
         return (200, {}, {"servers": [
             {'id': '1234', 'name': 'sample-server'},
             {'id': '5678', 'name': 'sample-server2'},
@@ -399,6 +401,8 @@ class FakeSessionClient(base_client.SessionClient):
         ]})
 
     def get_servers_detail(self, **kw):
+        if kw.get('marker') == '9014':
+            return (200, {}, {"servers": []})
         return (200, {}, {"servers": [
             {
                 "id": '1234',

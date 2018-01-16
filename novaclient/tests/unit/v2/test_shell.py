@@ -1324,63 +1324,99 @@ class ShellTest(utils.TestCase):
 
     def test_list(self):
         self.run_command('list')
-        self.assert_called('GET', '/servers/detail')
+        self.assert_called('GET', '/servers/detail', pos=0)
+        self.assert_called('GET', '/servers/detail?marker=9014')
 
     def test_list_minimal(self):
         self.run_command('list --minimal')
-        self.assert_called('GET', '/servers')
+        self.assert_called('GET', '/servers', pos=0)
+        self.assert_called('GET', '/servers?marker=9014')
 
     def test_list_deleted(self):
         self.run_command('list --deleted')
-        self.assert_called('GET', '/servers/detail?deleted=True')
+        self.assert_called(
+            'GET',
+            '/servers/detail?deleted=True',
+            pos=0)
+        self.assert_called(
+            'GET',
+            '/servers/detail?deleted=True&marker=9014')
 
     def test_list_with_images(self):
         self.run_command('list --image %s' % FAKE_UUID_1)
-        self.assert_called('GET', '/servers/detail?image=%s' % FAKE_UUID_1)
+        self.assert_called(
+            'GET',
+            '/servers/detail?image=%s' % FAKE_UUID_1,
+            pos=1)
+        self.assert_called(
+            'GET',
+            '/servers/detail?image=%s&marker=9014' % FAKE_UUID_1)
 
     def test_list_with_flavors(self):
         self.run_command('list --flavor 1')
-        self.assert_called('GET', '/servers/detail?flavor=1')
+        self.assert_called('GET', '/servers/detail?flavor=1', pos=1)
+        self.assert_called('GET', '/servers/detail?flavor=1&marker=9014')
 
     def test_list_by_tenant(self):
         self.run_command('list --tenant fake_tenant')
         self.assert_called(
             'GET',
-            '/servers/detail?all_tenants=1&tenant_id=fake_tenant')
+            '/servers/detail?all_tenants=1&tenant_id=fake_tenant', pos=0)
+        self.assert_called(
+            'GET',
+            '/servers/detail?all_tenants=1&marker=9014&tenant_id=fake_tenant')
 
     def test_list_by_user(self):
         self.run_command('list --user fake_user')
         self.assert_called(
             'GET',
-            '/servers/detail?all_tenants=1&user_id=fake_user')
+            '/servers/detail?all_tenants=1&user_id=fake_user', pos=0)
+        self.assert_called(
+            'GET',
+            '/servers/detail?all_tenants=1&marker=9014&user_id=fake_user')
 
     def test_list_with_single_sort_key_no_dir(self):
         self.run_command('list --sort 1')
         self.assert_called(
-            'GET', ('/servers/detail?sort_dir=desc&sort_key=1'))
+            'GET', ('/servers/detail?sort_dir=desc&sort_key=1'), pos=0)
+        self.assert_called(
+            'GET',
+            '/servers/detail?marker=9014&sort_dir=desc&sort_key=1')
 
     def test_list_with_single_sort_key_and_dir(self):
         self.run_command('list --sort 1:asc')
         self.assert_called(
-            'GET', ('/servers/detail?sort_dir=asc&sort_key=1'))
+            'GET', ('/servers/detail?sort_dir=asc&sort_key=1'), pos=0)
+        self.assert_called(
+            'GET',
+            '/servers/detail?marker=9014&sort_dir=asc&sort_key=1')
 
     def test_list_with_sort_keys_no_dir(self):
         self.run_command('list --sort 1,2')
         self.assert_called(
             'GET', ('/servers/detail?sort_dir=desc&sort_dir=desc&'
+                    'sort_key=1&sort_key=2'), pos=0)
+        self.assert_called(
+            'GET', ('/servers/detail?marker=9014&sort_dir=desc&sort_dir=desc&'
                     'sort_key=1&sort_key=2'))
 
     def test_list_with_sort_keys_and_dirs(self):
         self.run_command('list --sort 1:asc,2:desc')
         self.assert_called(
             'GET', ('/servers/detail?sort_dir=asc&sort_dir=desc&'
+                    'sort_key=1&sort_key=2'), pos=0)
+        self.assert_called(
+            'GET', ('/servers/detail?marker=9014&sort_dir=asc&sort_dir=desc&'
                     'sort_key=1&sort_key=2'))
 
     def test_list_with_sort_keys_and_some_dirs(self):
         self.run_command('list --sort 1,2:asc')
         self.assert_called(
             'GET', ('/servers/detail?sort_dir=desc&sort_dir=asc&'
-                    'sort_key=1&sort_key=2'))
+                    'sort_key=1&sort_key=2'), pos=0)
+        self.assert_called(
+            'GET', ('/servers/detail?marker=9014&sort_dir=desc&'
+                    'sort_dir=asc&sort_key=1&sort_key=2'))
 
     def test_list_with_invalid_sort_dir_one(self):
         cmd = 'list --sort 1:foo'
@@ -1412,7 +1448,8 @@ class ShellTest(utils.TestCase):
         output, _err = self.run_command(
             'list --fields '
             'host,security_groups,OS-EXT-MOD:some_thing')
-        self.assert_called('GET', '/servers/detail')
+        self.assert_called('GET', '/servers/detail', pos=0)
+        self.assert_called('GET', '/servers/detail?marker=9014')
         self.assertIn('computenode1', output)
         self.assertIn('securitygroup1', output)
         self.assertIn('OS-EXT-MOD: Some Thing', output)
@@ -1454,7 +1491,8 @@ class ShellTest(utils.TestCase):
 
     def test_list_with_marker(self):
         self.run_command('list --marker some-uuid')
-        self.assert_called('GET', '/servers/detail?marker=some-uuid')
+        self.assert_called('GET', '/servers/detail?marker=some-uuid', pos=0)
+        self.assert_called('GET', '/servers/detail?marker=9014')
 
     def test_list_with_limit(self):
         self.run_command('list --limit 3')
@@ -1463,7 +1501,13 @@ class ShellTest(utils.TestCase):
     def test_list_with_changes_since(self):
         self.run_command('list --changes-since 2016-02-29T06:23:22')
         self.assert_called(
-            'GET', '/servers/detail?changes-since=2016-02-29T06%3A23%3A22')
+            'GET',
+            '/servers/detail?changes-since=2016-02-29T06%3A23%3A22',
+            pos=0)
+        self.assert_called(
+            'GET',
+            ('/servers/detail?changes-since=2016-02-29T06%3A23%3A22&'
+             'marker=9014'))
 
     def test_list_with_changes_since_invalid_value(self):
         self.assertRaises(exceptions.CommandError,
@@ -1501,12 +1545,14 @@ class ShellTest(utils.TestCase):
         output, _err = self.run_command('rebuild sample-server %s'
                                         % FAKE_UUID_1)
         self.assert_called('GET', '/servers?name=sample-server', pos=0)
-        self.assert_called('GET', '/servers/1234', pos=1)
-        self.assert_called('GET', '/v2/images/%s' % FAKE_UUID_1, pos=2)
+        self.assert_called('GET', '/servers?marker=9014&name=sample-server',
+                           pos=1)
+        self.assert_called('GET', '/servers/1234', pos=2)
+        self.assert_called('GET', '/v2/images/%s' % FAKE_UUID_1, pos=3)
         self.assert_called('POST', '/servers/1234/action',
-                           {'rebuild': {'imageRef': FAKE_UUID_1}}, pos=3)
-        self.assert_called('GET', '/flavors/1', pos=4)
-        self.assert_called('GET', '/v2/images/%s' % FAKE_UUID_2, pos=5)
+                           {'rebuild': {'imageRef': FAKE_UUID_1}}, pos=4)
+        self.assert_called('GET', '/flavors/1', pos=5)
+        self.assert_called('GET', '/v2/images/%s' % FAKE_UUID_2, pos=6)
         self.assertIn('adminPass', output)
 
     def test_rebuild_password(self):
@@ -1514,63 +1560,73 @@ class ShellTest(utils.TestCase):
                                         ' --rebuild-password asdf'
                                         % FAKE_UUID_1)
         self.assert_called('GET', '/servers?name=sample-server', pos=0)
-        self.assert_called('GET', '/servers/1234', pos=1)
-        self.assert_called('GET', '/v2/images/%s' % FAKE_UUID_1, pos=2)
+        self.assert_called('GET', '/servers?marker=9014&name=sample-server',
+                           pos=1)
+        self.assert_called('GET', '/servers/1234', pos=2)
+        self.assert_called('GET', '/v2/images/%s' % FAKE_UUID_1, pos=3)
         self.assert_called('POST', '/servers/1234/action',
                            {'rebuild': {'imageRef': FAKE_UUID_1,
-                            'adminPass': 'asdf'}}, pos=3)
-        self.assert_called('GET', '/flavors/1', pos=4)
-        self.assert_called('GET', '/v2/images/%s' % FAKE_UUID_2, pos=5)
+                            'adminPass': 'asdf'}}, pos=4)
+        self.assert_called('GET', '/flavors/1', pos=5)
+        self.assert_called('GET', '/v2/images/%s' % FAKE_UUID_2, pos=6)
         self.assertIn('adminPass', output)
 
     def test_rebuild_preserve_ephemeral(self):
         self.run_command('rebuild sample-server %s --preserve-ephemeral'
                          % FAKE_UUID_1)
         self.assert_called('GET', '/servers?name=sample-server', pos=0)
-        self.assert_called('GET', '/servers/1234', pos=1)
-        self.assert_called('GET', '/v2/images/%s' % FAKE_UUID_1, pos=2)
+        self.assert_called('GET', '/servers?marker=9014&name=sample-server',
+                           pos=1)
+        self.assert_called('GET', '/servers/1234', pos=2)
+        self.assert_called('GET', '/v2/images/%s' % FAKE_UUID_1, pos=3)
         self.assert_called('POST', '/servers/1234/action',
                            {'rebuild': {'imageRef': FAKE_UUID_1,
-                                        'preserve_ephemeral': True}}, pos=3)
-        self.assert_called('GET', '/flavors/1', pos=4)
-        self.assert_called('GET', '/v2/images/%s' % FAKE_UUID_2, pos=5)
+                                        'preserve_ephemeral': True}}, pos=4)
+        self.assert_called('GET', '/flavors/1', pos=5)
+        self.assert_called('GET', '/v2/images/%s' % FAKE_UUID_2, pos=6)
 
     def test_rebuild_name_meta(self):
         self.run_command('rebuild sample-server %s --name asdf --meta '
                          'foo=bar' % FAKE_UUID_1)
         self.assert_called('GET', '/servers?name=sample-server', pos=0)
-        self.assert_called('GET', '/servers/1234', pos=1)
-        self.assert_called('GET', '/v2/images/%s' % FAKE_UUID_1, pos=2)
+        self.assert_called('GET', '/servers?marker=9014&name=sample-server',
+                           pos=1)
+        self.assert_called('GET', '/servers/1234', pos=2)
+        self.assert_called('GET', '/v2/images/%s' % FAKE_UUID_1, pos=3)
         self.assert_called('POST', '/servers/1234/action',
                            {'rebuild': {'imageRef': FAKE_UUID_1,
                                         'name': 'asdf',
-                                        'metadata': {'foo': 'bar'}}}, pos=3)
-        self.assert_called('GET', '/flavors/1', pos=4)
-        self.assert_called('GET', '/v2/images/%s' % FAKE_UUID_2, pos=5)
+                                        'metadata': {'foo': 'bar'}}}, pos=4)
+        self.assert_called('GET', '/flavors/1', pos=5)
+        self.assert_called('GET', '/v2/images/%s' % FAKE_UUID_2, pos=6)
 
     def test_rebuild_reset_keypair(self):
         self.run_command('rebuild sample-server %s --key-name test_keypair' %
                          FAKE_UUID_1, api_version='2.54')
         self.assert_called('GET', '/servers?name=sample-server', pos=0)
-        self.assert_called('GET', '/servers/1234', pos=1)
-        self.assert_called('GET', '/v2/images/%s' % FAKE_UUID_1, pos=2)
+        self.assert_called('GET', '/servers?marker=9014&name=sample-server',
+                           pos=1)
+        self.assert_called('GET', '/servers/1234', pos=2)
+        self.assert_called('GET', '/v2/images/%s' % FAKE_UUID_1, pos=3)
         self.assert_called('POST', '/servers/1234/action',
                            {'rebuild': {'imageRef': FAKE_UUID_1,
                                         'key_name': 'test_keypair',
-                                        'description': None}}, pos=3)
-        self.assert_called('GET', '/v2/images/%s' % FAKE_UUID_2, pos=4)
+                                        'description': None}}, pos=4)
+        self.assert_called('GET', '/v2/images/%s' % FAKE_UUID_2, pos=5)
 
     def test_rebuild_unset_keypair(self):
         self.run_command('rebuild sample-server %s --key-unset' %
                          FAKE_UUID_1, api_version='2.54')
         self.assert_called('GET', '/servers?name=sample-server', pos=0)
-        self.assert_called('GET', '/servers/1234', pos=1)
-        self.assert_called('GET', '/v2/images/%s' % FAKE_UUID_1, pos=2)
+        self.assert_called('GET', '/servers?marker=9014&name=sample-server',
+                           pos=1)
+        self.assert_called('GET', '/servers/1234', pos=2)
+        self.assert_called('GET', '/v2/images/%s' % FAKE_UUID_1, pos=3)
         self.assert_called('POST', '/servers/1234/action',
                            {'rebuild': {'imageRef': FAKE_UUID_1,
                                         'key_name': None,
-                                        'description': None}}, pos=3)
-        self.assert_called('GET', '/v2/images/%s' % FAKE_UUID_2, pos=4)
+                                        'description': None}}, pos=4)
+        self.assert_called('GET', '/v2/images/%s' % FAKE_UUID_2, pos=5)
 
     def test_rebuild_unset_keypair_with_key_name(self):
         ex = self.assertRaises(
@@ -1612,25 +1668,29 @@ class ShellTest(utils.TestCase):
                          FAKE_UUID_1, api_version='2.57')
         user_data = servers.ServerManager.transform_userdata('test')
         self.assert_called('GET', '/servers?name=sample-server', pos=0)
-        self.assert_called('GET', '/servers/1234', pos=1)
-        self.assert_called('GET', '/v2/images/%s' % FAKE_UUID_1, pos=2)
+        self.assert_called('GET', '/servers?marker=9014&name=sample-server',
+                           pos=1)
+        self.assert_called('GET', '/servers/1234', pos=2)
+        self.assert_called('GET', '/v2/images/%s' % FAKE_UUID_1, pos=3)
         self.assert_called('POST', '/servers/1234/action',
                            {'rebuild': {'imageRef': FAKE_UUID_1,
                                         'user_data': user_data,
-                                        'description': None}}, pos=3)
-        self.assert_called('GET', '/v2/images/%s' % FAKE_UUID_2, pos=4)
+                                        'description': None}}, pos=4)
+        self.assert_called('GET', '/v2/images/%s' % FAKE_UUID_2, pos=5)
 
     def test_rebuild_unset_user_data(self):
         self.run_command('rebuild sample-server %s --user-data-unset' %
                          FAKE_UUID_1, api_version='2.57')
         self.assert_called('GET', '/servers?name=sample-server', pos=0)
-        self.assert_called('GET', '/servers/1234', pos=1)
-        self.assert_called('GET', '/v2/images/%s' % FAKE_UUID_1, pos=2)
+        self.assert_called('GET', '/servers?marker=9014&name=sample-server',
+                           pos=1)
+        self.assert_called('GET', '/servers/1234', pos=2)
+        self.assert_called('GET', '/v2/images/%s' % FAKE_UUID_1, pos=3)
         self.assert_called('POST', '/servers/1234/action',
                            {'rebuild': {'imageRef': FAKE_UUID_1,
                                         'user_data': None,
-                                        'description': None}}, pos=3)
-        self.assert_called('GET', '/v2/images/%s' % FAKE_UUID_2, pos=4)
+                                        'description': None}}, pos=4)
+        self.assert_called('GET', '/v2/images/%s' % FAKE_UUID_2, pos=5)
 
     def test_rebuild_user_data_and_unset_user_data(self):
         """Tests that trying to set --user-data and --unset-user-data in the
@@ -1651,7 +1711,11 @@ class ShellTest(utils.TestCase):
         self.run_command('start sample-server --all-tenants')
         self.assert_called('GET',
                            '/servers?all_tenants=1&name=sample-server', pos=0)
-        self.assert_called('GET', '/servers/1234', pos=1)
+        self.assert_called('GET',
+                           ('/servers?all_tenants=1&marker=9014&'
+                            'name=sample-server'),
+                           pos=1)
+        self.assert_called('GET', '/servers/1234', pos=2)
         self.assert_called('POST', '/servers/1234/action', {'os-start': None})
 
     def test_stop(self):
@@ -1662,7 +1726,11 @@ class ShellTest(utils.TestCase):
         self.run_command('stop sample-server --all-tenants')
         self.assert_called('GET',
                            '/servers?all_tenants=1&name=sample-server', pos=0)
-        self.assert_called('GET', '/servers/1234', pos=1)
+        self.assert_called('GET',
+                           ('/servers?all_tenants=1&marker=9014&'
+                            'name=sample-server'),
+                           pos=1)
+        self.assert_called('GET', '/servers/1234', pos=2)
         self.assert_called('POST', '/servers/1234/action', {'os-stop': None})
 
     def test_pause(self):
@@ -1765,10 +1833,12 @@ class ShellTest(utils.TestCase):
     def test_show(self):
         self.run_command('show 1234')
         self.assert_called('GET', '/servers?name=1234', pos=0)
-        self.assert_called('GET', '/servers?name=1234', pos=1)
-        self.assert_called('GET', '/servers/1234', pos=2)
-        self.assert_called('GET', '/flavors/1', pos=3)
-        self.assert_called('GET', '/v2/images/%s' % FAKE_UUID_2, pos=4)
+        self.assert_called('GET', '/servers?marker=9014&name=1234', pos=1)
+        self.assert_called('GET', '/servers?name=1234', pos=2)
+        self.assert_called('GET', '/servers?marker=9014&name=1234', pos=3)
+        self.assert_called('GET', '/servers/1234', pos=4)
+        self.assert_called('GET', '/flavors/1', pos=5)
+        self.assert_called('GET', '/v2/images/%s' % FAKE_UUID_2, pos=6)
 
     def test_show_no_image(self):
         self.run_command('show 9012')
@@ -1827,21 +1897,31 @@ class ShellTest(utils.TestCase):
         self.run_command('restore sample-server')
         self.assert_called('GET',
                            '/servers?deleted=True&name=sample-server', pos=0)
-        self.assert_called('GET', '/servers/1234', pos=1)
+        self.assert_called('GET',
+                           ('/servers?deleted=True&marker=9014&'
+                            'name=sample-server'),
+                           pos=1)
+        self.assert_called('GET', '/servers/1234', pos=2)
         self.assert_called('POST', '/servers/1234/action', {'restore': None},
-                           pos=2)
+                           pos=3)
 
     def test_delete_two_with_two_existent(self):
         self.run_command('delete 1234 5678')
-        self.assert_called('DELETE', '/servers/1234', pos=-5)
+        self.assert_called('DELETE', '/servers/1234', pos=-7)
         self.assert_called('DELETE', '/servers/5678', pos=-1)
         self.run_command('delete sample-server sample-server2')
         self.assert_called('GET',
-                           '/servers?name=sample-server', pos=-6)
-        self.assert_called('GET', '/servers/1234', pos=-5)
-        self.assert_called('DELETE', '/servers/1234', pos=-4)
+                           '/servers?name=sample-server', pos=-8)
+        self.assert_called('GET',
+                           '/servers?marker=9014&name=sample-server',
+                           pos=-7)
+        self.assert_called('GET', '/servers/1234', pos=-6)
+        self.assert_called('DELETE', '/servers/1234', pos=-5)
         self.assert_called('GET',
                            '/servers?name=sample-server2',
+                           pos=-4)
+        self.assert_called('GET',
+                           '/servers?marker=9014&name=sample-server2',
                            pos=-3)
         self.assert_called('GET', '/servers/5678', pos=-2)
         self.assert_called('DELETE', '/servers/5678', pos=-1)
@@ -1850,13 +1930,21 @@ class ShellTest(utils.TestCase):
         self.run_command('delete sample-server sample-server2 --all-tenants')
         self.assert_called('GET',
                            '/servers?all_tenants=1&name=sample-server', pos=0)
-        self.assert_called('GET', '/servers/1234', pos=1)
-        self.assert_called('DELETE', '/servers/1234', pos=2)
+        self.assert_called('GET',
+                           ('/servers?all_tenants=1&marker=9014&'
+                            'name=sample-server'),
+                           pos=1)
+        self.assert_called('GET', '/servers/1234', pos=2)
+        self.assert_called('DELETE', '/servers/1234', pos=3)
         self.assert_called('GET',
                            '/servers?all_tenants=1&name=sample-server2',
-                           pos=3)
-        self.assert_called('GET', '/servers/5678', pos=4)
-        self.assert_called('DELETE', '/servers/5678', pos=5)
+                           pos=4)
+        self.assert_called('GET',
+                           ('/servers?all_tenants=1&marker=9014&'
+                            'name=sample-server2'),
+                           pos=5)
+        self.assert_called('GET', '/servers/5678', pos=6)
+        self.assert_called('DELETE', '/servers/5678', pos=7)
 
     def test_delete_two_with_one_nonexistent(self):
         cmd = 'delete 1234 123456789'
@@ -2503,21 +2591,25 @@ class ShellTest(utils.TestCase):
         self.run_command('reset-state sample-server --all-tenants')
         self.assert_called('GET',
                            '/servers?all_tenants=1&name=sample-server', pos=0)
-        self.assert_called('GET', '/servers/1234', pos=1)
+        self.assert_called('GET',
+                           ('/servers?all_tenants=1&marker=9014&'
+                            'name=sample-server'),
+                           pos=1)
+        self.assert_called('GET', '/servers/1234', pos=2)
         self.assert_called('POST', '/servers/1234/action',
                            {'os-resetState': {'state': 'error'}})
 
     def test_reset_state_multiple(self):
         self.run_command('reset-state sample-server sample-server2')
         self.assert_called('POST', '/servers/1234/action',
-                           {'os-resetState': {'state': 'error'}}, pos=-4)
+                           {'os-resetState': {'state': 'error'}}, pos=-5)
         self.assert_called('POST', '/servers/5678/action',
                            {'os-resetState': {'state': 'error'}}, pos=-1)
 
     def test_reset_state_active_multiple(self):
         self.run_command('reset-state --active sample-server sample-server2')
         self.assert_called('POST', '/servers/1234/action',
-                           {'os-resetState': {'state': 'active'}}, pos=-4)
+                           {'os-resetState': {'state': 'active'}}, pos=-5)
         self.assert_called('POST', '/servers/5678/action',
                            {'os-resetState': {'state': 'active'}}, pos=-1)
 
@@ -3533,7 +3625,8 @@ class ShellTest(utils.TestCase):
 
     def test_list_v2_10(self):
         self.run_command('list', api_version='2.10')
-        self.assert_called('GET', '/servers/detail')
+        self.assert_called('GET', '/servers/detail', pos=0)
+        self.assert_called('GET', '/servers/detail?marker=9014')
 
     def test_server_tag_add(self):
         self.run_command('server-tag-add sample-server tag',
@@ -3576,19 +3669,43 @@ class ShellTest(utils.TestCase):
 
     def test_list_v2_26_tags(self):
         self.run_command('list --tags tag1,tag2', api_version='2.26')
-        self.assert_called('GET', '/servers/detail?tags=tag1%2Ctag2')
+        self.assert_called(
+            'GET',
+            '/servers/detail?tags=tag1%2Ctag2',
+            pos=0)
+        self.assert_called(
+            'GET',
+            '/servers/detail?marker=9014&tags=tag1%2Ctag2')
 
     def test_list_v2_26_tags_any(self):
         self.run_command('list --tags-any tag1,tag2', api_version='2.26')
-        self.assert_called('GET', '/servers/detail?tags-any=tag1%2Ctag2')
+        self.assert_called(
+            'GET',
+            '/servers/detail?tags-any=tag1%2Ctag2',
+            pos=0)
+        self.assert_called(
+            'GET',
+            '/servers/detail?marker=9014&tags-any=tag1%2Ctag2')
 
     def test_list_v2_26_not_tags(self):
         self.run_command('list --not-tags tag1,tag2', api_version='2.26')
-        self.assert_called('GET', '/servers/detail?not-tags=tag1%2Ctag2')
+        self.assert_called(
+            'GET',
+            '/servers/detail?not-tags=tag1%2Ctag2',
+            pos=0)
+        self.assert_called(
+            'GET',
+            '/servers/detail?marker=9014&not-tags=tag1%2Ctag2')
 
     def test_list_v2_26_not_tags_any(self):
         self.run_command('list --not-tags-any tag1,tag2', api_version='2.26')
-        self.assert_called('GET', '/servers/detail?not-tags-any=tag1%2Ctag2')
+        self.assert_called(
+            'GET',
+            '/servers/detail?not-tags-any=tag1%2Ctag2',
+            pos=0)
+        self.assert_called(
+            'GET',
+            '/servers/detail?marker=9014&not-tags-any=tag1%2Ctag2')
 
 
 class PollForStatusTestCase(utils.TestCase):

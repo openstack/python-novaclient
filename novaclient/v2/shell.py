@@ -1441,8 +1441,8 @@ def _print_flavor(flavor):
     default=None,
     help=_("Maximum number of servers to display. If limit == -1, all servers "
            "will be displayed. If limit is bigger than 'CONF.api.max_limit' "
-           "option of Nova API, limit 'CONF.api.max_limit' will be used "
-           "instead."))
+           "option of Nova API, multiple requests will be sent and results "
+           "will be merged."))
 @utils.arg(
     '--changes-since',
     dest='changes_since',
