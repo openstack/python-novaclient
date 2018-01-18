@@ -72,7 +72,7 @@ Terminate an instance::
 SEE ALSO
 ========
 
-OpenStack Nova CLI Guide: http://docs.openstack.org/cli-reference/nova.html
+OpenStack Nova CLI Guide: https://docs.openstack.org/cli-reference/nova.html
 
 
 BUGS
