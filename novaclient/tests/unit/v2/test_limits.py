@@ -11,6 +11,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from novaclient import api_versions
 from novaclient.tests.unit.fixture_data import client
 from novaclient.tests.unit.fixture_data import limits as data
 from novaclient.tests.unit import utils
@@ -22,6 +23,8 @@ class LimitsTest(utils.FixturedTestCase):
 
     client_fixture_class = client.V1
     data_fixture_class = data.Fixture
+    supports_image_meta = True   # 2.39 deprecates maxImageMeta
+    supports_personality = True  # 2.57 deprecates maxPersonality*
 
     def test_get_limits(self):
         obj = self.cs.limits.get()
@@ -39,13 +42,16 @@ class LimitsTest(utils.FixturedTestCase):
         obj = self.cs.limits.get(reserved=True)
         self.assert_request_id(obj, fakes.FAKE_REQUEST_ID_LIST)
 
-        expected = (
+        expected = [
             limits.AbsoluteLimit("maxTotalRAMSize", 51200),
-            limits.AbsoluteLimit("maxServerMeta", 5),
-            limits.AbsoluteLimit("maxImageMeta", 5),
-            limits.AbsoluteLimit("maxPersonality", 5),
-            limits.AbsoluteLimit("maxPersonalitySize", 10240),
-        )
+            limits.AbsoluteLimit("maxServerMeta", 5)
+        ]
+        if self.supports_image_meta:
+            expected.append(limits.AbsoluteLimit("maxImageMeta", 5))
+        if self.supports_personality:
+            expected.extend([
+                limits.AbsoluteLimit("maxPersonality", 5),
+                limits.AbsoluteLimit("maxPersonalitySize", 10240)])
 
         self.assert_called('GET', '/limits?reserved=1')
         abs_limits = list(obj.absolute)
@@ -75,16 +81,29 @@ class LimitsTest(utils.FixturedTestCase):
         for limit in rate_limits:
             self.assertIn(limit, expected)
 
-        expected = (
+        expected = [
             limits.AbsoluteLimit("maxTotalRAMSize", 51200),
-            limits.AbsoluteLimit("maxServerMeta", 5),
-            limits.AbsoluteLimit("maxImageMeta", 5),
-            limits.AbsoluteLimit("maxPersonality", 5),
-            limits.AbsoluteLimit("maxPersonalitySize", 10240),
-        )
+            limits.AbsoluteLimit("maxServerMeta", 5)
+        ]
+        if self.supports_image_meta:
+            expected.append(limits.AbsoluteLimit("maxImageMeta", 5))
+        if self.supports_personality:
+            expected.extend([
+                limits.AbsoluteLimit("maxPersonality", 5),
+                limits.AbsoluteLimit("maxPersonalitySize", 10240)])
 
         abs_limits = list(obj.absolute)
         self.assertEqual(len(abs_limits), len(expected))
 
         for limit in abs_limits:
             self.assertIn(limit, expected)
+
+
+class LimitsTest2_57(LimitsTest):
+    data_fixture_class = data.Fixture2_57
+    supports_image_meta = False
+    supports_personality = False
+
+    def setUp(self):
+        super(LimitsTest2_57, self).setUp()
+        self.cs.api_version = api_versions.APIVersion('2.57')

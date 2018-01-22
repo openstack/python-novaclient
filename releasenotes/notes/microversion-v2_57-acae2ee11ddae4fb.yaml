@@ -1,0 +1,31 @@
+---
+features:
+  - |
+    Support is added for the 2.57 microversion:
+
+    * A ``userdata`` keyword argument can be passed to the ``Server.rebuild``
+      python API binding. If set to None, it will unset any existing userdata
+      on the server.
+    * The ``--user-data`` and ``--user-data-unset`` options are added to the
+      ``nova rebuild`` CLI. The options are mutually exclusive. Specifying
+      ``--user-data`` will overwrite the existing userdata in the server, and
+      ``--user-data-unset`` will unset any existing userdata on the server.
+upgrade:
+  - |
+    Support is added for the 2.57 microversion:
+
+    * The ``--file`` option for the ``nova boot`` and ``nova rebuild`` CLIs is
+      capped at the 2.56 microversion. Similarly, the ``file`` parameter to
+      the ``Server.create`` and ``Server.rebuild`` python API binding methods
+      is capped at 2.56. Users are recommended to use the ``--user-data``
+      option instead.
+    * The ``--injected-files``, ``--injected-file-content-bytes`` and
+      ``--injected-file-path-bytes`` options are capped at the 2.56
+      microversion in the ``nova quota-update`` and ``nova quota-class-update``
+      commands.
+    * The ``maxPersonality`` and ``maxPersonalitySize`` fields are capped at
+      the 2.56 microversion in the ``nova limits`` command and API binding.
+    * The ``injected_files``, ``injected_file_content_bytes`` and
+      ``injected_file_path_bytes`` entries are capped at version 2.56 from
+      the output of the ``nova quota-show`` and ``nova quota-class-show``
+      commands and related python API bindings.

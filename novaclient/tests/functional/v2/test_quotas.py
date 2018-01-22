@@ -52,7 +52,7 @@ class TestQuotasNovaClient2_35(test_quotas.TestQuotasNovaClient):
 class TestQuotasNovaClient2_36(TestQuotasNovaClient2_35):
     """Nova quotas functional tests."""
 
-    COMPUTE_API_VERSION = "2.latest"
+    COMPUTE_API_VERSION = "2.36"
 
     # The 2.36 microversion stops proxying network quota resources like
     # floating/fixed IPs and security groups/rules.
@@ -60,4 +60,15 @@ class TestQuotasNovaClient2_36(TestQuotasNovaClient2_35):
                         'metadata_items', 'injected_files',
                         'injected_file_content_bytes',
                         'injected_file_path_bytes', 'key_pairs',
+                        'server_groups', 'server_group_members']
+
+
+class TestQuotasNovaClient2_57(TestQuotasNovaClient2_35):
+    """Nova quotas functional tests."""
+
+    COMPUTE_API_VERSION = "2.latest"
+
+    # The 2.57 microversion deprecates injected_file* quotas.
+    _quota_resources = ['instances', 'cores', 'ram',
+                        'metadata_items', 'key_pairs',
                         'server_groups', 'server_group_members']

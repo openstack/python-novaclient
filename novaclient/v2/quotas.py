@@ -13,6 +13,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from novaclient import api_versions
 from novaclient import base
 
 
@@ -38,6 +39,10 @@ class QuotaSetManager(base.Manager):
 
         return self._get(url % params, "quota_set")
 
+    # NOTE(mriedem): Before 2.57 the resources you could update was just a
+    # kwargs dict and not validated on the client-side, only on the API server
+    # side.
+    @api_versions.wraps("2.0", "2.56")
     def update(self, tenant_id, **kwargs):
 
         user_id = kwargs.pop('user_id', None)
@@ -46,6 +51,40 @@ class QuotaSetManager(base.Manager):
         for key in list(body['quota_set']):
             if body['quota_set'][key] is None:
                 body['quota_set'].pop(key)
+
+        if user_id:
+            url = '/os-quota-sets/%s?user_id=%s' % (tenant_id, user_id)
+        else:
+            url = '/os-quota-sets/%s' % tenant_id
+        return self._update(url, body, 'quota_set')
+
+    # NOTE(mriedem): 2.57 does strict validation of the resources you can
+    # specify. 2.36 blocks network-related resources and 2.57 blocks
+    # injected files related quotas.
+    @api_versions.wraps("2.57")
+    def update(self, tenant_id, user_id=None, force=False,
+               instances=None, cores=None, ram=None,
+               metadata_items=None, key_pairs=None, server_groups=None,
+               server_group_members=None):
+
+        resources = {}
+        if force:
+            resources['force'] = force
+        if instances is not None:
+            resources['instances'] = instances
+        if cores is not None:
+            resources['cores'] = cores
+        if ram is not None:
+            resources['ram'] = ram
+        if metadata_items is not None:
+            resources['metadata_items'] = metadata_items
+        if key_pairs is not None:
+            resources['key_pairs'] = key_pairs
+        if server_groups is not None:
+            resources['server_groups'] = server_groups
+        if server_group_members is not None:
+            resources['server_group_members'] = server_group_members
+        body = {'quota_set': resources}
 
         if user_id:
             url = '/os-quota-sets/%s?user_id=%s' % (tenant_id, user_id)

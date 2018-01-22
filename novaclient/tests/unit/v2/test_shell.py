@@ -36,6 +36,7 @@ from novaclient import exceptions
 import novaclient.shell
 from novaclient.tests.unit import utils
 from novaclient.tests.unit.v2 import fakes
+from novaclient.v2 import servers
 import novaclient.v2.shell
 
 FAKE_UUID_1 = fakes.FAKE_IMAGE_UUID_1
@@ -971,6 +972,16 @@ class ShellTest(utils.TestCase):
                ' --file /foo=%s' % (FAKE_UUID_1, invalid_file))
         self.assertRaises(exceptions.CommandError, self.run_command, cmd)
 
+    def test_boot_files_2_57(self):
+        """Tests that trying to run the boot command with the --file option
+        after microversion 2.56 fails.
+        """
+        testfile = os.path.join(os.path.dirname(__file__), 'testfile.txt')
+        cmd = ('boot some-server --flavor 1 --image %s'
+               ' --file /tmp/foo=%s')
+        self.assertRaises(SystemExit, self.run_command,
+                          cmd % (FAKE_UUID_1, testfile), api_version='2.57')
+
     def test_boot_max_min_count(self):
         self.run_command('boot --image %s --flavor 1 --min-count 1'
                          ' --max-count 3 server' % FAKE_UUID_1)
@@ -1569,6 +1580,62 @@ class ShellTest(utils.TestCase):
                                    self.run_command, cmd)
         expected = "'['foo']' is not in the format of 'key=value'"
         self.assertEqual(expected, result.args[0])
+
+    def test_rebuild_user_data_2_56(self):
+        """Tests that trying to run the rebuild command with the --user-data*
+        options before microversion 2.57 fails.
+        """
+        cmd = 'rebuild sample-server %s --user-data test' % FAKE_UUID_1
+        self.assertRaises(SystemExit, self.run_command, cmd,
+                          api_version='2.56')
+        cmd = 'rebuild sample-server %s --user-data-unset' % FAKE_UUID_1
+        self.assertRaises(SystemExit, self.run_command, cmd,
+                          api_version='2.56')
+
+    def test_rebuild_files_2_57(self):
+        """Tests that trying to run the rebuild command with the --file option
+        after microversion 2.56 fails.
+        """
+        testfile = os.path.join(os.path.dirname(__file__), 'testfile.txt')
+        cmd = 'rebuild sample-server %s --file /tmp/foo=%s'
+        self.assertRaises(SystemExit, self.run_command,
+                          cmd % (FAKE_UUID_1, testfile), api_version='2.57')
+
+    def test_rebuild_change_user_data(self):
+        self.run_command('rebuild sample-server %s --user-data test' %
+                         FAKE_UUID_1, api_version='2.57')
+        user_data = servers.ServerManager.transform_userdata('test')
+        self.assert_called('GET', '/servers?name=sample-server', pos=0)
+        self.assert_called('GET', '/servers/1234', pos=1)
+        self.assert_called('GET', '/v2/images/%s' % FAKE_UUID_1, pos=2)
+        self.assert_called('POST', '/servers/1234/action',
+                           {'rebuild': {'imageRef': FAKE_UUID_1,
+                                        'user_data': user_data,
+                                        'description': None}}, pos=3)
+        self.assert_called('GET', '/v2/images/%s' % FAKE_UUID_2, pos=4)
+
+    def test_rebuild_unset_user_data(self):
+        self.run_command('rebuild sample-server %s --user-data-unset' %
+                         FAKE_UUID_1, api_version='2.57')
+        self.assert_called('GET', '/servers?name=sample-server', pos=0)
+        self.assert_called('GET', '/servers/1234', pos=1)
+        self.assert_called('GET', '/v2/images/%s' % FAKE_UUID_1, pos=2)
+        self.assert_called('POST', '/servers/1234/action',
+                           {'rebuild': {'imageRef': FAKE_UUID_1,
+                                        'user_data': None,
+                                        'description': None}}, pos=3)
+        self.assert_called('GET', '/v2/images/%s' % FAKE_UUID_2, pos=4)
+
+    def test_rebuild_user_data_and_unset_user_data(self):
+        """Tests that trying to set --user-data and --unset-user-data in the
+        same rebuild call fails.
+        """
+        cmd = ('rebuild sample-server %s --user-data x --user-data-unset' %
+               FAKE_UUID_1)
+        ex = self.assertRaises(exceptions.CommandError, self.run_command, cmd,
+                               api_version='2.57')
+        self.assertIn("Cannot specify '--user-data-unset' with "
+                      "'--user-data'.", six.text_type(ex))
 
     def test_start(self):
         self.run_command('start sample-server')
@@ -2643,6 +2710,17 @@ class ShellTest(utils.TestCase):
             'PUT', '/os-quota-sets/97f4c221bff44578b0300df4ef119353',
             {'quota_set': {'fixed_ips': 5}})
 
+    def test_quota_update_injected_file_2_57(self):
+        """Tests that trying to update injected_file* quota with microversion
+        2.57 fails.
+        """
+        for quota in ('--injected-files', '--injected-file-content-bytes',
+                      '--injected-file-path-bytes'):
+            cmd = ('quota-update 97f4c221bff44578b0300df4ef119353 %s=5' %
+                   quota)
+            self.assertRaises(SystemExit, self.run_command, cmd,
+                              api_version='2.57')
+
     def test_quota_delete(self):
         self.run_command('quota-delete --tenant '
                          '97f4c221bff44578b0300df4ef119353')
@@ -2680,6 +2758,16 @@ class ShellTest(utils.TestCase):
                 'PUT', '/os-quota-class-sets/97f4c221bff44578b0300df4ef119353',
                 body)
 
+    def test_quota_class_update_injected_file_2_57(self):
+        """Tests that trying to update injected_file* quota with microversion
+        2.57 fails.
+        """
+        for quota in ('--injected-files', '--injected-file-content-bytes',
+                      '--injected-file-path-bytes'):
+            cmd = 'quota-class-update default %s=5' % quota
+            self.assertRaises(SystemExit, self.run_command, cmd,
+                              api_version='2.57')
+
     def test_backup(self):
         out, err = self.run_command('backup sample-server back1 daily 1')
         # With microversion < 2.45 there is no output from this command.
@@ -2712,8 +2800,9 @@ class ShellTest(utils.TestCase):
                               'rotation': '1'}})
 
     def test_limits(self):
-        self.run_command('limits')
+        out = self.run_command('limits')[0]
         self.assert_called('GET', '/limits')
+        self.assertIn('Personality', out)
 
         self.run_command('limits --reserved')
         self.assert_called('GET', '/limits?reserved=1')
@@ -2724,6 +2813,14 @@ class ShellTest(utils.TestCase):
         stdout, _err = self.run_command('limits --tenant 1234')
         self.assertIn('Verb', stdout)
         self.assertIn('Name', stdout)
+
+    def test_limits_2_57(self):
+        """Tests the limits command at microversion 2.57 where personality
+        size limits should not be shown.
+        """
+        out = self.run_command('limits', api_version='2.57')[0]
+        self.assert_called('GET', '/limits')
+        self.assertNotIn('Personality', out)
 
     def test_evacuate(self):
         self.run_command('evacuate sample-server new_host')
@@ -3128,6 +3225,7 @@ class ShellTest(utils.TestCase):
             51,  # There are no version-wrapped shell method changes for this.
             52,  # There are no version-wrapped shell method changes for this.
             54,  # There are no version-wrapped shell method changes for this.
+            57,  # There are no version-wrapped shell method changes for this.
         ])
         versions_supported = set(range(0,
                                  novaclient.API_MAX_VERSION.ver_minor + 1))

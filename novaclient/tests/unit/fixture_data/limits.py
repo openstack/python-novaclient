@@ -16,6 +16,13 @@ from novaclient.tests.unit.fixture_data import base
 class Fixture(base.Fixture):
 
     base_url = 'limits'
+    absolute = {
+        "maxTotalRAMSize": 51200,
+        "maxServerMeta": 5,
+        "maxImageMeta": 5,
+        "maxPersonality": 5,
+        "maxPersonalitySize": 10240
+    }
 
     def setUp(self):
         super(Fixture, self).setUp()
@@ -64,13 +71,7 @@ class Fixture(base.Fixture):
                         ]
                     }
                 ],
-                "absolute": {
-                    "maxTotalRAMSize": 51200,
-                    "maxServerMeta": 5,
-                    "maxImageMeta": 5,
-                    "maxPersonality": 5,
-                    "maxPersonalitySize": 10240
-                },
+                "absolute": self.absolute,
             },
         }
 
@@ -78,3 +79,13 @@ class Fixture(base.Fixture):
         self.requests_mock.get(self.url(),
                                json=get_limits,
                                headers=headers)
+
+
+class Fixture2_57(Fixture):
+    """Fixture data for the 2.57 microversion where personality files are
+    deprecated.
+    """
+    absolute = {
+        "maxTotalRAMSize": 51200,
+        "maxServerMeta": 5
+    }
