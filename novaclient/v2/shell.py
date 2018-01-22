@@ -4864,6 +4864,7 @@ def do_instance_action(cs, args):
     utils.print_dict(action)
 
 
+@api_versions.wraps("2.0", "2.57")
 @utils.arg(
     'server',
     metavar='<server>',
@@ -4884,6 +4885,56 @@ def do_instance_action_list(cs, args):
     actions = cs.instance_action.list(server)
     utils.print_list(actions,
                      ['Action', 'Request_ID', 'Message', 'Start_Time'],
+                     sortby_index=3)
+
+
+@api_versions.wraps("2.58")
+@utils.arg(
+    'server',
+    metavar='<server>',
+    help=_('Name or UUID of the server to list actions for. Only UUID can be '
+           'used to list actions on a deleted server.'))
+@utils.arg(
+    '--marker',
+    dest='marker',
+    metavar='<marker>',
+    default=None,
+    help=_('The last instance action of the previous page; displays list of '
+           'actions after "marker".'))
+@utils.arg(
+    '--limit',
+    dest='limit',
+    metavar='<limit>',
+    type=int,
+    default=None,
+    help=_('Maximum number of instance actions to display. Note that there '
+           'is a configurable max limit on the server, and the limit that is '
+           'used will be the minimum between what is requested here and what '
+           'is configured in the server.'))
+@utils.arg(
+    '--changes-since',
+    dest='changes_since',
+    metavar='<changes_since>',
+    default=None,
+    help=_('List only instance actions changed after a certain point of '
+           'time. The provided time should be an ISO 8061 formatted time. '
+           'ex 2016-03-04T06:27:59Z.'))
+def do_instance_action_list(cs, args):
+    """List actions on a server."""
+    server = _find_server(cs, args.server, raise_if_notfound=False)
+    if args.changes_since:
+        try:
+            timeutils.parse_isotime(args.changes_since)
+        except ValueError:
+            raise exceptions.CommandError(_('Invalid changes-since value: %s')
+                                          % args.changes_since)
+    actions = cs.instance_action.list(server, marker=args.marker,
+                                      limit=args.limit,
+                                      changes_since=args.changes_since)
+    # TODO(yikun): Output a "Marker" column if there is a next link?
+    utils.print_list(actions,
+                     ['Action', 'Request_ID', 'Message', 'Start_Time',
+                      'Updated_At'],
                      sortby_index=3)
 
 

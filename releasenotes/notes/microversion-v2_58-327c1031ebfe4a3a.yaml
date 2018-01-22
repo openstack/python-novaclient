@@ -1,0 +1,8 @@
+---
+features:
+  - |
+    Added support for microversion v2.58 which introduces pagination support
+    for instance actions with the help of new optional parameters ``limit``,
+    ``marker``, and also adds the new filter ``changes-since``. Users can use
+    ``changes-since`` filter to filter the results based on the last time the
+    instance action was updated.
