@@ -3310,6 +3310,7 @@ class ShellTest(utils.TestCase):
             52,  # There are no version-wrapped shell method changes for this.
             54,  # There are no version-wrapped shell method changes for this.
             57,  # There are no version-wrapped shell method changes for this.
+            60,  # There are no client-side changes for volume multiattach.
         ])
         versions_supported = set(range(0,
                                  novaclient.API_MAX_VERSION.ver_minor + 1))
