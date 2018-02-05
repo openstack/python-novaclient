@@ -18,6 +18,7 @@
 
 import argparse
 import base64
+import collections
 import datetime
 import os
 
@@ -41,6 +42,11 @@ import novaclient.v2.shell
 
 FAKE_UUID_1 = fakes.FAKE_IMAGE_UUID_1
 FAKE_UUID_2 = fakes.FAKE_IMAGE_UUID_2
+
+
+# Converting dictionary to object
+TestAbsoluteLimits = collections.namedtuple("TestAbsoluteLimits",
+                                            ["name", "value"])
 
 
 class ShellFixture(fixtures.Fixture):
@@ -2813,6 +2819,20 @@ class ShellTest(utils.TestCase):
         stdout, _err = self.run_command('limits --tenant 1234')
         self.assertIn('Verb', stdout)
         self.assertIn('Name', stdout)
+
+    def test_print_absolute_limits(self):
+        # Note: This test is to validate that no exception is
+        #       thrown if in case we pass multiple custom fields
+        limits = [TestAbsoluteLimits('maxTotalPrivateNetworks', 3),
+                  TestAbsoluteLimits('totalPrivateNetworksUsed', 0),
+                  # Above two fields are custom fields
+                  TestAbsoluteLimits('maxImageMeta', 15),
+                  TestAbsoluteLimits('totalCoresUsed', 10),
+                  TestAbsoluteLimits('totalInstancesUsed', 5),
+                  TestAbsoluteLimits('maxServerMeta', 10),
+                  TestAbsoluteLimits('totalRAMUsed', 10240),
+                  TestAbsoluteLimits('totalFloatingIpsUsed', 10)]
+        novaclient.v2.shell._print_absolute_limits(limits=limits)
 
     def test_limits_2_57(self):
         """Tests the limits command at microversion 2.57 where personality

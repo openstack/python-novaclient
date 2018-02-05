@@ -2853,7 +2853,8 @@ def _print_absolute_limits(limits):
             used[name] = l.value
         else:
             other[name] = l.value
-            columns.append('Other')
+            if 'Other' not in columns:
+                columns.append('Other')
         if name not in limit_names:
             limit_names.append(name)
 
