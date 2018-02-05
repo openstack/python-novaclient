@@ -124,6 +124,8 @@ class FakeSessionClient(base_client.SessionClient):
             munged_url = munged_url.replace(' ', '_')
             munged_url = munged_url.replace('!', '_')
             munged_url = munged_url.replace('@', '_')
+            munged_url = munged_url.replace('%20', '_')
+            munged_url = munged_url.replace('%3A', '_')
             callback = "%s_%s" % (method.lower(), munged_url)
 
         if url is None or callback == "get_http:__nova_api:8774":
@@ -2005,6 +2007,86 @@ class FakeSessionClient(base_client.SessionClient):
             action['updated_at'] = '2013-03-25T13:45:09.000000'
         return (200, FAKE_RESPONSE_HEADERS, {
             "instanceAction": action})
+
+    def get_os_instance_usage_audit_log(self, **kw):
+        return (200, FAKE_RESPONSE_HEADERS, {
+            "instance_usage_audit_logs": {
+                "hosts_not_run": ["samplehost3"],
+                "log": {
+                    "samplehost0": {
+                        "errors": 1,
+                        "instances": 1,
+                        "message": ("Instance usage audit ran for host "
+                                    "samplehost0, 1 instances in 0.01 "
+                                    "seconds."),
+                        "state": "DONE"
+                    },
+                    "samplehost1": {
+                        "errors": 1,
+                        "instances": 2,
+                        "message": ("Instance usage audit ran for host "
+                                    "samplehost1, 2 instances in 0.01 "
+                                    "seconds."),
+                        "state": "DONE"
+                    },
+                    "samplehost2": {
+                        "errors": 1,
+                        "instances": 3,
+                        "message": ("Instance usage audit ran for host "
+                                    "samplehost2, 3 instances in 0.01 "
+                                    "seconds."),
+                        "state": "DONE"
+                    },
+                },
+                "num_hosts": 4,
+                "num_hosts_done": 3,
+                "num_hosts_not_run": 1,
+                "num_hosts_running": 0,
+                "overall_status": "3 of 4 hosts done. 3 errors.",
+                "period_beginning": "2012-06-01 00:00:00",
+                "period_ending": "2012-07-01 00:00:00",
+                "total_errors": 3,
+                "total_instances": 6}})
+
+    def get_os_instance_usage_audit_log_2016_12_10_13_59_59_999999(self, **kw):
+        return (200, FAKE_RESPONSE_HEADERS, {
+            "instance_usage_audit_log": {
+                "hosts_not_run": ["samplehost3"],
+                "log": {
+                    "samplehost0": {
+                        "errors": 1,
+                        "instances": 1,
+                        "message": ("Instance usage audit ran for host "
+                                    "samplehost0, 1 instances in 0.01 "
+                                    "seconds."),
+                        "state": "DONE"
+                    },
+                    "samplehost1": {
+                        "errors": 1,
+                        "instances": 2,
+                        "message": ("Instance usage audit ran for host "
+                                    "samplehost1, 2 instances in 0.01 "
+                                    "seconds."),
+                        "state": "DONE"
+                    },
+                    "samplehost2": {
+                        "errors": 1,
+                        "instances": 3,
+                        "message": ("Instance usage audit ran for host "
+                                    "samplehost2, 3 instances in 0.01 "
+                                    "seconds."),
+                        "state": "DONE"
+                    },
+                },
+                "num_hosts": 4,
+                "num_hosts_done": 3,
+                "num_hosts_not_run": 1,
+                "num_hosts_running": 0,
+                "overall_status": "3 of 4 hosts done. 3 errors.",
+                "period_beginning": "2012-06-01 00:00:00",
+                "period_ending": "2012-07-01 00:00:00",
+                "total_errors": 3,
+                "total_instances": 6}})
 
     def post_servers_uuid1_action(self, **kw):
         return 202, {}, {}
