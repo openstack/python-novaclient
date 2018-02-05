@@ -10,7 +10,6 @@
       - openstack/python-novaclient
 
 - project:
-    name: openstack/python-novaclient
     check:
       jobs:
         - novaclient-dsvm-functional
