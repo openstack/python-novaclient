@@ -118,43 +118,6 @@ def service_type(stype):
     return inner
 
 
-def add_resource_manager_extra_kwargs_hook(f, hook):
-    """Add hook to bind CLI arguments to ResourceManager calls.
-
-    The `do_foo` calls in shell.py will receive CLI args and then in turn pass
-    them through to the ResourceManager. Before passing through the args, the
-    hooks registered here will be called, giving us a chance to add extra
-    kwargs (taken from the command-line) to what's passed to the
-    ResourceManager.
-    """
-    if not hasattr(f, 'resource_manager_kwargs_hooks'):
-        f.resource_manager_kwargs_hooks = []
-
-    names = [h.__name__ for h in f.resource_manager_kwargs_hooks]
-    if hook.__name__ not in names:
-        f.resource_manager_kwargs_hooks.append(hook)
-
-
-def get_resource_manager_extra_kwargs(f, args, allow_conflicts=False):
-    """Return extra_kwargs by calling resource manager kwargs hooks."""
-    hooks = getattr(f, "resource_manager_kwargs_hooks", [])
-    extra_kwargs = {}
-    for hook in hooks:
-        hook_kwargs = hook(args)
-        hook_name = hook.__name__
-        conflicting_keys = set(hook_kwargs.keys()) & set(extra_kwargs.keys())
-        if conflicting_keys and not allow_conflicts:
-            msg = (_("Hook '%(hook_name)s' is attempting to redefine "
-                     "attributes '%(conflicting_keys)s'") %
-                   {'hook_name': hook_name,
-                    'conflicting_keys': conflicting_keys})
-            raise exceptions.NoUniqueMatch(msg)
-
-        extra_kwargs.update(hook_kwargs)
-
-    return extra_kwargs
-
-
 def pretty_choice_list(l):
     return ', '.join("'%s'" % i for i in l)
 

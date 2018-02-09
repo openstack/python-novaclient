@@ -380,26 +380,6 @@ class ValidationsTestCase(test_utils.TestCase):
                 self.assertIn(key, str(ce))
 
 
-class ResourceManagerExtraKwargsHookTestCase(test_utils.TestCase):
-    def test_get_resource_manager_extra_kwargs_hook_test(self):
-        do_foo = mock.MagicMock()
-
-        def hook1(args):
-            return {'kwarg1': 'v_hook1'}
-
-        def hook2(args):
-            return {'kwarg1': 'v_hook2'}
-        do_foo.resource_manager_kwargs_hooks = [hook1, hook2]
-        args = {}
-        exc = self.assertRaises(exceptions.NoUniqueMatch,
-                                utils.get_resource_manager_extra_kwargs,
-                                do_foo,
-                                args)
-        except_error = ("Hook 'hook2' is attempting to redefine "
-                        "attributes")
-        self.assertIn(except_error, six.text_type(exc))
-
-
 class DoActionOnManyTestCase(test_utils.TestCase):
 
     def _test_do_action_on_many(self, side_effect, fail):

@@ -1,0 +1,10 @@
+---
+deprecations:
+  - |
+    ``novaclient.utils.add_resource_manager_extra_kwargs_hook`` and
+    ``novaclient.utils.get_resource_manager_extra_kwargs`` were designed for
+    supporting extensions in nova/novaclient. Nowadays, this "extensions"
+    feature is abandoned and both ``add_resource_manager_extra_kwargs_hook``,
+    ``add_resource_manager_extra_kwargs_hook`` are not used in novaclient's
+    code. These methods are not documented, so we are removing them without
+    standard deprecation cycle.
