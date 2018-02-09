@@ -19,6 +19,7 @@
 from __future__ import print_function
 
 import argparse
+import codecs
 import collections
 import datetime
 import getpass
@@ -2594,7 +2595,10 @@ def do_console_log(cs, args):
     """Get console log output of a server."""
     server = _find_server(cs, args.server)
     data = server.get_console_output(length=args.length)
-    print(data)
+
+    if data and data[-1] != '\n':
+        data += '\n'
+    codecs.getwriter('utf-8')(sys.stdout).write(data)
 
 
 @utils.arg('server', metavar='<server>', help=_('Name or ID of server.'))
