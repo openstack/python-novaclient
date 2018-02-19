@@ -69,7 +69,7 @@ class Server(base.Resource):
     @api_versions.wraps("2.0", "2.18")
     def update(self, name=None):
         """
-        Update the name and the description for this server.
+        Update the name for this server.
 
         :param name: Update the server's name.
         :returns: :class:`Server`
