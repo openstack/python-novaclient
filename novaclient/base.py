@@ -28,7 +28,7 @@ import threading
 
 from oslo_utils import reflection
 from oslo_utils import strutils
-from requests import Response
+import requests
 import six
 
 from novaclient import exceptions
@@ -103,7 +103,7 @@ class RequestIdMixin(object):
             self._append_request_id(resp)
 
     def _append_request_id(self, resp):
-        if isinstance(resp, Response):
+        if isinstance(resp, requests.Response):
             # Extract 'x-openstack-request-id' from headers if
             # response is a Response object.
             request_id = (resp.headers.get('x-openstack-request-id') or
