@@ -11,7 +11,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from requests import Response
+import requests
 import six
 
 from novaclient import api_versions
@@ -23,13 +23,13 @@ from novaclient.v2 import flavors
 
 
 def create_response_obj_with_header():
-    resp = Response()
+    resp = requests.Response()
     resp.headers['x-openstack-request-id'] = fakes.FAKE_REQUEST_ID
     return resp
 
 
 def create_response_obj_with_compute_header():
-    resp = Response()
+    resp = requests.Response()
     resp.headers['x-compute-request-id'] = fakes.FAKE_REQUEST_ID
     return resp
 
