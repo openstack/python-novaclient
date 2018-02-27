@@ -393,7 +393,7 @@ def wraps(start_version, end_version=None):
             return methods[-1].func(obj, *args, **kwargs)
 
         # Let's share "arguments" with original method and substitution to
-        # allow put cliutils.arg and wraps decorators in any order
+        # allow put utils.arg and wraps decorators in any order
         if not hasattr(func, 'arguments'):
             func.arguments = []
         substitution.arguments = func.arguments
