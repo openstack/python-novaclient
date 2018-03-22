@@ -13,6 +13,8 @@
     check:
       jobs:
         - novaclient-dsvm-functional
+        - openstack-tox-lower-constraints
     gate:
       jobs:
         - novaclient-dsvm-functional
+        - openstack-tox-lower-constraints
