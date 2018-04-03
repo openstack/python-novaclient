@@ -82,11 +82,11 @@ Then call methods on its managers::
     >>> nova.flavors.list()
     [<Flavor: 256 server>,
      <Flavor: 512 server>,
-     <Flavor: 1GB server>,
-     <Flavor: 2GB server>,
-     <Flavor: 4GB server>,
-     <Flavor: 8GB server>,
-     <Flavor: 15.5GB server>]
+     <Flavor: 1GiB server>,
+     <Flavor: 2GiB server>,
+     <Flavor: 4GiB server>,
+     <Flavor: 8GiB server>,
+     <Flavor: 15.5GiB server>]
 
     >>> fl = nova.flavors.find(ram=512)
     >>> nova.servers.create("my-server", flavor=fl)
