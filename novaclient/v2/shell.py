@@ -3175,6 +3175,11 @@ def do_aggregate_update(cs, args):
     if args.availability_zone:
         updates["availability_zone"] = args.availability_zone
 
+    if not updates:
+        raise exceptions.CommandError(_(
+            "Either '--name <name>' or '--availability-zone "
+            "<availability-zone>' must be specified."))
+
     aggregate = cs.aggregates.update(aggregate.id, updates)
     print(_("Aggregate %s has been successfully updated.") % aggregate.id)
     _print_aggregate_details(cs, aggregate)

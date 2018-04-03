@@ -2243,6 +2243,13 @@ class ShellTest(utils.TestCase):
         self.assert_called('PUT', '/os-aggregates/1', body, pos=-2)
         self.assert_called('GET', '/os-aggregates/1', pos=-1)
 
+    def test_aggregate_update_without_availability_zone_and_name(self):
+        ex = self.assertRaises(exceptions.CommandError, self.run_command,
+                               'aggregate-update test')
+        self.assertIn("Either '--name <name>' or '--availability-zone "
+                      "<availability-zone>' must be specified.",
+                      six.text_type(ex))
+
     def test_aggregate_set_metadata_add_by_id(self):
         out, err = self.run_command('aggregate-set-metadata 3 foo=bar')
         body = {"set_metadata": {"metadata": {"foo": "bar"}}}
