@@ -61,7 +61,7 @@ class TestServersBootNovaClient(base.ClientTestBase):
 
     def test_boot_server_with_legacy_bdm(self):
         # bdm v1 format
-        # <id>:<type>:<size(GB)>:<delete-on-terminate>
+        # <id>:<type>:<size(GiB)>:<delete-on-terminate>
         # params = (type, size, delete-on-terminate)
         params = ('', '', '1')
         self._boot_server_with_legacy_bdm(bdm_params=params)

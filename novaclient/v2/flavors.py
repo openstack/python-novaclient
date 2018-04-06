@@ -184,11 +184,11 @@ class FlavorManager(base.ManagerWithFind):
         :param name: Descriptive name of the flavor
         :param ram: Memory in MB for the flavor
         :param vcpus: Number of VCPUs for the flavor
-        :param disk: Size of local disk in GB
+        :param disk: Size of local disk in GiB
         :param flavorid: ID for the flavor (optional). You can use the reserved
                          value ``"auto"`` to have Nova generate a UUID for the
                          flavor in cases where you cannot simply pass ``None``.
-        :param ephemeral: Ephemeral disk space in GB.
+        :param ephemeral: Ephemeral disk space in GiB.
         :param swap: Swap space in MB
         :param rxtx_factor: RX/TX factor
         :param is_public: Whether or not the flavor is public.

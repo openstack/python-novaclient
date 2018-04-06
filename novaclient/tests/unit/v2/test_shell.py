@@ -2051,7 +2051,7 @@ class ShellTest(utils.TestCase):
                            'start=2000-01-20T00:00:00&' +
                            'end=2005-02-01T00:00:00&' +
                            'detailed=1')
-        # Servers, RAM MB-Hours, CPU Hours, Disk GB-Hours
+        # Servers, RAM MB-Hours, CPU Hours, Disk GiB-Hours
         self.assertIn('1       | 25451.76     | 49.71     | 0.00', stdout)
 
     def test_usage_list_stitch_together_next_results(self):
@@ -2072,7 +2072,7 @@ class ShellTest(utils.TestCase):
                                'start=2000-01-20T00:00:00&'
                                'end=2005-02-01T00:00:00&'
                                'marker=%s&detailed=1' % (marker), pos=pos + 1)
-        # Servers, RAM MB-Hours, CPU Hours, Disk GB-Hours
+        # Servers, RAM MB-Hours, CPU Hours, Disk GiB-Hours
         self.assertIn('2       | 50903.53     | 99.42     | 0.00', stdout)
 
     def test_usage_list_no_args(self):
@@ -2092,7 +2092,7 @@ class ShellTest(utils.TestCase):
                            '/os-simple-tenant-usage/test?' +
                            'start=2000-01-20T00:00:00&' +
                            'end=2005-02-01T00:00:00')
-        # Servers, RAM MB-Hours, CPU Hours, Disk GB-Hours
+        # Servers, RAM MB-Hours, CPU Hours, Disk GiB-Hours
         self.assertIn('1       | 25451.76     | 49.71     | 0.00', stdout)
 
     def test_usage_stitch_together_next_results(self):
@@ -2112,7 +2112,7 @@ class ShellTest(utils.TestCase):
                                'start=2000-01-20T00:00:00&'
                                'end=2005-02-01T00:00:00&'
                                'marker=%s' % (marker), pos=pos + 1)
-        # Servers, RAM MB-Hours, CPU Hours, Disk GB-Hours
+        # Servers, RAM MB-Hours, CPU Hours, Disk GiB-Hours
         self.assertIn('2       | 50903.53     | 99.42     | 0.00', stdout)
 
     def test_usage_no_tenant(self):

@@ -599,7 +599,7 @@ def _boot(cs, args):
     action='append',
     default=[],
     help=_("Block device mapping in the format "
-           "<dev-name>=<id>:<type>:<size(GB)>:<delete-on-terminate>."))
+           "<dev-name>=<id>:<type>:<size(GiB)>:<delete-on-terminate>."))
 @utils.arg(
     '--block-device',
     metavar="key1=value1[,key2=value2...]",
@@ -621,7 +621,7 @@ def _boot(cs, args):
            "depending on selected bus; note the libvirt driver always "
            "uses default device names), "
            "size=size of the block device in MB(for swap) and in "
-           "GB(for other formats) "
+           "GiB(for other formats) "
            "(if omitted, hypervisor driver calculates size), "
            "format=device will be formatted (e.g. swap, ntfs, ...; optional), "
            "bootindex=integer used for ordering the boot disks "
@@ -651,7 +651,7 @@ def _boot(cs, args):
            "depending on selected bus; note the libvirt driver always "
            "uses default device names), "
            "size=size of the block device in MB(for swap) and in "
-           "GB(for other formats) "
+           "GiB(for other formats) "
            "(if omitted, hypervisor driver calculates size), "
            "format=device will be formatted (e.g. swap, ntfs, ...; optional), "
            "bootindex=integer used for ordering the boot disks "
@@ -680,7 +680,7 @@ def _boot(cs, args):
            "depending on selected bus; note the libvirt driver always "
            "uses default device names), "
            "size=size of the block device in MB(for swap) and in "
-           "GB(for other formats) "
+           "GiB(for other formats) "
            "(if omitted, hypervisor driver calculates size), "
            "format=device will be formatted (e.g. swap, ntfs, ...; optional), "
            "bootindex=integer used for ordering the boot disks "
@@ -708,7 +708,7 @@ def _boot(cs, args):
            "depending on selected bus; note the libvirt driver always "
            "uses default device names), "
            "size=size of the block device in MB(for swap) and in "
-           "GB(for other formats) "
+           "GiB(for other formats) "
            "(if omitted, hypervisor driver calculates size), "
            "format=device will be formatted (e.g. swap, ntfs, ...; optional), "
            "bootindex=integer used for ordering the boot disks "
@@ -727,7 +727,7 @@ def _boot(cs, args):
     metavar="size=<size>[,format=<format>]",
     action='append',
     default=[],
-    help=_("Create and attach a local ephemeral block device of <size> GB "
+    help=_("Create and attach a local ephemeral block device of <size> GiB "
            "and format it to <format>."))
 @utils.arg(
     '--hint',
@@ -1130,11 +1130,11 @@ def do_flavor_show(cs, args):
 @utils.arg(
     'disk',
     metavar='<disk>',
-    help=_("Disk size in GB."))
+    help=_("Disk size in GiB."))
 @utils.arg(
     '--ephemeral',
     metavar='<ephemeral>',
-    help=_("Ephemeral space size in GB (default 0)."),
+    help=_("Ephemeral space size in GiB (default 0)."),
     default=0)
 @utils.arg(
     'vcpus',
@@ -2939,7 +2939,7 @@ def do_usage_list(cs, args):
     """List usage data for all tenants."""
     dateformat = "%Y-%m-%d"
     rows = ["Tenant ID", "Servers", "RAM MB-Hours", "CPU Hours",
-            "Disk GB-Hours"]
+            "Disk GiB-Hours"]
 
     now = timeutils.utcnow()
 
@@ -3007,7 +3007,7 @@ def do_usage_list(cs, args):
 def do_usage(cs, args):
     """Show usage data for a single tenant."""
     dateformat = "%Y-%m-%d"
-    rows = ["Servers", "RAM MB-Hours", "CPU Hours", "Disk GB-Hours"]
+    rows = ["Servers", "RAM MB-Hours", "CPU Hours", "Disk GiB-Hours"]
 
     now = timeutils.utcnow()
 

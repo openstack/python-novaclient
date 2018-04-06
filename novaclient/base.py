@@ -501,7 +501,7 @@ class BootingManagerWithFind(ManagerWithFind):
         for device_name, mapping in block_device_mapping.items():
             #
             # The mapping is in the format:
-            # <id>:[<type>]:[<size(GB)>]:[<delete_on_terminate>]
+            # <id>:[<type>]:[<size(GiB)>]:[<delete_on_terminate>]
             #
             bdm_dict = {'device_name': device_name}
 
