@@ -29,6 +29,7 @@ import testtools
 
 import novaclient
 import novaclient.api_versions
+from novaclient import base
 import novaclient.client
 from novaclient.v2 import networks
 import novaclient.v2.shell
@@ -371,7 +372,7 @@ class ClientTestBase(testtools.TestCase):
                     raise
             time.sleep(poll_interval)
         else:
-            self.fail("The resource '%s' still exists." % resource.id)
+            self.fail("The resource '%s' still exists." % base.getid(resource))
 
     def name_generate(self):
         """Generate randomized name for some entity."""
