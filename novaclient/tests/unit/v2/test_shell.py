@@ -104,6 +104,9 @@ class ShellTest(utils.TestCase):
     def assert_called_anytime(self, method, url, body=None):
         return self.shell.cs.assert_called_anytime(method, url, body)
 
+    def assert_not_called(self, method, url, body=None):
+        return self.shell.cs.assert_not_called(method, url, body)
+
     def test_agents_list_with_hypervisor(self):
         self.run_command('agent-list --hypervisor xen')
         self.assert_called('GET', '/os-agents?hypervisor=xen')
@@ -1168,6 +1171,16 @@ class ShellTest(utils.TestCase):
         self.assert_called('GET', '/flavors/aa1/os-extra_specs')
         self.assert_called_anytime('GET', '/flavors/detail')
 
+    def test_flavor_list_with_extra_specs_2_61_or_later(self):
+        """Tests that the 'os-extra_specs' API is not called
+        when the '--extra-specs' option is specified since microversion 2.61.
+        """
+        out, _ = self.run_command('flavor-list --extra-specs',
+                                  api_version='2.61')
+        self.assert_not_called('GET', '/flavors/aa1/os-extra_specs')
+        self.assert_called_anytime('GET', '/flavors/detail')
+        self.assertIn('extra_specs', out)
+
     def test_flavor_list_with_all(self):
         self.run_command('flavor-list --all')
         self.assert_called('GET', '/flavors/detail?is_public=None')
@@ -1196,8 +1209,16 @@ class ShellTest(utils.TestCase):
     def test_flavor_show_with_description(self):
         """Tests that the description is shown in version >= 2.55."""
         out, _ = self.run_command('flavor-show 1', api_version='2.55')
-        self.assert_called_anytime('GET', '/flavors/1')
+        self.assert_called('GET', '/flavors/1', pos=-2)
+        self.assert_called('GET', '/flavors/1/os-extra_specs', pos=-1)
         self.assertIn('description', out)
+
+    def test_flavor_show_2_61_or_later(self):
+        """Tests that the 'os-extra_specs' is not called in version >= 2.61."""
+        out, _ = self.run_command('flavor-show 1', api_version='2.61')
+        self.assert_not_called('GET', '/flavors/1/os-extra_specs')
+        self.assert_called_anytime('GET', '/flavors/1')
+        self.assertIn('extra_specs', out)
 
     def test_flavor_show_with_alphanum_id(self):
         self.run_command('flavor-show aa1')
@@ -3612,6 +3633,7 @@ class ShellTest(utils.TestCase):
             54,  # There are no version-wrapped shell method changes for this.
             57,  # There are no version-wrapped shell method changes for this.
             60,  # There are no client-side changes for volume multiattach.
+            61,  # There are no version-wrapped shell method changes for this.
         ])
         versions_supported = set(range(0,
                                  novaclient.API_MAX_VERSION.ver_minor + 1))

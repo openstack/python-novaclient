@@ -131,6 +131,19 @@ class FakeClient(object):
 
         self.client.callstack = []
 
+    def assert_not_called(self, method, url, body=None):
+        """Assert that an HTTP method was not called in the test.
+
+        :param method: HTTP method name which is expected not to be called
+        :param url: Expected request url not to be called with given method
+        :param body: Expected request body not to be called with given method
+                     and url. Default is None.
+        """
+        not_expected = (method, url, body)
+        for entry in self.client.callstack:
+            assert not_expected != entry[0:3], (
+                'API %s %s body=%s was called.' % not_expected)
+
     def clear_callstack(self):
         self.client.callstack = []
 

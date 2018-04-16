@@ -837,6 +837,8 @@ class FakeSessionClient(base_client.SessionClient):
         included_fields = ['id', 'name']
         if self.api_version >= api_versions.APIVersion('2.55'):
             included_fields.append('description')
+        if self.api_version >= api_versions.APIVersion('2.61'):
+            included_fields.append('extra_specs')
         for flavor in flavors['flavors']:
             for k in list(flavor):
                 if k not in included_fields:
@@ -896,6 +898,11 @@ class FakeSessionClient(base_client.SessionClient):
             new_flavor['name'] = 'with-description'
             new_flavor['description'] = 'test description'
             flavors['flavors'].append(new_flavor)
+
+        # Add extra_specs in the response for all flavors.
+        if self.api_version >= api_versions.APIVersion('2.61'):
+            for flavor in flavors['flavors']:
+                flavor['extra_specs'] = {'test': 'value'}
 
         return (200, FAKE_RESPONSE_HEADERS, flavors)
 
