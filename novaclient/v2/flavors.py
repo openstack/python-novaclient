@@ -155,7 +155,8 @@ class FlavorManager(base.ManagerWithFind):
     def delete(self, flavor):
         """Delete a specific flavor.
 
-        :param flavor: The ID of the :class:`Flavor` to get.
+        :param flavor: Instance of :class:`Flavor` to delete or ID of the
+                       flavor to delete.
         :returns: An instance of novaclient.base.TupleWithMeta
         """
         return self._delete("/flavors/%s" % base.getid(flavor))

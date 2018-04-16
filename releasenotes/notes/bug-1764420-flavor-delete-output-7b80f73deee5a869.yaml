@@ -1,0 +1,5 @@
+---
+upgrade:
+  - |
+    The ``flavor-delete`` command no longer prints out the details of the
+    deleted flavor. On successful deletion, there is no output.

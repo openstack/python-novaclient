@@ -1099,9 +1099,8 @@ def do_flavor_list(cs, args):
     help=_("Name or ID of the flavor to delete."))
 def do_flavor_delete(cs, args):
     """Delete a specific flavor"""
-    flavorid = _find_flavor(cs, args.flavor)
-    cs.flavors.delete(flavorid)
-    _print_flavor_list(cs, [flavorid])
+    flavor = _find_flavor(cs, args.flavor)
+    cs.flavors.delete(flavor)
 
 
 @utils.arg(
