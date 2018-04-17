@@ -1,0 +1,13 @@
+---
+other:
+  - |
+    Starting from microversion 2.61, the responses of the 'Flavor' APIs
+    include the 'extra_specs' parameter. Therefore 'Flavors extra-specs'
+    (os-extra_specs) API calls have been removed in the following commands
+    since microversion 2.61.
+
+    * ``nova flavor-list``
+    * ``nova flavor-show``
+
+    There are no behavior changes in the CLI. This is just a performance
+    optimization.

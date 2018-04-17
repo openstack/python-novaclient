@@ -1016,11 +1016,13 @@ def _print_flavor_list(cs, flavors, show_extra_specs=False):
         'Is_Public',
     ]
 
+    formatters = {}
     if show_extra_specs:
-        formatters = {'extra_specs': _print_flavor_extra_specs}
+        # Starting with microversion 2.61, extra specs are included
+        # in the flavor details response.
+        if cs.api_version < api_versions.APIVersion('2.61'):
+            formatters = {'extra_specs': _print_flavor_extra_specs}
         headers.append('extra_specs')
-    else:
-        formatters = {}
 
     if cs.api_version >= api_versions.APIVersion('2.55'):
         headers.append('Description')
@@ -1316,7 +1318,10 @@ def _print_flavor(flavor):
     info = flavor.to_dict()
     # ignore links, we don't need to present those
     info.pop('links')
-    info.update({"extra_specs": _print_flavor_extra_specs(flavor)})
+    # Starting with microversion 2.61, extra specs are included
+    # in the flavor details response.
+    if 'extra_specs' not in info:
+        info.update({"extra_specs": _print_flavor_extra_specs(flavor)})
     utils.print_dict(info)
 
 
