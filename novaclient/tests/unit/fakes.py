@@ -42,7 +42,7 @@ def assert_has_keys(dict, required=None, optional=None):
 class FakeClient(object):
 
     def assert_called(self, method, url, body=None, pos=-1):
-        """Assert than an HTTP method was called at given order/position.
+        """Assert that an HTTP method was called at given order/position.
 
         :param method: HTTP method name which is expected to be called
         :param url: Expected request url to be called with given method
@@ -98,7 +98,7 @@ class FakeClient(object):
                                      (self.client.callstack[pos][2], body))
 
     def assert_called_anytime(self, method, url, body=None):
-        """Assert than an HTTP method was called anytime in the test.
+        """Assert that an HTTP method was called anytime in the test.
 
         :param method: HTTP method name which is expected to be called
         :param url: Expected request url to be called with given method
