@@ -85,7 +85,7 @@ def emit_hosts_deprecation_warning(command_name, replacement=None):
 def emit_fixed_floating_deprecation_warning(command_name):
     print(_('WARNING: Command %s is deprecated and will be removed '
             'in the first major release after the Nova server 16.0.0 '
-            'Pike release. Use python-neutronclient or python-openstackclient'
+            'Pike release. Use python-neutronclient or python-openstackclient '
             'instead. Specify --os-compute-api-version less than 2.44 '
             'to continue using this command until it is removed.') %
           command_name, file=sys.stderr)
