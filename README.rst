@@ -12,11 +12,11 @@ Python bindings to the OpenStack Compute API
 ============================================
 
 .. image:: https://img.shields.io/pypi/v/python-novaclient.svg
-    :target: https://pypi.python.org/pypi/python-novaclient/
+    :target: https://pypi.org/project/python-novaclient/
     :alt: Latest Version
 
 .. image:: https://img.shields.io/pypi/dm/python-novaclient.svg
-    :target: https://pypi.python.org/pypi/python-novaclient/
+    :target: https://pypi.org/project/python-novaclient/
     :alt: Downloads
 
 This is a client for the OpenStack Compute API. It provides a Python API (the
@@ -33,7 +33,7 @@ This is a client for the OpenStack Compute API. It provides a Python API (the
 * `Specs`_
 * `How to Contribute`_
 
-.. _PyPi: https://pypi.python.org/pypi/python-novaclient
+.. _PyPi: https://pypi.org/project/python-novaclient
 .. _Online Documentation: https://docs.openstack.org/python-novaclient/latest
 .. _Launchpad project: https://launchpad.net/python-novaclient
 .. _Blueprints: https://blueprints.launchpad.net/python-novaclient
