@@ -66,6 +66,8 @@ class TestInstanceActionCLIV258(TestInstanceActionCLI):
     """Instance action functional tests for v2.58 nova-api microversion."""
 
     COMPUTE_API_VERSION = "2.58"
+    # Does this microversion return a hostId field in the event response?
+    expect_event_hostId_field = False
 
     def test_list_instance_action_with_marker_and_limit(self):
         server = self._create_server()
@@ -86,6 +88,13 @@ class TestInstanceActionCLIV258(TestInstanceActionCLI):
         action = self._get_list_of_values_from_single_column_table(
             output, "Action")
         self.assertEqual(action, ['create'])
+        if not self.expect_event_hostId_field:
+            # Make sure host and hostId are not in the response when
+            # microversion is less than 2.62.
+            output = self.nova("instance-action %s %s" % (
+                server.id, marker_req))
+            self.assertNotIn("'host'", output)
+            self.assertNotIn("'hostId'", output)
 
     def test_list_instance_action_with_changes_since(self):
         # Ignore microseconds to make this a deterministic test.
@@ -120,6 +129,7 @@ class TestInstanceActionCLIV262(TestInstanceActionCLIV258,
     """Instance action functional tests for v2.62 nova-api microversion."""
 
     COMPUTE_API_VERSION = "2.62"
+    expect_event_hostId_field = True
 
     def test_show_actions_with_host(self):
         name = self.name_generate()
