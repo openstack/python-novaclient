@@ -1,0 +1,6 @@
+---
+upgrade:
+  - |
+    The ``nova server-group-create`` command now only supports specifying
+    a single policy name when creating the server group. This is to match
+    the server-side API validation.

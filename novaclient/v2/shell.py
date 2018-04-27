@@ -4501,8 +4501,7 @@ def do_server_group_list(cs, args):
 @utils.arg(
     'policy',
     metavar='<policy>',
-    nargs='+',
-    help=_('Policies for the server groups.'))
+    help=_('Policy for the server group.'))
 def do_server_group_create(cs, args):
     """Create a new server group with the specified details."""
     server_group = cs.server_groups.create(name=args.name,
