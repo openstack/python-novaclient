@@ -1,0 +1,11 @@
+---
+features:
+  - |
+    Adds support for microversion 2.62 which adds ``host`` (hostname)
+    and ``hostId`` (an obfuscated hashed host id string) fields to the
+    instance action ``GET /servers/{server_id}/os-instance-actions/{req_id}``
+    API.
+
+    The event columns are already included in the result of
+    "nova instance-action <server> <request-id>" command, therefore does not
+    have any CLI or python API binding impacts in the client.

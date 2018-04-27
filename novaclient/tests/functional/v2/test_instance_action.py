@@ -113,3 +113,31 @@ class TestInstanceActionCLIV258(TestInstanceActionCLI):
                          '--changes-since=%s but got: %s\n\n'
                          'First instance-action-list output: %s' %
                          (before_stop, stop_output, create_output))
+
+
+class TestInstanceActionCLIV262(TestInstanceActionCLIV258,
+                                base.TenantTestBase):
+    """Instance action functional tests for v2.62 nova-api microversion."""
+
+    COMPUTE_API_VERSION = "2.62"
+
+    def test_show_actions_with_host(self):
+        name = self.name_generate()
+        # Create server with non-admin user
+        server = self.another_nova('boot --flavor %s --image %s --poll %s' %
+                                   (self.flavor.name, self.image.name, name))
+        server_id = self._get_value_from_the_table(server, 'id')
+        output = self.nova("instance-action-list %s" % server_id)
+        request_id = self._get_column_value_from_single_row_table(
+            output, "Request_ID")
+
+        # Only the 'hostId' are exposed to non-admin
+        output = self.another_nova(
+            "instance-action %s %s" % (server_id, request_id))
+        self.assertNotIn("'host'", output)
+        self.assertIn("'hostId'", output)
+
+        # The 'host' and 'hostId' are exposed to admin
+        output = self.nova("instance-action %s %s" % (server_id, request_id))
+        self.assertIn("'host'", output)
+        self.assertIn("'hostId'", output)
