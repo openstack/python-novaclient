@@ -35,7 +35,7 @@ from novaclient.v2 import networks
 import novaclient.v2.shell
 
 BOOT_IS_COMPLETE = ("login as 'cirros' user. default password: "
-                    "'cubswin:)'. use 'sudo' for root.")
+                    "'gocubsgo'. use 'sudo' for root.")
 
 
 def is_keystone_version_available(session, version):
