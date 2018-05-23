@@ -1,0 +1,15 @@
+---
+fixes:
+  - |
+    A fix is made for `bug 1744118`_  which adds the below missing CLI
+    arguments.
+
+    * OS_PROJECT_DOMAIN_ID
+
+    * OS_PROJECT_DOMAIN_NAME
+
+    * OS_USER_DOMAIN_ID
+
+    * OS_USER_DOMAIN_NAME
+
+    .. _bug 1744118: https://bugs.launchpad.net/python-novaclient/+bug/1744118
