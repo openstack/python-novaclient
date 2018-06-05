@@ -13,6 +13,14 @@ For help on a specific :command:`nova` command, enter:
 
    $ nova help COMMAND
 
+.. note:: Over time, command line functionality will be phased out
+          of the ``nova`` CLI and into the ``openstack`` CLI. Using
+          the ``openstack`` client where possible is preferred but
+          there is not full parity yet for all of the ``nova`` commands.
+          For information on using the ``openstack`` CLI, see:
+
+          https://docs.openstack.org/python-openstackclient/latest/
+
 .. _nova_command_usage:
 
 nova usage
