@@ -47,44 +47,39 @@ class ServersTest(utils.FixturedTestCase):
         """
         return None
 
-    def test_list_all_servers(self):
+    def test_list_servers(self):
         sl = self.cs.servers.list()
         self.assert_request_id(sl, fakes.FAKE_REQUEST_ID_LIST)
-        self.assert_called('GET', '/servers/detail', pos=-2)
-        self.assert_called('GET', '/servers/detail?marker=9012')
+        self.assert_called('GET', '/servers/detail')
         for s in sl:
             self.assertIsInstance(s, servers.Server)
 
     def test_filter_servers_unicode(self):
         sl = self.cs.servers.list(search_opts={'name': u't€sting'})
         self.assert_request_id(sl, fakes.FAKE_REQUEST_ID_LIST)
-        self.assert_called(
-            'GET',
-            '/servers/detail?name=t%E2%82%ACsting',
-            pos=-2)
-        self.assert_called(
-            'GET',
-            '/servers/detail?marker=9012&name=t%E2%82%ACsting')
+        self.assert_called('GET', '/servers/detail?name=t%E2%82%ACsting')
+        for s in sl:
+            self.assertIsInstance(s, servers.Server)
+
+    def test_list_all_servers(self):
+        # use marker just to identify this call in fixtures
+        sl = self.cs.servers.list(limit=-1, marker=1234)
+        self.assert_request_id(sl, fakes.FAKE_REQUEST_ID_LIST)
+
+        self.assertEqual(2, len(sl))
+
+        self.assertEqual(self.requests_mock.request_history[-2].method, 'GET')
+        self.assertEqual(self.requests_mock.request_history[-2].path_url,
+                         '/servers/detail?marker=1234')
+        self.assert_called('GET', '/servers/detail?marker=5678')
+
         for s in sl:
             self.assertIsInstance(s, servers.Server)
 
     def test_list_servers_undetailed(self):
         sl = self.cs.servers.list(detailed=False)
         self.assert_request_id(sl, fakes.FAKE_REQUEST_ID_LIST)
-        self.assert_called('GET', '/servers', pos=-2)
-        self.assert_called('GET', '/servers?marker=5678')
-        for s in sl:
-            self.assertIsInstance(s, servers.Server)
-
-    def test_list_servers_with_marker(self):
-        sl = self.cs.servers.list(marker=1234)
-        self.assert_request_id(sl, fakes.FAKE_REQUEST_ID_LIST)
-
-        self.assertEqual(2, len(sl))
-
-        self.assert_called('GET', '/servers/detail?marker=1234', pos=-2)
-        self.assert_called('GET', '/servers/detail?marker=9012')
-
+        self.assert_called('GET', '/servers')
         for s in sl:
             self.assertIsInstance(s, servers.Server)
 
@@ -94,17 +89,6 @@ class ServersTest(utils.FixturedTestCase):
         self.assert_called('GET', '/servers/detail?limit=2&marker=1234')
         for s in sl:
             self.assertIsInstance(s, servers.Server)
-        self.assertEqual(2, len(sl))
-
-    def test_list_servers_with_limit_above_max_limit(self):
-        # use limit=3 to trigger paging simulation on backend fixture side
-        sl = self.cs.servers.list(limit=3)
-        self.assert_request_id(sl, fakes.FAKE_REQUEST_ID_LIST)
-        self.assert_called('GET', '/servers/detail?limit=3', pos=-2)
-        self.assert_called('GET', '/servers/detail?limit=1&marker=5678')
-        for s in sl:
-            self.assertIsInstance(s, servers.Server)
-        self.assertEqual(3, len(sl))
 
     def test_list_servers_sort_single(self):
         sl = self.cs.servers.list(sort_keys=['display_name'],
@@ -112,10 +96,7 @@ class ServersTest(utils.FixturedTestCase):
         self.assert_request_id(sl, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called(
             'GET',
-            '/servers/detail?sort_dir=asc&sort_key=display_name', pos=-2)
-        self.assert_called(
-            'GET',
-            '/servers/detail?marker=9012&sort_dir=asc&sort_key=display_name')
+            '/servers/detail?sort_dir=asc&sort_key=display_name')
         for s in sl:
             self.assertIsInstance(s, servers.Server)
 
@@ -126,11 +107,6 @@ class ServersTest(utils.FixturedTestCase):
         self.assert_called(
             'GET',
             ('/servers/detail?sort_dir=asc&sort_dir=desc&'
-             'sort_key=display_name&sort_key=id'),
-            pos=-2)
-        self.assert_called(
-            'GET',
-            ('/servers/detail?marker=9012&sort_dir=asc&sort_dir=desc&'
              'sort_key=display_name&sort_key=id'))
         for s in sl:
             self.assertIsInstance(s, servers.Server)

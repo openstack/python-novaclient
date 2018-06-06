@@ -32,16 +32,6 @@ class Base(base.Fixture):
 
         self.requests_mock.get(self.url(),
                                json=get_servers,
-                               headers=self.json_headers,
-                               complete_qs=True)
-
-        self.requests_mock.get(self.url(name='sample-server'),
-                               json=get_servers,
-                               headers=self.json_headers,
-                               complete_qs=True)
-
-        self.requests_mock.get(self.url(marker='5678'),
-                               json={"servers": []},
                                headers=self.json_headers)
 
         self.server_1234 = {
@@ -170,31 +160,13 @@ class Base(base.Fixture):
 
         self.requests_mock.get(
             self.url('detail', marker=self.server_1234["id"]),
-            json={"servers": [self.server_5678, self.server_9012]},
-            headers=self.json_headers, complete_qs=True)
-
-        self.requests_mock.get(
-            self.url('detail', marker=self.server_1234["id"], limit=2),
-            json={"servers": [self.server_5678, self.server_9012]},
-            headers=self.json_headers, complete_qs=True)
-
-        # simulate max_limit=2 by returning 2 items when limit=3
-        # another request should be triggered with limit=1 to get complete
-        # result
-        self.requests_mock.get(
-            self.url('detail', limit=3),
             json={"servers": [self.server_1234, self.server_5678]},
             headers=self.json_headers, complete_qs=True)
 
         self.requests_mock.get(
-            self.url('detail', marker=self.server_5678["id"], limit=1),
-            json={"servers": [self.server_9012]},
-            headers=self.json_headers, complete_qs=True)
-
-        self.requests_mock.get(
-            self.url('detail', marker=self.server_9012["id"]),
+            self.url('detail', marker=self.server_5678["id"]),
             json={"servers": []},
-            headers=self.json_headers)
+            headers=self.json_headers, complete_qs=True)
 
         self.server_1235 = self.server_1234.copy()
         self.server_1235['id'] = 1235

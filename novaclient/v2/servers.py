@@ -855,10 +855,7 @@ class ServerManager(base.BootingManagerWithFind):
             result.extend(servers)
             result.append_request_ids(servers.request_ids)
 
-            if limit and limit != -1:
-                limit = max(limit - len(servers), 0)
-
-            if not servers or limit == 0:
+            if not servers or limit != -1:
                 break
             marker = result[-1].id
         return result

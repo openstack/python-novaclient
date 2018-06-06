@@ -93,16 +93,12 @@ class FixturedTestCase(testscenarios.TestWithScenarios, TestCase):
             fix = self.data_fixture_class(self.requests_mock)
             self.data_fixture = self.useFixture(fix)
 
-    def assert_called(self, method, path, body=None, pos=-1):
-        self.assertEqual(
-            self.requests_mock.request_history[pos].method,
-            method)
-        self.assertEqual(
-            self.requests_mock.request_history[pos].path_url,
-            path)
+    def assert_called(self, method, path, body=None):
+        self.assertEqual(self.requests_mock.last_request.method, method)
+        self.assertEqual(self.requests_mock.last_request.path_url, path)
 
         if body:
-            req_data = self.requests_mock.request_history[pos].body
+            req_data = self.requests_mock.last_request.body
             if isinstance(req_data, six.binary_type):
                 req_data = req_data.decode('utf-8')
             if not isinstance(body, six.string_types):
