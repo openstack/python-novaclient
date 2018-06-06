@@ -4815,7 +4815,7 @@ def _server_live_migrate(cs, server, args):
     default=False,
     help=_('live Evacuate host with exact hypervisor hostname match'))
 def do_host_evacuate_live(cs, args):
-    """Live migrate all instances of the specified host
+    """Live migrate all instances off the specified host
     to other available hosts.
     """
     response = []

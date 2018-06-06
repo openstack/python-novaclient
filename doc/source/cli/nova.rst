@@ -218,7 +218,7 @@ nova usage
   Evacuate all instances from failed host.
 
 ``host-evacuate-live``
-  Live migrate all instances of the specified
+  Live migrate all instances off the specified
   host to other available hosts.
 
 ``host-list``
@@ -1672,7 +1672,7 @@ nova host-evacuate-live
                                   [--max-servers <max_servers>] [--force]
                                   <host>
 
-Live migrate all instances of the specified host to other available hosts.
+Live migrate all instances off the specified host to other available hosts.
 
 **Positional arguments:**
 
