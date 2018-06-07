@@ -15,10 +15,6 @@ Python bindings to the OpenStack Compute API
     :target: https://pypi.org/project/python-novaclient/
     :alt: Latest Version
 
-.. image:: https://img.shields.io/pypi/dm/python-novaclient.svg
-    :target: https://pypi.org/project/python-novaclient/
-    :alt: Downloads
-
 This is a client for the OpenStack Compute API. It provides a Python API (the
 ``novaclient`` module) and a command-line script (``nova``). Each implements
 100% of the OpenStack Compute API.
