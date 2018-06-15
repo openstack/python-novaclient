@@ -1499,6 +1499,29 @@ Show details about the given flavor.
 ``<flavor>``
   Name or ID of flavor.
 
+nova flavor-update
+------------------
+
+.. code-block:: console
+
+   usage: nova flavor-update <flavor> <description>
+
+Update the description of an existing flavor.
+(Supported by API versions '2.55' - '2.latest')
+[hint: use '--os-compute-api-version' flag to show help message for proper
+version]
+
+.. versionadded:: 10.0.0
+
+**Positional arguments**
+
+``<flavor>``
+  Name or ID of the flavor to update.
+
+``<description>``
+  A free form description of the flavor. Limited to 65535
+  characters in length. Only printable characters are allowed.
+
 .. _nova_force-delete:
 
 nova force-delete
