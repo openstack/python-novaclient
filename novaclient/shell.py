@@ -270,6 +270,14 @@ class OpenStackComputeShell(object):
             'OS_PROJECT_NAME', 'OS_TENANT_NAME', 'NOVA_PROJECT_ID'))
         parser.set_defaults(os_project_id=utils.env(
             'OS_PROJECT_ID', 'OS_TENANT_ID'))
+        parser.set_defaults(
+            os_project_domain_id=utils.env('OS_PROJECT_DOMAIN_ID'))
+        parser.set_defaults(
+            os_project_domain_name=utils.env('OS_PROJECT_DOMAIN_NAME'))
+        parser.set_defaults(
+            os_user_domain_id=utils.env('OS_USER_DOMAIN_ID'))
+        parser.set_defaults(
+            os_user_domain_name=utils.env('OS_USER_DOMAIN_NAME'))
 
     def get_base_parser(self, argv):
         parser = NovaClientArgumentParser(
@@ -596,6 +604,26 @@ class OpenStackComputeShell(object):
                     _("You must provide an auth url "
                       "via either --os-auth-url or env[OS_AUTH_URL]."))
 
+            # TODO(Shilpasd): need to provide support in python - novaclient
+            # for required options for below default auth type plugins:
+            # 1. v3oidcclientcredential
+            # 2. v3oidcpassword
+            # 3. v3oidcauthcode
+            # 4. v3oidcaccesstoken
+            # 5. v3oauth1
+            # 6. v3fedkerb
+            # 7. v3adfspassword
+            # 8. v3samlpassword
+            # 9. v3applicationcredential
+            # TODO(Shilpasd): need to provide support in python - novaclient
+            # for below extra keystoneauth auth type plugins:
+            # We will need to add code to support discovering of versions
+            # supported by the keystone service based on the auth_url similar
+            # to the one supported by glanceclient.
+            # 1. v3password
+            # 2. v3token
+            # 3. v3kerberos
+            # 4. v3totp
             with utils.record_time(self.times, args.timings,
                                    'auth_url', args.os_auth_url):
                 keystone_session = (
