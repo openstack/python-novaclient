@@ -1011,6 +1011,7 @@ nova boot
                     [--config-drive <value>] [--poll] [--admin-pass <value>]
                     [--access-ip-v4 <value>] [--access-ip-v6 <value>]
                     [--description <description>]
+                    [--trusted-image-certificate-id]
                     <name>
 
 Boot a new server.
@@ -1163,6 +1164,13 @@ Boot a new server.
 ``--description <description>``
   Description for the server. (Supported by API
   versions '2.19' - '2.latest')
+
+``--trusted-image-certificate-id <trusted-image-certificate-id>``
+  Trusted image certificate IDs used to validate certificates
+  during the image signature verification process.
+  Defaults to env[OS_TRUSTED_IMAGE_CERTIFICATE_IDS].
+  May be specified multiple times to pass multiple trusted image
+  certificate IDs. (Supported by API versions '2.63' - '2.latest')
 
 .. _nova_cell-capacities:
 
@@ -2683,6 +2691,8 @@ nova rebuild
                        [--minimal] [--preserve-ephemeral] [--name <name>]
                        [--description <description>] [--meta <key=value>]
                        [--file <dst-path=src-path>]
+                       [--trusted-image-certificate-id <trusted-image-certificate-id>]
+                       [--trusted-image-certificates-unset]
                        <server> <image>
 
 Shutdown, re-image, and re-boot a server.
@@ -2729,6 +2739,18 @@ Shutdown, re-image, and re-boot a server.
   Store arbitrary files from <src-path> locally
   to <dst-path> on the new server. You may store
   up to 5 files.
+
+``--trusted-image-certificate-id <trusted-image-certificate-id>``
+  Trusted image certificate IDs used to validate certificates
+  during the image signature verification process.
+  Defaults to env[OS_TRUSTED_IMAGE_CERTIFICATE_IDS].
+  May be specified multiple times to pass multiple trusted image
+  certificate IDs. (Supported by API versions '2.63' - '2.latest')
+
+``--trusted-image-certificates-unset``
+  Unset trusted_image_certificates in the server. Cannot be
+  specified with the ``--trusted-image-certificate-id`` option.
+  (Supported by API versions '2.63' - '2.latest')
 
 .. _nova_refresh-network:
 

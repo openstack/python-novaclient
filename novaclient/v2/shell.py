@@ -510,6 +510,14 @@ def _boot(cs, args):
     if include_files:
         boot_kwargs['files'] = files
 
+    if ('trusted_image_certificates' in args and
+            args.trusted_image_certificates):
+        boot_kwargs['trusted_image_certificates'] = (
+            args.trusted_image_certificates)
+    elif utils.env('OS_TRUSTED_IMAGE_CERTIFICATE_IDS'):
+        boot_kwargs["trusted_image_certificates"] = utils.env(
+            'OS_TRUSTED_IMAGE_CERTIFICATE_IDS').split(',')
+
     return boot_args, boot_kwargs
 
 
@@ -874,6 +882,18 @@ def _boot(cs, args):
     action="store_true",
     default=False,
     help=_("Return a reservation id bound to created servers."))
+@utils.arg(
+    '--trusted-image-certificate-id',
+    metavar='<trusted-image-certificate-id>',
+    action='append',
+    dest='trusted_image_certificates',
+    default=[],
+    help=_('Trusted image certificate IDs used to validate certificates '
+           'during the image signature verification process. '
+           'Defaults to env[OS_TRUSTED_IMAGE_CERTIFICATE_IDS]. '
+           'May be specified multiple times to pass multiple trusted image '
+           'certificate IDs.'),
+    start_version="2.63")
 def do_boot(cs, args):
     """Boot a new server."""
     boot_args, boot_kwargs = _boot(cs, args)
@@ -1807,6 +1827,25 @@ def do_reboot(cs, args):
     help=_("Unset user_data in the server. Cannot be specified with the "
            "'--user-data' option."),
     start_version='2.57')
+@utils.arg(
+    '--trusted-image-certificate-id',
+    metavar='<trusted-image-certificate-id>',
+    action='append',
+    dest='trusted_image_certificates',
+    default=[],
+    help=_('Trusted image certificate IDs used to validate certificates '
+           'during the image signature verification process. '
+           'Defaults to env[OS_TRUSTED_IMAGE_CERTIFICATE_IDS]. '
+           'May be specified multiple times to pass multiple trusted image '
+           'certificate IDs.'),
+    start_version="2.63")
+@utils.arg(
+    '--trusted-image-certificates-unset',
+    action='store_true',
+    default=False,
+    help=_("Unset trusted_image_certificates in the server. Cannot be "
+           "specified with the '--trusted-image-certificate-id' option."),
+    start_version="2.63")
 def do_rebuild(cs, args):
     """Shutdown, re-image, and re-boot a server."""
     server = _find_server(cs, args.server)
@@ -1860,6 +1899,33 @@ def do_rebuild(cs, args):
                     _("Cannot specify '--key-unset' with '--key-name'."))
         elif args.key_name:
             kwargs['key_name'] = args.key_name
+
+    if cs.api_version >= api_versions.APIVersion('2.63'):
+        # First determine if the user specified anything via the command line
+        # or the environment variable.
+        trusted_image_certificates = None
+        if ('trusted_image_certificates' in args and
+                args.trusted_image_certificates):
+            trusted_image_certificates = args.trusted_image_certificates
+        elif utils.env('OS_TRUSTED_IMAGE_CERTIFICATE_IDS'):
+            trusted_image_certificates = utils.env(
+                'OS_TRUSTED_IMAGE_CERTIFICATE_IDS').split(',')
+
+        if args.trusted_image_certificates_unset:
+            kwargs['trusted_image_certificates'] = None
+            # Check for conflicts in option usage.
+            if trusted_image_certificates:
+                raise exceptions.CommandError(
+                    _("Cannot specify '--trusted-image-certificates-unset' "
+                      "with '--trusted-image-certificate-id' or with "
+                      "OS_TRUSTED_IMAGE_CERTIFICATE_IDS env variable set."))
+        elif trusted_image_certificates:
+            # Only specify the kwarg if there is a value specified to avoid
+            # confusion with unsetting the value.
+            kwargs['trusted_image_certificates'] = trusted_image_certificates
+    elif utils.env('OS_TRUSTED_IMAGE_CERTIFICATE_IDS'):
+        raise exceptions.UnsupportedAttribute("trusted_image_certificates",
+                                              "2.63")
 
     server = server.rebuild(image, _password, **kwargs)
     _print_server(cs, args, server)
