@@ -2951,7 +2951,7 @@ nova server-group-create
 
 .. code-block:: console
 
-   usage: nova server-group-create <name> <policy> [<policy> ...]
+   usage: nova server-group-create <name> <policy>
 
 Create a new server group with the specified details.
 
