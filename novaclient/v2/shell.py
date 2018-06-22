@@ -515,8 +515,13 @@ def _boot(cs, args):
         boot_kwargs['trusted_image_certificates'] = (
             args.trusted_image_certificates)
     elif utils.env('OS_TRUSTED_IMAGE_CERTIFICATE_IDS'):
-        boot_kwargs["trusted_image_certificates"] = utils.env(
-            'OS_TRUSTED_IMAGE_CERTIFICATE_IDS').split(',')
+        if cs.api_version >= api_versions.APIVersion('2.63'):
+            boot_kwargs["trusted_image_certificates"] = utils.env(
+                'OS_TRUSTED_IMAGE_CERTIFICATE_IDS').split(',')
+        else:
+            raise exceptions.UnsupportedAttribute(
+                "OS_TRUSTED_IMAGE_CERTIFICATE_IDS",
+                "2.63")
 
     return boot_args, boot_kwargs
 
@@ -1924,8 +1929,9 @@ def do_rebuild(cs, args):
             # confusion with unsetting the value.
             kwargs['trusted_image_certificates'] = trusted_image_certificates
     elif utils.env('OS_TRUSTED_IMAGE_CERTIFICATE_IDS'):
-        raise exceptions.UnsupportedAttribute("trusted_image_certificates",
-                                              "2.63")
+        raise exceptions.UnsupportedAttribute(
+            "OS_TRUSTED_IMAGE_CERTIFICATE_IDS",
+            "2.63")
 
     server = server.rebuild(image, _password, **kwargs)
     _print_server(cs, args, server)

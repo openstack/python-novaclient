@@ -1011,7 +1011,7 @@ nova boot
                     [--config-drive <value>] [--poll] [--admin-pass <value>]
                     [--access-ip-v4 <value>] [--access-ip-v6 <value>]
                     [--description <description>]
-                    [--trusted-image-certificate-id]
+                    [--trusted-image-certificate-id <trusted-image-certificate-id>]
                     <name>
 
 Boot a new server.
