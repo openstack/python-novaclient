@@ -4525,16 +4525,15 @@ def do_availability_zone_list(cs, _args):
                      sortby_index=None)
 
 
-@api_versions.wraps("2.0", "2.12")
 def _print_server_group_details(cs, server_group):
-    columns = ['Id', 'Name', 'Policies', 'Members', 'Metadata']
-    utils.print_list(server_group, columns)
-
-
-@api_versions.wraps("2.13")
-def _print_server_group_details(cs, server_group):    # noqa
-    columns = ['Id', 'Name', 'Project Id', 'User Id',
-               'Policies', 'Members', 'Metadata']
+    if cs.api_version < api_versions.APIVersion('2.13'):
+        columns = ['Id', 'Name', 'Policies', 'Members', 'Metadata']
+    elif cs.api_version < api_versions.APIVersion('2.64'):
+        columns = ['Id', 'Name', 'Project Id', 'User Id',
+                   'Policies', 'Members', 'Metadata']
+    else:
+        columns = ['Id', 'Name', 'Project Id', 'User Id',
+                   'Policy', 'Rules', 'Members']
     utils.print_list(server_group, columns)
 
 
@@ -4569,6 +4568,7 @@ def do_server_group_list(cs, args):
     _print_server_group_details(cs, server_groups)
 
 
+@api_versions.wraps("2.0", "2.63")
 @utils.arg('name', metavar='<name>', help=_('Server group name.'))
 @utils.arg(
     'policy',
@@ -4578,6 +4578,30 @@ def do_server_group_create(cs, args):
     """Create a new server group with the specified details."""
     server_group = cs.server_groups.create(name=args.name,
                                            policies=args.policy)
+    _print_server_group_details(cs, [server_group])
+
+
+@api_versions.wraps("2.64")
+@utils.arg('name', metavar='<name>', help=_('Server group name.'))
+@utils.arg(
+    'policy',
+    metavar='<policy>',
+    help=_('Policy for the server group.'))
+@utils.arg(
+    '--rule',
+    metavar="<key=value>",
+    dest='rules',
+    action='append',
+    default=[],
+    help=_('A rule for the policy. Currently, only the '
+           '``max_server_per_host`` rule is supported for the '
+           '``anti-affinity`` policy.'))
+def do_server_group_create(cs, args):
+    """Create a new server group with the specified details."""
+    rules = _meta_parsing(args.rules)
+    server_group = cs.server_groups.create(name=args.name,
+                                           policy=args.policy,
+                                           rules=rules)
     _print_server_group_details(cs, [server_group])
 
 

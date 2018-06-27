@@ -2951,7 +2951,7 @@ nova server-group-create
 
 .. code-block:: console
 
-   usage: nova server-group-create <name> <policy>
+   usage: nova server-group-create [--rules <key=value>] <name> <policy>
 
 Create a new server group with the specified details.
 
@@ -2961,7 +2961,15 @@ Create a new server group with the specified details.
   Server group name.
 
 ``<policy>``
-  Policies for the server groups.
+  Policy for the server groups.
+
+``--rule``
+  Policy rules for the server groups. (Supported by API versions
+  '2.64' - '2.latest'）. Currently, only the ``max_server_per_host`` rule
+  is supported for the ``anti-affinity`` policy. The ``max_server_per_host``
+  rule allows specifying how many members of the anti-affinity group can
+  reside on the same compute host. If not specified, only one member from
+  the same anti-affinity group can reside on a given host.
 
 .. _nova_server-group-delete:
 
