@@ -28,6 +28,7 @@ This is a client for the OpenStack Compute API. It provides a Python API (the
 * `Source`_
 * `Specs`_
 * `How to Contribute`_
+* `Release Notes`_
 
 .. _PyPi: https://pypi.org/project/python-novaclient
 .. _Online Documentation: https://docs.openstack.org/python-novaclient/latest
@@ -37,3 +38,4 @@ This is a client for the OpenStack Compute API. It provides a Python API (the
 .. _Source: https://git.openstack.org/cgit/openstack/python-novaclient
 .. _How to Contribute: https://docs.openstack.org/infra/manual/developers.html
 .. _Specs: http://specs.openstack.org/openstack/nova-specs/
+.. _Release Notes: https://docs.openstack.org/releasenotes/python-novaclient
