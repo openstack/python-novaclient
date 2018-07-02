@@ -2195,6 +2195,10 @@ nova list
 
 List servers.
 
+Note that from microversion 2.69, during partial infrastructure failures in the
+deployment, the output of this command may return partial results for the servers
+present in the failure domain.
+
 **Optional arguments:**
 
 ``--reservation-id <reservation-id>``
@@ -3363,6 +3367,10 @@ nova service-list
 
 Show a list of all running services. Filter by host & binary.
 
+Note that from microversion 2.69, during partial infrastructure failures in the
+deployment, the output of this command may return partial results for the
+services present in the failure domain.
+
 **Optional arguments:**
 
 ``--host <hostname>``
@@ -3429,6 +3437,10 @@ nova show
    usage: nova show [--minimal] [--wrap <integer>] <server>
 
 Show details about the given server.
+
+Note that from microversion 2.69, during partial infrastructure failures in the
+deployment, the output of this command may return partial results for the server
+if it exists in the failure domain.
 
 **Positional arguments:**
 

@@ -1670,7 +1670,18 @@ def do_list(cs, args):
     # For detailed lists, if we have embedded flavor information then replace
     # the "flavor" attribute with more detailed information.
     if detailed and have_embedded_flavor_info:
-        _expand_dict_attr(servers, 'flavor')
+        if cs.api_version >= api_versions.APIVersion('2.69'):
+            # NOTE(tssurya): From 2.69, we will have the key 'flavor' missing
+            # in the server response during infrastructure failure situations.
+            # For those servers with partial constructs we just skip the
+            # process of expanding the flavor information.
+            servers_final = []
+            for server in servers:
+                if hasattr(server, 'flavor'):
+                    servers_final.append(server)
+            _expand_dict_attr(servers_final, 'flavor')
+        else:
+            _expand_dict_attr(servers, 'flavor')
 
     if servers:
         cols, fmts = _get_list_table_columns_and_formatters(

@@ -2939,6 +2939,21 @@ class ShellTest(utils.TestCase):
         self.run_command('service-list', api_version='2.53')
         self.assert_called('GET', '/os-services')
 
+    def test_services_list_v269_with_down_cells(self):
+        """Tests nova service-list at the 2.69 microversion."""
+        stdout, _stderr = self.run_command('service-list', api_version='2.69')
+        self.assertEqual('''\
++--------------------------------------+--------------+-----------+------+----------+-------+---------------------+-----------------+-------------+
+| Id                                   | Binary       | Host      | Zone | Status   | State | Updated_at          | Disabled Reason | Forced down |
++--------------------------------------+--------------+-----------+------+----------+-------+---------------------+-----------------+-------------+
+| 75e9eabc-ed3b-4f11-8bba-add1e7e7e2de | nova-compute | host1     | nova | enabled  | up    | 2012-10-29 13:42:02 |                 |             |
+| 1f140183-c914-4ddf-8757-6df73028aa86 | nova-compute | host1     | nova | disabled | down  | 2012-09-18 08:03:38 |                 |             |
+|                                      | nova-compute | host-down |      | UNKNOWN  |       |                     |                 |             |
++--------------------------------------+--------------+-----------+------+----------+-------+---------------------+-----------------+-------------+
+''',  # noqa
+            stdout)
+        self.assert_called('GET', '/os-services')
+
     def test_services_list_with_host(self):
         self.run_command('service-list --host host1')
         self.assert_called('GET', '/os-services?host=host1')
@@ -4021,6 +4036,15 @@ class ShellTest(utils.TestCase):
             63,  # There are no version-wrapped shell method changes for this.
             65,  # There are no version-wrapped shell method changes for this.
             67,  # There are no version-wrapped shell method changes for this.
+            69,  # NOTE(tssurya): 2.69 adds support for missing keys in the
+                 # responses of `GET /servers``, ``GET /servers/detail``,
+                 # ``GET /servers/{server_id}`` and ``GET /os-services`` when
+                 # a cell is down to return minimal constructs. From 2.69 and
+                 # upwards, if the response for ``GET /servers/detail`` does
+                 # not have the 'flavor' key for those instances in the down
+                 # cell, they will be handled on the client side by being
+                 # skipped when forming the detailed lists for embedded
+                 # flavor information.
         ])
         versions_supported = set(range(0,
                                  novaclient.API_MAX_VERSION.ver_minor + 1))
@@ -4097,6 +4121,70 @@ class ShellTest(utils.TestCase):
     def test_list_v2_26_not_tags_any(self):
         self.run_command('list --not-tags-any tag1,tag2', api_version='2.26')
         self.assert_called('GET', '/servers/detail?not-tags-any=tag1%2Ctag2')
+
+    def test_list_detail_v269_with_down_cells(self):
+        """Tests nova list at the 2.69 microversion."""
+        stdout, _stderr = self.run_command('list', api_version='2.69')
+        self.assertIn('''\
++------+----------------+---------+------------+-------------+----------------------------------------------+
+| ID   | Name           | Status  | Task State | Power State | Networks                                     |
++------+----------------+---------+------------+-------------+----------------------------------------------+
+| 9015 |                | UNKNOWN | N/A        | N/A         |                                              |
+| 9014 | help           | ACTIVE  | N/A        | N/A         |                                              |
+| 1234 | sample-server  | BUILD   | N/A        | N/A         | private=10.11.12.13; public=1.2.3.4, 5.6.7.8 |
+| 5678 | sample-server2 | ACTIVE  | N/A        | N/A         | private=10.13.12.13; public=4.5.6.7, 5.6.9.8 |
+| 9012 | sample-server3 | ACTIVE  | N/A        | N/A         | private=10.13.12.13; public=4.5.6.7, 5.6.9.8 |
+| 9013 | sample-server4 | ACTIVE  | N/A        | N/A         |                                              |
++------+----------------+---------+------------+-------------+----------------------------------------------+
+''',  # noqa
+        stdout)
+        self.assert_called('GET', '/servers/detail')
+
+    def test_list_v269_with_down_cells(self):
+        stdout, _stderr = self.run_command(
+            'list --minimal', api_version='2.69')
+        expected = '''\
++------+----------------+
+| ID   | Name           |
++------+----------------+
+| 9015 |                |
+| 9014 | help           |
+| 1234 | sample-server  |
+| 5678 | sample-server2 |
++------+----------------+
+'''
+        self.assertEqual(expected, stdout)
+        self.assert_called('GET', '/servers')
+
+    def test_show_v269_with_down_cells(self):
+        stdout, _stderr = self.run_command('show 9015', api_version='2.69')
+        self.assertEqual('''\
++-----------------------------+---------------------------------------------------+
+| Property                    | Value                                             |
++-----------------------------+---------------------------------------------------+
+| OS-EXT-AZ:availability_zone | geneva                                            |
+| OS-EXT-STS:power_state      | 0                                                 |
+| created                     | 2018-12-03T21:06:18Z                              |
+| flavor:disk                 | 1                                                 |
+| flavor:ephemeral            | 0                                                 |
+| flavor:extra_specs          | {}                                                |
+| flavor:original_name        | m1.tiny                                           |
+| flavor:ram                  | 512                                               |
+| flavor:swap                 | 0                                                 |
+| flavor:vcpus                | 1                                                 |
+| id                          | 9015                                              |
+| image                       | CentOS 5.2 (c99d7632-bd66-4be9-aed5-3dd14b223a76) |
+| status                      | UNKNOWN                                           |
+| tenant_id                   | 6f70656e737461636b20342065766572                  |
+| user_id                     | fake                                              |
++-----------------------------+---------------------------------------------------+
+''',  # noqa
+            stdout)
+        FAKE_UUID_2 = 'c99d7632-bd66-4be9-aed5-3dd14b223a76'
+        self.assert_called('GET', '/servers?name=9015', pos=0)
+        self.assert_called('GET', '/servers?name=9015', pos=1)
+        self.assert_called('GET', '/servers/9015', pos=2)
+        self.assert_called('GET', '/v2/images/%s' % FAKE_UUID_2, pos=3)
 
 
 class PollForStatusTestCase(utils.TestCase):

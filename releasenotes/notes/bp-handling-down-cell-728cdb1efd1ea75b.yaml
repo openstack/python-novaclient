@@ -1,0 +1,9 @@
+---
+features:
+  - |
+    From microversion 2.69 the results of ``nova list``, ``nova show`` and
+    ``nova service-list`` may contain missing information in their outputs
+    when there are partial infrastructure failure periods in the deployment.
+    See `Handling Down Cells`_ for more information on the missing keys/info.
+
+    .. _Handling Down Cells: https://developer.openstack.org/api-guide/compute/down_cells.html

@@ -392,14 +392,32 @@ class FakeSessionClient(base_client.SessionClient):
     #
 
     def get_servers(self, **kw):
-        return (200, {}, {"servers": [
+        servers = {"servers": [
             {'id': '1234', 'name': 'sample-server'},
             {'id': '5678', 'name': 'sample-server2'},
             {'id': '9014', 'name': 'help'}
-        ]})
+        ]}
+        if self.api_version >= api_versions.APIVersion('2.69'):
+            # include "partial results" from non-responsive part of
+            # infrastructure.
+            servers['servers'].append(
+                {'id': '9015',
+                 'status': "UNKNOWN",
+                 "links": [
+                     {
+                         "href": "http://fake/v2.1/",
+                         "rel": "self"
+                     },
+                     {
+                         "href": "http://fake",
+                         "rel": "bookmark"
+                     }
+                 ]}
+            )
+        return (200, {}, servers)
 
     def get_servers_detail(self, **kw):
-        return (200, {}, {"servers": [
+        servers = {"servers": [
             {
                 "id": '1234',
                 "name": "sample-server",
@@ -538,7 +556,29 @@ class FakeSessionClient(base_client.SessionClient):
                 "hostId": "9e107d9d372bb6826bd81d3542a419d6",
                 "status": "ACTIVE",
             },
-        ]})
+        ]}
+        if self.api_version >= api_versions.APIVersion('2.69'):
+            # include "partial results" from non-responsive part of
+            # infrastructure.
+            servers['servers'].append(
+                {
+                    "id": "9015",
+                    "status": "UNKNOWN",
+                    "tenant_id": "6f70656e737461636b20342065766572",
+                    "created": "2018-12-03T21:06:18Z",
+                    "links": [
+                        {
+                            "href": "http://fake/v2.1/",
+                            "rel": "self"
+                        },
+                        {
+                            "href": "http://fake",
+                            "rel": "bookmark"
+                        }
+                    ]
+                }
+            )
+        return (200, {}, servers)
 
     def post_servers(self, body, **kw):
         assert set(body.keys()) <= set(['server', 'os:scheduler_hints'])
@@ -597,6 +637,27 @@ class FakeSessionClient(base_client.SessionClient):
 
     def get_servers_9014(self, **kw):
         r = {'server': self.get_servers_detail()[2]['servers'][4]}
+        return (200, {}, r)
+
+    def get_servers_9015(self, **kw):
+        r = {'server': self.get_servers_detail()[2]['servers'][5]}
+        r['server']["OS-EXT-AZ:availability_zone"] = 'geneva'
+        r['server']["OS-EXT-STS:power_state"] = 0
+        flavor = {
+            "disk": 1,
+            "ephemeral": 0,
+            "original_name": "m1.tiny",
+            "ram": 512,
+            "swap": 0,
+            "vcpus": 1,
+            "extra_specs": {}
+        }
+        image = {
+            "id": "c99d7632-bd66-4be9-aed5-3dd14b223a76",
+        }
+        r['server']['image'] = image
+        r['server']['flavor'] = flavor
+        r['server']['user_id'] = "fake"
         return (200, {}, r)
 
     def delete_os_server_groups_12345(self, **kw):
@@ -1644,24 +1705,35 @@ class FakeSessionClient(base_client.SessionClient):
         else:
             service_id_1 = 1
             service_id_2 = 2
-        return (200, FAKE_RESPONSE_HEADERS,
-                {'services': [{'binary': binary,
-                               'host': host,
-                               'zone': 'nova',
-                               'status': 'enabled',
-                               'state': 'up',
-                               'updated_at': datetime.datetime(
-                                   2012, 10, 29, 13, 42, 2),
-                               'id': service_id_1},
-                              {'binary': binary,
-                               'host': host,
-                               'zone': 'nova',
-                               'status': 'disabled',
-                               'state': 'down',
-                               'updated_at': datetime.datetime(
-                                   2012, 9, 18, 8, 3, 38),
-                               'id': service_id_2},
-                              ]})
+        services = {
+            'services': [
+                {'binary': binary,
+                 'host': host,
+                 'zone': 'nova',
+                 'status': 'enabled',
+                 'state': 'up',
+                 'updated_at': datetime.datetime(
+                     2012, 10, 29, 13, 42, 2),
+                 'id': service_id_1},
+                {'binary': binary,
+                 'host': host,
+                 'zone': 'nova',
+                 'status': 'disabled',
+                 'state': 'down',
+                 'updated_at': datetime.datetime(
+                     2012, 9, 18, 8, 3, 38),
+                 'id': service_id_2},
+            ]
+        }
+        if self.api_version >= api_versions.APIVersion('2.69'):
+            services['services'].append(
+                {
+                    "binary": "nova-compute",
+                    "host": "host-down",
+                    "status": "UNKNOWN"
+                }
+            )
+        return (200, FAKE_RESPONSE_HEADERS, services)
 
     def put_os_services_enable(self, body, **kw):
         return (200, FAKE_RESPONSE_HEADERS,
