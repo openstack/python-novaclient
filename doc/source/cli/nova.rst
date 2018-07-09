@@ -33,7 +33,7 @@ nova usage
                [--service-name <service-name>]
                [--os-endpoint-type <endpoint-type>]
                [--os-compute-api-version <compute-api-ver>]
-               [--endpoint-override <bypass-url>] [--profile HMAC_KEY]
+               [--os-endpoint-override <bypass-url>] [--profile HMAC_KEY]
                [--insecure] [--os-cacert <ca-certificate>]
                [--os-cert <certificate>] [--os-key <key>] [--timeout <seconds>]
                [--os-auth-type <name>] [--os-auth-url OS_AUTH_URL]
@@ -678,10 +678,10 @@ nova optional arguments
   minor part) or "X.latest", defaults to
   ``env[OS_COMPUTE_API_VERSION]``.
 
-``--endpoint-override <bypass-url>``
+``--os-endpoint-override <bypass-url>``
   Use this API endpoint instead of the Service
   Catalog. Defaults to
-  ``env[NOVACLIENT_ENDPOINT_OVERRIDE]``.
+  ``env[OS_ENDPOINT_OVERRIDE]``.
 
 ``--profile HMAC_KEY``
   HMAC key to use for encrypting context data

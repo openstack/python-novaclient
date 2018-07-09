@@ -1,0 +1,12 @@
+---
+upgrade:
+  - The deprecated ``--bypass-url`` command line argument has been removed.
+deprecations:
+  - |
+    The ``--endpoint-override`` command line argument has been deprecated.
+    It is renamed to ``--os-endpoint-override`` to avoid misinterpreting
+    command line arguments.
+    It defaults to the ``OS_ENDPOINT_OVERRIDE`` environment variable.
+    See `bug 1778536`_ for more details.
+
+    .. _bug 1778536: https://bugs.launchpad.net/python-novaclient/+bug/1778536
