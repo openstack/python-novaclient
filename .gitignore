@@ -1,6 +1,6 @@
 .coverage
 .venv
-.testrepository
+.stestr/
 subunit.log
 .tox
 *,cover
