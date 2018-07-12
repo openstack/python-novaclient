@@ -1334,6 +1334,18 @@ class ShellTest(utils.TestCase):
             }},
         )
 
+    @mock.patch.object(servers.Server, 'networks',
+                       new_callable=mock.PropertyMock)
+    def test_boot_with_not_found_when_accessing_addresses_attribute(
+            self, mock_networks):
+        mock_networks.side_effect = exceptions.NotFound(
+            404, 'Instance %s could not be found.' % FAKE_UUID_1)
+        ex = self.assertRaises(
+            exceptions.CommandError, self.run_command,
+            'boot --flavor 1 --image %s some-server' % FAKE_UUID_2)
+        self.assertIn('Instance %s could not be found.' % FAKE_UUID_1,
+                      six.text_type(ex))
+
     def test_flavor_list(self):
         out, _ = self.run_command('flavor-list')
         self.assert_called_anytime('GET', '/flavors/detail')

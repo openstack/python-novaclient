@@ -405,7 +405,7 @@ class Server(base.Resource):
             for network_label, address_list in self.addresses.items():
                 networks[network_label] = [a['addr'] for a in address_list]
             return networks
-        except Exception:
+        except AttributeError:
             return {}
 
     @api_versions.wraps("2.0", "2.24")

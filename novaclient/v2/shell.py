@@ -2368,7 +2368,11 @@ def _print_server(cs, args, server=None, wrap=0):
 
     minimal = getattr(args, "minimal", False)
 
-    networks = server.networks
+    try:
+        networks = server.networks
+    except Exception as e:
+        raise exceptions.CommandError(six.text_type(e))
+
     info = server.to_dict()
     for network_label, address_list in networks.items():
         info['%s network' % network_label] = ', '.join(address_list)
