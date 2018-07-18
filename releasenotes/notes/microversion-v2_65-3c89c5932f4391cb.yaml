@@ -1,0 +1,9 @@
+---
+features:
+  - |
+    Support has been added for the compute API `2.65`_ microversion. This
+    allows calling ``nova live-migration-abort`` on live migrations that are
+    in ``queued`` or ``preparing`` status in addition to the already accepted
+    ``running`` status.
+
+    .. _2.65: https://docs.openstack.org/nova/latest/reference/api-microversion-history.html#id59

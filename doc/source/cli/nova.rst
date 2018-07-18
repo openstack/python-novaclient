@@ -2321,6 +2321,10 @@ Abort an on-going live migration. (Supported by API versions '2.24' -
 '2.latest') [hint: use '--os-compute-api-version' flag to show help message
 for proper version]
 
+For microversions from 2.24 to 2.64 the migration status must be ``running``;
+for microversion 2.65 and greater, the migration status can also be ``queued``
+and ``preparing``.
+
 **Positional arguments:**
 
 ``<server>``
