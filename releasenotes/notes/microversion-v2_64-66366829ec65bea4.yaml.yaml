@@ -1,0 +1,15 @@
+---
+features:
+  - |
+    Added support for `microversion 2.64`_, which includes the following
+    changes:
+
+    * The ``--rule`` options is added to the ``nova server-group-create``
+      CLI that enables user to create server group with specific policy rules.
+    * Remove ``metadata`` column in the output of ``nova server-group-create``,
+      ``nova server-group-get``, ``nova server-group-list``.
+    * Remove ``policies`` column, add ``policy`` and ``rules`` columns in
+      the output of ``nova server-group-create``, ``nova server-group-get``,
+      ``nova server-group-list``.
+
+    .. _microversion 2.64: https://docs.openstack.org/nova/latest/api_microversion_history.html#id58

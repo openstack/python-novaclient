@@ -2236,8 +2236,13 @@ class FakeSessionClient(base_client.SessionClient):
         return (200, {}, {"server_groups": server_groups})
 
     def _return_server_group(self):
-        r = {'server_group':
-             self.get_os_server_groups()[2]['server_groups'][0]}
+        if self.api_version < api_versions.APIVersion("2.64"):
+            r = {'server_group':
+                 self.get_os_server_groups()[2]['server_groups'][0]}
+        else:
+            r = {"members": [], "id": "2cbd51f4-fafe-4cdb-801b-cf913a6f288b",
+                 'server_group': {'name': 'ig1', 'policy': 'anti-affinity',
+                                  'rules': {'max_server_per_host': 3}}}
         return (200, {}, r)
 
     def post_os_server_groups(self, body, **kw):

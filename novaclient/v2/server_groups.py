@@ -17,7 +17,10 @@
 Server group interface.
 """
 
+from novaclient import api_versions
 from novaclient import base
+from novaclient import exceptions
+from novaclient.i18n import _
 
 
 class ServerGroup(base.Resource):
@@ -80,6 +83,7 @@ class ServerGroupsManager(base.ManagerWithFind):
         """
         return self._delete('/os-server-groups/%s' % id)
 
+    @api_versions.wraps("2.0", "2.63")
     def create(self, name, policies):
         """Create (allocate) a server group.
 
@@ -91,4 +95,30 @@ class ServerGroupsManager(base.ManagerWithFind):
         policies = policies if isinstance(policies, list) else [policies]
         body = {'server_group': {'name': name,
                                  'policies': policies}}
+        return self._create('/os-server-groups', body, 'server_group')
+
+    @api_versions.wraps("2.64")
+    def create(self, name, policy, rules=None):
+        """Create (allocate) a server group.
+
+        :param name: The name of the server group.
+        :param policy: Policy name to associate with the server group.
+        :param rules: The rules of policy which is a dict, can be applied to
+            the policy, now only ``max_server_per_host`` for ``anti-affinity``
+            policy would be supported (optional).
+        :rtype: list of :class:`ServerGroup`
+        """
+        body = {'server_group': {
+            'name': name, 'policy': policy
+        }}
+        if rules:
+            key = 'max_server_per_host'
+            try:
+                if key in rules:
+                    rules[key] = int(rules[key])
+            except ValueError:
+                msg = _("Invalid '%(key)s' value: %(value)s")
+                raise exceptions.CommandError(msg % {
+                    'key': key, 'value': rules[key]})
+            body['server_group']['rules'] = rules
         return self._create('/os-server-groups', body, 'server_group')

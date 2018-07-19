@@ -3728,6 +3728,48 @@ class ShellTest(utils.TestCase):
                            {'server_group': {'name': 'wjsg',
                                              'policies': ['affinity']}})
 
+    def test_create_server_group_v2_64(self):
+        self.run_command('server-group-create sg1 affinity',
+                         api_version='2.64')
+        self.assert_called('POST', '/os-server-groups',
+                           {'server_group': {
+                               'name': 'sg1',
+                               'policy': 'affinity'
+                           }})
+
+    def test_create_server_group_with_rules(self):
+        self.run_command('server-group-create sg1 anti-affinity '
+                         '--rule max_server_per_host=3', api_version='2.64')
+        self.assert_called('POST', '/os-server-groups',
+                           {'server_group': {
+                               'name': 'sg1',
+                               'policy': 'anti-affinity',
+                               'rules': {'max_server_per_host': 3}
+                           }})
+
+    def test_create_server_group_with_multi_rules(self):
+        self.run_command('server-group-create sg1 anti-affinity '
+                         '--rule a=b --rule c=d', api_version='2.64')
+        self.assert_called('POST', '/os-server-groups',
+                           {'server_group': {
+                               'name': 'sg1',
+                               'policy': 'anti-affinity',
+                               'rules': {'a': 'b', 'c': 'd'}
+                           }})
+
+    def test_create_server_group_with_invalid_value(self):
+        result = self.assertRaises(
+            exceptions.CommandError, self.run_command,
+            'server-group-create sg1 anti-affinity '
+            '--rule max_server_per_host=foo', api_version='2.64')
+        self.assertIn("Invalid 'max_server_per_host' value: foo",
+                      six.text_type(result))
+
+    def test_create_server_group_with_rules_pre_264(self):
+        self.assertRaises(SystemExit, self.run_command,
+                          'server-group-create sg1 anti-affinity '
+                          '--rule max_server_per_host=3', api_version='2.63')
+
     def test_create_server_group_with_multiple_policies(self):
         self.assertRaises(SystemExit, self.run_command,
                           'server-group-create wjsg affinity anti-affinity')
@@ -3758,6 +3800,9 @@ class ShellTest(utils.TestCase):
             7,   # doesn't require any changes in novaclient
             9,   # doesn't require any changes in novaclient
             12,  # no longer supported
+            13,  # 13 adds information ``project_id`` and ``user_id`` to
+                 # ``os-server-groups``, but is not explicitly tested
+                 # via wraps and _SUBSTITUTIONS.
             15,  # doesn't require any changes in novaclient
             16,  # doesn't require any changes in novaclient
             18,  # NOTE(andreykurilin): this microversion requires changes in
