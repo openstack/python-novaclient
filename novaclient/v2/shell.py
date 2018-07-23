@@ -4594,8 +4594,8 @@ def do_server_group_create(cs, args):
     action='append',
     default=[],
     help=_('A rule for the policy. Currently, only the '
-           '``max_server_per_host`` rule is supported for the '
-           '``anti-affinity`` policy.'))
+           '"max_server_per_host" rule is supported for the '
+           '"anti-affinity" policy.'))
 def do_server_group_create(cs, args):
     """Create a new server group with the specified details."""
     rules = _meta_parsing(args.rules)
