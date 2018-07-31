@@ -12,7 +12,6 @@
 #    under the License.
 
 import contextlib
-import json
 import os
 import re
 import textwrap
@@ -199,7 +198,7 @@ def flatten_dict(data):
     for key, value in data.items():
         if isinstance(value, six.string_types):
             try:
-                data[key] = json.loads(value)
+                data[key] = jsonutils.loads(value)
             except ValueError:
                 pass
 

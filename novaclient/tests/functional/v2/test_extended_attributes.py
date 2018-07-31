@@ -10,7 +10,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import json
+from oslo_serialization import jsonutils
 
 from novaclient.tests.functional.v2.legacy import test_extended_attributes
 
@@ -41,4 +41,4 @@ class TestExtAttrNovaClientV23(test_extended_attributes.TestExtAttrNovaClient):
             table, 'os-extended-volumes:volumes_attached')
         # Check that 'delete_on_termination' exists as a key
         # of volume_attr dict
-        self.assertIn('delete_on_termination', json.loads(volume_attr)[0])
+        self.assertIn('delete_on_termination', jsonutils.loads(volume_attr)[0])

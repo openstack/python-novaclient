@@ -10,7 +10,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import json
+from oslo_serialization import jsonutils
 
 from novaclient.tests.functional import base
 
@@ -50,4 +50,4 @@ class TestExtAttrNovaClient(base.ClientTestBase):
         volume_attr = self._get_value_from_the_table(
             table, 'os-extended-volumes:volumes_attached')
         # Check that 'id' exists as a key of volume_attr dict
-        self.assertIn('id', json.loads(volume_attr)[0])
+        self.assertIn('id', jsonutils.loads(volume_attr)[0])

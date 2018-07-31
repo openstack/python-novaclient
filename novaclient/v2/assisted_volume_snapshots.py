@@ -16,7 +16,7 @@
 Assisted volume snapshots - to be used by Cinder and not end users.
 """
 
-import json
+from oslo_serialization import jsonutils
 
 from novaclient import base
 
@@ -51,4 +51,5 @@ class AssistedSnapshotManager(base.Manager):
         :returns: An instance of novaclient.base.TupleWithMeta
         """
         return self._delete("/os-assisted-volume-snapshots/%s?delete_info=%s" %
-                            (base.getid(snapshot), json.dumps(delete_info)))
+                            (base.getid(snapshot),
+                             jsonutils.dumps(delete_info)))
