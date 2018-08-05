@@ -41,10 +41,7 @@ def getid(obj):
     Abstracts the common pattern of allowing both an object or an object's ID
     as a parameter when dealing with relationships.
     """
-    try:
-        return obj.id
-    except AttributeError:
-        return obj
+    return getattr(obj, 'id', obj)
 
 
 # TODO(aababilov): call run_hooks() in HookableMixin's child classes
