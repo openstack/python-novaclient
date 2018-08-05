@@ -23,6 +23,7 @@ from novaclient import exceptions
 from novaclient.tests.unit import fakes
 from novaclient.tests.unit import utils as test_utils
 from novaclient import utils
+from novaclient.v2 import servers
 
 UUID = '8e8ec658-c7b0-4243-bdf8-6f7f2952c0d0'
 
@@ -401,6 +402,30 @@ class DoActionOnManyTestCase(test_utils.TestCase):
 
     def test_do_action_on_many_last_fails(self):
         self._test_do_action_on_many([None, Exception()], fail=True)
+
+    @mock.patch('sys.stdout', new_callable=six.StringIO)
+    def _test_do_action_on_many_resource_string(
+            self, resource, expected_string, mock_stdout):
+        utils.do_action_on_many(mock.Mock(), [resource], 'success with %s',
+                                'error')
+        self.assertIn('success with %s' % expected_string,
+                      mock_stdout.getvalue())
+
+    def test_do_action_on_many_resource_string_with_str(self):
+        self._test_do_action_on_many_resource_string('resource1', 'resource1')
+
+    def test_do_action_on_many_resource_string_with_human_id(self):
+        resource = servers.Server(None, {'name': 'resource1'})
+        self._test_do_action_on_many_resource_string(resource, 'resource1')
+
+    def test_do_action_on_many_resource_string_with_id(self):
+        resource = servers.Server(None, {'id': UUID})
+        self._test_do_action_on_many_resource_string(resource, UUID)
+
+    def test_do_action_on_many_resource_string_with_id_and_human_id(self):
+        resource = servers.Server(None, {'name': 'resource1', 'id': UUID})
+        self._test_do_action_on_many_resource_string(resource,
+                                                     'resource1 (%s)' % UUID)
 
 
 class RecordTimeTestCase(test_utils.TestCase):

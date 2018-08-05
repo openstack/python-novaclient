@@ -361,6 +361,18 @@ def safe_issubclass(*args):
     return False
 
 
+def _get_resource_string(resource):
+    if hasattr(resource, 'human_id') and resource.human_id:
+        if hasattr(resource, 'id') and resource.id:
+            return "%s (%s)" % (resource.human_id, resource.id)
+        else:
+            return resource.human_id
+    elif hasattr(resource, 'id') and resource.id:
+        return resource.id
+    else:
+        return resource
+
+
 def do_action_on_many(action, resources, success_msg, error_msg):
     """Helper to run an action on many resources."""
     failure_flag = False
@@ -368,7 +380,7 @@ def do_action_on_many(action, resources, success_msg, error_msg):
     for resource in resources:
         try:
             action(resource)
-            print(success_msg % resource)
+            print(success_msg % _get_resource_string(resource))
         except Exception as e:
             failure_flag = True
             print(encodeutils.safe_encode(six.text_type(e)))
