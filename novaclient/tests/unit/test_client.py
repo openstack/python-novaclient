@@ -14,10 +14,10 @@
 #    under the License.
 
 import copy
-import uuid
 
 from keystoneauth1 import session
 import mock
+from oslo_utils import uuidutils
 
 import novaclient.api_versions
 import novaclient.client
@@ -72,7 +72,7 @@ class SessionClientTest(utils.TestCase):
         self.assertEqual(0, len(cs.get_timings()))
 
     def test_global_id(self):
-        global_id = "req-%s" % uuid.uuid4()
+        global_id = "req-%s" % uuidutils.generate_uuid()
         self.requests_mock.get('http://no.where')
 
         client = novaclient.client.SessionClient(session=session.Session(),
