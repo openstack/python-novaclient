@@ -16,10 +16,10 @@ import os
 import re
 import textwrap
 import time
-import uuid
 
 from oslo_serialization import jsonutils
 from oslo_utils import encodeutils
+from oslo_utils import uuidutils
 import prettytable
 import six
 from six.moves.urllib import parse
@@ -255,9 +255,9 @@ def find_resource(manager, name_or_id, wrap_exception=True, **find_args):
         if six.PY3:
             tmp_id = tmp_id.decode()
 
-        uuid.UUID(tmp_id)
-        return manager.get(tmp_id)
-    except (TypeError, ValueError, exceptions.NotFound):
+        if uuidutils.is_uuid_like(tmp_id):
+            return manager.get(tmp_id)
+    except (TypeError, exceptions.NotFound):
         pass
 
     # then try to get entity as name
