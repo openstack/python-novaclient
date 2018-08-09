@@ -22,7 +22,8 @@ from keystoneauth1 import session as ksession
 from keystoneclient import client as keystoneclient
 from keystoneclient import discover as keystone_discover
 from neutronclient.v2_0 import client as neutronclient
-import os_client_config
+import openstack.config
+import openstack.config.exceptions
 from oslo_utils import uuidutils
 import tempest.lib.cli.base
 import testtools
@@ -173,18 +174,18 @@ class ClientTestBase(testtools.TestCase):
         # tempest-lib, we do it in a way that's not available for top
         # level tests. Long term this probably needs to be in the base
         # class.
-        openstack_config = os_client_config.config.OpenStackConfig()
+        openstack_config = openstack.config.OpenStackConfig()
         try:
             cloud_config = openstack_config.get_one_cloud('functional_admin')
-        except os_client_config.exceptions.OpenStackConfigException:
+        except openstack.config.exceptions.OpenStackConfigException:
             try:
                 cloud_config = openstack_config.get_one_cloud(
                     'devstack', auth=dict(
                         username='admin', project_name='admin'))
-            except os_client_config.exceptions.OpenStackConfigException:
+            except openstack.config.exceptions.OpenStackConfigException:
                 try:
                     cloud_config = openstack_config.get_one_cloud('envvars')
-                except os_client_config.exceptions.OpenStackConfigException:
+                except openstack.config.exceptions.OpenStackConfigException:
                     cloud_config = None
 
         if cloud_config is None:
