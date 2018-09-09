@@ -23,6 +23,13 @@
       - openstack/python-novaclient
 
 - project:
+    templates:
+      - openstack-python-jobs
+      - openstack-python35-jobs
+      - publish-openstack-sphinx-docs
+      - check-requirements
+      - lib-forward-testing
+      - release-notes-jobs
     check:
       jobs:
         - novaclient-dsvm-functional-identity-v3-only
@@ -30,3 +37,6 @@
     gate:
       jobs:
         - novaclient-dsvm-functional-neutron
+    post:
+      jobs:
+        - openstack-tox-cover
