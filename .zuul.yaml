@@ -10,10 +10,19 @@
       - openstack/python-novaclient
 
 - project:
-    name: openstack/python-novaclient
+    templates:
+      - openstack-python-jobs
+      - openstack-python35-jobs
+      - publish-openstack-sphinx-docs
+      - check-requirements
+      - lib-forward-testing
+      - release-notes-jobs
     check:
       jobs:
         - novaclient-dsvm-functional
     gate:
       jobs:
         - novaclient-dsvm-functional
+    post:
+      jobs:
+        - openstack-tox-cover
