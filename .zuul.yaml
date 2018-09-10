@@ -11,22 +11,19 @@
 
 - project:
     templates:
+      - check-requirements
+      - lib-forward-testing
+      - lib-forward-testing-python3
+      - openstack-cover-jobs
+      - openstack-lower-constraints-jobs
       - openstack-python-jobs
       - openstack-python35-jobs
       - openstack-python36-jobs
       - publish-openstack-docs-pti
-      - check-requirements
-      - lib-forward-testing
-      - lib-forward-testing-python3
       - release-notes-jobs-python3
     check:
       jobs:
         - novaclient-dsvm-functional
-        - openstack-tox-lower-constraints
     gate:
       jobs:
         - novaclient-dsvm-functional
-        - openstack-tox-lower-constraints
-    post:
-      jobs:
-        - openstack-tox-cover
