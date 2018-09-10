@@ -1921,7 +1921,9 @@ nova instance-action-list
 
 .. code-block:: console
 
-   usage: nova instance-action-list <server>
+   usage: nova instance-action-list [--marker <marker>] [--limit <limit>]
+                                    [--changes-since <changes_since>]
+                                    <server>
 
 List actions on a server.
 
@@ -1931,6 +1933,23 @@ List actions on a server.
   Name or UUID of the server to list actions for. Only UUID can be
   used to list actions on a deleted server. (Supported by API
   versions '2.21' - '2.latest')
+
+**Optional arguments:**
+
+``--marker <marker>``
+  The last instance action of the previous page; displays list of actions
+  after "marker". (Supported by API versions '2.58' - '2.latest')
+
+``--limit <limit>``
+  Maximum number of instance actions to display. Note that there is
+  a configurable max limit on the server, and the limit that is used will be
+  the minimum between what is requested here and what is configured
+  in the server. (Supported by API versions '2.58' - '2.latest')
+
+``--changes-since <changes_since>``
+  List only instance actions changed after a certain point of time.
+  The provided time should be an ISO 8061 formatted time.
+  ex 2016-03-04T06:27:59Z. (Supported by API versions '2.58' - '2.latest')
 
 .. _nova_interface-attach:
 
@@ -2422,7 +2441,8 @@ nova migration-list
 .. code-block:: console
 
    usage: nova migration-list [--instance-uuid <instance_uuid>] [--host <host>]
-                              [--status <status>]
+                              [--status <status>] [--marker <marker>]
+                              [--limit <limit>] [--changes-since <changes_since>]
 
 Print a list of migrations.
 
@@ -2436,6 +2456,22 @@ Print a list of migrations.
 
 ``--status <status>``
   Fetch migrations for the given status.
+
+``--marker <marker>``
+  The last migration of the previous page; displays list of migrations after
+  "marker". Note that the marker is the migration UUID.
+  (Supported by API versions '2.59' - '2.latest')
+
+``--limit <limit>``
+  Maximum number of migrations to display. Note that there is a configurable
+  max limit on the server, and the limit that is used will be the minimum
+  between what is requested here and what is configured in the server.
+  (Supported by API versions '2.59' - '2.latest')
+
+``--changes-since <changes_since>``
+  List only migrations changed after a certain point of time.
+  The provided time should be an ISO 8061 formatted time.
+  ex 2016-03-04T06:27:59Z . (Supported by API versions '2.59' - '2.latest')
 
 .. _nova_pause:
 
