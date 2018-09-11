@@ -13,10 +13,10 @@
     templates:
       - openstack-python-jobs
       - openstack-python35-jobs
-      - publish-openstack-sphinx-docs
+      - publish-openstack-docs-pti
       - check-requirements
       - lib-forward-testing
-      - release-notes-jobs
+      - release-notes-jobs-python3
     check:
       jobs:
         - novaclient-dsvm-functional
