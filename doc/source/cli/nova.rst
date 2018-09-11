@@ -1943,13 +1943,13 @@ List actions on a server.
 ``--limit <limit>``
   Maximum number of instance actions to display. Note that there is
   a configurable max limit on the server, and the limit that is used will be
-  the minimum between what is requested here and what is configured
+  the minimum of what is requested here and what is configured
   in the server. (Supported by API versions '2.58' - '2.latest')
 
 ``--changes-since <changes_since>``
   List only instance actions changed after a certain point of time.
   The provided time should be an ISO 8061 formatted time.
-  ex 2016-03-04T06:27:59Z. (Supported by API versions '2.58' - '2.latest')
+  e.g. 2016-03-04T06:27:59Z. (Supported by API versions '2.58' - '2.latest')
 
 .. _nova_interface-attach:
 
@@ -2464,14 +2464,14 @@ Print a list of migrations.
 
 ``--limit <limit>``
   Maximum number of migrations to display. Note that there is a configurable
-  max limit on the server, and the limit that is used will be the minimum
-  between what is requested here and what is configured in the server.
+  max limit on the server, and the limit that is used will be the minimum of
+  what is requested here and what is configured in the server.
   (Supported by API versions '2.59' - '2.latest')
 
 ``--changes-since <changes_since>``
   List only migrations changed after a certain point of time.
   The provided time should be an ISO 8061 formatted time.
-  ex 2016-03-04T06:27:59Z . (Supported by API versions '2.59' - '2.latest')
+  e.g. 2016-03-04T06:27:59Z . (Supported by API versions '2.59' - '2.latest')
 
 .. _nova_pause:
 

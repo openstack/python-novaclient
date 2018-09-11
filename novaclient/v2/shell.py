@@ -5044,7 +5044,7 @@ def do_instance_action_list(cs, args):
     default=None,
     help=_('Maximum number of instance actions to display. Note that there '
            'is a configurable max limit on the server, and the limit that is '
-           'used will be the minimum between what is requested here and what '
+           'used will be the minimum of what is requested here and what '
            'is configured in the server.'))
 @utils.arg(
     '--changes-since',
@@ -5053,7 +5053,7 @@ def do_instance_action_list(cs, args):
     default=None,
     help=_('List only instance actions changed after a certain point of '
            'time. The provided time should be an ISO 8061 formatted time. '
-           'ex 2016-03-04T06:27:59Z.'))
+           'e.g. 2016-03-04T06:27:59Z.'))
 def do_instance_action_list(cs, args):
     """List actions on a server."""
     server = _find_server(cs, args.server, raise_if_notfound=False)
@@ -5197,7 +5197,7 @@ def do_migration_list(cs, args):
     default=None,
     help=_('Maximum number of migrations to display. Note that there is a '
            'configurable max limit on the server, and the limit that is used '
-           'will be the minimum between what is requested here and what '
+           'will be the minimum of what is requested here and what '
            'is configured in the server.'))
 @utils.arg(
     '--changes-since',
@@ -5206,7 +5206,7 @@ def do_migration_list(cs, args):
     default=None,
     help=_('List only migrations changed after a certain point of time. '
            'The provided time should be an ISO 8061 formatted time. '
-           'ex 2016-03-04T06:27:59Z .'))
+           'e.g. 2016-03-04T06:27:59Z .'))
 def do_migration_list(cs, args):
     """Print a list of migrations."""
     if args.changes_since:
