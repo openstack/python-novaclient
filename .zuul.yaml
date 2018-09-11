@@ -13,6 +13,7 @@
     templates:
       - openstack-python-jobs
       - openstack-python35-jobs
+      - openstack-python36-jobs
       - publish-openstack-docs-pti
       - check-requirements
       - lib-forward-testing
