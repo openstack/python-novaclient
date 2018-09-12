@@ -104,6 +104,6 @@ Reference
 For more information, see the reference:
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 6
 
-   autoindex
+   modules

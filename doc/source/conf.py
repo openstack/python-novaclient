@@ -17,9 +17,18 @@
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
 extensions = [
-    'sphinx.ext.autodoc',
     'openstackdocstheme',
+    'sphinx.ext.autodoc',
+    'sphinxcontrib.apidoc',
 ]
+
+# sphinxcontrib.apidoc options
+apidoc_module_dir = '../../novaclient'
+apidoc_output_dir = 'reference/api'
+apidoc_excluded_paths = [
+    'tests/*',
+    'v2/contrib/*']
+apidoc_separate_modules = True
 
 # The content that will be inserted into the main body of an autoclass
 # directive.
