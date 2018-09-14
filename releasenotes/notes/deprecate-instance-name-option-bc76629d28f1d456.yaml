@@ -1,0 +1,7 @@
+---
+deprecations:
+  - |
+    The ``--instance-name`` option has been deprecated from the ``nova list``
+    command because the instance name query parameter is ignored by the
+    compute REST API.
+
