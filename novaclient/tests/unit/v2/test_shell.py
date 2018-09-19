@@ -1597,6 +1597,23 @@ class ShellTest(utils.TestCase):
         self.assertRaises(exceptions.CommandError,
                           self.run_command, 'list --changes-since 0123456789')
 
+    def test_list_with_changes_before(self):
+        self.run_command('list --changes-before 2016-02-29T06:23:22',
+                         api_version='2.66')
+        self.assert_called(
+            'GET', '/servers/detail?changes-before=2016-02-29T06%3A23%3A22')
+
+    def test_list_with_changes_before_invalid_value(self):
+        ex = self.assertRaises(exceptions.CommandError, self.run_command,
+                               'list --changes-before 0123456789',
+                               api_version='2.66')
+        self.assertIn('Invalid changes-before value', six.text_type(ex))
+
+    def test_list_with_changes_before_pre_v266_not_allowed(self):
+        self.assertRaises(SystemExit, self.run_command,
+                          'list --changes-before 2016-02-29T06:23:22',
+                          api_version='2.65')
+
     def test_list_fields_redundant(self):
         output, _err = self.run_command('list --fields id,status,status')
         header = output.splitlines()[1]
@@ -3487,6 +3504,28 @@ class ShellTest(utils.TestCase):
             api_version='2.58')
         self.assertIn('Invalid changes-since value', six.text_type(ex))
 
+    def test_instance_action_list_changes_before_pre_v266_not_allowed(self):
+        cmd = 'instance-action-list sample-server --changes-before ' \
+              '2016-02-29T06:23:22'
+        self.assertRaises(SystemExit, self.run_command,
+                          cmd, api_version='2.65')
+
+    def test_instance_action_list_with_changes_before_v266(self):
+        self.run_command('instance-action-list sample-server '
+                         '--changes-before 2016-02-29T06:23:22',
+                         api_version='2.66')
+        self.assert_called(
+            'GET',
+            '/servers/1234/os-instance-actions?'
+            'changes-before=2016-02-29T06%3A23%3A22')
+
+    def test_instance_action_list_with_changes_before_invalid_value_v266(self):
+        ex = self.assertRaises(
+            exceptions.CommandError, self.run_command,
+            'instance-action-list sample-server --changes-before 0123456789',
+            api_version='2.66')
+        self.assertIn('Invalid changes-before value', six.text_type(ex))
+
     def test_instance_usage_audit_log(self):
         self.run_command('instance-usage-audit-log')
         self.assert_called('GET', '/os-instance_usage_audit_log')
@@ -3563,6 +3602,23 @@ class ShellTest(utils.TestCase):
                                'migration-list --changes-since 0123456789',
                                api_version='2.59')
         self.assertIn('Invalid changes-since value', six.text_type(ex))
+
+    def test_migration_list_with_changes_before_v266(self):
+        self.run_command('migration-list --changes-before 2016-02-29T06:23:22',
+                         api_version='2.66')
+        self.assert_called(
+            'GET', '/os-migrations?changes-before=2016-02-29T06%3A23%3A22')
+
+    def test_migration_list_with_changes_before_invalid_value_v266(self):
+        ex = self.assertRaises(exceptions.CommandError, self.run_command,
+                               'migration-list --changes-before 0123456789',
+                               api_version='2.66')
+        self.assertIn('Invalid changes-before value', six.text_type(ex))
+
+    def test_migration_list_with_changes_before_pre_v266_not_allowed(self):
+        cmd = 'migration-list --changes-before 2016-02-29T06:23:22'
+        self.assertRaises(SystemExit, self.run_command, cmd,
+                          api_version='2.65')
 
     @mock.patch('novaclient.v2.shell._find_server')
     @mock.patch('os.system')
