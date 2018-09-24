@@ -715,7 +715,7 @@ class ServersTest(utils.FixturedTestCase):
         s = self.cs.servers.get(1234)
         password = s.get_password('novaclient/tests/unit/idfake.pem')
         self.assert_request_id(password, fakes.FAKE_REQUEST_ID_LIST)
-        self.assertEqual(b'FooBar123', password)
+        self.assertEqual('FooBar123', password)
         self.assert_called('GET', '/servers/1234/os-server-password')
 
     def test_get_password_without_key(self):
