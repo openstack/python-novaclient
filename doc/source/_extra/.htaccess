@@ -1,0 +1,10 @@
+# The following is generated with:
+#
+# git log --follow --name-status --format='%H' ac25ae6fee.. -- doc/source/ | \
+#   grep ^R | grep .rst | cut -f2- | \
+#   sed -e 's|doc/source/|redirectmatch 301 ^/python-novaclient/([^/]+)/|' -e 's|doc/source/|/python-novaclient/$1/|' -e 's/.rst/.html$/' -e 's/.rst/.html/' | \
+#   sort
+
+redirectmatch 301 ^/python-novaclient/([^/]+)/api.html$ /python-novaclient/$1/reference/api/index.html
+redirectmatch 301 ^/python-novaclient/([^/]+)/man/nova.html$ /python-novaclient/$1/cli/nova.html
+redirectmatch 301 ^/python-novaclient/([^/]+)/shell.html$ /python-novaclient/$1/user/shell.html

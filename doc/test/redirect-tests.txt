@@ -1,0 +1,3 @@
+/python-novaclient/latest/api.html 301 /python-novaclient/latest/reference/api/index.html
+/python-novaclient/latest/man/nova.html 301 /python-novaclient/latest/cli/nova.html
+/python-novaclient/latest/shell.html 301 /python-novaclient/latest/user/shell.html

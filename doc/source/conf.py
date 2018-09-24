@@ -70,6 +70,10 @@ pygments_style = 'sphinx'
 # Sphinx are currently 'default' and 'sphinxdoc'.
 html_theme = 'openstackdocs'
 
+# Add any paths that contain "extra" files, such as .htaccess or
+# robots.txt.
+html_extra_path = ['_extra']
+
 # -- Options for openstackdocstheme -------------------------------------------
 
 repository_name = 'openstack/python-novaclient'
