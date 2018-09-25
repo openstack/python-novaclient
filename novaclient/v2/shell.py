@@ -1475,9 +1475,18 @@ def _print_flavor(flavor):
     dest='changes_since',
     metavar='<changes_since>',
     default=None,
-    help=_("List only servers changed after a certain point of time. "
-           "The provided time should be an ISO 8061 formatted time. "
-           "ex 2016-03-04T06:27:59Z ."))
+    help=_("List only servers changed later or equal to a certain point of "
+           "time. The provided time should be an ISO 8061 formatted time. "
+           "e.g. 2016-03-04T06:27:59Z ."))
+@utils.arg(
+    '--changes-before',
+    dest='changes_before',
+    metavar='<changes_before>',
+    default=None,
+    help=_("List only servers changed earlier or equal to a certain point of "
+           "time. The provided time should be an ISO 8061 formatted time. "
+           "e.g. 2016-03-04T06:27:59Z ."),
+    start_version="2.66")
 @utils.arg(
     '--tags',
     dest='tags',
@@ -1582,6 +1591,18 @@ def do_list(cs, args):
             raise exceptions.CommandError(_('Invalid changes-since value: %s')
                                           % search_opts['changes-since'])
 
+    # In microversion 2.66 we added ``changes-before`` option
+    # in server details.
+    have_added_changes_before = (
+        cs.api_version >= api_versions.APIVersion('2.66'))
+    if have_added_changes_before and args.changes_before:
+        search_opts['changes-before'] = args.changes_before
+        try:
+            timeutils.parse_isotime(search_opts['changes-before'])
+        except ValueError:
+            raise exceptions.CommandError(_('Invalid changes-before value: %s')
+                                          % search_opts['changes-before'])
+
     servers = cs.servers.list(detailed=detailed,
                               search_opts=search_opts,
                               sort_keys=sort_keys,
@@ -1629,7 +1650,7 @@ def do_list(cs, args):
         # Tenant ID as well
         if search_opts['all_tenants']:
             columns.insert(2, 'Tenant ID')
-        if search_opts['changes-since']:
+        if search_opts['changes-since'] or search_opts.get('changes-before'):
             columns.append('Updated')
     formatters['Networks'] = utils.format_servers_list_networks
     sortby_index = 1
@@ -5023,7 +5044,7 @@ def do_instance_action_list(cs, args):
                      sortby_index=3)
 
 
-@api_versions.wraps("2.58")
+@api_versions.wraps("2.58", "2.65")
 @utils.arg(
     'server',
     metavar='<server>',
@@ -5051,9 +5072,9 @@ def do_instance_action_list(cs, args):
     dest='changes_since',
     metavar='<changes_since>',
     default=None,
-    help=_('List only instance actions changed after a certain point of '
-           'time. The provided time should be an ISO 8061 formatted time. '
-           'e.g. 2016-03-04T06:27:59Z.'))
+    help=_('List only instance actions changed later or equal to a certain '
+           'point of time. The provided time should be an ISO 8061 formatted '
+           'time. e.g. 2016-03-04T06:27:59Z.'))
 def do_instance_action_list(cs, args):
     """List actions on a server."""
     server = _find_server(cs, args.server, raise_if_notfound=False)
@@ -5067,6 +5088,75 @@ def do_instance_action_list(cs, args):
                                       limit=args.limit,
                                       changes_since=args.changes_since)
     # TODO(yikun): Output a "Marker" column if there is a next link?
+    utils.print_list(actions,
+                     ['Action', 'Request_ID', 'Message', 'Start_Time',
+                      'Updated_At'],
+                     sortby_index=3)
+
+
+@api_versions.wraps("2.66")
+@utils.arg(
+    'server',
+    metavar='<server>',
+    help=_('Name or UUID of the server to list actions for. Only UUID can be '
+           'used to list actions on a deleted server.'))
+@utils.arg(
+    '--marker',
+    dest='marker',
+    metavar='<marker>',
+    default=None,
+    help=_('The last instance action of the previous page; displays list of '
+           'actions after "marker".'))
+@utils.arg(
+    '--limit',
+    dest='limit',
+    metavar='<limit>',
+    type=int,
+    default=None,
+    help=_('Maximum number of instance actions to display. Note that there '
+           'is a configurable max limit on the server, and the limit that is '
+           'used will be the minimum of what is requested here and what '
+           'is configured in the server.'))
+@utils.arg(
+    '--changes-since',
+    dest='changes_since',
+    metavar='<changes_since>',
+    default=None,
+    help=_('List only instance actions changed later or equal to a certain '
+           'point of time. The provided time should be an ISO 8061 formatted '
+           'time. e.g. 2016-03-04T06:27:59Z.'))
+@utils.arg(
+    '--changes-before',
+    dest='changes_before',
+    metavar='<changes_before>',
+    default=None,
+    help=_('List only instance actions changed earlier or equal to a certain '
+           'point of time. The provided time should be an ISO 8061 formatted '
+           'time. e.g. 2016-03-04T06:27:59Z.'),
+    start_version="2.66")
+def do_instance_action_list(cs, args):
+    """List actions on a server."""
+    server = _find_server(cs, args.server, raise_if_notfound=False)
+    if args.changes_since:
+        try:
+            timeutils.parse_isotime(args.changes_since)
+        except ValueError:
+            raise exceptions.CommandError(_('Invalid changes-since value: %s')
+                                          % args.changes_since)
+
+    # In microversion 2.66 we added ``changes-before`` option
+    # in instance actions.
+    if args.changes_before:
+        try:
+            timeutils.parse_isotime(args.changes_before)
+        except ValueError:
+            raise exceptions.CommandError(_('Invalid changes-before value: %s')
+                                          % args.changes_before)
+
+    actions = cs.instance_action.list(server, marker=args.marker,
+                                      limit=args.limit,
+                                      changes_since=args.changes_since,
+                                      changes_before=args.changes_before)
     utils.print_list(actions,
                      ['Action', 'Request_ID', 'Message', 'Start_Time',
                       'Updated_At'],
@@ -5165,7 +5255,7 @@ def do_migration_list(cs, args):
     _print_migrations(cs, migrations)
 
 
-@api_versions.wraps("2.59")
+@api_versions.wraps("2.59", "2.65")
 @utils.arg(
     '--instance-uuid',
     dest='instance_uuid',
@@ -5204,8 +5294,8 @@ def do_migration_list(cs, args):
     dest='changes_since',
     metavar='<changes_since>',
     default=None,
-    help=_('List only migrations changed after a certain point of time. '
-           'The provided time should be an ISO 8061 formatted time. '
+    help=_('List only migrations changed later or equal to a certain point '
+           'of time. The provided time should be an ISO 8061 formatted time. '
            'e.g. 2016-03-04T06:27:59Z .'))
 def do_migration_list(cs, args):
     """Print a list of migrations."""
@@ -5221,6 +5311,81 @@ def do_migration_list(cs, args):
                                     marker=args.marker, limit=args.limit,
                                     changes_since=args.changes_since)
     # TODO(yikun): Output a "Marker" column if there is a next link?
+    _print_migrations(cs, migrations)
+
+
+@api_versions.wraps("2.66")
+@utils.arg(
+    '--instance-uuid',
+    dest='instance_uuid',
+    metavar='<instance_uuid>',
+    help=_('Fetch migrations for the given instance.'))
+@utils.arg(
+    '--host',
+    dest='host',
+    metavar='<host>',
+    help=_('Fetch migrations for the given host.'))
+@utils.arg(
+    '--status',
+    dest='status',
+    metavar='<status>',
+    help=_('Fetch migrations for the given status.'))
+@utils.arg(
+    '--marker',
+    dest='marker',
+    metavar='<marker>',
+    default=None,
+    help=_('The last migration of the previous page; displays list of '
+           'migrations after "marker". Note that the marker is the '
+           'migration UUID.'))
+@utils.arg(
+    '--limit',
+    dest='limit',
+    metavar='<limit>',
+    type=int,
+    default=None,
+    help=_('Maximum number of migrations to display. Note that there is a '
+           'configurable max limit on the server, and the limit that is used '
+           'will be the minimum of what is requested here and what '
+           'is configured in the server.'))
+@utils.arg(
+    '--changes-since',
+    dest='changes_since',
+    metavar='<changes_since>',
+    default=None,
+    help=_('List only migrations changed later or equal to a certain point '
+           'of time. The provided time should be an ISO 8061 formatted time. '
+           'e.g. 2016-03-04T06:27:59Z .'))
+@utils.arg(
+    '--changes-before',
+    dest='changes_before',
+    metavar='<changes_before>',
+    default=None,
+    help=_('List only migrations changed earlier or equal to a certain point '
+           'of time. The provided time should be an ISO 8061 formatted time. '
+           'e.g. 2016-03-04T06:27:59Z .'),
+    start_version="2.66")
+def do_migration_list(cs, args):
+    """Print a list of migrations."""
+    if args.changes_since:
+        try:
+            timeutils.parse_isotime(args.changes_since)
+        except ValueError:
+            raise exceptions.CommandError(_('Invalid changes-since value: %s')
+                                          % args.changes_since)
+
+    if args.changes_before:
+        try:
+            timeutils.parse_isotime(args.changes_before)
+        except ValueError:
+            raise exceptions.CommandError(_('Invalid changes-before value: %s')
+                                          % args.changes_before)
+
+    migrations = cs.migrations.list(args.host, args.status,
+                                    instance_uuid=args.instance_uuid,
+                                    marker=args.marker, limit=args.limit,
+                                    changes_since=args.changes_since,
+                                    changes_before=args.changes_before)
     _print_migrations(cs, migrations)
 
 

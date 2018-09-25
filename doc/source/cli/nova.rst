@@ -1923,6 +1923,7 @@ nova instance-action-list
 
    usage: nova instance-action-list [--marker <marker>] [--limit <limit>]
                                     [--changes-since <changes_since>]
+                                    [--changes-before <changes_before>]
                                     <server>
 
 List actions on a server.
@@ -1947,9 +1948,14 @@ List actions on a server.
   in the server. (Supported by API versions '2.58' - '2.latest')
 
 ``--changes-since <changes_since>``
-  List only instance actions changed after a certain point of time.
-  The provided time should be an ISO 8061 formatted time.
+  List only instance actions changed later or equal to a certain
+  point of time. The provided time should be an ISO 8061 formatted time.
   e.g. 2016-03-04T06:27:59Z. (Supported by API versions '2.58' - '2.latest')
+
+``--changes-before <changes_before>``
+  List only instance actions changed earlier or equal to a certain
+  point of time. The provided time should be an ISO 8061 formatted time.
+  e.g. 2016-03-04T06:27:59Z. (Supported by API versions '2.66' - '2.latest')
 
 .. _nova_interface-attach:
 
@@ -2154,6 +2160,7 @@ nova list
                     [--user [<user>]] [--deleted] [--fields <fields>] [--minimal]
                     [--sort <key>[:<direction>]] [--marker <marker>]
                     [--limit <limit>] [--changes-since <changes_since>]
+                    [--changes-before <changes_before>]
                     [--tags <tags>] [--tags-any <tags-any>]
                     [--not-tags <not-tags>] [--not-tags-any <not-tags-any>]
 
@@ -2233,10 +2240,17 @@ List servers.
   used instead.
 
 ``--changes-since <changes_since>``
-  List only servers changed after a certain
-  point of time.The provided time should be an
-  ISO 8061 formatted time.ex
+  List only servers changed later or equal to a
+  certain point of time. The provided time should
+  be an ISO 8061 formatted time. e.g.
   2016-03-04T06:27:59Z .
+
+``--changes-before <changes_before>``
+  List only servers changed earlier or equal to a
+  certain point of time. The provided time should
+  be an ISO 8061 formatted time. e.g.
+  2016-03-05T06:27:59Z . (Supported by API versions
+  '2.66' - '2.latest')
 
 ``--tags <tags>``
   The given tags must all be present for a
@@ -2443,6 +2457,7 @@ nova migration-list
    usage: nova migration-list [--instance-uuid <instance_uuid>] [--host <host>]
                               [--status <status>] [--marker <marker>]
                               [--limit <limit>] [--changes-since <changes_since>]
+                              [--changes-before <changes_before>]
 
 Print a list of migrations.
 
@@ -2469,9 +2484,14 @@ Print a list of migrations.
   (Supported by API versions '2.59' - '2.latest')
 
 ``--changes-since <changes_since>``
-  List only migrations changed after a certain point of time.
-  The provided time should be an ISO 8061 formatted time.
+  List only migrations changed later or equal to a certain
+  point of time. The provided time should be an ISO 8061 formatted time.
   e.g. 2016-03-04T06:27:59Z . (Supported by API versions '2.59' - '2.latest')
+
+``--changes-before <changes_before>``
+  List only migrations changed earlier or equal to a certain
+  point of time. The provided time should be an ISO 8061 formatted time.
+  e.g. 2016-03-04T06:27:59Z . (Supported by API versions '2.66' - '2.latest')
 
 .. _nova_pause:
 

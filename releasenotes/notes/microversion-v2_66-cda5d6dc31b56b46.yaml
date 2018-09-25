@@ -1,0 +1,14 @@
+---
+features:
+  - |
+    Added support for `microversion 2.66`_ which adds ``changes-before``
+    parameter to the servers, os-instance-actions or os-migrations APIs.
+
+    * This parameter (``changes-before``) does not change any read-deleted
+      behavior in the os-instance-actions or os-migrations APIs.
+    * Like the ``changes-since`` filter, the ``changes-before`` filter will
+      also return deleted servers.
+    * The ``--changes-before`` options is added to the ``nova list``,
+      ``nova instance-action-list`` and ``nova migration-list`` CLIs.
+
+    .. _microversion 2.66: https://docs.openstack.org/nova/latest/reference/api-microversion-history.html#id59

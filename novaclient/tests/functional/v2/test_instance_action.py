@@ -151,3 +151,39 @@ class TestInstanceActionCLIV262(TestInstanceActionCLIV258,
         output = self.nova("instance-action %s %s" % (server_id, request_id))
         self.assertIn("'host'", output)
         self.assertIn("'hostId'", output)
+
+
+class TestInstanceActionCLIV266(TestInstanceActionCLIV258,
+                                base.TenantTestBase):
+    """Instance action functional tests for v2.66 nova-api microversion."""
+
+    COMPUTE_API_VERSION = "2.66"
+    expect_event_hostId_field = True
+
+    def test_list_instance_action_with_changes_before(self):
+        # Ignore microseconds to make this a deterministic test.
+        server = self._create_server()
+        end_create = timeutils.utcnow().replace(microsecond=0).isoformat()
+        time.sleep(2)
+        server.stop()
+        end_stop = timeutils.utcnow().replace(microsecond=0).isoformat()
+
+        stop_output = self.nova(
+            "instance-action-list %s --changes-before %s" %
+            (server.id, end_stop))
+        action = self._get_list_of_values_from_single_column_table(
+            stop_output, "Action")
+        # The actions are sorted by created_at in descending order.
+        self.assertEqual(action, ['create', 'stop'])
+
+        create_output = self.nova(
+            "instance-action-list %s --changes-before %s" %
+            (server.id, end_create))
+        action = self._get_list_of_values_from_single_column_table(
+            create_output, "Action")
+        # Provide detailed debug information if this fails.
+        self.assertEqual(action, ['create'],
+                         'Expected to find the create action with '
+                         '--changes-before=%s but got: %s\n\n'
+                         'First instance-action-list output: %s' %
+                         (end_create, create_output, stop_output))
