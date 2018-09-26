@@ -1850,8 +1850,15 @@ def do_rebuild(cs, args):
                     _("Cannot specify '--user-data-unset' with "
                       "'--user-data'."))
         elif args.user_data:
-            kwargs['userdata'] = args.user_data
-
+            try:
+                kwargs['userdata'] = open(args.user_data)
+            except IOError as e:
+                raise exceptions.CommandError(
+                    _("Can't open '%(user_data)s': %(exc)s") % {
+                        'user_data': args.user_data,
+                        'exc': e,
+                    }
+                )
     if cs.api_version >= api_versions.APIVersion('2.54'):
         if args.key_unset:
             kwargs['key_name'] = None

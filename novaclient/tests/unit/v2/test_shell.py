@@ -1602,17 +1602,28 @@ class ShellTest(utils.TestCase):
                           cmd % (FAKE_UUID_1, testfile), api_version='2.57')
 
     def test_rebuild_change_user_data(self):
-        self.run_command('rebuild sample-server %s --user-data test' %
-                         FAKE_UUID_1, api_version='2.57')
-        user_data = servers.ServerManager.transform_userdata('test')
+        testfile = os.path.join(os.path.dirname(__file__), 'testfile.txt')
+        with open(testfile) as testfile_fd:
+            data = testfile_fd.read().encode('utf-8')
+        expected_file_data = servers.ServerManager.transform_userdata(data)
+        self.run_command('rebuild sample-server %s --user-data %s' %
+                         (FAKE_UUID_1, testfile), api_version='2.57')
         self.assert_called('GET', '/servers?name=sample-server', pos=0)
         self.assert_called('GET', '/servers/1234', pos=1)
         self.assert_called('GET', '/v2/images/%s' % FAKE_UUID_1, pos=2)
         self.assert_called('POST', '/servers/1234/action',
                            {'rebuild': {'imageRef': FAKE_UUID_1,
-                                        'user_data': user_data,
+                                        'user_data': expected_file_data,
                                         'description': None}}, pos=3)
         self.assert_called('GET', '/v2/images/%s' % FAKE_UUID_2, pos=4)
+
+    def test_rebuild_invalid_user_data(self):
+        invalid_file = os.path.join(os.path.dirname(__file__),
+                                    'no_such_file')
+        cmd = ('rebuild sample-server %s --user-data %s'
+               % (FAKE_UUID_1, invalid_file))
+        self.assertRaises(exceptions.CommandError, self.run_command, cmd,
+                          api_version='2.57')
 
     def test_rebuild_unset_user_data(self):
         self.run_command('rebuild sample-server %s --user-data-unset' %
