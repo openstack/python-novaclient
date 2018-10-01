@@ -6,16 +6,22 @@ The preferred way to run the unit tests is using ``tox``. There are multiple
 test targets that can be run to validate the code.
 
 ``tox -e pep8``
-
   Style guidelines enforcement.
 
 ``tox -e py27``
+  Traditional unit testing (Python 2.7).
 
-  Traditional unit testing.
+``tox -e py35``
+  Traditional unit testing (Python 3.5).
 
 ``tox -e functional``
+  Live functional testing against an existing OpenStack instance. (Python 2.7)
 
-  Live functional testing against an existing OpenStack instance.
+``tox -e functional-py35``
+  Live functional testing against an existing OpenStack instance. (Python 3.5)
+
+``tox -e cover``
+  Generate a coverage report on unit testing.
 
 Functional testing assumes the existence of a `clouds.yaml` file as supported
 by `os-client-config <https://docs.openstack.org/os-client-config/latest>`__
