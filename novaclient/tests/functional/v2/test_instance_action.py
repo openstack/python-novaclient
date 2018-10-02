@@ -161,12 +161,11 @@ class TestInstanceActionCLIV266(TestInstanceActionCLIV258,
     expect_event_hostId_field = True
 
     def test_list_instance_action_with_changes_before(self):
-        # Ignore microseconds to make this a deterministic test.
         server = self._create_server()
-        end_create = timeutils.utcnow().replace(microsecond=0).isoformat()
-        time.sleep(2)
+        end_create = timeutils.utcnow().isoformat()
         server.stop()
-        end_stop = timeutils.utcnow().replace(microsecond=0).isoformat()
+        self._wait_for_state_change(server.id, 'shutoff')
+        end_stop = timeutils.utcnow().isoformat()
 
         stop_output = self.nova(
             "instance-action-list %s --changes-before %s" %
