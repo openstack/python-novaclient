@@ -1756,8 +1756,11 @@ class ShellTest(utils.TestCase):
                                     'no_such_file')
         cmd = ('rebuild sample-server %s --user-data %s'
                % (FAKE_UUID_1, invalid_file))
-        self.assertRaises(exceptions.CommandError, self.run_command, cmd,
-                          api_version='2.57')
+        ex = self.assertRaises(exceptions.CommandError, self.run_command, cmd,
+                               api_version='2.57')
+        self.assertIn("Can't open '%(user_data)s': "
+                      "[Errno 2] No such file or directory: '%(user_data)s'" %
+                      {'user_data': invalid_file}, six.text_type(ex))
 
     def test_rebuild_unset_user_data(self):
         self.run_command('rebuild sample-server %s --user-data-unset' %

@@ -1,5 +1,6 @@
 ---
 fixes:
   - |
-    The user data argument to rebuild was passing the filename as is as userdata.
-    Now this passes the contents of the filename as intended.
+    The user data argument in the ``nova rebuild`` command was passing
+    the filename as userdata. Now this passes the contents of the file
+    as intended.
