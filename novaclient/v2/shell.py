@@ -397,7 +397,8 @@ def _boot(cs, args):
         for f in args.files:
             try:
                 dst, src = f.split('=', 1)
-                files[dst] = open(src)
+                with open(src) as fo:
+                    files[dst] = fo.read()
             except IOError as e:
                 raise exceptions.CommandError(
                     _("Can't open '%(src)s': %(exc)s") %
@@ -415,7 +416,8 @@ def _boot(cs, args):
 
     if args.user_data:
         try:
-            userdata = open(args.user_data)
+            with open(args.user_data) as f:
+                userdata = f.read()
         except IOError as e:
             raise exceptions.CommandError(_("Can't open '%(user_data)s': "
                                             "%(exc)s") %
@@ -1851,7 +1853,8 @@ def do_rebuild(cs, args):
                       "'--user-data'."))
         elif args.user_data:
             try:
-                kwargs['userdata'] = open(args.user_data)
+                with open(args.user_data) as f:
+                    kwargs['userdata'] = f.read()
             except IOError as e:
                 raise exceptions.CommandError(
                     _("Can't open '%(user_data)s': %(exc)s") % {
