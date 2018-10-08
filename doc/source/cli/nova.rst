@@ -5,8 +5,6 @@
 The nova client is the command-line interface (CLI) for
 the Compute service (nova) API and its extensions.
 
-This chapter documents :command:`nova` version ``9.0.1``.
-
 For help on a specific :command:`nova` command, enter:
 
 .. code-block:: console
@@ -36,7 +34,8 @@ nova usage
                [--os-endpoint-override <bypass-url>] [--profile HMAC_KEY]
                [--insecure] [--os-cacert <ca-certificate>]
                [--os-cert <certificate>] [--os-key <key>] [--timeout <seconds>]
-               [--os-auth-type <name>] [--os-auth-url OS_AUTH_URL]
+               [--collect-timing] [--os-auth-type <name>]
+               [--os-auth-url OS_AUTH_URL] [--os-system-scope OS_SYSTEM_SCOPE]
                [--os-domain-id OS_DOMAIN_ID] [--os-domain-name OS_DOMAIN_NAME]
                [--os-project-id OS_PROJECT_ID]
                [--os-project-name OS_PROJECT_NAME]
@@ -173,6 +172,12 @@ nova usage
 ``flavor-show``
   Show details about the given flavor.
 
+``flavor-update``
+  Update the description of an existing flavor.
+  (Supported by API versions '2.55' - '2.latest')
+  [hint: use '--os-compute-api-version' flag to show help message
+  for proper version]
+
 ``floating-ip-associate``
   **DEPRECATED** Associate a floating IP address to
   a server.
@@ -236,20 +241,9 @@ nova usage
   **DEPRECATED** Update host settings.
 
 ``hypervisor-list``
-  List hypervisors. (Supported by API versions
-  '2.0'
-  -
-  '2.latest')
-  [hint:
-  use
-  '--os-compute-api-version'
-  flag
-  to
-  show
-  help
-  message
-  for
-  proper version]
+  List hypervisors. (Supported by API versions '2.0' - '2.latest')
+  [hint: use '--os-compute-api-version' flag to show help message
+  for proper version]
 
 ``hypervisor-servers``
   List servers belonging to specific
@@ -276,6 +270,9 @@ nova usage
 
 ``instance-action-list``
   List actions on a server.
+
+``instance-usage-audit-log``
+  List/Get server usage audits.
 
 ``interface-attach``
   Attach a network interface to a server.
@@ -331,23 +328,9 @@ nova usage
 
 ``live-migration-force-complete``
   Force on-going live migration to complete.
-  (Supported
-  by
-  API
-  versions
-  '2.22'
-  -'2.latest')
-  [hint:
-  use
-  '--os-compute-api-version'
-  flag
-  to
-  show
-  help
-  message
-  for
-  proper
-  version]
+  (Supported by API versions '2.22' - '2.latest')
+  [hint: use '--os-compute-api-version' flag to show help message
+  for proper version]
 
 ``lock``
   Lock a server. A normal (non-admin) user will
@@ -450,43 +433,15 @@ nova usage
 
 ``server-migration-list``
   Get the migrations list of specified server.
-  (Supported
-  by
-  API
-  versions
-  '2.23'
-  -'2.latest')
-  [hint:
-  use
-  '--os-compute-api-version'
-  flag
-  to
-  show
-  help
-  message
-  for
-  proper
-  version]
+  (Supported by API versions '2.23' - '2.latest')
+  [hint: use '--os-compute-api-version' flag to show help message
+  for proper version]
 
 ``server-migration-show``
   Get the migration of specified server.
-  (Supported
-  by
-  API
-  versions
-  '2.23'
-  -'2.latest')
-  [hint:
-  use
-  '--os-compute-api-version'
-  flag
-  to
-  show
-  help
-  message
-  for
-  proper
-  version]
+  (Supported by API versions '2.23' - '2.latest')
+  [hint: use '--os-compute-api-version' flag to show help message
+  for proper version]
 
 ``server-tag-add``
   Add one or more tags to a server. (Supported
@@ -496,23 +451,9 @@ nova usage
 
 ``server-tag-delete``
   Delete one or more tags from a server.
-  (Supported
-  by
-  API
-  versions
-  '2.26'
-  -'2.latest')
-  [hint:
-  use
-  '--os-compute-api-version'
-  flag
-  to
-  show
-  help
-  message
-  for
-  proper
-  version]
+  (Supported by API versions '2.26' - '2.latest')
+  [hint: use '--os-compute-api-version' flag to show help message
+  for proper version]
 
 ``server-tag-delete-all``
   Delete all tags from a server. (Supported by
@@ -998,8 +939,7 @@ nova boot
                     [--image-with <key=value>] [--boot-volume <volume_id>]
                     [--snapshot <snapshot_id>] [--min-count <number>]
                     [--max-count <number>] [--meta <key=value>]
-                    [--file <dst-path=src-path>] [--key-name <key-name>]
-                    [--user-data <user-data>]
+                    [--key-name <key-name>] [--user-data <user-data>]
                     [--availability-zone <availability-zone>]
                     [--security-groups <security-groups>]
                     [--block-device-mapping <dev-name=mapping>]
@@ -1010,7 +950,8 @@ nova boot
                     [--nic <auto,none,net-id=net-uuid,net-name=network-name,port-id=port-uuid,v4-fixed-ip=ip-addr,v6-fixed-ip=ip-addr,tag=tag>]
                     [--config-drive <value>] [--poll] [--admin-pass <value>]
                     [--access-ip-v4 <value>] [--access-ip-v6 <value>]
-                    [--description <description>]
+                    [--description <description>] [--tags <tags>]
+                    [--return-reservation-id]
                     [--trusted-image-certificate-id <trusted-image-certificate-id>]
                     <name>
 
@@ -1052,11 +993,6 @@ Boot a new server.
   /meta_data.json on the metadata server. Can be
   specified multiple times.
 
-``--file <dst-path=src-path>``
-  Store arbitrary files from <src-path> locally
-  to <dst-path> on the new server. Limited by
-  the injected_files quota value.
-
 ``--key-name <key-name>``
   Key name of keypair that should be created
   earlier with the command keypair-add.
@@ -1072,13 +1008,8 @@ Boot a new server.
   Comma separated list of security group names.
 
 ``--block-device-mapping <dev-name=mapping>``
-  Block
-  device
-  mapping
-  in
-  the
-  format
-  <dev-name>=<id>:<type>:<size(GB)>:<delete-on-terminate>.
+  Block device mapping in the format
+  <dev-name>=<id>:<type>:<size(GiB)>:<delete-on-terminate>.
 
 ``--block-device``
   key1=value1[,key2=value2...]
@@ -1097,7 +1028,7 @@ Boot a new server.
   driver chooses suitable device depending on
   selected bus; note the libvirt driver always
   uses default device names), size=size of the
-  block device in MB(for swap) and in GB(for
+  block device in MB(for swap) and in GiB(for
   other formats) (if omitted, hypervisor driver
   calculates size), format=device will be
   formatted (e.g. swap, ntfs, ...; optional),
@@ -1117,7 +1048,7 @@ Boot a new server.
 ``--ephemeral``
   size=<size>[,format=<format>]
   Create and attach a local ephemeral block
-  device of <size> GB and format it to <format>.
+  device of <size> GiB and format it to <format>.
 
 ``--hint <key=value>``
   Send arbitrary key/value pairs to the
@@ -1164,6 +1095,13 @@ Boot a new server.
 ``--description <description>``
   Description for the server. (Supported by API
   versions '2.19' - '2.latest')
+
+``--tags <tags>``
+  Tags for the server.Tags must be separated by commas: --tags <tag1,tag2>
+  (Supported by API versions '2.52' - '2.latest')
+
+``--return-reservation-id``
+  Return a reservation id bound to created servers.
 
 ``--trusted-image-certificate-id <trusted-image-certificate-id>``
   Trusted image certificate IDs used to validate certificates
@@ -1373,6 +1311,7 @@ nova flavor-create
 
    usage: nova flavor-create [--ephemeral <ephemeral>] [--swap <swap>]
                              [--rxtx-factor <factor>] [--is-public <is-public>]
+                             [--description <description>]
                              <name> <id> <ram> <disk> <vcpus>
 
 Create a new flavor.
@@ -1390,7 +1329,7 @@ Create a new flavor.
   Memory size in MB.
 
 ``<disk>``
-  Disk size in GB.
+  Disk size in GiB.
 
 ``<vcpus>``
   Number of vcpus
@@ -1398,7 +1337,7 @@ Create a new flavor.
 **Optional arguments:**
 
 ``--ephemeral <ephemeral>``
-  Ephemeral space size in GB (default 0).
+  Ephemeral space size in GiB (default 0).
 
 ``--swap <swap>``
   Swap space size in MB (default 0).
@@ -1409,6 +1348,11 @@ Create a new flavor.
 ``--is-public <is-public>``
   Make flavor accessible to the public (default
   true).
+
+``--description <description>``
+  A free form description of the flavor. Limited to 65535 characters
+  in length. Only printable characters are allowed.
+  (Supported by API versions '2.55' - '2.latest')
 
 .. _nova_flavor-delete:
 
@@ -1559,6 +1503,8 @@ Get an MKS console to a server. (Supported by API versions '2.8' - '2.latest')
 [hint: use '--os-compute-api-version' flag to show help message for proper
 version]
 
+.. versionadded:: 3.0.0
+
 **Positional arguments:**
 
 ``<server>``
@@ -1673,14 +1619,20 @@ nova host-evacuate
 
 .. code-block:: console
 
-   usage: nova host-evacuate [--target_host <target_host>] [--force] <host>
+   usage: nova host-evacuate [--target_host <target_host>] [--force] [--strict]
+                             <host>
 
 Evacuate all instances from failed host.
 
 **Positional arguments:**
 
 ``<host>``
-  Name of host.
+  The hypervisor hostname (or pattern) to search for.
+
+  .. warning::
+
+    Use a fully qualified domain name if you only want to evacuate from
+    a specific host.
 
 **Optional arguments:**
 
@@ -1692,6 +1644,9 @@ Evacuate all instances from failed host.
   Force to not verify the scheduler if a host is
   provided. (Supported by API versions '2.29' -'2.latest')
 
+``--strict``
+  Evacuate host with exact hypervisor hostname match
+
 .. _nova_host-evacuate-live:
 
 nova host-evacuate-live
@@ -1701,6 +1656,7 @@ nova host-evacuate-live
 
    usage: nova host-evacuate-live [--target-host <target_host>] [--block-migrate]
                                   [--max-servers <max_servers>] [--force]
+                                  [--strict]
                                   <host>
 
 Live migrate all instances off the specified host to other available hosts.
@@ -1709,6 +1665,12 @@ Live migrate all instances off the specified host to other available hosts.
 
 ``<host>``
   Name of host.
+  The hypervisor hostname (or pattern) to search for.
+
+  .. warning::
+
+    Use a fully qualified domain name if you only want to live migrate
+    from a specific host.
 
 **Optional arguments:**
 
@@ -1727,6 +1689,9 @@ Live migrate all instances off the specified host to other available hosts.
   Force to not verify the scheduler if a host is
   provided. (Supported by API versions '2.30' -'2.latest')
 
+``--strict``
+  live Evacuate host with exact hypervisor hostname match
+
 .. _nova_host-meta:
 
 nova host-meta
@@ -1734,20 +1699,30 @@ nova host-meta
 
 .. code-block:: console
 
-   usage: nova host-meta <host> <action> <key=value> [<key=value> ...]
+   usage: nova host-meta [--strict] <host> <action> <key=value> [<key=value> ...]
 
 Set or Delete metadata on all instances of a host.
 
 **Positional arguments:**
 
 ``<host>``
-  Name of host.
+  The hypervisor hostname (or pattern) to search for.
+
+  .. warning::
+
+    Use a fully qualified domain name if you only want to update
+    metadata for servers on a specific host.
 
 ``<action>``
   Actions: 'set' or 'delete'
 
 ``<key=value>``
   Metadata to set or delete (only key is necessary on delete)
+
+**Optional arguments:**
+
+``--strict``
+  Set host-meta to the hypervisor with exact hostname match
 
 .. _nova_host-servers-migrate:
 
@@ -1756,7 +1731,7 @@ nova host-servers-migrate
 
 .. code-block:: console
 
-   usage: nova host-servers-migrate <host>
+   usage: nova host-servers-migrate [--strict] <host>
 
 Cold migrate all instances off the specified host to other available hosts.
 
@@ -1764,6 +1739,17 @@ Cold migrate all instances off the specified host to other available hosts.
 
 ``<host>``
   Name of host.
+  The hypervisor hostname (or pattern) to search for.
+
+  .. warning::
+
+    Use a fully qualified domain name if you only want to cold migrate
+    from a specific host.
+
+**Optional arguments:**
+
+``--strict``
+  Migrate host with exact hypervisor hostname match
 
 .. _nova_hypervisor-list:
 
@@ -1824,7 +1810,8 @@ Display the details of the specified hypervisor.
 **Positional arguments:**
 
 ``<hypervisor>``
-  Name or ID of the hypervisor to show the details of.
+  Name or ID of the hypervisor.
+  Starting with microversion 2.53 the ID must be a UUID.
 
 **Optional arguments:**
 
@@ -1857,7 +1844,8 @@ Display the uptime of the specified hypervisor.
 **Positional arguments:**
 
 ``<hypervisor>``
-  Name or ID of the hypervisor to show the uptime of.
+  Name or ID of the hypervisor.
+  Starting with microversion 2.53 the ID must be a UUID.
 
 .. _nova_image-create:
 
@@ -1957,6 +1945,24 @@ List actions on a server.
   point of time. The provided time should be an ISO 8061 formatted time.
   e.g. 2016-03-04T06:27:59Z. (Supported by API versions '2.66' - '2.latest')
 
+.. _nova_instance-usage-audit-log:
+
+nova instance-usage-audit-log
+-----------------------------
+
+.. code-block:: console
+
+   usage: nova instance-usage-audit-log [--before <before>]
+
+List/Get server usage audits.
+
+**Optional arguments:**
+
+``--before <before>``
+  Filters the response by the date and time before which to list usage audits.
+  The date and time stamp format is as follows: CCYY-MM-DD hh:mm:ss.NNNNNN
+  ex 2015-08-27 09:49:58 or 2015-08-27 09:49:58.123456.
+
 .. _nova_interface-attach:
 
 nova interface-attach
@@ -1965,7 +1971,7 @@ nova interface-attach
 .. code-block:: console
 
    usage: nova interface-attach [--port-id <port_id>] [--net-id <net_id>]
-                                [--fixed-ip <fixed_ip>]
+                                [--fixed-ip <fixed_ip>] [--tag <tag>]
                                 <server>
 
 Attach a network interface to a server.
@@ -1985,6 +1991,10 @@ Attach a network interface to a server.
 
 ``--fixed-ip <fixed_ip>``
   Requested fixed IP.
+
+``--tag <tag>``
+  Tag for the attached interface.
+  (Supported by API versions '2.49' - '2.latest')
 
 .. _nova_interface-detach:
 
@@ -2358,6 +2368,8 @@ For microversions from 2.24 to 2.64 the migration status must be ``running``;
 for microversion 2.65 and greater, the migration status can also be ``queued``
 and ``preparing``.
 
+.. versionadded:: 3.3.0
+
 **Positional arguments:**
 
 ``<server>``
@@ -2378,6 +2390,8 @@ nova live-migration-force-complete
 Force on-going live migration to complete. (Supported by API versions '2.22' -
 '2.latest') [hint: use '--os-compute-api-version' flag to show help message
 for proper version]
+
+.. versionadded:: 3.3.0
 
 **Positional arguments:**
 
@@ -2433,7 +2447,7 @@ nova migrate
 
 .. code-block:: console
 
-   usage: nova migrate [--poll] <server>
+   usage: nova migrate [--host <host>] [--poll] <server>
 
 Migrate a server. The new host will be selected by the scheduler.
 
@@ -2443,6 +2457,9 @@ Migrate a server. The new host will be selected by the scheduler.
   Name or ID of server.
 
 **Optional arguments:**
+
+``--host <host>``
+  Destination host name. (Supported by API versions '2.56' - '2.latest')
 
 ``--poll``
   Report the server migration progress until it completes.
@@ -2535,9 +2552,6 @@ nova quota-class-update
    usage: nova quota-class-update [--instances <instances>] [--cores <cores>]
                                   [--ram <ram>]
                                   [--metadata-items <metadata-items>]
-                                  [--injected-files <injected-files>]
-                                  [--injected-file-content-bytes <injected-file-content-bytes>]
-                                  [--injected-file-path-bytes <injected-file-path-bytes>]
                                   [--key-pairs <key-pairs>]
                                   [--server-groups <server-groups>]
                                   [--server-group-members <server-group-members>]
@@ -2565,16 +2579,6 @@ for proper version]
 
 ``--metadata-items <metadata-items>``
   New value for the "metadata-items" quota.
-
-``--injected-files <injected-files>``
-  New value for the "injected-files" quota.
-
-``--injected-file-content-bytes <injected-file-content-bytes>``
-  New value for the "injected-file-content-bytes" quota.
-
-``--injected-file-path-bytes <injected-file-path-bytes>``
-  New value for the "injected-file-path-bytes"
-  quota.
 
 ``--key-pairs <key-pairs>``
   New value for the "key-pairs" quota.
@@ -2653,9 +2657,6 @@ nova quota-update
    usage: nova quota-update [--user <user-id>] [--instances <instances>]
                             [--cores <cores>] [--ram <ram>]
                             [--metadata-items <metadata-items>]
-                            [--injected-files <injected-files>]
-                            [--injected-file-content-bytes <injected-file-content-bytes>]
-                            [--injected-file-path-bytes <injected-file-path-bytes>]
                             [--key-pairs <key-pairs>]
                             [--server-groups <server-groups>]
                             [--server-group-members <server-group-members>]
@@ -2687,16 +2688,6 @@ for proper version]
 
 ``--metadata-items <metadata-items>``
   New value for the "metadata-items" quota.
-
-``--injected-files <injected-files>``
-  New value for the "injected-files" quota.
-
-``--injected-file-content-bytes <injected-file-content-bytes>``
-  New value for the "injected-file-content-bytes" quota.
-
-``--injected-file-path-bytes <injected-file-path-bytes>``
-  New value for the "injected-file-path-bytes"
-  quota.
 
 ``--key-pairs <key-pairs>``
   New value for the "key-pairs" quota.
@@ -2750,7 +2741,8 @@ nova rebuild
    usage: nova rebuild [--rebuild-password <rebuild-password>] [--poll]
                        [--minimal] [--preserve-ephemeral] [--name <name>]
                        [--description <description>] [--meta <key=value>]
-                       [--file <dst-path=src-path>]
+                       [--key-name <key-name>] [--key-unset]
+                       [--user-data <user-data>] [--user-data-unset]
                        [--trusted-image-certificate-id <trusted-image-certificate-id>]
                        [--trusted-image-certificates-unset]
                        <server> <image>
@@ -2795,10 +2787,24 @@ Shutdown, re-image, and re-boot a server.
   /meta_data.json on the metadata server. Can be
   specified multiple times.
 
-``--file <dst-path=src-path>``
-  Store arbitrary files from <src-path> locally
-  to <dst-path> on the new server. You may store
-  up to 5 files.
+``--key-name <key-name>``
+  Keypair name to set in the server. Cannot be specified with
+  the '--key-unset' option.
+  (Supported by API versions '2.54' - '2.latest')
+
+``--key-unset``
+  Unset keypair in the server. Cannot be specified with
+  the '--key-name' option.
+  (Supported by API versions '2.54' - '2.latest')
+
+``--user-data <user-data>``
+  User data file to pass to be exposed by the metadata server.
+  (Supported by API versions '2.57' - '2.latest')
+
+``--user-data-unset``
+  Unset user_data in the server. Cannot be specified with
+  the '--user-data' option.
+  (Supported by API versions '2.57' - '2.latest')
 
 ``--trusted-image-certificate-id <trusted-image-certificate-id>``
   Trusted image certificate IDs used to validate certificates
@@ -3023,6 +3029,8 @@ Create a new server group with the specified details.
 ``<policy>``
   Policy for the server groups.
 
+**Optional arguments:**
+
 ``--rule``
   Policy rules for the server groups. (Supported by API versions
   '2.64' - '2.latest'）. Currently, only the ``max_server_per_host`` rule
@@ -3102,6 +3110,8 @@ Get the migrations list of specified server. (Supported by API versions '2.23'
 - '2.latest') [hint: use '--os-compute-api-version' flag to show help message
 for proper version]
 
+.. versionadded:: 3.3.0
+
 **Positional arguments:**
 
 ``<server>``
@@ -3119,6 +3129,8 @@ nova server-migration-show
 Get the migration of specified server. (Supported by API versions '2.23' -
 '2.latest') [hint: use '--os-compute-api-version' flag to show help message
 for proper version]
+
+.. versionadded:: 3.3.0
 
 **Positional arguments:**
 
@@ -3141,6 +3153,8 @@ Add one or more tags to a server. (Supported by API versions '2.26' -
 '2.latest') [hint: use '--os-compute-api-version' flag to show help message
 for proper version]
 
+.. versionadded:: 4.1.0
+
 **Positional arguments:**
 
 ``<server>``
@@ -3161,6 +3175,8 @@ nova server-tag-delete
 Delete one or more tags from a server. (Supported by API versions '2.26' -
 '2.latest') [hint: use '--os-compute-api-version' flag to show help message
 for proper version]
+
+.. versionadded:: 4.1.0
 
 **Positional arguments:**
 
@@ -3183,6 +3199,8 @@ Delete all tags from a server. (Supported by API versions '2.26' - '2.latest')
 [hint: use '--os-compute-api-version' flag to show help message for proper
 version]
 
+.. versionadded:: 4.1.0
+
 **Positional arguments:**
 
 ``<server>``
@@ -3201,6 +3219,8 @@ Get list of tags from a server. (Supported by API versions '2.26' -
 '2.latest') [hint: use '--os-compute-api-version' flag to show help message
 for proper version]
 
+.. versionadded:: 4.1.0
+
 **Positional arguments:**
 
 ``<server>``
@@ -3218,6 +3238,8 @@ nova server-tag-set
 Set list of tags to a server. (Supported by API versions '2.26' - '2.latest')
 [hint: use '--os-compute-api-version' flag to show help message for proper
 version]
+
+.. versionadded:: 4.1.0
 
 **Positional arguments:**
 
@@ -3241,7 +3263,7 @@ Delete the service.
 **Positional arguments:**
 
 ``<id>``
-  ID of service.
+  ID of service as a UUID. (Supported by API versions '2.53' - '2.latest')
 
 .. _nova_service-disable:
 
@@ -3250,22 +3272,19 @@ nova service-disable
 
 .. code-block:: console
 
-   usage: nova service-disable [--reason <reason>] <hostname> <binary>
+   usage: nova service-disable [--reason <reason>] <id>
 
 Disable the service.
 
 **Positional arguments:**
 
-``<hostname>``
-  Name of host.
-
-``<binary>``
-  Service binary.
+``<id>``
+  ID of the service as a UUID. (Supported by API versions '2.53' - '2.latest')
 
 **Optional arguments:**
 
 ``--reason <reason>``
-  Reason for disabling service.
+  Reason for disabling the service.
 
 .. _nova_service-enable:
 
@@ -3274,17 +3293,14 @@ nova service-enable
 
 .. code-block:: console
 
-   usage: nova service-enable <hostname> <binary>
+   usage: nova service-enable <id>
 
 Enable the service.
 
 **Positional arguments:**
 
-``<hostname>``
-  Name of host.
-
-``<binary>``
-  Service binary.
+``<id>``
+  ID of the service as a UUID. (Supported by API versions '2.53' - '2.latest')
 
 .. _nova_service-force-down:
 
@@ -3293,23 +3309,23 @@ nova service-force-down
 
 .. code-block:: console
 
-   usage: nova service-force-down [--unset] <hostname> <binary>
+   usage: nova service-force-down [--unset] <id>
 
 Force service to down. (Supported by API versions '2.11' - '2.latest') [hint:
 use '--os-compute-api-version' flag to show help message for proper version]
 
+.. versionadded:: 2.27.0
+
 **Positional arguments:**
 
-``<hostname>``
-  Name of host.
+``<id>``
+  ID of the service as a UUID. (Supported by API versions '2.53' - '2.latest')
 
-``<binary>``
-  Service binary.
 
 **Optional arguments:**
 
 ``--unset``
-  Unset the force state down of service.
+  Unset the forced_down state of the service.
 
 .. _nova_service-list:
 
@@ -3521,6 +3537,8 @@ Trigger crash dump in an instance. (Supported by API versions '2.17' -
 '2.latest') [hint: use '--os-compute-api-version' flag to show help message
 for proper version]
 
+.. versionadded:: 3.3.0
+
 **Positional arguments:**
 
 ``<server>``
@@ -3679,7 +3697,7 @@ nova volume-attach
 
 .. code-block:: console
 
-   usage: nova volume-attach <server> <volume> [<device>]
+   usage: nova volume-attach [--tag <tag>] <server> <volume> [<device>]
 
 Attach a volume to a server.
 
@@ -3694,6 +3712,11 @@ Attach a volume to a server.
 ``<device>``
   Name of the device e.g. /dev/vdb. Use "auto" for autoassign (if
   supported). Libvirt driver will use default device name.
+
+**Optional arguments:**
+
+``--tag <tag>``
+  Tag for the attached volume. (Supported by API versions '2.49' - '2.latest')
 
 .. _nova_volume-attachments:
 
@@ -3754,3 +3777,14 @@ new volume.
 ``<dest_volid>``
   ID of the destination volume.
 
+.. _nova_bash-completion:
+
+nova bash-completion
+--------------------
+
+.. code-block:: console
+
+   usage: nova bash-completion
+
+Prints all of the commands and options to stdout so that the
+nova.bash_completion script doesn't have to hard code them.
