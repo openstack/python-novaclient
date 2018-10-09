@@ -15,9 +15,8 @@ For help on a specific :command:`nova` command, enter:
           of the ``nova`` CLI and into the ``openstack`` CLI. Using
           the ``openstack`` client where possible is preferred but
           there is not full parity yet for all of the ``nova`` commands.
-          For information on using the ``openstack`` CLI, see:
-
-          https://docs.openstack.org/python-openstackclient/latest/
+          For information on using the ``openstack`` CLI, see
+          :python-openstackclient-doc:`OpenStackClient <>`.
 
 .. _nova_command_usage:
 

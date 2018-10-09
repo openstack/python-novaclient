@@ -53,9 +53,8 @@ application, you can append a (name, version) tuple to the session's
     >>> sess = session.Session(auth=auth)
     >>> sess.additional_user_agent.append(('shade', '1.2.3'))
 
-For more information on this keystoneauth API, see `Using Sessions`_.
-
-.. _Using Sessions: https://docs.openstack.org/keystoneauth/latest/using-sessions.html
+For more information on this keystoneauth API, see
+:keystoneauth-doc:`Using Sessions <using-sessions.html>`.
 
 It is also possible to use an instance as a context manager in which case
 there will be a session kept alive for the duration of the with statement::

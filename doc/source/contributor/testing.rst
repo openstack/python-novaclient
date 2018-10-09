@@ -24,7 +24,7 @@ test targets that can be run to validate the code.
   Generate a coverage report on unit testing.
 
 Functional testing assumes the existence of a `clouds.yaml` file as supported
-by `os-client-config <https://docs.openstack.org/os-client-config/latest>`__
+by :os-client-config-doc:`os-client-config <>`.
 It assumes the existence of a cloud named `devstack` that behaves like a normal
 DevStack installation with a demo and an admin user/tenant - or clouds named
 `functional_admin` and `functional_nonadmin`.

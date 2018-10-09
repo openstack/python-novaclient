@@ -79,6 +79,11 @@ html_extra_path = ['_extra']
 repository_name = 'openstack/python-novaclient'
 bug_project = 'python-novaclient'
 bug_tag = ''
+openstack_projects = [
+    'keystoneauth',
+    'os-client-config',
+    'python-openstackclient',
+]
 
 # -- Options for manual page output ------------------------------------------
 
