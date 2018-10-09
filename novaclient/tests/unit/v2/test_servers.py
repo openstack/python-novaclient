@@ -455,9 +455,10 @@ class ServersTest(utils.FixturedTestCase):
         self.assertEqual('sample-server', server.name)
 
         self.assertRaises(exceptions.NoUniqueMatch, self.cs.servers.find,
-                          flavor={"id": 1, "name": "256 MB Server"})
+                          flavor={"id": 1, "name": "256 MiB Server"})
 
-        sl = self.cs.servers.findall(flavor={"id": 1, "name": "256 MB Server"})
+        sl = self.cs.servers.findall(flavor={"id": 1,
+                                             "name": "256 MiB Server"})
         self.assert_request_id(sl, fakes.FAKE_REQUEST_ID_LIST)
         self.assertEqual([1234, 5678, 9012], [s.id for s in sl])
 

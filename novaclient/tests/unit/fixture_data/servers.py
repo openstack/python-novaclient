@@ -43,7 +43,7 @@ class Base(base.Fixture):
             },
             "flavor": {
                 "id": 1,
-                "name": "256 MB Server",
+                "name": "256 MiB Server",
             },
             "hostId": "e4d909c290d0fb1ca068ffaddf22cbd0",
             "status": "BUILD",
@@ -85,7 +85,7 @@ class Base(base.Fixture):
             },
             "flavor": {
                 "id": 1,
-                "name": "256 MB Server",
+                "name": "256 MiB Server",
             },
             "hostId": "9e107d9d372bb6826bd81d3542a419d6",
             "status": "ACTIVE",
@@ -127,7 +127,7 @@ class Base(base.Fixture):
             "image": "",
             "flavor": {
                 "id": 1,
-                "name": "256 MB Server",
+                "name": "256 MiB Server",
             },
             "hostId": "9e107d9d372bb6826bd81d3542a419d6",
             "status": "ACTIVE",

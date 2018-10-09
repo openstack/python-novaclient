@@ -49,7 +49,7 @@ class SimpleReadOnlyNovaClientTest(base.ClientTestBase):
                           params='--flavor m1.tiny')
 
     def test_admin_flavor_list(self):
-        self.assertIn("Memory_MB", self.nova('flavor-list'))
+        self.assertIn("Memory_MiB", self.nova('flavor-list'))
 
     def test_admin_hypervisor_list(self):
         self.nova('hypervisor-list')

@@ -59,10 +59,10 @@ class FakeClient(object):
                self.assert_called('GET', '/flavors/aa1/os-extra_specs')
 
             2. self.run_command(["boot", "--image", "1",
-                                 "--flavor", "512 MB Server",
+                                 "--flavor", "512 MiB Server",
                                  "--max-count", "3", "server"])
                self.assert_called('GET', '/images/1', pos=0)
-               self.assert_called('GET', '/flavors/512 MB Server', pos=1)
+               self.assert_called('GET', '/flavors/512 MiB Server', pos=1)
                self.assert_called('GET', '/flavors?is_public=None', pos=2)
                self.assert_called('GET', '/flavors/2', pos=3)
                self.assert_called(

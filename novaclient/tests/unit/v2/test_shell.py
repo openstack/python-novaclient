@@ -1165,10 +1165,10 @@ class ShellTest(utils.TestCase):
 
     def test_boot_named_flavor(self):
         self.run_command(["boot", "--image", FAKE_UUID_1,
-                          "--flavor", "512 MB Server",
+                          "--flavor", "512 MiB Server",
                           "--max-count", "3", "server"])
         self.assert_called('GET', '/v2/images/' + FAKE_UUID_1, pos=0)
-        self.assert_called('GET', '/flavors/512 MB Server', pos=1)
+        self.assert_called('GET', '/flavors/512 MiB Server', pos=1)
         self.assert_called('GET', '/flavors?is_public=None', pos=2)
         self.assert_called('GET', '/flavors/2', pos=3)
         self.assert_called(
@@ -1404,15 +1404,15 @@ class ShellTest(utils.TestCase):
         self.assert_called_anytime('GET', '/flavors/aa1')
 
     def test_flavor_show_by_name(self):
-        self.run_command(['flavor-show', '128 MB Server'])
-        self.assert_called('GET', '/flavors/128 MB Server', pos=0)
+        self.run_command(['flavor-show', '128 MiB Server'])
+        self.assert_called('GET', '/flavors/128 MiB Server', pos=0)
         self.assert_called('GET', '/flavors?is_public=None', pos=1)
         self.assert_called('GET', '/flavors/aa1', pos=2)
         self.assert_called('GET', '/flavors/aa1/os-extra_specs', pos=3)
 
     def test_flavor_show_by_name_priv(self):
-        self.run_command(['flavor-show', '512 MB Server'])
-        self.assert_called('GET', '/flavors/512 MB Server', pos=0)
+        self.run_command(['flavor-show', '512 MiB Server'])
+        self.assert_called('GET', '/flavors/512 MiB Server', pos=0)
         self.assert_called('GET', '/flavors?is_public=None', pos=1)
         self.assert_called('GET', '/flavors/2', pos=2)
         self.assert_called('GET', '/flavors/2/os-extra_specs', pos=3)
@@ -1444,7 +1444,7 @@ class ShellTest(utils.TestCase):
                            {'addTenantAccess': {'tenant': 'proj2'}})
 
     def test_flavor_access_add_by_name(self):
-        self.run_command(['flavor-access-add', '512 MB Server', 'proj2'])
+        self.run_command(['flavor-access-add', '512 MiB Server', 'proj2'])
         self.assert_called('POST', '/flavors/2/action',
                            {'addTenantAccess': {'tenant': 'proj2'}})
 
@@ -1454,7 +1454,7 @@ class ShellTest(utils.TestCase):
                            {'removeTenantAccess': {'tenant': 'proj2'}})
 
     def test_flavor_access_remove_by_name(self):
-        self.run_command(['flavor-access-remove', '512 MB Server', 'proj2'])
+        self.run_command(['flavor-access-remove', '512 MiB Server', 'proj2'])
         self.assert_called('POST', '/flavors/2/action',
                            {'removeTenantAccess': {'tenant': 'proj2'}})
 
@@ -2336,8 +2336,8 @@ class ShellTest(utils.TestCase):
                            'start=2000-01-20T00:00:00&' +
                            'end=2005-02-01T00:00:00&' +
                            'detailed=1')
-        # Servers, RAM MB-Hours, CPU Hours, Disk GiB-Hours
-        self.assertIn('1       | 25451.76     | 49.71     | 0.00', stdout)
+        # Servers, RAM MiB-Hours, CPU Hours, Disk GiB-Hours
+        self.assertIn('1       | 25451.76      | 49.71     | 0.00', stdout)
 
     def test_usage_list_stitch_together_next_results(self):
         cmd = 'usage-list --start 2000-01-20 --end 2005-02-01'
@@ -2357,8 +2357,8 @@ class ShellTest(utils.TestCase):
                                'start=2000-01-20T00:00:00&'
                                'end=2005-02-01T00:00:00&'
                                'marker=%s&detailed=1' % (marker), pos=pos + 1)
-        # Servers, RAM MB-Hours, CPU Hours, Disk GiB-Hours
-        self.assertIn('2       | 50903.53     | 99.42     | 0.00', stdout)
+        # Servers, RAM MiB-Hours, CPU Hours, Disk GiB-Hours
+        self.assertIn('2       | 50903.53      | 99.42     | 0.00', stdout)
 
     def test_usage_list_no_args(self):
         timeutils.set_time_override(datetime.datetime(2005, 2, 1, 0, 0))
@@ -2377,8 +2377,8 @@ class ShellTest(utils.TestCase):
                            '/os-simple-tenant-usage/test?' +
                            'start=2000-01-20T00:00:00&' +
                            'end=2005-02-01T00:00:00')
-        # Servers, RAM MB-Hours, CPU Hours, Disk GiB-Hours
-        self.assertIn('1       | 25451.76     | 49.71     | 0.00', stdout)
+        # Servers, RAM MiB-Hours, CPU Hours, Disk GiB-Hours
+        self.assertIn('1       | 25451.76      | 49.71     | 0.00', stdout)
 
     def test_usage_stitch_together_next_results(self):
         cmd = 'usage --start 2000-01-20 --end 2005-02-01'
@@ -2397,8 +2397,8 @@ class ShellTest(utils.TestCase):
                                'start=2000-01-20T00:00:00&'
                                'end=2005-02-01T00:00:00&'
                                'marker=%s' % (marker), pos=pos + 1)
-        # Servers, RAM MB-Hours, CPU Hours, Disk GiB-Hours
-        self.assertIn('2       | 50903.53     | 99.42     | 0.00', stdout)
+        # Servers, RAM MiB-Hours, CPU Hours, Disk GiB-Hours
+        self.assertIn('2       | 50903.53      | 99.42     | 0.00', stdout)
 
     def test_usage_no_tenant(self):
         self.run_command('usage --start 2000-01-20 --end 2005-02-01')
