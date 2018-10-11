@@ -1036,9 +1036,13 @@ Boot a new server.
   to 0, for others need to be specified),
   shutdown=shutdown behaviour (either preserve
   or remove, for local destination set to
-  remove) and tag=device metadata tag
-  (optional). (Supported by API versions '2.42'
-  - '2.latest')
+  remove), tag=device metadata tag
+  (optional; supported by API versions '2.42'
+  - '2.latest'), and volume_type=type of volume
+  to create (either ID or name) when source is
+  `blank`, `image` or `snapshot` and dest is `volume`
+  (optional; supported by API versions '2.67'
+  - '2.latest').
 
 ``--swap <swap_size>``
   Create and attach a local swap block device of

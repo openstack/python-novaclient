@@ -624,6 +624,78 @@ class ShellTest(utils.TestCase):
                            'size=1,format=ext4,type=disk,shutdown=foobar '
                            'some-server' % FAKE_UUID_1))
 
+    def test_boot_from_volume_with_volume_type_old_microversion(self):
+        ex = self.assertRaises(
+            exceptions.CommandError, self.run_command,
+            'boot --flavor 1 --block-device id=%s,source=image,dest=volume,'
+            'size=1,bootindex=0,shutdown=remove,tag=foo,volume_type=lvm '
+            'bfv-server' % FAKE_UUID_1, api_version='2.66')
+        self.assertIn("'volume_type' in block device mapping is not supported "
+                      "in API version", six.text_type(ex))
+
+    def test_boot_from_volume_with_volume_type(self):
+        """Tests creating a volume-backed server from a source image and
+        specifying the type of volume to create with microversion 2.67.
+        """
+        self.run_command(
+            'boot --flavor 1 --block-device id=%s,source=image,dest=volume,'
+            'size=1,bootindex=0,shutdown=remove,tag=foo,volume_type=lvm '
+            'bfv-server' % FAKE_UUID_1, api_version='2.67')
+        self.assert_called_anytime(
+            'POST', '/servers',
+            {'server': {
+                'flavorRef': '1',
+                'name': 'bfv-server',
+                'block_device_mapping_v2': [
+                    {
+                        'uuid': FAKE_UUID_1,
+                        'source_type': 'image',
+                        'destination_type': 'volume',
+                        'volume_size': '1',
+                        'delete_on_termination': True,
+                        'tag': 'foo',
+                        'boot_index': '0',
+                        'volume_type': 'lvm'
+                    },
+                ],
+                'networks': 'auto',
+                'imageRef': '',
+                'min_count': 1,
+                'max_count': 1,
+            }})
+
+    def test_boot_from_volume_without_volume_type_2_67(self):
+        """Tests creating a volume-backed server from a source image but
+        without specifying the type of volume to create with microversion 2.67.
+        The volume_type parameter should be omitted in the request to the
+        API server.
+        """
+        self.run_command(
+            'boot --flavor 1 --block-device id=%s,source=image,dest=volume,'
+            'size=1,bootindex=0,shutdown=remove,tag=foo bfv-server' %
+            FAKE_UUID_1, api_version='2.67')
+        self.assert_called_anytime(
+            'POST', '/servers',
+            {'server': {
+                'flavorRef': '1',
+                'name': 'bfv-server',
+                'block_device_mapping_v2': [
+                    {
+                        'uuid': FAKE_UUID_1,
+                        'source_type': 'image',
+                        'destination_type': 'volume',
+                        'volume_size': '1',
+                        'delete_on_termination': True,
+                        'tag': 'foo',
+                        'boot_index': '0',
+                    },
+                ],
+                'networks': 'auto',
+                'imageRef': '',
+                'min_count': 1,
+                'max_count': 1,
+            }})
+
     def test_boot_metadata(self):
         self.run_command('boot --image %s --flavor 1 --meta foo=bar=pants'
                          ' --meta spam=eggs some-server ' % FAKE_UUID_1)
@@ -3913,6 +3985,7 @@ class ShellTest(utils.TestCase):
             62,  # There are no version-wrapped shell method changes for this.
             63,  # There are no version-wrapped shell method changes for this.
             65,  # There are no version-wrapped shell method changes for this.
+            67,  # There are no version-wrapped shell method changes for this.
         ])
         versions_supported = set(range(0,
                                  novaclient.API_MAX_VERSION.ver_minor + 1))
