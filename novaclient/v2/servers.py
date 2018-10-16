@@ -1305,6 +1305,14 @@ class ServerManager(base.BootingManagerWithFind):
             raise exceptions.UnsupportedAttribute("trusted_image_certificates",
                                                   "2.63")
 
+        if (block_device_mapping_v2 and
+                self.api_version < api_versions.APIVersion('2.67')):
+            for bdm in block_device_mapping_v2:
+                if bdm.get('volume_type'):
+                    raise ValueError(
+                        "Block device volume_type is not supported before "
+                        "microversion 2.67")
+
         boot_kwargs = dict(
             meta=meta, files=files, userdata=userdata,
             reservation_id=reservation_id, min_count=min_count,

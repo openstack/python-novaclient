@@ -1,0 +1,10 @@
+---
+features:
+  - |
+    Support is added for the `2.67 microversion`_ which allows specifying
+    a ``volume_type`` with the ``--block-device`` option on the ``nova boot``
+    command. The ``novaclient.v2.servers.ServerManager.create()`` method now
+    also supports a ``volume_type`` entry in the ``block_device_mapping_v2``
+    parameter.
+
+    .. _2.67 microversion: https://docs.openstack.org/nova/latest/reference/api-microversion-history.html#id60

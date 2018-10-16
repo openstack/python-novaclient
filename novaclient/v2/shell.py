@@ -71,6 +71,7 @@ CLIENT_BDM2_KEYS = {
     'type': 'device_type',
     'shutdown': 'delete_on_termination',
     'tag': 'tag',
+    'volume_type': 'volume_type'  # added in 2.67
 }
 
 
@@ -145,6 +146,8 @@ def _parse_block_device_mapping_v2(cs, args, image):
                     'delete_on_termination': False}
         bdm.append(bdm_dict)
 
+    supports_volume_type = cs.api_version == api_versions.APIVersion('2.67')
+
     for device_spec in args.block_device:
         spec_dict = _parse_device_spec(device_spec)
         bdm_dict = {}
@@ -152,6 +155,12 @@ def _parse_block_device_mapping_v2(cs, args, image):
         if ('tag' in spec_dict and not _supports_block_device_tags(cs)):
             raise exceptions.CommandError(
                 _("'tag' in block device mapping is not supported "
+                  "in API version %(version)s.")
+                % {'version': cs.api_version.get_string()})
+
+        if 'volume_type' in spec_dict and not supports_volume_type:
+            raise exceptions.CommandError(
+                _("'volume_type' in block device mapping is not supported "
                   "in API version %(version)s.")
                 % {'version': cs.api_version.get_string()})
 
@@ -709,6 +718,7 @@ def _boot(cs, args):
     action='append',
     default=[],
     start_version='2.42',
+    end_version='2.66',
     help=_("Block device mapping with the keys: "
            "id=UUID (image_id, snapshot_id or volume_id only if using source "
            "image, snapshot or volume) "
@@ -732,6 +742,38 @@ def _boot(cs, args):
            "shutdown=shutdown behaviour (either preserve or remove, "
            "for local destination set to remove) and "
            "tag=device metadata tag (optional)."))
+@utils.arg(
+    '--block-device',
+    metavar="key1=value1[,key2=value2...]",
+    action='append',
+    default=[],
+    start_version='2.67',
+    help=_("Block device mapping with the keys: "
+           "id=UUID (image_id, snapshot_id or volume_id only if using source "
+           "image, snapshot or volume) "
+           "source=source type (image, snapshot, volume or blank), "
+           "dest=destination type of the block device (volume or local), "
+           "bus=device's bus (e.g. uml, lxc, virtio, ...; if omitted, "
+           "hypervisor driver chooses a suitable default, "
+           "honoured only if device type is supplied) "
+           "type=device type (e.g. disk, cdrom, ...; defaults to 'disk') "
+           "device=name of the device (e.g. vda, xda, ...; "
+           "if omitted, hypervisor driver chooses suitable device "
+           "depending on selected bus; note the libvirt driver always "
+           "uses default device names), "
+           "size=size of the block device in MB(for swap) and in "
+           "GiB(for other formats) "
+           "(if omitted, hypervisor driver calculates size), "
+           "format=device will be formatted (e.g. swap, ntfs, ...; optional), "
+           "bootindex=integer used for ordering the boot disks "
+           "(for image backed instances it is equal to 0, "
+           "for others need to be specified), "
+           "shutdown=shutdown behaviour (either preserve or remove, "
+           "for local destination set to remove) and "
+           "tag=device metadata tag (optional), "
+           "volume_type=type of volume to create (either ID or name) when "
+           "source is blank, image or snapshot and dest is volume (optional)."
+           ))
 @utils.arg(
     '--swap',
     metavar="<swap_size>",
