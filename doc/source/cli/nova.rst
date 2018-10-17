@@ -1248,8 +1248,13 @@ Evacuate server from failed host.
   storage.
 
 ``--force``
-  Force to not verify the scheduler if a host is
-  provided. (Supported by API versions '2.29' -'2.latest')
+  Force an evacuation by not verifying the provided destination host by the
+  scheduler. (Supported by API versions '2.29' -'2.latest')
+
+  .. warning:: This could result in failures to actually evacuate the
+    server to the specified host. It is recommended to either not specify
+    a host so that the scheduler will pick one, or specify a host without
+    ``--force``.
 
 .. _nova_flavor-access-add:
 
@@ -1644,8 +1649,13 @@ Evacuate all instances from failed host.
   the scheduler will select a target.
 
 ``--force``
-  Force to not verify the scheduler if a host is
-  provided. (Supported by API versions '2.29' -'2.latest')
+  Force an evacuation by not verifying the provided destination host by the
+  scheduler. (Supported by API versions '2.29' -'2.latest')
+
+  .. warning:: This could result in failures to actually evacuate the
+    server to the specified host. It is recommended to either not specify
+    a host so that the scheduler will pick one, or specify a host without
+    ``--force``.
 
 ``--strict``
   Evacuate host with exact hypervisor hostname match
@@ -1678,7 +1688,8 @@ Live migrate all instances off the specified host to other available hosts.
 **Optional arguments:**
 
 ``--target-host <target_host>``
-  Name of target host.
+  Name of target host. If no host is specified, the scheduler will choose
+  one.
 
 ``--block-migrate``
   Enable block migration. (Default=auto)
@@ -1689,8 +1700,13 @@ Live migrate all instances off the specified host to other available hosts.
   simultaneously
 
 ``--force``
-  Force to not verify the scheduler if a host is
-  provided. (Supported by API versions '2.30' -'2.latest')
+  Force a live-migration by not verifying the provided destination host by
+  the scheduler. (Supported by API versions '2.30' -'2.latest')
+
+  .. warning:: This could result in failures to actually live migrate the
+    servers to the specified host. It is recommended to either not specify
+    a host so that the scheduler will pick one, or specify a host without
+    ``--force``.
 
 ``--strict``
   live Evacuate host with exact hypervisor hostname match
@@ -2341,7 +2357,8 @@ Migrate running server to a new machine.
   Name or ID of server.
 
 ``<host>``
-  Destination host name.
+  Destination host name. If no host is specified, the scheduler will choose
+  one.
 
 **Optional arguments:**
 
@@ -2351,8 +2368,13 @@ Migrate running server to a new machine.
   '2.25' - '2.latest')
 
 ``--force``
-  Force to not verify the scheduler if a host is provided.
-  (Supported by API versions '2.30' - '2.latest')
+  Force a live-migration by not verifying the provided destination host by
+  the scheduler. (Supported by API versions '2.30' -'2.latest')
+
+  .. warning:: This could result in failures to actually live migrate the
+    server to the specified host. It is recommended to either not specify
+    a host so that the scheduler will pick one, or specify a host without
+    ``--force``.
 
 .. _nova_live-migration-abort:
 

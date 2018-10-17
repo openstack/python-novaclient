@@ -3425,7 +3425,8 @@ def _print_aggregate_details(cs, aggregate):
 @utils.arg('server', metavar='<server>', help=_('Name or ID of server.'))
 @utils.arg(
     'host', metavar='<host>', default=None, nargs='?',
-    help=_('Destination host name.'))
+    help=_('Destination host name. If no host is specified, the scheduler '
+           'will choose one.'))
 @utils.arg(
     '--block-migrate',
     action='store_true',
@@ -3452,7 +3453,11 @@ def _print_aggregate_details(cs, aggregate):
     dest='force',
     action='store_true',
     default=False,
-    help=_('Force to not verify the scheduler if a host is provided.'),
+    help=_('Force a live-migration by not verifying the provided destination '
+           'host by the scheduler. WARNING: This could result in failures to '
+           'actually live migrate the server to the specified host. It is '
+           'recommended to either not specify a host so that the scheduler '
+           'will pick one, or specify a host without --force.'),
     start_version='2.30')
 def do_live_migration(cs, args):
     """Migrate running server to a new machine."""
@@ -4437,7 +4442,11 @@ def do_quota_class_update(cs, args):
     dest='force',
     action='store_true',
     default=False,
-    help=_('Force to not verify the scheduler if a host is provided.'),
+    help=_('Force an evacuation by not verifying the provided destination '
+           'host by the scheduler. WARNING: This could result in failures to '
+           'actually evacuate the server to the specified host. It is '
+           'recommended to either not specify a host so that the scheduler '
+           'will pick one, or specify a host without --force.'),
     start_version='2.29')
 def do_evacuate(cs, args):
     """Evacuate server from failed host."""
@@ -4890,7 +4899,11 @@ def _hyper_servers(cs, host, strict):
     dest='force',
     action='store_true',
     default=False,
-    help=_('Force to not verify the scheduler if a host is provided.'),
+    help=_('Force an evacuation by not verifying the provided destination '
+           'host by the scheduler. WARNING: This could result in failures to '
+           'actually evacuate the server to the specified host. It is '
+           'recommended to either not specify a host so that the scheduler '
+           'will pick one, or specify a host without --force.'),
     start_version='2.29')
 @utils.arg(
     '--strict',
@@ -4945,7 +4958,8 @@ def _server_live_migrate(cs, server, args):
     '--target-host',
     metavar='<target_host>',
     default=None,
-    help=_('Name of target host.'))
+    help=_('Name of target host. If no host is specified, the scheduler will '
+           'choose one.'))
 @utils.arg(
     '--block-migrate',
     action='store_true',
@@ -4975,7 +4989,11 @@ def _server_live_migrate(cs, server, args):
     dest='force',
     action='store_true',
     default=False,
-    help=_('Force to not verify the scheduler if a host is provided.'),
+    help=_('Force a live-migration by not verifying the provided destination '
+           'host by the scheduler. WARNING: This could result in failures to '
+           'actually live migrate the servers to the specified host. It is '
+           'recommended to either not specify a host so that the scheduler '
+           'will pick one, or specify a host without --force.'),
     start_version='2.30')
 @utils.arg(
     '--strict',
