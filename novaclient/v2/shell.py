@@ -1423,7 +1423,9 @@ def _print_flavor(flavor):
     dest='instance_name',
     metavar='<name-regexp>',
     default=None,
-    help=_('Search with regular expression match by server name.'))
+    action=shell.DeprecatedAction,
+    help=_('Search with regular expression match by server name. The option '
+           'is not used and will be removed in T release.'))
 @utils.arg(
     '--status',
     dest='status',
