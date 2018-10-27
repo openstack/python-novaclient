@@ -644,7 +644,7 @@ def _boot(cs, args):
            "if omitted, hypervisor driver chooses suitable device "
            "depending on selected bus; note the libvirt driver always "
            "uses default device names), "
-           "size=size of the block device in MB(for swap) and in "
+           "size=size of the block device in MiB(for swap) and in "
            "GiB(for other formats) "
            "(if omitted, hypervisor driver calculates size), "
            "format=device will be formatted (e.g. swap, ntfs, ...; optional), "
@@ -674,7 +674,7 @@ def _boot(cs, args):
            "if omitted, hypervisor driver chooses suitable device "
            "depending on selected bus; note the libvirt driver always "
            "uses default device names), "
-           "size=size of the block device in MB(for swap) and in "
+           "size=size of the block device in MiB(for swap) and in "
            "GiB(for other formats) "
            "(if omitted, hypervisor driver calculates size), "
            "format=device will be formatted (e.g. swap, ntfs, ...; optional), "
@@ -703,7 +703,7 @@ def _boot(cs, args):
            "if omitted, hypervisor driver chooses suitable device "
            "depending on selected bus; note the libvirt driver always "
            "uses default device names), "
-           "size=size of the block device in MB(for swap) and in "
+           "size=size of the block device in MiB(for swap) and in "
            "GiB(for other formats) "
            "(if omitted, hypervisor driver calculates size), "
            "format=device will be formatted (e.g. swap, ntfs, ...; optional), "
@@ -732,7 +732,7 @@ def _boot(cs, args):
            "if omitted, hypervisor driver chooses suitable device "
            "depending on selected bus; note the libvirt driver always "
            "uses default device names), "
-           "size=size of the block device in MB(for swap) and in "
+           "size=size of the block device in MiB(for swap) and in "
            "GiB(for other formats) "
            "(if omitted, hypervisor driver calculates size), "
            "format=device will be formatted (e.g. swap, ntfs, ...; optional), "
@@ -761,7 +761,7 @@ def _boot(cs, args):
            "if omitted, hypervisor driver chooses suitable device "
            "depending on selected bus; note the libvirt driver always "
            "uses default device names), "
-           "size=size of the block device in MB(for swap) and in "
+           "size=size of the block device in MiB(for swap) and in "
            "GiB(for other formats) "
            "(if omitted, hypervisor driver calculates size), "
            "format=device will be formatted (e.g. swap, ntfs, ...; optional), "
@@ -778,7 +778,7 @@ def _boot(cs, args):
     '--swap',
     metavar="<swap_size>",
     default=None,
-    help=_("Create and attach a local swap block device of <swap_size> MB."))
+    help=_("Create and attach a local swap block device of <swap_size> MiB."))
 @utils.arg(
     '--ephemeral',
     metavar="size=<size>[,format=<format>]",
@@ -1060,7 +1060,7 @@ def _translate_extended_states(collection):
 
 
 def _translate_flavor_keys(collection):
-    _translate_keys(collection, [('ram', 'memory_mb')])
+    _translate_keys(collection, [('ram', 'memory_mib')])
 
 
 def _print_flavor_extra_specs(flavor):
@@ -1076,7 +1076,7 @@ def _print_flavor_list(cs, flavors, show_extra_specs=False):
     headers = [
         'ID',
         'Name',
-        'Memory_MB',
+        'Memory_MiB',
         'Disk',
         'Ephemeral',
         'Swap',
@@ -1129,7 +1129,7 @@ def _print_flavor_list(cs, flavors, show_extra_specs=False):
     dest='min_ram',
     metavar='<min-ram>',
     default=None,
-    help=_('Filters the flavors by a minimum RAM, in MB.'))
+    help=_('Filters the flavors by a minimum RAM, in MiB.'))
 @utils.arg(
     '--limit',
     dest='limit',
@@ -1196,7 +1196,7 @@ def do_flavor_show(cs, args):
 @utils.arg(
     'ram',
     metavar='<ram>',
-    help=_("Memory size in MB."))
+    help=_("Memory size in MiB."))
 @utils.arg(
     'disk',
     metavar='<disk>',
@@ -1213,7 +1213,7 @@ def do_flavor_show(cs, args):
 @utils.arg(
     '--swap',
     metavar='<swap>',
-    help=_("Additional swap space size in MB (default 0)."),
+    help=_("Additional swap space size in MiB (default 0)."),
     default=0)
 @utils.arg(
     '--rxtx-factor',
@@ -3089,7 +3089,7 @@ def _merge_usage_list(usages, next_usage_list):
 def do_usage_list(cs, args):
     """List usage data for all tenants."""
     dateformat = "%Y-%m-%d"
-    rows = ["Tenant ID", "Servers", "RAM MB-Hours", "CPU Hours",
+    rows = ["Tenant ID", "Servers", "RAM MiB-Hours", "CPU Hours",
             "Disk GiB-Hours"]
 
     now = timeutils.utcnow()
@@ -3158,7 +3158,7 @@ def do_usage_list(cs, args):
 def do_usage(cs, args):
     """Show usage data for a single tenant."""
     dateformat = "%Y-%m-%d"
-    rows = ["Servers", "RAM MB-Hours", "CPU Hours", "Disk GiB-Hours"]
+    rows = ["Servers", "RAM MiB-Hours", "CPU Hours", "Disk GiB-Hours"]
 
     now = timeutils.utcnow()
 
@@ -4810,13 +4810,13 @@ def do_cell_show(cs, args):
 def do_cell_capacities(cs, args):
     """Get cell capacities for all cells or a given cell."""
     cell = cs.cells.capacities(args.cell)
-    print(_("Ram Available: %s MB") % cell.capacities['ram_free']['total_mb'])
+    print(_("Ram Available: %s MiB") % cell.capacities['ram_free']['total_mb'])
     utils.print_dict(cell.capacities['ram_free']['units_by_mb'],
-                     dict_property='Ram(MB)', dict_value="Units")
-    print(_("\nDisk Available: %s MB") %
+                     dict_property='Ram(MiB)', dict_value="Units")
+    print(_("\nDisk Available: %s MiB") %
           cell.capacities['disk_free']['total_mb'])
     utils.print_dict(cell.capacities['disk_free']['units_by_mb'],
-                     dict_property='Disk(MB)', dict_value="Units")
+                     dict_property='Disk(MiB)', dict_value="Units")
 
 
 @utils.arg('server', metavar='<server>', help='Name or ID of server.')

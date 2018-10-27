@@ -122,11 +122,11 @@ class FlavorsTest(utils.TestCase):
         f = self.cs.flavors.find(ram=256)
         self.assert_request_id(f, fakes.FAKE_REQUEST_ID_LIST)
         self.cs.assert_called('GET', '/flavors/detail')
-        self.assertEqual('256 MB Server', f.name)
+        self.assertEqual('256 MiB Server', f.name)
 
         f = self.cs.flavors.find(disk=0)
         self.assert_request_id(f, fakes.FAKE_REQUEST_ID_LIST)
-        self.assertEqual('128 MB Server', f.name)
+        self.assertEqual('128 MiB Server', f.name)
 
         self.assertRaises(exceptions.NotFound, self.cs.flavors.find,
                           disk=12345)

@@ -1027,7 +1027,7 @@ Boot a new server.
   driver chooses suitable device depending on
   selected bus; note the libvirt driver always
   uses default device names), size=size of the
-  block device in MB(for swap) and in GiB(for
+  block device in MiB(for swap) and in GiB(for
   other formats) (if omitted, hypervisor driver
   calculates size), format=device will be
   formatted (e.g. swap, ntfs, ...; optional),
@@ -1046,7 +1046,7 @@ Boot a new server.
 
 ``--swap <swap_size>``
   Create and attach a local swap block device of
-  <swap_size> MB.
+  <swap_size> MiB.
 
 ``--ephemeral``
   size=<size>[,format=<format>]
@@ -1334,7 +1334,7 @@ Create a new flavor.
   generated a UUID for the ID.
 
 ``<ram>``
-  Memory size in MB.
+  Memory size in MiB.
 
 ``<disk>``
   Disk size in GiB.
@@ -1348,7 +1348,7 @@ Create a new flavor.
   Ephemeral space size in GiB (default 0).
 
 ``--swap <swap>``
-  Swap space size in MB (default 0).
+  Swap space size in MiB (default 0).
 
 ``--rxtx-factor <factor>``
   RX/TX factor (default 1).
@@ -1430,7 +1430,7 @@ Print a list of available 'flavors' (sizes of servers).
   Filters the flavors by a minimum disk space, in GiB.
 
 ``--min-ram <min-ram>``
-  Filters the flavors by a minimum RAM, in MB.
+  Filters the flavors by a minimum RAM, in MiB.
 
 ``--limit <limit>``
   Maximum number of flavors to display. If limit is

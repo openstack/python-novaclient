@@ -49,7 +49,7 @@ class BaseTest(utils.TestCase):
     def test_resource_lazy_getattr(self):
         cs = fakes.FakeClient(api_versions.APIVersion("2.0"))
         f = flavors.Flavor(cs.flavors, {'id': 1})
-        self.assertEqual('256 MB Server', f.name)
+        self.assertEqual('256 MiB Server', f.name)
         cs.assert_called('GET', '/flavors/1')
 
         # Missing stuff still fails after a second get

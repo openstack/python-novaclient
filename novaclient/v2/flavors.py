@@ -114,7 +114,7 @@ class FlavorManager(base.ManagerWithFind):
         :param marker: Begin returning flavors that appear later in the flavor
                        list than that represented by this flavor id (optional).
         :param min_disk: Filters the flavors by a minimum disk space, in GiB.
-        :param min_ram: Filters the flavors by a minimum RAM, in MB.
+        :param min_ram: Filters the flavors by a minimum RAM, in MiB.
         :param limit: maximum number of flavors to return (optional).
         :param sort_key: Flavors list sort key (optional).
         :param sort_dir: Flavors list sort direction (optional).
@@ -183,14 +183,14 @@ class FlavorManager(base.ManagerWithFind):
         """Create a flavor.
 
         :param name: Descriptive name of the flavor
-        :param ram: Memory in MB for the flavor
+        :param ram: Memory in MiB for the flavor
         :param vcpus: Number of VCPUs for the flavor
         :param disk: Size of local disk in GiB
         :param flavorid: ID for the flavor (optional). You can use the reserved
                          value ``"auto"`` to have Nova generate a UUID for the
                          flavor in cases where you cannot simply pass ``None``.
         :param ephemeral: Ephemeral disk space in GiB.
-        :param swap: Swap space in MB
+        :param swap: Swap space in MiB
         :param rxtx_factor: RX/TX factor
         :param is_public: Whether or not the flavor is public.
         :param description: A free form description of the flavor.

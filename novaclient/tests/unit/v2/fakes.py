@@ -409,7 +409,7 @@ class FakeSessionClient(base_client.SessionClient):
                 },
                 "flavor": {
                     "id": 1,
-                    "name": "256 MB Server",
+                    "name": "256 MiB Server",
                 },
                 "hostId": "e4d909c290d0fb1ca068ffaddf22cbd0",
                 "status": "BUILD",
@@ -450,7 +450,7 @@ class FakeSessionClient(base_client.SessionClient):
                 },
                 "flavor": {
                     "id": 1,
-                    "name": "256 MB Server",
+                    "name": "256 MiB Server",
                 },
                 "hostId": "9e107d9d372bb6826bd81d3542a419d6",
                 "status": "ACTIVE",
@@ -491,7 +491,7 @@ class FakeSessionClient(base_client.SessionClient):
                 "image": "",
                 "flavor": {
                     "id": 1,
-                    "name": "256 MB Server",
+                    "name": "256 MiB Server",
                 },
                 "hostId": "9e107d9d372bb6826bd81d3542a419d6",
                 "status": "ACTIVE",
@@ -844,19 +844,19 @@ class FakeSessionClient(base_client.SessionClient):
 
     def get_flavors_detail(self, **kw):
         flavors = {'flavors': [
-            {'id': 1, 'name': '256 MB Server', 'ram': 256, 'disk': 10,
+            {'id': 1, 'name': '256 MiB Server', 'ram': 256, 'disk': 10,
              'OS-FLV-EXT-DATA:ephemeral': 10,
              'os-flavor-access:is_public': True,
              'links': {}},
-            {'id': 2, 'name': '512 MB Server', 'ram': 512, 'disk': 20,
+            {'id': 2, 'name': '512 MiB Server', 'ram': 512, 'disk': 20,
              'OS-FLV-EXT-DATA:ephemeral': 20,
              'os-flavor-access:is_public': False,
              'links': {}},
-            {'id': 4, 'name': '1024 MB Server', 'ram': 1024, 'disk': 10,
+            {'id': 4, 'name': '1024 MiB Server', 'ram': 1024, 'disk': 10,
              'OS-FLV-EXT-DATA:ephemeral': 10,
              'os-flavor-access:is_public': True,
              'links': {}},
-            {'id': 'aa1', 'name': '128 MB Server', 'ram': 128, 'disk': 0,
+            {'id': 'aa1', 'name': '128 MiB Server', 'ram': 128, 'disk': 0,
              'OS-FLV-EXT-DATA:ephemeral': 0,
              'os-flavor-access:is_public': True,
              'links': {}}
@@ -925,16 +925,16 @@ class FakeSessionClient(base_client.SessionClient):
             FAKE_RESPONSE_HEADERS,
             {'flavor': {
                 'id': 3,
-                'name': '256 MB Server',
+                'name': '256 MiB Server',
                 'ram': 256,
                 'disk': 10,
             }},
         )
 
-    def get_flavors_512_MB_Server(self, **kw):
+    def get_flavors_512_MiB_Server(self, **kw):
         raise exceptions.NotFound('404')
 
-    def get_flavors_128_MB_Server(self, **kw):
+    def get_flavors_128_MiB_Server(self, **kw):
         raise exceptions.NotFound('404')
 
     def get_flavors_80645cf4_6ad3_410a_bbc8_6f3e1e291f51(self, **kw):
