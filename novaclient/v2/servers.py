@@ -710,6 +710,7 @@ class ServerManager(base.BootingManagerWithFind):
             body["server"]["availability_zone"] = availability_zone
 
         # Block device mappings are passed as a list of dictionaries
+        # in the create API
         if block_device_mapping:
             body['server']['block_device_mapping'] = \
                 self._parse_block_device_mapping(block_device_mapping)
@@ -1229,8 +1230,8 @@ class ServerManager(base.BootingManagerWithFind):
                                   placement.
         :param block_device_mapping: (optional extension) A dict of block
                       device mappings for this server.
-        :param block_device_mapping_v2: (optional extension) A dict of block
-                      device mappings for this server.
+        :param block_device_mapping_v2: (optional extension) A list of block
+                      device mappings (dicts) for this server.
         :param nics:  An ordered list of nics (dicts) to be added to this
                       server, with information about connected networks,
                       fixed IPs, port etc.
