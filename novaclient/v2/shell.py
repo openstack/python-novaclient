@@ -3688,7 +3688,13 @@ def do_service_force_down(cs, args):
            help=_('ID of service as an integer. Note that this may not '
                   'uniquely identify a service in a multi-cell deployment.'))
 def do_service_delete(cs, args):
-    """Delete the service by integer ID."""
+    """Delete the service by integer ID.
+
+    If deleting a nova-compute service, be sure to stop the actual
+    nova-compute process on the physical host before deleting the
+    service with this command. Failing to do so can lead to the running
+    service re-creating orphaned compute_nodes table records in the database.
+    """
     cs.services.delete(args.id)
 
 
@@ -3696,7 +3702,13 @@ def do_service_delete(cs, args):
 @api_versions.wraps('2.53')
 @utils.arg('id', metavar='<id>', help=_('ID of service as a UUID.'))
 def do_service_delete(cs, args):
-    """Delete the service by UUID ID."""
+    """Delete the service by UUID ID.
+
+    If deleting a nova-compute service, be sure to stop the actual
+    nova-compute process on the physical host before deleting the
+    service with this command. Failing to do so can lead to the running
+    service re-creating orphaned compute_nodes table records in the database.
+    """
     cs.services.delete(args.id)
 
 
