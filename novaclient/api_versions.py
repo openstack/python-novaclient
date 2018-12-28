@@ -324,11 +324,11 @@ def update_headers(headers, api_version):
 def check_headers(response, api_version):
     """Checks that microversion header is in response."""
     if api_version.ver_minor > 0:
-        if (api_version.ver_minor < 27
-                and LEGACY_HEADER_NAME not in response.headers):
+        if (api_version.ver_minor < 27 and
+                LEGACY_HEADER_NAME not in response.headers):
             _warn_missing_microversion_header(LEGACY_HEADER_NAME)
-        elif (api_version.ver_minor >= 27
-                and HEADER_NAME not in response.headers):
+        elif (api_version.ver_minor >= 27 and
+                HEADER_NAME not in response.headers):
             _warn_missing_microversion_header(HEADER_NAME)
 
 

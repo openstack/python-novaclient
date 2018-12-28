@@ -30,15 +30,15 @@ from keystoneauth1 import session as ksession
 from oslo_utils import importutils
 import pkg_resources
 
-osprofiler_profiler = importutils.try_import("osprofiler.profiler")
-osprofiler_web = importutils.try_import("osprofiler.web")
-
 import novaclient
 from novaclient import api_versions
 from novaclient import exceptions
 from novaclient import extension as ext
 from novaclient.i18n import _
 from novaclient import utils
+
+osprofiler_profiler = importutils.try_import("osprofiler.profiler")
+osprofiler_web = importutils.try_import("osprofiler.web")
 
 # TODO(jichenjc): when an extension in contrib is moved to core extension,
 # Add the name into the following list, then after last patch merged,

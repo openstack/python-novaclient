@@ -29,8 +29,6 @@ from oslo_utils import importutils
 from oslo_utils import strutils
 import six
 
-osprofiler_profiler = importutils.try_import("osprofiler.profiler")
-
 import novaclient
 from novaclient import api_versions
 from novaclient import client
@@ -38,6 +36,8 @@ from novaclient import exceptions as exc
 import novaclient.extension
 from novaclient.i18n import _
 from novaclient import utils
+
+osprofiler_profiler = importutils.try_import("osprofiler.profiler")
 
 DEFAULT_MAJOR_OS_COMPUTE_API_VERSION = "2.0"
 # The default behaviour of nova client CLI is that CLI negotiates with server

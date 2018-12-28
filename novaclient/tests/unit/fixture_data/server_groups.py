@@ -87,8 +87,8 @@ class Fixture(base.Fixture):
                                headers=headers)
 
         self.requests_mock.get(self.url(all_projects=True),
-                               json={'server_groups': server_groups
-                                     + other_project_server_groups},
+                               json={'server_groups': server_groups +
+                                     other_project_server_groups},
                                headers=headers)
 
         self.requests_mock.get(self.url(limit=2, offset=1),
