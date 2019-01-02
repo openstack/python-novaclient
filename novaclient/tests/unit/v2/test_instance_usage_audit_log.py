@@ -14,6 +14,7 @@
 #    under the License.
 
 from novaclient import api_versions
+from novaclient import exceptions
 from novaclient.tests.unit import utils
 from novaclient.tests.unit.v2 import fakes
 
@@ -35,3 +36,8 @@ class InstanceUsageAuditLogTests(utils.TestCase):
         self.cs.assert_called(
             'GET',
             '/os-instance_usage_audit_log/2016-12-10%2013%3A59%3A59.999999')
+
+    def test_instance_usage_audit_log_with_before_unicode(self):
+        before = u'\\u5de5\\u4f5c'
+        self.assertRaises(exceptions.BadRequest,
+                          self.cs.instance_usage_audit_log.get, before)

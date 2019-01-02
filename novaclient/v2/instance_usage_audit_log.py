@@ -13,6 +13,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from oslo_utils import encodeutils
+import six
 from six.moves.urllib import parse
 
 from novaclient import base
@@ -32,6 +34,8 @@ class InstanceUsageAuditLogManager(base.Manager):
                        before which to list usage audits.
         """
         if before:
+            if six.PY2:
+                before = encodeutils.safe_encode(before)
             return self._get('/os-instance_usage_audit_log/%s' %
                              parse.quote(before, safe=''),
                              'instance_usage_audit_log')

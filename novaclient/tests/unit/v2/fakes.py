@@ -126,6 +126,7 @@ class FakeSessionClient(base_client.SessionClient):
             munged_url = munged_url.replace('@', '_')
             munged_url = munged_url.replace('%20', '_')
             munged_url = munged_url.replace('%3A', '_')
+            munged_url = munged_url.replace('%', '_')
             callback = "%s_%s" % (method.lower(), munged_url)
 
         if url is None or callback == "get_http:__nova_api:8774":
@@ -176,6 +177,10 @@ class FakeSessionClient(base_client.SessionClient):
             "text": body,
             "headers": headers,
         })
+
+        if status >= 400:
+            raise exceptions.from_response(r, body, url, method)
+
         return r, body
 
     def get_versions(self):
@@ -2094,6 +2099,9 @@ class FakeSessionClient(base_client.SessionClient):
                 "period_ending": "2012-07-01 00:00:00",
                 "total_errors": 3,
                 "total_instances": 6}})
+
+    def get_os_instance_usage_audit_log__5Cu5de5_5Cu4f5c(self, **kw):
+        return (400, {}, {"Invalid timestamp for date \u6f22\u5b57"})
 
     def post_servers_uuid1_action(self, **kw):
         return 202, {}, {}
