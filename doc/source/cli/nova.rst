@@ -1249,7 +1249,7 @@ Evacuate server from failed host.
 
 ``--force``
   Force an evacuation by not verifying the provided destination host by the
-  scheduler. (Supported by API versions '2.29' -'2.latest')
+  scheduler. (Supported by API versions '2.29' - '2.67')
 
   .. warning:: This could result in failures to actually evacuate the
     server to the specified host. It is recommended to either not specify
@@ -1650,7 +1650,7 @@ Evacuate all instances from failed host.
 
 ``--force``
   Force an evacuation by not verifying the provided destination host by the
-  scheduler. (Supported by API versions '2.29' -'2.latest')
+  scheduler. (Supported by API versions '2.29' - '2.67')
 
   .. warning:: This could result in failures to actually evacuate the
     server to the specified host. It is recommended to either not specify
@@ -1701,7 +1701,7 @@ Live migrate all instances off the specified host to other available hosts.
 
 ``--force``
   Force a live-migration by not verifying the provided destination host by
-  the scheduler. (Supported by API versions '2.30' -'2.latest')
+  the scheduler. (Supported by API versions '2.30' - '2.67')
 
   .. warning:: This could result in failures to actually live migrate the
     servers to the specified host. It is recommended to either not specify
@@ -2369,7 +2369,7 @@ Migrate running server to a new machine.
 
 ``--force``
   Force a live-migration by not verifying the provided destination host by
-  the scheduler. (Supported by API versions '2.30' -'2.latest')
+  the scheduler. (Supported by API versions '2.30' - '2.67')
 
   .. warning:: This could result in failures to actually live migrate the
     server to the specified host. It is recommended to either not specify

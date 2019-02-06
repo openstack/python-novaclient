@@ -3464,7 +3464,8 @@ def _print_aggregate_details(cs, aggregate):
            'actually live migrate the server to the specified host. It is '
            'recommended to either not specify a host so that the scheduler '
            'will pick one, or specify a host without --force.'),
-    start_version='2.30')
+    start_version='2.30',
+    end_version='2.67')
 def do_live_migration(cs, args):
     """Migrate running server to a new machine."""
 
@@ -4453,10 +4454,12 @@ def do_quota_class_update(cs, args):
            'actually evacuate the server to the specified host. It is '
            'recommended to either not specify a host so that the scheduler '
            'will pick one, or specify a host without --force.'),
-    start_version='2.29')
+    start_version='2.29',
+    end_version='2.67')
 def do_evacuate(cs, args):
     """Evacuate server from failed host."""
 
+    # TODO(stephenfin): Simply call '_server_evacuate' instead?
     server = _find_server(cs, args.server)
     on_shared_storage = getattr(args, 'on_shared_storage', None)
     force = getattr(args, 'force', None)
@@ -4843,8 +4846,11 @@ def _server_evacuate(cs, server, args):
     success = True
     error_message = ""
     try:
-        if api_versions.APIVersion("2.29") <= cs.api_version:
-            # if microversion >= 2.29
+        if api_versions.APIVersion('2.68') <= cs.api_version:
+            # if microversion >= 2.68
+            cs.servers.evacuate(server=server['uuid'], host=args.target_host)
+        elif api_versions.APIVersion('2.29') <= cs.api_version:
+            # if microversion 2.29 - 2.67
             force = getattr(args, 'force', None)
             cs.servers.evacuate(server=server['uuid'], host=args.target_host,
                                 force=force)
@@ -4910,7 +4916,8 @@ def _hyper_servers(cs, host, strict):
            'actually evacuate the server to the specified host. It is '
            'recommended to either not specify a host so that the scheduler '
            'will pick one, or specify a host without --force.'),
-    start_version='2.29')
+    start_version='2.29',
+    end_version='2.67')
 @utils.arg(
     '--strict',
     dest='strict',
@@ -5000,7 +5007,8 @@ def _server_live_migrate(cs, server, args):
            'actually live migrate the servers to the specified host. It is '
            'recommended to either not specify a host so that the scheduler '
            'will pick one, or specify a host without --force.'),
-    start_version='2.30')
+    start_version='2.30',
+    end_version='2.67')
 @utils.arg(
     '--strict',
     dest='strict',

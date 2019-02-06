@@ -444,7 +444,7 @@ class Server(base.Resource):
             block_migration = "auto"
         return self.manager.live_migrate(self, host, block_migration)
 
-    @api_versions.wraps("2.30")
+    @api_versions.wraps("2.30", "2.67")
     def live_migrate(self, host=None, block_migration=None, force=None):
         """
         Migrates a running instance to a new machine.
@@ -458,6 +458,20 @@ class Server(base.Resource):
         if block_migration is None:
             block_migration = "auto"
         return self.manager.live_migrate(self, host, block_migration, force)
+
+    @api_versions.wraps("2.68")
+    def live_migrate(self, host=None, block_migration=None):
+        """
+        Migrates a running instance to a new machine.
+
+        :param host: destination host name.
+        :param block_migration: if True, do block_migration, the default
+                                value is None which is mapped to 'auto'.
+        :returns: An instance of novaclient.base.TupleWithMeta
+        """
+        if block_migration is None:
+            block_migration = "auto"
+        return self.manager.live_migrate(self, host, block_migration)
 
     def reset_state(self, state='error'):
         """
@@ -524,7 +538,7 @@ class Server(base.Resource):
         """
         return self.manager.evacuate(self, host, password)
 
-    @api_versions.wraps("2.29")
+    @api_versions.wraps("2.29", "2.67")
     def evacuate(self, host=None, password=None, force=None):
         """
         Evacuate an instance from failed host to specified host.
@@ -536,6 +550,18 @@ class Server(base.Resource):
         :returns: An instance of novaclient.base.TupleWithMeta
         """
         return self.manager.evacuate(self, host, password, force)
+
+    @api_versions.wraps("2.68")
+    def evacuate(self, host=None, password=None):
+        """
+        Evacuate an instance from failed host to specified host.
+
+        :param host: Name of the target host
+        :param password: string to set as admin password on the evacuated
+                         server.
+        :returns: An instance of novaclient.base.TupleWithMeta
+        """
+        return self.manager.evacuate(self, host, password)
 
     def interface_list(self):
         """
@@ -1670,6 +1696,24 @@ class ServerManager(base.BootingManagerWithFind):
 
         return result
 
+    def _live_migrate(self, server, host, block_migration, disk_over_commit,
+                      force):
+        """Inner function to abstract changes in live migration API."""
+        body = {
+            'host': host,
+            'block_migration': block_migration,
+        }
+
+        if disk_over_commit is not None:
+            body['disk_over_commit'] = disk_over_commit
+
+        # NOTE(stephenfin): For some silly reason, we don't set this if it's
+        # False, hence why we're not explicitly checking against None
+        if force:
+            body['force'] = force
+
+        return self._action('os-migrateLive', server, body)
+
     @api_versions.wraps('2.0', '2.24')
     def live_migrate(self, server, host, block_migration, disk_over_commit):
         """
@@ -1681,10 +1725,10 @@ class ServerManager(base.BootingManagerWithFind):
         :param disk_over_commit: if True, allow disk overcommit.
         :returns: An instance of novaclient.base.TupleWithMeta
         """
-        return self._action('os-migrateLive', server,
-                            {'host': host,
-                             'block_migration': block_migration,
-                             'disk_over_commit': disk_over_commit})
+        return self._live_migrate(server, host,
+                                  block_migration=block_migration,
+                                  disk_over_commit=disk_over_commit,
+                                  force=None)
 
     @api_versions.wraps('2.25', '2.29')
     def live_migrate(self, server, host, block_migration):
@@ -1697,11 +1741,12 @@ class ServerManager(base.BootingManagerWithFind):
                                 'auto'
         :returns: An instance of novaclient.base.TupleWithMeta
         """
-        return self._action('os-migrateLive', server,
-                            {'host': host,
-                             'block_migration': block_migration})
+        return self._live_migrate(server, host,
+                                  block_migration=block_migration,
+                                  disk_over_commit=None,
+                                  force=None)
 
-    @api_versions.wraps('2.30')
+    @api_versions.wraps('2.30', '2.67')
     def live_migrate(self, server, host, block_migration, force=None):
         """
         Migrates a running instance to a new machine.
@@ -1713,10 +1758,26 @@ class ServerManager(base.BootingManagerWithFind):
         :param force: forces to bypass the scheduler if host is provided.
         :returns: An instance of novaclient.base.TupleWithMeta
         """
-        body = {'host': host, 'block_migration': block_migration}
-        if force:
-            body['force'] = force
-        return self._action('os-migrateLive', server, body)
+        return self._live_migrate(server, host,
+                                  block_migration=block_migration,
+                                  disk_over_commit=None,
+                                  force=force)
+
+    @api_versions.wraps('2.68')
+    def live_migrate(self, server, host, block_migration):
+        """
+        Migrates a running instance to a new machine.
+
+        :param server: instance id which comes from nova list.
+        :param host: destination host name.
+        :param block_migration: if True, do block_migration, can be set as
+                                'auto'
+        :returns: An instance of novaclient.base.TupleWithMeta
+        """
+        return self._live_migrate(server, host,
+                                  block_migration=block_migration,
+                                  disk_over_commit=None,
+                                  force=None)
 
     def reset_state(self, server, state='error'):
         """
@@ -1771,66 +1832,13 @@ class ServerManager(base.BootingManagerWithFind):
                           base.getid(server), 'security_groups',
                           SecurityGroup)
 
-    @api_versions.wraps("2.0", "2.13")
-    def evacuate(self, server, host=None, on_shared_storage=True,
-                 password=None):
-        """
-        Evacuate a server instance.
-
-        :param server: The :class:`Server` (or its ID) to share onto.
-        :param host: Name of the target host.
-        :param on_shared_storage: Specifies whether instance files located
-                        on shared storage
-        :param password: string to set as password on the evacuated server.
-        :returns: An instance of novaclient.base.TupleWithMeta
-        """
-
-        body = {'onSharedStorage': on_shared_storage}
-        if host is not None:
-            body['host'] = host
-
-        if password is not None:
-            body['adminPass'] = password
-
-        resp, body = self._action_return_resp_and_body('evacuate', server,
-                                                       body)
-        return base.TupleWithMeta((resp, body), resp)
-
-    @api_versions.wraps("2.14", "2.28")
-    def evacuate(self, server, host=None, password=None):
-        """
-        Evacuate a server instance.
-
-        :param server: The :class:`Server` (or its ID) to share onto.
-        :param host: Name of the target host.
-        :param password: string to set as password on the evacuated server.
-        :returns: An instance of novaclient.base.TupleWithMeta
-        """
-
+    def _evacuate(self, server, host, on_shared_storage, password, force):
+        """Inner function to abstract changes in evacuate API."""
         body = {}
-        if host is not None:
-            body['host'] = host
 
-        if password is not None:
-            body['adminPass'] = password
+        if on_shared_storage is not None:
+            body['onSharedStorage'] = on_shared_storage
 
-        resp, body = self._action_return_resp_and_body('evacuate', server,
-                                                       body)
-        return base.TupleWithMeta((resp, body), resp)
-
-    @api_versions.wraps("2.29")
-    def evacuate(self, server, host=None, password=None, force=None):
-        """
-        Evacuate a server instance.
-
-        :param server: The :class:`Server` (or its ID) to share onto.
-        :param host: Name of the target host.
-        :param password: string to set as password on the evacuated server.
-        :param force: forces to bypass the scheduler if host is provided.
-        :returns: An instance of novaclient.base.TupleWithMeta
-        """
-
-        body = {}
         if host is not None:
             body['host'] = host
 
@@ -1843,6 +1851,70 @@ class ServerManager(base.BootingManagerWithFind):
         resp, body = self._action_return_resp_and_body('evacuate', server,
                                                        body)
         return base.TupleWithMeta((resp, body), resp)
+
+    @api_versions.wraps("2.0", "2.13")
+    def evacuate(self, server, host=None, on_shared_storage=True,
+                 password=None):
+        """
+        Evacuate a server instance.
+
+        :param server: The :class:`Server` (or its ID) to evacuate to.
+        :param host: Name of the target host.
+        :param on_shared_storage: Specifies whether instance files located
+                        on shared storage
+        :param password: string to set as password on the evacuated server.
+        :returns: An instance of novaclient.base.TupleWithMeta
+        """
+        return self._evacuate(server, host,
+                              on_shared_storage=on_shared_storage,
+                              password=password,
+                              force=None)
+
+    @api_versions.wraps("2.14", "2.28")
+    def evacuate(self, server, host=None, password=None):
+        """
+        Evacuate a server instance.
+
+        :param server: The :class:`Server` (or its ID) to evacuate to.
+        :param host: Name of the target host.
+        :param password: string to set as password on the evacuated server.
+        :returns: An instance of novaclient.base.TupleWithMeta
+        """
+        return self._evacuate(server, host,
+                              on_shared_storage=None,
+                              password=password,
+                              force=None)
+
+    @api_versions.wraps("2.29", "2.67")
+    def evacuate(self, server, host=None, password=None, force=None):
+        """
+        Evacuate a server instance.
+
+        :param server: The :class:`Server` (or its ID) to evacuate to.
+        :param host: Name of the target host.
+        :param password: string to set as password on the evacuated server.
+        :param force: forces to bypass the scheduler if host is provided.
+        :returns: An instance of novaclient.base.TupleWithMeta
+        """
+        return self._evacuate(server, host,
+                              on_shared_storage=None,
+                              password=password,
+                              force=force)
+
+    @api_versions.wraps("2.68")
+    def evacuate(self, server, host=None, password=None):
+        """
+        Evacuate a server instance.
+
+        :param server: The :class:`Server` (or its ID) to evacuate to.
+        :param host: Name of the target host.
+        :param password: string to set as password on the evacuated server.
+        :returns: An instance of novaclient.base.TupleWithMeta
+        """
+        return self._evacuate(server, host,
+                              on_shared_storage=None,
+                              password=password,
+                              force=None)
 
     def interface_list(self, server):
         """

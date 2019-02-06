@@ -1,0 +1,8 @@
+---
+upgrade:
+  - |
+    Added support for `microversion 2.68`_, which removes the ``--force`` option
+    from the ``nova evacuate``, ``nova live-migration``, ``nova host-evacuate``
+    and ``nova host-evacuate-live`` commands.
+
+    .. _microversion 2.68: https://docs.openstack.org/nova/latest/api_microversion_history.html#id61

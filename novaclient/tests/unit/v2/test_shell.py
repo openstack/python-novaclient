@@ -2690,6 +2690,18 @@ class ShellTest(utils.TestCase):
                                                'block_migration': 'auto',
                                                'force': True}})
 
+    def test_live_migration_v2_68(self):
+        self.run_command('live-migration sample-server hostname',
+                         api_version='2.68')
+        self.assert_called('POST', '/servers/1234/action',
+                           {'os-migrateLive': {'host': 'hostname',
+                                               'block_migration': 'auto'}})
+
+        self.assertRaises(
+            SystemExit, self.run_command,
+            'live-migration --force sample-server hostname',
+            api_version='2.68')
+
     def test_live_migration_force_complete(self):
         self.run_command('live-migration-force-complete sample-server 1',
                          api_version='2.22')
@@ -3436,6 +3448,17 @@ class ShellTest(utils.TestCase):
         self.assert_called('POST', '/servers/1234/action',
                            {'evacuate': {'host': 'new_host',
                                          'force': True}})
+
+    def test_evacuate_v2_68(self):
+        self.run_command('evacuate sample-server new_host',
+                         api_version='2.68')
+        self.assert_called('POST', '/servers/1234/action',
+                           {'evacuate': {'host': 'new_host'}})
+
+        self.assertRaises(
+            SystemExit, self.run_command,
+            'evacuate --force sample-server new_host',
+            api_version='2.68')
 
     def test_evacuate_with_no_target_host(self):
         self.run_command('evacuate sample-server')

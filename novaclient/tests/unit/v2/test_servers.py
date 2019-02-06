@@ -1655,3 +1655,43 @@ class ServersV267Test(ServersV263Test):
                                nics='none', block_device_mapping_v2=bdm)
         self.assertIn("Block device volume_type is not supported before "
                       "microversion 2.67", six.text_type(ex))
+
+
+class ServersV268Test(ServersV267Test):
+
+    api_version = "2.68"
+
+    def test_evacuate(self):
+        s = self.cs.servers.get(1234)
+        ret = s.evacuate('fake_target_host')
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
+        self.assert_called('POST', '/servers/1234/action',
+                           {'evacuate': {'host': 'fake_target_host'}})
+
+        ret = self.cs.servers.evacuate(s, 'fake_target_host')
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
+        self.assert_called('POST', '/servers/1234/action',
+                           {'evacuate': {'host': 'fake_target_host'}})
+
+        ex = self.assertRaises(TypeError, self.cs.servers.evacuate,
+                               'fake_target_host', force=True)
+        self.assertIn('force', six.text_type(ex))
+
+    def test_live_migrate_server(self):
+        s = self.cs.servers.get(1234)
+        ret = s.live_migrate(host='hostname', block_migration='auto')
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
+        self.assert_called('POST', '/servers/1234/action',
+                           {'os-migrateLive': {'host': 'hostname',
+                                               'block_migration': 'auto'}})
+
+        ret = self.cs.servers.live_migrate(s, host='hostname',
+                                           block_migration='auto')
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
+        self.assert_called('POST', '/servers/1234/action',
+                           {'os-migrateLive': {'host': 'hostname',
+                                               'block_migration': 'auto'}})
+
+        ex = self.assertRaises(TypeError, self.cs.servers.live_migrate,
+                               host='hostname', force=True)
+        self.assertIn('force', six.text_type(ex))
