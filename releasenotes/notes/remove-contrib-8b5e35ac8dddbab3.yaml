@@ -1,0 +1,5 @@
+---
+upgrade:
+  - All modules of ``novaclient.v2.contrib`` have been removed.
+  - The ``only_contrib`` parameter for the
+    ``novaclient.client.discover_extensions`` method is no longer valid.

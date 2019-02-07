@@ -40,11 +40,6 @@ from novaclient import utils
 osprofiler_profiler = importutils.try_import("osprofiler.profiler")
 osprofiler_web = importutils.try_import("osprofiler.web")
 
-# TODO(jichenjc): when an extension in contrib is moved to core extension,
-# Add the name into the following list, then after last patch merged,
-# remove the whole function
-extensions_ignored_name = ["__init__"]
-
 
 class SessionClient(adapter.LegacyJsonAdapter):
 
@@ -178,14 +173,6 @@ def discover_extensions(*args, **kwargs):
     """Returns the list of extensions, which can be discovered by python path
     and by entry-point 'novaclient.extension'.
     """
-    # TODO(mriedem): Remove support for 'only_contrib' in Queens.
-    if 'only_contrib' in kwargs and kwargs['only_contrib']:
-        warnings.warn(_('Discovering extensions only by contrib path is no '
-                        'longer supported since all contrib extensions '
-                        'have either been made required or removed. The '
-                        'only_contrib argument is deprecated and will be '
-                        'removed in a future release.'))
-        return []
     chain = itertools.chain(_discover_via_python_path(),
                             _discover_via_entry_points())
     return [ext.Extension(name, module) for name, module in chain]

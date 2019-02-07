@@ -23,7 +23,6 @@ from novaclient.v2 import aggregates
 from novaclient.v2 import assisted_volume_snapshots
 from novaclient.v2 import availability_zones
 from novaclient.v2 import cells
-from novaclient.v2 import contrib
 from novaclient.v2 import flavor_access
 from novaclient.v2 import flavors
 from novaclient.v2 import hypervisors
@@ -182,15 +181,6 @@ class Client(object):
         # Add in any extensions...
         if extensions:
             for extension in extensions:
-                # do not import extensions from contrib directory twice.
-                if extension.name in contrib.V2_0_EXTENSIONS:
-                    # NOTE(andreykurilin): this message looks more like
-                    #   warning or note, but it is not critical, so let's do
-                    #   not flood "warning" logging level and use just debug..
-                    self.logger.debug("Nova 2.0 extenstion '%s' is auto-loaded"
-                                      " by default. You do not need to specify"
-                                      " it manually.", extension.name)
-                    continue
                 if extension.manager_class:
                     setattr(self, extension.name,
                             extension.manager_class(self))

@@ -26,8 +26,7 @@ extensions = [
 apidoc_module_dir = '../../novaclient'
 apidoc_output_dir = 'reference/api'
 apidoc_excluded_paths = [
-    'tests/*',
-    'v2/contrib/*']
+    'tests/*']
 apidoc_separate_modules = True
 
 # The content that will be inserted into the main body of an autoclass

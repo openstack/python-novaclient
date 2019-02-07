@@ -109,23 +109,6 @@ class ClientsUtilsTest(utils.TestCase):
         mock_discover_via_entry_points.assert_called_once_with()
         self.assertEqual([mock_extension()] * 4, result)
 
-    @mock.patch('novaclient.client.warnings')
-    @mock.patch("novaclient.client._discover_via_entry_points")
-    @mock.patch("novaclient.client._discover_via_python_path")
-    @mock.patch("novaclient.extension.Extension")
-    def test_discover_extensions_only_contrib(
-            self, mock_extension, mock_discover_via_python_path,
-            mock_discover_via_entry_points, mock_warnings):
-
-        version = novaclient.api_versions.APIVersion("2.0")
-
-        self.assertEqual([], novaclient.client.discover_extensions(
-            version, only_contrib=True))
-        self.assertFalse(mock_discover_via_python_path.called)
-        self.assertFalse(mock_discover_via_entry_points.called)
-        self.assertFalse(mock_extension.called)
-        self.assertTrue(mock_warnings.warn.called)
-
     @mock.patch("novaclient.client.warnings")
     def test__check_arguments(self, mock_warnings):
         release = "Coolest"
