@@ -3518,8 +3518,14 @@ class ShellTest(utils.TestCase):
         self.assert_called('GET', '/servers/1234/os-security-groups')
 
     def test_interface_list(self):
-        self.run_command('interface-list 1234')
+        out = self.run_command('interface-list 1234')[0]
         self.assert_called('GET', '/servers/1234/os-interface')
+        self.assertNotIn('Tag', out)
+
+    def test_interface_list_v2_70(self):
+        out = self.run_command('interface-list 1234', api_version='2.70')[0]
+        self.assert_called('GET', '/servers/1234/os-interface')
+        self.assertIn('test-tag', out)
 
     def test_interface_attach(self):
         self.run_command('interface-attach --port-id port_id 1234')
@@ -3533,20 +3539,37 @@ class ShellTest(utils.TestCase):
             api_version='2.48')
 
     def test_interface_attach_with_tag(self):
-        self.run_command(
-            'interface-attach --port-id port_id --tag test_tag 1234',
-            api_version='2.49')
+        out = self.run_command(
+            'interface-attach --port-id port_id --tag test-tag 1234',
+            api_version='2.49')[0]
         self.assert_called('POST', '/servers/1234/os-interface',
                            {'interfaceAttachment': {'port_id': 'port_id',
-                                                    'tag': 'test_tag'}})
+                                                    'tag': 'test-tag'}})
+        self.assertNotIn('test-tag', out)
+
+    def test_interface_attach_v2_70(self):
+        out = self.run_command(
+            'interface-attach --port-id port_id --tag test-tag 1234',
+            api_version='2.70')[0]
+        self.assert_called('POST', '/servers/1234/os-interface',
+                           {'interfaceAttachment': {'port_id': 'port_id',
+                                                    'tag': 'test-tag'}})
+        self.assertIn('test-tag', out)
 
     def test_interface_detach(self):
         self.run_command('interface-detach 1234 port_id')
         self.assert_called('DELETE', '/servers/1234/os-interface/port_id')
 
     def test_volume_attachments(self):
-        self.run_command('volume-attachments 1234')
+        out = self.run_command('volume-attachments 1234')[0]
         self.assert_called('GET', '/servers/1234/os-volume_attachments')
+        self.assertNotIn('test-tag', out)
+
+    def test_volume_attachments_v2_70(self):
+        out = self.run_command(
+            'volume-attachments 1234', api_version='2.70')[0]
+        self.assert_called('GET', '/servers/1234/os-volume_attachments')
+        self.assertIn('test-tag', out)
 
     def test_volume_attach(self):
         self.run_command('volume-attach sample-server Work /dev/vdb')
@@ -3568,14 +3591,26 @@ class ShellTest(utils.TestCase):
             api_version='2.48')
 
     def test_volume_attach_with_tag(self):
-        self.run_command(
+        out = self.run_command(
             'volume-attach --tag test_tag sample-server Work /dev/vdb',
-            api_version='2.49')
+            api_version='2.49')[0]
         self.assert_called('POST', '/servers/1234/os-volume_attachments',
                            {'volumeAttachment':
                                {'device': '/dev/vdb',
                                 'volumeId': 'Work',
                                 'tag': 'test_tag'}})
+        self.assertNotIn('test-tag', out)
+
+    def test_volume_attach_with_tag_v2_70(self):
+        out = self.run_command(
+            'volume-attach --tag test-tag sample-server Work /dev/vdb',
+            api_version='2.70')[0]
+        self.assert_called('POST', '/servers/1234/os-volume_attachments',
+                           {'volumeAttachment':
+                               {'device': '/dev/vdb',
+                                'volumeId': 'Work',
+                                'tag': 'test-tag'}})
+        self.assertIn('test-tag', out)
 
     def test_volume_update(self):
         self.run_command('volume-update sample-server Work Work')
@@ -4045,6 +4080,7 @@ class ShellTest(utils.TestCase):
                  # cell, they will be handled on the client side by being
                  # skipped when forming the detailed lists for embedded
                  # flavor information.
+            70,  # There are no version-wrapped shell method changes for this.
         ])
         versions_supported = set(range(0,
                                  novaclient.API_MAX_VERSION.ver_minor + 1))

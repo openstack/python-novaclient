@@ -2004,7 +2004,7 @@ class FakeSessionClient(base_client.SessionClient):
                  "hosts": None}]})
 
     def get_servers_1234_os_interface(self, **kw):
-        return (200, {}, {
+        attachments = {
             "interfaceAttachments": [
                 {"port_state": "ACTIVE",
                  "net_id": "net-id-1",
@@ -2017,27 +2017,38 @@ class FakeSessionClient(base_client.SessionClient):
                  "port_id": "port-id-1",
                  "mac_address": "aa:bb:cc:dd:ee:ff",
                  "fixed_ips": [{"ip_address": "1.2.3.4"}],
-                 }]
-        })
+                 }
+            ]
+        }
+        if self.api_version >= api_versions.APIVersion('2.70'):
+            # Include the "tag" field in each attachment.
+            for attachment in attachments['interfaceAttachments']:
+                attachment['tag'] = 'test-tag'
+        return (200, {}, attachments)
 
     def post_servers_1234_os_interface(self, **kw):
-        return (200, {}, {'interfaceAttachment': {}})
+        attachment = {}
+        if self.api_version >= api_versions.APIVersion('2.70'):
+            # Include the "tag" field in the response.
+            attachment['tag'] = 'test-tag'
+        return (200, {}, {'interfaceAttachment': attachment})
 
     def delete_servers_1234_os_interface_port_id(self, **kw):
         return (200, {}, None)
 
     def post_servers_1234_os_volume_attachments(self, **kw):
-        return (200, FAKE_RESPONSE_HEADERS, {
-            "volumeAttachment":
-                {"device": "/dev/vdb",
-                 "volumeId": 2}})
+        attachment = {"device": "/dev/vdb", "volumeId": 2}
+        if self.api_version >= api_versions.APIVersion('2.70'):
+            # Include the "tag" field in the response.
+            attachment['tag'] = 'test-tag'
+        return (200, FAKE_RESPONSE_HEADERS, {"volumeAttachment": attachment})
 
     def put_servers_1234_os_volume_attachments_Work(self, **kw):
         return (200, FAKE_RESPONSE_HEADERS,
                 {"volumeAttachment": {"volumeId": 2}})
 
     def get_servers_1234_os_volume_attachments(self, **kw):
-        return (200, FAKE_RESPONSE_HEADERS, {
+        attachments = {
             "volumeAttachments": [
                 {"display_name": "Work",
                  "display_description": "volume for work",
@@ -2047,7 +2058,14 @@ class FakeSessionClient(base_client.SessionClient):
                  "attached": "2011-11-11T00:00:00Z",
                  "size": 1024,
                  "attachments": [{"id": "3333", "links": ''}],
-                 "metadata": {}}]})
+                 "metadata": {}}
+            ]
+        }
+        if self.api_version >= api_versions.APIVersion('2.70'):
+            # Include the "tag" field in each attachment.
+            for attachment in attachments['volumeAttachments']:
+                attachment['tag'] = 'test-tag'
+        return (200, FAKE_RESPONSE_HEADERS, attachments)
 
     def get_servers_1234_os_volume_attachments_Work(self, **kw):
         return (200, FAKE_RESPONSE_HEADERS, {

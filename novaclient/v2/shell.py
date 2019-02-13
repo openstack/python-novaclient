@@ -2617,7 +2617,11 @@ def do_volume_attachments(cs, args):
     """List all the volumes attached to a server."""
     volumes = cs.volumes.get_server_volumes(_find_server(cs, args.server).id)
     _translate_volume_attachments_keys(volumes)
-    utils.print_list(volumes, ['ID', 'DEVICE', 'SERVER ID', 'VOLUME ID'])
+    # Microversion >= 2.70 returns the tag value.
+    fields = ['ID', 'DEVICE', 'SERVER ID', 'VOLUME ID']
+    if cs.api_version >= api_versions.APIVersion('2.70'):
+        fields.append('TAG')
+    utils.print_list(volumes, fields)
 
 
 @api_versions.wraps('2.0', '2.5')
@@ -4497,9 +4501,11 @@ def do_evacuate(cs, args):
         utils.print_dict(res)
 
 
-def _print_interfaces(interfaces):
+def _print_interfaces(interfaces, show_tag=False):
     columns = ['Port State', 'Port ID', 'Net ID', 'IP addresses',
                'MAC Addr']
+    if show_tag:
+        columns.append('Tag')
 
     class FormattedInterface(object):
         def __init__(self, interface):
@@ -4519,7 +4525,9 @@ def do_interface_list(cs, args):
 
     res = server.interface_list()
     if isinstance(res, list):
-        _print_interfaces(res)
+        # The "tag" field is in the response starting with microversion 2.70.
+        show_tag = cs.api_version >= api_versions.APIVersion('2.70')
+        _print_interfaces(res, show_tag=show_tag)
 
 
 @utils.arg('server', metavar='<server>', help=_('Name or ID of server.'))
