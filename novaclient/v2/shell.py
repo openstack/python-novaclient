@@ -4530,10 +4530,21 @@ def do_interface_attach(cs, args):
     if 'tag' in args and args.tag:
         update_kwargs['tag'] = args.tag
 
-    res = server.interface_attach(args.port_id, args.net_id, args.fixed_ip,
-                                  **update_kwargs)
-    if isinstance(res, dict):
-        utils.print_dict(res)
+    network_interface = server.interface_attach(
+        args.port_id, args.net_id, args.fixed_ip, **update_kwargs)
+
+    _print_interface(network_interface)
+
+
+def _print_interface(interface):
+    ni_dict = interface.to_dict()
+
+    fixed_ips = ni_dict.pop('fixed_ips', None)
+    ni_dict['ip_address'] = (",".join(
+        [fip['ip_address'] for fip in fixed_ips])
+        if fixed_ips is not None else None)
+
+    utils.print_dict(ni_dict)
 
 
 @utils.arg('server', metavar='<server>', help=_('Name or ID of server.'))
@@ -4541,10 +4552,7 @@ def do_interface_attach(cs, args):
 def do_interface_detach(cs, args):
     """Detach a network interface from a server."""
     server = _find_server(cs, args.server)
-
-    res = server.interface_detach(args.port_id)
-    if isinstance(res, dict):
-        utils.print_dict(res)
+    server.interface_detach(args.port_id)
 
 
 @api_versions.wraps("2.17")

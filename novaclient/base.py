@@ -358,15 +358,19 @@ class Manager(HookableMixin):
         return self.resource_class(self, content, loaded=True,
                                    resp=resp)
 
-    def _create(self, url, body, response_key, return_raw=False, **kwargs):
+    def _create(self, url, body, response_key, return_raw=False,
+                obj_class=None, **kwargs):
         self.run_hooks('modify_body_for_create', body, **kwargs)
         resp, body = self.api.client.post(url, body=body)
         if return_raw:
             return self.convert_into_with_meta(body[response_key], resp)
 
-        with self.completion_cache('human_id', self.resource_class, mode="a"):
-            with self.completion_cache('uuid', self.resource_class, mode="a"):
-                return self.resource_class(self, body[response_key], resp=resp)
+        if obj_class is None:
+            obj_class = self.resource_class
+
+        with self.completion_cache('human_id', obj_class, mode="a"):
+            with self.completion_cache('uuid', obj_class, mode="a"):
+                return obj_class(self, body[response_key], resp=resp)
 
     def _delete(self, url):
         resp, body = self.api.client.delete(url)

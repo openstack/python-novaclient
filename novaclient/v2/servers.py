@@ -1944,7 +1944,8 @@ class ServerManager(base.BootingManagerWithFind):
                 {'ip_address': fixed_ip}]
 
         return self._create('/servers/%s/os-interface' % base.getid(server),
-                            body, 'interfaceAttachment')
+                            body, 'interfaceAttachment',
+                            obj_class=NetworkInterface)
 
     @api_versions.wraps("2.49")
     def interface_attach(self, server, port_id, net_id, fixed_ip, tag=None):
@@ -1973,7 +1974,8 @@ class ServerManager(base.BootingManagerWithFind):
             body['interfaceAttachment']['tag'] = tag
 
         return self._create('/servers/%s/os-interface' % base.getid(server),
-                            body, 'interfaceAttachment')
+                            body, 'interfaceAttachment',
+                            obj_class=NetworkInterface)
 
     def interface_detach(self, server, port_id):
         """
