@@ -20,6 +20,7 @@ Server interface.
 """
 
 import base64
+import collections
 
 from oslo_utils import encodeutils
 import six
@@ -399,10 +400,16 @@ class Server(base.Resource):
     def networks(self):
         """
         Generate a simplified list of addresses
+
+        :returns: An OrderedDict, keyed by network name, and sorted by network
+            name in ascending order.
         """
-        networks = {}
+        networks = collections.OrderedDict()
         try:
-            for network_label, address_list in self.addresses.items():
+            # Sort the keys by network name in natural (ascending) order.
+            network_labels = sorted(self.addresses.keys())
+            for network_label in network_labels:
+                address_list = self.addresses[network_label]
                 networks[network_label] = [a['addr'] for a in address_list]
             return networks
         except AttributeError:

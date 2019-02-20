@@ -453,6 +453,12 @@ class ServersTest(utils.FixturedTestCase):
         self.assert_request_id(server, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('GET', '/servers/1234')
         self.assertEqual('sample-server', server.name)
+        # The networks should be sorted.
+        networks = server.networks
+        self.assertEqual(2, len(networks))
+        labels = list(networks)  # returns the dict keys
+        self.assertEqual('private', labels[0])
+        self.assertEqual('public', labels[1])
 
         self.assertRaises(exceptions.NoUniqueMatch, self.cs.servers.find,
                           flavor={"id": 1, "name": "256 MiB Server"})

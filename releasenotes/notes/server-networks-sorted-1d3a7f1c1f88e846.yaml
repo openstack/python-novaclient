@@ -1,0 +1,7 @@
+---
+other:
+  - |
+    The ``novaclient.v2.servers.Server.networks`` property method now returns
+    an OrderedDict where the keys are sorted in natural (ascending) order.
+    This means the ``nova show`` and ``nova list`` output will have predictable
+    sort order on the networks attached to a server.
