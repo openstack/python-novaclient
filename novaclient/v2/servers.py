@@ -1236,6 +1236,10 @@ class ServerManager(base.BootingManagerWithFind):
         """
         Create (boot) a new server.
 
+        In order to create a server with pre-existing ports that contain a
+        ``resource_request`` value, such as for guaranteed minimum bandwidth
+        quality of service support, microversion ``2.72`` is required.
+
         :param name: Something to name the server.
         :param image: The :class:`Image` to boot with.
         :param flavor: The :class:`Flavor` to boot onto.

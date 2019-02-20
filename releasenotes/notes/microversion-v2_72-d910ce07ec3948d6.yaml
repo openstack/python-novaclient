@@ -1,0 +1,10 @@
+---
+features:
+  - |
+    Support has been added for `microversion 2.72`_. This microversion
+    allows creating a server using the ``nova boot`` command with
+    pre-existing ports having a ``resource_request`` value to enable
+    features such as guaranteed minimum bandwidth for `quality of service`_.
+
+    .. _microversion 2.72: https://docs.openstack.org/nova/latest/reference/api-microversion-history.html#id65
+    .. _quality of service: https://docs.openstack.org/neutron/latest/admin/config-qos.html

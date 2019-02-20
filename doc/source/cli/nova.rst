@@ -956,6 +956,10 @@ nova boot
 
 Boot a new server.
 
+In order to create a server with pre-existing ports that contain a
+``resource_request`` value, such as for guaranteed minimum bandwidth
+quality of service support, microversion ``2.72`` is required.
+
 **Positional arguments:**
 
 ``<name>``
