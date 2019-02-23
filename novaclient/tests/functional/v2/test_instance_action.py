@@ -160,12 +160,35 @@ class TestInstanceActionCLIV266(TestInstanceActionCLIV258,
     COMPUTE_API_VERSION = "2.66"
     expect_event_hostId_field = True
 
+    def _wait_for_instance_actions(self, server, expected_num_of_actions):
+        start_time = time.time()
+        # Time out after 60 seconds
+        while time.time() - start_time < 60:
+            actions = self.client.instance_action.list(server)
+            if len(actions) == expected_num_of_actions:
+                break
+            # Sleep 1 second
+            time.sleep(1)
+        else:
+            self.fail("The number of instance actions for server %s "
+                      "was not %d after 60 s" %
+                      (server.id, expected_num_of_actions))
+        # NOTE(takashin): In some DBMSs (e.g. MySQL 5.7), fractions
+        # (millisecond and microsecond) of DateTime column is not stored
+        # by default. So sleep an extra second.
+        time.sleep(1)
+        # Return time
+        return timeutils.utcnow().isoformat()
+
     def test_list_instance_action_with_changes_before(self):
         server = self._create_server()
-        end_create = timeutils.utcnow().isoformat()
+        end_create = self._wait_for_instance_actions(server, 1)
+        # NOTE(takashin): In some DBMSs (e.g. MySQL 5.7), fractions
+        # (millisecond and microsecond) of DateTime column is not stored
+        # by default. So sleep a second.
+        time.sleep(1)
         server.stop()
-        self._wait_for_state_change(server.id, 'shutoff')
-        end_stop = timeutils.utcnow().isoformat()
+        end_stop = self._wait_for_instance_actions(server, 2)
 
         stop_output = self.nova(
             "instance-action-list %s --changes-before %s" %
@@ -173,7 +196,10 @@ class TestInstanceActionCLIV266(TestInstanceActionCLIV258,
         action = self._get_list_of_values_from_single_column_table(
             stop_output, "Action")
         # The actions are sorted by created_at in descending order.
-        self.assertEqual(action, ['create', 'stop'])
+        self.assertEqual(['create', 'stop'], action,
+                         'Expected to find the create and stop actions with '
+                         '--changes-before=%s but got: %s\n\n' %
+                         (end_stop, stop_output))
 
         create_output = self.nova(
             "instance-action-list %s --changes-before %s" %
@@ -181,7 +207,7 @@ class TestInstanceActionCLIV266(TestInstanceActionCLIV258,
         action = self._get_list_of_values_from_single_column_table(
             create_output, "Action")
         # Provide detailed debug information if this fails.
-        self.assertEqual(action, ['create'],
+        self.assertEqual(['create'], action,
                          'Expected to find the create action with '
                          '--changes-before=%s but got: %s\n\n'
                          'First instance-action-list output: %s' %
