@@ -10,6 +10,9 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+from oslo_utils import encodeutils
+from six.moves.urllib import parse
+
 from novaclient import api_versions
 from novaclient.tests.unit.fixture_data import base
 
@@ -129,6 +132,31 @@ class V1(base.Fixture):
         self.requests_mock.get(url,
                                json=get_os_hypervisors_search,
                                headers=self.headers)
+
+        if uuid_as_id:
+            get_os_hypervisors_search_u_v2_53 = {
+                'error_name': 'BadRequest',
+                'message': 'Invalid input for query parameters '
+                           'hypervisor_hostname_pattern.',
+                'code': 400}
+            # hypervisor_hostname_pattern is encoded in the url method
+            url = self.url(hypervisor_hostname_pattern='\\u5de5\\u4f5c')
+            self.requests_mock.get(url,
+                                   json=get_os_hypervisors_search_u_v2_53,
+                                   headers=self.headers, status_code=400)
+        else:
+            get_os_hypervisors_search_unicode = {
+                'error_name': 'NotFound',
+                'message': "No hypervisor matching "
+                           "'\\u5de5\\u4f5c' could be found.",
+                'code': 404
+            }
+            hypervisor_hostname_pattern = parse.quote(encodeutils.safe_encode(
+                '\\u5de5\\u4f5c'))
+            url = self.url(hypervisor_hostname_pattern, 'search')
+            self.requests_mock.get(url,
+                                   json=get_os_hypervisors_search_unicode,
+                                   headers=self.headers, status_code=404)
 
         get_hyper_server = {
             'hypervisors': [
