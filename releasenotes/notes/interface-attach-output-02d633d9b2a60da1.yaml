@@ -1,0 +1,11 @@
+---
+upgrade:
+  - The ``nova interface-attach`` command shows output of its result
+    when it is successful.
+  - |
+    The following methods return a ``NetworkInterface`` object
+    instead of a ``Server`` object.
+
+    * The ``interface_attach`` method in the ``novaclient.v2.Server`` class
+    * The ``interface_attach`` method in the ``novaclient.v2.ServerManager``
+      class

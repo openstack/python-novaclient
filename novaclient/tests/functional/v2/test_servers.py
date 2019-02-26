@@ -326,3 +326,20 @@ class TestServersDetailsFlavorInfo(base.ClientTestBase):
         flavor_output = self.nova("flavor-show %s" % self.flavor.id)
         flavor_val = self._get_value_from_the_table(flavor_output, 'disk')
         self.assertEqual(flavor_val, server_flavor_val)
+
+
+class TestInterfaceAttach(base.ClientTestBase):
+
+    COMPUTE_API_VERSION = '2.latest'
+
+    def test_interface_attach(self):
+        server = self._create_server()
+        output = self.nova("interface-attach --net-id %s %s" %
+                           (self.network.id, server.id))
+
+        for key in ('ip_address', 'mac_addr', 'port_id', 'port_state'):
+            self._get_value_from_the_table(output, key)
+
+        self.assertEqual(
+            self.network.id,
+            self._get_value_from_the_table(output, 'net_id'))

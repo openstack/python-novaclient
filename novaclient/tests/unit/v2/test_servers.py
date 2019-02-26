@@ -947,6 +947,7 @@ class ServersTest(utils.FixturedTestCase):
         ret = s.interface_attach(None, None, None)
         self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('POST', '/servers/1234/os-interface')
+        self.assertIsInstance(ret, servers.NetworkInterface)
 
     def test_interface_detach(self):
         s = self.cs.servers.get(1234)
@@ -1415,6 +1416,7 @@ class ServersV249Test(ServersV2_37Test):
             {'interfaceAttachment':
                 {'port_id': '7f42712e-63fe-484c-a6df-30ae4867ff66',
                  'tag': 'test_tag'}})
+        self.assertIsInstance(ret, servers.NetworkInterface)
 
     def test_add_fixed_ip(self):
         # novaclient.v2.servers.Server.add_fixed_ip()
