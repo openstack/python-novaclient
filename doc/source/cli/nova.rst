@@ -3289,6 +3289,12 @@ nova service-delete
 
 Delete the service.
 
+.. important:: If deleting a nova-compute service, be sure to stop the actual
+    ``nova-compute`` process on the physical host *before* deleting the
+    service with this command. Failing to do so can lead to the running
+    service re-creating orphaned **compute_nodes** table records in the
+    database.
+
 **Positional arguments:**
 
 ``<id>``
