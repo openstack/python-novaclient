@@ -1,0 +1,12 @@
+---
+features:
+  - |
+    Added support for `microversion 2.70`_ which outputs the `Tag` field in
+    the following commands:
+
+    * ``nova interface-list``
+    * ``nova interface-attach``
+    * ``nova volume-attachments``
+    * ``nova volume-attach``
+
+    .. _microversion 2.70: https://docs.openstack.org/nova/latest/reference/api-microversion-history.html#id63
