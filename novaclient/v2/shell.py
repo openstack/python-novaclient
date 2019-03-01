@@ -4524,10 +4524,10 @@ def do_interface_list(cs, args):
     server = _find_server(cs, args.server)
 
     res = server.interface_list()
-    if isinstance(res, list):
-        # The "tag" field is in the response starting with microversion 2.70.
-        show_tag = cs.api_version >= api_versions.APIVersion('2.70')
-        _print_interfaces(res, show_tag=show_tag)
+
+    # The "tag" field is in the response starting with microversion 2.70.
+    show_tag = cs.api_version >= api_versions.APIVersion('2.70')
+    _print_interfaces(res, show_tag=show_tag)
 
 
 @utils.arg('server', metavar='<server>', help=_('Name or ID of server.'))
