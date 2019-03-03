@@ -1,0 +1,10 @@
+---
+features:
+  - |
+    Added support for `microversion 2.71`_ which outputs the `server_groups`
+    field in the following commands:
+
+    * ``nova show``
+    * ``nova rebuild``
+
+    .. _microversion 2.71: https://docs.openstack.org/nova/latest/reference/api-microversion-history.html#id64

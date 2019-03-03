@@ -2028,6 +2028,36 @@ class ShellTest(utils.TestCase):
                             }, pos=3)
         self.assert_called('GET', '/v2/images/%s' % FAKE_UUID_2, pos=4)
 
+    def test_rebuild_with_server_groups_in_response(self):
+        out = self.run_command('rebuild sample-server %s' % FAKE_UUID_1,
+                               api_version='2.71')[0]
+        self.assert_called('GET', '/servers?name=sample-server', pos=0)
+        self.assert_called('GET', '/servers/1234', pos=1)
+        self.assert_called('GET', '/v2/images/%s' % FAKE_UUID_1, pos=2)
+        self.assert_called('POST', '/servers/1234/action',
+                           {'rebuild': {'imageRef': FAKE_UUID_1,
+                                        'description': None,
+                                        }
+                            }, pos=3)
+        self.assert_called('GET', '/v2/images/%s' % FAKE_UUID_2, pos=4)
+        self.assertIn('server_groups', out)
+        self.assertIn('a67359fb-d397-4697-88f1-f55e3ee7c499', out)
+
+    def test_rebuild_without_server_groups_in_response(self):
+        out = self.run_command('rebuild sample-server %s' % FAKE_UUID_1,
+                               api_version='2.70')[0]
+        self.assert_called('GET', '/servers?name=sample-server', pos=0)
+        self.assert_called('GET', '/servers/1234', pos=1)
+        self.assert_called('GET', '/v2/images/%s' % FAKE_UUID_1, pos=2)
+        self.assert_called('POST', '/servers/1234/action',
+                           {'rebuild': {'imageRef': FAKE_UUID_1,
+                                        'description': None,
+                                        }
+                            }, pos=3)
+        self.assert_called('GET', '/v2/images/%s' % FAKE_UUID_2, pos=4)
+        self.assertNotIn('server_groups', out)
+        self.assertNotIn('a67359fb-d397-4697-88f1-f55e3ee7c499', out)
+
     def test_start(self):
         self.run_command('start sample-server')
         self.assert_called('POST', '/servers/1234/action', {'os-start': None})
@@ -2179,6 +2209,26 @@ class ShellTest(utils.TestCase):
     def test_show_with_name_help(self):
         output, _ = self.run_command('show help')
         self.assert_called('GET', '/servers/9014', pos=-6)
+
+    def test_show_with_server_groups_in_response(self):
+        # Starting microversion 2.71, the 'server_groups' is included
+        # in the output (the response).
+        out = self.run_command('show 1234', api_version='2.71')[0]
+        self.assert_called('GET', '/servers?name=1234', pos=0)
+        self.assert_called('GET', '/servers?name=1234', pos=1)
+        self.assert_called('GET', '/servers/1234', pos=2)
+        self.assert_called('GET', '/v2/images/%s' % FAKE_UUID_2, pos=3)
+        self.assertIn('server_groups', out)
+        self.assertIn('a67359fb-d397-4697-88f1-f55e3ee7c499', out)
+
+    def test_show_without_server_groups_in_response(self):
+        out = self.run_command('show 1234', api_version='2.70')[0]
+        self.assert_called('GET', '/servers?name=1234', pos=0)
+        self.assert_called('GET', '/servers?name=1234', pos=1)
+        self.assert_called('GET', '/servers/1234', pos=2)
+        self.assert_called('GET', '/v2/images/%s' % FAKE_UUID_2, pos=3)
+        self.assertNotIn('server_groups', out)
+        self.assertNotIn('a67359fb-d397-4697-88f1-f55e3ee7c499', out)
 
     @mock.patch('novaclient.v2.shell.utils.print_dict')
     def test_print_server(self, mock_print_dict):
@@ -4081,6 +4131,7 @@ class ShellTest(utils.TestCase):
                  # skipped when forming the detailed lists for embedded
                  # flavor information.
             70,  # There are no version-wrapped shell method changes for this.
+            71,  # There are no version-wrapped shell method changes for this.
         ])
         versions_supported = set(range(0,
                                  novaclient.API_MAX_VERSION.ver_minor + 1))

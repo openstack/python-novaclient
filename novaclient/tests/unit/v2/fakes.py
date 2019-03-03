@@ -618,8 +618,11 @@ class FakeSessionClient(base_client.SessionClient):
         return (202, {}, self.get_servers_9012()[2])
 
     def get_servers_1234(self, **kw):
-        r = {'server': self.get_servers_detail()[2]['servers'][0]}
-        return (200, {}, r)
+        server = self.get_servers_detail()[2]['servers'][0]
+        if self.api_version >= api_versions.APIVersion('2.71'):
+            server.update(
+                {'server_groups': ['a67359fb-d397-4697-88f1-f55e3ee7c499']})
+        return (200, {}, {'server': server})
 
     def get_servers_1235(self, **kw):
         r = {'server': self.get_servers_detail()[2]['servers'][0]}
