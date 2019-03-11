@@ -1,0 +1,7 @@
+---
+upgrade:
+  - |
+    The following deprecated options have been removed.
+
+    * ``--endpoint-override`` (Authentication option)
+    * ``--instance-name`` (``nova list`` command)

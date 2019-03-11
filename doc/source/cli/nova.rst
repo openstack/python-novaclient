@@ -2187,10 +2187,10 @@ nova list
 
    usage: nova list [--reservation-id <reservation-id>] [--ip <ip-regexp>]
                     [--ip6 <ip6-regexp>] [--name <name-regexp>]
-                    [--instance-name <name-regexp>] [--status <status>]
-                    [--flavor <flavor>] [--image <image>] [--host <hostname>]
-                    [--all-tenants [<0|1>]] [--tenant [<tenant>]]
-                    [--user [<user>]] [--deleted] [--fields <fields>] [--minimal]
+                    [--status <status>] [--flavor <flavor>] [--image <image>]
+                    [--host <hostname>] [--all-tenants [<0|1>]]
+                    [--tenant [<tenant>]] [--user [<user>]] [--deleted]
+                    [--fields <fields>] [--minimal]
                     [--sort <key>[:<direction>]] [--marker <marker>]
                     [--limit <limit>] [--changes-since <changes_since>]
                     [--changes-before <changes_before>]
@@ -2218,10 +2218,6 @@ present in the failure domain.
 
 ``--name <name-regexp>``
   Search with regular expression match by name.
-
-``--instance-name <name-regexp>``
-  Search with regular expression match by server
-  name.
 
 ``--status <status>``
   Search by server status.

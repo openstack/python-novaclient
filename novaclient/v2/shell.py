@@ -1419,14 +1419,6 @@ def _print_flavor(flavor):
     default=None,
     help=_('Search with regular expression match by name.'))
 @utils.arg(
-    '--instance-name',
-    dest='instance_name',
-    metavar='<name-regexp>',
-    default=None,
-    action=shell.DeprecatedAction,
-    help=_('Search with regular expression match by server name. The option '
-           'is not used and will be removed in T release.'))
-@utils.arg(
     '--status',
     dest='status',
     metavar='<status>',
@@ -1596,7 +1588,6 @@ def do_list(cs, args):
         'user_id': args.user,
         'host': args.host,
         'deleted': args.deleted,
-        'instance_name': args.instance_name,
         'changes-since': args.changes_since}
 
     for arg in ('tags', "tags-any", 'not-tags', 'not-tags-any'):

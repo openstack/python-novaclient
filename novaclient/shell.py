@@ -367,26 +367,6 @@ class OpenStackComputeShell(object):
             help=_("Use this API endpoint instead of the Service Catalog. "
                    "Defaults to env[OS_ENDPOINT_OVERRIDE]."))
 
-        # NOTE(takashin): This dummy '--end' argument was added
-        # to avoid misinterpreting command line arguments.
-        # If there is not this dummy argument, the '--end' is interpreted to
-        # the '--endpoint-override'.
-        # TODO(takashin): Remove this dummy '--end' argument
-        # when the deprecated '--endpoint-override' argument is removed.
-        parser.add_argument(
-            '--end',
-            metavar='<end>',
-            nargs='?',
-            help=argparse.SUPPRESS)
-
-        parser.add_argument(
-            '--endpoint-override',
-            action=DeprecatedAction,
-            use=_('use "%s"; this option will be removed after Rocky '
-                  'OpenStack release.') % '--os-endpoint-override',
-            dest='endpoint_override',
-            help=argparse.SUPPRESS)
-
         if osprofiler_profiler:
             parser.add_argument('--profile',
                                 metavar='HMAC_KEY',
