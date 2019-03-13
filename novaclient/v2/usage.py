@@ -87,7 +87,9 @@ class UsageManager(base.ManagerWithFind):
                        later in the instance list than that represented by
                        this instance UUID (optional).
         :param limit: Maximum number of instances to include in the usage
-                      (optional).
+                      (optional). Note the API server has a configurable
+                      default limit. If no limit is specified here or limit
+                      is larger than default, the default limit will be used.
         :rtype: list of :class:`Usage`.
         """
         query_string = self._usage_query(start, end, marker, limit, detailed)
@@ -120,7 +122,9 @@ class UsageManager(base.ManagerWithFind):
                        later in the instance list than that represented by
                        this instance UUID (optional).
         :param limit: Maximum number of instances to include in the usage
-                      (optional).
+                      (optional). Note the API server has a configurable
+                      default limit. If no limit is specified here or limit
+                      is larger than default, the default limit will be used.
         :rtype: :class:`Usage`
         """
         query_string = self._usage_query(start, end, marker, limit)

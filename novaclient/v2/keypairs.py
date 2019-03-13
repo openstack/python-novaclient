@@ -185,6 +185,9 @@ class KeypairManager(base.ManagerWithFind):
                        keypair list than that represented by this keypair name
                        (optional).
         :param limit: maximum number of keypairs to return (optional).
+                      Note the API server has a configurable default limit.
+                      If no limit is specified here or limit is larger than
+                      default, the default limit will be used.
         """
         params = {}
         if user_id:

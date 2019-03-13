@@ -116,6 +116,9 @@ class FlavorManager(base.ManagerWithFind):
         :param min_disk: Filters the flavors by a minimum disk space, in GiB.
         :param min_ram: Filters the flavors by a minimum RAM, in MiB.
         :param limit: maximum number of flavors to return (optional).
+                      Note the API server has a configurable default limit.
+                      If no limit is specified here or limit is larger than
+                      default, the default limit will be used.
         :param sort_key: Flavors list sort key (optional).
         :param sort_dir: Flavors list sort direction (optional).
         :returns: list of :class:`Flavor`.
