@@ -11,14 +11,14 @@ test targets that can be run to validate the code.
 ``tox -e py27``
   Traditional unit testing (Python 2.7).
 
-``tox -e py35``
-  Traditional unit testing (Python 3.5).
+``tox -e py36``
+  Traditional unit testing (Python 3.6).
 
 ``tox -e functional``
   Live functional testing against an existing OpenStack instance. (Python 2.7)
 
-``tox -e functional-py35``
-  Live functional testing against an existing OpenStack instance. (Python 3.5)
+``tox -e functional-py36``
+  Live functional testing against an existing OpenStack instance. (Python 3.6)
 
 ``tox -e cover``
   Generate a coverage report on unit testing.
