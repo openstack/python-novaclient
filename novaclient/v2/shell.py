@@ -517,6 +517,12 @@ def _boot(cs, args):
     if 'tags' in args and args.tags:
         boot_kwargs["tags"] = args.tags.split(',')
 
+    if 'host' in args and args.host:
+        boot_kwargs["host"] = args.host
+
+    if 'hypervisor_hostname' in args and args.hypervisor_hostname:
+        boot_kwargs["hypervisor_hostname"] = args.hypervisor_hostname
+
     if include_files:
         boot_kwargs['files'] = files
 
@@ -942,6 +948,21 @@ def _boot(cs, args):
            'May be specified multiple times to pass multiple trusted image '
            'certificate IDs.'),
     start_version="2.63")
+@utils.arg(
+    '--host',
+    metavar='<host>',
+    dest='host',
+    default=None,
+    help=_('Requested host to create servers. Admin only by default.'),
+    start_version="2.74")
+@utils.arg(
+    '--hypervisor-hostname',
+    metavar='<hypervisor-hostname>',
+    dest='hypervisor_hostname',
+    default=None,
+    help=_('Requested hypervisor hostname to create servers. Admin only by '
+           'default.'),
+    start_version="2.74")
 def do_boot(cs, args):
     """Boot a new server."""
     boot_args, boot_kwargs = _boot(cs, args)
