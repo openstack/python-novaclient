@@ -1,0 +1,5 @@
+---
+fixes:
+  - |
+    The user data argument to rebuild was passing the filename as is as userdata.
+    Now this passes the contents of the filename as intended.
