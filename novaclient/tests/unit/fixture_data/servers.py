@@ -454,6 +454,8 @@ class V1(Base):
             pass
         elif action == 'migrate':
             return None
+        elif action == 'lock':
+            return None
         elif action == 'rebuild':
             body = body[action]
             adminPass = body.get('adminPass', 'randompassword')

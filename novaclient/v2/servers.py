@@ -214,6 +214,7 @@ class Server(base.Resource):
         """
         return self.manager.unpause(self)
 
+    @api_versions.wraps("2.0", "2.72")
     def lock(self):
         """
         Lock -- Lock the instance from certain operations.
@@ -221,6 +222,16 @@ class Server(base.Resource):
         :returns: An instance of novaclient.base.TupleWithMeta
         """
         return self.manager.lock(self)
+
+    @api_versions.wraps("2.73")
+    def lock(self, reason=None):
+        """
+        Lock -- Lock the instance from certain operations.
+
+        :param reason: (Optional) The lock reason.
+        :returns: An instance of novaclient.base.TupleWithMeta
+        """
+        return self.manager.lock(self, reason=reason)
 
     def unlock(self):
         """
@@ -1097,6 +1108,7 @@ class ServerManager(base.BootingManagerWithFind):
         """
         return self._action('unpause', server, None)
 
+    @api_versions.wraps("2.0", "2.72")
     def lock(self, server):
         """
         Lock the server.
@@ -1105,6 +1117,22 @@ class ServerManager(base.BootingManagerWithFind):
         :returns: An instance of novaclient.base.TupleWithMeta
         """
         return self._action('lock', server, None)
+
+    @api_versions.wraps("2.73")
+    def lock(self, server, reason=None):
+        """
+        Lock the server.
+
+        :param server: The :class:`Server` (or its ID) to lock
+        :param reason: (Optional) The lock reason.
+        :returns: An instance of novaclient.base.TupleWithMeta
+        """
+        info = None
+
+        if reason:
+            info = {'locked_reason': reason}
+
+        return self._action('lock', server, info)
 
     def unlock(self, server):
         """

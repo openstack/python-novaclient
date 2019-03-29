@@ -1563,6 +1563,13 @@ def _print_flavor(flavor):
            "case is 'NOT(t1 OR t2)'. Tags must be separated by commas: "
            "--not-tags-any <tag1,tag2>"),
     start_version="2.26")
+@utils.arg(
+    '--locked',
+    dest='locked',
+    metavar='<locked>',
+    default=None,
+    help=_('Display servers based on their locked value'),
+    start_version="2.73")
 def do_list(cs, args):
     """List servers."""
     imageid = None
@@ -1638,6 +1645,11 @@ def do_list(cs, args):
         except ValueError:
             raise exceptions.CommandError(_('Invalid changes-before value: %s')
                                           % search_opts['changes-before'])
+
+    # In microversion 2.73 we added ``locked`` option in server details.
+    have_added_locked = cs.api_version >= api_versions.APIVersion('2.73')
+    if have_added_locked and args.locked:
+        search_opts['locked'] = args.locked
 
     servers = cs.servers.list(detailed=detailed,
                               search_opts=search_opts,
@@ -2155,12 +2167,23 @@ def do_start(cs, args):
         _("Unable to start the specified server(s)."))
 
 
+# From microversion 2.73, we can specify a reason for locking the server.
 @utils.arg('server', metavar='<server>', help=_('Name or ID of server.'))
+@utils.arg(
+    '--reason',
+    metavar='<reason>',
+    help=_('Reason for locking the server.'),
+    start_version='2.73')
 def do_lock(cs, args):
     """Lock a server. A normal (non-admin) user will not be able to execute
     actions on a locked server.
     """
-    _find_server(cs, args.server).lock()
+    update_kwargs = {}
+    if 'reason' in args and args.reason is not None:
+        update_kwargs['reason'] = args.reason
+
+    server = _find_server(cs, args.server)
+    server.lock(**update_kwargs)
 
 
 @utils.arg('server', metavar='<server>', help=_('Name or ID of server.'))

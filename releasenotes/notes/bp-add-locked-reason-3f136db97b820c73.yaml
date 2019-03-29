@@ -1,0 +1,6 @@
+---
+features:
+  - Added a ``--reason`` option to ``nova lock`` command that enables users
+    to specify a reason when locking a server and a ``locked``
+    filtering/sorting option to ``nova list`` command which enables users to
+    filter/sort servers based on their ``locked`` value in microversion 2.73.

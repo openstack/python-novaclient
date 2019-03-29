@@ -1703,3 +1703,26 @@ class ServersV268Test(ServersV267Test):
         ex = self.assertRaises(TypeError, self.cs.servers.live_migrate,
                                host='hostname', force=True)
         self.assertIn('force', six.text_type(ex))
+
+
+class ServersV273Test(ServersV268Test):
+
+    api_version = "2.73"
+
+    def test_lock_server(self):
+        s = self.cs.servers.get(1234)
+        ret = s.lock()
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
+        self.assert_called('POST', '/servers/1234/action',
+                           {'lock': None})
+        ret = s.lock(reason='zombie-apocalypse')
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
+        self.assert_called('POST', '/servers/1234/action',
+                           {'lock': {'locked_reason': 'zombie-apocalypse'}})
+
+    def test_lock_server_pre_273_fails_with_reason(self):
+        self.cs.api_version = api_versions.APIVersion('2.72')
+        s = self.cs.servers.get(1234)
+        e = self.assertRaises(TypeError,
+                              s.lock, reason='blah')
+        self.assertIn("unexpected keyword argument 'reason'", six.text_type(e))
