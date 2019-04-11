@@ -1232,6 +1232,33 @@ nova console-log
 
 Get console log output of a server.
 
+**Locale encoding issues**
+
+If you encounter an error such as:
+
+.. code-block:: console
+
+  UnicodeEncodeError: 'ascii' codec can't encode characters in position
+
+The solution to these problems is different depending on which locale your
+computer is running in.
+
+For instance, if you have a German Linux machine, you can fix the problem by
+exporting the locale to de_DE.utf-8:
+
+.. code-block:: console
+
+  export LC_ALL=de_DE.utf-8
+  export LANG=de_DE.utf-8
+
+If you are on a US machine, en_US.utf-8 is the encoding of choice. On some
+newer Linux systems, you could also try C.UTF-8 as the locale:
+
+.. code-block:: console
+
+  export LC_ALL=C.UTF-8
+  export LANG=C.UTF-8
+
 **Positional arguments:**
 
 ``<server>``

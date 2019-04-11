@@ -3364,6 +3364,12 @@ class ShellTest(utils.TestCase):
         self.run_command('availability-zone-list')
         self.assert_called('GET', '/os-availability-zone/detail')
 
+    def test_console_log(self):
+        out = self.run_command('console-log --length 20 1234')[0]
+        self.assert_called('POST', '/servers/1234/action',
+                           body={'os-getConsoleOutput': {'length': '20'}})
+        self.assertIn('foo', out)
+
     def test_server_security_group_add(self):
         self.run_command('add-secgroup sample-server testgroup')
         self.assert_called('POST', '/servers/1234/action',
