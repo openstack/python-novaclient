@@ -6,7 +6,7 @@
     timeout: 7200
     voting: false
     required-projects:
-      - openstack-infra/devstack-gate
+      - openstack/devstack-gate
       - openstack/nova
       - openstack/python-novaclient
 
@@ -17,7 +17,7 @@
     post-run: playbooks/legacy/novaclient-dsvm-functional-neutron/post.yaml
     timeout: 7200
     required-projects:
-      - openstack-infra/devstack-gate
+      - openstack/devstack-gate
       - openstack/neutron
       - openstack/nova
       - openstack/python-novaclient
