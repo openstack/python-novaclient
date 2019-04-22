@@ -35,7 +35,7 @@ This is a client for the OpenStack Compute API. It provides a Python API (the
 .. _Launchpad project: https://launchpad.net/python-novaclient
 .. _Blueprints: https://blueprints.launchpad.net/python-novaclient
 .. _Bugs: https://bugs.launchpad.net/python-novaclient
-.. _Source: https://git.openstack.org/cgit/openstack/python-novaclient
+.. _Source: https://opendev.org/openstack/python-novaclient
 .. _How to Contribute: https://docs.openstack.org/infra/manual/developers.html
 .. _Specs: http://specs.openstack.org/openstack/nova-specs/
 .. _Release Notes: https://docs.openstack.org/releasenotes/python-novaclient

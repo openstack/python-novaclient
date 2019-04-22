@@ -4095,7 +4095,7 @@ class ShellTest(utils.TestCase):
                  #   before feature-freeze
                  #   (we can do it, since nova-api change didn't actually add
                  #   new microversion, just an additional checks. See
-                 #   https://review.openstack.org/#/c/233076/ for more details)
+                 #   https://review.opendev.org/#/c/233076/ for more details)
             20,  # doesn't require any changes in novaclient
             27,  # NOTE(cdent): 27 adds support for updated microversion
                  #   headers, and is tested in test_api_versions, but is

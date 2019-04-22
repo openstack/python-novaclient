@@ -72,7 +72,7 @@ class TestOsServicesNovaClientV2_53(base.ClientTestBase):
         # services returned by client
         # NOTE(sdague): service disable has the chance in racing
         # with other tests. Now functional tests for novaclient are launched
-        # in serial way (https://review.openstack.org/#/c/217768/), but
+        # in serial way (https://review.opendev.org/#/c/217768/), but
         # it's a potential issue for making these tests parallel in the future
         for serv in self.client.services.list():
             # In Pike the os-services API was made multi-cell aware and it

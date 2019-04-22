@@ -21,9 +21,9 @@ The process for command deprecation is:
 2. Once the change is approved, have a member of the `nova-release`_ team
    release a new version of `python-novaclient`.
 
-   .. _nova-release: https://review.openstack.org/#/admin/groups/147,members
+   .. _nova-release: https://review.opendev.org/#/admin/groups/147,members
 
-3. Example: `<https://review.openstack.org/#/c/185141/>`_
+3. Example: `<https://review.opendev.org/#/c/185141/>`_
 
    This change was made while the nova 12.0.0 Liberty release was in
    development. The current version of `python-novaclient` at the time was
