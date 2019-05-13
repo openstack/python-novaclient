@@ -2,7 +2,7 @@
  Python bindings to the OpenStack Nova API
 ===========================================
 
-This is a client for OpenStack Nova API. There's :doc:`a Python API
+This is a client for OpenStack Nova API. There's a :doc:`Python API
 <reference/api/index>` (the :mod:`novaclient` module), and a :doc:`command-line
 script </user/shell>` (installed as :program:`nova`). Each implements the
 entire OpenStack Nova API.
