@@ -774,7 +774,7 @@ class FakeSessionClient(base_client.SessionClient):
 
     none_actions = ['revertResize', 'os-stop', 'os-start',
                     'forceDelete', 'restore', 'pause', 'unpause', 'unlock',
-                    'unrescue', 'resume', 'suspend', 'lock', 'shelve',
+                    'unrescue', 'resume', 'suspend', 'shelve',
                     'shelveOffload', 'unshelve', 'resetNetwork']
     type_actions = ['os-getVNCConsole', 'os-getSPICEConsole',
                     'os-getRDPConsole']
@@ -836,6 +836,22 @@ class FakeSessionClient(base_client.SessionClient):
                     # host can be optional
                     expected.add('host')
                 assert set(body[action].keys()) == expected
+        elif action == 'lock':
+            if self.api_version < api_versions.APIVersion("2.73"):
+                assert body[action] is None
+            else:
+                # In 2.73 and above, we allow body to be one of these:
+                # a) {'lock': None}
+                # b) {'lock': {}}
+                # c) {'lock': {locked_reason': 'blah'}}
+                if body[action] is not None:
+                    expected = set()
+                    if 'locked_reason' in body[action].keys():
+                        # reason can be optional
+                        expected.add('locked_reason')
+                    assert set(body[action].keys()) == expected
+                else:
+                    assert body[action] is None
         elif action == 'rebuild':
             body = body[action]
             adminPass = body.get('adminPass', 'randompassword')

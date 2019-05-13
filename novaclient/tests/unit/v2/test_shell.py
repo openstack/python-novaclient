@@ -2092,6 +2092,24 @@ class ShellTest(utils.TestCase):
         self.run_command('lock sample-server')
         self.assert_called('POST', '/servers/1234/action', {'lock': None})
 
+    def test_lock_pre_v273(self):
+        exp = self.assertRaises(SystemExit,
+                                self.run_command,
+                                'lock sample-server --reason zombies',
+                                api_version='2.72')
+        self.assertIn('2', six.text_type(exp))
+
+    def test_lock_v273(self):
+        self.run_command('lock sample-server',
+                         api_version='2.73')
+        self.assert_called('POST', '/servers/1234/action',
+                           {'lock': None})
+
+        self.run_command('lock sample-server --reason zombies',
+                         api_version='2.73')
+        self.assert_called('POST', '/servers/1234/action',
+                           {'lock': {'locked_reason': 'zombies'}})
+
     def test_unlock(self):
         self.run_command('unlock sample-server')
         self.assert_called('POST', '/servers/1234/action', {'unlock': None})
@@ -4279,6 +4297,22 @@ class ShellTest(utils.TestCase):
         self.assert_called('GET', '/servers?name=9015', pos=1)
         self.assert_called('GET', '/servers/9015', pos=2)
         self.assert_called('GET', '/v2/images/%s' % FAKE_UUID_2, pos=3)
+
+    def test_list_pre_v273(self):
+        exp = self.assertRaises(SystemExit,
+                                self.run_command,
+                                'list --locked t',
+                                api_version='2.72')
+        self.assertEqual(2, exp.code)
+
+    def test_list_v273(self):
+        self.run_command('list --locked t', api_version='2.73')
+        self.assert_called('GET', '/servers/detail?locked=t')
+
+    def test_list_v273_with_sort_key_dir(self):
+        self.run_command('list --sort locked:asc', api_version='2.73')
+        self.assert_called(
+            'GET', '/servers/detail?sort_dir=asc&sort_key=locked')
 
 
 class PollForStatusTestCase(utils.TestCase):
