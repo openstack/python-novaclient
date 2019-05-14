@@ -1568,7 +1568,9 @@ def _print_flavor(flavor):
     dest='locked',
     metavar='<locked>',
     default=None,
-    help=_('Display servers based on their locked value'),
+    help=_("Display servers based on their locked value. A value must be "
+           "specified; eg. 'true' will list only locked servers and 'false' "
+           "will list only unlocked servers."),
     start_version="2.73")
 def do_list(cs, args):
     """List servers."""

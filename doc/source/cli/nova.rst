@@ -2223,6 +2223,7 @@ nova list
                     [--changes-before <changes_before>]
                     [--tags <tags>] [--tags-any <tags-any>]
                     [--not-tags <not-tags>] [--not-tags-any <not-tags-any>]
+                    [--locked]
 
 List servers.
 
@@ -2344,6 +2345,14 @@ present in the failure domain.
   commas: --not-tags-any <tag1,tag2> (Supported
   by API versions '2.26' - '2.latest')
 
+``--locked <locked>``
+  Display servers based on their locked value. A
+  value must be specified; eg. 'true' will list
+  only locked servers and 'false' will list only
+  unlocked servers. (Supported by API versions
+  '2.73' - '2.latest')
+
+
 .. _nova_list-extensions:
 
 nova list-extensions
@@ -2464,7 +2473,7 @@ nova lock
 
 .. code-block:: console
 
-   usage: nova lock <server>
+   usage: nova lock [--reason <reason>] <server>
 
 Lock a server. A normal (non-admin) user will not be able to execute actions
 on a locked server.
@@ -2473,6 +2482,12 @@ on a locked server.
 
 ``<server>``
   Name or ID of server.
+
+**Optional arguments:**
+
+``--reason <reason>``
+  Reason for locking the server. (Supported by API versions
+  '2.73' - '2.latest')
 
 .. _nova_meta:
 
