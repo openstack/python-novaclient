@@ -33,7 +33,6 @@ jmespath==0.9.0
 jsonpatch==1.16
 jsonpointer==1.13
 jsonschema==2.6.0
-keyring==5.5.1
 keystoneauth1==3.5.0
 kombu==4.0.0
 linecache2==1.0.0
