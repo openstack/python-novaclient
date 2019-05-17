@@ -53,6 +53,9 @@ class InstanceActionManager(base.ManagerWithFind):
                        list than that represented by this action request id
                        (optional).
         :param limit: Maximum number of actions to return. (optional).
+                      Note the API server has a configurable default limit.
+                      If no limit is specified here or limit is larger than
+                      default, the default limit will be used.
         :param changes_since: List only instance actions changed later or
                               equal to a certain point of time. The provided
                               time should be an ISO 8061 formatted time.

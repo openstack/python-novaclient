@@ -843,6 +843,10 @@ class ServerManager(base.BootingManagerWithFind):
         :param marker: Begin returning servers that appear later in the server
                        list than that represented by this server id (optional).
         :param limit: Maximum number of servers to return (optional).
+                      Note the API server has a configurable default limit.
+                      If no limit is specified here or limit is larger than
+                      default, the default limit will be used.
+                      If limit == -1, all servers will be returned.
         :param sort_keys: List of sort keys
         :param sort_dirs: List of sort directions
 

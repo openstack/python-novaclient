@@ -70,6 +70,9 @@ class HypervisorManager(base.ManagerWithFind):
                        marker must be a UUID hypervisor ID.
                        (optional).
         :param limit: maximum number of hypervisors to return (optional).
+                      Note the API server has a configurable default limit.
+                      If no limit is specified here or limit is larger than
+                      default, the default limit will be used.
         """
         return self._list_base(detailed=detailed, marker=marker, limit=limit)
 

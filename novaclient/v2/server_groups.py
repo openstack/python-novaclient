@@ -51,6 +51,9 @@ class ServerGroupsManager(base.ManagerWithFind):
 
         :param all_projects: Lists server groups for all projects. (optional)
         :param limit: Maximum number of server groups to return. (optional)
+                      Note the API server has a configurable default limit.
+                      If no limit is specified here or limit is larger than
+                      default, the default limit will be used.
         :param offset: Use with `limit` to return a slice of server
                        groups. `offset` is where to start in the groups
                        list. (optional)
