@@ -76,6 +76,15 @@ class ServersTest(utils.FixturedTestCase):
         for s in sl:
             self.assertIsInstance(s, servers.Server)
 
+    def test_filter_servers_unlocked(self):
+        # calling the cs.servers.list python binding
+        # will fail before 2.73 microversion.
+        e = self.assertRaises(exceptions.UnsupportedAttribute,
+                              self.cs.servers.list,
+                              search_opts={'locked': False})
+        self.assertIn("'locked' argument is only allowed since "
+                      "microversion 2.73.", six.text_type(e))
+
     def test_list_servers_undetailed(self):
         sl = self.cs.servers.list(detailed=False)
         self.assert_request_id(sl, fakes.FAKE_REQUEST_ID_LIST)
@@ -1726,3 +1735,11 @@ class ServersV273Test(ServersV268Test):
         e = self.assertRaises(TypeError,
                               s.lock, reason='blah')
         self.assertIn("unexpected keyword argument 'reason'", six.text_type(e))
+
+    def test_filter_servers_unlocked(self):
+        # support locked=False
+        sl = self.cs.servers.list(search_opts={'locked': False})
+        self.assert_request_id(sl, fakes.FAKE_REQUEST_ID_LIST)
+        self.assert_called('GET', '/servers/detail?locked=False')
+        for s in sl:
+            self.assertIsInstance(s, servers.Server)

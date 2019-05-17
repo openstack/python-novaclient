@@ -862,9 +862,14 @@ class ServerManager(base.BootingManagerWithFind):
             search_opts = {}
 
         qparams = {}
-
+        # In microversion 2.73 we added ``locked`` filtering option
+        # for listing server details.
+        if ('locked' in search_opts and
+                self.api_version < api_versions.APIVersion('2.73')):
+            raise exceptions.UnsupportedAttribute("locked", "2.73")
         for opt, val in search_opts.items():
-            if val:
+            # support locked=False from 2.73 microversion
+            if val or (opt == 'locked' and val is False):
                 if isinstance(val, six.text_type):
                     val = val.encode('utf-8')
                 qparams[opt] = val
