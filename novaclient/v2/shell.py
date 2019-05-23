@@ -145,7 +145,7 @@ def _parse_block_device_mapping_v2(cs, args, image):
                     'delete_on_termination': False}
         bdm.append(bdm_dict)
 
-    supports_volume_type = cs.api_version == api_versions.APIVersion('2.67')
+    supports_volume_type = cs.api_version >= api_versions.APIVersion('2.67')
 
     for device_spec in args.block_device:
         spec_dict = _parse_device_spec(device_spec)

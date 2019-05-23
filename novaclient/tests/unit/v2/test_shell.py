@@ -624,6 +624,34 @@ class ShellTest(utils.TestCase):
                            'size=1,format=ext4,type=disk,shutdown=foobar '
                            'some-server' % FAKE_UUID_1))
 
+    def test_boot_from_volume_with_volume_type_latest_microversion(self):
+        self.run_command(
+            'boot --flavor 1 --block-device id=%s,source=image,dest=volume,'
+            'size=1,bootindex=0,shutdown=remove,tag=foo,volume_type=lvm '
+            'bfv-server' % FAKE_UUID_1, api_version='2.latest')
+        self.assert_called_anytime(
+            'POST', '/servers',
+            {'server': {
+                'flavorRef': '1',
+                'name': 'bfv-server',
+                'block_device_mapping_v2': [
+                    {
+                        'uuid': FAKE_UUID_1,
+                        'source_type': 'image',
+                        'destination_type': 'volume',
+                        'volume_size': '1',
+                        'delete_on_termination': True,
+                        'tag': 'foo',
+                        'boot_index': '0',
+                        'volume_type': 'lvm'
+                    },
+                ],
+                'networks': 'auto',
+                'imageRef': '',
+                'min_count': 1,
+                'max_count': 1,
+            }})
+
     def test_boot_from_volume_with_volume_type_old_microversion(self):
         ex = self.assertRaises(
             exceptions.CommandError, self.run_command,
