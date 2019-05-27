@@ -13,6 +13,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import six
+
 from novaclient import api_versions
 from novaclient import exceptions
 from novaclient.tests.unit.fixture_data import client
@@ -118,6 +120,14 @@ class HypervisorsTest(utils.FixturedTestCase):
             self.assertRaises(exceptions.NotFound,
                               self.cs.hypervisors.search,
                               hypervisor_match)
+
+    def test_hypervisor_search_detailed(self):
+        # detailed=True is not supported before 2.53
+        ex = self.assertRaises(exceptions.UnsupportedVersion,
+                               self.cs.hypervisors.search, 'hyper',
+                               detailed=True)
+        self.assertIn('Parameter "detailed" requires API version 2.53 or '
+                      'greater.', six.text_type(ex))
 
     def test_hypervisor_servers(self):
         expected = [
@@ -236,3 +246,16 @@ class HypervisorsV2_53Test(HypervisorsV233Test):
     def setUp(self):
         super(HypervisorsV2_53Test, self).setUp()
         self.cs.api_version = api_versions.APIVersion("2.53")
+
+    def test_hypervisor_search_detailed(self):
+        expected = [
+            dict(id=self.data_fixture.hyper_id_1,
+                 hypervisor_hostname='hyper1'),
+            dict(id=self.data_fixture.hyper_id_2,
+                 hypervisor_hostname='hyper2')]
+        result = self.cs.hypervisors.search('hyper', detailed=True)
+        self.assert_request_id(result, fakes.FAKE_REQUEST_ID_LIST)
+        self.assert_called(
+            'GET', '/os-hypervisors/detail?hypervisor_hostname_pattern=hyper')
+        for idx, hyper in enumerate(result):
+            self.compare_to_expected(expected[idx], hyper)

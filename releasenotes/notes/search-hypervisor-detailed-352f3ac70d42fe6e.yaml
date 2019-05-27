@@ -1,0 +1,8 @@
+---
+features:
+  - |
+    The ``novaclient.v2.hypervisors.HypervisorManager.search`` method now
+    accepts a ``detailed`` boolean kwarg which defaults to False but when
+    True will search for the given hypervisor hostname match and return
+    details about any matching hypervisors. Specifying ``detailed=True``
+    requires compute API version 2.53 or greater.

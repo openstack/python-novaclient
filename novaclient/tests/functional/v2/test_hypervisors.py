@@ -26,3 +26,16 @@ class TestHypervisorsV2_53(TestHypervisorsV28):
 
     def test_list(self):
         self._test_list(cpu_info_type=dict, uuid_as_id=True)
+
+    def test_search_with_details(self):
+        # First find a hypervisor from the list to search on.
+        hypervisors = self.client.hypervisors.list()
+        # Now search for that hypervisor with details.
+        hypervisor = hypervisors[0]
+        hypervisors = self.client.hypervisors.search(
+            hypervisor.hypervisor_hostname, detailed=True)
+        self.assertEqual(1, len(hypervisors))
+        hypervisor = hypervisors[0]
+        # We know we got details if service is in the response.
+        self.assertIsNotNone(hypervisor.service,
+                             'Expected service in hypervisor: %s' % hypervisor)
