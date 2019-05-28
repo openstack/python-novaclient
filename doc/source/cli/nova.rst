@@ -1258,7 +1258,7 @@ nova evacuate
 
 .. code-block:: console
 
-   usage: nova evacuate [--password <password>] [--force] <server> [<host>]
+   usage: nova evacuate [--password <password>] [--on-shared-storage] [--force] <server> [<host>]
 
 Evacuate server from failed host.
 
@@ -1277,6 +1277,10 @@ Evacuate server from failed host.
   Set the provided admin password on the evacuated
   server. Not applicable if the server is on shared
   storage.
+
+``--on-shared-storage``
+  Specifies whether server files are located on shared
+  storage. (Supported by API versions '2.0' - '2.13')
 
 ``--force``
   Force an evacuation by not verifying the provided destination host by the
