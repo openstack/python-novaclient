@@ -775,7 +775,7 @@ class FakeSessionClient(base_client.SessionClient):
     none_actions = ['revertResize', 'os-stop', 'os-start',
                     'forceDelete', 'restore', 'pause', 'unpause', 'unlock',
                     'unrescue', 'resume', 'suspend', 'shelve',
-                    'shelveOffload', 'unshelve', 'resetNetwork']
+                    'shelveOffload', 'resetNetwork']
     type_actions = ['os-getVNCConsole', 'os-getSPICEConsole',
                     'os-getRDPConsole']
 
@@ -852,6 +852,16 @@ class FakeSessionClient(base_client.SessionClient):
                     assert set(body[action].keys()) == expected
                 else:
                     assert body[action] is None
+        elif action == 'unshelve':
+            if self.api_version < api_versions.APIVersion("2.77"):
+                assert body[action] is None
+            else:
+                # In 2.77 and above, we allow body to be one of these:
+                # {'unshelve': None}
+                # {'unshelve': {'availability_zone': 'foo-az'}}
+                if body[action] is not None:
+                    assert set(body[action].keys()) == set(
+                        ['availability_zone'])
         elif action == 'rebuild':
             body = body[action]
             adminPass = body.get('adminPass', 'randompassword')

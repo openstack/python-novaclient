@@ -291,6 +291,7 @@ class Server(base.Resource):
         """
         return self.manager.shelve_offload(self)
 
+    @api_versions.wraps("2.0", "2.76")
     def unshelve(self):
         """
         Unshelve -- Unshelve the server.
@@ -298,6 +299,18 @@ class Server(base.Resource):
         :returns: An instance of novaclient.base.TupleWithMeta
         """
         return self.manager.unshelve(self)
+
+    @api_versions.wraps("2.77")
+    def unshelve(self, availability_zone=None):
+        """
+        Unshelve -- Unshelve the server.
+
+        :param availability_zone: The specified availability zone name
+                                  (Optional)
+        :returns: An instance of novaclient.base.TupleWithMeta
+        """
+        return self.manager.unshelve(self,
+                                     availability_zone=availability_zone)
 
     def diagnostics(self):
         """Diagnostics -- Retrieve server diagnostics."""
@@ -1222,6 +1235,7 @@ class ServerManager(base.BootingManagerWithFind):
         """
         return self._action('shelveOffload', server, None)
 
+    @api_versions.wraps("2.0", "2.76")
     def unshelve(self, server):
         """
         Unshelve the server.
@@ -1230,6 +1244,21 @@ class ServerManager(base.BootingManagerWithFind):
         :returns: An instance of novaclient.base.TupleWithMeta
         """
         return self._action('unshelve', server, None)
+
+    @api_versions.wraps("2.77")
+    def unshelve(self, server, availability_zone=None):
+        """
+        Unshelve the server.
+
+        :param server: The :class:`Server` (or its ID) to unshelve
+        :param availability_zone: The specified availability zone name
+                                  (Optional)
+        :returns: An instance of novaclient.base.TupleWithMeta
+        """
+        info = None
+        if availability_zone:
+            info = {'availability_zone': availability_zone}
+        return self._action('unshelve', server, info)
 
     def ips(self, server):
         """

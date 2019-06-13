@@ -3698,7 +3698,7 @@ nova unshelve
 
 .. code-block:: console
 
-   usage: nova unshelve <server>
+   usage: nova unshelve [--availability-zone <availability_zone>] <server>
 
 Unshelve a server.
 
@@ -3706,6 +3706,12 @@ Unshelve a server.
 
 ``<server>``
   Name or ID of server.
+
+**Optional arguments:**
+
+``--availability-zone <availability_zone>``
+  Name of the availability zone in which to unshelve a ``SHELVED_OFFLOADED``
+  server. (Supported by API versions '2.77' - '2.latest')
 
 .. _nova_update:
 
