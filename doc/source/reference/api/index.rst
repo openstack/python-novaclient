@@ -4,6 +4,7 @@
 
 .. module:: novaclient
    :synopsis: A client for the OpenStack Nova API.
+   :noindex:
 
 .. currentmodule:: novaclient
 
