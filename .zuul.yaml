@@ -8,15 +8,6 @@
       - openstack/devstack-gate
       - openstack/nova
       - openstack/python-novaclient
-    irrelevant-files:
-      - ^(test-|)requirements.txt$
-      - ^.*\.rst$
-      - ^doc/.*$
-      - ^novaclient/tests/.*$
-      - ^releasenotes/.*$
-      - ^setup.cfg$
-      - ^tools/.*$
-      - ^tox.ini$
 
 - project:
     templates:
