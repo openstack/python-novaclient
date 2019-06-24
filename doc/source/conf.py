@@ -80,6 +80,7 @@ bug_project = 'python-novaclient'
 bug_tag = ''
 openstack_projects = [
     'keystoneauth',
+    'nova',
     'os-client-config',
     'python-openstackclient',
 ]
