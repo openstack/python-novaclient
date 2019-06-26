@@ -55,44 +55,8 @@ class CommandError(Exception):
     pass
 
 
-class AuthorizationFailure(Exception):
-    pass
-
-
 class NoUniqueMatch(Exception):
     pass
-
-
-class NoTokenLookupException(Exception):
-    """This form of authentication does not support looking up
-       endpoints from an existing token.
-    """
-    pass
-
-
-class EndpointNotFound(Exception):
-    """Could not find Service or Region in Service Catalog."""
-    pass
-
-
-class AmbiguousEndpoints(Exception):
-    """Found more than one matching endpoint in Service Catalog."""
-    def __init__(self, endpoints=None):
-        self.endpoints = endpoints
-
-    def __str__(self):
-        return "AmbiguousEndpoints: %s" % repr(self.endpoints)
-
-
-class ConnectionRefused(Exception):
-    """
-    Connection refused: the server refused the connection.
-    """
-    def __init__(self, response=None):
-        self.response = response
-
-    def __str__(self):
-        return "ConnectionRefused: %s" % repr(self.response)
 
 
 class ResourceInErrorState(Exception):
