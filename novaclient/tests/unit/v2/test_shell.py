@@ -3811,16 +3811,28 @@ class ShellTest(utils.TestCase):
                                   '/2016-12-10%2013%3A59%3A59.999999')
 
     def test_cell_show(self):
-        self.run_command('cell-show child_cell')
+        _, err = self.run_command('cell-show child_cell')
         self.assert_called('GET', '/os-cells/child_cell')
+        self.assertIn(
+            'The cells v1 interface has been deprecated. This command will be '
+            'removed in the first major release after the Nova server 20.0.0 '
+            'Train release.', err)
 
     def test_cell_capacities_with_cell_name(self):
-        self.run_command('cell-capacities --cell child_cell')
+        _, err = self.run_command('cell-capacities --cell child_cell')
         self.assert_called('GET', '/os-cells/child_cell/capacities')
+        self.assertIn(
+            'The cells v1 interface has been deprecated. This command will be '
+            'removed in the first major release after the Nova server 20.0.0 '
+            'Train release.', err)
 
     def test_cell_capacities_without_cell_name(self):
-        self.run_command('cell-capacities')
+        _, err = self.run_command('cell-capacities')
         self.assert_called('GET', '/os-cells/capacities')
+        self.assertIn(
+            'The cells v1 interface has been deprecated. This command will be '
+            'removed in the first major release after the Nova server 20.0.0 '
+            'Train release.', err)
 
     def test_migration_list(self):
         self.run_command('migration-list')

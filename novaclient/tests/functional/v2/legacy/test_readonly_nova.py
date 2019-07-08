@@ -86,7 +86,11 @@ class SimpleReadOnlyNovaClientTest(base.ClientTestBase):
         self.nova('help')
 
     def test_admin_list_extensions(self):
-        self.nova('list-extensions')
+        output = self.nova('list-extensions', merge_stderr=True)
+        self.assertIn(
+            'The API extension interface has been deprecated. This command '
+            'will be removed in the first major release after '
+            'the Nova server 20.0.0 Train release.', output)
 
     def test_agent_list(self):
         self.nova('agent-list')

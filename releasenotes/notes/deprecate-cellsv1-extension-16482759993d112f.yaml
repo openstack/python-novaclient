@@ -1,0 +1,11 @@
+---
+deprecations:
+  - |
+    The following CLIs and their backing API bindings are deprecated.
+
+    - ``nova list-extensions``
+    - ``nova cell-capacities``
+    - ``nova cell-show``
+
+    The CLIs and API bindings will be removed in the first major release after
+    Nova 20.0.0 Train is released.
