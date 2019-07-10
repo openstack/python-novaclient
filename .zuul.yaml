@@ -8,6 +8,10 @@
       - openstack/devstack-gate
       - openstack/nova
       - openstack/python-novaclient
+    irrelevant-files:
+      - ^.*\.rst$
+      - ^doc/.*$
+      - ^releasenotes/.*$
 
 - project:
     templates:
