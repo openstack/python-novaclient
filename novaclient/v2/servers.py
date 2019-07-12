@@ -694,7 +694,8 @@ class ServerManager(base.BootingManagerWithFind):
               block_device_mapping_v2=None, nics=None, scheduler_hints=None,
               config_drive=None, admin_pass=None, disk_config=None,
               access_ip_v4=None, access_ip_v6=None, description=None,
-              tags=None, trusted_image_certificates=None, **kwargs):
+              tags=None, trusted_image_certificates=None,
+              host=None, hypervisor_hostname=None, **kwargs):
         """
         Create (boot) a new server.
         """
@@ -816,6 +817,12 @@ class ServerManager(base.BootingManagerWithFind):
         if trusted_image_certificates:
             body['server']['trusted_image_certificates'] = (
                 trusted_image_certificates)
+
+        if host:
+            body['server']['host'] = host
+
+        if hypervisor_hostname:
+            body['server']['hypervisor_hostname'] = hypervisor_hostname
 
         return self._create('/servers', body, response_key,
                             return_raw=return_raw, **kwargs)
@@ -1267,7 +1274,9 @@ class ServerManager(base.BootingManagerWithFind):
                nics=None, scheduler_hints=None,
                config_drive=None, disk_config=None, admin_pass=None,
                access_ip_v4=None, access_ip_v6=None,
-               trusted_image_certificates=None, **kwargs):
+               trusted_image_certificates=None,
+               host=None, hypervisor_hostname=None,
+               **kwargs):
         # TODO(anthony): indicate in doc string if param is an extension
         # and/or optional
         """
@@ -1334,6 +1343,10 @@ class ServerManager(base.BootingManagerWithFind):
                      server as tags (allowed since microversion 2.52)
         :param trusted_image_certificates: A list of trusted certificate IDs
                                            (allowed since microversion 2.63)
+        :param host: requested host to create servers
+                     (allowed since microversion 2.74)
+        :param hypervisor_hostname: requested hypervisor hostname to create
+                                    servers (allowed since microversion 2.74)
         """
         if not min_count:
             min_count = 1
@@ -1388,6 +1401,15 @@ class ServerManager(base.BootingManagerWithFind):
                         "Block device volume_type is not supported before "
                         "microversion 2.67")
 
+        host_microversion = api_versions.APIVersion("2.74")
+        if host and self.api_version < host_microversion:
+            raise exceptions.UnsupportedAttribute("host", "2.74")
+        hypervisor_hostname_microversion = api_versions.APIVersion("2.74")
+        if (hypervisor_hostname and
+                self.api_version < hypervisor_hostname_microversion):
+            raise exceptions.UnsupportedAttribute(
+                "hypervisor_hostname", "2.74")
+
         boot_kwargs = dict(
             meta=meta, files=files, userdata=userdata,
             reservation_id=reservation_id, min_count=min_count,
@@ -1396,7 +1418,9 @@ class ServerManager(base.BootingManagerWithFind):
             scheduler_hints=scheduler_hints, config_drive=config_drive,
             disk_config=disk_config, admin_pass=admin_pass,
             access_ip_v4=access_ip_v4, access_ip_v6=access_ip_v6,
-            trusted_image_certificates=trusted_image_certificates, **kwargs)
+            trusted_image_certificates=trusted_image_certificates,
+            host=host, hypervisor_hostname=hypervisor_hostname,
+            **kwargs)
 
         if block_device_mapping:
             boot_kwargs['block_device_mapping'] = block_device_mapping

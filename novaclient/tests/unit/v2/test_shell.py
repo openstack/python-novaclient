@@ -1374,6 +1374,83 @@ class ShellTest(utils.TestCase):
         self.assertIn('Instance %s could not be found.' % FAKE_UUID_1,
                       six.text_type(ex))
 
+    def test_boot_with_host_v274(self):
+        self.run_command('boot --flavor 1 --image %s '
+                         '--host new-host --nic auto '
+                         'some-server' % FAKE_UUID_1,
+                         api_version='2.74')
+        self.assert_called_anytime(
+            'POST', '/servers',
+            {'server': {
+                'flavorRef': '1',
+                'name': 'some-server',
+                'imageRef': FAKE_UUID_1,
+                'min_count': 1,
+                'max_count': 1,
+                'networks': 'auto',
+                'host': 'new-host',
+            }},
+        )
+
+    def test_boot_with_hypervisor_hostname_v274(self):
+        self.run_command('boot --flavor 1 --image %s --nic auto '
+                         '--hypervisor-hostname new-host '
+                         'some-server' % FAKE_UUID_1,
+                         api_version='2.74')
+        self.assert_called_anytime(
+            'POST', '/servers',
+            {'server': {
+                'flavorRef': '1',
+                'name': 'some-server',
+                'imageRef': FAKE_UUID_1,
+                'min_count': 1,
+                'max_count': 1,
+                'networks': 'auto',
+                'hypervisor_hostname': 'new-host',
+            }},
+        )
+
+    def test_boot_with_host_and_hypervisor_hostname_v274(self):
+        self.run_command('boot --flavor 1 --image %s '
+                         '--host new-host --nic auto '
+                         '--hypervisor-hostname new-host '
+                         'some-server' % FAKE_UUID_1,
+                         api_version='2.74')
+        self.assert_called_anytime(
+            'POST', '/servers',
+            {'server': {
+                'flavorRef': '1',
+                'name': 'some-server',
+                'imageRef': FAKE_UUID_1,
+                'min_count': 1,
+                'max_count': 1,
+                'networks': 'auto',
+                'host': 'new-host',
+                'hypervisor_hostname': 'new-host',
+            }},
+        )
+
+    def test_boot_with_host_pre_v274(self):
+        cmd = ('boot --flavor 1 --image %s --nic auto '
+               '--host new-host some-server'
+               % FAKE_UUID_1)
+        self.assertRaises(SystemExit, self.run_command,
+                          cmd, api_version='2.73')
+
+    def test_boot_with_hypervisor_hostname_pre_v274(self):
+        cmd = ('boot --flavor 1 --image %s --nic auto '
+               '--hypervisor-hostname new-host some-server'
+               % FAKE_UUID_1)
+        self.assertRaises(SystemExit, self.run_command,
+                          cmd, api_version='2.73')
+
+    def test_boot_with_host_and_hypervisor_hostname_pre_v274(self):
+        cmd = ('boot --flavor 1 --image %s --nic auto '
+               '--host new-host --hypervisor-hostname new-host some-server'
+               % FAKE_UUID_1)
+        self.assertRaises(SystemExit, self.run_command,
+                          cmd, api_version='2.73')
+
     def test_flavor_list(self):
         out, _ = self.run_command('flavor-list')
         self.assert_called_anytime('GET', '/flavors/detail')
@@ -4185,6 +4262,7 @@ class ShellTest(utils.TestCase):
             70,  # There are no version-wrapped shell method changes for this.
             71,  # There are no version-wrapped shell method changes for this.
             72,  # There are no version-wrapped shell method changes for this.
+            74,  # There are no version-wrapped shell method changes for this.
         ])
         versions_supported = set(range(0,
                                  novaclient.API_MAX_VERSION.ver_minor + 1))

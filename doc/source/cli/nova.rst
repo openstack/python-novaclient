@@ -952,6 +952,8 @@ nova boot
                     [--description <description>] [--tags <tags>]
                     [--return-reservation-id]
                     [--trusted-image-certificate-id <trusted-image-certificate-id>]
+                    [--host <host>]
+                    [--hypervisor-hostname <hypervisor-hostname>]
                     <name>
 
 Boot a new server.
@@ -1116,6 +1118,14 @@ quality of service support, microversion ``2.72`` is required.
   Defaults to env[OS_TRUSTED_IMAGE_CERTIFICATE_IDS].
   May be specified multiple times to pass multiple trusted image
   certificate IDs. (Supported by API versions '2.63' - '2.latest')
+
+``--host <host>``
+  Requested host to create servers. Admin only by default.
+  (Supported by API versions '2.74' - '2.latest')
+
+``--hypervisor-hostname <hypervisor-hostname>``
+  Requested hypervisor hostname to create servers. Admin only by default.
+  (Supported by API versions '2.74' - '2.latest')
 
 .. _nova_cell-capacities:
 

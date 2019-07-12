@@ -1,0 +1,9 @@
+---
+features:
+  - |
+    Support is added for the `2.74 microversion`_ which allows specifying the
+    ``--host`` and ``--hypervisor-hostname`` options on the ``nova boot``
+    command. The ``novaclient.v2.servers.ServerManager.create()`` method now
+    also supports ``host`` and ``hypervisor_hostname`` parameters.
+
+    .. _2.74 microversion: https://docs.openstack.org/nova/latest/reference/api-microversion-history.html#id66
