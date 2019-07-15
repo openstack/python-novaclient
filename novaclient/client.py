@@ -85,21 +85,6 @@ class SessionClient(adapter.LegacyJsonAdapter):
     def reset_timings(self):
         self.times = []
 
-    @property
-    def management_url(self):
-        self.logger.warning(
-            _("Property `management_url` is deprecated for SessionClient. "
-              "Use `endpoint_override` instead."))
-        return self.endpoint_override
-
-    @management_url.setter
-    def management_url(self, value):
-        self.logger.warning(
-            _("Property `management_url` is deprecated for SessionClient. "
-              "It should be set via `endpoint_override` variable while class"
-              " initialization."))
-        self.endpoint_override = value
-
 
 def _construct_http_client(api_version=None,
                            auth=None,
@@ -209,14 +194,6 @@ def _get_client_class_and_version(version):
             _("The version should be explicit, not latest."))
     return version, importutils.import_class(
         "novaclient.v%s.client.Client" % version.ver_major)
-
-
-def get_client_class(version):
-    """Returns Client class based on given version."""
-    warnings.warn(_("'get_client_class' is deprecated. "
-                    "Please use `novaclient.client.Client` instead."))
-    _api_version, client_class = _get_client_class_and_version(version)
-    return client_class
 
 
 def _check_arguments(kwargs, release, deprecated_name, right_name=None):

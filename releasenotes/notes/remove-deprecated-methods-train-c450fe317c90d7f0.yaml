@@ -1,0 +1,24 @@
+---
+upgrade:
+  - |
+    The following properties have been removed.
+
+    - ``novaclient.client.SessionClient``
+
+      - ``management_url``
+
+    - ``novaclient.v2.client.Client``
+
+      - ``projectid``
+      - ``tenant_id``
+
+    The following methods have been removed.
+
+    - ``novaclient.client.get_client_class``
+    - ``novaclient.v2.client.Client``
+
+      - ``set_management_url``
+      - ``authenticate``
+
+    The ``novaclient.v2.client.Client.__enter__`` method now raises
+    the ``InvalidUsage`` runtime error.
