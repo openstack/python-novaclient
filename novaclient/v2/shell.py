@@ -48,6 +48,21 @@ from novaclient.v2 import servers
 
 logger = logging.getLogger(__name__)
 
+CELL_V1_DEPRECATION_WARNING = _(
+    'The cells v1 interface has been deprecated. This command will be removed '
+    'in the first major release after the Nova server 20.0.0 Train release.')
+
+EXTENSION_DEPRECATION_WARNING = _(
+    'The API extension interface has been deprecated. This command will be '
+    'removed in the first major release after the Nova server 20.0.0 Train '
+    'release.')
+
+
+# NOTE(takashin): Remove this along with the deprecated commands in the first
+# major python-novaclient release AFTER the nova server 20.0.0 Train release.
+def _emit_deprecation_warning(message):
+    print(message, file=sys.stderr)
+
 
 def emit_duplicated_image_with_warning(img, image_with):
     img_uuid_list = [str(image.id) for image in img]
@@ -4876,7 +4891,8 @@ def do_server_tag_delete_all(cs, args):
     metavar='<cell-name>',
     help=_('Name of the cell.'))
 def do_cell_show(cs, args):
-    """Show details of a given cell."""
+    """DEPRECATED Show details of a given cell."""
+    _emit_deprecation_warning(CELL_V1_DEPRECATION_WARNING)
     cell = cs.cells.get(args.cell)
     utils.print_dict(cell.to_dict())
 
@@ -4887,7 +4903,8 @@ def do_cell_show(cs, args):
     help=_("Name of the cell to get the capacities."),
     default=None)
 def do_cell_capacities(cs, args):
-    """Get cell capacities for all cells or a given cell."""
+    """DEPRECATED Get cell capacities for all cells or a given cell."""
+    _emit_deprecation_warning(CELL_V1_DEPRECATION_WARNING)
     cell = cs.cells.capacities(args.cell)
     print(_("Ram Available: %s MiB") % cell.capacities['ram_free']['total_mb'])
     utils.print_dict(cell.capacities['ram_free']['units_by_mb'],
@@ -5321,8 +5338,9 @@ def do_instance_action_list(cs, args):
 
 def do_list_extensions(cs, _args):
     """
-    List all the os-api extensions that are available.
+    DEPRECATED List all the os-api extensions that are available.
     """
+    _emit_deprecation_warning(EXTENSION_DEPRECATION_WARNING)
     extensions = cs.list_extensions.show_all()
     fields = ["Name", "Summary", "Alias", "Updated"]
     utils.print_list(extensions, fields)

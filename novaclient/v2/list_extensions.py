@@ -13,12 +13,23 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import warnings
+
 from novaclient import base
+from novaclient.i18n import _
+
+EXTENSION_DEPRECATION_WARNING = _(
+    'The API extension interface has been deprecated since 12.0.0 Liberty '
+    'Release. This API binding will be removed in the first major release '
+    'after the Nova server 20.0.0 Train release.')
 
 
 class ListExtResource(base.Resource):
+    """DEPRECATED"""
     @property
     def summary(self):
+        """DEPRECATED"""
+        warnings.warn(EXTENSION_DEPRECATION_WARNING, DeprecationWarning)
         descr = self.description.strip()
         if not descr:
             return '??'
@@ -30,7 +41,10 @@ class ListExtResource(base.Resource):
 
 
 class ListExtManager(base.Manager):
+    """DEPRECATED"""
     resource_class = ListExtResource
 
     def show_all(self):
+        """DEPRECATED"""
+        warnings.warn(EXTENSION_DEPRECATION_WARNING, DeprecationWarning)
         return self._list("/extensions", 'extensions')
