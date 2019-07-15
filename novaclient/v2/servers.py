@@ -316,6 +316,11 @@ class Server(base.Resource):
         """Diagnostics -- Retrieve server diagnostics."""
         return self.manager.diagnostics(self)
 
+    @api_versions.wraps("2.78")
+    def topology(self):
+        """Retrieve server topology."""
+        return self.manager.topology(self)
+
     @api_versions.wraps("2.0", "2.55")
     def migrate(self):
         """
@@ -1285,6 +1290,19 @@ class ServerManager(base.BootingManagerWithFind):
         resp, body = self.api.client.get("/servers/%s/diagnostics" %
                                          base.getid(server))
         return base.TupleWithMeta((resp, body), resp)
+
+    @api_versions.wraps("2.78")
+    def topology(self, server):
+        """
+        Retrieve server topology.
+
+        :param server: The :class:`Server` (or its ID) for which
+                       topology to be returned
+        :returns: An instance of novaclient.base.DictWithMeta
+        """
+        resp, body = self.api.client.get("/servers/%s/topology" %
+                                         base.getid(server))
+        return base.DictWithMeta(body, resp)
 
     def _validate_create_nics(self, nics):
         # nics are required with microversion 2.37+ and can be a string or list

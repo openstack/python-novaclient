@@ -1875,3 +1875,27 @@ class ServersV277Test(ServersV274Test):
                                s, availability_zone='foo-az')
         self.assertIn("unexpected keyword argument 'availability_zone'",
                       six.text_type(ex))
+
+
+class ServersV278Test(ServersV273Test):
+
+    api_version = "2.78"
+
+    def test_get_server_topology(self):
+        s = self.cs.servers.get(1234)
+        topology = s.topology()
+        self.assert_request_id(topology, fakes.FAKE_REQUEST_ID_LIST)
+        self.assertIsNotNone(topology)
+        self.assert_called('GET', '/servers/1234/topology')
+
+        topology_from_manager = self.cs.servers.topology(1234)
+        self.assert_request_id(topology, fakes.FAKE_REQUEST_ID_LIST)
+        self.assertIsNotNone(topology_from_manager)
+        self.assert_called('GET', '/servers/1234/topology')
+
+        self.assertEqual(topology, topology_from_manager)
+
+    def test_get_server_topology_pre278(self):
+        self.cs.api_version = api_versions.APIVersion('2.77')
+        s = self.cs.servers.get(1234)
+        self.assertRaises(exceptions.VersionNotFoundForAPIMethod, s.topology)

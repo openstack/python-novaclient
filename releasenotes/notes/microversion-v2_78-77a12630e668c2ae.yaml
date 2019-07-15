@@ -1,0 +1,14 @@
+---
+features:
+  - |
+    Added support for `microversion 2.78`_ which outputs the server NUMA
+    topology information in the following command:
+
+    * ``nova server-topology``
+
+    And associated python API bindings:
+
+    * ``novaclient.v2.servers.Server.topology``
+    * ``novaclient.v2.servers.ServerManager.topology``
+
+    .. _microversion 2.78: https://docs.openstack.org/nova/latest/reference/api-microversion-history.html#id70

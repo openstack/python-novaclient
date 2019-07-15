@@ -472,6 +472,9 @@ nova usage
   '--os-compute-api-version' flag to show help
   message for proper version]
 
+``server-topology``
+  Retrieve NUMA topology of the given server.
+
 ``service-delete``
   Delete the service.
 
@@ -3357,6 +3360,26 @@ version]
 
 ``<tags>``
   Tag(s) to set.
+
+.. _nova_server_topology:
+
+nova server-topology
+--------------------
+
+.. code-block:: console
+
+   usage: nova server-topology <server>
+
+Retrieve server NUMA topology information. Host specific fields are only
+visible to users with the administrative role.
+(Supported by API versions '2.78' - '2.latest')
+
+.. versionadded:: 16.0.0
+
+**Positional arguments:**
+
+``<server>``
+  Name or ID of server.
 
 .. _nova_service-delete:
 

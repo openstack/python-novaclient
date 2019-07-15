@@ -2463,6 +2463,19 @@ class ShellTest(utils.TestCase):
         self.run_command('diagnostics sample-server')
         self.assert_called('GET', '/servers/1234/diagnostics')
 
+    def test_server_topology(self):
+        self.run_command('server-topology 1234', api_version='2.78')
+        self.assert_called('GET', '/servers/1234/topology')
+        self.run_command('server-topology sample-server', api_version='2.78')
+        self.assert_called('GET', '/servers/1234/topology')
+
+    def test_server_topology_pre278(self):
+        exp = self.assertRaises(SystemExit,
+                                self.run_command,
+                                'server-topology 1234',
+                                api_version='2.77')
+        self.assertIn('2', six.text_type(exp))
+
     def test_refresh_network(self):
         self.run_command('refresh-network 1234')
         self.assert_called('POST', '/os-server-external-events',

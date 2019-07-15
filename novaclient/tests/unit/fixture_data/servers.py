@@ -371,6 +371,10 @@ class V1(Base):
         self.requests_mock.delete(self.url('1234', 'os-interface', 'port-id'),
                                   headers=self.json_headers)
 
+        self.requests_mock.get(self.url('1234', 'topology'),
+                               json=v2_fakes.SERVER_TOPOLOGY,
+                               headers=self.json_headers)
+
         # Testing with the following password and key
         #
         # Clear password: FooBar123

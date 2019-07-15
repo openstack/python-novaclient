@@ -2313,6 +2313,17 @@ def do_diagnostics(cs, args):
     utils.print_dict(cs.servers.diagnostics(server)[1], wrap=80)
 
 
+@api_versions.wraps("2.78")
+@utils.arg('server', metavar='<server>', help=_('Name or ID of server.'))
+def do_server_topology(cs, args):
+    """Retrieve server topology."""
+    server = _find_server(cs, args.server)
+    # This prints a dict with only two properties: nodes and pagesize_kb
+    # nodes is a list of dicts so it does not print very well, it's just a
+    # json blob in the output.
+    utils.print_dict(cs.servers.topology(server), wrap=80)
+
+
 @utils.arg(
     'server', metavar='<server>',
     help=_('Name or ID of a server for which the network cache should '

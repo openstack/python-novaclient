@@ -58,6 +58,48 @@ FAKE_RESPONSE_HEADERS = {'x-openstack-request-id': FAKE_REQUEST_ID}
 FAKE_SERVICE_UUID_1 = '75e9eabc-ed3b-4f11-8bba-add1e7e7e2de'
 FAKE_SERVICE_UUID_2 = '1f140183-c914-4ddf-8757-6df73028aa86'
 
+SERVER_TOPOLOGY = {
+    "nodes": [
+        {
+            "cpu_pinning": {
+                "0": 0,
+                "1": 5
+            },
+            "host_node": 0,
+            "memory_mb": 1024,
+            "siblings": [
+                [
+                    0,
+                    1
+                ]
+            ],
+            "vcpu_set": [
+                0,
+                1
+            ]
+        },
+        {
+            "cpu_pinning": {
+                "2": 1,
+                "3": 8
+            },
+            "host_node": 1,
+            "memory_mb": 2048,
+            "siblings": [
+                [
+                    2,
+                    3
+                ]
+            ],
+            "vcpu_set": [
+                2,
+                3
+            ]
+        }
+    ],
+    "pagesize_kb": 4
+}
+
 
 class FakeClient(fakes.FakeClient, client.Client):
 
@@ -737,6 +779,9 @@ class FakeSessionClient(base_client.SessionClient):
                 'tenant_id': '4ffc664c198e435e9853f2538fbcd7a7',
                 'rules': []}]
         })
+
+    def get_servers_1234_topology(self, **kw):
+        return 200, {}, SERVER_TOPOLOGY
 
     #
     # Server password
