@@ -32,8 +32,8 @@ in *python-novaclient*.
 
    Add the microversion in the ``exclusions`` in the ``test_versions``
    method of the ``novaclient.tests.unit.v2.test_shell.ShellTest`` class
-   if there are no versioned wrapped shell method changes
-   for the microversion.
+   if there are no versioned wrapped method changes for the microversion.
+   The versioned wrapped methods have ``@api_versions.wraps`` decorators.
 
    For example (microversion 2.72 example)::
 
