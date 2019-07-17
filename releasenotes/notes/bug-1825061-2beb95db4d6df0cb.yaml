@@ -1,0 +1,5 @@
+---
+fixes:
+  - |
+    A check for a value of the '--config-drive' option has been added on the
+    ``nova boot`` command. A boolean value is only allowed in the option now.

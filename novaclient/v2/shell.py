@@ -506,7 +506,9 @@ def _boot(cs, args):
     elif str(args.config_drive).lower() in ("false", "0", "", "none"):
         config_drive = None
     else:
-        config_drive = args.config_drive
+        raise exceptions.CommandError(
+            _("The value of the '--config-drive' option must be "
+              "a boolean value."))
 
     boot_kwargs = dict(
         meta=meta,
@@ -906,7 +908,7 @@ def _boot(cs, args):
     metavar="<value>",
     dest='config_drive',
     default=False,
-    help=_("Enable config drive."))
+    help=_("Enable config drive. The value must be a boolean value."))
 @utils.arg(
     '--poll',
     dest='poll',

@@ -1375,8 +1375,8 @@ class ServerManager(base.BootingManagerWithFind):
                       any networking for the server.
         :param scheduler_hints: (optional extension) arbitrary key-value pairs
                             specified by the client to help boot an instance
-        :param config_drive: (optional extension) value for config drive
-                            either boolean, or volume-id
+        :param config_drive: (optional extension) a boolean value to enable
+                             config drive
         :param disk_config: (optional extension) control how the disk is
                             partitioned when the server is created.  possible
                             values are 'AUTO' or 'MANUAL'.

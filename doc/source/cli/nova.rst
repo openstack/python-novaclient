@@ -1089,7 +1089,8 @@ quality of service support, microversion ``2.72`` is required.
   versions '2.42' - '2.latest')
 
 ``--config-drive <value>``
-  Enable config drive.
+  Enable config drive. The value must be a
+  boolean value.
 
 ``--poll``
   Report the new server boot progress until it
