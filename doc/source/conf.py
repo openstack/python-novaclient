@@ -46,7 +46,6 @@ master_doc = 'index'
 repository_name = 'openstack/python-novaclient'
 bug_project = 'python-novaclient'
 bug_tag = 'doc'
-project = 'python-novaclient'
 copyright = 'OpenStack Contributors'
 
 # List of directories, relative to source directory, that shouldn't be searched
