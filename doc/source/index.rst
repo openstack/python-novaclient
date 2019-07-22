@@ -16,7 +16,7 @@ such as TryStack, HP, or Rackspace, in order to use the nova client.
     to get an idea of the concepts. By understanding the concepts
     this library should make more sense.
 
-    __ https://developer.openstack.org/api-guide/compute/index.html
+    __ https://docs.openstack.org/api-guide/compute/index.html
 
 .. toctree::
    :maxdepth: 2
