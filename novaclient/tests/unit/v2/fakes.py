@@ -2115,6 +2115,11 @@ class FakeSessionClient(base_client.SessionClient):
         if self.api_version >= api_versions.APIVersion('2.70'):
             # Include the "tag" field in the response.
             attachment['tag'] = 'test-tag'
+
+        if self.api_version >= api_versions.APIVersion('2.79'):
+            # Include the "delete_on_termination" field in the
+            # response.
+            attachment['delete_on_termination'] = True
         return (200, FAKE_RESPONSE_HEADERS, {"volumeAttachment": attachment})
 
     def put_servers_1234_os_volume_attachments_Work(self, **kw):
@@ -2139,6 +2144,12 @@ class FakeSessionClient(base_client.SessionClient):
             # Include the "tag" field in each attachment.
             for attachment in attachments['volumeAttachments']:
                 attachment['tag'] = 'test-tag'
+
+        if self.api_version >= api_versions.APIVersion('2.79'):
+            # Include the "delete_on_termination" field in each
+            # attachment.
+            for attachment in attachments['volumeAttachments']:
+                attachment['delete_on_termination'] = True
         return (200, FAKE_RESPONSE_HEADERS, attachments)
 
     def get_servers_1234_os_volume_attachments_Work(self, **kw):

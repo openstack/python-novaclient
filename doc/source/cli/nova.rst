@@ -3849,7 +3849,8 @@ nova volume-attach
 
 .. code-block:: console
 
-   usage: nova volume-attach [--tag <tag>] <server> <volume> [<device>]
+   usage: nova volume-attach [--delete-on-termination] [--tag <tag>]
+                             <server> <volume> [<device>]
 
 Attach a volume to a server.
 
@@ -3869,6 +3870,11 @@ Attach a volume to a server.
 
 ``--tag <tag>``
   Tag for the attached volume. (Supported by API versions '2.49' - '2.latest')
+
+``--delete-on-termination``
+  Specify if the attached volume sholud be deleted when the server is
+  destroyed. By default the attached volume is not deleted when the server is
+  destroyed. (Supported by API versions '2.79' - '2.latest')
 
 .. _nova_volume-attachments:
 

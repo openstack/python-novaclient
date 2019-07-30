@@ -2633,6 +2633,13 @@ def _translate_volume_attachments_keys(collection):
     default=None,
     help=_('Tag for the attached volume.'),
     start_version="2.49")
+@utils.arg(
+    '--delete-on-termination',
+    action='store_true',
+    default=False,
+    help=_('Specify if the attached volume should be deleted '
+           'when the server is destroyed.'),
+    start_version="2.79")
 def do_volume_attach(cs, args):
     """Attach a volume to a server."""
     if args.device == 'auto':
@@ -2641,6 +2648,9 @@ def do_volume_attach(cs, args):
     update_kwargs = {}
     if 'tag' in args and args.tag:
         update_kwargs['tag'] = args.tag
+
+    if 'delete_on_termination' in args and args.delete_on_termination:
+        update_kwargs['delete_on_termination'] = args.delete_on_termination
 
     volume = cs.volumes.create_server_volume(_find_server(cs, args.server).id,
                                              args.volume,
@@ -2699,6 +2709,9 @@ def do_volume_attachments(cs, args):
     fields = ['ID', 'DEVICE', 'SERVER ID', 'VOLUME ID']
     if cs.api_version >= api_versions.APIVersion('2.70'):
         fields.append('TAG')
+    # Microversion >= 2.79 returns the delete_on_termination value.
+    if cs.api_version >= api_versions.APIVersion('2.79'):
+        fields.append('DELETE ON TERMINATION')
     utils.print_list(volumes, fields)
 
 

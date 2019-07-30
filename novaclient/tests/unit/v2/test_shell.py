@@ -3825,6 +3825,42 @@ class ShellTest(utils.TestCase):
                                 'tag': 'test-tag'}})
         self.assertIn('test-tag', out)
 
+    def test_volume_attachments_pre_v2_79(self):
+        out = self.run_command(
+            'volume-attachments 1234', api_version='2.78')[0]
+        self.assert_called('GET', '/servers/1234/os-volume_attachments')
+        self.assertNotIn('DELETE ON TERMINATION', out)
+
+    def test_volume_attachments_v2_79(self):
+        out = self.run_command(
+            'volume-attachments 1234', api_version='2.79')[0]
+        self.assert_called('GET', '/servers/1234/os-volume_attachments')
+        self.assertIn('DELETE ON TERMINATION', out)
+
+    def test_volume_attach_with_delete_on_termination_pre_v2_79(self):
+        self.assertRaises(
+            SystemExit, self.run_command,
+            'volume-attach --delete-on-termination sample-server '
+            'Work /dev/vdb', api_version='2.78')
+
+    def test_volume_attach_with_delete_on_termination_v2_79(self):
+        out = self.run_command(
+            'volume-attach --delete-on-termination sample-server '
+            '2 /dev/vdb', api_version='2.79')[0]
+        self.assert_called('POST', '/servers/1234/os-volume_attachments',
+                           {'volumeAttachment':
+                               {'device': '/dev/vdb',
+                                'volumeId': '2',
+                                'delete_on_termination': True}})
+        self.assertIn('delete_on_termination', out)
+
+    def test_volume_attach_without_delete_on_termination(self):
+        self.run_command('volume-attach sample-server Work',
+                         api_version='2.79')
+        self.assert_called('POST', '/servers/1234/os-volume_attachments',
+                           {'volumeAttachment':
+                               {'volumeId': 'Work'}})
+
     def test_volume_update(self):
         self.run_command('volume-update sample-server Work Work')
         self.assert_called('PUT', '/servers/1234/os-volume_attachments/Work',

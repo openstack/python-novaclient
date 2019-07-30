@@ -1,0 +1,16 @@
+---
+features:
+  - |
+    Added support for `microversion 2.79`_ which includes the following
+    changes:
+
+    - The ``--delete-on-termination`` option is added to the
+      ``nova volume-attach`` CLI.
+    - A ``DELETE ON TERMINATION`` column is added to the
+      ``nova volume-attachments`` table.
+    - New kwarg called ``delete_on_termination`` added to the python API
+      binding:
+
+      - ``novaclient.v2.volumes.VolumeManager.create_server_volume()``
+
+    .. _microversion 2.79: https://docs.openstack.org/nova/latest/reference/api-microversion-history.html#id71

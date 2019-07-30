@@ -55,7 +55,7 @@ class VolumeManager(base.Manager):
         return self._create("/servers/%s/os-volume_attachments" % server_id,
                             body, "volumeAttachment")
 
-    @api_versions.wraps("2.49")
+    @api_versions.wraps("2.49", "2.78")
     def create_server_volume(self, server_id, volume_id, device=None,
                              tag=None):
         """
@@ -72,6 +72,34 @@ class VolumeManager(base.Manager):
             body['volumeAttachment']['device'] = device
         if tag is not None:
             body['volumeAttachment']['tag'] = tag
+        return self._create("/servers/%s/os-volume_attachments" % server_id,
+                            body, "volumeAttachment")
+
+    @api_versions.wraps("2.79")
+    def create_server_volume(self, server_id, volume_id, device=None,
+                             tag=None, delete_on_termination=False):
+        """
+        Attach a volume identified by the volume ID to the given server ID
+
+        :param server_id: The ID of the server.
+        :param volume_id: The ID of the volume to attach.
+        :param device: The device name (optional).
+        :param tag: The tag (optional).
+        :param delete_on_termination: Marked whether to delete the attached
+                                      volume when the server is deleted
+                                      (optional).
+        :rtype: :class:`Volume`
+        """
+        # TODO(mriedem): Move this body construction into a private common
+        # helper method for all versions of create_server_volume to use.
+        body = {'volumeAttachment': {'volumeId': volume_id}}
+        if device is not None:
+            body['volumeAttachment']['device'] = device
+        if tag is not None:
+            body['volumeAttachment']['tag'] = tag
+        if delete_on_termination:
+            body['volumeAttachment']['delete_on_termination'] = (
+                delete_on_termination)
         return self._create("/servers/%s/os-volume_attachments" % server_id,
                             body, "volumeAttachment")
 
