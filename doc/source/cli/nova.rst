@@ -2569,7 +2569,7 @@ Print a list of migrations.
   Fetch migrations for the given instance.
 
 ``--host <host>``
-  Fetch migrations for the given host.
+  Fetch migrations for the given source or destination host.
 
 ``--status <status>``
   Fetch migrations for the given status.

@@ -5416,7 +5416,7 @@ def _print_migrations(cs, migrations):
     '--host',
     dest='host',
     metavar='<host>',
-    help=_('Fetch migrations for the given host.'))
+    help=_('Fetch migrations for the given source or destination host.'))
 @utils.arg(
     '--status',
     dest='status',
@@ -5439,7 +5439,7 @@ def do_migration_list(cs, args):
     '--host',
     dest='host',
     metavar='<host>',
-    help=_('Fetch migrations for the given host.'))
+    help=_('Fetch migrations for the given source or destination host.'))
 @utils.arg(
     '--status',
     dest='status',
@@ -5498,7 +5498,7 @@ def do_migration_list(cs, args):
     '--host',
     dest='host',
     metavar='<host>',
-    help=_('Fetch migrations for the given host.'))
+    help=_('Fetch migrations for the given source or destination host.'))
 @utils.arg(
     '--status',
     dest='status',
