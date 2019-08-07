@@ -3597,6 +3597,10 @@ def do_server_migration_list(cs, args):
                   "memory_remaining_bytes", "disk_total_bytes",
                   "disk_processed_bytes", "disk_remaining_bytes"]
 
+    if cs.api_version >= api_versions.APIVersion("2.80"):
+        fields.append("Project ID")
+        fields.append("User ID")
+
     formatters = map(lambda field: utils.make_field_formatter(field)[1],
                      format_key)
     formatters = dict(zip(format_name, formatters))
@@ -5391,6 +5395,10 @@ def _print_migrations(cs, migrations):
         fields.append("Type")
         formatters.update({"Type": migration_type})
 
+    if cs.api_version >= api_versions.APIVersion("2.80"):
+        fields.append("Project ID")
+        fields.append("User ID")
+
     utils.print_list(migrations, fields, formatters)
 
 
@@ -5564,6 +5572,20 @@ def do_migration_list(cs, args):
            'of time. The provided time should be an ISO 8061 formatted time. '
            'e.g. 2016-03-04T06:27:59Z .'),
     start_version="2.66")
+@utils.arg(
+    '--project-id',
+    dest='project_id',
+    metavar='<project_id>',
+    default=None,
+    help=_('Filter the migrations by the given project ID.'),
+    start_version='2.80')
+@utils.arg(
+    '--user-id',
+    dest='user_id',
+    metavar='<user_id>',
+    default=None,
+    help=_('Filter the migrations by the given user ID.'),
+    start_version='2.80')
 def do_migration_list(cs, args):
     """Print a list of migrations."""
     if args.changes_since:
@@ -5580,13 +5602,20 @@ def do_migration_list(cs, args):
             raise exceptions.CommandError(_('Invalid changes-before value: %s')
                                           % args.changes_before)
 
-    migrations = cs.migrations.list(args.host, args.status,
-                                    instance_uuid=args.instance_uuid,
-                                    marker=args.marker, limit=args.limit,
-                                    changes_since=args.changes_since,
-                                    changes_before=args.changes_before,
-                                    migration_type=args.migration_type,
-                                    source_compute=args.source_compute)
+    kwargs = dict(
+        instance_uuid=args.instance_uuid,
+        marker=args.marker,
+        limit=args.limit,
+        changes_since=args.changes_since,
+        changes_before=args.changes_before,
+        migration_type=args.migration_type,
+        source_compute=args.source_compute)
+
+    if cs.api_version >= api_versions.APIVersion('2.80'):
+        kwargs['project_id'] = args.project_id
+        kwargs['user_id'] = args.user_id
+
+    migrations = cs.migrations.list(args.host, args.status, **kwargs)
     _print_migrations(cs, migrations)
 
 

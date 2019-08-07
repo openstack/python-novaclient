@@ -2955,10 +2955,38 @@ class ShellTest(utils.TestCase):
                          api_version='2.23')
         self.assert_called('GET', '/servers/1234/migrations')
 
+    def test_list_migrations_pre_v280(self):
+        out = self.run_command('server-migration-list sample-server',
+                               api_version='2.79')[0]
+        self.assert_called('GET', '/servers/1234/migrations')
+        self.assertNotIn('User ID', out)
+        self.assertNotIn('Project ID', out)
+
+    def test_list_migrations_v280(self):
+        out = self.run_command('server-migration-list sample-server',
+                               api_version='2.80')[0]
+        self.assert_called('GET', '/servers/1234/migrations')
+        self.assertIn('User ID', out)
+        self.assertIn('Project ID', out)
+
     def test_get_migration(self):
         self.run_command('server-migration-show sample-server 1',
                          api_version='2.23')
         self.assert_called('GET', '/servers/1234/migrations/1')
+
+    def test_get_migration_pre_v280(self):
+        out = self.run_command('server-migration-show sample-server 1',
+                               api_version='2.79')[0]
+        self.assert_called('GET', '/servers/1234/migrations/1')
+        self.assertNotIn('user_id', out)
+        self.assertNotIn('project_id', out)
+
+    def test_get_migration_v280(self):
+        out = self.run_command('server-migration-show sample-server 1',
+                               api_version='2.80')[0]
+        self.assert_called('GET', '/servers/1234/migrations/1')
+        self.assertIn('user_id', out)
+        self.assertIn('project_id', out)
 
     def test_live_migration_abort(self):
         self.run_command('live-migration-abort sample-server 1',
@@ -4062,6 +4090,52 @@ class ShellTest(utils.TestCase):
         cmd = 'migration-list --changes-before 2016-02-29T06:23:22'
         self.assertRaises(SystemExit, self.run_command, cmd,
                           api_version='2.65')
+
+    def test_migration_list_with_user_id_v280(self):
+        user_id = '13cc0930d27c4be0acc14d7c47a3e1f7'
+        out = self.run_command('migration-list --user-id %s' % user_id,
+                               api_version='2.80')[0]
+        self.assert_called('GET', '/os-migrations?user_id=%s' % user_id)
+        self.assertIn('User ID', out)
+        self.assertIn('Project ID', out)
+
+    def test_migration_list_with_project_id_v280(self):
+        project_id = 'b59c18e5fa284fd384987c5cb25a1853'
+        out = self.run_command('migration-list --project-id %s' % project_id,
+                               api_version='2.80')[0]
+        self.assert_called('GET', '/os-migrations?project_id=%s' % project_id)
+        self.assertIn('User ID', out)
+        self.assertIn('Project ID', out)
+
+    def test_migration_list_with_user_and_project_id_v280(self):
+        user_id = '13cc0930d27c4be0acc14d7c47a3e1f7'
+        project_id = 'b59c18e5fa284fd384987c5cb25a1853'
+        out = self.run_command('migration-list --project-id %(project_id)s '
+                               '--user-id %(user_id)s' %
+                               {'user_id': user_id, 'project_id': project_id},
+                               api_version='2.80')[0]
+        self.assert_called('GET', '/os-migrations?project_id=%s&user_id=%s'
+                           % (project_id, user_id))
+        self.assertIn('User ID', out)
+        self.assertIn('Project ID', out)
+
+    def test_migration_list_with_user_id_pre_v280_not_allowed(self):
+        user_id = '13cc0930d27c4be0acc14d7c47a3e1f7'
+        cmd = 'migration-list --user-id %s' % user_id
+        self.assertRaises(SystemExit, self.run_command, cmd,
+                          api_version='2.79')
+
+    def test_migration_list_with_project_id_pre_v280_not_allowed(self):
+        project_id = 'b59c18e5fa284fd384987c5cb25a1853'
+        cmd = 'migration-list --project-id %s' % project_id
+        self.assertRaises(SystemExit, self.run_command, cmd,
+                          api_version='2.79')
+
+    def test_migration_list_pre_v280(self):
+        out = self.run_command('migration-list', api_version='2.79')[0]
+        self.assert_called('GET', '/os-migrations')
+        self.assertNotIn('User ID', out)
+        self.assertNotIn('Project ID', out)
 
     @mock.patch('novaclient.v2.shell._find_server')
     @mock.patch('os.system')

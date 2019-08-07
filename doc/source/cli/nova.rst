@@ -2516,6 +2516,8 @@ nova migration-list
                               [--limit <limit>]
                               [--changes-since <changes_since>]
                               [--changes-before <changes_before>]
+                              [--project-id <project_id>]
+                              [--user-id <user_id>]
 
 Print a list of migrations.
 
@@ -2572,6 +2574,14 @@ To see the list of evacuation operations *from* a compute service host:
   List only migrations changed earlier or equal to a certain
   point of time. The provided time should be an ISO 8061 formatted time.
   e.g. 2016-03-04T06:27:59Z . (Supported by API versions '2.66' - '2.latest')
+
+``--project-id <project_id>``
+  Filter the migrations by the given project ID.
+  (Supported by API versions '2.80' - '2.latest')
+
+``--user-id <user_id>``
+  Filter the migrations by the given user ID.
+  (Supported by API versions '2.80' - '2.latest')
 
 .. _nova_pause:
 

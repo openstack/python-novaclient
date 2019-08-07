@@ -29,7 +29,7 @@ class MigrationManager(base.ManagerWithFind):
     def _list_base(self, host=None, status=None, instance_uuid=None,
                    marker=None, limit=None, changes_since=None,
                    changes_before=None, migration_type=None,
-                   source_compute=None):
+                   source_compute=None, user_id=None, project_id=None):
         opts = {}
         if host:
             opts['host'] = host
@@ -49,6 +49,10 @@ class MigrationManager(base.ManagerWithFind):
             opts['migration_type'] = migration_type
         if source_compute:
             opts['source_compute'] = source_compute
+        if user_id:
+            opts['user_id'] = user_id
+        if project_id:
+            opts['project_id'] = project_id
 
         return self._list("/os-migrations", "migrations", filters=opts)
 
@@ -99,7 +103,7 @@ class MigrationManager(base.ManagerWithFind):
                                migration_type=migration_type,
                                source_compute=source_compute)
 
-    @api_versions.wraps("2.66")
+    @api_versions.wraps("2.66", "2.79")
     def list(self, host=None, status=None, instance_uuid=None,
              marker=None, limit=None, changes_since=None,
              changes_before=None, migration_type=None, source_compute=None):
@@ -132,3 +136,42 @@ class MigrationManager(base.ManagerWithFind):
                                changes_before=changes_before,
                                migration_type=migration_type,
                                source_compute=source_compute)
+
+    @api_versions.wraps("2.80")
+    def list(self, host=None, status=None, instance_uuid=None,
+             marker=None, limit=None, changes_since=None,
+             changes_before=None, migration_type=None,
+             source_compute=None, user_id=None, project_id=None):
+        """
+        Get a list of migrations.
+        :param host: filter migrations by host name (optional).
+        :param status: filter migrations by status (optional).
+        :param instance_uuid: filter migrations by instance uuid (optional).
+        :param marker: Begin returning migrations that appear later in the
+        migrations list than that represented by this migration UUID
+        (optional).
+        :param limit: maximum number of migrations to return (optional).
+        Note the API server has a configurable default limit. If no limit is
+        specified here or limit is larger than default, the default limit will
+        be used.
+        :param changes_since: Only return migrations changed later or equal
+        to a certain point of time. The provided time should be an ISO 8061
+        formatted time. e.g. 2016-03-04T06:27:59Z . (optional).
+        :param changes_before: Only return migrations changed earlier or
+        equal to a certain point of time. The provided time should be an ISO
+        8061 formatted time. e.g. 2016-03-05T06:27:59Z . (optional).
+        :param migration_type: Filter migrations by type. Valid values are:
+        evacuation, live-migration, migration, resize
+        :param source_compute: Filter migrations by source compute host name.
+        :param user_id: filter migrations by user (optional).
+        :param project_id: filter migrations by project (optional).
+        """
+        return self._list_base(host=host, status=status,
+                               instance_uuid=instance_uuid,
+                               marker=marker, limit=limit,
+                               changes_since=changes_since,
+                               changes_before=changes_before,
+                               migration_type=migration_type,
+                               source_compute=source_compute,
+                               user_id=user_id,
+                               project_id=project_id)

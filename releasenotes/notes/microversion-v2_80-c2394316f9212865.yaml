@@ -1,0 +1,20 @@
+---
+features:
+  - |
+    Added support for `microversion 2.80`_ which adds ``user_id``
+    and ``project_id`` filter parameters to the ``GET /os-migrations`` API.
+
+    New kwargs ``project_id`` and ``user_id`` have been added to
+    the following python API binding:
+
+    - novaclient.v2.migrations.MigrationManager.list
+
+    The following CLI changes have been made:
+
+    - The ``--project-id`` and ``--user-id`` options are added to the
+      ``nova migration-list`` CLI.
+    - The ``nova server-migration-list`` and ``nova server-migration-show``
+      commands will show the ``Project ID`` and ``User ID`` values when
+      using microversion 2.80 or greater.
+
+    .. _microversion 2.80: https://docs.openstack.org/nova/latest/reference/api-microversion-history.html#id72

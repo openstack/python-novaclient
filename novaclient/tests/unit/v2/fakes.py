@@ -2288,6 +2288,14 @@ class FakeSessionClient(base_client.SessionClient):
             migration1.update({"uuid": "11111111-07d5-11e1-90e3-e3dffe0c5983"})
             migration2.update({"uuid": "22222222-07d5-11e1-90e3-e3dffe0c5983"})
 
+        if self.api_version >= api_versions.APIVersion("2.80"):
+            migration1.update({
+                "project_id": "b59c18e5fa284fd384987c5cb25a1853",
+                "user_id": "13cc0930d27c4be0acc14d7c47a3e1f7"})
+            migration2.update({
+                "project_id": "b59c18e5fa284fd384987c5cb25a1853",
+                "user_id": "13cc0930d27c4be0acc14d7c47a3e1f7"})
+
         migration_list = []
         instance_uuid = kw.get('instance_uuid', None)
         if instance_uuid == migration1['instance_uuid']:
@@ -2379,6 +2387,12 @@ class FakeSessionClient(base_client.SessionClient):
             "disk_remaining_bytes": 230000,
             "updated_at": "2016-01-29T13:42:02.000000"
         }}
+
+        if self.api_version >= api_versions.APIVersion("2.80"):
+            migration['migration'].update({
+                "project_id": "b59c18e5fa284fd384987c5cb25a1853",
+                "user_id": "13cc0930d27c4be0acc14d7c47a3e1f7"})
+
         return (200, FAKE_RESPONSE_HEADERS, migration)
 
     @api_versions.wraps(start_version="2.23")
@@ -2402,6 +2416,12 @@ class FakeSessionClient(base_client.SessionClient):
                 "disk_remaining_bytes": 230000,
                 "updated_at": "2016-01-29T13:42:02.000000"
             }]}
+
+        if self.api_version >= api_versions.APIVersion("2.80"):
+            migrations['migrations'][0].update({
+                "project_id": "b59c18e5fa284fd384987c5cb25a1853",
+                "user_id": "13cc0930d27c4be0acc14d7c47a3e1f7"})
+
         return (200, FAKE_RESPONSE_HEADERS, migrations)
 
     def delete_servers_1234_migrations_1(self):
