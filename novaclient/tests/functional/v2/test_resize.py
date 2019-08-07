@@ -20,27 +20,6 @@ class TestServersResize(base.ClientTestBase):
 
     COMPUTE_API_VERSION = '2.1'
 
-    def _pick_alternate_flavor(self):
-        """Given the flavor picked in the base class setup, this finds the
-        opposite flavor to use for a resize test. For example, if m1.nano is
-        the flavor, then use m1.micro, but those are only available if Tempest
-        is configured. If m1.tiny, then use m1.small.
-        """
-        flavor_name = self.flavor.name
-        if flavor_name == 'm1.nano':
-            # This is an upsize test.
-            return 'm1.micro'
-        if flavor_name == 'm1.micro':
-            # This is a downsize test.
-            return 'm1.nano'
-        if flavor_name == 'm1.tiny':
-            # This is an upsize test.
-            return 'm1.small'
-        if flavor_name == 'm1.small':
-            # This is a downsize test.
-            return 'm1.tiny'
-        self.fail('Unable to find alternate for flavor: %s' % flavor_name)
-
     def _compare_quota_usage(self, old_usage, new_usage, expect_diff=True):
         """Compares the quota usage in the provided AbsoluteLimits."""
         # For a resize, instance usage shouldn't change.

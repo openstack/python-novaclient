@@ -1,0 +1,9 @@
+---
+features:
+  - |
+    The ``--migration-type`` and ``--source-compute`` options are added to the
+    ``nova migration-list`` CLI and related kwargs are added to the
+    ``novaclient.v2.migrations.MigrationManager.list`` method. These can be
+    used to filter the list of migrations by type (evacuation, live-migration,
+    migration, resize) and the name of the source compute service host involved
+    in the migration.

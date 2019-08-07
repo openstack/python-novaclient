@@ -28,7 +28,8 @@ class MigrationManager(base.ManagerWithFind):
 
     def _list_base(self, host=None, status=None, instance_uuid=None,
                    marker=None, limit=None, changes_since=None,
-                   changes_before=None):
+                   changes_before=None, migration_type=None,
+                   source_compute=None):
         opts = {}
         if host:
             opts['host'] = host
@@ -44,23 +45,34 @@ class MigrationManager(base.ManagerWithFind):
             opts['changes-since'] = changes_since
         if changes_before:
             opts['changes-before'] = changes_before
+        if migration_type:
+            opts['migration_type'] = migration_type
+        if source_compute:
+            opts['source_compute'] = source_compute
 
         return self._list("/os-migrations", "migrations", filters=opts)
 
     @api_versions.wraps("2.0", "2.58")
-    def list(self, host=None, status=None, instance_uuid=None):
+    def list(self, host=None, status=None, instance_uuid=None,
+             migration_type=None, source_compute=None):
         """
         Get a list of migrations.
         :param host: filter migrations by host name (optional).
         :param status: filter migrations by status (optional).
         :param instance_uuid: filter migrations by instance uuid (optional).
+        :param migration_type: Filter migrations by type. Valid values are:
+        evacuation, live-migration, migration, resize
+        :param source_compute: Filter migrations by source compute host name.
         """
         return self._list_base(host=host, status=status,
-                               instance_uuid=instance_uuid)
+                               instance_uuid=instance_uuid,
+                               migration_type=migration_type,
+                               source_compute=source_compute)
 
     @api_versions.wraps("2.59", "2.65")
     def list(self, host=None, status=None, instance_uuid=None,
-             marker=None, limit=None, changes_since=None):
+             marker=None, limit=None, changes_since=None,
+             migration_type=None, source_compute=None):
         """
         Get a list of migrations.
         :param host: filter migrations by host name (optional).
@@ -76,16 +88,21 @@ class MigrationManager(base.ManagerWithFind):
         :param changes_since: only return migrations changed later or equal
         to a certain point of time. The provided time should be an ISO 8061
         formatted time. e.g. 2016-03-04T06:27:59Z . (optional).
+        :param migration_type: Filter migrations by type. Valid values are:
+        evacuation, live-migration, migration, resize
+        :param source_compute: Filter migrations by source compute host name.
         """
         return self._list_base(host=host, status=status,
                                instance_uuid=instance_uuid,
                                marker=marker, limit=limit,
-                               changes_since=changes_since)
+                               changes_since=changes_since,
+                               migration_type=migration_type,
+                               source_compute=source_compute)
 
     @api_versions.wraps("2.66")
     def list(self, host=None, status=None, instance_uuid=None,
              marker=None, limit=None, changes_since=None,
-             changes_before=None):
+             changes_before=None, migration_type=None, source_compute=None):
         """
         Get a list of migrations.
         :param host: filter migrations by host name (optional).
@@ -104,9 +121,14 @@ class MigrationManager(base.ManagerWithFind):
         :param changes_before: Only return migrations changed earlier or
         equal to a certain point of time. The provided time should be an ISO
         8061 formatted time. e.g. 2016-03-05T06:27:59Z . (optional).
+        :param migration_type: Filter migrations by type. Valid values are:
+        evacuation, live-migration, migration, resize
+        :param source_compute: Filter migrations by source compute host name.
         """
         return self._list_base(host=host, status=status,
                                instance_uuid=instance_uuid,
                                marker=marker, limit=limit,
                                changes_since=changes_since,
-                               changes_before=changes_before)
+                               changes_before=changes_before,
+                               migration_type=migration_type,
+                               source_compute=source_compute)
