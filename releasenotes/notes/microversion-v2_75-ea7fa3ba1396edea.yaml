@@ -1,0 +1,18 @@
+---
+features:
+  - |
+    Added support for `microversion 2.75`_. The following changes were made:
+
+    - Return all fields of ``server`` in ``nova rebuild`` command which are
+      returned in ``nova show``. Both command will return the same set of
+      fields of ``server`` representation.
+
+    - Default return value of ``swap`` field will be 0 (integer) in below
+      commands:
+
+      - ``nova flavor-list``
+      - ``nova flavor-show``
+      - ``nova flavor-create``
+      - ``nova flavor-update``
+
+    .. _microversion 2.75: https://docs.openstack.org/nova/latest/reference/api-microversion-history.html#id67

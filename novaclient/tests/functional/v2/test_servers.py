@@ -343,3 +343,44 @@ class TestInterfaceAttach(base.ClientTestBase):
         self.assertEqual(
             self.network.id,
             self._get_value_from_the_table(output, 'net_id'))
+
+
+class TestServeRebuildV274(base.ClientTestBase):
+
+    COMPUTE_API_VERSION = '2.74'
+    REBUILD_FIELDS = ["OS-DCF:diskConfig", "accessIPv4", "accessIPv6",
+                      "adminPass", "created", "description",
+                      "flavor", "hostId", "id", "image", "key_name",
+                      "locked", "locked_reason", "metadata", "name",
+                      "progress", "server_groups", "status", "tags",
+                      "tenant_id", "trusted_image_certificates", "updated",
+                      "user_data", "user_id"]
+
+    def test_rebuild(self):
+        server = self._create_server()
+        output = self.nova("rebuild %s %s" % (server.id, self.image.name))
+        for field in self.REBUILD_FIELDS:
+            self.assertIn(field, output)
+
+
+class TestServeRebuildV275(TestServeRebuildV274):
+
+    COMPUTE_API_VERSION = '2.75'
+    REBUILD_FIELDS_V275 = ['OS-EXT-AZ:availability_zone', 'config_drive',
+                           'OS-EXT-SRV-ATTR:host',
+                           'OS-EXT-SRV-ATTR:hypervisor_hostname',
+                           'OS-EXT-SRV-ATTR:instance_name',
+                           'OS-EXT-SRV-ATTR:hostname',
+                           'OS-EXT-SRV-ATTR:kernel_id',
+                           'OS-EXT-SRV-ATTR:launch_index',
+                           'OS-EXT-SRV-ATTR:ramdisk_id',
+                           'OS-EXT-SRV-ATTR:reservation_id',
+                           'OS-EXT-SRV-ATTR:root_device_name',
+                           'host_status',
+                           'OS-SRV-USG:launched_at',
+                           'OS-SRV-USG:terminated_at',
+                           'OS-EXT-STS:task_state', 'OS-EXT-STS:vm_state',
+                           'OS-EXT-STS:power_state', 'security_groups',
+                           'os-extended-volumes:volumes_attached']
+
+    REBUILD_FIELDS = TestServeRebuildV274.REBUILD_FIELDS + REBUILD_FIELDS_V275
