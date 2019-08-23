@@ -5422,10 +5422,23 @@ def _print_migrations(cs, migrations):
     dest='status',
     metavar='<status>',
     help=_('Fetch migrations for the given status.'))
+@utils.arg(
+    '--migration-type',
+    dest='migration_type',
+    metavar='<migration_type>',
+    help=_('Filter migrations by type. Valid values are: evacuation, '
+           'live-migration, migration, resize'))
+@utils.arg(
+    '--source-compute',
+    dest='source_compute',
+    metavar='<source_compute>',
+    help=_('Filter migrations by source compute host name.'))
 def do_migration_list(cs, args):
     """Print a list of migrations."""
     migrations = cs.migrations.list(args.host, args.status,
-                                    instance_uuid=args.instance_uuid)
+                                    instance_uuid=args.instance_uuid,
+                                    migration_type=args.migration_type,
+                                    source_compute=args.source_compute)
     _print_migrations(cs, migrations)
 
 
@@ -5445,6 +5458,17 @@ def do_migration_list(cs, args):
     dest='status',
     metavar='<status>',
     help=_('Fetch migrations for the given status.'))
+@utils.arg(
+    '--migration-type',
+    dest='migration_type',
+    metavar='<migration_type>',
+    help=_('Filter migrations by type. Valid values are: evacuation, '
+           'live-migration, migration, resize'))
+@utils.arg(
+    '--source-compute',
+    dest='source_compute',
+    metavar='<source_compute>',
+    help=_('Filter migrations by source compute host name.'))
 @utils.arg(
     '--marker',
     dest='marker',
@@ -5483,7 +5507,9 @@ def do_migration_list(cs, args):
     migrations = cs.migrations.list(args.host, args.status,
                                     instance_uuid=args.instance_uuid,
                                     marker=args.marker, limit=args.limit,
-                                    changes_since=args.changes_since)
+                                    changes_since=args.changes_since,
+                                    migration_type=args.migration_type,
+                                    source_compute=args.source_compute)
     # TODO(yikun): Output a "Marker" column if there is a next link?
     _print_migrations(cs, migrations)
 
@@ -5504,6 +5530,17 @@ def do_migration_list(cs, args):
     dest='status',
     metavar='<status>',
     help=_('Fetch migrations for the given status.'))
+@utils.arg(
+    '--migration-type',
+    dest='migration_type',
+    metavar='<migration_type>',
+    help=_('Filter migrations by type. Valid values are: evacuation, '
+           'live-migration, migration, resize'))
+@utils.arg(
+    '--source-compute',
+    dest='source_compute',
+    metavar='<source_compute>',
+    help=_('Filter migrations by source compute host name.'))
 @utils.arg(
     '--marker',
     dest='marker',
@@ -5559,7 +5596,9 @@ def do_migration_list(cs, args):
                                     instance_uuid=args.instance_uuid,
                                     marker=args.marker, limit=args.limit,
                                     changes_since=args.changes_since,
-                                    changes_before=args.changes_before)
+                                    changes_before=args.changes_before,
+                                    migration_type=args.migration_type,
+                                    source_compute=args.source_compute)
     _print_migrations(cs, migrations)
 
 

@@ -2556,12 +2556,25 @@ nova migration-list
 
 .. code-block:: console
 
-   usage: nova migration-list [--instance-uuid <instance_uuid>] [--host <host>]
-                              [--status <status>] [--marker <marker>]
-                              [--limit <limit>] [--changes-since <changes_since>]
+   usage: nova migration-list [--instance-uuid <instance_uuid>]
+                              [--host <host>]
+                              [--status <status>]
+                              [--migration-type <migration_type>]
+                              [--source-compute <source_compute>]
+                              [--marker <marker>]
+                              [--limit <limit>]
+                              [--changes-since <changes_since>]
                               [--changes-before <changes_before>]
 
 Print a list of migrations.
+
+**Examples**
+
+To see the list of evacuation operations *from* a compute service host:
+
+.. code-block:: console
+
+  nova migration-list --migration-type evacuation --source-compute host.foo.bar
 
 **Optional arguments:**
 
@@ -2573,6 +2586,17 @@ Print a list of migrations.
 
 ``--status <status>``
   Fetch migrations for the given status.
+
+``--migration-type <migration_type>``
+  Filter migrations by type. Valid values are:
+
+  * evacuation
+  * live-migration
+  * migration
+  * resize
+
+``--source-compute <source_compute>``
+  Filter migrations by source compute host name.
 
 ``--marker <marker>``
   The last migration of the previous page; displays list of migrations after
