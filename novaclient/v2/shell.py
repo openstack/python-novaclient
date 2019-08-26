@@ -5427,7 +5427,7 @@ def _print_migrations(cs, migrations):
     dest='migration_type',
     metavar='<migration_type>',
     help=_('Filter migrations by type. Valid values are: evacuation, '
-           'live-migration, migration, resize'))
+           'live-migration, migration (cold), resize'))
 @utils.arg(
     '--source-compute',
     dest='source_compute',
@@ -5463,7 +5463,7 @@ def do_migration_list(cs, args):
     dest='migration_type',
     metavar='<migration_type>',
     help=_('Filter migrations by type. Valid values are: evacuation, '
-           'live-migration, migration, resize'))
+           'live-migration, migration (cold), resize'))
 @utils.arg(
     '--source-compute',
     dest='source_compute',
@@ -5535,7 +5535,7 @@ def do_migration_list(cs, args):
     dest='migration_type',
     metavar='<migration_type>',
     help=_('Filter migrations by type. Valid values are: evacuation, '
-           'live-migration, migration, resize'))
+           'live-migration, migration (cold), resize'))
 @utils.arg(
     '--source-compute',
     dest='source_compute',

@@ -61,7 +61,7 @@ class MigrationManager(base.ManagerWithFind):
         :param status: filter migrations by status (optional).
         :param instance_uuid: filter migrations by instance uuid (optional).
         :param migration_type: Filter migrations by type. Valid values are:
-        evacuation, live-migration, migration, resize
+        evacuation, live-migration, migration (cold), resize
         :param source_compute: Filter migrations by source compute host name.
         """
         return self._list_base(host=host, status=status,
@@ -89,7 +89,7 @@ class MigrationManager(base.ManagerWithFind):
         to a certain point of time. The provided time should be an ISO 8061
         formatted time. e.g. 2016-03-04T06:27:59Z . (optional).
         :param migration_type: Filter migrations by type. Valid values are:
-        evacuation, live-migration, migration, resize
+        evacuation, live-migration, migration (cold), resize
         :param source_compute: Filter migrations by source compute host name.
         """
         return self._list_base(host=host, status=status,
@@ -122,7 +122,7 @@ class MigrationManager(base.ManagerWithFind):
         equal to a certain point of time. The provided time should be an ISO
         8061 formatted time. e.g. 2016-03-05T06:27:59Z . (optional).
         :param migration_type: Filter migrations by type. Valid values are:
-        evacuation, live-migration, migration, resize
+        evacuation, live-migration, migration (cold), resize
         :param source_compute: Filter migrations by source compute host name.
         """
         return self._list_base(host=host, status=status,
