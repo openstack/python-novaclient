@@ -13,7 +13,7 @@
 from novaclient.tests.functional import base
 
 
-class TestFlavorNovaClientV274(base.TenantTestBase):
+class TestFlavorNovaClientV274(base.ClientTestBase):
     """Functional tests for flavors"""
 
     COMPUTE_API_VERSION = "2.74"
