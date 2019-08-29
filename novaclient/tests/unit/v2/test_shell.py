@@ -2258,6 +2258,27 @@ class ShellTest(utils.TestCase):
         self.run_command('unshelve sample-server')
         self.assert_called('POST', '/servers/1234/action', {'unshelve': None})
 
+    def test_unshelve_pre_v277_with_az_fails(self):
+        """Tests that trying to unshelve with an --availability-zone before
+        2.77 is an error.
+        """
+        self.assertRaises(SystemExit,
+                          self.run_command,
+                          'unshelve --availability-zone foo-az sample-server',
+                          api_version='2.76')
+
+    def test_unshelve_v277(self):
+        # Test backward compat without an AZ specified.
+        self.run_command('unshelve sample-server',
+                         api_version='2.77')
+        self.assert_called('POST', '/servers/1234/action',
+                           {'unshelve': None})
+        # Test with specifying an AZ.
+        self.run_command('unshelve --availability-zone foo-az sample-server',
+                         api_version='2.77')
+        self.assert_called('POST', '/servers/1234/action',
+                           {'unshelve': {'availability_zone': 'foo-az'}})
+
     def test_migrate(self):
         self.run_command('migrate sample-server')
         self.assert_called('POST', '/servers/1234/action', {'migrate': None})
@@ -4277,6 +4298,7 @@ class ShellTest(utils.TestCase):
             74,  # There are no version-wrapped shell method changes for this.
             75,  # There are no version-wrapped shell method changes for this.
             76,  # doesn't require any changes in novaclient.
+            77,  # There are no version-wrapped shell method changes for this.
         ])
         versions_supported = set(range(0,
                                  novaclient.API_MAX_VERSION.ver_minor + 1))

@@ -2285,9 +2285,25 @@ def do_shelve_offload(cs, args):
 
 
 @utils.arg('server', metavar='<server>', help=_('Name or ID of server.'))
+@utils.arg(
+    '--availability-zone',
+    metavar='<availability-zone>',
+    default=None,
+    dest='availability_zone',
+    help=_('Name of the availability zone in which to unshelve a '
+           'SHELVED_OFFLOADED server.'),
+    start_version='2.77')
 def do_unshelve(cs, args):
     """Unshelve a server."""
-    _find_server(cs, args.server).unshelve()
+    update_kwargs = {}
+    # Microversion >= 2.77 will support user to specify an
+    # availability_zone to unshelve a shelve offloaded server.
+    if cs.api_version >= api_versions.APIVersion('2.77'):
+        if 'availability_zone' in args and args.availability_zone is not None:
+            update_kwargs['availability_zone'] = args.availability_zone
+
+    server = _find_server(cs, args.server)
+    server.unshelve(**update_kwargs)
 
 
 @utils.arg('server', metavar='<server>', help=_('Name or ID of server.'))

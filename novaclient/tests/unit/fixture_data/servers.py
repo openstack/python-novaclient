@@ -456,6 +456,8 @@ class V1(Base):
             return None
         elif action == 'lock':
             return None
+        elif action == 'unshelve':
+            return None
         elif action == 'rebuild':
             body = body[action]
             adminPass = body.get('adminPass', 'randompassword')

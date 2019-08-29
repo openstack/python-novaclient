@@ -1839,3 +1839,39 @@ class ServersV274Test(ServersV273Test):
                                hypervisor_hostname="new-host")
         self.assertIn("'host' argument is only allowed since microversion "
                       "2.74", six.text_type(ex))
+
+
+class ServersV277Test(ServersV274Test):
+
+    api_version = "2.77"
+
+    def test_unshelve_with_az(self):
+        s = self.cs.servers.get(1234)
+        # Test going through the Server object.
+        ret = s.unshelve(availability_zone='foo-az')
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
+        self.assert_called('POST', '/servers/1234/action',
+                           {'unshelve': {
+                               'availability_zone': 'foo-az'}})
+        # Test going through the ServerManager directly.
+        ret = self.cs.servers.unshelve(s, availability_zone='foo-az')
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
+        self.assert_called('POST', '/servers/1234/action',
+                           {'unshelve': {
+                               'availability_zone': 'foo-az'}})
+
+    def test_unshelve_server_pre_277_fails_with_specified_az(self):
+        self.cs.api_version = api_versions.APIVersion('2.76')
+        s = self.cs.servers.get(1234)
+        # Test going through the Server object.
+        ex = self.assertRaises(TypeError,
+                               s.unshelve,
+                               availability_zone='foo-az')
+        self.assertIn("unexpected keyword argument 'availability_zone'",
+                      six.text_type(ex))
+        # Test going through the ServerManager directly.
+        ex = self.assertRaises(TypeError,
+                               self.cs.servers.unshelve,
+                               s, availability_zone='foo-az')
+        self.assertIn("unexpected keyword argument 'availability_zone'",
+                      six.text_type(ex))

@@ -1,0 +1,8 @@
+---
+features:
+  - |
+    Support has been added for `microversion 2.77`_. This microversion
+    allows specifying an availability zone to unshelve a shelve
+    offloaded server.
+
+    .. _microversion 2.77: https://docs.openstack.org/nova/latest/reference/api-microversion-history.html#id69
