@@ -1841,11 +1841,13 @@ List hypervisors. (Supported by API versions '2.0' - '2.latest') [hint: use
 ``--marker <marker>``
   The last hypervisor of the previous page; displays
   list of hypervisors after "marker".
+  (Supported by API versions '2.33' - '2.latest')
 
 ``--limit <limit>``
   Maximum number of hypervisors to display. If limit is
   bigger than 'CONF.api.max_limit' option of Nova API,
   limit 'CONF.api.max_limit' will be used instead.
+  (Supported by API versions '2.33' - '2.latest')
 
 .. _nova_hypervisor-servers:
 
