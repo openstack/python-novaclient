@@ -474,8 +474,7 @@ def _boot(cs, args):
 
     hints = {}
     if args.scheduler_hints:
-        for hint in args.scheduler_hints:
-            key, _sep, value = hint.partition('=')
+        for key, value in args.scheduler_hints:
             # NOTE(vish): multiple copies of the same hint will
             #             result in a list of values
             if key in hints:
@@ -789,6 +788,7 @@ def _boot(cs, args):
     '--hint',
     action='append',
     dest='scheduler_hints',
+    type=_key_value_pairing,
     default=[],
     metavar='<key=value>',
     help=_("Send arbitrary key/value pairs to the scheduler for custom "
