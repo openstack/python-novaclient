@@ -85,17 +85,27 @@ class ShellTest(utils.TestCase):
         self.useFixture(fixtures.MonkeyPatch(
             'novaclient.client.Client', fakes.FakeClient))
 
+    # TODO(stephenfin): We should migrate most of the existing assertRaises
+    # calls to simply pass expected_error to this instead so we can easily
+    # capture and compare output
     @mock.patch('sys.stdout', new_callable=six.StringIO)
     @mock.patch('sys.stderr', new_callable=six.StringIO)
-    def run_command(self, cmd, mock_stderr, mock_stdout, api_version=None):
+    def run_command(self, cmd, mock_stderr, mock_stdout, api_version=None,
+                    expected_error=None):
         version_options = []
         if api_version:
             version_options.extend(["--os-compute-api-version", api_version,
                                     "--service-type", "computev21"])
-        if isinstance(cmd, list):
-            self.shell.main(version_options + cmd)
+        if not isinstance(cmd, list):
+            cmd = cmd.split()
+
+        if expected_error:
+            self.assertRaises(expected_error,
+                              self.shell.main,
+                              version_options + cmd)
         else:
-            self.shell.main(version_options + cmd.split())
+            self.shell.main(version_options + cmd)
+
         return mock_stdout.getvalue(), mock_stderr.getvalue()
 
     def assert_called(self, method, url, body=None, **kwargs):
@@ -755,9 +765,12 @@ class ShellTest(utils.TestCase):
         self.assertEqual(expected, result.args[0])
 
     def test_boot_hints(self):
-        self.run_command('boot --image %s --flavor 1 '
-                         '--hint a=b0=c0 --hint a=b1=c1 some-server ' %
-                         FAKE_UUID_1)
+        cmd = ('boot --image %s --flavor 1 '
+               '--hint same_host=a0cf03a5-d921-4877-bb5c-86d26cf818e1 '
+               '--hint same_host=8c19174f-4220-44f0-824a-cd1eeef10287 '
+               '--hint query=[>=,$free_ram_mb,1024] '
+               'some-server' % FAKE_UUID_1)
+        self.run_command(cmd)
         self.assert_called_anytime(
             'POST', '/servers',
             {
@@ -768,9 +781,24 @@ class ShellTest(utils.TestCase):
                     'min_count': 1,
                     'max_count': 1,
                 },
-                'os:scheduler_hints': {'a': ['b0=c0', 'b1=c1']},
+                'os:scheduler_hints': {
+                    'same_host': [
+                        'a0cf03a5-d921-4877-bb5c-86d26cf818e1',
+                        '8c19174f-4220-44f0-824a-cd1eeef10287',
+                    ],
+                    'query': '[>=,$free_ram_mb,1024]',
+                },
             },
         )
+
+    def test_boot_hints_invalid(self):
+        cmd = ('boot --image %s --flavor 1 '
+               '--hint a0cf03a5-d921-4877-bb5c-86d26cf818e1 '
+               'some-server' % FAKE_UUID_1)
+        _, err = self.run_command(cmd, expected_error=SystemExit)
+        self.assertIn("'a0cf03a5-d921-4877-bb5c-86d26cf818e1' is not in "
+                      "the format of 'key=value'",
+                      err)
 
     def test_boot_nic_auto_not_alone_after(self):
         cmd = ('boot --image %s --flavor 1 '
