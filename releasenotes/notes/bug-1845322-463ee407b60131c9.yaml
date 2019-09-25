@@ -1,0 +1,6 @@
+---
+upgrade:
+  - |
+    The ``--hint`` option for the ``boot`` command expects a key-value
+    argument. Previously, if this was not the case, the argument would be
+    silently ignored. It will now raise an error.
