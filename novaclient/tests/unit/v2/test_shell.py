@@ -240,22 +240,6 @@ class ShellTest(utils.TestCase):
             }},
         )
 
-    def test_boot_config_drive(self):
-        self.run_command(
-            'boot --flavor 1 --image %s --config-drive 1 some-server' %
-            FAKE_UUID_1)
-        self.assert_called_anytime(
-            'POST', '/servers',
-            {'server': {
-                'flavorRef': '1',
-                'name': 'some-server',
-                'imageRef': FAKE_UUID_1,
-                'min_count': 1,
-                'max_count': 1,
-                'config_drive': True
-            }},
-        )
-
     def test_boot_access_ip(self):
         self.run_command(
             'boot --flavor 1 --image %s --access-ip-v4 10.10.10.10 '
@@ -273,9 +257,9 @@ class ShellTest(utils.TestCase):
             }},
         )
 
-    def test_boot_config_drive_custom(self):
+    def test_boot_config_drive(self):
         self.run_command(
-            'boot --flavor 1 --image %s --config-drive /dev/hda some-server' %
+            'boot --flavor 1 --image %s --config-drive 1 some-server' %
             FAKE_UUID_1)
         self.assert_called_anytime(
             'POST', '/servers',
@@ -285,9 +269,32 @@ class ShellTest(utils.TestCase):
                 'imageRef': FAKE_UUID_1,
                 'min_count': 1,
                 'max_count': 1,
-                'config_drive': '/dev/hda'
+                'config_drive': True
             }},
         )
+
+    def test_boot_config_drive_false(self):
+        self.run_command(
+            'boot --flavor 1 --image %s --config-drive false some-server' %
+            FAKE_UUID_1)
+        self.assert_called_anytime(
+            'POST', '/servers',
+            {'server': {
+                'flavorRef': '1',
+                'name': 'some-server',
+                'imageRef': FAKE_UUID_1,
+                'min_count': 1,
+                'max_count': 1,
+            }},
+        )
+
+    def test_boot_config_drive_invalid_value(self):
+        ex = self.assertRaises(
+            exceptions.CommandError, self.run_command,
+            'boot --flavor 1 --image %s --config-drive /dev/hda some-server' %
+            FAKE_UUID_1)
+        self.assertIn("The value of the '--config-drive' option must be "
+                      "a boolean value.", six.text_type(ex))
 
     def test_boot_invalid_user_data(self):
         invalid_file = os.path.join(os.path.dirname(__file__),
