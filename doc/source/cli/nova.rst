@@ -108,13 +108,6 @@ nova usage
 ``boot``
   Boot a new server.
 
-``cell-capacities``
-  Get cell capacities for all cells or a given
-  cell.
-
-``cell-show``
-  Show details of a given cell.
-
 ``clear-password``
   Clear the admin password for a server from the
   metadata server. This action does not actually
@@ -308,10 +301,6 @@ nova usage
 
 ``list``
   List servers.
-
-``list-extensions``
-  List all the os-api extensions that are
-  available.
 
 ``list-secgroup``
   List Security Group(s) of a server.
@@ -1130,38 +1119,6 @@ quality of service support, microversion ``2.72`` is required.
 ``--hypervisor-hostname <hypervisor-hostname>``
   Requested hypervisor hostname to create servers. Admin only by default.
   (Supported by API versions '2.74' - '2.latest')
-
-.. _nova_cell-capacities:
-
-nova cell-capacities
---------------------
-
-.. code-block:: console
-
-   usage: nova cell-capacities [--cell <cell-name>]
-
-Get cell capacities for all cells or a given cell.
-
-**Optional arguments:**
-
-``--cell <cell-name>``
-  Name of the cell to get the capacities.
-
-.. _nova_cell-show:
-
-nova cell-show
---------------
-
-.. code-block:: console
-
-   usage: nova cell-show <cell-name>
-
-Show details of a given cell.
-
-**Positional arguments:**
-
-``<cell-name>``
-  Name of the cell.
 
 .. _nova_clear-password:
 
@@ -2371,18 +2328,6 @@ present in the failure domain.
   only locked servers and 'false' will list only
   unlocked servers. (Supported by API versions
   '2.73' - '2.latest')
-
-
-.. _nova_list-extensions:
-
-nova list-extensions
---------------------
-
-.. code-block:: console
-
-   usage: nova list-extensions
-
-List all the os-api extensions that are available.
 
 .. _nova_list-secgroup:
 

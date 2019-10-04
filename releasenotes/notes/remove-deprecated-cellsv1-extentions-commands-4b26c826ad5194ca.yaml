@@ -1,0 +1,8 @@
+---
+upgrade:
+  - |
+    The following CLIs and their backing API bindings have been removed.
+
+    - ``nova list-extensions``
+    - ``nova cell-capacities``
+    - ``nova cell-show``

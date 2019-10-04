@@ -22,7 +22,6 @@ from novaclient.v2 import agents
 from novaclient.v2 import aggregates
 from novaclient.v2 import assisted_volume_snapshots
 from novaclient.v2 import availability_zones
-from novaclient.v2 import cells
 from novaclient.v2 import flavor_access
 from novaclient.v2 import flavors
 from novaclient.v2 import hypervisors
@@ -31,7 +30,6 @@ from novaclient.v2 import instance_action
 from novaclient.v2 import instance_usage_audit_log
 from novaclient.v2 import keypairs
 from novaclient.v2 import limits
-from novaclient.v2 import list_extensions
 from novaclient.v2 import migrations
 from novaclient.v2 import networks
 from novaclient.v2 import quota_classes
@@ -167,11 +165,9 @@ class Client(object):
         #   deprecated now, which is why it is not initialized by default.
         self.assisted_volume_snapshots = \
             assisted_volume_snapshots.AssistedSnapshotManager(self)
-        self.cells = cells.CellsManager(self)
         self.instance_action = instance_action.InstanceActionManager(self)
         self.instance_usage_audit_log = \
             instance_usage_audit_log.InstanceUsageAuditLogManager(self)
-        self.list_extensions = list_extensions.ListExtManager(self)
         self.migrations = migrations.MigrationManager(self)
         self.server_external_events = \
             server_external_events.ServerExternalEventManager(self)

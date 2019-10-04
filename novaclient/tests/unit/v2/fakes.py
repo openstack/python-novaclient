@@ -329,53 +329,6 @@ class FakeSessionClient(base_client.SessionClient):
                       'id': 1}})
 
     #
-    # List all extensions
-    #
-
-    def get_extensions(self, **kw):
-        exts = [
-            {
-                "alias": "NMN",
-                "description": "Multiple network support",
-                "links": [],
-                "name": "Multinic",
-                "namespace": ("http://docs.openstack.org/"
-                              "compute/ext/multinic/api/v1.1"),
-                "updated": "2011-06-09T00:00:00+00:00"
-            },
-            {
-                "alias": "OS-DCF",
-                "description": "Disk Management Extension",
-                "links": [],
-                "name": "DiskConfig",
-                "namespace": ("http://docs.openstack.org/"
-                              "compute/ext/disk_config/api/v1.1"),
-                "updated": "2011-09-27T00:00:00+00:00"
-            },
-            {
-                "alias": "OS-EXT-SRV-ATTR",
-                "description": "Extended Server Attributes support.",
-                "links": [],
-                "name": "ExtendedServerAttributes",
-                "namespace": ("http://docs.openstack.org/"
-                              "compute/ext/extended_status/api/v1.1"),
-                "updated": "2011-11-03T00:00:00+00:00"
-            },
-            {
-                "alias": "OS-EXT-STS",
-                "description": "Extended Status support",
-                "links": [],
-                "name": "ExtendedStatus",
-                "namespace": ("http://docs.openstack.org/"
-                              "compute/ext/extended_status/api/v1.1"),
-                "updated": "2011-11-03T00:00:00+00:00"
-            },
-        ]
-        return (200, FAKE_RESPONSE_HEADERS, {
-            "extensions": exts,
-        })
-
-    #
     # Limits
     #
 
@@ -2295,34 +2248,6 @@ class FakeSessionClient(base_client.SessionClient):
 
     def post_servers_uuid6_action(self, **kw):
         return 202, {}, {}
-
-    def get_os_cells_child_cell(self, **kw):
-        cell = {'cell': {
-            'username': 'cell1_user',
-            'name': 'cell1',
-            'rpc_host': '10.0.1.10',
-            'info': {
-                'username': 'cell1_user',
-                'rpc_host': '10.0.1.10',
-                'type': 'child',
-                'name': 'cell1',
-                'rpc_port': 5673},
-            'type': 'child',
-            'rpc_port': 5673,
-            'loaded': True
-        }}
-        return (200, FAKE_RESPONSE_HEADERS, cell)
-
-    def get_os_cells_capacities(self, **kw):
-        cell_capacities_response = {"cell": {"capacities": {"ram_free": {
-            "units_by_mb": {"8192": 0, "512": 13, "4096": 1, "2048": 3,
-                            "16384": 0}, "total_mb": 7680}, "disk_free": {
-            "units_by_mb": {"81920": 11, "20480": 46, "40960": 23, "163840": 5,
-                            "0": 0}, "total_mb": 1052672}}}}
-        return (200, FAKE_RESPONSE_HEADERS, cell_capacities_response)
-
-    def get_os_cells_child_cell_capacities(self, **kw):
-        return self.get_os_cells_capacities()
 
     def get_os_migrations(self, **kw):
         migration1 = {
