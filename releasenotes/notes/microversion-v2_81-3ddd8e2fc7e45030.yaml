@@ -1,0 +1,10 @@
+---
+features:
+  - |
+    Added support for `microversion 2.81`_ which adds image pre-caching support by
+    aggregate.
+
+    - The ``aggregate-cache-images`` command is added to the CLI
+    - The ``cache_images()`` method is added to the python API binding
+
+    .. _microversion 2.81: https://docs.openstack.org/nova/latest/reference/api-microversion-history.html#id73

@@ -1734,6 +1734,9 @@ class FakeSessionClient(base_client.SessionClient):
     def delete_os_aggregates_1(self, **kw):
         return (202, {}, None)
 
+    def post_os_aggregates_1_images(self, body, **kw):
+        return (202, {}, None)
+
     #
     # Services
     #

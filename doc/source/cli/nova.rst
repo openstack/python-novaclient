@@ -73,6 +73,9 @@ nova usage
 ``aggregate-add-host``
   Add the host to the specified aggregate.
 
+``aggregate-cache-images``
+  Request images be pre-cached on hosts within an aggregate.
+
 ``aggregate-create``
   Create a new aggregate with the specified
   details.
@@ -755,6 +758,25 @@ Add the host to the specified aggregate.
 
 ``<host>``
   The host to add to the aggregate.
+
+.. _nova_aggregate-cache-images:
+
+nova aggregate-cache-images
+---------------------------
+
+.. code-block:: console
+
+   usage: nova aggregate-cache-images <aggregate> <image> [<image> ..]
+
+Request image(s) be pre-cached on hosts within the aggregate.
+
+**Positional arguments:**
+
+``<aggregate>``
+  Name or ID of aggregate.
+
+``<image>``
+  Name or ID of image(s) to cache.
 
 .. _nova_aggregate-create:
 

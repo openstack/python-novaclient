@@ -51,3 +51,10 @@ class Fixture(base.Fixture):
 
         self.requests_mock.delete(self.url(1), status_code=202,
                                   headers=self.json_headers)
+
+        self.requests_mock.register_uri('POST', self.url(1),
+                                        json={},
+                                        headers=self.json_headers)
+        self.requests_mock.post(self.url(1, 'images'),
+                                json={},
+                                headers=self.json_headers)

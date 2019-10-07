@@ -2884,6 +2884,30 @@ class ShellTest(utils.TestCase):
         self.run_command('aggregate-show test')
         self.assert_called('GET', '/os-aggregates')
 
+    def test_aggregate_cache_images(self):
+        self.run_command(
+            'aggregate-cache-images 1 %s %s' % (
+                FAKE_UUID_1, FAKE_UUID_2),
+            api_version='2.81')
+        body = {
+            'cache': [{'id': FAKE_UUID_1},
+                      {'id': FAKE_UUID_2}],
+        }
+        self.assert_called('POST', '/os-aggregates/1/images', body)
+
+    def test_aggregate_cache_images_no_images(self):
+        self.assertRaises(SystemExit,
+                          self.run_command,
+                          'aggregate-cache-images 1',
+                          api_version='2.81')
+
+    def test_aggregate_cache_images_pre281(self):
+        self.assertRaises(SystemExit,
+                          self.run_command,
+                          'aggregate-cache-images 1 %s %s' % (
+                              FAKE_UUID_1, FAKE_UUID_2),
+                          api_version='2.80')
+
     def test_live_migration(self):
         self.run_command('live-migration sample-server hostname')
         self.assert_called('POST', '/servers/1234/action',

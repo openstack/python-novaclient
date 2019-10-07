@@ -3526,6 +3526,21 @@ def _print_aggregate_details(cs, aggregate):
     utils.print_list([aggregate], columns, formatters=formatters)
 
 
+@api_versions.wraps("2.81")
+@utils.arg(
+    'aggregate', metavar='<aggregate>',
+    help=_('Name or ID of the aggregate.'))
+@utils.arg(
+    'images', metavar='<image>', nargs='+',
+    help=_('Name or ID of image(s) to cache on the hosts within '
+           'the aggregate.'))
+def do_aggregate_cache_images(cs, args):
+    """Request images be cached."""
+    aggregate = _find_aggregate(cs, args.aggregate)
+    images = _find_images(cs, args.images)
+    cs.aggregates.cache_images(aggregate, images)
+
+
 @utils.arg('server', metavar='<server>', help=_('Name or ID of server.'))
 @utils.arg(
     'host', metavar='<host>', default=None, nargs='?',

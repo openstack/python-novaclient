@@ -13,11 +13,14 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from novaclient import api_versions
+from novaclient import exceptions
 from novaclient.tests.unit.fixture_data import aggregates as data
 from novaclient.tests.unit.fixture_data import client
 from novaclient.tests.unit import utils
 from novaclient.tests.unit.v2 import fakes
 from novaclient.v2 import aggregates
+from novaclient.v2 import images
 
 
 class AggregatesTest(utils.FixturedTestCase):
@@ -161,3 +164,40 @@ class AggregatesTest(utils.FixturedTestCase):
         result3 = self.cs.aggregates.delete(aggregate)
         self.assert_request_id(result3, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('DELETE', '/os-aggregates/1')
+
+
+class AggregatesV281Test(utils.FixturedTestCase):
+    api_version = "2.81"
+    data_fixture_class = data.Fixture
+
+    scenarios = [('original', {'client_fixture_class': client.V1}),
+                 ('session', {'client_fixture_class': client.SessionV1})]
+
+    def setUp(self):
+        super(AggregatesV281Test, self).setUp()
+        self.cs.api_version = api_versions.APIVersion(self.api_version)
+
+    def test_cache_images(self):
+        aggregate = self.cs.aggregates.list()[0]
+        _images = [images.Image(self.cs.aggregates, {'id': '1'}),
+                   images.Image(self.cs.aggregates, {'id': '2'})]
+        aggregate.cache_images(_images)
+        expected_body = {'cache': [{'id': image.id}
+                                   for image in _images]}
+        self.assert_called('POST', '/os-aggregates/1/images',
+                           expected_body)
+
+    def test_cache_images_just_ids(self):
+        aggregate = self.cs.aggregates.list()[0]
+        _images = ['1']
+        aggregate.cache_images(_images)
+        expected_body = {'cache': [{'id': '1'}]}
+        self.assert_called('POST', '/os-aggregates/1/images',
+                           expected_body)
+
+    def test_cache_images_pre281(self):
+        self.cs.api_version = api_versions.APIVersion('2.80')
+        aggregate = self.cs.aggregates.list()[0]
+        _images = [images.Image(self.cs.aggregates, {'id': '1'})]
+        self.assertRaises(exceptions.VersionNotFoundForAPIMethod,
+                          aggregate.cache_images, _images)
