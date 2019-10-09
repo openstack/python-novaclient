@@ -2544,6 +2544,9 @@ To see the list of evacuation operations *from* a compute service host:
   * evacuation
   * live-migration
   * migration
+
+    .. note:: This is a cold migration.
+
   * resize
 
 ``--source-compute <source_compute>``
