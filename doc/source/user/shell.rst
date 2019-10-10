@@ -87,12 +87,4 @@ From there, all shell commands take the form::
 Run :program:`nova help` to get a full list of all possible commands, and run
 :program:`nova help <command>` to get detailed help for that command.
 
-Reference
----------
-
-For more information, see the reference:
-
-.. toctree::
-   :maxdepth: 2
-
-   /cli/nova
+For more information, see :doc:`the command reference </cli/nova>`.

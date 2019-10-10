@@ -101,9 +101,4 @@ Then call methods on its managers::
 Reference
 ---------
 
-For more information, see the reference:
-
-.. toctree::
-   :maxdepth: 6
-
-   modules
+See :doc:`the module reference </reference/index>`.

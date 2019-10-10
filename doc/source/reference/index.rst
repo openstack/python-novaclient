@@ -1,8 +1,8 @@
+=========
 Reference
 =========
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 6
 
-   api/index
-   deprecation-policy
+   api/modules

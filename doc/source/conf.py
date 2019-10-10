@@ -72,6 +72,20 @@ html_theme = 'openstackdocs'
 # robots.txt.
 html_extra_path = ['_extra']
 
+# -- Options for LaTeX output -------------------------------------------------
+
+latex_documents = [
+    ('index', 'doc-python-novaclient.tex', u'python-novaclient Documentation',
+     u'OpenStack Foundation', 'manual'),
+]
+
+latex_elements = {
+    'extraclassoptions': 'openany,oneside',
+    'preamble': r'\setcounter{tocdepth}{4}',
+    'makeindex': '',
+    'printindex': '',
+}
+
 # -- Options for openstackdocstheme -------------------------------------------
 
 repository_name = 'openstack/python-novaclient'

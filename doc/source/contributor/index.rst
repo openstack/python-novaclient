@@ -15,3 +15,4 @@ __ https://docs.openstack.org/infra/manual/developers.html#development-workflow
 
    microversions
    testing
+   deprecation-policy

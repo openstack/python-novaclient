@@ -3,7 +3,7 @@
 ===========================================
 
 This is a client for OpenStack Nova API. There's a :doc:`Python API
-<reference/api/index>` (the :mod:`novaclient` module), and a :doc:`command-line
+<reference/index>` (the :mod:`novaclient` module), and a :doc:`command-line
 script </user/shell>` (installed as :program:`nova`). Each implements the
 entire OpenStack Nova API.
 
@@ -22,6 +22,6 @@ such as TryStack, HP, or Rackspace, in order to use the nova client.
    :maxdepth: 2
 
    user/index
-   reference/index
    cli/index
+   reference/index
    contributor/index
