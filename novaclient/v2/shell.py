@@ -2570,6 +2570,14 @@ def _find_image(cs, image):
         raise exceptions.CommandError(six.text_type(e))
 
 
+def _find_images(cs, images):
+    """Get images by name or ID."""
+    try:
+        return cs.glance.find_images(images)
+    except (exceptions.NotFound, exceptions.NoUniqueMatch) as e:
+        raise exceptions.CommandError(six.text_type(e))
+
+
 def _find_flavor(cs, flavor):
     """Get a flavor by name, ID, or RAM size."""
     try:

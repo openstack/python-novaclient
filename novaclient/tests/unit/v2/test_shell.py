@@ -4676,3 +4676,27 @@ class PollForStatusTestCase(utils.TestCase):
                           action=action,
                           show_progress=True,
                           silent=False)
+
+
+class TestUtilMethods(utils.TestCase):
+    def setUp(self):
+        super(TestUtilMethods, self).setUp()
+        self.shell = self.useFixture(ShellFixture()).shell
+        # NOTE(danms): Get a client that we can use to call things outside of
+        # the shell main
+        self.shell.cs = fakes.FakeClient('2.1')
+
+    def test_find_images(self):
+        """Test find_images() with a name and id."""
+        images = novaclient.v2.shell._find_images(self.shell.cs,
+                                                  [FAKE_UUID_1,
+                                                   'back1'])
+        self.assertEqual(2, len(images))
+        self.assertEqual(FAKE_UUID_1, images[0].id)
+        self.assertEqual(fakes.FAKE_IMAGE_UUID_BACKUP, images[1].id)
+
+    def test_find_images_missing(self):
+        """Test find_images() where one of the images is not found."""
+        self.assertRaises(exceptions.CommandError,
+                          novaclient.v2.shell._find_images,
+                          self.shell.cs, [FAKE_UUID_1, 'foo'])

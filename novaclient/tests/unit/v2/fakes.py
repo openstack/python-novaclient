@@ -1141,7 +1141,7 @@ class FakeSessionClient(base_client.SessionClient):
     # Images
     #
     def get_images(self, **kw):
-        return (200, {}, {'images': [
+        images = [
             {
                 "id": FAKE_IMAGE_UUID_SNAPSHOT,
                 "name": "My Server Backup",
@@ -1191,7 +1191,16 @@ class FakeSessionClient(base_client.SessionClient):
                 "progress": 80,
                 "links": {},
             },
-        ]})
+        ]
+
+        if 'id' in kw:
+            requested = kw['id'].replace('in:', '').split(',')
+            images = [i for i in images if i['id'] in requested]
+        if 'names' in kw:
+            requested = kw['names'].replace('in:', '').split(',')
+            images = [i for i in images if i['name'] in requested]
+
+        return (200, {}, {'images': images})
 
     def get_images_555cae93_fb41_4145_9c52_f5b923538a26(self, **kw):
         return (200, {}, {'image': self.get_images()[2]['images'][0]})

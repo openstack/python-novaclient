@@ -66,6 +66,43 @@ class GlanceManager(base.Manager):
                     matches[0].append_request_ids(matches.request_ids)
                     return matches[0]
 
+    def find_images(self, names_or_ids):
+        """Find multiple images by name or id (user provided input).
+
+        :param names_or_ids: A list of strings to use to find images.
+        :returns: novaclient.v2.images.Image objects for each images found
+        :raises exceptions.NotFound: If one or more images is not found
+        :raises exceptions.ClientException: If the image service returns any
+                                            unexpected images.
+
+        NOTE: This method always makes two calls to the image service, even if
+        only one image is provided by ID and is returned in the first query.
+        """
+        with self.alternate_service_type(
+                'image', allowed_types=('image',)):
+            matches = self._list('/v2/images?id=in:%s' % ','.join(
+                names_or_ids), 'images')
+            matches.extend(self._list('/v2/images?names=in:%s' % ','.join(
+                names_or_ids), 'images'))
+            missed = (set(names_or_ids) -
+                      set(m.name for m in matches) -
+                      set(m.id for m in matches))
+            if missed:
+                msg = _("Unable to find image(s): %(images)s") % {
+                    "images": ",".join(missed)}
+                raise exceptions.NotFound(404, msg)
+            for match in matches:
+                match.append_request_ids(matches.request_ids)
+
+            additional = []
+            for i in matches:
+                if i.name not in names_or_ids and i.id not in names_or_ids:
+                    additional.append(i)
+            if additional:
+                msg = _('Additional images found in response')
+                raise exceptions.ClientException(500, msg)
+            return matches
+
     def list(self):
         """
         Get a detailed list of all images.
