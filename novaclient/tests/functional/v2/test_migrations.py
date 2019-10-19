@@ -41,6 +41,8 @@ class TestMigrationList(base.ClientTestBase):
         # Find the source compute by getting OS-EXT-SRV-ATTR:host from the
         # nova show output.
         server = self.nova('show', params='%s' % server_id)
+        server_user_id = self._get_value_from_the_table(server, 'user_id')
+        tenant_id = self._get_value_from_the_table(server, 'tenant_id')
         source_compute = self._get_value_from_the_table(
             server, 'OS-EXT-SRV-ATTR:host')
         # now resize up
@@ -97,3 +99,14 @@ class TestMigrationList(base.ClientTestBase):
         migrations = self._filter_migrations(
             '2.66', 'resize', uuidutils.generate_uuid())
         self.assertNotIn(server_id, migrations)
+
+        # Listing migrations with v2.80 and make sure there are the User ID
+        # and Project ID values in the output.
+        migrations = self.nova('migration-list',
+                               flags='--os-compute-api-version 2.80')
+        user_id = self._get_column_value_from_single_row_table(
+            migrations, 'User ID')
+        self.assertEqual(server_user_id, user_id)
+        project_id = self._get_column_value_from_single_row_table(
+            migrations, 'Project ID')
+        self.assertEqual(tenant_id, project_id)
