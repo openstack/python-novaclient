@@ -27,6 +27,7 @@
         cmd: |
           set -e
           set -x
+          export DEVSTACK_GATE_USE_PYTHON3=true
           export PYTHONUNBUFFERED=true
           export BRANCH_OVERRIDE=default
           export DEVSTACK_PROJECT_FROM_GIT=python-novaclient

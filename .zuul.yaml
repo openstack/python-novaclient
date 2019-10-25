@@ -1,4 +1,5 @@
 - job:
+    # TODO(efried): Cut over to zuulv3
     name: novaclient-dsvm-functional
     parent: legacy-dsvm-base
     run: playbooks/legacy/novaclient-dsvm-functional/run.yaml
@@ -16,11 +17,9 @@
 - project:
     templates:
       - check-requirements
-      - lib-forward-testing
       - lib-forward-testing-python3
       - openstack-cover-jobs
       - openstack-lower-constraints-jobs
-      - openstack-python-jobs
       - openstack-python3-ussuri-jobs
       - publish-openstack-docs-pti
       - release-notes-jobs-python3
