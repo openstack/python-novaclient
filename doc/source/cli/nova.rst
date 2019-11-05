@@ -75,6 +75,7 @@ nova usage
 
 ``aggregate-cache-images``
   Request images be pre-cached on hosts within an aggregate.
+  (Supported by API versions '2.81' - '2.latest')
 
 ``aggregate-create``
   Create a new aggregate with the specified
@@ -466,6 +467,7 @@ nova usage
 
 ``server-topology``
   Retrieve NUMA topology of the given server.
+  (Supported by API versions '2.78' - '2.latest')
 
 ``service-delete``
   Delete the service.
@@ -769,6 +771,9 @@ nova aggregate-cache-images
    usage: nova aggregate-cache-images <aggregate> <image> [<image> ..]
 
 Request image(s) be pre-cached on hosts within the aggregate.
+(Supported by API versions '2.81' - '2.latest')
+
+.. versionadded:: 16.0.0
 
 **Positional arguments:**
 
@@ -3357,7 +3362,7 @@ Retrieve server NUMA topology information. Host specific fields are only
 visible to users with the administrative role.
 (Supported by API versions '2.78' - '2.latest')
 
-.. versionadded:: 16.0.0
+.. versionadded:: 15.1.0
 
 **Positional arguments:**
 
