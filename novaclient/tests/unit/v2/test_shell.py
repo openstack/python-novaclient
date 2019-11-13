@@ -4411,6 +4411,7 @@ class ShellTest(utils.TestCase):
                  #   new microversion, just an additional checks. See
                  #   https://review.opendev.org/#/c/233076/ for more details)
             20,  # doesn't require any changes in novaclient
+            21,  # doesn't require any changes in novaclient
             27,  # NOTE(cdent): 27 adds support for updated microversion
                  #   headers, and is tested in test_api_versions, but is
                  #   not explicitly tested via wraps and _SUBSTITUTIONS.
@@ -4463,9 +4464,11 @@ class ShellTest(utils.TestCase):
 
         versions_covered = set()
         for key, values in api_versions._SUBSTITUTIONS.items():
-            for value in values:
-                if value.start_version.ver_major == 2:
-                    versions_covered.add(value.start_version.ver_minor)
+            # Exclude version-wrapped
+            if 'novaclient.tests' not in key:
+                for value in values:
+                    if value.start_version.ver_major == 2:
+                        versions_covered.add(value.start_version.ver_minor)
 
         versions_not_covered = versions_supported - versions_covered
         unaccounted_for = versions_not_covered - exclusions
