@@ -1,0 +1,5 @@
+---
+issues:
+  - |
+    The ``nova show`` command will no longer output the ``user_data`` column.
+    This is traditionally binary data of limited value from a CLI perspective.

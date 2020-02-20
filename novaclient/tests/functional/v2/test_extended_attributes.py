@@ -32,8 +32,7 @@ class TestExtAttrNovaClientV23(test_extended_attributes.TestExtAttrNovaClient):
                      'OS-EXT-SRV-ATTR:ramdisk_id',
                      'OS-EXT-SRV-ATTR:kernel_id',
                      'OS-EXT-SRV-ATTR:hostname',
-                     'OS-EXT-SRV-ATTR:root_device_name',
-                     'OS-EXT-SRV-ATTR:user_data']:
+                     'OS-EXT-SRV-ATTR:root_device_name']:
             self._get_value_from_the_table(table, attr)
         # Check that attribute given below also exists in 'nova show' table
         # as a key (first column) of table dict

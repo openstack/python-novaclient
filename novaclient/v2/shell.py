@@ -2502,6 +2502,7 @@ def _print_server(cs, args, server=None, wrap=0):
 
     info.pop('links', None)
     info.pop('addresses', None)
+    info.pop('OS-EXT-SRV-ATTR:user_data', None)
 
     utils.print_dict(info, wrap=wrap)
 
