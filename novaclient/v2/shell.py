@@ -3112,11 +3112,10 @@ def _print_absolute_limits(limits):
 
     limit_list = []
     for name in limit_names:
-        l = Limit(name,
-                  used.get(name, "-"),
-                  max.get(name, "-"),
-                  other.get(name, "-"))
-        limit_list.append(l)
+        limit_list.append(Limit(
+            name, used.get(name, '-'), max.get(name, '-'),
+            other.get(name, '-'),
+        ))
 
     utils.print_list(limit_list, columns)
 

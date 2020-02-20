@@ -1062,7 +1062,7 @@ class ShellTest(utils.TestCase):
         cmd = ('boot --image %s --flavor 1 '
                '--nic net-name=blank some-server' % FAKE_UUID_1)
         # this should raise a multiple matches error
-        msg = 'No Network matching blank\..*'
+        msg = 'No Network matching blank\\..*'
         with testtools.ExpectedException(exceptions.CommandError, msg):
             self.run_command(cmd)
 

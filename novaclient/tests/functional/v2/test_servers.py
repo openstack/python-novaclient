@@ -288,7 +288,7 @@ class TestServersDetailsFlavorInfo(base.ClientTestBase):
                 flavor_details, key)
             server_flavor_val = self._get_value_from_the_table(
                 server_details, flavor_key_mapping[key])
-            if key is "swap" and flavor_val is "":
+            if key == "swap" and flavor_val == "":
                 # "flavor-show" displays zero swap as empty string.
                 flavor_val = '0'
             self.assertEqual(flavor_val, server_flavor_val)

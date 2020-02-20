@@ -433,7 +433,7 @@ class ShellTest(utils.TestCase):
         if required is None:
             required = [
                 '.*?^usage: ',
-                '.*?^\s+set-password\s+Change the admin password',
+                '.*?^\\s+set-password\\s+Change the admin password',
                 '.*?^See "nova help COMMAND" for help on a specific command',
             ]
         stdout, stderr = self.shell(command)

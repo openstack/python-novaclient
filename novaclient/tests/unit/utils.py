@@ -44,6 +44,7 @@ def _patch_mock_to_raise_for_invalid_assert_calls():
     mock.Mock.__getattr__ = raise_for_invalid_assert_calls(
         mock.Mock.__getattr__)
 
+
 # NOTE(gibi): needs to be called only once at import time
 # to patch the mock lib
 _patch_mock_to_raise_for_invalid_assert_calls()
