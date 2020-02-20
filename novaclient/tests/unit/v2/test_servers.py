@@ -13,11 +13,11 @@
 #    under the License.
 
 import base64
+import io
 import os
 import tempfile
 
 import mock
-import six
 
 from novaclient import api_versions
 from novaclient import exceptions
@@ -83,7 +83,7 @@ class ServersTest(utils.FixturedTestCase):
                               self.cs.servers.list,
                               search_opts={'locked': False})
         self.assertIn("'locked' argument is only allowed since "
-                      "microversion 2.73.", six.text_type(e))
+                      "microversion 2.73.", str(e))
 
     def test_list_servers_undetailed(self):
         sl = self.cs.servers.list(detailed=False)
@@ -140,7 +140,7 @@ class ServersTest(utils.FixturedTestCase):
         if self.supports_files:
             kwargs['files'] = {
                 '/etc/passwd': 'some data',             # a file
-                '/tmp/foo.txt': six.StringIO('data'),   # a stream
+                '/tmp/foo.txt': io.StringIO('data'),    # a stream
             }
         s = self.cs.servers.create(
             name="My server",
@@ -270,14 +270,14 @@ class ServersTest(utils.FixturedTestCase):
         if self.supports_files:
             kwargs['files'] = {
                 '/etc/passwd': 'some data',             # a file
-                '/tmp/foo.txt': six.StringIO('data'),   # a stream
+                '/tmp/foo.txt': io.StringIO('data'),   # a stream
             }
         s = self.cs.servers.create(
             name="My server",
             image=1,
             flavor=1,
             meta={'foo': 'bar'},
-            userdata=six.StringIO('hello moto'),
+            userdata=io.StringIO('hello moto'),
             nics=self._get_server_create_default_nics(),
             **kwargs
         )
@@ -290,14 +290,14 @@ class ServersTest(utils.FixturedTestCase):
         if self.supports_files:
             kwargs['files'] = {
                 '/etc/passwd': 'some data',             # a file
-                '/tmp/foo.txt': six.StringIO('data'),   # a stream
+                '/tmp/foo.txt': io.StringIO('data'),   # a stream
             }
         s = self.cs.servers.create(
             name="My server",
             image=1,
             flavor=1,
             meta={'foo': 'bar'},
-            userdata=six.u('こんにちは'),
+            userdata='こんにちは',
             key_name="fakekey",
             nics=self._get_server_create_default_nics(),
             **kwargs
@@ -311,7 +311,7 @@ class ServersTest(utils.FixturedTestCase):
         if self.supports_files:
             kwargs['files'] = {
                 '/etc/passwd': 'some data',             # a file
-                '/tmp/foo.txt': six.StringIO('data'),   # a stream
+                '/tmp/foo.txt': io.StringIO('data'),   # a stream
             }
         s = self.cs.servers.create(
             name="My server",
@@ -349,7 +349,7 @@ class ServersTest(utils.FixturedTestCase):
         if self.supports_files:
             kwargs['files'] = {
                 '/etc/passwd': 'some data',             # a file
-                '/tmp/foo.txt': six.StringIO('data'),   # a stream
+                '/tmp/foo.txt': io.StringIO('data'),   # a stream
             }
         with tempfile.TemporaryFile(mode='wb+') as bin_file:
             original_data = os.urandom(1024)
@@ -1510,7 +1510,7 @@ class ServersV254Test(ServersV252Test):
                                self.cs.servers.rebuild,
                                '1234', fakes.FAKE_IMAGE_UUID_1,
                                key_name='test_keypair')
-        self.assertIn('key_name', six.text_type(ex.message))
+        self.assertIn('key_name', str(ex.message))
 
 
 class ServersV256Test(ServersV254Test):
@@ -1533,7 +1533,7 @@ class ServersV256Test(ServersV254Test):
         s = self.cs.servers.get(1234)
         ex = self.assertRaises(TypeError,
                                s.migrate, host='target-host')
-        self.assertIn('host', six.text_type(ex))
+        self.assertIn('host', str(ex))
 
 
 class ServersV257Test(ServersV256Test):
@@ -1549,9 +1549,9 @@ class ServersV257Test(ServersV256Test):
             name="My server", image=1, flavor=1,
             files={
                 '/etc/passwd': 'some data',  # a file
-                '/tmp/foo.txt': six.StringIO('data'),  # a stream
+                '/tmp/foo.txt': io.StringIO('data'),  # a stream
             }, nics='auto')
-        self.assertIn('files', six.text_type(ex))
+        self.assertIn('files', str(ex))
 
     def test_rebuild_server_name_meta_files(self):
         files = {'/etc/passwd': 'some data'}
@@ -1559,7 +1559,7 @@ class ServersV257Test(ServersV256Test):
         ex = self.assertRaises(
             exceptions.UnsupportedAttribute, s.rebuild, image=1, name='new',
             meta={'foo': 'bar'}, files=files)
-        self.assertIn('files', six.text_type(ex))
+        self.assertIn('files', str(ex))
 
 
 class ServersV263Test(ServersV257Test):
@@ -1600,7 +1600,7 @@ class ServersV263Test(ServersV257Test):
             userdata="hello moto", key_name="fakekey",
             nics=self._get_server_create_default_nics(),
             trusted_image_certificates=['id1', 'id2'])
-        self.assertIn('trusted_image_certificates', six.text_type(ex))
+        self.assertIn('trusted_image_certificates', str(ex))
 
     def test_rebuild_server_with_trusted_image_certificates(self):
         s = self.cs.servers.get(1234)
@@ -1626,7 +1626,7 @@ class ServersV263Test(ServersV257Test):
                                self.cs.servers.rebuild,
                                '1234', fakes.FAKE_IMAGE_UUID_1,
                                trusted_image_certificates=['id1', 'id2'])
-        self.assertIn('trusted_image_certificates', six.text_type(ex))
+        self.assertIn('trusted_image_certificates', str(ex))
 
 
 class ServersV267Test(ServersV263Test):
@@ -1671,7 +1671,7 @@ class ServersV267Test(ServersV263Test):
                                name="bfv server", image='', flavor=1,
                                nics='none', block_device_mapping_v2=bdm)
         self.assertIn("Block device volume_type is not supported before "
-                      "microversion 2.67", six.text_type(ex))
+                      "microversion 2.67", str(ex))
 
 
 class ServersV268Test(ServersV267Test):
@@ -1692,7 +1692,7 @@ class ServersV268Test(ServersV267Test):
 
         ex = self.assertRaises(TypeError, self.cs.servers.evacuate,
                                'fake_target_host', force=True)
-        self.assertIn('force', six.text_type(ex))
+        self.assertIn('force', str(ex))
 
     def test_live_migrate_server(self):
         s = self.cs.servers.get(1234)
@@ -1711,7 +1711,7 @@ class ServersV268Test(ServersV267Test):
 
         ex = self.assertRaises(TypeError, self.cs.servers.live_migrate,
                                host='hostname', force=True)
-        self.assertIn('force', six.text_type(ex))
+        self.assertIn('force', str(ex))
 
 
 class ServersV273Test(ServersV268Test):
@@ -1734,7 +1734,7 @@ class ServersV273Test(ServersV268Test):
         s = self.cs.servers.get(1234)
         e = self.assertRaises(TypeError,
                               s.lock, reason='blah')
-        self.assertIn("unexpected keyword argument 'reason'", six.text_type(e))
+        self.assertIn("unexpected keyword argument 'reason'", str(e))
 
     def test_filter_servers_unlocked(self):
         # support locked=False
@@ -1818,7 +1818,7 @@ class ServersV274Test(ServersV273Test):
                                name="My server", image=1, flavor=1,
                                nics='auto', host="new-host")
         self.assertIn("'host' argument is only allowed since microversion "
-                      "2.74", six.text_type(ex))
+                      "2.74", str(ex))
 
     def test_create_server_with_hypervisor_hostname_pre_274_fails(self):
         self.cs.api_version = api_versions.APIVersion('2.73')
@@ -1827,7 +1827,7 @@ class ServersV274Test(ServersV273Test):
                                name="My server", image=1, flavor=1,
                                nics='auto', hypervisor_hostname="new-host")
         self.assertIn("'hypervisor_hostname' argument is only allowed since "
-                      "microversion 2.74", six.text_type(ex))
+                      "microversion 2.74", str(ex))
 
     def test_create_server_with_host_and_hypervisor_hostname_pre_274_fails(
             self):
@@ -1838,7 +1838,7 @@ class ServersV274Test(ServersV273Test):
                                nics='auto', host="new-host",
                                hypervisor_hostname="new-host")
         self.assertIn("'host' argument is only allowed since microversion "
-                      "2.74", six.text_type(ex))
+                      "2.74", str(ex))
 
 
 class ServersV277Test(ServersV274Test):
@@ -1868,13 +1868,13 @@ class ServersV277Test(ServersV274Test):
                                s.unshelve,
                                availability_zone='foo-az')
         self.assertIn("unexpected keyword argument 'availability_zone'",
-                      six.text_type(ex))
+                      str(ex))
         # Test going through the ServerManager directly.
         ex = self.assertRaises(TypeError,
                                self.cs.servers.unshelve,
                                s, availability_zone='foo-az')
         self.assertIn("unexpected keyword argument 'availability_zone'",
-                      six.text_type(ex))
+                      str(ex))
 
 
 class ServersV278Test(ServersV273Test):

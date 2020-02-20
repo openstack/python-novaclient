@@ -31,7 +31,6 @@ import time
 from oslo_utils import netutils
 from oslo_utils import strutils
 from oslo_utils import timeutils
-import six
 
 import novaclient
 from novaclient import api_versions
@@ -478,7 +477,7 @@ def _boot(cs, args):
             # NOTE(vish): multiple copies of the same hint will
             #             result in a list of values
             if key in hints:
-                if isinstance(hints[key], six.string_types):
+                if isinstance(hints[key], str):
                     hints[key] = [hints[key]]
                 hints[key] += [value]
             else:
@@ -2447,7 +2446,7 @@ def _print_server(cs, args, server=None, wrap=0):
     try:
         networks = server.networks
     except Exception as e:
-        raise exceptions.CommandError(six.text_type(e))
+        raise exceptions.CommandError(str(e))
 
     info = server.to_dict()
     for network_label, address_list in networks.items():
@@ -2556,7 +2555,7 @@ def _find_server(cs, server, raise_if_notfound=True, **find_args):
             return utils.find_resource(cs.servers, server,
                                        wrap_exception=False)
         except exceptions.NoUniqueMatch as e:
-            raise exceptions.CommandError(six.text_type(e))
+            raise exceptions.CommandError(str(e))
         except exceptions.NotFound:
             # The server can be deleted
             return server
@@ -2567,7 +2566,7 @@ def _find_image(cs, image):
     try:
         return cs.glance.find_image(image)
     except (exceptions.NotFound, exceptions.NoUniqueMatch) as e:
-        raise exceptions.CommandError(six.text_type(e))
+        raise exceptions.CommandError(str(e))
 
 
 def _find_images(cs, images):
@@ -2575,7 +2574,7 @@ def _find_images(cs, images):
     try:
         return cs.glance.find_images(images)
     except (exceptions.NotFound, exceptions.NoUniqueMatch) as e:
-        raise exceptions.CommandError(six.text_type(e))
+        raise exceptions.CommandError(str(e))
 
 
 def _find_flavor(cs, flavor):
@@ -2591,7 +2590,7 @@ def _find_network_id(cs, net_name):
     try:
         return cs.neutron.find_network(net_name).id
     except (exceptions.NotFound, exceptions.NoUniqueMatch) as e:
-        raise exceptions.CommandError(six.text_type(e))
+        raise exceptions.CommandError(str(e))
 
 
 def _print_volume(volume):

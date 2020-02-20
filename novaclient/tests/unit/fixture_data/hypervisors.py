@@ -10,8 +10,9 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+from urllib import parse
+
 from oslo_utils import encodeutils
-from six.moves.urllib import parse
 
 from novaclient import api_versions
 from novaclient.tests.unit.fixture_data import base

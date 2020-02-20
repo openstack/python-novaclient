@@ -13,8 +13,6 @@
 
 import datetime
 
-import six
-
 from novaclient import api_versions
 from novaclient.tests.unit import utils
 from novaclient.tests.unit.v2 import fakes
@@ -60,8 +58,8 @@ class UsageTest(utils.TestCase):
         self.assertIsInstance(u, usage.Usage)
 
     def test_usage_class_get(self):
-        start = six.u('2012-01-22T19:48:41.750722')
-        stop = six.u('2012-01-22T19:48:41.750722')
+        start = '2012-01-22T19:48:41.750722'
+        stop = '2012-01-22T19:48:41.750722'
 
         info = {'tenant_id': 'tenantfoo', 'start': start,
                 'stop': stop}

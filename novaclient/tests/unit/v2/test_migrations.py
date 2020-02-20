@@ -10,8 +10,6 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import six
-
 from novaclient import api_versions
 from novaclient.tests.unit import utils
 from novaclient.tests.unit.v2 import fakes
@@ -158,8 +156,7 @@ class MigrationsV280Test(MigrationsV266Test):
         ex = self.assertRaises(TypeError,
                                self.cs.migrations.list,
                                user_id=user_id)
-        self.assertIn("unexpected keyword argument 'user_id'",
-                      six.text_type(ex))
+        self.assertIn("unexpected keyword argument 'user_id'", str(ex))
 
     def test_list_migrations_with_project_id_pre_v280(self):
         self.cs.api_version = api_versions.APIVersion('2.79')
@@ -167,5 +164,4 @@ class MigrationsV280Test(MigrationsV266Test):
         ex = self.assertRaises(TypeError,
                                self.cs.migrations.list,
                                project_id=project_id)
-        self.assertIn("unexpected keyword argument 'project_id'",
-                      six.text_type(ex))
+        self.assertIn("unexpected keyword argument 'project_id'", str(ex))

@@ -11,12 +11,11 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import io
 import sys
+from urllib import parse
 
 import mock
-from oslo_utils import encodeutils
-import six
-from six.moves.urllib import parse
 
 from novaclient import base
 from novaclient import exceptions
@@ -177,7 +176,7 @@ class _FakeResult(object):
 
 
 class PrintResultTestCase(test_utils.TestCase):
-    @mock.patch('sys.stdout', six.StringIO())
+    @mock.patch('sys.stdout', io.StringIO())
     def test_print_dict(self):
         dict = {'key': 'value'}
         utils.print_dict(dict)
@@ -188,7 +187,7 @@ class PrintResultTestCase(test_utils.TestCase):
                          '+----------+-------+\n',
                          sys.stdout.getvalue())
 
-    @mock.patch('sys.stdout', six.StringIO())
+    @mock.patch('sys.stdout', io.StringIO())
     def test_print_dict_wrap(self):
         dict = {'key1': 'not wrapped',
                 'key2': 'this will be wrapped'}
@@ -202,7 +201,7 @@ class PrintResultTestCase(test_utils.TestCase):
                          '+----------+--------------+\n',
                          sys.stdout.getvalue())
 
-    @mock.patch('sys.stdout', six.StringIO())
+    @mock.patch('sys.stdout', io.StringIO())
     def test_print_list_sort_by_str(self):
         objs = [_FakeResult("k1", 1),
                 _FakeResult("k3", 2),
@@ -219,7 +218,7 @@ class PrintResultTestCase(test_utils.TestCase):
                          '+------+-------+\n',
                          sys.stdout.getvalue())
 
-    @mock.patch('sys.stdout', six.StringIO())
+    @mock.patch('sys.stdout', io.StringIO())
     def test_print_list_sort_by_integer(self):
         objs = [_FakeResult("k1", 1),
                 _FakeResult("k3", 2),
@@ -236,14 +235,11 @@ class PrintResultTestCase(test_utils.TestCase):
                          '+------+-------+\n',
                          sys.stdout.getvalue())
 
-    @mock.patch('sys.stdout', six.StringIO())
+    @mock.patch('sys.stdout', io.StringIO())
     def test_print_unicode_list(self):
         objs = [_FakeResult("k", u'\u2026')]
         utils.print_list(objs, ["Name", "Value"])
-        if six.PY3:
-            s = u'\u2026'
-        else:
-            s = encodeutils.safe_encode(u'\u2026')
+        s = u'\u2026'
         self.assertEqual('+------+-------+\n'
                          '| Name | Value |\n'
                          '+------+-------+\n'
@@ -252,7 +248,7 @@ class PrintResultTestCase(test_utils.TestCase):
                          sys.stdout.getvalue())
 
     # without sorting
-    @mock.patch('sys.stdout', six.StringIO())
+    @mock.patch('sys.stdout', io.StringIO())
     def test_print_list_sort_by_none(self):
         objs = [_FakeResult("k1", 1),
                 _FakeResult("k3", 3),
@@ -269,7 +265,7 @@ class PrintResultTestCase(test_utils.TestCase):
                          '+------+-------+\n',
                          sys.stdout.getvalue())
 
-    @mock.patch('sys.stdout', six.StringIO())
+    @mock.patch('sys.stdout', io.StringIO())
     def test_print_dict_dictionary(self):
         dict = {'k': {'foo': 'bar'}}
         utils.print_dict(dict)
@@ -280,7 +276,7 @@ class PrintResultTestCase(test_utils.TestCase):
                          '+----------+----------------+\n',
                          sys.stdout.getvalue())
 
-    @mock.patch('sys.stdout', six.StringIO())
+    @mock.patch('sys.stdout', io.StringIO())
     def test_print_dict_list_dictionary(self):
         dict = {'k': [{'foo': 'bar'}]}
         utils.print_dict(dict)
@@ -291,7 +287,7 @@ class PrintResultTestCase(test_utils.TestCase):
                          '+----------+------------------+\n',
                          sys.stdout.getvalue())
 
-    @mock.patch('sys.stdout', six.StringIO())
+    @mock.patch('sys.stdout', io.StringIO())
     def test_print_dict_list(self):
         dict = {'k': ['foo', 'bar']}
         utils.print_dict(dict)
@@ -302,7 +298,7 @@ class PrintResultTestCase(test_utils.TestCase):
                          '+----------+----------------+\n',
                          sys.stdout.getvalue())
 
-    @mock.patch('sys.stdout', six.StringIO())
+    @mock.patch('sys.stdout', io.StringIO())
     def test_print_large_dict_list(self):
         dict = {'k': ['foo1', 'bar1', 'foo2', 'bar2',
                       'foo3', 'bar3', 'foo4', 'bar4']}
@@ -316,14 +312,11 @@ class PrintResultTestCase(test_utils.TestCase):
             '+----------+------------------------------------------+\n',
             sys.stdout.getvalue())
 
-    @mock.patch('sys.stdout', six.StringIO())
+    @mock.patch('sys.stdout', io.StringIO())
     def test_print_unicode_dict(self):
         dict = {'k': u'\u2026'}
         utils.print_dict(dict)
-        if six.PY3:
-            s = u'\u2026'
-        else:
-            s = encodeutils.safe_encode(u'\u2026')
+        s = u'\u2026'
         self.assertEqual('+----------+-------+\n'
                          '| Property | Value |\n'
                          '+----------+-------+\n'
@@ -403,7 +396,7 @@ class DoActionOnManyTestCase(test_utils.TestCase):
     def test_do_action_on_many_last_fails(self):
         self._test_do_action_on_many([None, Exception()], fail=True)
 
-    @mock.patch('sys.stdout', new_callable=six.StringIO)
+    @mock.patch('sys.stdout', new_callable=io.StringIO)
     def _test_do_action_on_many_resource_string(
             self, resource, expected_string, mock_stdout):
         utils.do_action_on_many(mock.Mock(), [resource], 'success with %s',
@@ -452,9 +445,8 @@ class PrepareQueryStringTestCase(test_utils.TestCase):
     def setUp(self):
         super(PrepareQueryStringTestCase, self).setUp()
         self.ustr = b'?\xd0\xbf=1&\xd1\x80=2'
-        if six.PY3:
-            # in py3 real unicode symbols will be urlencoded
-            self.ustr = self.ustr.decode('utf8')
+        # in py3 real unicode symbols will be urlencoded
+        self.ustr = self.ustr.decode('utf8')
         self.cases = (
             ({}, ''),
             (None, ''),

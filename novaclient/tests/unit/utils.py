@@ -18,7 +18,6 @@ import mock
 from oslo_serialization import jsonutils
 import requests
 from requests_mock.contrib import fixture as requests_mock_fixture
-import six
 import testscenarios
 import testtools
 
@@ -99,9 +98,9 @@ class FixturedTestCase(testscenarios.TestWithScenarios, TestCase):
 
         if body:
             req_data = self.requests_mock.last_request.body
-            if isinstance(req_data, six.binary_type):
+            if isinstance(req_data, bytes):
                 req_data = req_data.decode('utf-8')
-            if not isinstance(body, six.string_types):
+            if not isinstance(body, str):
                 # json load if the input body to match against is not a string
                 req_data = jsonutils.loads(req_data)
             self.assertEqual(body, req_data)

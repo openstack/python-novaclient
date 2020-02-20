@@ -14,9 +14,10 @@
 #    under the License.
 
 """
-service interface
+Service interface.
 """
-from six.moves import urllib
+
+from urllib import parse
 
 from novaclient import api_versions
 from novaclient import base
@@ -48,7 +49,7 @@ class ServiceManager(base.ManagerWithFind):
         if binary:
             filters.append(("binary", binary))
         if filters:
-            url = "%s?%s" % (url, urllib.parse.urlencode(filters))
+            url = "%s?%s" % (url, parse.urlencode(filters))
         return self._list(url, "services")
 
     @api_versions.wraps("2.0", "2.10")

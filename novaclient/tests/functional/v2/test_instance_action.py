@@ -14,7 +14,6 @@ import time
 
 from oslo_utils import timeutils
 from oslo_utils import uuidutils
-import six
 from tempest.lib import exceptions
 
 from novaclient.tests.functional import base
@@ -28,7 +27,7 @@ class TestInstanceActionCLI(base.ClientTestBase):
         try:
             self.nova("%s %s" % (cmd, args))
         except exceptions.CommandFailed as e:
-            self.assertIn("ERROR (NotFound):", six.text_type(e))
+            self.assertIn("ERROR (NotFound):", str(e))
         else:
             self.fail("%s is not failed on non existing instance." % cmd)
 

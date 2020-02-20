@@ -16,13 +16,12 @@ import os
 import re
 import textwrap
 import time
+from urllib import parse
 
 from oslo_serialization import jsonutils
 from oslo_utils import encodeutils
 from oslo_utils import uuidutils
 import prettytable
-import six
-from six.moves.urllib import parse
 
 from novaclient import exceptions
 from novaclient.i18n import _
@@ -149,7 +148,7 @@ def print_list(objs, fields, formatters={}, sortby_index=None):
                 if data is None:
                     data = '-'
                 # '\r' would break the table, so remove it.
-                data = six.text_type(data).replace("\r", "")
+                data = str(data).replace("\r", "")
                 row.append(data)
         pt.add_row(row)
 
@@ -158,8 +157,7 @@ def print_list(objs, fields, formatters={}, sortby_index=None):
     else:
         result = encodeutils.safe_encode(pt.get_string())
 
-    if six.PY3:
-        result = result.decode()
+    result = result.decode()
 
     print(result)
 
@@ -196,7 +194,7 @@ def flatten_dict(data):
     data = data.copy()
     # Try and decode any nested JSON structures.
     for key, value in data.items():
-        if isinstance(value, six.string_types):
+        if isinstance(value, str):
             try:
                 data[key] = jsonutils.loads(value)
             except ValueError:
@@ -213,10 +211,10 @@ def print_dict(d, dict_property="Property", dict_value="Value", wrap=0):
         if isinstance(v, (dict, list)):
             v = jsonutils.dumps(v, ensure_ascii=False)
         if wrap > 0:
-            v = textwrap.fill(six.text_type(v), wrap)
+            v = textwrap.fill(str(v), wrap)
         # if value has a newline, add in multiple rows
         # e.g. fault with stacktrace
-        if v and isinstance(v, six.string_types) and (r'\n' in v or '\r' in v):
+        if v and isinstance(v, str) and (r'\n' in v or '\r' in v):
             # '\r' would break the table, so remove it.
             if '\r' in v:
                 v = v.replace('\r', '')
@@ -232,8 +230,7 @@ def print_dict(d, dict_property="Property", dict_value="Value", wrap=0):
 
     result = encodeutils.safe_encode(pt.get_string())
 
-    if six.PY3:
-        result = result.decode()
+    result = result.decode()
 
     print(result)
 
@@ -252,8 +249,7 @@ def find_resource(manager, name_or_id, wrap_exception=True, **find_args):
     try:
         tmp_id = encodeutils.safe_encode(name_or_id)
 
-        if six.PY3:
-            tmp_id = tmp_id.decode()
+        tmp_id = tmp_id.decode()
 
         if uuidutils.is_uuid_like(tmp_id):
             return manager.get(tmp_id)
@@ -383,7 +379,7 @@ def do_action_on_many(action, resources, success_msg, error_msg):
             print(success_msg % _get_resource_string(resource))
         except Exception as e:
             failure_flag = True
-            print(encodeutils.safe_encode(six.text_type(e)))
+            print(encodeutils.safe_encode(str(e)))
 
     if failure_flag:
         raise exceptions.CommandError(error_msg)

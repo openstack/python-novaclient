@@ -10,8 +10,6 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import six
-
 from novaclient.tests.functional import base
 from novaclient import utils
 
@@ -41,4 +39,4 @@ class TestHypervisors(base.ClientTestBase):
                     'Expected hypervisor.service.id to be an integer.')
 
     def test_list(self):
-        self._test_list(six.text_type)
+        self._test_list(str)

@@ -14,7 +14,6 @@
 #    under the License.
 
 import mock
-import six
 
 from novaclient import api_versions
 from novaclient.tests.unit import utils
@@ -156,4 +155,4 @@ class VolumesV279Test(VolumesV249Test):
             TypeError, self.cs.volumes.create_server_volume, "1234",
             volume_id='15e59938-07d5-11e1-90e3-e3dffe0c5983',
             delete_on_termination=True)
-        self.assertIn('delete_on_termination', six.text_type(ex))
+        self.assertIn('delete_on_termination', str(ex))

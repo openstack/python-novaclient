@@ -18,15 +18,15 @@
 
 import argparse
 import base64
+import builtins
 import collections
 import datetime
+import io
 import os
 
 import fixtures
 import mock
 from oslo_utils import timeutils
-import six
-from six.moves import builtins
 import testtools
 
 import novaclient
@@ -88,8 +88,8 @@ class ShellTest(utils.TestCase):
     # TODO(stephenfin): We should migrate most of the existing assertRaises
     # calls to simply pass expected_error to this instead so we can easily
     # capture and compare output
-    @mock.patch('sys.stdout', new_callable=six.StringIO)
-    @mock.patch('sys.stderr', new_callable=six.StringIO)
+    @mock.patch('sys.stdout', new_callable=io.StringIO)
+    @mock.patch('sys.stderr', new_callable=io.StringIO)
     def run_command(self, cmd, mock_stderr, mock_stdout, api_version=None,
                     expected_error=None):
         version_options = []
@@ -304,7 +304,7 @@ class ShellTest(utils.TestCase):
             'boot --flavor 1 --image %s --config-drive /dev/hda some-server' %
             FAKE_UUID_1)
         self.assertIn("The value of the '--config-drive' option must be "
-                      "a boolean value.", six.text_type(ex))
+                      "a boolean value.", str(ex))
 
     def test_boot_invalid_user_data(self):
         invalid_file = os.path.join(os.path.dirname(__file__),
@@ -676,7 +676,7 @@ class ShellTest(utils.TestCase):
             'size=1,bootindex=0,shutdown=remove,tag=foo,volume_type=lvm '
             'bfv-server' % FAKE_UUID_1, api_version='2.66')
         self.assertIn("'volume_type' in block device mapping is not supported "
-                      "in API version", six.text_type(ex))
+                      "in API version", str(ex))
 
     def test_boot_from_volume_with_volume_type(self):
         """Tests creating a volume-backed server from a source image and
@@ -895,7 +895,7 @@ class ShellTest(utils.TestCase):
                '--nic net-id=1,port-id=2 some-server' % FAKE_UUID_1)
         ex = self.assertRaises(exceptions.CommandError, self.run_command,
                                cmd, api_version='2.1')
-        self.assertNotIn('tag=tag', six.text_type(ex))
+        self.assertNotIn('tag=tag', str(ex))
 
     def test_boot_invalid_nics_v2_32(self):
         # This is a negative test to make sure we fail with the correct message
@@ -903,7 +903,7 @@ class ShellTest(utils.TestCase):
                '--nic net-id=1,port-id=2 some-server' % FAKE_UUID_1)
         ex = self.assertRaises(exceptions.CommandError, self.run_command,
                                cmd, api_version='2.32')
-        self.assertIn('tag=tag', six.text_type(ex))
+        self.assertIn('tag=tag', str(ex))
 
     def test_boot_invalid_nics_v2_36_auto(self):
         """This is a negative test to make sure we fail with the correct
@@ -912,7 +912,7 @@ class ShellTest(utils.TestCase):
         cmd = ('boot --image %s --flavor 1 --nic auto test' % FAKE_UUID_1)
         ex = self.assertRaises(exceptions.CommandError, self.run_command,
                                cmd, api_version='2.36')
-        self.assertNotIn('auto,none', six.text_type(ex))
+        self.assertNotIn('auto,none', str(ex))
 
     def test_boot_invalid_nics_v2_37(self):
         """This is a negative test to make sure we fail with the correct
@@ -922,7 +922,7 @@ class ShellTest(utils.TestCase):
                '--nic net-id=1 --nic auto some-server' % FAKE_UUID_1)
         ex = self.assertRaises(exceptions.CommandError, self.run_command,
                                cmd, api_version='2.37')
-        self.assertIn('auto,none', six.text_type(ex))
+        self.assertIn('auto,none', str(ex))
 
     def test_boot_nics_auto_allocate_default(self):
         """Tests that if microversion>=2.37 is specified and no --nics are
@@ -1407,7 +1407,7 @@ class ShellTest(utils.TestCase):
             exceptions.CommandError, self.run_command,
             'boot --flavor 1 --image %s some-server' % FAKE_UUID_2)
         self.assertIn('Instance %s could not be found.' % FAKE_UUID_1,
-                      six.text_type(ex))
+                      str(ex))
 
     def test_boot_with_host_v274(self):
         self.run_command('boot --flavor 1 --image %s '
@@ -1831,7 +1831,7 @@ class ShellTest(utils.TestCase):
         ex = self.assertRaises(exceptions.CommandError, self.run_command,
                                'list --changes-before 0123456789',
                                api_version='2.66')
-        self.assertIn('Invalid changes-before value', six.text_type(ex))
+        self.assertIn('Invalid changes-before value', str(ex))
 
     def test_list_with_changes_before_pre_v266_not_allowed(self):
         self.assertRaises(SystemExit, self.run_command,
@@ -1947,7 +1947,7 @@ class ShellTest(utils.TestCase):
             'rebuild sample-server %s --key-unset --key-name test_keypair' %
             FAKE_UUID_1, api_version='2.54')
         self.assertIn("Cannot specify '--key-unset' with '--key-name'.",
-                      six.text_type(ex))
+                      str(ex))
 
     def test_rebuild_with_incorrect_metadata(self):
         cmd = 'rebuild sample-server %s --name asdf --meta foo' % FAKE_UUID_1
@@ -2001,7 +2001,7 @@ class ShellTest(utils.TestCase):
                                api_version='2.57')
         self.assertIn("Can't open '%(user_data)s': "
                       "[Errno 2] No such file or directory: '%(user_data)s'" %
-                      {'user_data': invalid_file}, six.text_type(ex))
+                      {'user_data': invalid_file}, str(ex))
 
     def test_rebuild_unset_user_data(self):
         self.run_command('rebuild sample-server %s --user-data-unset' %
@@ -2024,7 +2024,7 @@ class ShellTest(utils.TestCase):
         ex = self.assertRaises(exceptions.CommandError, self.run_command, cmd,
                                api_version='2.57')
         self.assertIn("Cannot specify '--user-data-unset' with "
-                      "'--user-data'.", six.text_type(ex))
+                      "'--user-data'.", str(ex))
 
     def test_rebuild_with_single_trusted_image_certificates(self):
         self.run_command('rebuild sample-server %s '
@@ -2132,7 +2132,7 @@ class ShellTest(utils.TestCase):
             api_version='2.63')
         self.assertIn("Cannot specify '--trusted-image-certificates-unset' "
                       "with '--trusted-image-certificate-id'",
-                      six.text_type(ex))
+                      str(ex))
 
     def test_rebuild_with_trusted_image_certificates_unset_env_conflict(self):
         """Tests the error condition that trusted image certs are both unset
@@ -2146,7 +2146,7 @@ class ShellTest(utils.TestCase):
             FAKE_UUID_1, api_version='2.63')
         self.assertIn("Cannot specify '--trusted-image-certificates-unset' "
                       "with '--trusted-image-certificate-id'",
-                      six.text_type(ex))
+                      str(ex))
 
     def test_rebuild_with_trusted_image_certificates_arg_and_envar(self):
         """Tests that if both the environment variable and argument are
@@ -2237,7 +2237,7 @@ class ShellTest(utils.TestCase):
                                 self.run_command,
                                 'lock sample-server --reason zombies',
                                 api_version='2.72')
-        self.assertIn('2', six.text_type(exp))
+        self.assertIn('2', str(exp))
 
     def test_lock_v273(self):
         self.run_command('lock sample-server',
@@ -2509,7 +2509,7 @@ class ShellTest(utils.TestCase):
                                 self.run_command,
                                 'server-topology 1234',
                                 api_version='2.77')
-        self.assertIn('2', six.text_type(exp))
+        self.assertIn('2', str(exp))
 
     def test_refresh_network(self):
         self.run_command('refresh-network 1234')
@@ -2787,7 +2787,7 @@ class ShellTest(utils.TestCase):
                                'aggregate-update test')
         self.assertIn("Either '--name <name>' or '--availability-zone "
                       "<availability-zone>' must be specified.",
-                      six.text_type(ex))
+                      str(ex))
 
     def test_aggregate_set_metadata_add_by_id(self):
         out, err = self.run_command('aggregate-set-metadata 3 foo=bar')
@@ -4009,7 +4009,7 @@ class ShellTest(utils.TestCase):
             exceptions.CommandError, self.run_command,
             'instance-action-list sample-server --changes-since 0123456789',
             api_version='2.58')
-        self.assertIn('Invalid changes-since value', six.text_type(ex))
+        self.assertIn('Invalid changes-since value', str(ex))
 
     def test_instance_action_list_changes_before_pre_v266_not_allowed(self):
         cmd = 'instance-action-list sample-server --changes-before ' \
@@ -4031,7 +4031,7 @@ class ShellTest(utils.TestCase):
             exceptions.CommandError, self.run_command,
             'instance-action-list sample-server --changes-before 0123456789',
             api_version='2.66')
-        self.assertIn('Invalid changes-before value', six.text_type(ex))
+        self.assertIn('Invalid changes-before value', str(ex))
 
     def test_instance_usage_audit_log(self):
         self.run_command('instance-usage-audit-log')
@@ -4096,7 +4096,7 @@ class ShellTest(utils.TestCase):
         ex = self.assertRaises(exceptions.CommandError, self.run_command,
                                'migration-list --changes-since 0123456789',
                                api_version='2.59')
-        self.assertIn('Invalid changes-since value', six.text_type(ex))
+        self.assertIn('Invalid changes-since value', str(ex))
 
     def test_migration_list_with_changes_before_v266(self):
         self.run_command('migration-list --changes-before 2016-02-29T06:23:22',
@@ -4108,7 +4108,7 @@ class ShellTest(utils.TestCase):
         ex = self.assertRaises(exceptions.CommandError, self.run_command,
                                'migration-list --changes-before 0123456789',
                                api_version='2.66')
-        self.assertIn('Invalid changes-before value', six.text_type(ex))
+        self.assertIn('Invalid changes-before value', str(ex))
 
     def test_migration_list_with_changes_before_pre_v266_not_allowed(self):
         cmd = 'migration-list --changes-before 2016-02-29T06:23:22'
@@ -4284,7 +4284,7 @@ class ShellTest(utils.TestCase):
                                    api_version="2.2")
 
     def test_keypair_stdin(self):
-        with mock.patch('sys.stdin', six.StringIO('FAKE_PUBLIC_KEY')):
+        with mock.patch('sys.stdin', io.StringIO('FAKE_PUBLIC_KEY')):
             self.run_command('keypair-add --pub-key - test', api_version="2.2")
             self.assert_called(
                 'POST', '/os-keypairs', {
@@ -4360,7 +4360,7 @@ class ShellTest(utils.TestCase):
             'server-group-create sg1 anti-affinity '
             '--rule max_server_per_host=foo', api_version='2.64')
         self.assertIn("Invalid 'max_server_per_host' value: foo",
-                      six.text_type(result))
+                      str(result))
 
     def test_create_server_group_with_rules_pre_264(self):
         self.assertRaises(SystemExit, self.run_command,

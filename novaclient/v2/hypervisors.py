@@ -17,9 +17,7 @@
 Hypervisors interface
 """
 
-from oslo_utils import encodeutils
-import six
-from six.moves.urllib import parse
+from urllib import parse
 
 from novaclient import api_versions
 from novaclient import base
@@ -92,8 +90,6 @@ class HypervisorManager(base.ManagerWithFind):
         # Starting with microversion 2.53, the /servers and /search routes are
         # deprecated and we get the same results using GET /os-hypervisors
         # using query parameters for the hostname pattern and servers.
-        if six.PY2:
-            hypervisor_match = encodeutils.safe_encode(hypervisor_match)
         if self.api_version >= api_versions.APIVersion('2.53'):
             url = ('/os-hypervisors%s?hypervisor_hostname_pattern=%s' %
                    ('/detail' if detailed else '',

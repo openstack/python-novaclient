@@ -16,8 +16,6 @@
 import base64
 import subprocess
 
-import six
-
 
 class DecryptionFailure(Exception):
     pass
@@ -38,6 +36,6 @@ def decrypt_password(private_key, password):
     if proc.returncode:
         raise DecryptionFailure(err)
 
-    if not six.PY2 and isinstance(out, bytes):
+    if isinstance(out, bytes):
         return out.decode('utf-8')
     return out

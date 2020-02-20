@@ -13,6 +13,7 @@
 
 import argparse
 import distutils.version as dist_version
+import io
 import re
 import sys
 
@@ -22,7 +23,6 @@ from keystoneauth1 import fixture
 import mock
 import prettytable
 import requests_mock
-import six
 from testtools import matchers
 
 from novaclient import api_versions
@@ -212,7 +212,7 @@ class DeprecatedActionTest(utils.TestCase):
         action.assert_called_once_with(
             'option_strings', 'dest', help='Deprecated', a=1, b=2, c=3)
 
-    @mock.patch.object(sys, 'stderr', six.StringIO())
+    @mock.patch.object(sys, 'stderr', io.StringIO())
     def test_get_action_nolookup(self):
         action_class = mock.Mock()
         parser = mock.Mock(**{
@@ -230,7 +230,7 @@ class DeprecatedActionTest(utils.TestCase):
         self.assertFalse(action_class.called)
         self.assertEqual(sys.stderr.getvalue(), '')
 
-    @mock.patch.object(sys, 'stderr', six.StringIO())
+    @mock.patch.object(sys, 'stderr', io.StringIO())
     def test_get_action_lookup_noresult(self):
         parser = mock.Mock(**{
             '_registry_get.return_value': None,
@@ -248,7 +248,7 @@ class DeprecatedActionTest(utils.TestCase):
                          'WARNING: Programming error: Unknown real action '
                          '"store"\n')
 
-    @mock.patch.object(sys, 'stderr', six.StringIO())
+    @mock.patch.object(sys, 'stderr', io.StringIO())
     def test_get_action_lookup_withresult(self):
         action_class = mock.Mock()
         parser = mock.Mock(**{
@@ -267,7 +267,7 @@ class DeprecatedActionTest(utils.TestCase):
             'option_strings', 'dest', help='Deprecated', const=1)
         self.assertEqual(sys.stderr.getvalue(), '')
 
-    @mock.patch.object(sys, 'stderr', six.StringIO())
+    @mock.patch.object(sys, 'stderr', io.StringIO())
     @mock.patch.object(novaclient.shell.DeprecatedAction, '_get_action')
     def test_call_unemitted_nouse(self, mock_get_action):
         obj = novaclient.shell.DeprecatedAction(
@@ -282,7 +282,7 @@ class DeprecatedActionTest(utils.TestCase):
         self.assertEqual(sys.stderr.getvalue(),
                          'WARNING: Option "option_string" is deprecated\n')
 
-    @mock.patch.object(sys, 'stderr', six.StringIO())
+    @mock.patch.object(sys, 'stderr', io.StringIO())
     @mock.patch.object(novaclient.shell.DeprecatedAction, '_get_action')
     def test_call_unemitted_withuse(self, mock_get_action):
         obj = novaclient.shell.DeprecatedAction(
@@ -298,7 +298,7 @@ class DeprecatedActionTest(utils.TestCase):
                          'WARNING: Option "option_string" is deprecated; '
                          'use this instead\n')
 
-    @mock.patch.object(sys, 'stderr', six.StringIO())
+    @mock.patch.object(sys, 'stderr', io.StringIO())
     @mock.patch.object(novaclient.shell.DeprecatedAction, '_get_action')
     def test_call_emitted_nouse(self, mock_get_action):
         obj = novaclient.shell.DeprecatedAction(
@@ -313,7 +313,7 @@ class DeprecatedActionTest(utils.TestCase):
             'parser', 'namespace', 'values', 'option_string')
         self.assertEqual(sys.stderr.getvalue(), '')
 
-    @mock.patch.object(sys, 'stderr', six.StringIO())
+    @mock.patch.object(sys, 'stderr', io.StringIO())
     @mock.patch.object(novaclient.shell.DeprecatedAction, '_get_action')
     def test_call_emitted_withuse(self, mock_get_action):
         obj = novaclient.shell.DeprecatedAction(
@@ -393,8 +393,8 @@ class ShellTest(utils.TestCase):
         orig = sys.stdout
         orig_stderr = sys.stderr
         try:
-            sys.stdout = six.StringIO()
-            sys.stderr = six.StringIO()
+            sys.stdout = io.StringIO()
+            sys.stderr = io.StringIO()
             _shell = novaclient.shell.OpenStackComputeShell()
             _shell.main(argstr.split())
         except SystemExit:
@@ -622,8 +622,8 @@ class ShellTest(utils.TestCase):
                           'unknown', 'compute', self.mock_client)
 
     @mock.patch('sys.argv', ['nova'])
-    @mock.patch('sys.stdout', six.StringIO())
-    @mock.patch('sys.stderr', six.StringIO())
+    @mock.patch('sys.stdout', io.StringIO())
+    @mock.patch('sys.stderr', io.StringIO())
     def test_main_noargs(self):
         # Ensure that main works with no command-line arguments
         try:
@@ -761,7 +761,7 @@ class ShellTest(utils.TestCase):
     def test_main_error_handling(self, mock_compute_shell):
         class MyException(Exception):
             pass
-        with mock.patch('sys.stderr', six.StringIO()):
+        with mock.patch('sys.stderr', io.StringIO()):
             mock_compute_shell.side_effect = MyException('message')
             self.assertRaises(SystemExit, novaclient.shell.main)
             err = sys.stderr.getvalue()

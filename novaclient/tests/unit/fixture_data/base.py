@@ -10,8 +10,9 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+from urllib import parse
+
 import fixtures
-from six.moves.urllib import parse
 
 from novaclient.tests.unit.v2 import fakes
 

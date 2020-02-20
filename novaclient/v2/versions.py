@@ -16,7 +16,7 @@
 version interface
 """
 
-from six.moves import urllib
+from urllib import parse
 
 from novaclient import base
 from novaclient import exceptions as exc
@@ -79,7 +79,7 @@ class VersionManager(base.ManagerWithFind):
         """List all versions."""
 
         endpoint = self.api.client.get_endpoint()
-        url = urllib.parse.urlparse(endpoint)
+        url = parse.urlparse(endpoint)
         # NOTE(andreykurilin): endpoint URL has at least 3 formats:
         #   1. the classic (legacy) endpoint:
         #       http://{host}:{optional_port}/v{2 or 2.1}/{project-id}

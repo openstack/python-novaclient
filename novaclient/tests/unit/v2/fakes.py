@@ -17,11 +17,10 @@
 import copy
 import datetime
 import re
+from urllib import parse
 
 import mock
 from oslo_utils import strutils
-import six
-from six.moves.urllib import parse
 
 import novaclient
 from novaclient import api_versions
@@ -1528,158 +1527,146 @@ class FakeSessionClient(base_client.SessionClient):
     # Tenant Usage
     #
     def get_os_simple_tenant_usage(self, **kw):
-        return (200, FAKE_RESPONSE_HEADERS,
-                {six.u('tenant_usages'): [{
-                    six.u('total_memory_mb_usage'): 25451.762807466665,
-                    six.u('total_vcpus_usage'): 49.71047423333333,
-                    six.u('total_hours'): 49.71047423333333,
-                    six.u('tenant_id'):
-                        six.u('7b0a1d73f8fb41718f3343c207597869'),
-                    six.u('stop'): six.u('2012-01-22 19:48:41.750722'),
-                    six.u('server_usages'): [{
-                        six.u('hours'): 49.71047423333333,
-                        six.u('uptime'): 27035,
-                        six.u('local_gb'): 0,
-                        six.u('ended_at'): None,
-                        six.u('name'): six.u('f15image1'),
-                        six.u('tenant_id'):
-                            six.u('7b0a1d73f8fb41718f3343c207597869'),
-                        six.u('instance_id'):
-                            six.u('f079e394-1111-457b-b350-bb5ecc685cdd'),
-                        six.u('vcpus'): 1,
-                        six.u('memory_mb'): 512,
-                        six.u('state'): six.u('active'),
-                        six.u('flavor'): six.u('m1.tiny'),
-                        six.u('started_at'):
-                            six.u('2012-01-20 18:06:06.479998')}],
-                    six.u('start'): six.u('2011-12-25 19:48:41.750687'),
-                    six.u('total_local_gb_usage'): 0.0}]})
+        return (200, FAKE_RESPONSE_HEADERS, {'tenant_usages': [{
+            'total_memory_mb_usage': 25451.762807466665,
+            'total_vcpus_usage': 49.71047423333333,
+            'total_hours': 49.71047423333333,
+            'tenant_id': '7b0a1d73f8fb41718f3343c207597869',
+            'stop': '2012-01-22 19:48:41.750722',
+            'server_usages': [{
+                'hours': 49.71047423333333,
+                'uptime': 27035,
+                'local_gb': 0,
+                'ended_at': None,
+                'name': 'f15image1',
+                'tenant_id': '7b0a1d73f8fb41718f3343c207597869',
+                'instance_id': 'f079e394-1111-457b-b350-bb5ecc685cdd',
+                'vcpus': 1,
+                'memory_mb': 512,
+                'state': 'active',
+                'flavor': 'm1.tiny',
+                'started_at': '2012-01-20 18:06:06.479998',
+            }],
+            'start': '2011-12-25 19:48:41.750687',
+            'total_local_gb_usage': 0.0}]})
 
     def get_os_simple_tenant_usage_next(self, **kw):
-        return (200, FAKE_RESPONSE_HEADERS,
-                {six.u('tenant_usages'): [{
-                    six.u('total_memory_mb_usage'): 25451.762807466665,
-                    six.u('total_vcpus_usage'): 49.71047423333333,
-                    six.u('total_hours'): 49.71047423333333,
-                    six.u('tenant_id'):
-                        six.u('7b0a1d73f8fb41718f3343c207597869'),
-                    six.u('stop'): six.u('2012-01-22 19:48:41.750722'),
-                    six.u('server_usages'): [{
-                        six.u('hours'): 49.71047423333333,
-                        six.u('uptime'): 27035,
-                        six.u('local_gb'): 0,
-                        six.u('ended_at'): None,
-                        six.u('name'): six.u('f15image1'),
-                        six.u('tenant_id'):
-                            six.u('7b0a1d73f8fb41718f3343c207597869'),
-                        six.u('instance_id'):
-                            six.u('f079e394-2222-457b-b350-bb5ecc685cdd'),
-                        six.u('vcpus'): 1,
-                        six.u('memory_mb'): 512,
-                        six.u('state'): six.u('active'),
-                        six.u('flavor'): six.u('m1.tiny'),
-                        six.u('started_at'):
-                            six.u('2012-01-20 18:06:06.479998')}],
-                    six.u('start'): six.u('2011-12-25 19:48:41.750687'),
-                    six.u('total_local_gb_usage'): 0.0}]})
+        return (200, FAKE_RESPONSE_HEADERS, {'tenant_usages': [{
+            'total_memory_mb_usage': 25451.762807466665,
+            'total_vcpus_usage': 49.71047423333333,
+            'total_hours': 49.71047423333333,
+            'tenant_id': '7b0a1d73f8fb41718f3343c207597869',
+            'stop': '2012-01-22 19:48:41.750722',
+            'server_usages': [{
+                'hours': 49.71047423333333,
+                'uptime': 27035,
+                'local_gb': 0,
+                'ended_at': None,
+                'name': 'f15image1',
+                'tenant_id': '7b0a1d73f8fb41718f3343c207597869',
+                'instance_id': 'f079e394-2222-457b-b350-bb5ecc685cdd',
+                'vcpus': 1,
+                'memory_mb': 512,
+                'state': 'active',
+                'flavor': 'm1.tiny',
+                'started_at': '2012-01-20 18:06:06.479998',
+            }],
+            'start': '2011-12-25 19:48:41.750687',
+            'total_local_gb_usage': 0.0}]})
 
     def get_os_simple_tenant_usage_next_next(self, **kw):
-        return (200, FAKE_RESPONSE_HEADERS, {six.u('tenant_usages'): []})
+        return (200, FAKE_RESPONSE_HEADERS, {'tenant_usages': []})
 
     def get_os_simple_tenant_usage_tenantfoo(self, **kw):
-        return (200, FAKE_RESPONSE_HEADERS,
-                {six.u('tenant_usage'): {
-                    six.u('total_memory_mb_usage'): 25451.762807466665,
-                    six.u('total_vcpus_usage'): 49.71047423333333,
-                    six.u('total_hours'): 49.71047423333333,
-                    six.u('tenant_id'):
-                        six.u('7b0a1d73f8fb41718f3343c207597869'),
-                    six.u('stop'): six.u('2012-01-22 19:48:41.750722'),
-                    six.u('server_usages'): [{
-                        six.u('hours'): 49.71047423333333,
-                        six.u('uptime'): 27035, six.u('local_gb'): 0,
-                        six.u('ended_at'): None,
-                        six.u('name'): six.u('f15image1'),
-                        six.u('tenant_id'):
-                            six.u('7b0a1d73f8fb41718f3343c207597869'),
-                        six.u('instance_id'):
-                            six.u('f079e394-1111-457b-b350-bb5ecc685cdd'),
-                        six.u('vcpus'): 1, six.u('memory_mb'): 512,
-                        six.u('state'): six.u('active'),
-                        six.u('flavor'): six.u('m1.tiny'),
-                        six.u('started_at'):
-                            six.u('2012-01-20 18:06:06.479998')}],
-                    six.u('start'): six.u('2011-12-25 19:48:41.750687'),
-                    six.u('total_local_gb_usage'): 0.0}})
+        return (200, FAKE_RESPONSE_HEADERS, {'tenant_usage': {
+            'total_memory_mb_usage': 25451.762807466665,
+            'total_vcpus_usage': 49.71047423333333,
+            'total_hours': 49.71047423333333,
+            'tenant_id': '7b0a1d73f8fb41718f3343c207597869',
+            'stop': '2012-01-22 19:48:41.750722',
+            'server_usages': [{
+                'hours': 49.71047423333333,
+                'uptime': 27035, 'local_gb': 0,
+                'ended_at': None,
+                'name': 'f15image1',
+                'tenant_id': '7b0a1d73f8fb41718f3343c207597869',
+                'instance_id': 'f079e394-1111-457b-b350-bb5ecc685cdd',
+                'vcpus': 1, 'memory_mb': 512,
+                'state': 'active',
+                'flavor': 'm1.tiny',
+                'started_at': '2012-01-20 18:06:06.479998',
+            }],
+            'start': '2011-12-25 19:48:41.750687',
+            'total_local_gb_usage': 0.0}})
 
     def get_os_simple_tenant_usage_test(self, **kw):
-        return (200, {}, {six.u('tenant_usage'): {
-            six.u('total_memory_mb_usage'): 25451.762807466665,
-            six.u('total_vcpus_usage'): 49.71047423333333,
-            six.u('total_hours'): 49.71047423333333,
-            six.u('tenant_id'): six.u('7b0a1d73f8fb41718f3343c207597869'),
-            six.u('stop'): six.u('2012-01-22 19:48:41.750722'),
-            six.u('server_usages'): [{
-                six.u('hours'): 49.71047423333333,
-                six.u('uptime'): 27035, six.u('local_gb'): 0,
-                six.u('ended_at'): None,
-                six.u('name'): six.u('f15image1'),
-                six.u('tenant_id'): six.u('7b0a1d73f8fb41718f3343c207597869'),
-                six.u('instance_id'):
-                    six.u('f079e394-1111-457b-b350-bb5ecc685cdd'),
-                six.u('vcpus'): 1, six.u('memory_mb'): 512,
-                six.u('state'): six.u('active'),
-                six.u('flavor'): six.u('m1.tiny'),
-                six.u('started_at'): six.u('2012-01-20 18:06:06.479998')}],
-            six.u('start'): six.u('2011-12-25 19:48:41.750687'),
-            six.u('total_local_gb_usage'): 0.0}})
+        return (200, {}, {'tenant_usage': {
+            'total_memory_mb_usage': 25451.762807466665,
+            'total_vcpus_usage': 49.71047423333333,
+            'total_hours': 49.71047423333333,
+            'tenant_id': '7b0a1d73f8fb41718f3343c207597869',
+            'stop': '2012-01-22 19:48:41.750722',
+            'server_usages': [{
+                'hours': 49.71047423333333,
+                'uptime': 27035, 'local_gb': 0,
+                'ended_at': None,
+                'name': 'f15image1',
+                'tenant_id': '7b0a1d73f8fb41718f3343c207597869',
+                'instance_id': 'f079e394-1111-457b-b350-bb5ecc685cdd',
+                'vcpus': 1, 'memory_mb': 512,
+                'state': 'active',
+                'flavor': 'm1.tiny',
+                'started_at': '2012-01-20 18:06:06.479998',
+            }],
+            'start': '2011-12-25 19:48:41.750687',
+            'total_local_gb_usage': 0.0}})
 
     def get_os_simple_tenant_usage_tenant_id(self, **kw):
-        return (200, {}, {six.u('tenant_usage'): {
-            six.u('total_memory_mb_usage'): 25451.762807466665,
-            six.u('total_vcpus_usage'): 49.71047423333333,
-            six.u('total_hours'): 49.71047423333333,
-            six.u('tenant_id'): six.u('7b0a1d73f8fb41718f3343c207597869'),
-            six.u('stop'): six.u('2012-01-22 19:48:41.750722'),
-            six.u('server_usages'): [{
-                six.u('hours'): 49.71047423333333,
-                six.u('uptime'): 27035, six.u('local_gb'): 0,
-                six.u('ended_at'): None,
-                six.u('name'): six.u('f15image1'),
-                six.u('tenant_id'): six.u('7b0a1d73f8fb41718f3343c207597869'),
-                six.u('instance_id'):
-                    six.u('f079e394-1111-457b-b350-bb5ecc685cdd'),
-                six.u('vcpus'): 1, six.u('memory_mb'): 512,
-                six.u('state'): six.u('active'),
-                six.u('flavor'): six.u('m1.tiny'),
-                six.u('started_at'): six.u('2012-01-20 18:06:06.479998')}],
-            six.u('start'): six.u('2011-12-25 19:48:41.750687'),
-            six.u('total_local_gb_usage'): 0.0}})
+        return (200, {}, {'tenant_usage': {
+            'total_memory_mb_usage': 25451.762807466665,
+            'total_vcpus_usage': 49.71047423333333,
+            'total_hours': 49.71047423333333,
+            'tenant_id': '7b0a1d73f8fb41718f3343c207597869',
+            'stop': '2012-01-22 19:48:41.750722',
+            'server_usages': [{
+                'hours': 49.71047423333333,
+                'uptime': 27035, 'local_gb': 0,
+                'ended_at': None,
+                'name': 'f15image1',
+                'tenant_id': '7b0a1d73f8fb41718f3343c207597869',
+                'instance_id': 'f079e394-1111-457b-b350-bb5ecc685cdd',
+                'vcpus': 1, 'memory_mb': 512,
+                'state': 'active',
+                'flavor': 'm1.tiny',
+                'started_at': '2012-01-20 18:06:06.479998',
+            }],
+            'start': '2011-12-25 19:48:41.750687',
+            'total_local_gb_usage': 0.0}})
 
     def get_os_simple_tenant_usage_tenant_id_next(self, **kw):
-        return (200, {}, {six.u('tenant_usage'): {
-            six.u('total_memory_mb_usage'): 25451.762807466665,
-            six.u('total_vcpus_usage'): 49.71047423333333,
-            six.u('total_hours'): 49.71047423333333,
-            six.u('tenant_id'): six.u('7b0a1d73f8fb41718f3343c207597869'),
-            six.u('stop'): six.u('2012-01-22 19:48:41.750722'),
-            six.u('server_usages'): [{
-                six.u('hours'): 49.71047423333333,
-                six.u('uptime'): 27035, six.u('local_gb'): 0,
-                six.u('ended_at'): None,
-                six.u('name'): six.u('f15image1'),
-                six.u('tenant_id'): six.u('7b0a1d73f8fb41718f3343c207597869'),
-                six.u('instance_id'):
-                    six.u('f079e394-2222-457b-b350-bb5ecc685cdd'),
-                six.u('vcpus'): 1, six.u('memory_mb'): 512,
-                six.u('state'): six.u('active'),
-                six.u('flavor'): six.u('m1.tiny'),
-                six.u('started_at'): six.u('2012-01-20 18:06:06.479998')}],
-            six.u('start'): six.u('2011-12-25 19:48:41.750687'),
-            six.u('total_local_gb_usage'): 0.0}})
+        return (200, {}, {'tenant_usage': {
+            'total_memory_mb_usage': 25451.762807466665,
+            'total_vcpus_usage': 49.71047423333333,
+            'total_hours': 49.71047423333333,
+            'tenant_id': '7b0a1d73f8fb41718f3343c207597869',
+            'stop': '2012-01-22 19:48:41.750722',
+            'server_usages': [{
+                'hours': 49.71047423333333,
+                'uptime': 27035, 'local_gb': 0,
+                'ended_at': None,
+                'name': 'f15image1',
+                'tenant_id': '7b0a1d73f8fb41718f3343c207597869',
+                'instance_id': 'f079e394-2222-457b-b350-bb5ecc685cdd',
+                'vcpus': 1, 'memory_mb': 512,
+                'state': 'active',
+                'flavor': 'm1.tiny',
+                'started_at': '2012-01-20 18:06:06.479998',
+            }],
+            'start': '2011-12-25 19:48:41.750687',
+            'total_local_gb_usage': 0.0}})
 
     def get_os_simple_tenant_usage_tenant_id_next_next(self, **kw):
-        return (200, {}, {six.u('tenant_usage'): {}})
+        return (200, {}, {'tenant_usage': {}})
 
     #
     # Aggregates

@@ -12,7 +12,6 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import six
 from tempest.lib import exceptions
 
 from novaclient.tests.functional import base
@@ -40,7 +39,7 @@ class TestBlockDeviceTaggingCLIError(base.ClientTestBase):
             self.assertIn("ERROR (CommandError): "
                           "'tag' in block device mapping is not supported "
                           "in API version %s." % self.COMPUTE_API_VERSION,
-                          six.text_type(e))
+                          str(e))
         else:
             server_id = self._get_value_from_the_table(output, 'id')
             self.client.servers.delete(server_id)
@@ -67,7 +66,7 @@ class TestNICDeviceTaggingCLIError(base.ClientTestBase):
                                      'net-uuid': self.network.id,
                                      'image': self.image.id}))
         except exceptions.CommandFailed as e:
-            self.assertIn("Invalid nic argument", six.text_type(e))
+            self.assertIn('Invalid nic argument', str(e))
         else:
             server_id = self._get_value_from_the_table(output, 'id')
             self.client.servers.delete(server_id)

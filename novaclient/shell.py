@@ -27,7 +27,6 @@ from keystoneauth1 import loading
 from oslo_utils import encodeutils
 from oslo_utils import importutils
 from oslo_utils import strutils
-import six
 
 import novaclient
 from novaclient import api_versions
@@ -123,7 +122,7 @@ class DeprecatedAction(argparse.Action):
             # option
             self.real_action_args = False
             self.real_action = None
-        elif real_action is None or isinstance(real_action, six.string_types):
+        elif real_action is None or isinstance(real_action, str):
             # Specified by string (or None); we have to have a parser
             # to look up the actual action, so defer to later
             self.real_action_args = (option_strings, dest, help, kwargs)
@@ -810,10 +809,7 @@ def main():
         OpenStackComputeShell().main(argv)
     except Exception as exc:
         logger.debug(exc, exc_info=1)
-        if six.PY2:
-            message = encodeutils.safe_encode(six.text_type(exc))
-        else:
-            message = encodeutils.exception_to_unicode(exc)
+        message = encodeutils.exception_to_unicode(exc)
         print("ERROR (%(type)s): %(msg)s" % {
               'type': exc.__class__.__name__,
               'msg': message},

@@ -14,8 +14,6 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import six
-
 from novaclient.tests.unit.fixture_data import availability_zones as data
 from novaclient.tests.unit.fixture_data import client
 from novaclient.tests.unit import utils
@@ -54,8 +52,8 @@ class AvailabilityZoneTest(utils.FixturedTestCase):
 
         self.assertEqual(2, len(zones))
 
-        l0 = [six.u('zone-1'), six.u('available')]
-        l1 = [six.u('zone-2'), six.u('not available')]
+        l0 = ['zone-1', 'available']
+        l1 = ['zone-2', 'not available']
 
         z0 = self.shell._treeizeAvailabilityZone(zones[0])
         z1 = self.shell._treeizeAvailabilityZone(zones[1])
@@ -75,18 +73,15 @@ class AvailabilityZoneTest(utils.FixturedTestCase):
 
         self.assertEqual(3, len(zones))
 
-        l0 = [six.u('zone-1'), six.u('available')]
-        l1 = [six.u('|- fake_host-1'), six.u('')]
-        l2 = [six.u('| |- nova-compute'),
-              six.u('enabled :-) 2012-12-26 14:45:25')]
-        l3 = [six.u('internal'), six.u('available')]
-        l4 = [six.u('|- fake_host-1'), six.u('')]
-        l5 = [six.u('| |- nova-sched'),
-              six.u('enabled :-) 2012-12-26 14:45:25')]
-        l6 = [six.u('|- fake_host-2'), six.u('')]
-        l7 = [six.u('| |- nova-network'),
-              six.u('enabled XXX 2012-12-26 14:45:24')]
-        l8 = [six.u('zone-2'), six.u('not available')]
+        l0 = ['zone-1', 'available']
+        l1 = ['|- fake_host-1', '']
+        l2 = ['| |- nova-compute', 'enabled :-) 2012-12-26 14:45:25']
+        l3 = ['internal', 'available']
+        l4 = ['|- fake_host-1', '']
+        l5 = ['| |- nova-sched', 'enabled :-) 2012-12-26 14:45:25']
+        l6 = ['|- fake_host-2', '']
+        l7 = ['| |- nova-network', 'enabled XXX 2012-12-26 14:45:24']
+        l8 = ['zone-2', 'not available']
 
         z0 = self.shell._treeizeAvailabilityZone(zones[0])
         z1 = self.shell._treeizeAvailabilityZone(zones[1])

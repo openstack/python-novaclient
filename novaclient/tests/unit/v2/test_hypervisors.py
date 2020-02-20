@@ -13,8 +13,6 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import six
-
 from novaclient import api_versions
 from novaclient import exceptions
 from novaclient.tests.unit.fixture_data import client
@@ -127,7 +125,7 @@ class HypervisorsTest(utils.FixturedTestCase):
                                self.cs.hypervisors.search, 'hyper',
                                detailed=True)
         self.assertIn('Parameter "detailed" requires API version 2.53 or '
-                      'greater.', six.text_type(ex))
+                      'greater.', str(ex))
 
     def test_hypervisor_servers(self):
         expected = [

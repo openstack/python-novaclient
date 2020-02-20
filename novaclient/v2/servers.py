@@ -21,10 +21,7 @@ Server interface.
 
 import base64
 import collections
-
-from oslo_utils import encodeutils
-import six
-from six.moves.urllib import parse
+from urllib import parse
 
 from novaclient import api_versions
 from novaclient import base
@@ -690,17 +687,11 @@ class ServerManager(base.BootingManagerWithFind):
 
         # NOTE(melwitt): Text file data is converted to bytes prior to
         # base64 encoding. The utf-8 encoding will fail for binary files.
-        if six.PY3:
-            try:
-                userdata = userdata.encode("utf-8")
-            except AttributeError:
-                # In python 3, 'bytes' object has no attribute 'encode'
-                pass
-        else:
-            try:
-                userdata = encodeutils.safe_encode(userdata)
-            except UnicodeDecodeError:
-                pass
+        try:
+            userdata = userdata.encode("utf-8")
+        except AttributeError:
+            # In python 3, 'bytes' object has no attribute 'encode'
+            pass
 
         return base64.b64encode(userdata).decode('utf-8')
 
@@ -761,7 +752,7 @@ class ServerManager(base.BootingManagerWithFind):
                 else:
                     data = file_or_string
 
-                if six.PY3 and isinstance(data, str):
+                if isinstance(data, str):
                     data = data.encode('utf-8')
                 cont = base64.b64encode(data).decode('utf-8')
                 personality.append({
@@ -791,7 +782,7 @@ class ServerManager(base.BootingManagerWithFind):
         if nics is not None:
             # With microversion 2.37+ nics can be an enum of 'auto' or 'none'
             # or a list of dicts.
-            if isinstance(nics, six.string_types):
+            if isinstance(nics, str):
                 all_net_data = nics
             else:
                 # NOTE(tr3buchet): nics can be an empty list
@@ -899,7 +890,7 @@ class ServerManager(base.BootingManagerWithFind):
         for opt, val in search_opts.items():
             # support locked=False from 2.73 microversion
             if val or (opt == 'locked' and val is False):
-                if isinstance(val, six.text_type):
+                if isinstance(val, str):
                     val = val.encode('utf-8')
                 qparams[opt] = val
 
