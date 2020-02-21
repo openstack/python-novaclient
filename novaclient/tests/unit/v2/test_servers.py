@@ -55,7 +55,7 @@ class ServersTest(utils.FixturedTestCase):
             self.assertIsInstance(s, servers.Server)
 
     def test_filter_servers_unicode(self):
-        sl = self.cs.servers.list(search_opts={'name': u't€sting'})
+        sl = self.cs.servers.list(search_opts={'name': 't€sting'})
         self.assert_request_id(sl, fakes.FAKE_REQUEST_ID_LIST)
         self.assert_called('GET', '/servers/detail?name=t%E2%82%ACsting')
         for s in sl:

@@ -109,7 +109,7 @@ class HypervisorsTest(utils.FixturedTestCase):
             self.compare_to_expected(expected[idx], hyper)
 
     def test_hypervisor_search_unicode(self):
-        hypervisor_match = u'\\u5de5\\u4f5c'
+        hypervisor_match = '\\u5de5\\u4f5c'
         if self.cs.api_version >= api_versions.APIVersion('2.53'):
             self.assertRaises(exceptions.BadRequest,
                               self.cs.hypervisors.search,

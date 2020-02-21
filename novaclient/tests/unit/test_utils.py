@@ -237,9 +237,9 @@ class PrintResultTestCase(test_utils.TestCase):
 
     @mock.patch('sys.stdout', io.StringIO())
     def test_print_unicode_list(self):
-        objs = [_FakeResult("k", u'\u2026')]
+        objs = [_FakeResult("k", '\u2026')]
         utils.print_list(objs, ["Name", "Value"])
-        s = u'\u2026'
+        s = '\u2026'
         self.assertEqual('+------+-------+\n'
                          '| Name | Value |\n'
                          '+------+-------+\n'
@@ -314,9 +314,9 @@ class PrintResultTestCase(test_utils.TestCase):
 
     @mock.patch('sys.stdout', io.StringIO())
     def test_print_unicode_dict(self):
-        dict = {'k': u'\u2026'}
+        dict = {'k': '\u2026'}
         utils.print_dict(dict)
-        s = u'\u2026'
+        s = '\u2026'
         self.assertEqual('+----------+-------+\n'
                          '| Property | Value |\n'
                          '+----------+-------+\n'

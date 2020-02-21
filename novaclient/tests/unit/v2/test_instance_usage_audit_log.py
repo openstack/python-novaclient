@@ -38,6 +38,6 @@ class InstanceUsageAuditLogTests(utils.TestCase):
             '/os-instance_usage_audit_log/2016-12-10%2013%3A59%3A59.999999')
 
     def test_instance_usage_audit_log_with_before_unicode(self):
-        before = u'\\u5de5\\u4f5c'
+        before = '\\u5de5\\u4f5c'
         self.assertRaises(exceptions.BadRequest,
                           self.cs.instance_usage_audit_log.get, before)
