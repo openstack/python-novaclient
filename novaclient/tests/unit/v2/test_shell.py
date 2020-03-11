@@ -1704,7 +1704,7 @@ class ShellTest(utils.TestCase):
         self.run_command('list --user fake_user')
         self.assert_called(
             'GET',
-            '/servers/detail?all_tenants=1&user_id=fake_user')
+            '/servers/detail?user_id=fake_user')
 
     def test_list_with_single_sort_key_no_dir(self):
         self.run_command('list --sort 1')
@@ -1837,6 +1837,51 @@ class ShellTest(utils.TestCase):
         self.assertRaises(SystemExit, self.run_command,
                           'list --changes-before 2016-02-29T06:23:22',
                           api_version='2.65')
+
+    def test_list_with_availability_zone(self):
+        self.run_command('list --availability-zone nova')
+        self.assert_called('GET', '/servers/detail?availability_zone=nova')
+
+    def test_list_with_key_name(self):
+        self.run_command('list --key-name my_key')
+        self.assert_called('GET', '/servers/detail?key_name=my_key')
+
+    def test_list_with_config_drive_passing_through_any_value(self):
+        self.run_command('list --config-drive True')
+        self.assert_called('GET', '/servers/detail?config_drive=True')
+        self.run_command('list --config-drive some-random-string')
+        self.assert_called(
+            'GET', '/servers/detail?config_drive=some-random-string')
+        # This form is special for the test env to pass through an empty string
+        # as a parameter. The real CLI call would look like
+        # list --config drive ''
+        self.run_command(['list', '--config-drive', ''])
+        self.assert_called(
+            'GET', '/servers/detail?config_drive=')
+
+    def test_list_with_progress(self):
+        self.run_command('list --progress 100')
+        self.assert_called('GET', '/servers/detail?progress=100')
+
+    def test_list_with_0_progress(self):
+        self.run_command('list --progress 0')
+        self.assert_called('GET', '/servers/detail?progress=0')
+
+    def test_list_with_vm_state(self):
+        self.run_command('list --vm-state active')
+        self.assert_called('GET', '/servers/detail?vm_state=active')
+
+    def test_list_with_task_state(self):
+        self.run_command('list --task-state reboot_started')
+        self.assert_called('GET', '/servers/detail?task_state=reboot_started')
+
+    def test_list_with_power_state(self):
+        self.run_command('list --power-state 1')
+        self.assert_called('GET', '/servers/detail?power_state=1')
+
+    def test_list_with_power_state_filter_for_0_state(self):
+        self.run_command('list --power-state 0')
+        self.assert_called('GET', '/servers/detail?power_state=0')
 
     def test_list_fields_redundant(self):
         output, _err = self.run_command('list --fields id,status,status')
@@ -4458,7 +4503,8 @@ class ShellTest(utils.TestCase):
             75,  # There are no version-wrapped shell method changes for this.
             76,  # doesn't require any changes in novaclient.
             77,  # There are no version-wrapped shell method changes for this.
-            82,  # doesn't require any changes in novaclient.
+            82,  # There are no version-wrapped shell method changes for this.
+            83,  # There are no version-wrapped shell method changes for this.
         ])
         versions_supported = set(range(0,
                                  novaclient.API_MAX_VERSION.ver_minor + 1))

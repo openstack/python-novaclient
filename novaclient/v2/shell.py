@@ -1486,7 +1486,8 @@ def _print_flavor(flavor):
     dest='user',
     metavar='<user>',
     nargs='?',
-    help=_('Display information from single user (Admin only).'))
+    help=_('Display information from single user (Admin only until '
+           'microversion 2.82).'))
 @utils.arg(
     '--deleted',
     dest='deleted',
@@ -1529,6 +1530,61 @@ def _print_flavor(flavor):
            "will be displayed. If limit is bigger than 'CONF.api.max_limit' "
            "option of Nova API, limit 'CONF.api.max_limit' will be used "
            "instead."))
+@utils.arg(
+    '--availability-zone',
+    dest='availability_zone',
+    metavar='<availability_zone>',
+    default=None,
+    help=_('Display servers based on their availability zone (Admin only '
+           'until microversion 2.82).'))
+@utils.arg(
+    '--key-name',
+    dest='key_name',
+    metavar='<key_name>',
+    default=None,
+    help=_('Display servers based on their keypair name (Admin only until '
+           'microversion 2.82).'))
+# NOTE(gibi): we can make this a real boolean filter after bug 1871409 is fixed
+# and the REST API is cleaned up regarding the values of config_drive. Unit
+# that we simply pass through any string from the user to the REST API.
+@utils.arg(
+    '--config-drive',
+    dest='config_drive',
+    metavar='<config_drive>',
+    default=None,
+    help=_('Display servers based on their config_drive value (Admin only '
+           'until microversion 2.82). The value must be a boolean value.'))
+@utils.arg(
+    '--progress',
+    dest='progress',
+    metavar='<progress>',
+    default=None,
+    help=_('Display servers based on their progress value (Admin only until '
+           'microversion 2.82).'))
+@utils.arg(
+    '--vm-state',
+    dest='vm_state',
+    metavar='<vm_state>',
+    default=None,
+    help=_('Display servers based on their vm_state value (Admin only until '
+           'microversion 2.82).'))
+@utils.arg(
+    '--task-state',
+    dest='task_state',
+    metavar='<task_state>',
+    default=None,
+    help=_('Display servers based on their task_state value (Admin only until '
+           'microversion 2.82).'))
+# TODO(gibi): this is now only work with the integer power state values.
+# Later on we can extend this to accept the string values of the power state
+# and translate it to integers towards the REST API.
+@utils.arg(
+    '--power-state',
+    dest='power_state',
+    metavar='<power_state>',
+    default=None,
+    help=_('Display servers based on their power_state value (Admin only '
+           'until microversion 2.82).'))
 @utils.arg(
     '--changes-since',
     dest='changes_since',
@@ -1603,8 +1659,9 @@ def do_list(cs, args):
     if args.flavor:
         flavorid = _find_flavor(cs, args.flavor).id
     # search by tenant or user only works with all_tenants
-    if args.tenant or args.user:
+    if args.tenant:
         args.all_tenants = 1
+
     search_opts = {
         'all_tenants': args.all_tenants,
         'reservation_id': args.reservation_id,
@@ -1618,7 +1675,15 @@ def do_list(cs, args):
         'user_id': args.user,
         'host': args.host,
         'deleted': args.deleted,
-        'changes-since': args.changes_since}
+        'changes-since': args.changes_since,
+        'availability_zone': args.availability_zone,
+        'config_drive': args.config_drive,
+        'key_name': args.key_name,
+        'progress': args.progress,
+        'vm_state': args.vm_state,
+        'task_state': args.task_state,
+        'power_state': args.power_state,
+    }
 
     for arg in ('tags', "tags-any", 'not-tags', 'not-tags-any'):
         if arg in args:

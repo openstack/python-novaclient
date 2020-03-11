@@ -1,0 +1,18 @@
+---
+  features:
+    - |
+      Added the following filters support for the ``nova list`` command,
+      these filters are admin-only restricted until microversion 2.82:
+
+      * --availability-zone
+      * --config-drive
+      * --key-name
+      * --power-state
+      * --task-state
+      * --vm-state
+      * --progress
+
+      Existing user filter will be available to non admin since
+      `microversion 2.83`_.
+
+      .. _microversion 2.83: https://docs.openstack.org/nova/latest/reference/api-microversion-history.html#id76

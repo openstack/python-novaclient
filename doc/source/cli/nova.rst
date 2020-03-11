@@ -2223,7 +2223,11 @@ nova list
                     [--tenant [<tenant>]] [--user [<user>]] [--deleted]
                     [--fields <fields>] [--minimal]
                     [--sort <key>[:<direction>]] [--marker <marker>]
-                    [--limit <limit>] [--changes-since <changes_since>]
+                    [--limit <limit>] [--availability-zone <availability_zone>]
+                    [--key-name <key_name>] [--config-drive <config_drive>]
+                    [--progress <progress>] [--vm-state <vm_state>]
+                    [--task-state <task_state>] [--power-state <power_state>]
+                    [--changes-since <changes_since>]
                     [--changes-before <changes_before>]
                     [--tags <tags>] [--tags-any <tags-any>]
                     [--not-tags <not-tags>] [--not-tags-any <not-tags-any>]
@@ -2274,7 +2278,7 @@ present in the failure domain.
 
 ``--user [<user>]``
   Display information from single user (Admin
-  only).
+  only until microversion 2.82).
 
 ``--deleted``
   Only display deleted servers (Admin only).
@@ -2303,6 +2307,35 @@ present in the failure domain.
   is bigger than 'CONF.api.max_limit' option of
   Nova API, limit 'CONF.api.max_limit' will be
   used instead.
+
+``--availability-zone <availability_zone>``
+  Display servers based on their availability zone
+  (Admin only until microversion 2.82).
+
+``--key-name <key_name>``
+  Display servers based on their keypair name
+  (Admin only until microversion 2.82).
+
+``--config-drive <config_drive>``
+  Display servers based on their config_drive value
+  The value must be a boolean. (Admin only until
+  microversion 2.82).
+
+``--progress <progress>``
+  Display servers based on their progress value
+  (Admin only until microversion 2.82).
+
+``--vm-state <vm_state>``
+  Display servers based on their vm_state value
+  (Admin only until microversion 2.82).
+
+``--task-state <task_state>``
+  Display servers based on their task_state value
+  (Admin only until microversion 2.82).
+
+``--power-state <power_state>``
+  Display servers based on their power_state value
+  (Admin only until microversion 2.82).
 
 ``--changes-since <changes_since>``
   List only servers changed later or equal to a

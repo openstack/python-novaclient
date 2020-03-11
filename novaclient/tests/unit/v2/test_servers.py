@@ -85,6 +85,13 @@ class ServersTest(utils.FixturedTestCase):
         self.assertIn("'locked' argument is only allowed since "
                       "microversion 2.73.", str(e))
 
+    def test_filter_without_config_drive(self):
+        sl = self.cs.servers.list(search_opts={'config_drive': None})
+        self.assert_request_id(sl, fakes.FAKE_REQUEST_ID_LIST)
+        self.assert_called('GET', '/servers/detail')
+        for s in sl:
+            self.assertIsInstance(s, servers.Server)
+
     def test_list_servers_undetailed(self):
         sl = self.cs.servers.list(detailed=False)
         self.assert_request_id(sl, fakes.FAKE_REQUEST_ID_LIST)
