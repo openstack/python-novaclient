@@ -558,10 +558,12 @@ nova usage
   Detach a volume from a server.
 
 ``volume-update``
-  Update the attachment on the server. Migrates
-  the data from an attached volume to the
-  specified available volume and swaps out the
-  active attachment to the new volume.
+  Update the attachment on the server. Migrates the data from an
+  attached volume to the specified available volume and swaps out
+  the active attachment to the new volume.
+  Since microversion 2.85, support for updating the
+  ``delete_on_termination`` delete flag, which allows changing the
+  behavior of volume deletion on instance deletion.
 
 ``x509-create-cert``
   **DEPRECATED** Create x509 cert for a user in
@@ -3896,7 +3898,7 @@ Attach a volume to a server.
   Tag for the attached volume. (Supported by API versions '2.49' - '2.latest')
 
 ``--delete-on-termination``
-  Specify if the attached volume sholud be deleted when the server is
+  Specify if the attached volume should be deleted when the server is
   destroyed. By default the attached volume is not deleted when the server is
   destroyed. (Supported by API versions '2.79' - '2.latest')
 
@@ -3942,7 +3944,8 @@ nova volume-update
 
 .. code-block:: console
 
-   usage: nova volume-update <server> <src_volid> <dest_volid>
+   usage: nova volume-update [--[no-]delete-on-termination]
+                             <server> <src_volume> <dest_volume>
 
 Update the attachment on the server. Migrates the data from an attached volume
 to the specified available volume and swaps out the active attachment to the
@@ -3953,11 +3956,21 @@ new volume.
 ``<server>``
   Name or ID of server.
 
-``<src_volid>``
+``<src_volume>``
   ID of the source (original) volume.
 
-``<dest_volid>``
+``<dest_volume>``
   ID of the destination volume.
+
+**Optional arguments:**
+
+``--delete-on-termination``
+  Specify that the volume should be deleted when the server is destroyed.
+  (Supported by API versions '2.85' - '2.latest')
+
+``--no-delete-on-termination``
+  Specify that the attached volume should not be deleted when
+  the server is destroyed. (Supported by API versions '2.85' - '2.latest')
 
 .. _nova_bash-completion:
 

@@ -3992,10 +3992,42 @@ class ShellTest(utils.TestCase):
                            {'volumeAttachment':
                                {'volumeId': 'Work'}})
 
-    def test_volume_update(self):
-        self.run_command('volume-update sample-server Work Work')
+    def test_volume_update_pre_v285(self):
+        """Before microversion 2.85, we should keep the original behavior"""
+        self.run_command('volume-update sample-server Work Work',
+                         api_version='2.84')
         self.assert_called('PUT', '/servers/1234/os-volume_attachments/Work',
                            {'volumeAttachment': {'volumeId': 'Work'}})
+
+    def test_volume_update_swap_v285(self):
+        """Microversion 2.85, we should also keep the original behavior."""
+        self.run_command('volume-update sample-server Work Work',
+                         api_version='2.85')
+        self.assert_called('PUT', '/servers/1234/os-volume_attachments/Work',
+                           {'volumeAttachment': {'volumeId': 'Work'}})
+
+    def test_volume_update_v285(self):
+        self.run_command('volume-update sample-server --delete-on-termination '
+                         'Work Work', api_version='2.85')
+        body = {'volumeAttachment':
+                {'volumeId': 'Work', 'delete_on_termination': True}}
+        self.assert_called('PUT', '/servers/1234/os-volume_attachments/Work',
+                           body)
+
+        self.run_command('volume-update sample-server '
+                         '--no-delete-on-termination '
+                         'Work Work', api_version='2.85')
+        body = {'volumeAttachment':
+                {'volumeId': 'Work', 'delete_on_termination': False}}
+        self.assert_called('PUT', '/servers/1234/os-volume_attachments/Work',
+                           body)
+
+    def test_volume_update_v285_conflicting(self):
+        self.assertRaises(
+            SystemExit, self.run_command,
+            'volume-update sample-server --delete-on-termination '
+            '--no-delete-on-termination Work Work',
+            api_version='2.85')
 
     def test_volume_detach(self):
         self.run_command('volume-detach sample-server Work')

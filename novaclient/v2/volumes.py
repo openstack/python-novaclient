@@ -103,6 +103,7 @@ class VolumeManager(base.Manager):
         return self._create("/servers/%s/os-volume_attachments" % server_id,
                             body, "volumeAttachment")
 
+    @api_versions.wraps("2.0", "2.84")
     def update_server_volume(self, server_id, src_volid, dest_volid):
         """
         Swaps the existing volume attachment to point to a new volume.
@@ -122,6 +123,35 @@ class VolumeManager(base.Manager):
         body = {'volumeAttachment': {'volumeId': dest_volid}}
         return self._update("/servers/%s/os-volume_attachments/%s" %
                             (server_id, src_volid,),
+                            body, "volumeAttachment")
+
+    @api_versions.wraps("2.85")
+    def update_server_volume(self, server_id, src_volid, dest_volid,
+                             delete_on_termination=None):
+        """
+        Swaps the existing volume attachment to point to a new volume.
+
+        Takes a server, a source (attached) volume and a destination volume and
+        performs a hypervisor assisted data migration from src to dest volume,
+        detaches the original (source) volume and attaches the new destination
+        volume. Note that not all backing hypervisor drivers support this
+        operation and it may be disabled via policy.
+
+
+        :param server_id: The ID of the server
+        :param source_volume: The ID of the src volume
+        :param dest_volume: The ID of the destination volume
+        :param delete_on_termination: Marked whether to delete the attached
+                                      volume when the server is deleted
+                                      (optional).
+        :rtype: :class:`Volume`
+        """
+        body = {'volumeAttachment': {'volumeId': dest_volid}}
+        if delete_on_termination is not None:
+            body['volumeAttachment']['delete_on_termination'] = (
+                delete_on_termination)
+        return self._update("/servers/%s/os-volume_attachments/%s" %
+                            (server_id, src_volid),
                             body, "volumeAttachment")
 
     def get_server_volume(self, server_id, volume_id=None, attachment_id=None):

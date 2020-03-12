@@ -1,0 +1,16 @@
+---
+features:
+  - |
+    Support is added for compute API `microversion 2.85`_. This adds the
+    ability to update an attached volume with a ``delete_on_termination``,
+    which specify if the attached volume should be deleted when the server
+    is destroyed.
+
+    - The ``--delete-on-termination`` and ``--no-delete-on-termination``
+      options are added to the ``nova volume-update`` CLI.
+    - New kwarg called ``delete_on_termination`` added to the python API
+      binding:
+
+    - ``novaclient.v2.volumes.VolumeManager.update_server_volume()``
+
+    .. _microversion 2.85: https://docs.openstack.org/nova/latest/reference/api-microversion-history.html#id78
