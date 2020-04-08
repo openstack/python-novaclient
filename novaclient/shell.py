@@ -442,6 +442,7 @@ class OpenStackComputeShell(object):
 
             action_help = desc.strip()
             arguments = getattr(callback, 'arguments', [])
+            groups = {}
 
             subparser = subparsers.add_parser(
                 command,
@@ -456,10 +457,14 @@ class OpenStackComputeShell(object):
             )
             self.subcommands[command] = subparser
             for (args, kwargs) in arguments:
-                start_version = kwargs.get("start_version", None)
+                kwargs = kwargs.copy()
+
+                start_version = kwargs.pop("start_version", None)
+                end_version = kwargs.pop("end_version", None)
+                group = kwargs.pop("group", None)
+
                 if start_version:
                     start_version = api_versions.APIVersion(start_version)
-                    end_version = kwargs.get("end_version", None)
                     if end_version:
                         end_version = api_versions.APIVersion(end_version)
                     else:
@@ -471,10 +476,16 @@ class OpenStackComputeShell(object):
                             "end": end_version.get_string()})
                     if not version.matches(start_version, end_version):
                         continue
-                kw = kwargs.copy()
-                kw.pop("start_version", None)
-                kw.pop("end_version", None)
-                subparser.add_argument(*args, **kw)
+
+                if group:
+                    if group not in groups:
+                        groups[group] = (
+                            subparser.add_mutually_exclusive_group()
+                        )
+                    kwargs['dest'] = kwargs.get('dest', group)
+                    groups[group].add_argument(*args, **kwargs)
+                else:
+                    subparser.add_argument(*args, **kwargs)
             subparser.set_defaults(func=callback)
 
     def setup_debugging(self, debug):

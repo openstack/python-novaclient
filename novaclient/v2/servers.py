@@ -893,12 +893,11 @@ class ServerManager(base.BootingManagerWithFind):
                 if isinstance(val, str):
                     val = val.encode('utf-8')
                 qparams[opt] = val
-            # NOTE(gibi): After we fixing bug 1871409 and cleaning up the API
-            # inconsistency around config_drive we can make the
-            # config_drive filter a boolean filter. But until that we
-            # simply pass through any value to the API even empty string.
+            # NOTE(gibi): The False value won't actually do anything until we
+            # fix bug 1871409 and clean up the API inconsistency, but we do it
+            # in preparation for that (hopefully backportable) fix
             if opt == 'config_drive' and val is not None:
-                qparams[opt] = val
+                qparams[opt] = str(val)
 
         detail = ""
         if detailed:

@@ -2224,7 +2224,7 @@ nova list
                     [--fields <fields>] [--minimal]
                     [--sort <key>[:<direction>]] [--marker <marker>]
                     [--limit <limit>] [--availability-zone <availability_zone>]
-                    [--key-name <key_name>] [--config-drive <config_drive>]
+                    [--key-name <key_name>] [--[no-]config-drive]
                     [--progress <progress>] [--vm-state <vm_state>]
                     [--task-state <task_state>] [--power-state <power_state>]
                     [--changes-since <changes_since>]
@@ -2316,10 +2316,13 @@ present in the failure domain.
   Display servers based on their keypair name
   (Admin only until microversion 2.82).
 
-``--config-drive <config_drive>``
-  Display servers based on their config_drive value
-  The value must be a boolean. (Admin only until
-  microversion 2.82).
+``--config-drive``
+  Display servers that have a config drive attached.
+  (Admin only until microversion 2.82).
+
+``--no-config-drive``
+  Display servers that do not have a config drive attached.
+  (Admin only until microversion 2.82).
 
 ``--progress <progress>``
   Display servers based on their progress value

@@ -6,6 +6,7 @@
 
       * --availability-zone
       * --config-drive
+      * --no-config-drive
       * --key-name
       * --power-state
       * --task-state

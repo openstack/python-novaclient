@@ -1846,18 +1846,17 @@ class ShellTest(utils.TestCase):
         self.run_command('list --key-name my_key')
         self.assert_called('GET', '/servers/detail?key_name=my_key')
 
-    def test_list_with_config_drive_passing_through_any_value(self):
-        self.run_command('list --config-drive True')
+    def test_list_with_config_drive(self):
+        self.run_command('list --config-drive')
         self.assert_called('GET', '/servers/detail?config_drive=True')
-        self.run_command('list --config-drive some-random-string')
-        self.assert_called(
-            'GET', '/servers/detail?config_drive=some-random-string')
-        # This form is special for the test env to pass through an empty string
-        # as a parameter. The real CLI call would look like
-        # list --config drive ''
-        self.run_command(['list', '--config-drive', ''])
-        self.assert_called(
-            'GET', '/servers/detail?config_drive=')
+
+    def test_list_with_no_config_drive(self):
+        self.run_command('list --no-config-drive')
+        self.assert_called('GET', '/servers/detail?config_drive=False')
+
+    def test_list_with_conflicting_config_drive(self):
+        self.assertRaises(SystemExit, self.run_command,
+                          'list --config-drive --no-config-drive')
 
     def test_list_with_progress(self):
         self.run_command('list --progress 100')

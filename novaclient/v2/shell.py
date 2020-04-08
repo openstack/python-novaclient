@@ -1544,16 +1544,21 @@ def _print_flavor(flavor):
     default=None,
     help=_('Display servers based on their keypair name (Admin only until '
            'microversion 2.82).'))
-# NOTE(gibi): we can make this a real boolean filter after bug 1871409 is fixed
-# and the REST API is cleaned up regarding the values of config_drive. Unit
-# that we simply pass through any string from the user to the REST API.
 @utils.arg(
     '--config-drive',
-    dest='config_drive',
-    metavar='<config_drive>',
+    action='store_true',
+    group='config_drive',
     default=None,
-    help=_('Display servers based on their config_drive value (Admin only '
-           'until microversion 2.82). The value must be a boolean value.'))
+    help=_('Display servers that have a config drive attached. (Admin only '
+           'until microversion 2.82).'))
+# NOTE(gibi): this won't actually do anything until bug 1871409 is fixed
+# and the REST API is cleaned up regarding the values of config_drive
+@utils.arg(
+    '--no-config-drive',
+    action='store_false',
+    group='config_drive',
+    help=_('Display servers that do not have a config drive attached (Admin '
+           'only until microversion 2.82)'))
 @utils.arg(
     '--progress',
     dest='progress',
