@@ -3966,11 +3966,13 @@ new volume.
 
 ``--delete-on-termination``
   Specify that the volume should be deleted when the server is destroyed.
+  It is mutually exclusive with '--no-delete-on-termination'.
   (Supported by API versions '2.85' - '2.latest')
 
 ``--no-delete-on-termination``
   Specify that the attached volume should not be deleted when
-  the server is destroyed. (Supported by API versions '2.85' - '2.latest')
+  the server is destroyed. It is mutually exclusive with '--delete-on-termination'.
+  (Supported by API versions '2.85' - '2.latest')
 
 .. _nova_bash-completion:
 

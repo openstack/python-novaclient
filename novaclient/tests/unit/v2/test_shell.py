@@ -4006,6 +4006,18 @@ class ShellTest(utils.TestCase):
         self.assert_called('PUT', '/servers/1234/os-volume_attachments/Work',
                            {'volumeAttachment': {'volumeId': 'Work'}})
 
+    def test_volume_update_delete_on_termination_pre_v285(self):
+        self.assertRaises(
+            SystemExit, self.run_command,
+            'volume-update sample-server --delete-on-termination Work Work',
+            api_version='2.84')
+
+    def test_volume_update_no_delete_on_termination_pre_v285(self):
+        self.assertRaises(
+            SystemExit, self.run_command,
+            'volume-update sample-server --no-delete-on-termination Work Work',
+            api_version='2.84')
+
     def test_volume_update_v285(self):
         self.run_command('volume-update sample-server --delete-on-termination '
                          'Work Work', api_version='2.85')
