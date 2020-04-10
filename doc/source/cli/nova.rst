@@ -2320,10 +2320,12 @@ present in the failure domain.
 
 ``--config-drive``
   Display servers that have a config drive attached.
+  It is mutually exclusive with '--no-config-drive'.
   (Admin only until microversion 2.82).
 
 ``--no-config-drive``
   Display servers that do not have a config drive attached.
+  It is mutually exclusive with '--config-drive'.
   (Admin only until microversion 2.82).
 
 ``--progress <progress>``
