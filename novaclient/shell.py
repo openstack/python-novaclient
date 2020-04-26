@@ -18,7 +18,6 @@
 Command-line interface to the OpenStack Nova API.
 """
 
-from __future__ import print_function
 import argparse
 import logging
 import sys
