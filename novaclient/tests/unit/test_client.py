@@ -14,9 +14,9 @@
 #    under the License.
 
 import copy
+from unittest import mock
 
 from keystoneauth1 import session
-import mock
 from oslo_utils import uuidutils
 
 import novaclient.api_versions

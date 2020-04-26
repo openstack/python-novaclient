@@ -17,9 +17,9 @@
 import copy
 import datetime
 import re
+from unittest import mock
 from urllib import parse
 
-import mock
 from oslo_utils import strutils
 
 import novaclient

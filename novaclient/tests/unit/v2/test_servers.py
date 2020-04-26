@@ -16,8 +16,7 @@ import base64
 import io
 import os
 import tempfile
-
-import mock
+from unittest import mock
 
 from novaclient import api_versions
 from novaclient import exceptions

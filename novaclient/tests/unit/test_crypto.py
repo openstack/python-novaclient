@@ -14,8 +14,7 @@
 
 import base64
 import subprocess
-
-import mock
+from unittest import mock
 
 from novaclient import crypto
 from novaclient.tests.unit import utils
