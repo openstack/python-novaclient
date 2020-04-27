@@ -13,9 +13,8 @@
 
 import io
 import sys
+from unittest import mock
 from urllib import parse
-
-import mock
 
 from novaclient import base
 from novaclient import exceptions

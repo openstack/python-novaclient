@@ -16,11 +16,11 @@ import distutils.version as dist_version
 import io
 import re
 import sys
+from unittest import mock
 
 import ddt
 import fixtures
 from keystoneauth1 import fixture
-import mock
 import prettytable
 import requests_mock
 from testtools import matchers

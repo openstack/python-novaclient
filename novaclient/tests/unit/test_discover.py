@@ -15,8 +15,8 @@
 
 import imp
 import inspect
+from unittest import mock
 
-import mock
 import pkg_resources
 
 from novaclient import client
