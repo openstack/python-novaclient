@@ -206,6 +206,8 @@ class ClientTestBase(testtools.TestCase):
             self.insecure = cloud_config.config['insecure']
         else:
             self.insecure = False
+        self.cacert = cloud_config.config['cacert']
+        self.cert = cloud_config.config['cert']
 
         auth = identity.Password(username=user,
                                  password=passwd,
@@ -213,7 +215,11 @@ class ClientTestBase(testtools.TestCase):
                                  auth_url=auth_url,
                                  project_domain_id=self.project_domain_id,
                                  user_domain_id=user_domain_id)
-        session = ksession.Session(auth=auth, verify=(not self.insecure))
+        session = ksession.Session(
+            cert=self.cert,
+            auth=auth,
+            verify=(self.cacert or not self.insecure)
+        )
 
         self.client = self._get_novaclient(session)
 

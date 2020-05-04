@@ -1,0 +1,6 @@
+- hosts: all
+  vars:
+    tox_envlist: functional
+  roles:
+    - fetch-tox-output
+    - fetch-subunit-output

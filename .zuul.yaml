@@ -1,14 +1,15 @@
 - job:
-    # TODO(efried): Cut over to zuulv3
-    name: novaclient-dsvm-functional
-    parent: legacy-dsvm-base
-    run: playbooks/legacy/novaclient-dsvm-functional/run.yaml
-    post-run: playbooks/legacy/novaclient-dsvm-functional/post.yaml
+    name: python-novaclient-functional
+    parent: devstack
+    run: playbooks/python-novaclient-functional.yaml
+    post-run: playbooks/post.yaml
     timeout: 7200
     required-projects:
-      - openstack/devstack-gate
       - openstack/nova
       - openstack/python-novaclient
+    vars:
+      devstack_localrc:
+        USE_PYTHON3: true
     irrelevant-files:
       - ^.*\.rst$
       - ^doc/.*$
@@ -25,7 +26,7 @@
       - release-notes-jobs-python3
     check:
       jobs:
-        - novaclient-dsvm-functional
+        - python-novaclient-functional
     gate:
       jobs:
-        - novaclient-dsvm-functional
+        - python-novaclient-functional

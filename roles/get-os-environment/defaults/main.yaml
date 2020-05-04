@@ -1,0 +1,2 @@
+---
+openrc_file: "{{ devstack_base_dir|default('/opt/stack') }}/devstack/openrc"
