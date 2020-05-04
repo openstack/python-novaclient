@@ -10,6 +10,7 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+import os
 from urllib import parse
 
 import tempest.lib.cli.base
@@ -28,14 +29,19 @@ class TestAuthentication(base.ClientTestBase):
                                  url.fragment))
 
     def nova_auth_with_password(self, action, identity_api_version):
-        flags = ('--os-username %s --os-tenant-name %s --os-password %s '
-                 '--os-auth-url %s --os-endpoint-type publicURL' % (
-                     self.cli_clients.username,
-                     self.cli_clients.tenant_name,
-                     self.cli_clients.password,
-                     self._get_url(identity_api_version)))
+        flags = (
+            f'--os-username {self.cli_clients.username} '
+            f'--os-tenant-name {self.cli_clients.tenant_name} '
+            f'--os-password {self.cli_clients.password} '
+            f'--os-auth-url {self._get_url(identity_api_version)} '
+            f'--os-endpoint-type publicURL'
+        )
+        if self.cacert:
+            flags = f'{flags} --os-cacert {self.cacert}'
+        if self.cert:
+            flags = f'{flags} --os-cert {self.cert}'
         if self.cli_clients.insecure:
-            flags += ' --insecure '
+            flags = f'{flags} --insecure'
 
         return tempest.lib.cli.base.execute(
             "nova", action, flags, cli_dir=self.cli_clients.cli_dir)
@@ -49,15 +55,37 @@ class TestAuthentication(base.ClientTestBase):
         if identity_api_version == "3":
             kw["project_domain_id"] = self.project_domain_id
         nova = client.Client("2", auth_token=token, auth_url=auth_url,
-                             project_name=self.project_name, **kw)
+                             project_name=self.project_name,
+                             cacert=self.cacert, cert=self.cert,
+                             **kw)
         nova.servers.list()
 
-        flags = ('--os-tenant-name %(project_name)s --os-token %(token)s '
-                 '--os-auth-url %(auth_url)s --os-endpoint-type publicURL'
-                 % {"project_name": self.project_name,
-                    "token": token, "auth_url": auth_url})
+        # NOTE(andreykurilin): tempest.lib.cli.base.execute doesn't allow to
+        #   pass 'env' argument to subprocess.Popen for overriding the current
+        #   process' environment.
+        #   When one of OS_AUTH_TYPE or OS_AUTH_PLUGIN environment variables
+        #   presents, keystoneauth1 can load the wrong auth plugin with wrong
+        #   expected cli arguments. To avoid this case, we need to modify
+        #   current environment.
+        # TODO(andreykurilin): tempest.lib.cli.base.execute is quite simple
+        #   method that can be replaced by subprocess.check_output direct call
+        #   with passing env argument to avoid modifying the current process
+        #   environment. or we probably can propose a change to tempest.
+        os.environ.pop("OS_AUTH_TYPE", None)
+        os.environ.pop("OS_AUTH_PLUGIN", None)
+
+        flags = (
+            f'--os-tenant-name {self.project_name} '
+            f'--os-token {token} '
+            f'--os-auth-url {auth_url} '
+            f'--os-endpoint-type publicURL'
+        )
+        if self.cacert:
+            flags = f'{flags} --os-cacert {self.cacert}'
+        if self.cert:
+            flags = f'{flags} --os-cert {self.cert}'
         if self.cli_clients.insecure:
-            flags += ' --insecure '
+            flags = f'{flags} --insecure'
 
         tempest.lib.cli.base.execute(
             "nova", "list", flags, cli_dir=self.cli_clients.cli_dir)
