@@ -36,10 +36,6 @@ autoclass_content = 'both'
 # The master toctree document.
 master_doc = 'index'
 
-# openstackdocstheme options
-repository_name = 'openstack/python-novaclient'
-bug_project = 'python-novaclient'
-bug_tag = 'doc'
 copyright = 'OpenStack Contributors'
 
 
@@ -70,10 +66,10 @@ latex_elements = {
 
 # -- Options for openstackdocstheme -------------------------------------------
 
-repository_name = 'openstack/python-novaclient'
-bug_project = 'python-novaclient'
-bug_tag = ''
-openstack_projects = [
+openstackdocs_repo_name = 'openstack/python-novaclient'
+openstackdocs_bug_project = 'python-novaclient'
+openstackdocs_bug_tag = ''
+openstackdocs_projects = [
     'keystoneauth',
     'nova',
     'os-client-config',
