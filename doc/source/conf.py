@@ -69,6 +69,7 @@ latex_elements = {
 openstackdocs_repo_name = 'openstack/python-novaclient'
 openstackdocs_bug_project = 'python-novaclient'
 openstackdocs_bug_tag = ''
+openstackdocs_pdf_link = True
 openstackdocs_projects = [
     'keystoneauth',
     'nova',
