@@ -28,7 +28,7 @@ from keystoneauth1 import adapter
 from keystoneauth1 import identity
 from keystoneauth1 import session as ksession
 from oslo_utils import importutils
-import pkg_resources
+import stevedore
 
 import novaclient
 from novaclient import api_versions
@@ -176,12 +176,15 @@ def _discover_via_python_path():
             yield name, module
 
 
-def _discover_via_entry_points():
-    for ep in pkg_resources.iter_entry_points('novaclient.extension'):
-        name = ep.name
-        module = ep.load()
+def _make_discovery_manager():
+    # This function provides a place to mock out the entry point scan
+    return stevedore.ExtensionManager('novaclient.extension')
 
-        yield name, module
+
+def _discover_via_entry_points():
+    mgr = _make_discovery_manager()
+    for extension in mgr:
+        yield extension.name, extension.plugin
 
 
 def _get_client_class_and_version(version):
