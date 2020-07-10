@@ -4,7 +4,7 @@ asn1crypto==0.23.0
 Babel==2.3.4
 bandit==1.4.0
 cachetools==2.0.0
-cffi==1.7.0
+cffi==1.14.0
 cliff==2.8.0
 cmd2==0.8.0
 contextlib2==0.4.0
@@ -24,7 +24,7 @@ future==0.16.0
 futurist==1.2.0
 gitdb==0.6.4
 GitPython==1.0.1
-greenlet==0.4.10
+greenlet==0.4.15
 hacking==1.1.0
 idna==2.6
 iso8601==0.1.11
@@ -36,7 +36,7 @@ jsonschema==2.6.0
 keystoneauth1==3.5.0
 kombu==4.0.0
 linecache2==1.0.0
-MarkupSafe==1.0
+MarkupSafe==1.1.1
 mccabe==0.2.1
 monotonic==0.6
 msgpack-python==0.4.0
@@ -82,7 +82,7 @@ python-mimeparse==1.6.0
 python-neutronclient==6.7.0
 python-subunit==1.0.0
 pytz==2013.6
-PyYAML==3.12
+PyYAML==3.13
 repoze.lru==0.7
 requests==2.14.2
 requests-mock==1.2.0
