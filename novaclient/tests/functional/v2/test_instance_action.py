@@ -136,6 +136,8 @@ class TestInstanceActionCLIV262(TestInstanceActionCLIV258,
         server = self.another_nova('boot --flavor %s --image %s --poll %s' %
                                    (self.flavor.name, self.image.name, name))
         server_id = self._get_value_from_the_table(server, 'id')
+        self.addCleanup(self.client.servers.delete, server_id)
+
         output = self.nova("instance-action-list %s" % server_id)
         request_id = self._get_column_value_from_single_row_table(
             output, "Request_ID")
