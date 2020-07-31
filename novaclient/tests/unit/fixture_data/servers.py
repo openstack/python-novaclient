@@ -271,28 +271,6 @@ class Base(base.Fixture):
                                status_code=204,
                                headers=self.json_headers)
 
-        def post_os_volumes_boot(request, context):
-            body = request.json()
-            assert (set(body.keys()) <=
-                    set(['server', 'os:scheduler_hints']))
-
-            fakes.assert_has_keys(body['server'],
-                                  required=['name', 'flavorRef'],
-                                  optional=['imageRef'])
-
-            data = body['server']
-
-            # Require one, and only one, of the keys for bdm
-            if 'block_device_mapping' not in data:
-                if 'block_device_mapping_v2' not in data:
-                    msg = "missing required keys: 'block_device_mapping'"
-                    raise AssertionError(msg)
-            elif 'block_device_mapping_v2' in data:
-                msg = "found extra keys: 'block_device_mapping'"
-                raise AssertionError(msg)
-
-            return {'server': self.server_9012}
-
         #
         # Server password
         #
