@@ -1,13 +1,12 @@
 - job:
     name: python-novaclient-functional
-    parent: devstack
-    run: playbooks/python-novaclient-functional.yaml
-    post-run: playbooks/post.yaml
+    parent: devstack-tox-functional
     timeout: 7200
     required-projects:
       - openstack/nova
       - openstack/python-novaclient
     vars:
+      openrc_enable_export: true
       devstack_localrc:
         USE_PYTHON3: true
     irrelevant-files:
