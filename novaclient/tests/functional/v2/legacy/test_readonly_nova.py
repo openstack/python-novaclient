@@ -86,8 +86,16 @@ class SimpleReadOnlyNovaClientTest(base.ClientTestBase):
         self.nova('help')
 
     def test_agent_list(self):
-        self.nova('agent-list')
-        self.nova('agent-list', flags='--debug')
+        ex = self.assertRaises(exceptions.CommandFailed,
+                               self.nova, 'agent-list')
+        self.assertIn(
+            "This resource is no longer available. "
+            "No forwarding address is given. (HTTP 410)", str(ex))
+        ex = self.assertRaises(exceptions.CommandFailed,
+                               self.nova, 'agent-list', flags='--debug')
+        self.assertIn(
+            "This resource is no longer available. "
+            "No forwarding address is given. (HTTP 410)", str(ex))
 
     def test_migration_list(self):
         self.nova('migration-list')
