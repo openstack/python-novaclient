@@ -55,6 +55,14 @@ def emit_duplicated_image_with_warning(img, image_with):
           file=sys.stderr)
 
 
+# TODO(takashin): Remove this along with the deprecated commands in the first
+# major python-novaclient release AFTER the nova server 24.0.0 X release.
+def _emit_agent_deprecation_warning():
+    print('This command has been deprecated since 23.0.0 Wallaby Release '
+          'and will be removed in the first major release '
+          'after the Nova server 24.0.0 X release.', file=sys.stderr)
+
+
 CLIENT_BDM2_KEYS = {
     'id': 'uuid',
     'source': 'source_type',
@@ -3411,7 +3419,8 @@ def do_usage(cs, args):
     default=None,
     help=_('Type of hypervisor.'))
 def do_agent_list(cs, args):
-    """List all builds."""
+    """DEPRECATED List all builds."""
+    _emit_agent_deprecation_warning()
     result = cs.agents.list(args.hypervisor)
     columns = ["Agent_id", "Hypervisor", "OS", "Architecture", "Version",
                'Md5hash', 'Url']
@@ -3432,7 +3441,8 @@ def do_agent_list(cs, args):
     default='xen',
     help=_('Type of hypervisor.'))
 def do_agent_create(cs, args):
-    """Create new agent build."""
+    """DEPRECATED Create new agent build."""
+    _emit_agent_deprecation_warning()
     result = cs.agents.create(args.os, args.architecture,
                               args.version, args.url,
                               args.md5hash, args.hypervisor)
@@ -3441,7 +3451,8 @@ def do_agent_create(cs, args):
 
 @utils.arg('id', metavar='<id>', help=_('ID of the agent-build.'))
 def do_agent_delete(cs, args):
-    """Delete existing agent build."""
+    """DEPRECATED Delete existing agent build."""
+    _emit_agent_deprecation_warning()
     cs.agents.delete(args.id)
 
 
@@ -3450,7 +3461,8 @@ def do_agent_delete(cs, args):
 @utils.arg('url', metavar='<url>', help=_('URL'))
 @utils.arg('md5hash', metavar='<md5hash>', help=_('MD5 hash.'))
 def do_agent_modify(cs, args):
-    """Modify existing agent build."""
+    """DEPRECATED Modify existing agent build."""
+    _emit_agent_deprecation_warning()
     result = cs.agents.update(args.id, args.version,
                               args.url, args.md5hash)
     utils.print_dict(result.to_dict())

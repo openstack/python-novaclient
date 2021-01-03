@@ -118,14 +118,18 @@ class ShellTest(utils.TestCase):
         return self.shell.cs.assert_not_called(method, url, body)
 
     def test_agents_list_with_hypervisor(self):
-        self.run_command('agent-list --hypervisor xen')
+        _, err = self.run_command('agent-list --hypervisor xen')
         self.assert_called('GET', '/os-agents?hypervisor=xen')
+        self.assertIn(
+            'This command has been deprecated since 23.0.0 Wallaby Release '
+            'and will be removed in the first major release '
+            'after the Nova server 24.0.0 X release.', err)
 
     def test_agents_create(self):
-        self.run_command('agent-create win x86 7.0 '
-                         '/xxx/xxx/xxx '
-                         'add6bb58e139be103324d04d82d8f546 '
-                         'kvm')
+        _, err = self.run_command('agent-create win x86 7.0 '
+                                  '/xxx/xxx/xxx '
+                                  'add6bb58e139be103324d04d82d8f546 '
+                                  'kvm')
         self.assert_called(
             'POST', '/os-agents',
             {'agent': {
@@ -135,19 +139,31 @@ class ShellTest(utils.TestCase):
                 'version': '7.0',
                 'url': '/xxx/xxx/xxx',
                 'md5hash': 'add6bb58e139be103324d04d82d8f546'}})
+        self.assertIn(
+            'This command has been deprecated since 23.0.0 Wallaby Release '
+            'and will be removed in the first major release '
+            'after the Nova server 24.0.0 X release.', err)
 
     def test_agents_delete(self):
-        self.run_command('agent-delete 1')
+        _, err = self.run_command('agent-delete 1')
         self.assert_called('DELETE', '/os-agents/1')
+        self.assertIn(
+            'This command has been deprecated since 23.0.0 Wallaby Release '
+            'and will be removed in the first major release '
+            'after the Nova server 24.0.0 X release.', err)
 
     def test_agents_modify(self):
-        self.run_command('agent-modify 1 8.0 /yyy/yyyy/yyyy '
-                         'add6bb58e139be103324d04d82d8f546')
+        _, err = self.run_command('agent-modify 1 8.0 /yyy/yyyy/yyyy '
+                                  'add6bb58e139be103324d04d82d8f546')
         self.assert_called('PUT', '/os-agents/1',
                            {"para": {
                                "url": "/yyy/yyyy/yyyy",
                                "version": "8.0",
                                "md5hash": "add6bb58e139be103324d04d82d8f546"}})
+        self.assertIn(
+            'This command has been deprecated since 23.0.0 Wallaby Release '
+            'and will be removed in the first major release '
+            'after the Nova server 24.0.0 X release.', err)
 
     def test_boot(self):
         self.run_command('boot --flavor 1 --image %s '

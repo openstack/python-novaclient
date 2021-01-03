@@ -1,0 +1,12 @@
+---
+deprecations:
+  - |
+    The following CLIs are deprecated.
+
+    - ``nova agent-create``
+    - ``nova agent-delete``
+    - ``nova agent-list``
+    - ``nova agent-modify``
+
+    The CLIs will be removed in the first major release after Nova 24.0.0 X
+    is released.
