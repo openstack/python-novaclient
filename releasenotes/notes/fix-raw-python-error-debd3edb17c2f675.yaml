@@ -1,0 +1,7 @@
+---
+fixes:
+  - |
+    `Bug #1903727 <https://bugs.launchpad.net/python-novaclient/+bug/1903727>`_:
+    Fixed raw Python error message when using ``nova`` without
+    a subcommand while passing an optional argument, such as
+    ``--os-compute-api-version 2.87``.

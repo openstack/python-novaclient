@@ -451,6 +451,9 @@ class ShellTest(utils.TestCase):
     def test_help_no_options(self):
         self._test_help('')
 
+    def test_help_no_subcommand(self):
+        self._test_help('--os-compute-api-version 2.87')
+
     def test_help_on_subcommand(self):
         required = [
             '.*?^usage: nova set-password',

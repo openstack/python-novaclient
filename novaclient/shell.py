@@ -365,6 +365,9 @@ class OpenStackComputeShell(object):
             help=_("Use this API endpoint instead of the Service Catalog. "
                    "Defaults to env[OS_ENDPOINT_OVERRIDE]."))
 
+        parser.set_defaults(func=self.do_help)
+        parser.set_defaults(command='')
+
         if osprofiler_profiler:
             parser.add_argument('--profile',
                                 metavar='HMAC_KEY',
