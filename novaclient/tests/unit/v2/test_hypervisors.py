@@ -63,7 +63,9 @@ class HypervisorsTest(utils.FixturedTestCase):
                  current_workload=2,
                  running_vms=2,
                  cpu_info='cpu_info',
-                 disk_available_least=100),
+                 disk_available_least=100,
+                 state='up',
+                 status='enabled'),
             dict(id=self.data_fixture.hyper_id_2,
                  service=dict(id=self.data_fixture.service_id_2,
                               host="compute2"),
@@ -81,7 +83,24 @@ class HypervisorsTest(utils.FixturedTestCase):
                  current_workload=2,
                  running_vms=2,
                  cpu_info='cpu_info',
-                 disk_available_least=100)]
+                 disk_available_least=100,
+                 state='up',
+                 status='enabled')]
+
+        if self.cs.api_version >= api_versions.APIVersion('2.88'):
+            for hypervisor in expected:
+                del hypervisor['current_workload']
+                del hypervisor['disk_available_least']
+                del hypervisor['free_ram_mb']
+                del hypervisor['free_disk_gb']
+                del hypervisor['local_gb']
+                del hypervisor['local_gb_used']
+                del hypervisor['memory_mb']
+                del hypervisor['memory_mb_used']
+                del hypervisor['running_vms']
+                del hypervisor['vcpus']
+                del hypervisor['vcpus_used']
+                hypervisor['uptime'] = 'fake uptime'
 
         result = self.cs.hypervisors.list()
         self.assert_request_id(result, fakes.FAKE_REQUEST_ID_LIST)
@@ -93,9 +112,13 @@ class HypervisorsTest(utils.FixturedTestCase):
     def test_hypervisor_search(self):
         expected = [
             dict(id=self.data_fixture.hyper_id_1,
-                 hypervisor_hostname='hyper1'),
+                 hypervisor_hostname='hyper1',
+                 state='up',
+                 status='enabled'),
             dict(id=self.data_fixture.hyper_id_2,
-                 hypervisor_hostname='hyper2')]
+                 hypervisor_hostname='hyper2',
+                 state='up',
+                 status='enabled')]
 
         result = self.cs.hypervisors.search('hyper')
         self.assert_request_id(result, fakes.FAKE_REQUEST_ID_LIST)
@@ -131,11 +154,15 @@ class HypervisorsTest(utils.FixturedTestCase):
         expected = [
             dict(id=self.data_fixture.hyper_id_1,
                  hypervisor_hostname='hyper1',
+                 state='up',
+                 status='enabled',
                  servers=[
                      dict(name='inst1', uuid='uuid1'),
                      dict(name='inst2', uuid='uuid2')]),
             dict(id=self.data_fixture.hyper_id_2,
                  hypervisor_hostname='hyper2',
+                 state='up',
+                 status='enabled',
                  servers=[
                      dict(name='inst3', uuid='uuid3'),
                      dict(name='inst4', uuid='uuid4')]),
@@ -171,7 +198,23 @@ class HypervisorsTest(utils.FixturedTestCase):
             current_workload=2,
             running_vms=2,
             cpu_info='cpu_info',
-            disk_available_least=100)
+            disk_available_least=100,
+            state='up',
+            status='enabled')
+
+        if self.cs.api_version >= api_versions.APIVersion('2.88'):
+            del expected['current_workload']
+            del expected['disk_available_least']
+            del expected['free_ram_mb']
+            del expected['free_disk_gb']
+            del expected['local_gb']
+            del expected['local_gb_used']
+            del expected['memory_mb']
+            del expected['memory_mb_used']
+            del expected['running_vms']
+            del expected['vcpus']
+            del expected['vcpus_used']
+            expected['uptime'] = 'fake uptime'
 
         result = self.cs.hypervisors.get(self.data_fixture.hyper_id_1)
         self.assert_request_id(result, fakes.FAKE_REQUEST_ID_LIST)
@@ -184,7 +227,9 @@ class HypervisorsTest(utils.FixturedTestCase):
         expected = dict(
             id=self.data_fixture.hyper_id_1,
             hypervisor_hostname="hyper1",
-            uptime="fake uptime")
+            uptime="fake uptime",
+            state='up',
+            status='enabled')
 
         result = self.cs.hypervisors.uptime(self.data_fixture.hyper_id_1)
         self.assert_request_id(result, fakes.FAKE_REQUEST_ID_LIST)
@@ -215,11 +260,6 @@ class HypervisorsTest(utils.FixturedTestCase):
 
         self.compare_to_expected(expected, result)
 
-    def test_hypervisor_statistics_data_model(self):
-        result = self.cs.hypervisor_stats.statistics()
-        self.assert_request_id(result, fakes.FAKE_REQUEST_ID_LIST)
-        self.assert_called('GET', '/os-hypervisors/statistics')
-
         # Test for Bug #1370415, the line below used to raise AttributeError
         self.assertEqual("<HypervisorStats: 2 Hypervisors>",
                          result.__repr__())
@@ -237,19 +277,23 @@ class HypervisorsV233Test(HypervisorsTest):
             self.assertEqual([v], self.requests_mock.last_request.qs[k])
 
 
-class HypervisorsV2_53Test(HypervisorsV233Test):
+class HypervisorsV253Test(HypervisorsV233Test):
     """Tests the os-hypervisors 2.53 API bindings."""
-    data_fixture_class = data.V2_53
+    data_fixture_class = data.V253
 
     def setUp(self):
-        super(HypervisorsV2_53Test, self).setUp()
+        super(HypervisorsV253Test, self).setUp()
         self.cs.api_version = api_versions.APIVersion("2.53")
 
     def test_hypervisor_search_detailed(self):
         expected = [
             dict(id=self.data_fixture.hyper_id_1,
+                 state='up',
+                 status='enabled',
                  hypervisor_hostname='hyper1'),
             dict(id=self.data_fixture.hyper_id_2,
+                 state='up',
+                 status='enabled',
                  hypervisor_hostname='hyper2')]
         result = self.cs.hypervisors.search('hyper', detailed=True)
         self.assert_request_id(result, fakes.FAKE_REQUEST_ID_LIST)
@@ -257,3 +301,35 @@ class HypervisorsV2_53Test(HypervisorsV233Test):
             'GET', '/os-hypervisors/detail?hypervisor_hostname_pattern=hyper')
         for idx, hyper in enumerate(result):
             self.compare_to_expected(expected[idx], hyper)
+
+
+class HypervisorsV288Test(HypervisorsV253Test):
+    data_fixture_class = data.V288
+
+    def setUp(self):
+        super().setUp()
+        self.cs.api_version = api_versions.APIVersion('2.88')
+
+    def test_hypervisor_uptime(self):
+        expected = {
+            'id': self.data_fixture.hyper_id_1,
+            'hypervisor_hostname': 'hyper1',
+            'uptime': 'fake uptime',
+            'state': 'up',
+            'status': 'enabled',
+        }
+
+        result = self.cs.hypervisors.uptime(self.data_fixture.hyper_id_1)
+        self.assert_request_id(result, fakes.FAKE_REQUEST_ID_LIST)
+        self.assert_called(
+            'GET', '/os-hypervisors/%s' % self.data_fixture.hyper_id_1)
+
+        self.compare_to_expected(expected, result)
+
+    def test_hypervisor_statistics(self):
+        exc = self.assertRaises(
+            exceptions.UnsupportedVersion,
+            self.cs.hypervisor_stats.statistics)
+        self.assertIn(
+            "The 'statistics' API is removed in API version 2.88 or later.",
+            str(exc))

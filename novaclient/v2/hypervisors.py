@@ -123,8 +123,25 @@ class HypervisorManager(base.ManagerWithFind):
         :param hypervisor: Either a Hypervisor object or an ID. Starting with
             microversion 2.53 the ID must be a UUID value.
         """
-        return self._get("/os-hypervisors/%s/uptime" % base.getid(hypervisor),
-                         "hypervisor")
+        # Starting with microversion 2.88, the '/os-hypervisors/{id}/uptime'
+        # route is removed in favour of returning 'uptime' in the response of
+        # the '/os-hypervisors/{id}' route. This behaves slightly differently,
+        # in that it won't error out if a virt driver doesn't support reporting
+        # uptime or if the hypervisor is down, but it's a good enough
+        # approximation
+        if self.api_version < api_versions.APIVersion("2.88"):
+            return self._get(
+                "/os-hypervisors/%s/uptime" % base.getid(hypervisor),
+                "hypervisor")
+
+        resp, body = self.api.client.get(
+            "/os-hypervisors/%s" % base.getid(hypervisor)
+        )
+        content = {
+            k: v for k, v in body['hypervisor'].items()
+            if k in ('id', 'hypervisor_hostname', 'state', 'status', 'uptime')
+        }
+        return self.resource_class(self, content, loaded=True, resp=resp)
 
     def statistics(self):
         """
@@ -145,8 +162,15 @@ class HypervisorStats(base.Resource):
 class HypervisorStatsManager(base.Manager):
     resource_class = HypervisorStats
 
+    @api_versions.wraps("2.0", "2.87")
     def statistics(self):
         """
         Get hypervisor statistics over all compute nodes.
         """
         return self._get("/os-hypervisors/statistics", "hypervisor_statistics")
+
+    @api_versions.wraps("2.88")
+    def statistics(self):
+        raise exceptions.UnsupportedVersion(
+            _("The 'statistics' API is removed in API version 2.88 or later.")
+        )

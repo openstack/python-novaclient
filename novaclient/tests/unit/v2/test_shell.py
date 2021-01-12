@@ -3575,6 +3575,16 @@ class ShellTest(utils.TestCase):
         self.run_command('hypervisor-stats')
         self.assert_called('GET', '/os-hypervisors/statistics')
 
+    def test_hypervisor_stats_v2_88(self):
+        """Tests nova hypervisor-stats at the 2.88 microversion."""
+        ex = self.assertRaises(
+            exceptions.CommandError, self.run_command,
+            'hypervisor-stats', api_version='2.88')
+        self.assertIn(
+            'The hypervisor-stats command is not supported in API version '
+            '2.88 or later.',
+            str(ex))
+
     def test_quota_show(self):
         self.run_command(
             'quota-show --tenant '

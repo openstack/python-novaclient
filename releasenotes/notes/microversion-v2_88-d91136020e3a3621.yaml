@@ -1,0 +1,16 @@
+---
+features:
+  - |
+    Added support for `microversion 2.88`_. The
+    ``novaclient.v2.hypervisors.HypervisorManager.uptime`` method will now
+    transparently switch between the ``/os-hypervisors/{id}/uptime`` API,
+    which is deprecated in 2.88, and the ``/os-hypervisors/{id}`` API, which
+    now includes uptime information, based on the microversion.
+
+    .. _microversion 2.88: https://docs.openstack.org/nova/latest/reference/api-microversion-history.html#id80
+deprecations:
+  - |
+    The ``nova hypervisor-stats`` command and underlying
+    ``novaclient.v2.hypervisors.HypervisorStatsManager.statistics`` API are
+    deprecated starting in microversion 2.88 and will return an error starting
+    on this version.

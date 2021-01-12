@@ -4049,10 +4049,20 @@ def do_hypervisor_uptime(cs, args):
     utils.print_dict(hyper.to_dict())
 
 
+@api_versions.wraps('2.0', '2.87')
 def do_hypervisor_stats(cs, args):
     """Get hypervisor statistics over all compute nodes."""
     stats = cs.hypervisor_stats.statistics()
     utils.print_dict(stats.to_dict())
+
+
+@api_versions.wraps('2.88')
+def do_hypervisor_stats(cs, args):
+    msg = _(
+        "The hypervisor-stats command is not supported in API version 2.88 "
+        "or later."
+    )
+    raise exceptions.CommandError(msg)
 
 
 @utils.arg('server', metavar='<server>', help=_('Name or ID of server.'))
