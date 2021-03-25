@@ -192,7 +192,7 @@ class Client(object):
             endpoint_type=endpoint_type,
             http_log_debug=http_log_debug,
             insecure=insecure,
-            logger=logger,
+            logger=self.logger,
             os_cache=self.os_cache,
             password=password,
             project_domain_id=project_domain_id,
