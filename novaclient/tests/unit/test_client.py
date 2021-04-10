@@ -124,3 +124,15 @@ class ClientsUtilsTest(utils.TestCase):
         self.assertNotEqual(original_kwargs, actual_kwargs)
         self.assertEqual({}, actual_kwargs)
         self.assertTrue(mock_warnings.warn.called)
+
+
+class ClientTest(utils.TestCase):
+
+    def test_logger(self):
+        client = novaclient.client.Client('2.1', logger=mock.sentinel.logger)
+        self.assertEqual(mock.sentinel.logger, client.logger)
+        self.assertEqual(mock.sentinel.logger, client.client.logger)
+        client = novaclient.client.Client('2.1')
+        self.assertEqual('novaclient.v2.client', client.logger.name)
+        self.assertIsNotNone(client.client.logger)
+        self.assertEqual('novaclient.v2.client', client.client.logger.name)
