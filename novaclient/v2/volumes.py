@@ -39,6 +39,20 @@ class VolumeManager(base.Manager):
     """
     resource_class = Volume
 
+    @staticmethod
+    def _get_request_body_for_create(volume_id, device=None, tag=None,
+                                     delete_on_termination=False):
+        body = {'volumeAttachment': {'volumeId': volume_id}}
+        if device is not None:
+            body['volumeAttachment']['device'] = device
+        if tag is not None:
+            body['volumeAttachment']['tag'] = tag
+        if delete_on_termination:
+            body['volumeAttachment']['delete_on_termination'] = (
+                delete_on_termination)
+
+        return body
+
     @api_versions.wraps("2.0", "2.48")
     def create_server_volume(self, server_id, volume_id, device=None):
         """
@@ -49,11 +63,10 @@ class VolumeManager(base.Manager):
         :param device: The device name (optional)
         :rtype: :class:`Volume`
         """
-        body = {'volumeAttachment': {'volumeId': volume_id}}
-        if device is not None:
-            body['volumeAttachment']['device'] = device
-        return self._create("/servers/%s/os-volume_attachments" % server_id,
-                            body, "volumeAttachment")
+        return self._create(
+            "/servers/%s/os-volume_attachments" % server_id,
+            VolumeManager._get_request_body_for_create(volume_id, device),
+            "volumeAttachment")
 
     @api_versions.wraps("2.49", "2.78")
     def create_server_volume(self, server_id, volume_id, device=None,
@@ -67,13 +80,10 @@ class VolumeManager(base.Manager):
         :param tag: The tag (optional)
         :rtype: :class:`Volume`
         """
-        body = {'volumeAttachment': {'volumeId': volume_id}}
-        if device is not None:
-            body['volumeAttachment']['device'] = device
-        if tag is not None:
-            body['volumeAttachment']['tag'] = tag
-        return self._create("/servers/%s/os-volume_attachments" % server_id,
-                            body, "volumeAttachment")
+        return self._create(
+            "/servers/%s/os-volume_attachments" % server_id,
+            VolumeManager._get_request_body_for_create(volume_id, device, tag),
+            "volumeAttachment")
 
     @api_versions.wraps("2.79")
     def create_server_volume(self, server_id, volume_id, device=None,
@@ -90,18 +100,11 @@ class VolumeManager(base.Manager):
                                       (optional).
         :rtype: :class:`Volume`
         """
-        # TODO(mriedem): Move this body construction into a private common
-        # helper method for all versions of create_server_volume to use.
-        body = {'volumeAttachment': {'volumeId': volume_id}}
-        if device is not None:
-            body['volumeAttachment']['device'] = device
-        if tag is not None:
-            body['volumeAttachment']['tag'] = tag
-        if delete_on_termination:
-            body['volumeAttachment']['delete_on_termination'] = (
-                delete_on_termination)
-        return self._create("/servers/%s/os-volume_attachments" % server_id,
-                            body, "volumeAttachment")
+        return self._create(
+            "/servers/%s/os-volume_attachments" % server_id,
+            VolumeManager._get_request_body_for_create(volume_id, device, tag,
+                                                       delete_on_termination),
+            "volumeAttachment")
 
     @api_versions.wraps("2.0", "2.84")
     def update_server_volume(self, server_id, src_volid, dest_volid):
