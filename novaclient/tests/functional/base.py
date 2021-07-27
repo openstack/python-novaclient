@@ -13,7 +13,7 @@
 import os
 import time
 
-from cinderclient.v2 import client as cinderclient
+from cinderclient.v3 import client as cinderclient
 import fixtures
 from glanceclient import client as glanceclient
 from keystoneauth1.exceptions import discovery as discovery_exc
