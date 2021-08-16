@@ -13,7 +13,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import imp
+import importlib
 import inspect
 from unittest import mock
 
@@ -31,7 +31,8 @@ class DiscoverTest(utils.TestCase):
         def mock_mgr():
             fake_ep = mock.Mock()
             fake_ep.name = 'foo'
-            fake_ep.module = imp.new_module('foo')
+            module_spec = importlib.machinery.ModuleSpec('foo', None)
+            fake_ep.module = importlib.util.module_from_spec(module_spec)
             fake_ep.load.return_value = fake_ep.module
             fake_ext = extension.Extension(
                 name='foo',
@@ -52,10 +53,14 @@ class DiscoverTest(utils.TestCase):
     def test_discover_extensions(self):
 
         def mock_discover_via_python_path():
-            yield 'foo', imp.new_module('foo')
+            module_spec = importlib.machinery.ModuleSpec('foo', None)
+            module = importlib.util.module_from_spec(module_spec)
+            yield 'foo', module
 
         def mock_discover_via_entry_points():
-            yield 'baz', imp.new_module('baz')
+            module_spec = importlib.machinery.ModuleSpec('baz', None)
+            module = importlib.util.module_from_spec(module_spec)
+            yield 'baz', module
 
         @mock.patch.object(client,
                            '_discover_via_python_path',
