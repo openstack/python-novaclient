@@ -2800,6 +2800,10 @@ def do_volume_attachments(cs, args):
     _translate_volume_attachments_keys(volumes)
     # Microversion >= 2.70 returns the tag value.
     fields = ['ID', 'DEVICE', 'SERVER ID', 'VOLUME ID']
+    if cs.api_version >= api_versions.APIVersion('2.89'):
+        fields.remove('ID')
+        fields.append('ATTACHMENT ID')
+        fields.append('BDM UUID')
     if cs.api_version >= api_versions.APIVersion('2.70'):
         fields.append('TAG')
     # Microversion >= 2.79 returns the delete_on_termination value.

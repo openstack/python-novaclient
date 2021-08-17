@@ -3994,6 +3994,24 @@ class ShellTest(utils.TestCase):
         self.assert_called('GET', '/servers/1234/os-volume_attachments')
         self.assertIn('DELETE ON TERMINATION', out)
 
+    def test_volume_attachments_pre_v2_89(self):
+        out = self.run_command(
+            'volume-attachments 1234', api_version='2.88')[0]
+        self.assert_called('GET', '/servers/1234/os-volume_attachments')
+        # We can't assert just ID here as it's part of various other fields
+        self.assertIn('| ID', out)
+        self.assertNotIn('ATTACHMENT ID', out)
+        self.assertNotIn('BDM UUID', out)
+
+    def test_volume_attachments_v2_89(self):
+        out = self.run_command(
+            'volume-attachments 1234', api_version='2.89')[0]
+        self.assert_called('GET', '/servers/1234/os-volume_attachments')
+        # We can't assert just ID here as it's part of various other fields
+        self.assertNotIn('| ID', out)
+        self.assertIn('ATTACHMENT ID', out)
+        self.assertIn('BDM UUID', out)
+
     def test_volume_attach_with_delete_on_termination_pre_v2_79(self):
         self.assertRaises(
             SystemExit, self.run_command,
@@ -4577,6 +4595,7 @@ class ShellTest(utils.TestCase):
             84,  # There are no version-wrapped shell method changes for this.
             86,  # doesn't require any changes in novaclient.
             87,  # doesn't require any changes in novaclient.
+            89,  # There are no version-wrapped shell method changes for this.
         ])
         versions_supported = set(range(0,
                                  novaclient.API_MAX_VERSION.ver_minor + 1))

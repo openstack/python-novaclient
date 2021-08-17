@@ -1,0 +1,11 @@
+---
+features:
+  - |
+    Added support for `microversion 2.89`_. This microversion removes the
+    ``id`` field while adding the ``attachment_id`` and ``bdm_uuid`` fields to
+    the responses of ``GET /servers/{server_id}/os-volume_attachments`` and
+    ``GET /servers/{server_id}/os-volume_attachments/{volume_id}`` with these
+    changes reflected in novaclient under the ``nova volume-attachments``
+    command.
+
+    .. _microversion 2.89: https://docs.openstack.org/nova/latest/reference/api-microversion-history.html#microversion-2-89
