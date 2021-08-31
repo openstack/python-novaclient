@@ -1502,6 +1502,34 @@ class ShellTest(utils.TestCase):
         self.assertRaises(SystemExit, self.run_command,
                           cmd, api_version='2.73')
 
+    def test_boot_with_hostname(self):
+        self.run_command(
+            'boot --flavor 1 --image %s '
+            '--hostname my-hostname --nic auto '
+            'some-server' % FAKE_UUID_1,
+            api_version='2.90')
+        self.assert_called_anytime(
+            'POST', '/servers',
+            {'server': {
+                'flavorRef': '1',
+                'name': 'some-server',
+                'imageRef': FAKE_UUID_1,
+                'min_count': 1,
+                'max_count': 1,
+                'networks': 'auto',
+                'hostname': 'my-hostname',
+            }},
+        )
+
+    def test_boot_with_hostname_pre_v290(self):
+        cmd = (
+            'boot --flavor 1 --image %s --nic auto '
+            '--hostname my-hostname some-server' % FAKE_UUID_1
+        )
+        self.assertRaises(
+            SystemExit, self.run_command,
+            cmd, api_version='2.89')
+
     def test_flavor_list(self):
         out, _ = self.run_command('flavor-list')
         self.assert_called_anytime('GET', '/flavors/detail')
@@ -2258,6 +2286,31 @@ class ShellTest(utils.TestCase):
         self.assertNotIn('server_groups', out)
         self.assertNotIn('a67359fb-d397-4697-88f1-f55e3ee7c499', out)
 
+    def test_rebuild_with_hostname(self):
+        self.run_command(
+            'rebuild sample-server %s --hostname new-hostname' % FAKE_UUID_1,
+            api_version='2.90')
+        self.assert_called('GET', '/servers?name=sample-server', pos=0)
+        self.assert_called('GET', '/servers/1234', pos=1)
+        self.assert_called('GET', '/v2/images/%s' % FAKE_UUID_1, pos=2)
+        self.assert_called(
+            'POST', '/servers/1234/action',
+            {
+                'rebuild': {
+                    'imageRef': FAKE_UUID_1,
+                    'description': None,
+                    'hostname': 'new-hostname',
+                },
+            },
+            pos=3)
+        self.assert_called('GET', '/v2/images/%s' % FAKE_UUID_2, pos=4)
+
+    def test_rebuild_with_hostname_pre_v290(self):
+        self.assertRaises(
+            SystemExit, self.run_command,
+            'rebuild sample-server %s --hostname hostname' % FAKE_UUID_1,
+            api_version='2.89')
+
     def test_start(self):
         self.run_command('start sample-server')
         self.assert_called('POST', '/servers/1234/action', {'os-start': None})
@@ -2423,6 +2476,25 @@ class ShellTest(utils.TestCase):
             self.run_command,
             'update --description new-description sample-server',
             api_version='2.18')
+
+    def test_update_with_hostname(self):
+        self.run_command(
+            'update --hostname new-hostname sample-server',
+            api_version='2.90')
+        expected_put_body = {
+            "server": {
+                "hostname": "new-hostname"
+            }
+        }
+        self.assert_called('GET', '/servers/1234', pos=-2)
+        self.assert_called('PUT', '/servers/1234', expected_put_body, pos=-1)
+
+    def test_update_with_hostname_pre_v290(self):
+        self.assertRaises(
+            SystemExit,
+            self.run_command,
+            'update --hostname new-hostname sample-server',
+            api_version='2.89')
 
     def test_resize(self):
         self.run_command('resize sample-server 1')

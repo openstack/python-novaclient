@@ -532,8 +532,10 @@ def _boot(cs, args):
     if include_files:
         boot_kwargs['files'] = files
 
-    if ('trusted_image_certificates' in args and
-            args.trusted_image_certificates):
+    if (
+        'trusted_image_certificates' in args and
+        args.trusted_image_certificates
+    ):
         boot_kwargs['trusted_image_certificates'] = (
             args.trusted_image_certificates)
     elif utils.env('OS_TRUSTED_IMAGE_CERTIFICATE_IDS'):
@@ -544,6 +546,9 @@ def _boot(cs, args):
             raise exceptions.UnsupportedAttribute(
                 "OS_TRUSTED_IMAGE_CERTIFICATE_IDS",
                 "2.63")
+
+    if 'hostname' in args and args.hostname:
+        boot_kwargs['hostname'] = args.hostname
 
     return boot_args, boot_kwargs
 
@@ -970,6 +975,14 @@ def _boot(cs, args):
     help=_('Requested hypervisor hostname to create servers. Admin only by '
            'default.'),
     start_version="2.74")
+@utils.arg(
+    '--hostname',
+    help=_(
+        'Hostname for the instance. This sets the hostname stored in the '
+        'metadata server: a utility such as cloud-init running on the guest '
+        'is required to propagate these changes to the guest.'
+    ),
+    start_version='2.90')
 def do_boot(cs, args):
     """Boot a new server."""
     boot_args, boot_kwargs = _boot(cs, args)
@@ -2031,6 +2044,14 @@ def do_reboot(cs, args):
     help=_("Unset trusted_image_certificates in the server. Cannot be "
            "specified with the '--trusted-image-certificate-id' option."),
     start_version="2.63")
+@utils.arg(
+    '--hostname',
+    help=_(
+        'New hostname for the instance. This only updates the hostname '
+        'stored in the metadata server: a utility running on the guest '
+        'is required to propagate these changes to the guest.'
+    ),
+    start_version='2.90')
 def do_rebuild(cs, args):
     """Shutdown, re-image, and re-boot a server."""
     server = _find_server(cs, args.server)
@@ -2121,6 +2142,9 @@ def do_rebuild(cs, args):
             "OS_TRUSTED_IMAGE_CERTIFICATE_IDS",
             "2.63")
 
+    if 'hostname' in args and args.hostname is not None:
+        kwargs['hostname'] = args.hostname
+
     server = server.rebuild(image, _password, **kwargs)
     _print_server(cs, args, server)
 
@@ -2145,6 +2169,14 @@ def do_rebuild(cs, args):
     help=_('New description for the server. If it equals to empty string '
            '(i.g. ""), the server description will be removed.'),
     start_version="2.19")
+@utils.arg(
+    '--hostname',
+    help=_(
+        'New hostname for the instance. This only updates the hostname '
+        'stored in the metadata server: a utility running on the guest '
+        'is required to propagate these changes to the guest.'
+    ),
+    start_version='2.90')
 def do_update(cs, args):
     """Update the name or the description for a server."""
     update_kwargs = {}
@@ -2152,6 +2184,8 @@ def do_update(cs, args):
         update_kwargs["name"] = args.name
     if "description" in args and args.description is not None:
         update_kwargs["description"] = args.description
+    if "hostname" in args and args.hostname is not None:
+        update_kwargs["hostname"] = args.hostname
     _find_server(cs, args.server).update(**update_kwargs)
 
 

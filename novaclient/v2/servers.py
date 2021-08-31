@@ -67,17 +67,17 @@ class Server(base.Resource):
     @api_versions.wraps("2.0", "2.18")
     def update(self, name=None):
         """
-        Update the name for this server.
+        Update attributes of this server.
 
         :param name: Update the server's name.
         :returns: :class:`Server`
         """
         return self.manager.update(self, name=name)
 
-    @api_versions.wraps("2.19")
+    @api_versions.wraps("2.19", "2.89")
     def update(self, name=None, description=None):
         """
-        Update the name and the description for this server.
+        Update attributes of this server.
 
         :param name: Update the server's name.
         :param description: Update the server's description.
@@ -86,6 +86,23 @@ class Server(base.Resource):
         update_kwargs = {"name": name}
         if description is not None:
             update_kwargs["description"] = description
+        return self.manager.update(self, **update_kwargs)
+
+    @api_versions.wraps("2.90")
+    def update(self, name=None, description=None, hostname=None):
+        """
+        Update attributes of this server.
+
+        :param name: Update the server's name.
+        :param description: Update the server's description.
+        :param hostname: Update the server's hostname.
+        :returns: :class:`Server`
+        """
+        update_kwargs = {"name": name}
+        if description is not None:
+            update_kwargs["description"] = description
+        if hostname is not None:
+            update_kwargs["hostname"] = hostname
         return self.manager.update(self, **update_kwargs)
 
     def get_console_output(self, length=None):
@@ -704,7 +721,7 @@ class ServerManager(base.BootingManagerWithFind):
               config_drive=None, admin_pass=None, disk_config=None,
               access_ip_v4=None, access_ip_v6=None, description=None,
               tags=None, trusted_image_certificates=None,
-              host=None, hypervisor_hostname=None, **kwargs):
+              host=None, hypervisor_hostname=None, hostname=None, **kwargs):
         """
         Create (boot) a new server.
         """
@@ -832,6 +849,9 @@ class ServerManager(base.BootingManagerWithFind):
 
         if hypervisor_hostname:
             body['server']['hypervisor_hostname'] = hypervisor_hostname
+
+        if hostname:
+            body['server']['hostname'] = hostname
 
         return self._create('/servers', body, response_key,
                             return_raw=return_raw, **kwargs)
@@ -1318,10 +1338,8 @@ class ServerManager(base.BootingManagerWithFind):
                config_drive=None, disk_config=None, admin_pass=None,
                access_ip_v4=None, access_ip_v6=None,
                trusted_image_certificates=None,
-               host=None, hypervisor_hostname=None,
+               host=None, hypervisor_hostname=None, hostname=None,
                **kwargs):
-        # TODO(anthony): indicate in doc string if param is an extension
-        # and/or optional
         """
         Create (boot) a new server.
 
@@ -1390,6 +1408,8 @@ class ServerManager(base.BootingManagerWithFind):
                      (allowed since microversion 2.74)
         :param hypervisor_hostname: requested hypervisor hostname to create
                                     servers (allowed since microversion 2.74)
+        :param hostname: requested hostname of server (allowed since
+                         microversion 2.90)
         """
         if not min_count:
             min_count = 1
@@ -1453,6 +1473,10 @@ class ServerManager(base.BootingManagerWithFind):
             raise exceptions.UnsupportedAttribute(
                 "hypervisor_hostname", "2.74")
 
+        hostname_microversion = api_versions.APIVersion("2.90")
+        if hostname and self.api_version < hostname_microversion:
+            raise exceptions.UnsupportedAttribute("hostname", "2.90")
+
         boot_kwargs = dict(
             meta=meta, files=files, userdata=userdata,
             reservation_id=reservation_id, min_count=min_count,
@@ -1463,7 +1487,7 @@ class ServerManager(base.BootingManagerWithFind):
             access_ip_v4=access_ip_v4, access_ip_v6=access_ip_v6,
             trusted_image_certificates=trusted_image_certificates,
             host=host, hypervisor_hostname=hypervisor_hostname,
-            **kwargs)
+            hostname=hostname, **kwargs)
 
         if block_device_mapping:
             boot_kwargs['block_device_mapping'] = block_device_mapping
@@ -1479,10 +1503,11 @@ class ServerManager(base.BootingManagerWithFind):
     @api_versions.wraps("2.0", "2.18")
     def update(self, server, name=None):
         """
-        Update the name for a server.
+        Update attributes of a server.
 
         :param server: The :class:`Server` (or its ID) to update.
         :param name: Update the server's name.
+        :returns: :class:`Server`
         """
         if name is None:
             return
@@ -1495,15 +1520,16 @@ class ServerManager(base.BootingManagerWithFind):
 
         return self._update("/servers/%s" % base.getid(server), body, "server")
 
-    @api_versions.wraps("2.19")
+    @api_versions.wraps("2.19", "2.89")
     def update(self, server, name=None, description=None):
         """
-        Update the name or the description for a server.
+        Update attributes of a server.
 
         :param server: The :class:`Server` (or its ID) to update.
         :param name: Update the server's name.
         :param description: Update the server's description. If it equals to
             empty string(i.g. ""), the server description will be removed.
+        :returns: :class:`Server`
         """
         if name is None and description is None:
             return
@@ -1515,6 +1541,36 @@ class ServerManager(base.BootingManagerWithFind):
             body["server"]["description"] = None
         elif description:
             body["server"]["description"] = description
+
+        return self._update("/servers/%s" % base.getid(server), body, "server")
+
+    @api_versions.wraps("2.90")
+    def update(self, server, name=None, description=None, hostname=None):
+        """
+        Update attributes of a server.
+
+        :param server: The :class:`Server` (or its ID) to update.
+        :param name: Update the server's name.
+        :param description: Update the server's description. If it equals to
+            empty string(i.g. ""), the server description will be removed.
+        :param hostname: Update the server's hostname as recorded by the
+            metadata service. Note that a separate utility running on the
+            guest will be necessary to reflect these changes in the guest
+            itself.
+        :returns: :class:`Server`
+        """
+        if name is None and description is None and hostname is None:
+            return
+
+        body = {"server": {}}
+        if name:
+            body["server"]["name"] = name
+        if description == "":
+            body["server"]["description"] = None
+        elif description:
+            body["server"]["description"] = description
+        if hostname:
+            body["server"]["hostname"] = hostname
 
         return self._update("/servers/%s" % base.getid(server), body, "server")
 
@@ -1548,6 +1604,7 @@ class ServerManager(base.BootingManagerWithFind):
         """
         return self._action('reboot', server, {'type': reboot_type})
 
+    # TODO(stephenfin): Expand out kwargs
     def rebuild(self, server, image, password=None, disk_config=None,
                 preserve_ephemeral=False, name=None, meta=None, files=None,
                 **kwargs):
@@ -1555,34 +1612,36 @@ class ServerManager(base.BootingManagerWithFind):
         Rebuild -- shut down and then re-image -- a server.
 
         :param server: The :class:`Server` (or its ID) to share onto.
-        :param image: the :class:`Image` (or its ID) to re-image with.
-        :param password: string to set as password on the rebuilt server.
-        :param disk_config: partitioning mode to use on the rebuilt server.
-                            Valid values are 'AUTO' or 'MANUAL'
+        :param image: The :class:`Image` (or its ID) to re-image with.
+        :param password: String to set as password on the rebuilt server.
+        :param disk_config: Partitioning mode to use on the rebuilt server.
+            Valid values are 'AUTO' or 'MANUAL'
         :param preserve_ephemeral: If True, request that any ephemeral device
             be preserved when rebuilding the instance. Defaults to False.
         :param name: Something to name the server.
         :param meta: A dict of arbitrary key/value metadata to store for this
-                     server. Both keys and values must be <=255 characters.
+            server. Both keys and values must be <=255 characters.
         :param files: A dict of files to overwrite on the server upon boot.
-                      Keys are file names (i.e. ``/etc/passwd``) and values
-                      are the file contents (either as a string or as a
-                      file-like object). A maximum of five entries is allowed,
-                      and each file must be 10k or less.
-                      (deprecated starting with microversion 2.57)
-        :param description: optional description of the server (allowed since
-                            microversion 2.19)
-        :param key_name: optional key pair name for rebuild operation; passing
-                         None will unset the key for the server instance
-                         (starting from microversion 2.54)
-        :param userdata: optional user data to pass to be exposed by the
-                         metadata server; this can be a file type object as
-                         well or a string. If None is specified, the existing
-                         user_data is unset.
-                         (starting from microversion 2.57)
+            Keys are file names (i.e. ``/etc/passwd``) and values are the file
+            contents (either as a string or as a file-like object). A maximum
+            of five entries is allowed, and each file must be 10k or less.
+            (deprecated starting with microversion 2.57)
+        :param description: Optional description of the server. If None is
+            specified, the existing description will be unset.
+            (starting from microversion 2.19)
+        :param key_name: Optional key pair name for rebuild operation. If None
+            is specified, the existing key will be unset.
+            (starting from microversion 2.54)
+        :param userdata: Optional user data to pass to be exposed by the
+            metadata server; this can be a file type object as well or a
+            string. If None is specified, the existing user_data is unset.
+            (starting from microversion 2.57)
         :param trusted_image_certificates: A list of trusted certificate IDs
-                         or None to unset/reset the servers trusted image
-                         certificates (allowed since microversion 2.63)
+            or None to unset/reset the servers trusted image certificates
+            (starting from microversion 2.63)
+        :param hostname: Optional hostname to configure for the instance. If
+            None is specified, the existing hostname will be unset.
+            (starting from microversion 2.90)
         :returns: :class:`Server`
         """
         descr_microversion = api_versions.APIVersion("2.19")
@@ -1612,6 +1671,12 @@ class ServerManager(base.BootingManagerWithFind):
             raise exceptions.UnsupportedAttribute("trusted_image_certificates",
                                                   "2.63")
 
+        if (
+            'hostname' in kwargs and
+            self.api_version < api_versions.APIVersion("2.90")
+        ):
+            raise exceptions.UnsupportedAttribute('hostname', '2.90')
+
         body = {'imageRef': base.getid(image)}
         if password is not None:
             body['adminPass'] = password
@@ -1628,6 +1693,8 @@ class ServerManager(base.BootingManagerWithFind):
         if "trusted_image_certificates" in kwargs:
             body["trusted_image_certificates"] = kwargs[
                 "trusted_image_certificates"]
+        if "hostname" in kwargs:
+            body["hostname"] = kwargs["hostname"]
         if meta:
             body['metadata'] = meta
         if files:

@@ -1,0 +1,13 @@
+---
+features:
+  - |
+    Added support for `microversion 2.90`_. This microversion provides the
+    ability to manually configure the instance ``hostname`` attribute when
+    creating a new instance (``nova boot --hostname HOSTNAME ...``), updating
+    an existing instance (``nova update --hostname HOSTNAME ...``), or
+    rebuilding an existing instance (``nova rebuild --hostname HOSTNAME``).
+    This attribute is published via the metadata service and config drive and
+    can be used by init scripts such as ``cloud-init`` to configure the guest's
+    hostname.
+
+    .. _microversion 2.90: https://docs.openstack.org/nova/latest/reference/api-microversion-history.html#microversion-2-90

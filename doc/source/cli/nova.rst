@@ -975,6 +975,7 @@ nova boot
                     [--trusted-image-certificate-id <trusted-image-certificate-id>]
                     [--host <host>]
                     [--hypervisor-hostname <hypervisor-hostname>]
+                    [--hostname <hostname>]
                     <name>
 
 Boot a new server.
@@ -1148,6 +1149,12 @@ quality of service support, microversion ``2.72`` is required.
 ``--hypervisor-hostname <hypervisor-hostname>``
   Requested hypervisor hostname to create servers. Admin only by default.
   (Supported by API versions '2.74' - '2.latest')
+
+``--hostname <hostname>``
+  Hostname for the instance. This sets the hostname stored in the
+  metadata server: a utility such as cloud-init running on the guest
+  is required to propagate these changes to the guest.
+  (Supported by API versions '2.90' - '2.latest')
 
 .. _nova_clear-password:
 
@@ -2885,6 +2892,7 @@ nova rebuild
                        [--user-data <user-data>] [--user-data-unset]
                        [--trusted-image-certificate-id <trusted-image-certificate-id>]
                        [--trusted-image-certificates-unset]
+                       [--hostname <hostname>]
                        <server> <image>
 
 Shutdown, re-image, and re-boot a server.
@@ -2957,6 +2965,12 @@ Shutdown, re-image, and re-boot a server.
   Unset trusted_image_certificates in the server. Cannot be
   specified with the ``--trusted-image-certificate-id`` option.
   (Supported by API versions '2.63' - '2.latest')
+
+``--hostname <hostname>``
+  New hostname for the instance. This only updates the hostname
+  stored in the metadata server: a utility running on the guest
+  is required to propagate these changes to the guest.
+  (Supported by API versions '2.90' - '2.latest')
 
 .. _nova_refresh-network:
 
@@ -3795,9 +3809,11 @@ nova update
 
 .. code-block:: console
 
-   usage: nova update [--name <name>] [--description <description>] <server>
+   usage: nova update [--name <name>] [--description <description>]
+                      [--hostname <hostname>]
+                      <server>
 
-Update the name or the description for a server.
+Update attributes of a server.
 
 **Positional arguments:**
 
@@ -3814,6 +3830,12 @@ Update the name or the description for a server.
   empty string (i.g. ""), the server description
   will be removed. (Supported by API versions
   '2.19' - '2.latest')
+
+``--hostname <hostname>``
+  New hostname for the instance. This only updates the hostname
+  stored in the metadata server: a utility running on the guest
+  is required to propagate these changes to the guest.
+  (Supported by API versions '2.90' - '2.latest')
 
 .. _nova_usage:
 
