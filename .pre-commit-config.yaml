@@ -1,0 +1,32 @@
+---
+default_language_version:
+  # force all unspecified python hooks to run python3
+  python: python3
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.0.1
+    hooks:
+      - id: trailing-whitespace
+      - id: mixed-line-ending
+        args: ['--fix', 'lf']
+      - id: check-byte-order-marker
+      - id: check-executables-have-shebangs
+      - id: check-merge-conflict
+      - id: debug-statements
+      - id: check-yaml
+        files: .*\.(yaml|yml)$
+  - repo: https://github.com/Lucas-C/pre-commit-hooks
+    rev: v1.1.10
+    hooks:
+      - id: remove-tabs
+        exclude: '.*\.(svg)$'
+  - repo: local
+    hooks:
+      - id: flake8
+        name: flake8
+        additional_dependencies:
+          - hacking>=3.0.1,<3.1.0
+        language: python
+        entry: flake8
+        files: '^.*\.py$'
+        exclude: '^(doc|releasenotes|tools)/.*$'
