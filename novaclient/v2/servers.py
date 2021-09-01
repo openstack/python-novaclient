@@ -29,6 +29,7 @@ from novaclient import crypto
 from novaclient import exceptions
 from novaclient.i18n import _
 
+_SENTINEL = object()
 
 REBOOT_SOFT, REBOOT_HARD = 'SOFT', 'HARD'
 
@@ -404,34 +405,90 @@ class Server(base.Resource):
         """
         return self.manager.reboot(self, reboot_type)
 
-    def rebuild(self, image, password=None, preserve_ephemeral=False,
-                **kwargs):
+    # NOTE(stephenfin): It would be nice to make everything bar image a
+    # kwarg-only argument but there are backwards-compatbility concerns
+    def rebuild(
+        self,
+        image,
+        password=None,
+        preserve_ephemeral=False,
+        *,
+        disk_config=None,
+        name=None,
+        meta=None,
+        files=None,
+        description=_SENTINEL,
+        key_name=_SENTINEL,
+        userdata=_SENTINEL,
+        trusted_image_certificates=_SENTINEL,
+        hostname=_SENTINEL,
+    ):
         """
         Rebuild -- shut down and then re-image -- this server.
 
-        :param image: the :class:`Image` (or its ID) to re-image with.
-        :param password: string to set as the admin password on the rebuilt
-                         server.
+        :param image: The :class:`Image` (or its ID) to re-image with.
+        :param password: String to set as password on the rebuilt server.
         :param preserve_ephemeral: If True, request that any ephemeral device
             be preserved when rebuilding the instance. Defaults to False.
+        :param disk_config: Partitioning mode to use on the rebuilt server.
+            Valid values are 'AUTO' or 'MANUAL'
+        :param name: Something to name the server.
+        :param meta: A dict of arbitrary key/value metadata to store for this
+            server. Both keys and values must be <=255 characters.
+        :param files: A dict of files to overwrite on the server upon boot.
+            Keys are file names (i.e. ``/etc/passwd``) and values are the file
+            contents (either as a string or as a file-like object). A maximum
+            of five entries is allowed, and each file must be 10k or less.
+            (deprecated starting with microversion 2.57)
+        :param description: Optional description of the server. If None is
+            specified, the existing description will be unset.
+            (starting from microversion 2.19)
+        :param key_name: Optional key pair name for rebuild operation. If None
+            is specified, the existing key will be unset.
+            (starting from microversion 2.54)
+        :param userdata: Optional user data to pass to be exposed by the
+            metadata server; this can be a file type object as well or a
+            string. If None is specified, the existing user_data is unset.
+            (starting from microversion 2.57)
+        :param trusted_image_certificates: A list of trusted certificate IDs
+            or None to unset/reset the servers trusted image certificates
+            (starting from microversion 2.63)
+        :param hostname: Optional hostname to configure for the instance. If
+            None is specified, the existing hostname will be unset.
+            (starting from microversion 2.90)
+        :returns: :class:`Server`
         """
-        return self.manager.rebuild(self, image, password=password,
-                                    preserve_ephemeral=preserve_ephemeral,
-                                    **kwargs)
+        return self.manager.rebuild(
+            self,
+            image,
+            password=password,
+            disk_config=disk_config,
+            preserve_ephemeral=preserve_ephemeral,
+            name=name,
+            meta=meta,
+            files=files,
+            description=description,
+            key_name=key_name,
+            userdata=userdata,
+            trusted_image_certificates=trusted_image_certificates,
+            hostname=hostname,
+        )
 
-    def resize(self, flavor, **kwargs):
+    def resize(self, flavor, *, disk_config=None):
         """
         Resize the server's resources.
 
-        :param flavor: the :class:`Flavor` (or its ID) to resize to.
+        :param flavor: The :class:`Flavor` (or its ID) to resize to.
+        :param disk_config: Partitioning mode to use on the rebuilt server.
+            Valid values are 'AUTO' or 'MANUAL'.
         :returns: An instance of novaclient.base.TupleWithMeta
 
         Until a resize event is confirmed with :meth:`confirm_resize`, the old
         server will be kept around and you'll be able to roll back to the old
         flavor quickly with :meth:`revert_resize`. All resizes are
-        automatically confirmed after 24 hours.
+        automatically confirmed after 24 hours by default.
         """
-        return self.manager.resize(self, flavor, **kwargs)
+        return self.manager.resize(self, flavor, disk_config=disk_config)
 
     def create_image(self, image_name, metadata=None):
         """
@@ -743,16 +800,38 @@ class ServerManager(base.BootingManagerWithFind):
 
         return base64.b64encode(userdata).decode('utf-8')
 
-    def _boot(self, response_key, name, image, flavor,
-              meta=None, files=None, userdata=None,
-              reservation_id=False, return_raw=False, min_count=None,
-              max_count=None, security_groups=None, key_name=None,
-              availability_zone=None, block_device_mapping=None,
-              block_device_mapping_v2=None, nics=None, scheduler_hints=None,
-              config_drive=None, admin_pass=None, disk_config=None,
-              access_ip_v4=None, access_ip_v6=None, description=None,
-              tags=None, trusted_image_certificates=None,
-              host=None, hypervisor_hostname=None, hostname=None, **kwargs):
+    def _boot(
+        self,
+        response_key,
+        name,
+        image,
+        flavor,
+        meta=None,
+        files=None,
+        userdata=None,
+        reservation_id=False,
+        return_raw=False,
+        min_count=None,
+        max_count=None,
+        security_groups=None,
+        key_name=None,
+        availability_zone=None,
+        block_device_mapping=None,
+        block_device_mapping_v2=None,
+        nics=None,
+        scheduler_hints=None,
+        config_drive=None,
+        admin_pass=None,
+        disk_config=None,
+        access_ip_v4=None,
+        access_ip_v6=None,
+        description=None,
+        tags=None,
+        trusted_image_certificates=None,
+        host=None,
+        hypervisor_hostname=None,
+        hostname=None,
+    ):
         """
         Create (boot) a new server.
         """
@@ -884,8 +963,9 @@ class ServerManager(base.BootingManagerWithFind):
         if hostname:
             body['server']['hostname'] = hostname
 
-        return self._create('/servers', body, response_key,
-                            return_raw=return_raw, **kwargs)
+        return self._create(
+            '/servers', body, response_key, return_raw=return_raw,
+        )
 
     def get(self, server):
         """
@@ -1390,17 +1470,39 @@ class ServerManager(base.BootingManagerWithFind):
             raise ValueError('nics must be a list or a tuple, not %s' %
                              type(nics))
 
-    def create(self, name, image, flavor, meta=None, files=None,
-               reservation_id=False, min_count=None,
-               max_count=None, security_groups=None, userdata=None,
-               key_name=None, availability_zone=None,
-               block_device_mapping=None, block_device_mapping_v2=None,
-               nics=None, scheduler_hints=None,
-               config_drive=None, disk_config=None, admin_pass=None,
-               access_ip_v4=None, access_ip_v6=None,
-               trusted_image_certificates=None,
-               host=None, hypervisor_hostname=None, hostname=None,
-               **kwargs):
+    # NOTE(stephenfin): It would be nice to make everything bar name, image and
+    # flavor a kwarg-only argument but there are backwards-compatbility
+    # concerns
+    def create(
+        self,
+        name,
+        image,
+        flavor,
+        meta=None,
+        files=None,
+        reservation_id=False,
+        min_count=None,
+        max_count=None,
+        security_groups=None,
+        userdata=None,
+        key_name=None,
+        availability_zone=None,
+        block_device_mapping=None,
+        block_device_mapping_v2=None,
+        nics=None,
+        scheduler_hints=None,
+        config_drive=None,
+        disk_config=None,
+        admin_pass=None,
+        access_ip_v4=None,
+        access_ip_v6=None,
+        description=None,
+        tags=None,
+        trusted_image_certificates=None,
+        host=None,
+        hypervisor_hostname=None,
+        hostname=None,
+    ):
         """
         Create (boot) a new server.
 
@@ -1412,65 +1514,59 @@ class ServerManager(base.BootingManagerWithFind):
         :param image: The :class:`Image` to boot with.
         :param flavor: The :class:`Flavor` to boot onto.
         :param meta: A dict of arbitrary key/value metadata to store for this
-                     server. Both keys and values must be <=255 characters.
+            server. Both keys and values must be <=255 characters.
         :param files: A dict of files to overwrite on the server upon boot.
-                      Keys are file names (i.e. ``/etc/passwd``) and values
-                      are the file contents (either as a string or as a
-                      file-like object). A maximum of five entries is allowed,
-                      and each file must be 10k or less.
-                      (deprecated starting with microversion 2.57)
-        :param reservation_id: return a reservation_id for the set of
-                               servers being requested, boolean.
-        :param min_count: (optional extension) The minimum number of
-                          servers to launch.
-        :param max_count: (optional extension) The maximum number of
-                          servers to launch.
+            Keys are file names (i.e. ``/etc/passwd``) and values
+            are the file contents (either as a string or as a
+            file-like object). A maximum of five entries is allowed,
+            and each file must be 10k or less.
+            (deprecated starting with microversion 2.57)
+        :param reservation_id: Return a reservation_id for the set of
+            servers being requested, boolean.
+        :param min_count: The minimum number of servers to launch.
+        :param max_count: The maximum number of servers to launch.
         :param security_groups: A list of security group names
-        :param userdata: user data to pass to be exposed by the metadata
-                      server this can be a file type object as well or a
-                      string.
-        :param key_name: (optional extension) name of previously created
-                      keypair to inject into the instance.
+        :param userdata: User data to pass to be exposed by the metadata
+            server this can be a file type object as well or a string.
+        :param key_name: Name of previously created keypair to inject into the
+            instance.
         :param availability_zone: Name of the availability zone for instance
-                                  placement.
-        :param block_device_mapping: (optional extension) A dict of block
-                      device mappings for this server.
-        :param block_device_mapping_v2: (optional extension) A list of block
-                      device mappings (dicts) for this server.
-        :param nics:  An ordered list of nics (dicts) to be added to this
-                      server, with information about connected networks,
-                      fixed IPs, port etc.
-                      Beginning in microversion 2.37 this field is required and
-                      also supports a single string value of 'auto' or 'none'.
-                      The 'auto' value means the Compute service will
-                      automatically allocate a network for the project if one
-                      is not available. This is the same behavior as not
-                      passing anything for nics before microversion 2.37. The
-                      'none' value tells the Compute service to not allocate
-                      any networking for the server.
-        :param scheduler_hints: (optional extension) arbitrary key-value pairs
-                            specified by the client to help boot an instance
-        :param config_drive: (optional extension) a boolean value to enable
-                             config drive
-        :param disk_config: (optional extension) control how the disk is
-                            partitioned when the server is created.  possible
-                            values are 'AUTO' or 'MANUAL'.
-        :param admin_pass: (optional extension) add a user supplied admin
-                           password.
-        :param access_ip_v4: (optional extension) add alternative access ip v4
-        :param access_ip_v6: (optional extension) add alternative access ip v6
-        :param description: optional description of the server (allowed since
-                            microversion 2.19)
-        :param tags: A list of arbitrary strings to be added to the
-                     server as tags (allowed since microversion 2.52)
+            placement.
+        :param block_device_mapping: A dict of block device mappings for this
+            server.
+        :param block_device_mapping_v2: A list of block device mappings (dicts)
+            for this server.
+        :param nics: An ordered list of nics (dicts) to be added to this
+            server, with information about connected networks, fixed IPs, port
+            etc. Beginning in microversion 2.37 this field is required and also
+            supports a single string value of 'auto' or 'none'. The 'auto'
+            value means the Compute service will automatically allocate a
+            network for the project if one is not available. This is the same
+            behavior as not passing anything for nics before microversion 2.37.
+            The 'none' value tells the Compute service to not allocate any
+            networking for the server.
+        :param scheduler_hints: Arbitrary key-value pairs specified by the
+            client to help boot an instance.
+        :param config_drive: A boolean value to enable config drive.
+        :param disk_config: Control how the disk is partitioned when the server
+            is created. Possible values are 'AUTO' or 'MANUAL'.
+        :param admin_pass: Add a user supplied admin password.
+        :param access_ip_v4: Add alternative access IP (v4)
+        :param access_ip_v6: Add alternative access IP (v6)
+        :param description: Optional description of the server
+            (allowed since microversion 2.19)
+        :param tags: A list of arbitrary strings to be added to the server as
+            tags
+            (allowed since microversion 2.52)
         :param trusted_image_certificates: A list of trusted certificate IDs
-                                           (allowed since microversion 2.63)
-        :param host: requested host to create servers
-                     (allowed since microversion 2.74)
-        :param hypervisor_hostname: requested hypervisor hostname to create
-                                    servers (allowed since microversion 2.74)
-        :param hostname: requested hostname of server (allowed since
-                         microversion 2.90)
+            (allowed since microversion 2.63)
+        :param host: Requested host to create servers
+            (allowed since microversion 2.74)
+        :param hypervisor_hostname: Requested hypervisor hostname to create
+            servers
+            (allowed since microversion 2.74)
+        :param hostname: Requested hostname of server
+            (allowed since microversion 2.90)
         """
         if not min_count:
             min_count = 1
@@ -1481,8 +1577,7 @@ class ServerManager(base.BootingManagerWithFind):
 
         boot_args = [name, image, flavor]
 
-        descr_microversion = api_versions.APIVersion("2.19")
-        if "description" in kwargs and self.api_version < descr_microversion:
+        if description and self.api_version < api_versions.APIVersion("2.19"):
             raise exceptions.UnsupportedAttribute("description", "2.19")
 
         self._validate_create_nics(nics)
@@ -1503,8 +1598,7 @@ class ServerManager(base.BootingManagerWithFind):
                                          "unsupported before microversion "
                                          "2.32")
 
-        boot_tags_microversion = api_versions.APIVersion("2.52")
-        if "tags" in kwargs and self.api_version < boot_tags_microversion:
+        if tags and self.api_version < api_versions.APIVersion("2.52"):
             raise exceptions.UnsupportedAttribute("tags", "2.52")
 
         personality_files_deprecation = api_versions.APIVersion('2.57')
@@ -1546,9 +1640,10 @@ class ServerManager(base.BootingManagerWithFind):
             scheduler_hints=scheduler_hints, config_drive=config_drive,
             disk_config=disk_config, admin_pass=admin_pass,
             access_ip_v4=access_ip_v4, access_ip_v6=access_ip_v6,
+            description=description, tags=tags,
             trusted_image_certificates=trusted_image_certificates,
             host=host, hypervisor_hostname=hypervisor_hostname,
-            hostname=hostname, **kwargs)
+            hostname=hostname)
 
         if block_device_mapping:
             boot_kwargs['block_device_mapping'] = block_device_mapping
@@ -1665,10 +1760,25 @@ class ServerManager(base.BootingManagerWithFind):
         """
         return self._action('reboot', server, {'type': reboot_type})
 
-    # TODO(stephenfin): Expand out kwargs
-    def rebuild(self, server, image, password=None, disk_config=None,
-                preserve_ephemeral=False, name=None, meta=None, files=None,
-                **kwargs):
+    # NOTE(stephenfin): It would be nice to make everything bar server and
+    # image a kwarg-only argument but there are backwards-compatbility concerns
+    def rebuild(
+        self,
+        server,
+        image,
+        password=None,
+        disk_config=None,
+        preserve_ephemeral=False,
+        name=None,
+        meta=None,
+        files=None,
+        *,
+        description=_SENTINEL,
+        key_name=_SENTINEL,
+        userdata=_SENTINEL,
+        trusted_image_certificates=_SENTINEL,
+        hostname=_SENTINEL,
+    ):
         """
         Rebuild -- shut down and then re-image -- a server.
 
@@ -1705,63 +1815,80 @@ class ServerManager(base.BootingManagerWithFind):
             (starting from microversion 2.90)
         :returns: :class:`Server`
         """
-        descr_microversion = api_versions.APIVersion("2.19")
-        if "description" in kwargs and self.api_version < descr_microversion:
-            raise exceptions.UnsupportedAttribute("description", "2.19")
+        # Microversion 2.19 adds the optional 'description' parameter
+        if (
+            description is not _SENTINEL and
+            self.api_version < api_versions.APIVersion('2.19')
+        ):
+            raise exceptions.UnsupportedAttribute('description', '2.19')
 
-        # Starting from microversion 2.54,
-        # the optional 'key_name' parameter has been added.
-        if ('key_name' in kwargs and
-                self.api_version < api_versions.APIVersion('2.54')):
+        # Microversion 2.54 adds the optional 'key_name' parameter
+        if (
+            key_name is not _SENTINEL and
+            self.api_version < api_versions.APIVersion('2.54')
+        ):
             raise exceptions.UnsupportedAttribute('key_name', '2.54')
 
         # Microversion 2.57 deprecates personality files and adds support
         # for user_data.
-        files_and_userdata = api_versions.APIVersion('2.57')
-        if files and self.api_version >= files_and_userdata:
+        if files and self.api_version >= api_versions.APIVersion('2.57'):
             raise exceptions.UnsupportedAttribute('files', '2.0', '2.56')
-        if 'userdata' in kwargs and self.api_version < files_and_userdata:
-            raise exceptions.UnsupportedAttribute('userdata', '2.57')
-
-        trusted_certs_microversion = api_versions.APIVersion("2.63")
-        # trusted_image_certificates is intentionally *not* a named kwarg
-        # so that trusted_image_certificates=None is not confused with an
-        # intentional unset/reset request.
-        if ("trusted_image_certificates" in kwargs and
-                self.api_version < trusted_certs_microversion):
-            raise exceptions.UnsupportedAttribute("trusted_image_certificates",
-                                                  "2.63")
 
         if (
-            'hostname' in kwargs and
-            self.api_version < api_versions.APIVersion("2.90")
+            userdata is not _SENTINEL and
+            self.api_version < api_versions.APIVersion('2.57')
+        ):
+            raise exceptions.UnsupportedAttribute('userdata', '2.57')
+
+        # Microversion 2.63 adds trusted image certificate support
+        if (
+            trusted_image_certificates is not _SENTINEL and
+            self.api_version < api_versions.APIVersion('2.63')
+        ):
+            raise exceptions.UnsupportedAttribute(
+                'trusted_image_certificates', '2.63')
+
+        # Microversion 2.90 adds the optional 'hostname' parameter
+        if (
+            hostname is not _SENTINEL and
+            self.api_version < api_versions.APIVersion('2.90')
         ):
             raise exceptions.UnsupportedAttribute('hostname', '2.90')
 
         body = {'imageRef': base.getid(image)}
+
         if password is not None:
             body['adminPass'] = password
+
         if disk_config is not None:
             body['OS-DCF:diskConfig'] = disk_config
+
         if preserve_ephemeral is not False:
             body['preserve_ephemeral'] = True
+
         if name is not None:
             body['name'] = name
-        if "description" in kwargs:
-            body["description"] = kwargs["description"]
-        if 'key_name' in kwargs:
-            body['key_name'] = kwargs['key_name']
-        if "trusted_image_certificates" in kwargs:
-            body["trusted_image_certificates"] = kwargs[
-                "trusted_image_certificates"]
-        if "hostname" in kwargs:
-            body["hostname"] = kwargs["hostname"]
+
+        if description is not _SENTINEL:
+            body["description"] = description
+
+        if key_name is not _SENTINEL:
+            body['key_name'] = key_name
+
+        if trusted_image_certificates is not _SENTINEL:
+            body["trusted_image_certificates"] = trusted_image_certificates
+
+        if hostname is not _SENTINEL:
+            body["hostname"] = hostname
+
         if meta:
             body['metadata'] = meta
+
         if files:
             personality = body['personality'] = []
-            for filepath, file_or_string in sorted(files.items(),
-                                                   key=lambda x: x[0]):
+            for filepath, file_or_string in sorted(
+                files.items(), key=lambda x: x[0],
+            ):
                 if hasattr(file_or_string, 'read'):
                     data = file_or_string.read()
                 else:
@@ -1772,15 +1899,17 @@ class ServerManager(base.BootingManagerWithFind):
                     'path': filepath,
                     'contents': cont,
                 })
-        if 'userdata' in kwargs:
+
+        if userdata is not _SENTINEL:
             # If userdata is specified but None, it means unset the existing
             # user_data on the instance.
-            userdata = kwargs['userdata']
+            userdata = userdata
             body['user_data'] = (userdata if userdata is None else
                                  self.transform_userdata(userdata))
 
-        resp, body = self._action_return_resp_and_body('rebuild', server,
-                                                       body, **kwargs)
+        resp, body = self._action_return_resp_and_body(
+            'rebuild', server, body,
+        )
         return Server(self, body['server'], resp=resp)
 
     @api_versions.wraps("2.0", "2.55")
@@ -1809,26 +1938,28 @@ class ServerManager(base.BootingManagerWithFind):
 
         return self._action('migrate', server, info)
 
-    def resize(self, server, flavor, disk_config=None, **kwargs):
+    # NOTE(stephenfin): It would be nice to make disk_config a kwarg-only
+    # argument but there are backwards-compatbility concerns
+    def resize(self, server, flavor, disk_config=None):
         """
         Resize a server's resources.
 
         :param server: The :class:`Server` (or its ID) to share onto.
-        :param flavor: the :class:`Flavor` (or its ID) to resize to.
-        :param disk_config: partitioning mode to use on the rebuilt server.
-                            Valid values are 'AUTO' or 'MANUAL'
+        :param flavor: The :class:`Flavor` (or its ID) to resize to.
+        :param disk_config: Partitioning mode to use on the rebuilt server.
+            Valid values are 'AUTO' or 'MANUAL'.
         :returns: An instance of novaclient.base.TupleWithMeta
 
         Until a resize event is confirmed with :meth:`confirm_resize`, the old
         server will be kept around and you'll be able to roll back to the old
         flavor quickly with :meth:`revert_resize`. All resizes are
-        automatically confirmed after 24 hours.
+        automatically confirmed after 24 hours by default.
         """
         info = {'flavorRef': base.getid(flavor)}
         if disk_config is not None:
             info['OS-DCF:diskConfig'] = disk_config
 
-        return self._action('resize', server, info=info, **kwargs)
+        return self._action('resize', server, info=info)
 
     def confirm_resize(self, server):
         """
