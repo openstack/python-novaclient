@@ -2408,6 +2408,9 @@ class FakeSessionClient(base_client.SessionClient):
     def delete_servers_1234_migrations_1(self):
         return (202, {}, None)
 
+    def put_servers_1234(self, **kw):
+        return (201, {}, None)
+
     def put_servers_1234_tags_tag(self, **kw):
         return (201, {}, None)
 

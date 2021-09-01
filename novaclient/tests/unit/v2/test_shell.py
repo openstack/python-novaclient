@@ -2395,6 +2395,35 @@ class ShellTest(utils.TestCase):
         self.assert_called('POST', '/servers/1234/action',
                            {'migrate': {'host': 'target-host'}})
 
+    def test_update(self):
+        self.run_command('update --name new-name sample-server')
+        expected_put_body = {
+            "server": {
+                "name": "new-name"
+            }
+        }
+        self.assert_called('GET', '/servers/1234', pos=-2)
+        self.assert_called('PUT', '/servers/1234', expected_put_body, pos=-1)
+
+    def test_update_with_description(self):
+        self.run_command(
+            'update --description new-description sample-server',
+            api_version='2.19')
+        expected_put_body = {
+            "server": {
+                "description": "new-description"
+            }
+        }
+        self.assert_called('GET', '/servers/1234', pos=-2)
+        self.assert_called('PUT', '/servers/1234', expected_put_body, pos=-1)
+
+    def test_update_with_description_pre_v219(self):
+        self.assertRaises(
+            SystemExit,
+            self.run_command,
+            'update --description new-description sample-server',
+            api_version='2.18')
+
     def test_resize(self):
         self.run_command('resize sample-server 1')
         self.assert_called('POST', '/servers/1234/action',
