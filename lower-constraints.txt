@@ -10,7 +10,7 @@ coverage==4.0
 cryptography==2.1
 ddt==1.0.1
 debtcollector==1.2.0
-decorator==3.4.0
+decorator==4.1.0
 deprecation==1.0
 dogpile.cache==0.6.2
 eventlet==0.18.2
