@@ -345,7 +345,7 @@ def _get_function_name(func):
     #    ("im_class" property does not exist at that moment)
     #  we need to write own logic to obtain the full function name which
     #  include module name, owner name(optional) and just function name.
-    filename, _lineno, _name, line = traceback.extract_stack()[-4]
+    filename, _lineno, _name, line = traceback.extract_stack(limit=4)[-4]
     module, _file_extension = os.path.splitext(filename)
     module = module.replace("/", ".")
     if module.endswith(func.__module__):
