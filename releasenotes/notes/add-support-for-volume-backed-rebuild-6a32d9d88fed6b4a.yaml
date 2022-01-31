@@ -1,0 +1,8 @@
+---
+features:
+  - |
+    Added support for `microversion 2.93`_.
+    This microversion provides the ability to rebuild a volume
+    backed instance.
+
+    .. _microversion 2.93: https://docs.openstack.org/nova/latest/reference/api-microversion-history.html#microversion-2-93
