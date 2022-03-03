@@ -835,7 +835,7 @@ class FakeSessionClient(base_client.SessionClient):
             if self.api_version < api_versions.APIVersion("2.77"):
                 assert body[action] is None
             else:
-                # In 2.77 and above, we allow body to be one of these:
+                # In 2.77 to 2.91, we allow body to be one of these:
                 # {'unshelve': None}
                 # {'unshelve': {'availability_zone': 'foo-az'}}
                 if body[action] is not None:

@@ -439,6 +439,17 @@ class V1(Base):
         elif action == 'lock':
             return None
         elif action == 'unshelve':
+            if api_version >= api_versions.APIVersion("2.91"):
+                # In 2.91 and above, we allow body to be one of these:
+                # {'unshelve': None}
+                # {'unshelve': {'availability_zone': <string>}}
+                # {'unshelve': {'availability_zone': None}}   (Unpin az)
+                # {'unshelve': {'host': <fqdn>}}
+                # {'unshelve': {'availability_zone': <string>, 'host': <fqdn>}}
+                # {'unshelve': {'availability_zone': None, 'host': <fqdn>}}
+                if body[action] is not None:
+                    for key in body[action].keys():
+                        key in ['availability_zone', 'host']
             return None
         elif action == 'rebuild':
             body = body[action]
