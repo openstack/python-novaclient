@@ -13,6 +13,7 @@ libffi-devel [platform:rpm]
 libssl-dev [platform:ubuntu]
 libuuid-devel [platform:rpm]
 locales [platform:debian]
+openssl
 python-dev [platform:dpkg]
 python-devel [platform:rpm]
 python3-all-dev [platform:ubuntu !platform:ubuntu-precise]
