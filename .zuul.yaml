@@ -9,7 +9,6 @@
       openrc_enable_export: true
       devstack_localrc:
         KEYSTONE_ADMIN_ENDPOINT: true
-        USE_PYTHON3: true
     irrelevant-files:
       - ^.*\.rst$
       - ^doc/.*$
