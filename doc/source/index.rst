@@ -3,12 +3,12 @@
 ===========================================
 
 This is a client for OpenStack Nova API. There's a :doc:`Python API
-<reference/index>` (the :mod:`novaclient` module), and a :doc:`command-line
-script </user/shell>` (installed as :program:`nova`). Each implements the
-entire OpenStack Nova API.
+<reference/index>` (the :mod:`novaclient` module), and a deprecated
+:doc:`command-line script </user/shell>` (installed as :program:`nova`).
+Each implements the entire OpenStack Nova API.
 
-You'll need credentials for an OpenStack cloud that implements the Compute API,
-such as TryStack, HP, or Rackspace, in order to use the nova client.
+You'll need credentials for an OpenStack cloud that implements the Compute API
+in order to use the nova client.
 
 .. seealso::
 

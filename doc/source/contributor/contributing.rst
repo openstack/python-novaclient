@@ -11,6 +11,12 @@ communicate as a community, etc.
 Below will cover the more project specific information you need to get started
 with python-novaclient.
 
+.. important::
+
+    The ``nova`` CLI has been deprecated in favour of the unified ``openstack``
+    CLI. Changes to the Python bindings are still welcome, however, no further
+    changes should be made to the shell.
+
 Communication
 ~~~~~~~~~~~~~
 
@@ -19,8 +25,8 @@ Please refer `how-to-get-involved <https://docs.openstack.org/nova/latest/contri
 Contacting the Core Team
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-The overall structure of the Nova team including python-novaclient is
-documented on `the wiki <https://wiki.openstack.org/wiki/Nova#People>`_.
+The easiest way to reach the core team is via IRC, using the ``openstack-nova``
+OFTC IRC channel.
 
 New Feature Planning
 ~~~~~~~~~~~~~~~~~~~~
@@ -48,5 +54,5 @@ Getting Your Patch Merged
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
 All changes proposed to the python-novaclient requires two ``Code-Review +2``
-votes from python-novaclient core reviewers before one of the core reviewers
+votes from ``python-novaclient`` core reviewers before one of the core reviewers
 can approve patch by giving ``Workflow +1`` vote..

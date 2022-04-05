@@ -15,6 +15,12 @@ information. You can do this with the `--os-username`, `--os-password`,
 options, but it's easier to just set them as environment variables by setting
 some environment variables:
 
+.. deprecated:: 17.8.0
+
+    The ``nova`` CLI has been deprecated in favour of the unified
+    ``openstack`` CLI. For information on using the ``openstack`` CLI, see
+    :python-openstackclient-doc:`OpenStackClient <>`.
+
 .. envvar:: OS_USERNAME
 
     Your OpenStack Keystone user name.

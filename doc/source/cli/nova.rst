@@ -11,12 +11,11 @@ For help on a specific :command:`nova` command, enter:
 
    $ nova help COMMAND
 
-.. note:: Over time, command line functionality will be phased out
-          of the ``nova`` CLI and into the ``openstack`` CLI. Using
-          the ``openstack`` client where possible is preferred but
-          there is not full parity yet for all of the ``nova`` commands.
-          For information on using the ``openstack`` CLI, see
-          :python-openstackclient-doc:`OpenStackClient <>`.
+.. deprecated:: 17.8.0
+
+    The ``nova`` CLI has been deprecated in favour of the unified
+    ``openstack`` CLI. For information on using the ``openstack`` CLI, see
+    :python-openstackclient-doc:`OpenStackClient <>`.
 
 .. _nova_command_usage:
 
