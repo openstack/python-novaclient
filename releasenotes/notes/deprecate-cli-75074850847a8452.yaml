@@ -1,0 +1,9 @@
+---
+deprecations:
+  - |
+    The ``nova`` CLI is now deprecated. This is the signal that it is
+    time to start using the openstack CLI. No new features will be
+    added to the ``nova`` CLI, though fixes to the CLI will be assessed
+    on a case by case basis. Fixes to the API bindings, development of
+    new API bindings, and changes to the compute commands in the openstack
+    CLI are exempt from this deprecation.

@@ -624,26 +624,32 @@ class ShellTest(utils.TestCase):
                           self._test_service_type,
                           'unknown', 'compute', self.mock_client)
 
-    @mock.patch('sys.argv', ['nova'])
     @mock.patch('sys.stdout', io.StringIO())
     @mock.patch('sys.stderr', io.StringIO())
     def test_main_noargs(self):
         # Ensure that main works with no command-line arguments
         try:
-            novaclient.shell.main()
+            novaclient.shell.main([])
         except SystemExit:
             self.fail('Unexpected SystemExit')
 
         # We expect the normal usage as a result
-        self.assertIn('Command-line interface to the OpenStack Nova API',
-                      sys.stdout.getvalue())
+        self.assertIn(
+            'Command-line interface to the OpenStack Nova API',
+            sys.stdout.getvalue(),
+        )
+        # We also expect to see the deprecation warning
+        self.assertIn(
+            'nova CLI is deprecated and will be a removed in a future release',
+            sys.stderr.getvalue(),
+        )
 
     @mock.patch.object(novaclient.shell.OpenStackComputeShell, 'main')
     def test_main_keyboard_interrupt(self, mock_compute_shell):
         # Ensure that exit code is 130 for KeyboardInterrupt
         mock_compute_shell.side_effect = KeyboardInterrupt()
         try:
-            novaclient.shell.main()
+            novaclient.shell.main([])
         except SystemExit as ex:
             self.assertEqual(ex.code, 130)
 
@@ -766,9 +772,15 @@ class ShellTest(utils.TestCase):
             pass
         with mock.patch('sys.stderr', io.StringIO()):
             mock_compute_shell.side_effect = MyException('message')
-            self.assertRaises(SystemExit, novaclient.shell.main)
+            self.assertRaises(SystemExit, novaclient.shell.main, [])
             err = sys.stderr.getvalue()
-        self.assertEqual(err, 'ERROR (MyException): message\n')
+        # We expect to see the error propagated
+        self.assertIn('ERROR (MyException): message\n', err)
+        # We also expect to see the deprecation warning
+        self.assertIn(
+            'nova CLI is deprecated and will be a removed in a future release',
+            err,
+        )
 
 
 class TestLoadVersionedActions(utils.TestCase):
