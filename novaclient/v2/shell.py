@@ -3231,15 +3231,15 @@ def _print_absolute_limits(limits):
     other = {}
     limit_names = []
     columns = ['Name', 'Used', 'Max']
-    for l in limits:
-        map = limit_map.get(l.name, {'name': l.name, 'type': 'other'})
+    for limit in limits:
+        map = limit_map.get(limit.name, {'name': limit.name, 'type': 'other'})
         name = map['name']
         if map['type'] == 'max':
-            max[name] = l.value
+            max[name] = limit.value
         elif map['type'] == 'used':
-            used[name] = l.value
+            used[name] = limit.value
         else:
-            other[name] = l.value
+            other[name] = limit.value
             if 'Other' not in columns:
                 columns.append('Other')
         if name not in limit_names:

@@ -116,13 +116,14 @@ def service_type(stype):
     return inner
 
 
-def pretty_choice_list(l):
-    return ', '.join("'%s'" % i for i in l)
+def pretty_choice_list(values):
+    return ', '.join("'%s'" % x for x in values)
 
 
-def pretty_choice_dict(d):
+def pretty_choice_dict(values):
     """Returns a formatted dict as 'key=value'."""
-    return pretty_choice_list(['%s=%s' % (k, d[k]) for k in sorted(d.keys())])
+    return pretty_choice_list(
+        ['%s=%s' % (k, values[k]) for k in sorted(values)])
 
 
 def print_list(objs, fields, formatters={}, sortby_index=None):

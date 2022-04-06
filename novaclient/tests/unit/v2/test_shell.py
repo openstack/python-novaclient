@@ -3397,7 +3397,8 @@ class ShellTest(utils.TestCase):
     def test_services_list_v269_with_down_cells(self):
         """Tests nova service-list at the 2.69 microversion."""
         stdout, _stderr = self.run_command('service-list', api_version='2.69')
-        self.assertEqual('''\
+        self.assertEqual(
+            '''\
 +--------------------------------------+--------------+-----------+------+----------+-------+---------------------+-----------------+-------------+
 | Id                                   | Binary       | Host      | Zone | Status   | State | Updated_at          | Disabled Reason | Forced down |
 +--------------------------------------+--------------+-----------+------+----------+-------+---------------------+-----------------+-------------+
@@ -3406,7 +3407,8 @@ class ShellTest(utils.TestCase):
 |                                      | nova-compute | host-down |      | UNKNOWN  |       |                     |                 |             |
 +--------------------------------------+--------------+-----------+------+----------+-------+---------------------+-----------------+-------------+
 ''',  # noqa
-            stdout)
+            stdout,
+        )
         self.assert_called('GET', '/os-services')
 
     def test_services_list_with_host(self):
@@ -4779,7 +4781,8 @@ class ShellTest(utils.TestCase):
     def test_list_detail_v269_with_down_cells(self):
         """Tests nova list at the 2.69 microversion."""
         stdout, _stderr = self.run_command('list', api_version='2.69')
-        self.assertIn('''\
+        self.assertIn(
+            '''\
 +------+----------------+---------+------------+-------------+----------------------------------------------+
 | ID   | Name           | Status  | Task State | Power State | Networks                                     |
 +------+----------------+---------+------------+-------------+----------------------------------------------+
@@ -4791,7 +4794,8 @@ class ShellTest(utils.TestCase):
 | 9013 | sample-server4 | ACTIVE  | N/A        | N/A         |                                              |
 +------+----------------+---------+------------+-------------+----------------------------------------------+
 ''',  # noqa
-        stdout)
+            stdout,
+        )
         self.assert_called('GET', '/servers/detail')
 
     def test_list_v269_with_down_cells(self):
@@ -4812,7 +4816,8 @@ class ShellTest(utils.TestCase):
 
     def test_show_v269_with_down_cells(self):
         stdout, _stderr = self.run_command('show 9015', api_version='2.69')
-        self.assertEqual('''\
+        self.assertEqual(
+            '''\
 +-----------------------------+---------------------------------------------------+
 | Property                    | Value                                             |
 +-----------------------------+---------------------------------------------------+
@@ -4833,7 +4838,8 @@ class ShellTest(utils.TestCase):
 | user_id                     | fake                                              |
 +-----------------------------+---------------------------------------------------+
 ''',  # noqa
-            stdout)
+            stdout,
+        )
         FAKE_UUID_2 = 'c99d7632-bd66-4be9-aed5-3dd14b223a76'
         self.assert_called('GET', '/servers?name=9015', pos=0)
         self.assert_called('GET', '/servers?name=9015', pos=1)
