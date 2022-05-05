@@ -36,6 +36,6 @@ Python API implements 100% of the OpenStack Compute API.
 .. _Blueprints: https://blueprints.launchpad.net/python-novaclient
 .. _Bugs: https://bugs.launchpad.net/python-novaclient
 .. _Source: https://opendev.org/openstack/python-novaclient
-.. _How to Contribute: https://docs.openstack.org/infra/manual/developers.html
-.. _Specs: http://specs.openstack.org/openstack/nova-specs/
+.. _How to Contribute: https://docs.opendev.org/opendev/infra-manual/latest/developers.html
+.. _Specs: https://specs.openstack.org/openstack/nova-specs/
 .. _Release Notes: https://docs.openstack.org/releasenotes/python-novaclient

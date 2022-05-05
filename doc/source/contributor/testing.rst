@@ -25,4 +25,4 @@ DevStack installation with a demo and an admin user/tenant - or clouds named
 
 Refer to  `Consistent Testing Interface`__ for more details.
 
-__ https://opendev.org/openstack/governance/src/branch/master/reference/project-testing-interface.rst
+__ https://governance.openstack.org/tc/reference/project-testing-interface.html
