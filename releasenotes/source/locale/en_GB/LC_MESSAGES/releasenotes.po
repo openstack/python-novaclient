@@ -1,0 +1,237 @@
+# Andi Chandler <andi@gowling.com>, 2017. #zanata
+# Andi Chandler <andi@gowling.com>, 2018. #zanata
+# Andi Chandler <andi@gowling.com>, 2022. #zanata
+msgid ""
+msgstr ""
+"Project-Id-Version: python-novaclient\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-05-08 05:06+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2022-06-13 07:34+0000\n"
+"Last-Translator: Andi Chandler <andi@gowling.com>\n"
+"Language-Team: English (United Kingdom)\n"
+"Language: en_GB\n"
+"X-Generator: Zanata 4.3.3\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+
+msgid ""
+"**auto**: This tells the Compute service to automatically allocate a network "
+"for the project if one is not available and then associate an IP from that "
+"network with the server. This is the same behavior as passing nics=None "
+"before the 2.37 microversion."
+msgstr ""
+"**auto**: This tells the Compute service to automatically allocate a network "
+"for the project if one is not available and then associate an IP from that "
+"network with the server. This is the same behaviour as passing nics=None "
+"before the 2.37 microversion."
+
+msgid ""
+"**none**: This tells the Compute service to not allocate any networking for "
+"the server."
+msgstr ""
+"**none**: This tells the Compute service to not allocate any networking for "
+"the server."
+
+msgid "--all_tenants replaced by --all-tenants"
+msgstr "--all_tenants replaced by --all-tenants"
+
+msgid "--availability-zone"
+msgstr "--availability-zone"
+
+msgid "--availability_zone replaced by -- availability-zone"
+msgstr "--availability_zone replaced by -- availability-zone"
+
+msgid "--availability_zone replaced by --availability-zone"
+msgstr "--availability_zone replaced by --availability-zone"
+
+msgid "--block_device_mapping replaced by --block-device-mapping"
+msgstr "--block_device_mapping replaced by --block-device-mapping"
+
+msgid "--block_migrate replaced by --block-migrate"
+msgstr "--block_migrate replaced by --block-migrate"
+
+msgid "--bypass_url replaced by --bypass-url"
+msgstr "--bypass_url replaced by --bypass-url"
+
+msgid "--config-drive"
+msgstr "--config-drive"
+
+msgid "--console_type replaced by --console-type"
+msgstr "--console_type replaced by --console-type"
+
+msgid "--disk_over_commit replaced by --disk-over-commit"
+msgstr "--disk_over_commit replaced by --disk-over-commit"
+
+msgid "--endpoint-type replaced by --os-endpoint-type"
+msgstr "--endpoint-type replaced by --os-endpoint-type"
+
+msgid "--floating_ips replaced by --floating-ips"
+msgstr "--floating_ips replaced by --floating-ips"
+
+msgid "--injected_file_content_bytes replaced by --injected-file-content-bytes"
+msgstr ""
+"--injected_file_content_bytes replaced by --injected-file-content-bytes"
+
+msgid "--injected_files replaced by --injected-files"
+msgstr "--injected_files replaced by --injected-files"
+
+msgid "--instance_name replaced by --instance-name"
+msgstr "--instance_name replaced by --instance-name"
+
+msgid "--key-name"
+msgstr "--key-name"
+
+msgid "--key_name replaced by --key-name"
+msgstr "--key_name replaced by --key-name"
+
+msgid "--metadata_items replaced by --metadata-items"
+msgstr "--metadata_items replaced by --metadata-items"
+
+msgid "--no-config-drive"
+msgstr "--no-config-drive"
+
+msgid "--num-instance replaced by --min-count and --max-count"
+msgstr "--num-instance replaced by --min-count and --max-count"
+
+msgid "--os_auth_system replaced by --os-auth-system"
+msgstr "--os_auth_system replaced by --os-auth-system"
+
+msgid "--os_auth_url replaced by --os-auth-url"
+msgstr "--os_auth_url replaced by --os-auth-url"
+
+msgid "--os_compute_api_version replaced by --os-compute-api-version"
+msgstr "--os_compute_api_version replaced by --os-compute-api-version"
+
+msgid "--os_password replaced by --os-password"
+msgstr "--os_password replaced by --os-password"
+
+msgid "--os_region_name replaced by --os-region-name"
+msgstr "--os_region_name replaced by --os-region-name"
+
+msgid "--os_tenant_name replaced by --os-tenant-name"
+msgstr "--os_tenant_name replaced by --os-tenant-name"
+
+msgid "--os_username replaced by --os-username"
+msgstr "--os_username replaced by --os-username"
+
+msgid "--policy"
+msgstr "--policy"
+
+msgid "--power-state"
+msgstr "--power-state"
+
+msgid "--progress"
+msgstr "--progress"
+
+msgid "--pub_key replaced by --pub-key"
+msgstr "--pub_key replaced by --pub-key"
+
+msgid "--rebuild_password replaced by --rebuild-password"
+msgstr "--rebuild_password replaced by --rebuild-password"
+
+msgid "--reservation_id replaced by --reservation-id"
+msgstr "--reservation_id replaced by --reservation-id"
+
+msgid "--security_groups replaced by --sercurity-groups"
+msgstr "--security_groups replaced by --security-groups"
+
+msgid "--service_name replaced by --service-name"
+msgstr "--service_name replaced by --service-name"
+
+msgid "--service_type replaced by --service-type"
+msgstr "--service_type replaced by --service-type"
+
+msgid "--task-state"
+msgstr "--task-state"
+
+msgid "--user_data replaced by --user-data"
+msgstr "--user_data replaced by --user-data"
+
+msgid "--volume_service_name replaced by --volume-service-name"
+msgstr "--volume_service_name replaced by --volume-service-name"
+
+msgid "10.0.0"
+msgstr "10.0.0"
+
+msgid "10.1.0"
+msgstr "10.1.0"
+
+msgid "10.2.0"
+msgstr "10.2.0"
+
+msgid "10.3.0"
+msgstr "10.3.0"
+
+msgid "11.0.0"
+msgstr "11.0.0"
+
+msgid "3.0.0"
+msgstr "3.0.0"
+
+msgid "3.3.0"
+msgstr "3.3.0"
+
+msgid "4.0.0"
+msgstr "4.0.0"
+
+msgid "4.1.0"
+msgstr "4.1.0"
+
+msgid "5.0.0"
+msgstr "5.0.0"
+
+msgid "5.1.0"
+msgstr "5.1.0"
+
+msgid "6.0.0"
+msgstr "6.0.0"
+
+msgid ":ref:`search`"
+msgstr ":ref:`search`"
+
+msgid "Current Series Release Notes"
+msgstr "Current Series Release Notes"
+
+msgid "Liberty Series Release Notes"
+msgstr "Liberty Series Release Notes"
+
+msgid "Mitaka Series Release Notes"
+msgstr "Mitaka Series Release Notes"
+
+msgid "Newton Series Release Notes"
+msgstr "Newton Series Release Notes"
+
+msgid "Ocata Series Release Notes"
+msgstr "Ocata Series Release Notes"
+
+msgid "Pike Series Release Notes"
+msgstr "Pike Series Release Notes"
+
+msgid "Queens Series Release Notes"
+msgstr "Queens Series Release Notes"
+
+msgid "Rocky Series Release Notes"
+msgstr "Rocky Series Release Notes"
+
+msgid "Stein Series Release Notes"
+msgstr "Stein Series Release Notes"
+
+msgid "Train Series Release Notes"
+msgstr "Train Series Release Notes"
+
+msgid "Ussuri Series Release Notes"
+msgstr "Ussuri Series Release Notes"
+
+msgid "Victoria Series Release Notes"
+msgstr "Victoria Series Release Notes"
+
+msgid "Wallaby Series Release Notes"
+msgstr "Wallaby Series Release Notes"
+
+msgid "Xena Series Release Notes"
+msgstr "Xena Series Release Notes"
+
+msgid "Yoga Series Release Notes"
+msgstr "Yoga Series Release Notes"
