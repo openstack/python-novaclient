@@ -114,7 +114,7 @@ class KeypairManager(base.ManagerWithFind):
             body['keypair']['public_key'] = public_key
         return self._create('/%s' % self.keypair_prefix, body, 'keypair')
 
-    @api_versions.wraps("2.10")
+    @api_versions.wraps("2.10", "2.91")
     def create(self, name, public_key=None, key_type="ssh", user_id=None):
         """
         Create a keypair
@@ -128,6 +128,23 @@ class KeypairManager(base.ManagerWithFind):
                             'type': key_type}}
         if public_key:
             body['keypair']['public_key'] = public_key
+        if user_id:
+            body['keypair']['user_id'] = user_id
+        return self._create('/%s' % self.keypair_prefix, body, 'keypair')
+
+    @api_versions.wraps("2.92")
+    def create(self, name, public_key, key_type="ssh", user_id=None):
+        """
+        Create a keypair
+
+        :param name: name for the keypair to create
+        :param public_key: existing public key to import
+        :param key_type: keypair type to create
+        :param user_id: user to add.
+        """
+        body = {'keypair': {'name': name,
+                            'type': key_type,
+                            'public_key': public_key}}
         if user_id:
             body['keypair']['user_id'] = user_id
         return self._create('/%s' % self.keypair_prefix, body, 'keypair')
