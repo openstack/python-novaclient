@@ -1851,6 +1851,23 @@ class ServersV277Test(ServersV274Test):
 
     api_version = "2.77"
 
+    def test_unshelve(self):
+        s = self.cs.servers.get(1234)
+        # Test going through the Server object.
+        ret = s.unshelve()
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
+        self.assert_called(
+            'POST',
+            '/servers/1234/action',
+            {'unshelve': None})
+        # Test going through the ServerManager directly.
+        ret = self.cs.servers.unshelve(s)
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
+        self.assert_called(
+            'POST',
+            '/servers/1234/action',
+            {'unshelve': None})
+
     def test_unshelve_with_az(self):
         s = self.cs.servers.get(1234)
         # Test going through the Server object.
@@ -1883,7 +1900,7 @@ class ServersV277Test(ServersV274Test):
                       str(ex))
 
 
-class ServersV278Test(ServersV273Test):
+class ServersV278Test(ServersV277Test):
 
     api_version = "2.78"
 
@@ -1992,3 +2009,82 @@ class ServersV290Test(ServersV278Test):
             s.update,
             hostname='new-hostname')
         self.assertIn('hostname', str(ex))
+
+
+class ServersV291Test(ServersV290Test):
+
+    api_version = "2.91"
+
+    def test_unshelve_with_host(self):
+        s = self.cs.servers.get(1234)
+        # Test going through the Server object.
+        ret = s.unshelve(host='server1')
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
+        self.assert_called(
+            'POST',
+            '/servers/1234/action',
+            {'unshelve': {'host': 'server1'}})
+        # Test going through the ServerManager directly.
+        ret = self.cs.servers.unshelve(s, host='server1')
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
+        self.assert_called(
+            'POST',
+            '/servers/1234/action',
+            {'unshelve': {'host': 'server1'}})
+
+    def test_unshelve_server_with_az_and_host(self):
+        s = self.cs.servers.get(1234)
+        # Test going through the Server object.
+        ret = s.unshelve(host='server1', availability_zone='foo-az')
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
+        self.assert_called(
+            'POST',
+            '/servers/1234/action',
+            {'unshelve': {'host': 'server1',
+                          'availability_zone': 'foo-az'}})
+        # Test going through the ServerManager directly.
+        ret = self.cs.servers.unshelve(
+            s, host='server1', availability_zone='foo-az')
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
+        self.assert_called(
+            'POST',
+            '/servers/1234/action',
+            {'unshelve': {'host': 'server1',
+                          'availability_zone': 'foo-az'}})
+
+    def test_unshelve_unpin_az(self):
+        s = self.cs.servers.get(1234)
+        # Test going through the Server object.
+        ret = s.unshelve(availability_zone=None)
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
+        self.assert_called(
+            'POST',
+            '/servers/1234/action',
+            {'unshelve': {'availability_zone': None}})
+        # Test going through the ServerManager directly.
+        ret = self.cs.servers.unshelve(s, availability_zone=None)
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
+        self.assert_called(
+            'POST',
+            '/servers/1234/action',
+            {'unshelve': {'availability_zone': None}})
+
+    def test_unshelve_server_with_host_and_unpin(self):
+        s = self.cs.servers.get(1234)
+        # Test going through the Server object.
+        ret = s.unshelve(availability_zone=None, host='server1')
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
+        self.assert_called(
+            'POST',
+            '/servers/1234/action',
+            {'unshelve': {'host': 'server1',
+                          'availability_zone': None}})
+        # Test going through the ServerManager directly.
+        ret = self.cs.servers.unshelve(
+            s, availability_zone=None, host='server1')
+        self.assert_request_id(ret, fakes.FAKE_REQUEST_ID_LIST)
+        self.assert_called(
+            'POST',
+            '/servers/1234/action',
+            {'unshelve': {'host': 'server1',
+                          'availability_zone': None}})
