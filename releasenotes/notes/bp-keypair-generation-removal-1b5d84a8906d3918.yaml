@@ -1,0 +1,8 @@
+---
+features:
+  - |
+    Support has been added for `microversion 2.92`_. This microversion only
+    accepts to import a public key and no longer to generate one, hence now the
+    public_key parameter be mandatory.
+
+    .. _microversion 2.92: https://docs.openstack.org/nova/latest/reference/api-microversion-history.html#microversion-2-92

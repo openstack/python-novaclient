@@ -127,3 +127,28 @@ class KeypairsV35TestCase(KeypairsTest):
                            % self.keypair_prefix)
         for kp in kps:
             self.assertIsInstance(kp, keypairs.Keypair)
+
+
+class KeypairsV92TestCase(KeypairsTest):
+    def setUp(self):
+        super(KeypairsV92TestCase, self).setUp()
+        self.cs.api_version = api_versions.APIVersion("2.92")
+
+    def test_create_keypair(self):
+        name = "foo"
+        key_type = "some_type"
+        public_key = "fake-public-key"
+        kp = self.cs.keypairs.create(name, public_key=public_key,
+                                     key_type=key_type)
+        self.assert_request_id(kp, fakes.FAKE_REQUEST_ID_LIST)
+        self.assert_called('POST', '/%s' % self.keypair_prefix,
+                           body={'keypair': {'name': name,
+                                             'public_key': public_key,
+                                             'type': key_type}})
+        self.assertIsInstance(kp, keypairs.Keypair)
+
+    def test_create_keypair_without_pubkey(self):
+        name = "foo"
+        key_type = "some_type"
+        self.assertRaises(TypeError,
+                          self.cs.keypairs.create, name, key_type=key_type)
