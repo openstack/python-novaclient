@@ -1228,13 +1228,8 @@ class FakeSessionClient(base_client.SessionClient):
 
     def post_os_keypairs(self, body, **kw):
         assert list(body) == ['keypair']
-        if self.api_version >= api_versions.APIVersion("2.92"):
-            # In 2.92, public_key becomes mandatory
-            required = ['name', 'public_key']
-        else:
-            required = ['name']
         fakes.assert_has_keys(body['keypair'],
-                              required=required)
+                              required=['name'])
         r = {'keypair': self.get_os_keypairs()[2]['keypairs'][0]['keypair']}
         return (202, {}, r)
 

@@ -10,16 +10,20 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+from novaclient import api_versions
 from novaclient.tests.unit import fakes
 from novaclient.tests.unit.fixture_data import base
 
 
 class V1(base.Fixture):
 
+    api_version = '2.1'
     base_url = 'os-keypairs'
 
     def setUp(self):
         super(V1, self).setUp()
+        api_version = api_versions.APIVersion(self.api_version)
+
         keypair = {'fingerprint': 'FAKE_KEYPAIR', 'name': 'test'}
 
         headers = self.json_headers
@@ -39,7 +43,13 @@ class V1(base.Fixture):
         def post_os_keypairs(request, context):
             body = request.json()
             assert list(body) == ['keypair']
-            fakes.assert_has_keys(body['keypair'], required=['name'])
+            if api_version >= api_versions.APIVersion("2.92"):
+                # In 2.92, public_key becomes mandatory
+                required = ['name', 'public_key']
+            else:
+                required = ['name']
+            fakes.assert_has_keys(body['keypair'],
+                                  required=required)
             return {'keypair': keypair}
 
         self.requests_mock.post(self.url(),
