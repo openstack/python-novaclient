@@ -12,7 +12,6 @@
 #    under the License.
 
 import argparse
-import distutils.version as dist_version
 import io
 import re
 import sys
@@ -21,7 +20,6 @@ from unittest import mock
 import ddt
 import fixtures
 from keystoneauth1 import fixture
-import prettytable
 import requests_mock
 from testtools import matchers
 
@@ -583,20 +581,13 @@ class ShellTest(utils.TestCase):
     def test_password(self, mock_getpass, mock_stdin, m_requests):
         mock_stdin.encoding = "utf-8"
 
-        # default output of empty tables differs depending between prettytable
-        # versions
-        if (hasattr(prettytable, '__version__') and
-                dist_version.StrictVersion(prettytable.__version__) <
-                dist_version.StrictVersion('0.7.2')):
-            ex = '\n'
-        else:
-            ex = '\n'.join([
-                '+----+------+--------+------------+-------------+----------+',
-                '| ID | Name | Status | Task State | Power State | Networks |',
-                '+----+------+--------+------------+-------------+----------+',
-                '+----+------+--------+------------+-------------+----------+',
-                ''
-            ])
+        ex = '\n'.join([
+            '+----+------+--------+------------+-------------+----------+',
+            '| ID | Name | Status | Task State | Power State | Networks |',
+            '+----+------+--------+------------+-------------+----------+',
+            '+----+------+--------+------------+-------------+----------+',
+            ''
+        ])
         self.make_env(exclude='OS_PASSWORD')
         self.register_keystone_discovery_fixture(m_requests)
         stdout, stderr = self.shell('list')
