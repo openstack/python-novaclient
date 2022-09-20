@@ -1429,7 +1429,7 @@ class ServerManager(base.BootingManagerWithFind):
         Often a cheaper call then getting all the details for a server.
 
         :param server: The :class:`Server` (or its ID) for which
-                       the IP adresses are to be returned
+                       the IP addresses are to be returned
         :returns: An instance of novaclient.base.DictWithMeta
         """
         resp, body = self.api.client.get("/servers/%s/ips" %

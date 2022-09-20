@@ -38,7 +38,7 @@ class SimpleReadOnlyNovaClientTest(base.ClientTestBase):
     def test_admin_availability_zone_list(self):
         self.assertIn("internal", self.nova('availability-zone-list'))
 
-    def test_admin_flavor_acces_list(self):
+    def test_admin_flavor_access_list(self):
         self.assertRaises(exceptions.CommandFailed,
                           self.nova,
                           'flavor-access-list')
@@ -73,7 +73,7 @@ class SimpleReadOnlyNovaClientTest(base.ClientTestBase):
     def test_admin_server_group_list(self):
         self.nova('server-group-list')
 
-    def test_admin_servce_list(self):
+    def test_admin_service_list(self):
         self.nova('service-list')
 
     def test_admin_usage(self):

@@ -21,7 +21,7 @@ from novaclient import base
 
 # NOTE(takashin): The os-agents APIs have been removed
 # in https://review.opendev.org/c/openstack/nova/+/749309 .
-# But the following API bindings remains as ther are
+# But the following API bindings remains as there are
 # because the python-openstackclient depends on them.
 
 
