@@ -2057,14 +2057,15 @@ def do_rebuild(cs, args):
     server = _find_server(cs, args.server)
     image = _find_image(cs, args.image)
 
-    if args.rebuild_password is not False:
-        _password = args.rebuild_password
-    else:
-        _password = None
-
     kwargs = {'preserve_ephemeral': args.preserve_ephemeral,
               'name': args.name,
               'meta': _meta_parsing(args.meta)}
+
+    if args.rebuild_password is not False:
+        kwargs['password'] = args.rebuild_password
+    else:
+        kwargs['password'] = None
+
     if 'description' in args:
         kwargs['description'] = args.description
 
@@ -2145,7 +2146,7 @@ def do_rebuild(cs, args):
     if 'hostname' in args and args.hostname is not None:
         kwargs['hostname'] = args.hostname
 
-    server = server.rebuild(image, _password, **kwargs)
+    server = server.rebuild(image, **kwargs)
     _print_server(cs, args, server)
 
     if args.poll:
