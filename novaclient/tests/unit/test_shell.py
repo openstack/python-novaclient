@@ -777,6 +777,8 @@ class ShellTest(utils.TestCase):
 class TestLoadVersionedActions(utils.TestCase):
 
     def test_load_versioned_actions(self):
+        # first load with API version 2.15, ensuring we use the 2.15 version of
+        # the underlying function (which returns 1)
         parser = novaclient.shell.NovaClientArgumentParser()
         subparsers = parser.add_subparsers(metavar='<subcommand>')
         shell = novaclient.shell.OpenStackComputeShell()
@@ -787,16 +789,18 @@ class TestLoadVersionedActions(utils.TestCase):
         self.assertEqual(
             1, shell.subcommands['fake-action'].get_default('func')())
 
+        # now load with API version 2.25, ensuring we now use the
+        # correspponding version of the underlying function (which now returns
+        # 2)
+        parser = novaclient.shell.NovaClientArgumentParser()
+        subparsers = parser.add_subparsers(metavar='<subcommand>')
+        shell = novaclient.shell.OpenStackComputeShell()
         shell.subcommands = {}
         shell._find_actions(subparsers, fake_actions_module,
                             api_versions.APIVersion("2.25"), False)
         self.assertIn('fake-action', shell.subcommands.keys())
         self.assertEqual(
             2, shell.subcommands['fake-action'].get_default('func')())
-
-        self.assertIn('fake-action2', shell.subcommands.keys())
-        self.assertEqual(
-            3, shell.subcommands['fake-action2'].get_default('func')())
 
     def test_load_versioned_actions_not_in_version_range(self):
         parser = novaclient.shell.NovaClientArgumentParser()
@@ -908,6 +912,10 @@ class TestLoadVersionedActions(utils.TestCase):
 
         mock_add_arg.reset_mock()
 
+        parser = novaclient.shell.NovaClientArgumentParser(add_help=False)
+        subparsers = parser.add_subparsers(metavar='<subcommand>')
+        shell = novaclient.shell.OpenStackComputeShell()
+        shell.subcommands = {}
         shell._find_actions(subparsers, fake_actions_module,
                             api_versions.APIVersion("2.21"), False)
         self.assertNotIn(mock.call('--foo', help="first foo"),
