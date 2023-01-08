@@ -19,7 +19,6 @@
       - check-requirements
       - lib-forward-testing-python3
       - openstack-cover-jobs
-      - openstack-lower-constraints-jobs
       - openstack-python3-xena-jobs
       - publish-openstack-docs-pti
       - release-notes-jobs-python3
