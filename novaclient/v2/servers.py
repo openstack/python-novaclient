@@ -781,7 +781,7 @@ class ServerManager(base.BootingManagerWithFind):
         return self._get("/servers/%s" % base.getid(server), "server")
 
     def list(self, detailed=True, search_opts=None, marker=None, limit=None,
-             sort_keys=None, sort_dirs=None):
+             sort_keys=None, sort_dirs=None, uuids=None):
         """
         Get a list of servers.
 
@@ -834,7 +834,7 @@ class ServerManager(base.BootingManagerWithFind):
 
             # Transform the dict to a sequence of two-element tuples in fixed
             # order, then the encoded string will be consistent in Python 2&3.
-            if qparams or sort_keys or sort_dirs:
+            if qparams or sort_keys or sort_dirs or uuids:
                 # sort keys and directions are unique since the same parameter
                 # key is repeated for each associated value
                 # (ie, &sort_key=key1&sort_key=key2&sort_key=key3)
@@ -845,6 +845,8 @@ class ServerManager(base.BootingManagerWithFind):
                 if sort_dirs:
                     items.extend(('sort_dir', sort_dir)
                                  for sort_dir in sort_dirs)
+                if uuids:
+                    items.extend(('uuid', uuid) for uuid in uuids)
                 new_qparams = sorted(items, key=lambda x: x[0])
                 query_string = "?%s" % parse.urlencode(new_qparams)
             else:
