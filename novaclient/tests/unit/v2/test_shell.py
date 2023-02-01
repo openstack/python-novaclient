@@ -4700,6 +4700,8 @@ class ShellTest(utils.TestCase):
             87,  # doesn't require any changes in novaclient.
             89,  # There are no version-wrapped shell method changes for this.
             93,  # There are no version-wrapped shell method changes for this.
+            94,  # There are no version-wrapped shell method changes for this.
+            95,  # There are no version-wrapped shell method changes for this.
         ])
         versions_supported = set(range(0,
                                  novaclient.API_MAX_VERSION.ver_minor + 1))

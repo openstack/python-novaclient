@@ -1,0 +1,11 @@
+---
+features:
+  - |
+    Added support for `microversion 2.94`_. There are no client-side changes
+    for this microversion, but sending this microversion allows the
+    ``hostname`` parameter in the server create, server update, and server
+    rebuild APIs to be a fully qualified domain name (FQDN). Prior to this
+    microversion, server-side validation only allows short names as the
+    ``hostname``.
+
+    .. _microversion 2.94: https://docs.openstack.org/nova/latest/reference/api-microversion-history.html#id83

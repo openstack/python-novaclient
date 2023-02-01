@@ -1,0 +1,10 @@
+---
+features:
+  - |
+    Added support for `microversion 2.95`_. There are no client-side changes
+    for this microversion, but sending this microversion triggers evacuated
+    instances to be stopped on the destination host. Prior to this
+    microversion, instances were keeping their state from source to
+    destination host.
+
+    .. _microversion 2.95: https://docs.openstack.org/nova/latest/reference/api-microversion-history.html#id84
