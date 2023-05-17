@@ -631,7 +631,7 @@ class ShellTest(utils.TestCase):
         )
         # We also expect to see the deprecation warning
         self.assertIn(
-            'nova CLI is deprecated and will be a removed in a future release',
+            'nova CLI is deprecated and will be removed in a future release',
             sys.stderr.getvalue(),
         )
 
@@ -769,7 +769,7 @@ class ShellTest(utils.TestCase):
         self.assertIn('ERROR (MyException): message\n', err)
         # We also expect to see the deprecation warning
         self.assertIn(
-            'nova CLI is deprecated and will be a removed in a future release',
+            'nova CLI is deprecated and will be removed in a future release',
             err,
         )
 
