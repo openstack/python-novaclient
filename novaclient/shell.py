@@ -824,7 +824,7 @@ def main(argv=sys.argv[1:]):
         if os.environ.get("NOVACLIENT_ISHOULDNTBEDOINGTHIS") != "1":
             print(
                 _(
-                    "nova CLI is deprecated and will be a removed in a future "
+                    "nova CLI is deprecated and will be removed in a future "
                     "release"
                 ),
                 file=sys.stderr,
