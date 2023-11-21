@@ -9,6 +9,7 @@
       openrc_enable_export: true
       devstack_localrc:
         KEYSTONE_ADMIN_ENDPOINT: true
+        NEUTRON_ENFORCE_SCOPE: false
     irrelevant-files:
       - ^.*\.rst$
       - ^doc/.*$
