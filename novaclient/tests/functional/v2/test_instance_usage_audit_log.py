@@ -21,7 +21,7 @@ class TestInstanceUsageAuditLogCLI(base.ClientTestBase):
     COMPUTE_API_VERSION = '2.1'
 
     # NOTE(takashin): By default, 'instance_usage_audit' is False in nova.
-    # So the instance usage audit log is not recoreded.
+    # So the instance usage audit log is not recorded.
     # Therefore an empty result can be got.
     # But it is tested here to call APIs and get responses normally.
 

@@ -44,7 +44,7 @@ class TestQuotaClassesNovaClient(base.ClientTestBase):
         """Returns a fake quota class name specific to this test class."""
         return 'fake-class-%s' % self.COMPUTE_API_VERSION.replace('.', '-')
 
-    def _verify_qouta_class_show_output(self, output, expected_values):
+    def _verify_quota_class_show_output(self, output, expected_values):
         # Assert that the expected key/value pairs are in the output table
         for quota_name in self._included_resources:
             # First make sure the resource is actually in expected quota.
@@ -74,7 +74,7 @@ class TestQuotaClassesNovaClient(base.ClientTestBase):
         }
         output = self.nova('quota-class-show %s' %
                            self._get_quota_class_name())
-        self._verify_qouta_class_show_output(output, default_values)
+        self._verify_quota_class_show_output(output, default_values)
 
     def test_quota_class_update(self):
         """Tests updating a fake quota class. The way this works in the API
@@ -96,7 +96,7 @@ class TestQuotaClassesNovaClient(base.ClientTestBase):
         self.nova("quota-class-update", params=" ".join(params))
         # Assert the results using the quota-class-show output.
         output = self.nova('quota-class-show %s' % class_name)
-        self._verify_qouta_class_show_output(output, expected_values)
+        self._verify_quota_class_show_output(output, expected_values)
 
         # Assert that attempting to update resources that are blocked will
         # result in a failure.
@@ -115,7 +115,7 @@ class TestQuotasNovaClient2_50(TestQuotaClassesNovaClient):
     # The 2.50 microversion added the server_groups and server_group_members
     # to the response, and filtered out floating_ips, fixed_ips,
     # security_groups and security_group_members, similar to the 2.36
-    # microversion in the os-qouta-sets API.
+    # microversion in the os-quota-sets API.
     _included_resources = ['instances', 'cores', 'ram', 'metadata_items',
                            'injected_files', 'injected_file_content_bytes',
                            'injected_file_path_bytes', 'key_pairs',

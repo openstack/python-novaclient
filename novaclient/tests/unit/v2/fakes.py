@@ -1218,7 +1218,7 @@ class FakeSessionClient(base_client.SessionClient):
                 "deleted": False,
                 "created_at": "2014-04-19T02:16:44.000000",
                 "updated_at": "2014-04-19T10:12:3.000000",
-                "figerprint": "FAKE_KEYPAIR",
+                "fingerprint": "FAKE_KEYPAIR",
                 "deleted_at": None,
                 "id": 4}}
             ]})
