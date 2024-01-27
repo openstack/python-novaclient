@@ -25,7 +25,7 @@ repos:
       - id: flake8
         name: flake8
         additional_dependencies:
-          - hacking~=4.1.0
+          - hacking>=6.1.0,<6.2.0
         language: python
         entry: flake8
         files: '^.*\.py$'
