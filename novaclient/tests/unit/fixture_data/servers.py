@@ -205,6 +205,19 @@ class Base(base.Fixture):
             self.requests_mock.delete(self.url(u, 'metadata', 'key1'),
                                       json=self.diagnostic,
                                       headers=self.json_headers)
+        metadata3 = {'meta': {
+            'Server Label': 'Web Head 1'
+        }}
+        self.requests_mock.get(self.url(1234, 'metadata', 'Server Label'),
+                               json=metadata3,
+                               headers=self.json_headers)
+        metadata4 = {'metadata': {
+            'Server Label': 'Web Head 1',
+            'Image Version': '2.1'
+        }}
+        self.requests_mock.get(self.url(1234, 'metadata'),
+                               json=metadata4,
+                               headers=self.json_headers)
 
         get_security_groups = {
             "security_groups": [{

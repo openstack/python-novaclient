@@ -463,6 +463,23 @@ class ServersTest(utils.FixturedTestCase):
         self.assert_called('PUT', '/servers/1234/metadata/test_key',
                            {'meta': {'test_key': 'test_value'}})
 
+    def test_get_server_meta(self):
+        m = self.cs.servers.get_meta(1234, 'Server Label')
+        self.assert_request_id(m, fakes.FAKE_REQUEST_ID_LIST)
+        self.assert_called('GET', '/servers/1234/metadata/Server%20Label')
+        self.assertEqual(m, {'meta': {
+            'Server Label': 'Web Head 1'
+        }})
+
+    def test_list_server_meta(self):
+        m = self.cs.servers.list_meta(1234)
+        self.assert_request_id(m, fakes.FAKE_REQUEST_ID_LIST)
+        self.assert_called('GET', '/servers/1234/metadata')
+        self.assertEqual(m, {'metadata': {
+            'Server Label': 'Web Head 1',
+            'Image Version': '2.1'
+        }})
+
     def test_find(self):
         server = self.cs.servers.find(name='sample-server')
         self.assert_request_id(server, fakes.FAKE_REQUEST_ID_LIST)
