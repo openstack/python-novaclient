@@ -89,11 +89,15 @@ class TestServersBootNovaClient(base.ClientTestBase):
         3. Create a second server using the --image-with option using the meta
            key stored in the snapshot image created in step 2.
         """
-        # create the first server and wait for it to be active
-        server_info = self.nova('boot', params=(
+        params = (
             '--flavor %(flavor)s --image %(image)s --poll '
             'image-with-server-1' % {'image': self.image.id,
-                                     'flavor': self.flavor.id}))
+                                     'flavor': self.flavor.id})
+        # check to see if we have to pass in a network id
+        if self.multiple_networks:
+            params += ' --nic net-id=%s' % self.network.id
+        # create the first server and wait for it to be active
+        server_info = self.nova('boot', params=params)
         server_id = self._get_value_from_the_table(server_info, 'id')
         self.addCleanup(self._cleanup_server, server_id)
 
@@ -114,11 +118,15 @@ class TestServersBootNovaClient(base.ClientTestBase):
             snapshot_info, 'image_with_meta')
         self.assertEqual(server_id, meta_value)
 
-        # create the second server using --image-with
-        server_info = self.nova('boot', params=(
+        params = (
             '--flavor %(flavor)s --image-with image_with_meta=%(meta_value)s '
             '--poll image-with-server-2' % {'meta_value': server_id,
-                                            'flavor': self.flavor.id}))
+                                            'flavor': self.flavor.id})
+        # check to see if we have to pass in a network id
+        if self.multiple_networks:
+            params += ' --nic net-id=%s' % self.network.id
+        # create the second server using --image-with
+        server_info = self.nova('boot', params=params)
         server_id = self._get_value_from_the_table(server_info, 'id')
         self.addCleanup(self._cleanup_server, server_id)
 
