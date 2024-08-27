@@ -258,7 +258,7 @@ class ClientTestBase(testtools.TestCase):
         # something more sensible.
         cli_dir = os.environ.get(
             'OS_NOVACLIENT_EXEC_DIR',
-            os.path.join(os.path.abspath('.'), '.tox/functional/bin'))
+            os.path.join(os.environ['TOX_ENV_DIR'], 'bin'))
 
         self.cli_clients = tempest.lib.cli.base.CLIClient(
             username=user,
