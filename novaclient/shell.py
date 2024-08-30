@@ -232,8 +232,11 @@ class NovaClientArgumentParser(argparse.ArgumentParser):
         option_tuples = (super(NovaClientArgumentParser, self)
                          ._get_option_tuples(option_string))
         if len(option_tuples) > 1:
-            normalizeds = [option.replace('_', '-')
-                           for action, option, value in option_tuples]
+            # In Python < 3.12, this is a 3-part tuple:
+            #   action, option_string, explicit_arg
+            # In Python >= 3.12, this is a 4 part tuple:
+            #   action, option_string, sep, explicit_arg
+            normalizeds = [opt[1].replace('_', '-') for opt in option_tuples]
             if len(set(normalizeds)) == 1:
                 return option_tuples[:1]
         return option_tuples
