@@ -1,0 +1,4 @@
+---
+features:
+  - |
+    Adds supports for Nova Server get and list metadata API.

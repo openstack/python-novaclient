@@ -2039,6 +2039,26 @@ class ServerManager(base.BootingManagerWithFind):
         return self._update("/servers/%s/metadata/%s" %
                             (base.getid(server), key), body)
 
+    def list_meta(self, server):
+        """
+        Lists all metadata for a server.
+        :param server: The :class:`Server` (or its ID).
+        :returns: A dict of metadata.
+        """
+        resp, body = self.api.client.get("/servers/%s/metadata" %
+                                         base.getid(server))
+        return base.DictWithMeta(body, resp)
+
+    def get_meta(self, server, key):
+        """
+        Shows details for a metadata item, by key, for a server.
+        :param server: The :class:`Server` (or its ID).
+        :param key: metadata key to get
+        """
+        resp, body = self.api.client.get("/servers/%s/metadata/%s" %
+                                         (base.getid(server), key))
+        return base.DictWithMeta(body, resp)
+
     def get_console_output(self, server, length=None):
         """
         Get text console log output from Server.
