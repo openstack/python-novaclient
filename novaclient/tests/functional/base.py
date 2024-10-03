@@ -15,7 +15,6 @@ import time
 
 from cinderclient.v3 import client as cinderclient
 import fixtures
-from glanceclient import client as glanceclient
 from keystoneauth1.exceptions import discovery as discovery_exc
 from keystoneauth1 import identity
 from keystoneauth1 import session as ksession
@@ -24,6 +23,7 @@ from keystoneclient import discover as keystone_discover
 from neutronclient.v2_0 import client as neutronclient
 import openstack.config
 import openstack.config.exceptions
+import openstack.connection
 from oslo_utils import uuidutils
 import tempest.lib.cli.base
 import testtools
@@ -223,13 +223,13 @@ class ClientTestBase(testtools.TestCase):
 
         self.client = self._get_novaclient(session)
 
-        self.glance = glanceclient.Client('2', session=session)
+        self.openstack = openstack.connection.Connection(session=session)
 
         # pick some reasonable flavor / image combo
         if "flavor" not in CACHE:
             CACHE["flavor"] = pick_flavor(self.client.flavors.list())
         if "image" not in CACHE:
-            CACHE["image"] = pick_image(self.glance.images.list())
+            CACHE["image"] = pick_image(self.openstack.image.images())
         self.flavor = CACHE["flavor"]
         self.image = CACHE["image"]
 

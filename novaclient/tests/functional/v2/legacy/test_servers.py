@@ -111,7 +111,7 @@ class TestServersBootNovaClient(base.ClientTestBase):
         # get the snapshot image id out of the output table for the second
         # server create request
         snapshot_id = self._get_value_from_the_table(snapshot_info, 'id')
-        self.addCleanup(self.glance.images.delete, snapshot_id)
+        self.addCleanup(self.openstack.image.delete_image, snapshot_id)
 
         # verify the metadata was set on the snapshot image
         meta_value = self._get_value_from_the_table(
