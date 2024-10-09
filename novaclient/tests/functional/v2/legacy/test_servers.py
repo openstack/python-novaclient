@@ -25,9 +25,8 @@ class TestServersBootNovaClient(base.ClientTestBase):
     def _boot_server_with_legacy_bdm(self, bdm_params=()):
         volume_size = 1
         volume_name = self.name_generate()
-        volume = self.cinder.volumes.create(size=volume_size,
-                                            name=volume_name,
-                                            imageRef=self.image.id)
+        volume = self.openstack.block_storage.create_volume(
+            size=volume_size, name=volume_name, image_id=self.image.id)
         self.wait_for_volume_status(volume, "available")
 
         if (len(bdm_params) >= 3 and bdm_params[2] == '1'):
@@ -56,8 +55,8 @@ class TestServersBootNovaClient(base.ClientTestBase):
         self.wait_for_resource_delete(server_id, self.client.servers)
 
         if delete_volume:
-            self.cinder.volumes.delete(volume.id)
-            self.wait_for_resource_delete(volume.id, self.cinder.volumes)
+            self.openstack.block_storage.delete_volume(volume)
+            self.openstack.block_storage.wait_for_delete(volume)
 
     def test_boot_server_with_legacy_bdm(self):
         # bdm v1 format

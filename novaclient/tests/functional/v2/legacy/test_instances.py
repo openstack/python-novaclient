@@ -53,8 +53,8 @@ class TestInstanceCLI(base.ClientTestBase):
         self.addCleanup(server.delete)
 
         # create a volume for attachment
-        volume = self.cinder.volumes.create(1)
-        self.addCleanup(volume.delete)
+        volume = self.openstack.block_storage.create_volume(size=1)
+        self.addCleanup(self.openstack.block_storage.delete_volume, volume)
 
         # allow volume to become available
         self.wait_for_volume_status(volume, 'available')
