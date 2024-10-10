@@ -19,7 +19,6 @@ from keystoneauth1 import identity
 from keystoneauth1 import session as ksession
 from keystoneclient import client as keystoneclient
 from keystoneclient import discover as keystone_discover
-from neutronclient.v2_0 import client as neutronclient
 import openstack.config
 import openstack.config.exceptions
 import openstack.connection
@@ -234,8 +233,7 @@ class ClientTestBase(testtools.TestCase):
 
         if "network" not in CACHE:
             # Get the networks from neutron.
-            neutron = neutronclient.Client(session=session)
-            neutron_networks = neutron.list_networks()['networks']
+            neutron_networks = self.openstack.network.networks()
             # Convert the neutron dicts to Network objects.
             nets = []
             for network in neutron_networks:
