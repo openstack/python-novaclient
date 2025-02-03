@@ -836,10 +836,9 @@ def main(argv=sys.argv[1:]):
         OpenStackComputeShell().main(argv)
     except Exception as exc:
         logger.debug(exc, exc_info=1)
-        message = encodeutils.exception_to_unicode(exc)
         print("ERROR (%(type)s): %(msg)s" % {
               'type': exc.__class__.__name__,
-              'msg': message},
+              'msg': exc},
               file=sys.stderr)
         sys.exit(1)
     except KeyboardInterrupt:
