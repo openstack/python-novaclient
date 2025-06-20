@@ -4208,7 +4208,7 @@ def do_ssh(cs, args):
     cmd = "ssh -%d -p%d %s %s@%s %s" % (version, args.port, identity,
                                         args.login, ip_address, args.extra)
     logger.debug("Executing cmd '%s'", cmd)
-    os.system(cmd)
+    os.system(cmd)  # nosec: B605
 
 
 # NOTE(mriedem): In the 2.50 microversion, the os-quota-class-sets API

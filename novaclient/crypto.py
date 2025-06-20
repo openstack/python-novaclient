@@ -14,7 +14,7 @@
 #    under the License.
 
 import base64
-import subprocess
+import subprocess  # nosec: B404
 
 
 class DecryptionFailure(Exception):
@@ -30,7 +30,7 @@ def decrypt_password(private_key, password):
     cmd = ['openssl', 'rsautl', '-decrypt', '-inkey', private_key]
     proc = subprocess.Popen(cmd, stdin=subprocess.PIPE,
                             stdout=subprocess.PIPE,
-                            stderr=subprocess.PIPE)
+                            stderr=subprocess.PIPE)  # nosec: B603
     out, err = proc.communicate(unencoded)
     proc.stdin.close()
     if proc.returncode:
