@@ -14,11 +14,9 @@ import os
 import time
 
 import fixtures
-from keystoneauth1.exceptions import discovery as discovery_exc
 from keystoneauth1 import identity
 from keystoneauth1 import session as ksession
 from keystoneclient import client as keystoneclient
-from keystoneclient import discover as keystone_discover
 import openstack.config
 import openstack.config.exceptions
 import openstack.connection
@@ -35,18 +33,6 @@ import novaclient.v2.shell
 
 BOOT_IS_COMPLETE = ("login as 'cirros' user. default password: "
                     "'gocubsgo'. use 'sudo' for root.")
-
-
-def is_keystone_version_available(session, version):
-    """Given a (major, minor) pair, check if the API version is enabled."""
-
-    d = keystone_discover.Discover(session)
-    try:
-        d.create_client(version)
-    except (discovery_exc.DiscoveryFailure, discovery_exc.VersionNotAvailable):
-        return False
-    else:
-        return True
 
 
 # The following are simple filter functions that filter our available
@@ -503,10 +489,7 @@ class ClientTestBase(testtools.TestCase):
 
     def _get_project_id(self, name):
         """Obtain project id by project name."""
-        if self.keystone.version == "v3":
-            project = self.keystone.projects.find(name=name)
-        else:
-            project = self.keystone.tenants.find(name=name)
+        project = self.keystone.projects.find(name=name)
         return project.id
 
     def _cleanup_server(self, server_id):
@@ -546,39 +529,31 @@ class ClientTestBase(testtools.TestCase):
         self.fail('Unable to find alternate for flavor: %s' % flavor_name)
 
 
-class TenantTestBase(ClientTestBase):
-    """Base test class for additional tenant and user creation which
+class ProjectTestBase(ClientTestBase):
+    """Base test class for additional project and user creation which
     could be required in various test scenarios
     """
 
     def setUp(self):
-        super(TenantTestBase, self).setUp()
+        super(ProjectTestBase, self).setUp()
         user_name = uuidutils.generate_uuid()
         project_name = uuidutils.generate_uuid()
         password = 'password'
 
-        if self.keystone.version == "v3":
-            project = self.keystone.projects.create(project_name,
-                                                    self.project_domain_id)
-            self.project_id = project.id
-            self.addCleanup(self.keystone.projects.delete, self.project_id)
+        project = self.keystone.projects.create(project_name,
+                                                self.project_domain_id)
+        self.project_id = project.id
+        self.addCleanup(self.keystone.projects.delete, self.project_id)
 
-            self.user_id = self.keystone.users.create(
-                name=user_name, password=password,
-                default_project=self.project_id).id
+        self.user_id = self.keystone.users.create(
+            name=user_name, password=password,
+            default_project=self.project_id).id
 
-            for role in self.keystone.roles.list():
-                if "member" in role.name.lower():
-                    self.keystone.roles.grant(role.id, user=self.user_id,
-                                              project=self.project_id)
-                    break
-        else:
-            project = self.keystone.tenants.create(project_name)
-            self.project_id = project.id
-            self.addCleanup(self.keystone.tenants.delete, self.project_id)
-
-            self.user_id = self.keystone.users.create(
-                user_name, password, tenant_id=self.project_id).id
+        for role in self.keystone.roles.list():
+            if "member" in role.name.lower():
+                self.keystone.roles.grant(role.id, user=self.user_id,
+                                          project=self.project_id)
+                break
 
         self.addCleanup(self.keystone.users.delete, self.user_id)
         self.cli_clients_2 = tempest.lib.cli.base.CLIClient(

@@ -19,7 +19,7 @@ from novaclient.v2 import shell
 
 
 @decorators.skip_because(bug="1675526")
-class TestTriggerCrashDumpNovaClientV217(base.TenantTestBase):
+class TestTriggerCrashDumpNovaClientV217(base.ProjectTestBase):
     """Functional tests for trigger crash dump"""
 
     COMPUTE_API_VERSION = "2.17"

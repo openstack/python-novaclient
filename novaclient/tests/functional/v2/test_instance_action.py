@@ -124,7 +124,7 @@ class TestInstanceActionCLIV258(TestInstanceActionCLI):
 
 
 class TestInstanceActionCLIV262(TestInstanceActionCLIV258,
-                                base.TenantTestBase):
+                                base.ProjectTestBase):
     """Instance action functional tests for v2.62 nova-api microversion."""
 
     COMPUTE_API_VERSION = "2.62"
@@ -155,7 +155,7 @@ class TestInstanceActionCLIV262(TestInstanceActionCLIV258,
 
 
 class TestInstanceActionCLIV266(TestInstanceActionCLIV258,
-                                base.TenantTestBase):
+                                base.ProjectTestBase):
     """Instance action functional tests for v2.66 nova-api microversion."""
 
     COMPUTE_API_VERSION = "2.66"

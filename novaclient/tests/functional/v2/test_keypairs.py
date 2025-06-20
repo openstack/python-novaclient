@@ -44,7 +44,7 @@ class TestKeypairsNovaClientV22(test_keypairs.TestKeypairsNovaClient):
         self.assertIn('x509', keypair)
 
 
-class TestKeypairsNovaClientV210(base.TenantTestBase):
+class TestKeypairsNovaClientV210(base.ProjectTestBase):
     """Keypairs functional tests for v2.10 nova-api microversion."""
 
     COMPUTE_API_VERSION = "2.10"
@@ -93,7 +93,7 @@ class TestKeypairsNovaClientV210(base.TenantTestBase):
             self._get_column_value_from_single_row_table, output, "Name")
 
 
-class TestKeypairsNovaClientV235(base.TenantTestBase):
+class TestKeypairsNovaClientV235(base.ProjectTestBase):
     """Keypairs functional tests for v2.35 nova-api microversion."""
 
     COMPUTE_API_VERSION = "2.35"

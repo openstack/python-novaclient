@@ -17,7 +17,7 @@ from keystoneauth1 import session
 
 from novaclient import client
 
-IDENTITY_URL = 'http://identityserver:5000/v2.0'
+IDENTITY_URL = 'http://identity.host/v3'
 COMPUTE_URL = 'http://compute.host'
 
 

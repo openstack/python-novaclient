@@ -33,7 +33,7 @@ from novaclient.tests.unit import utils
 FAKE_ENV = {'OS_USERNAME': 'username',
             'OS_PASSWORD': 'password',
             'OS_TENANT_NAME': 'tenant_name',
-            'OS_AUTH_URL': 'http://no.where/v2.0',
+            'OS_AUTH_URL': 'http://no.where/v3',
             'OS_COMPUTE_API_VERSION': '2',
             'OS_PROJECT_DOMAIN_ID': 'default',
             'OS_PROJECT_DOMAIN_NAME': 'default',
@@ -43,13 +43,13 @@ FAKE_ENV = {'OS_USERNAME': 'username',
 FAKE_ENV2 = {'OS_USER_ID': 'user_id',
              'OS_PASSWORD': 'password',
              'OS_TENANT_ID': 'tenant_id',
-             'OS_AUTH_URL': 'http://no.where/v2.0',
+             'OS_AUTH_URL': 'http://no.where/v3',
              'OS_COMPUTE_API_VERSION': '2'}
 
 FAKE_ENV3 = {'OS_USER_ID': 'user_id',
              'OS_PASSWORD': 'password',
              'OS_TENANT_ID': 'tenant_id',
-             'OS_AUTH_URL': 'http://no.where/v2.0',
+             'OS_AUTH_URL': 'http://no.where/v3',
              'NOVA_ENDPOINT_TYPE': 'novaURL',
              'OS_ENDPOINT_TYPE': 'osURL',
              'OS_COMPUTE_API_VERSION': '2'}
@@ -57,7 +57,7 @@ FAKE_ENV3 = {'OS_USER_ID': 'user_id',
 FAKE_ENV4 = {'OS_USER_ID': 'user_id',
              'OS_PASSWORD': 'password',
              'OS_TENANT_ID': 'tenant_id',
-             'OS_AUTH_URL': 'http://no.where/v2.0',
+             'OS_AUTH_URL': 'http://no.where/v3',
              'NOVA_ENDPOINT_TYPE': 'internal',
              'OS_ENDPOINT_TYPE': 'osURL',
              'OS_COMPUTE_API_VERSION': '2'}
@@ -65,7 +65,7 @@ FAKE_ENV4 = {'OS_USER_ID': 'user_id',
 FAKE_ENV5 = {'OS_USERNAME': 'username',
              'OS_PASSWORD': 'password',
              'OS_TENANT_NAME': 'tenant_name',
-             'OS_AUTH_URL': 'http://no.where/v2.0'}
+             'OS_AUTH_URL': 'http://no.where/v3'}
 
 
 def _create_ver_list(versions):
@@ -408,10 +408,10 @@ class ShellTest(utils.TestCase):
         return (stdout, stderr)
 
     def register_keystone_discovery_fixture(self, mreq):
-        v2_url = "http://no.where/v2.0"
-        v2_version = fixture.V2Discovery(v2_url)
+        v3_url = "http://no.where/v3"
+        v3_version = fixture.V3Discovery(v3_url)
         mreq.register_uri(
-            'GET', v2_url, json=_create_ver_list([v2_version]),
+            'GET', v3_url, json=_create_ver_list([v3_version]),
             status_code=200)
 
     def test_help_unknown_command(self):

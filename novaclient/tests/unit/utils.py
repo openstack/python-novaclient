@@ -21,10 +21,6 @@ from requests_mock.contrib import fixture as requests_mock_fixture
 import testscenarios
 import testtools
 
-AUTH_URL = "http://localhost:5002/auth_url"
-AUTH_URL_V1 = "http://localhost:5002/auth_url/v1.0"
-AUTH_URL_V2 = "http://localhost:5002/auth_url/v2.0"
-
 
 def _patch_mock_to_raise_for_invalid_assert_calls():
     def raise_for_invalid_assert_calls(wrapped):
