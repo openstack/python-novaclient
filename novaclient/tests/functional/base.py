@@ -16,7 +16,6 @@ import time
 import fixtures
 from keystoneauth1 import identity
 from keystoneauth1 import session as ksession
-from keystoneclient import client as keystoneclient
 import openstack.config
 import openstack.config.exceptions
 import openstack.connection
@@ -250,10 +249,6 @@ class ClientTestBase(testtools.TestCase):
             uri=auth_url,
             cli_dir=cli_dir,
             insecure=self.insecure)
-
-        self.keystone = keystoneclient.Client(session=session,
-                                              username=user,
-                                              password=passwd)
 
     def _get_novaclient(self, session):
         nc = novaclient.client.Client("2", session=session)
@@ -489,8 +484,9 @@ class ClientTestBase(testtools.TestCase):
 
     def _get_project_id(self, name):
         """Obtain project id by project name."""
-        project = self.keystone.projects.find(name=name)
-        return project.id
+        return self.openstack.identity.find_project(
+            name, ignore_missing=False
+        ).id
 
     def _cleanup_server(self, server_id):
         """Deletes a server and waits for it to be gone."""
@@ -540,22 +536,28 @@ class ProjectTestBase(ClientTestBase):
         project_name = uuidutils.generate_uuid()
         password = 'password'
 
-        project = self.keystone.projects.create(project_name,
-                                                self.project_domain_id)
+        project = self.openstack.identity.create_project(
+            name=project_name,
+            domain_id=self.project_domain_id)
         self.project_id = project.id
-        self.addCleanup(self.keystone.projects.delete, self.project_id)
+        self.addCleanup(
+            self.openstack.identity.delete_project, self.project_id)
 
-        self.user_id = self.keystone.users.create(
+        self.user_id = self.openstack.identity.create_user(
             name=user_name, password=password,
             default_project=self.project_id).id
 
-        for role in self.keystone.roles.list():
+        for role in self.openstack.identity.roles():
             if "member" in role.name.lower():
-                self.keystone.roles.grant(role.id, user=self.user_id,
-                                          project=self.project_id)
+                self.openstack.identity.assign_project_role_to_user(
+                    project=self.project_id,
+                    user=self.user_id,
+                    role=role.id)
                 break
 
-        self.addCleanup(self.keystone.users.delete, self.user_id)
+        self.addCleanup(
+            self.openstack.identity.delete_user, self.user_id)
+
         self.cli_clients_2 = tempest.lib.cli.base.CLIClient(
             username=user_name,
             password=password,
