@@ -17,7 +17,6 @@ import re
 import sys
 from unittest import mock
 
-import ddt
 import fixtures
 from keystoneauth1 import fixture
 import requests_mock
@@ -352,7 +351,6 @@ class ParserTest(utils.TestCase):
         self.assertTrue(args.tic_tac)
 
 
-@ddt.ddt
 class ShellTest(utils.TestCase):
 
     _msg_no_tenant_project = ("You must provide a project name or project"
@@ -528,22 +526,23 @@ class ShellTest(utils.TestCase):
         else:
             self.fail('CommandError not raised')
 
-    @ddt.data(
-        (None, 'project_domain_id', FAKE_ENV['OS_PROJECT_DOMAIN_ID']),
-        ('OS_PROJECT_DOMAIN_ID', 'project_domain_id', ''),
-        (None, 'project_domain_name', FAKE_ENV['OS_PROJECT_DOMAIN_NAME']),
-        ('OS_PROJECT_DOMAIN_NAME', 'project_domain_name', ''),
-        (None, 'user_domain_id', FAKE_ENV['OS_USER_DOMAIN_ID']),
-        ('OS_USER_DOMAIN_ID', 'user_domain_id', ''),
-        (None, 'user_domain_name', FAKE_ENV['OS_USER_DOMAIN_NAME']),
-        ('OS_USER_DOMAIN_NAME', 'user_domain_name', '')
-    )
-    @ddt.unpack
-    def test_basic_attributes(self, exclude, client_arg, env_var):
-        self.make_env(exclude=exclude, fake_env=FAKE_ENV)
-        self.shell('list')
-        client_kwargs = self.mock_client.call_args_list[0][1]
-        self.assertEqual(env_var, client_kwargs[client_arg])
+    def test_basic_attributes(self):
+        for exclude, client_arg, env_var in (
+            (None, 'project_domain_id', FAKE_ENV['OS_PROJECT_DOMAIN_ID']),
+            ('OS_PROJECT_DOMAIN_ID', 'project_domain_id', ''),
+            (None, 'project_domain_name', FAKE_ENV['OS_PROJECT_DOMAIN_NAME']),
+            ('OS_PROJECT_DOMAIN_NAME', 'project_domain_name', ''),
+            (None, 'user_domain_id', FAKE_ENV['OS_USER_DOMAIN_ID']),
+            ('OS_USER_DOMAIN_ID', 'user_domain_id', ''),
+            (None, 'user_domain_name', FAKE_ENV['OS_USER_DOMAIN_NAME']),
+            ('OS_USER_DOMAIN_NAME', 'user_domain_name', '')
+        ):
+            with self.subTest(f'{exclude},{client_arg},{env_var}'):
+                self.mock_client.reset_mock()
+                self.make_env(exclude=exclude, fake_env=FAKE_ENV)
+                self.shell('list')
+                client_kwargs = self.mock_client.call_args_list[0][1]
+                self.assertEqual(env_var, client_kwargs[client_arg])
 
     @requests_mock.Mocker()
     def test_nova_endpoint_type(self, m_requests):
