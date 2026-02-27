@@ -343,6 +343,27 @@ class WrapsTestCase(utils.TestCase):
         self.assertEqual(expected_name, fake_func.__id__)
 
 
+class CheckVersionTestCase(utils.TestCase):
+    def test_version_unsupported(self):
+        for version in ('1.0', '1.5', '1.100'):
+            with self.subTest('version too old', version=version):
+                self.assertRaises(
+                    exceptions.UnsupportedVersion,
+                    api_versions.check_version,
+                    api_versions.APIVersion(version))
+
+        for version in ('2.97', '2.101', '3.0'):
+            with self.subTest('version too new', version=version):
+                self.assertRaises(
+                    exceptions.UnsupportedVersion,
+                    api_versions.check_version,
+                    api_versions.APIVersion(version))
+
+        for version in ('2.1', '2.57', '2.96'):
+            with self.subTest('version just right', version=version):
+                api_versions.check_version(api_versions.APIVersion(version))
+
+
 class DiscoverVersionTestCase(utils.TestCase):
     def setUp(self):
         super(DiscoverVersionTestCase, self).setUp()
