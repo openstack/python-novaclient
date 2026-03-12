@@ -14,7 +14,6 @@
 import functools
 import logging
 import os
-import pkgutil
 import re
 import traceback
 import warnings
@@ -195,35 +194,59 @@ class VersionedMethod(object):
 
 
 def get_available_major_versions():
-    # NOTE(andreykurilin): available clients version should not be
-    # hardcoded, so let's discover them.
-    matcher = re.compile(r"v[0-9]*$")
-    submodules = pkgutil.iter_modules([os.path.dirname(__file__)])
-    available_versions = [name[1:] for loader, name, ispkg in submodules
-                          if matcher.search(name)]
-
-    return available_versions
+    return ['2']
 
 
 def check_major_version(api_version):
     """Checks major part of ``APIVersion`` obj is supported.
 
     :raises novaclient.exceptions.UnsupportedVersion: if major part is not
-                                                      supported
+        supported
     """
-    available_versions = get_available_major_versions()
-    if (not api_version.is_null() and
-            str(api_version.ver_major) not in available_versions):
-        if len(available_versions) == 1:
-            msg = _("Invalid client version '%(version)s'. "
-                    "Major part should be '%(major)s'") % {
-                "version": api_version.get_string(),
-                "major": available_versions[0]}
-        else:
-            msg = _("Invalid client version '%(version)s'. "
-                    "Major part must be one of: '%(major)s'") % {
-                "version": api_version.get_string(),
-                "major": ", ".join(available_versions)}
+    if api_version.is_null():
+        return
+
+    if api_version.ver_major == 2:
+        return
+
+    msg = _(
+        "Invalid client version '%(version)s'. Major part should be '2'"
+    ) % {"version": api_version.get_string()}
+    raise exceptions.UnsupportedVersion(msg)
+
+
+def check_version(api_version):
+    """Checks if version of ``APIVersion`` is supported.
+
+    Provided as an alternative to :func:`check_major_version` to avoid changing
+    the behavior of that function.
+
+    :raises novaclient.exceptions.UnsupportedVersion: if major part is not
+        supported
+    """
+    if api_version.is_null():
+        return
+
+    # we can't use API_MIN_VERSION since we do support 2.0 (which is 2.1 but
+    # less strict)
+    if api_version < APIVersion('2.0'):
+        msg = _(
+            "Invalid client version '%(version)s'. "
+            "Min version supported is '%(min_version)s'"
+        ) % {
+            "version": api_version.get_string(),
+            "min_version": novaclient.API_MIN_VERSION,
+        }
+        raise exceptions.UnsupportedVersion(msg)
+
+    if api_version > novaclient.API_MAX_VERSION:
+        msg = _(
+            "Invalid client version '%(version)s'. "
+            "Max version supported is '%(max_version)s'"
+        ) % {
+            "version": api_version.get_string(),
+            "max_version": novaclient.API_MAX_VERSION,
+        }
         raise exceptions.UnsupportedVersion(msg)
 
 

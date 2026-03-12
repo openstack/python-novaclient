@@ -51,6 +51,12 @@ class SessionClient(adapter.LegacyJsonAdapter):
         self.timings = kwargs.pop('timings', False)
         self.api_version = kwargs.pop('api_version', None)
         self.api_version = self.api_version or api_versions.APIVersion()
+
+        if isinstance(self.api_version, str):
+            self.api_version = api_versions.APIVersion(self.api_version)
+
+        api_versions.check_version(self.api_version)
+
         super(SessionClient, self).__init__(*args, **kwargs)
 
     def request(self, url, method, **kwargs):
