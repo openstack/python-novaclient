@@ -20,7 +20,6 @@ Command-line interface to the OpenStack Nova API.
 
 import argparse
 import logging
-import os
 import sys
 
 from keystoneauth1 import loading
@@ -822,16 +821,13 @@ class OpenStackHelpFormatter(argparse.HelpFormatter):
 
 def main(argv=sys.argv[1:]):
     try:
-        # Special dansmith envvar to hide the warning. Don't rely on this
-        # because we will eventually remove all this stuff.
-        if os.environ.get("NOVACLIENT_ISHOULDNTBEDOINGTHIS") != "1":
-            print(
-                _(
-                    "nova CLI is deprecated and will be removed in a future "
-                    "release"
-                ),
-                file=sys.stderr,
-            )
+        print(
+            _(
+                "nova CLI is deprecated and will be removed in a future "
+                "release"
+            ),
+            file=sys.stderr,
+        )
         argv = [encodeutils.safe_decode(a) for a in argv]
         OpenStackComputeShell().main(argv)
     except Exception as exc:
