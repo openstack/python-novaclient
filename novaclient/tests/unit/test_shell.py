@@ -657,10 +657,13 @@ class ShellTest(utils.TestCase):
     def test_osprofiler(self, m_requests):
         self.make_env()
 
+        if not novaclient.shell.osprofiler_profiler:
+            self.fail("osprofiler not installed")
+
         def client(*args, **kwargs):
             self.assertEqual('swordfish', kwargs['profile'])
+
         with mock.patch('novaclient.client.Client', client):
-            # we are only interested in the fact Client is initialized properly
             self.shell('list --profile swordfish', (0, 2))
 
     @requests_mock.Mocker()
